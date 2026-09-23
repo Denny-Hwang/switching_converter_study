@@ -1,0 +1,151 @@
+---
+title: 플라이백 컨버터
+description: 변압기로 절연한 벅-부스트로, CCM과 DCM에서의 변환비, 스위치와 다이오드의 스트레스, 누설 에너지, 그리고 고정 듀티비로 고정 출력에 전력을 공급할 때 한 값에 묶이는 입력 전압을 다룹니다.
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 1:n 권선비(turns ratio) 규약을 사용하여 CCM과 DCM에서 플라이백(flyback)의 변환비(conversion ratio)를 계산합니다.
+- 스위치와 다이오드의 스트레스(stress), 그리고 턴오프(turn-off)할 때마다 누설 인덕턴스(leakage inductance)가 남기는 에너지를 구합니다.
+- 고정 듀티비(duty ratio)로 고정 출력에 전력을 공급하면 CCM 플라이백의 입력 전압이 한 값에 묶이는 이유를 설명합니다.
+
+## 이론
+
+### 벅-부스트에서 플라이백으로
+
+벅-부스트의 인덕터를 하나의 코어에 감은 권선비 1:n의 두 결합 권선(coupled
+windings)으로 바꾸면 플라이백 컨버터가 됩니다. 여기서 $n$은 2차 권선(secondary
+winding)의 턴 수를 1차 권선(primary winding)의 턴 수로 나눈 값입니다.
+1차 측으로 환산한 자화 인덕턴스(magnetizing inductance) $L_M$은 스위치가 켜져 있는
+동안 에너지를 저장하고, 스위치가 꺼져 있는 동안에는 2차 권선과 다이오드가 그
+에너지를 출력으로 전달합니다. 권선은 출력을 절연하고, 권선비는 변환비의 배율을
+정합니다 <Cite key="erickson2020" where="Ch. 6" />.
+
+<Eq id="flyback.ccm.M" />
+
+$K$는 $L_M$과 실제 부하 저항(load resistance)으로 구성하며, 그러면 권선비는
+임계값(critical value)에 나타납니다(<EqRef id="Kcrit.flyback" label="플라이백 임계 K" />).
+DCM에서는 변환비가 더 이상 권선비에 의존하지 않습니다 <Cite key="erickson2020" where="Ch. 5" />.
+
+<Eq id="flyback.dcm.M" />
+
+### 스위치와 다이오드의 스트레스
+
+스위치가 꺼져 있는 동안 2차 측 전압은 출력 전압에 다이오드 전압 강하(diode drop)를
+더한 값으로 클램프되며, 이 전압은 $n$으로 나누어져 1차 측에 나타납니다. 따라서
+스위치는 입력 전압에 이 반사 전압(reflected voltage)을 더한 값을 차단합니다
+<Cite key="erickson2020" where="Ch. 6" />.
+
+<Eq id="flyback.Vds_off" />
+
+스위치가 켜져 있는 동안에는 2차 측에 $n V_g$가 걸리며, 다이오드는 출력 전압에 이
+전압을 더한 값을 차단합니다.
+
+<Eq id="flyback.diode.VR" />
+
+$n$이 작으면 다이오드 스트레스는 낮아지지만 스위치에 걸리는 반사 전압은 높아집니다.
+즉 권선비는 한쪽 스트레스를 다른 쪽 스트레스와 맞바꿉니다.
+
+### DCM 피크 전류와 무손실 저항
+
+DCM에서는 자화 전류가 매 주기 0에서 시작하므로, 그 피크값은 입력 전압, 온
+시간(on-time), $L_M$에만 의존합니다 <Cite key="erickson2020" where="Ch. 5" />.
+
+<Eq id="flyback.Ipk.dcm" />
+
+주기마다 저장되는 에너지가 입력 전력을 정하며, 입력은 무손실 저항(loss-free
+resistor, LFR)처럼 동작합니다(<EqRef id="dcm.P_in" label="DCM 입력 전력" />,
+<EqRef id="lfr.R_in" label="입력 저항" />).
+
+### 누설 인덕턴스
+
+1차 권선의 자속(flux)이 모두 2차 권선과 쇄교하는 것은 아닙니다. 턴오프 순간 누설
+인덕턴스에는 1차 전류가 흐르고 있으며, 그 에너지는 출력에 도달할 수 없습니다
+<Cite key="erickson2020" where="Ch. 4" />.
+
+<Eq id="flyback.leak.E" />
+
+클램프(clamp)나 스너버(snubber)가 매 주기 이 에너지를 흡수해야 하며, 이것이 그
+손실 전력의 하한을 정합니다.
+
+<Eq id="flyback.leak.P" />
+
+### 고정 출력에서의 고정 듀티비 동작
+
+출력이 배터리나 레귤레이션된 버스(regulated bus)로 유지되고 듀티비도 고정되어
+있으면, CCM 전압-초 평형(volt-second balance)에 맞는 입력 전압은 하나뿐입니다.
+
+<Eq id="flyback.V_crit" />
+
+입력 전압이 이 값보다 낮으면 플라이백은 DCM으로 동작하며 저항처럼 전력을
+끌어옵니다. 전류 제한 전원(current-limited source)이 입력을 구동하면 전원 전압은
+이 값에 도달할 때까지 상승하고, 이 값에서 CCM이 시작되어 입력을 그 전압에 붙잡아
+둡니다. 이때 컨버터는 정전압 싱크(constant-voltage sink)로 동작합니다. 그 지점에서
+스위치가 차단하는 전압은 다음과 같습니다.
+
+<Eq id="flyback.Vds_clamped" />
+
+## 풀이 예제
+
+세 가지 합성(synthetic) 플라이백입니다. 하나는 저항 부하로 CCM에서 동작하고,
+하나는 DCM에서 동작하며, 나머지 하나는 고정 듀티비로 고정 출력을 충전합니다.
+
+<Worked example="flyback-ccm" show={['V_g', 'n', 'D', 'f_s', 'L_M', 'R', 'V_D', 'M', 'V', 'K', 'K_crit', 'V_DS', 'V_R']} />
+
+<Worked example="flyback-dcm" show={['V_g', 'n', 'D', 'f_s', 'L_M', 'R', 'V_D', 'L_lk', 'K', 'K_crit', 'M', 'V', 'I_pk', 'V_DS', 'E_lk', 'P_lk']} />
+
+<Worked example="flyback-battery" />
+
+CCM 예제에서는 반사 전압이 입력 전압에 더해지므로, 스위치가 차단하는 전압은
+<Val example="flyback-ccm" name="V_DS" />인 반면 입력은 <Val example="flyback-ccm" name="V_g" />입니다.
+DCM 예제에서는 <Val example="flyback-dcm" name="L_lk" />의 누설 인덕턴스만으로도
+클램프가 소모해야 하는 전력이 최소 <Val example="flyback-dcm" name="P_lk" />입니다.
+
+## 직접 해 보기
+
+<TryIt eq="flyback.Vds_off" example="flyback-ccm" sweep="n" />
+
+권선비 $n$을 스윕(sweep)하십시오. $n$이 작을수록 반사 전압과 스위치 스트레스가
+높아집니다. 그다음 다이오드 스트레스 식을 열고 $n$을 다시 스윕하여 반대 경향을
+확인하십시오.
+
+## 벤치 실습
+
+저전력 플라이백 평가 보드(evaluation board)에서 스위치가 꺼져 있는 동안의 스위치
+전압을 관찰하십시오. 턴오프 순간의 짧은 스파이크(누설 에너지가 클램프되는 부분),
+이어서 입력 전압에 반사된 출력 전압을 더한 값의 평탄 구간(plateau), 그리고
+DCM에서는 2차 측 전류가 0에 도달한 뒤의 링잉(ringing)이 나타나야 합니다. 평탄
+구간의 전압을 측정하여, 측정한 입력 전압과 출력 전압에서 스위치 스트레스 식이
+주는 값과 비교하십시오.
+
+## 주의할 점
+
+- **누설 에너지는 어딘가로 가야 합니다.** 클램프나 스너버가 없으면 턴오프
+  스파이크는 무언가가 항복(breakdown)할 때까지 상승하고, 클램프나 스너버가 있으면
+  클램프가 적어도 앞에서 구한 누설 전력을 소모합니다 <Cite key="erickson2020" where="Ch. 4" />.
+- **개루프(open-loop) 플라이백은 부하를 잃어서는 안 됩니다.** DCM에서는 부하가
+  제거되면 출력이 상승하고(<EqRef id="flyback.dcm.M" label="DCM 변환비" />는 $K$가
+  작아질수록 커집니다), 그와 함께 반사 전압도 상승하며, 이 상승은 클램프가 스위치
+  전압을 제한할 때까지 계속됩니다.
+- **전류 제한 전원에서 동작하는 고정 듀티비 플라이백은 입력을 한 값에 묶어 둡니다.**
+  CCM이 시작되면 입력은 더 이상 상승하지 않고 앞에서 구한 임계 전압에 머뭅니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch6', 'coursera-converter-circuits', 'mit-6334-notes', 'benyaakov-channel']} />
+
+## 퀴즈
+
+<Quiz id="03-topologies/flyback" />

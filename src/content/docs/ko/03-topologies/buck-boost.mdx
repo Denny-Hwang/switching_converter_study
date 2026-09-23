@@ -1,0 +1,121 @@
+---
+title: 벅-부스트 컨버터
+description: 강압과 승압이 모두 가능한 반전형 컨버터로, 출력 전압의 크기, 인덕터 전류, 리플, 그리고 입력 전압과 출력 전압의 합으로 정해지는 스위치 스트레스를 다룹니다.
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 동작점(operating point)에서 벅-부스트(buck-boost)의 출력 전압 크기, 인덕터 전류, 리플을 계산합니다.
+- 스위치와 다이오드가 입력 전압과 출력 전압의 합을 차단(block)해야 하는 이유를 설명합니다.
+- 벅-부스트의 전류와 스트레스(stress)를 벅, 부스트의 경우와 비교합니다.
+
+## 이론
+
+### 회로와 변환비
+
+벅-부스트 컨버터는 스위치를 통해 인덕터를 입력에 연결하고, 다이오드를 통해
+인덕터를 출력에 연결합니다. 스위치가 켜져 있는 동안 인덕터는 입력으로부터
+에너지를 저장하고, 다이오드가 도통하는 동안에는 극성이 반전된 채로 그 에너지를
+출력에 방출합니다 <Cite key="erickson2020" where="Ch. 2" />. 따라서
+변환비(conversion ratio)는 음수입니다(<EqRef id="buckboost.ccm.M" label="벅-부스트 변환비" />).
+출력 전압의 크기로 나타내면 다음과 같습니다.
+
+<Eq id="buckboost.V" />
+
+$D < 0.5$이면 강압(step down)하고, $D > 0.5$이면 승압(step up)합니다.
+
+### 인덕터 전류와 리플
+
+입력과 출력이 인덕터에 동시에 연결되는 일은 없으므로, 인덕터 전류는 오프
+구간(off-interval) 동안에만 출력에 도달합니다. 전하 평형(charge balance)으로부터
+부스트와 같은 형태의 식을 얻습니다.
+
+<Eq id="buckboost.IL" />
+
+스위치가 켜져 있는 동안 인덕터에는 입력 전압이 걸립니다.
+
+<Eq id="buckboost.ripple.iL" />
+
+또한 스위치와 다이오드에는 모두 인덕터 전류의 피크값이
+흐릅니다(<EqRef id="ripple.Ipk" label="피크 전류" />).
+
+### 출력 전압 리플
+
+부스트와 마찬가지로, 스위치가 켜져 있는 동안에는 커패시터 혼자 부하에 전류를
+공급합니다 <Cite key="erickson2020" where="Ch. 2" />.
+
+<Eq id="buckboost.ripple.v" />
+
+벅-부스트는 입력 전류와 출력 전류가 모두 펄스 형태(pulsed)입니다. 입력은 온
+구간(on-interval) 동안에만 전류를 끌어오고, 출력은 오프 구간 동안에만 전류를
+받습니다.
+
+### 스위치 스트레스
+
+다이오드가 도통하는 동안 스위치의 입력 반대편 단자는 (음의) 출력 전압 전위에
+있으므로, 스위치는 입력 전압에 출력 전압의 크기를 더한 값을 차단합니다. 스위치가
+켜져 있는 동안에는 다이오드가 같은 합을 차단합니다 <Cite key="erickson2020" where="Ch. 6" />.
+
+<Eq id="buckboost.Vds" />
+
+이 합은 입력 전압보다도, 출력 전압보다도 큽니다. 이는 승압과 강압을 모두 할 수
+있는 단일 단(single stage)의 대가입니다. 또한 소신호 모델(small-signal model)에는
+우반평면(right-half-plane, RHP) 영점도 있습니다(<EqRef id="buckboost.ss.wz" label="RHP 영점" />).
+플라이백 컨버터는 이 회로를 변압기로 절연한 형태입니다([플라이백 페이지](../flyback/) 참고).
+
+## 풀이 예제
+
+[전압-초 평형(volt-second balance) 페이지](../../02-theory/volt-second-charge-balance/)에서
+사용한 합성(synthetic) 벅-부스트입니다.
+
+<Worked example="buckboost-basic" show={['V_g', 'D', 'f_s', 'L', 'C', 'R', 'V', 'I_L', 'Delta_i_L', 'I_pk', 'Delta_v', 'V_DS', 'K', 'K_crit']} />
+
+이 듀티비(duty ratio)에서는 출력 전압의 크기가 입력 전압과 같지만, 스위치가 차단해야
+하는 전압은 <Val example="buckboost-basic" name="V_DS" />이며, 피크에서 흘려야 하는
+전류는 <Val example="buckboost-basic" name="I_pk" />입니다.
+
+## 직접 해 보기
+
+<TryIt eq="buckboost.Vds" example="buckboost-basic" sweep="V" />
+
+출력 전압의 크기 $V$를 스윕(sweep)하십시오. 스위치 스트레스는 입력 전압에 더해,
+출력 전압이 늘어나는 만큼 그대로 늘어납니다.
+
+## 벤치 실습
+
+벅-부스트(반전형) 평가 보드(evaluation board)에서 오실로스코프의 접지
+클립(ground clip)을 컨버터의 접지에 연결한 상태로 출력을 측정하십시오. 출력은 음의
+값입니다. 스위치가 꺼져 있는 동안의 스위치 전압을 측정하여 입력 전압과 출력 전압
+크기의 합과 비교하십시오. 그런 다음 전류 프로브(current probe)로 입력 전류를
+관찰하고, 입력 전류가 펄스 형태로 흐르는 것을 확인하십시오.
+
+## 주의할 점
+
+- **출력이 반전되어 있습니다.** 출력이 양의 전압이라고 가정하는 부하, 측정, 피드백
+  분압기(feedback divider)는 극성을 잘못 읽거나 잘못된 극성으로 레귤레이션합니다.
+- **입력과 출력 양쪽에 펄스 전류가 흐릅니다.** 벅(연속적인 출력 전류)이나
+  부스트(연속적인 입력 전류)와 달리, 입력 커패시터와 출력 커패시터 모두에 큰 리플
+  전류가 흐릅니다.
+- **스트레스는 두 전압 모두에 따라 커집니다.** 승압비가 높을 때는 출력 전압의
+  크기가 스위치 스트레스의 대부분을 차지하고, 강압 폭이 클 때는 입력 전압이
+  대부분을 차지합니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['ti-slva059', 'erickson-ch6', 'coursera-converter-circuits']} />
+
+## 퀴즈
+
+<Quiz id="03-topologies/buck-boost" />

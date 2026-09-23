@@ -58,18 +58,18 @@ _Last updated: Phase 2b (03-topologies, EN and KO). `python scripts/modulelint.p
 
 | Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| buck | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `buck.IL`, `buck.ripple.iL`, `buck.ripple.iL_pp`, `ripple.Ipk`, `buck.ripple.v` |
-| boost | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `boost.IL`, `boost.ripple.iL`, `boost.ripple.v` |
-| buck-boost | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `buckboost.V`, `buckboost.IL`, `buckboost.ripple.iL`, `buckboost.ripple.v`, `buckboost.Vds` |
+| buck | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `buck.IL`, `buck.ripple.iL`, `buck.ripple.iL_pp`, `ripple.Ipk`, `buck.ripple.v` |
+| boost | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `boost.IL`, `boost.ripple.iL`, `boost.ripple.v` |
+| buck-boost | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `buckboost.V`, `buckboost.IL`, `buckboost.ripple.iL`, `buckboost.ripple.v`, `buckboost.Vds` |
 | cuk-sepic-zeta | later | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| flyback | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes the nine `flyback.*` equations (ratios, stresses, DCM peak, leakage, fixed-output boundary) |
-| forward | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `forward.ccm.M`, `forward.reset.Dmax`, `forward.Vds`, `forward.ripple.iL` |
+| flyback | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes the nine `flyback.*` equations (ratios, stresses, DCM peak, leakage, fixed-output boundary) |
+| forward | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `forward.ccm.M`, `forward.reset.Dmax`, `forward.Vds`, `forward.ripple.iL` |
 | bridges | later | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
 | llc | later | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
 | charge-pump | later | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
 | ldo | later | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
 | rectifiers | later | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| comparison | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `util.buck`, `util.boost`, `util.buckboost`, `util.forward` |
+| comparison | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `util.buck`, `util.boost`, `util.buckboost`, `util.forward` |
 
 ## 04-magnetics
 

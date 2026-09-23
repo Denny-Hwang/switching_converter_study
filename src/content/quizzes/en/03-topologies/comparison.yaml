@@ -33,14 +33,14 @@ questions:
       - 'None of them'
     answer: 2
     explain: 'The flyback, like the boost and the buck-boost, delivers energy to the output only during the off-interval; the buck and the forward converter feed the output through an L-C filter while the switch is on.'
-  - q: 'Why is the transistor utilization of the flyback independent of its turns ratio?'
+  - q: 'Why does the transistor utilization of the flyback not depend on its turns ratio?'
     options:
-      - 'The turns ratio only affects the diode'
-      - 'A larger $n$ lowers the reflected voltage on the transistor but raises its current by the same factor, so the product is unchanged'
-      - 'The flyback always runs at $D = 1/3$'
-      - 'The transformer stores no energy'
+      - 'Because the transformer stores no energy'
+      - 'Because at a given duty ratio the transistor sees the same peak voltage and the same rms current whatever $n$ is; the turns ratio only scales the output voltage and current'
+      - 'Because the flyback always runs at $D = 1/3$'
+      - 'Because the leakage inductance cancels the turns ratio'
     answer: 1
-    explain: 'The transistor blocks $V_g + V/n$ and carries the primary-referred current $n I/(1 - D)$; in the ratio of load power to their product, $n$ cancels.'
+    explain: 'In CCM the transistor blocks $V_g + V/n$, which equals $V_g/(1 - D)$, and for a given load power its current does not depend on $n$ either; the turns ratio changes only the output side.'
   - q: 'Which converter delivers a continuous current to its output capacitor and draws a pulsed current from its input?'
     options:
       - 'The buck'

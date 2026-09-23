@@ -1,0 +1,130 @@
+---
+title: 벅 컨버터
+description: CCM으로 동작하는 강압 컨버터의 인덕터 직류 전류, 전류 리플과 전압 리플, 피크 전류, 스위치 스트레스, 그리고 컨버터가 CCM을 벗어나는 부하를 다룹니다.
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 동작점(operating point)에서 벅 컨버터의 인덕터 직류 전류, 전류 리플(current ripple), 피크 전류(peak current)를 구합니다.
+- 출력 전압 리플(output voltage ripple)을 추정하고, 이상적인 식이 무엇을 빠뜨리는지 파악합니다.
+- 스위치와 다이오드가 차단(block)해야 하는 전압과, 벅이 CCM을 벗어나는 지점을 기술합니다.
+
+## 이론
+
+### 회로와 변환비
+
+벅 컨버터는 입력과 스위치 노드(switch node) 사이에 스위치를, 스위치 노드와
+접지 사이에 다이오드를, 스위치 노드와 부하 사이에 L-C 저역통과
+필터(low-pass filter)를 연결합니다 <Cite key="erickson2020" where="Ch. 2" />.
+필터는 스위치 노드의 평균을 통과시키므로, CCM에서 변환비(conversion ratio)는
+듀티비(duty ratio)와 같습니다(<EqRef id="buck.ccm.M" label="벅 변환비" />).
+
+### 인덕터 직류 전류
+
+전하 평형(charge balance)에 따라 출력 커패시터에는 직류 전류가 흐르지
+않으므로, 인덕터가 부하 전류 전체를 공급합니다.
+
+<Eq id="buck.IL" />
+
+### 전류 리플과 피크 전류
+
+스위치가 켜져 있는 동안 인덕터에는 입력 전압과 출력 전압의 차가 걸리고,
+인덕터 전류는 선형적으로 증가합니다. 다이오드가 도통하는 동안에는 인덕터에
+출력 전압이 반대 부호로 걸리고, 전류는 다시 감소합니다
+<Cite key="erickson2020" where="Ch. 2" />. 리플의 절반(half-ripple), 그리고
+같은 리플의 피크-피크(peak-to-peak) 값을 스위칭 주파수(switching frequency)로
+나타낸 식은 다음과 같습니다.
+
+<Eq id="buck.ripple.iL" />
+
+<Eq id="buck.ripple.iL_pp" />
+
+스위치와 다이오드는 인덕터 전류를 번갈아 흘리므로, 둘 모두에 그 피크값이
+흐릅니다.
+
+<Eq id="ripple.Ipk" />
+
+### 출력 전압 리플
+
+인덕터 전류 가운데 직류 성분은 부하로, 삼각파 리플은 커패시터로 흐릅니다.
+그 리플이 양수인 반주기 동안 커패시터가 얻는 전하는 커패시터 전압을
+최솟값에서 최댓값까지 올립니다 <Cite key="erickson2020" where="Ch. 2" />.
+
+<Eq id="buck.ripple.v" />
+
+커패시터에는 펄스가 아니라 연속적인 삼각파 전류가 공급되며, 그 덕분에 주어진
+커패시턴스에서 벅의 출력 리플이 작게 유지됩니다. 유도 과정은
+[유도 과정 페이지](../../02-theory/derivations/#deriv-topologies)에 있습니다.
+
+### 스위치 스트레스와 모드 경계
+
+스위치는 꺼져 있을 때 입력 전압을 차단하고, 스위치가 켜져 있을 때는 다이오드가
+입력 전압을 차단합니다. 둘 모두에 인덕터 피크 전류가 흐릅니다
+<Cite key="erickson2020" where="Ch. 6" />. 경부하(light load)에서는 인덕터
+전류가 0에 도달하며, $K$가 <EqRef id="Kcrit.buck" label="임계값" />(critical value)
+아래로 떨어지면 벅은 DCM으로 들어갑니다. 이때 출력은 $D V_g$보다
+높아집니다(<EqRef id="buck.dcm.M" label="DCM 변환비" />).
+
+## 풀이 예제
+
+[스위칭 원리 페이지](../../02-theory/switching-principle/)의 합성(synthetic) 벅과
+그 전류, 리플입니다.
+
+<Worked example="buck-basic" show={['V_g', 'D', 'f_s', 'L', 'C', 'R', 'V', 'I_L', 'Delta_i_L', 'Delta_i_pp', 'I_pk', 'Delta_v', 'K', 'K_crit']} />
+
+리플의 절반은 <Val example="buck-basic" name="Delta_i_L" />이며, 직류 전류
+<Val example="buck-basic" name="I_L" />에 비해 작으므로 소리플
+근사(small-ripple approximation)가 성립합니다. 스위치와 다이오드는 피크에서
+<Val example="buck-basic" name="I_pk" />의 전류를 흘려야 하며, 이상적인 출력
+리플은 출력 전압의 작은 일부인 <Val example="buck-basic" name="Delta_v" />입니다.
+
+## 직접 해 보기
+
+<TryIt eq="buck.ripple.v" example="buck-basic" sweep="C" />
+
+$C$를 두 디케이드에 걸쳐(로그 축) 스윕(sweep)하십시오. 리플은 커패시턴스에
+반비례하여 줄어듭니다. 그런 다음 $T_s$를 절반으로 줄이십시오. 전류 리플이
+같다면 전압 리플은 절반이 됩니다. 실제 컨버터에서는 전류 리플도 절반이
+되므로, 스위칭 주파수를 두 배로 높이면 출력 리플은 4분의 1로 줄어듭니다.
+
+## 벤치 실습
+
+저전압 벅 평가 보드(evaluation board)에서 전류 프로브(current probe)로 인덕터
+전류를 측정하고 그 피크-피크 리플을 읽으십시오. 이를 측정한 입력 전압, 출력
+전압, 스위칭 주파수에서 피크-피크 식이 주는 값과 비교하십시오. 그런 다음
+프로브의 접지 연결을 짧게 하여 커패시터 단자 양단에서 출력 리플을
+측정하십시오. 리플이 이상적인 식의 예측보다 클 것으로 예상하십시오. 커패시터의
+직렬 저항(series resistance)과 직렬 인덕턴스가 각자의 항을 더하기 때문입니다.
+
+## 주의할 점
+
+- **커패시터의 직렬 저항은 리플을 더합니다.** 직렬 저항이 있는 커패시터는 그
+  저항에 피크-피크 리플 전류를 곱한 값과 같은 전압을 전류와 같은 위상으로
+  더합니다. 이를 위에서 계산한 용량성 항과 비교하십시오. 커패시터에 따라 어느
+  쪽이든 지배적일 수 있습니다.
+- **인덕터는 직류 전류가 아니라 피크 전류를 기준으로 선정하십시오.** 자성 코어는
+  포화 자속 밀도(saturation flux density)를 넘으면 투자율(permeability)을 잃고
+  인덕턴스가 급격히 떨어집니다 <Cite key="erickson2020" where="Ch. 10" />. 그
+  한계 아래에 머물러야 하는 것은 인덕터 전류의 피크값입니다.
+- **리플 식은 리플 전체가 커패시터로 흐른다고 가정합니다.** 이 가정은 스위칭
+  주파수에서 커패시터의 임피던스가 부하의 임피던스보다 훨씬 낮을 때 성립합니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch2', 'ti-slva057', 'ti-slva477']} />
+
+## 퀴즈
+
+<Quiz id="03-topologies/buck" />
