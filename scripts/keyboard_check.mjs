@@ -198,6 +198,28 @@ async function staleAndHash(page, where, errors, prefix) {
   if (!got) errors.push(`${where}: a new URL hash did not load its values`);
 }
 
+/**
+ * A run still in flight when the form becomes invalid must not bring its
+ * result back after the charts were cleared: change a value (a run starts),
+ * empty a field while it runs, and wait longer than the run takes.
+ */
+async function noStaleResult(page, where, errors, prefix, waitMs) {
+  await page.waitForSelector(`${TOOL} .main-svg`, { timeout: 60000 });
+  const v = page.locator(`${TOOL} #${prefix}-V`);
+  const fs = page.locator(`${TOOL} #${prefix}-fs`);
+  const vValue = await v.inputValue();
+  const fsValue = await fs.inputValue();
+  await v.fill(String(Number(vValue) * 1.01));
+  await page.waitForTimeout(700);
+  await fs.fill('');
+  await page.waitForTimeout(waitMs);
+  if ((await page.locator(`${TOOL} .main-svg`).count()) > 0) {
+    errors.push(`${where}: a run started before the form became invalid brought its charts back`);
+  }
+  await fs.fill(fsValue);
+  await v.fill(vValue);
+}
+
 /** Designer: Space on the second topology button selects it and loads that topology's specification. */
 async function designerAction(page, where, errors) {
   const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
@@ -222,6 +244,8 @@ async function lossAction(page, where, errors) {
   if ((await second.getAttribute('aria-pressed')) !== 'true') errors.push(`${where}: Space did not select a topology button`);
   if ((await page.locator(`${TOOL} #loss-V`).inputValue()) === before) errors.push(`${where}: the topology's example was not loaded`);
   await staleAndHash(page, where, errors, 'loss');
+  // a budget takes a few seconds (every point is a simulation)
+  await noStaleResult(page, where, errors, 'loss', 10000);
 }
 
 async function main() {

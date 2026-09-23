@@ -214,13 +214,25 @@ export function hashOf(topo: Topology, values: Record<string, string>): string {
 
 type Done = (result: Budget | null, error: string | null) => void;
 
-/** Runs lossBudget() in a Web Worker; a new request abandons the one in flight. */
-function useLossRunner(): (spec: LossSpec, done: Done) => void {
+/**
+ * Runs lossBudget() in a Web Worker. A new request, or cancel(), abandons the
+ * one in flight (the worker is replaced), so a reply to earlier inputs never
+ * arrives after the inputs have changed.
+ */
+function useLossRunner(): { run: (spec: LossSpec, done: Done) => void; cancel: () => void } {
   const worker = useRef<Worker | null>(null);
   const inFlight = useRef(false);
   const seq = useRef(0);
   useEffect(() => () => worker.current?.terminate(), []);
-  return useCallback((spec: LossSpec, done: Done) => {
+  const cancel = useCallback(() => {
+    seq.current++;
+    if (worker.current && inFlight.current) {
+      worker.current.terminate();
+      worker.current = null;
+    }
+    inFlight.current = false;
+  }, []);
+  const run = useCallback((spec: LossSpec, done: Done) => {
     const id = ++seq.current;
     if (worker.current && inFlight.current) {
       worker.current.terminate();
@@ -243,6 +255,7 @@ function useLossRunner(): (spec: LossSpec, done: Done) => void {
     };
     w.postMessage({ id, spec });
   }, []);
+  return useMemo(() => ({ run, cancel }), [run, cancel]);
 }
 
 export default function LossBudget({ labels, presets, simulatorHref }: Props) {
@@ -254,7 +267,7 @@ export default function LossBudget({ labels, presets, simulatorHref }: Props) {
   const [busy, setBusy] = useState(false);
   const loadRef = useRef<HTMLDivElement>(null);
   const freqRef = useRef<HTMLDivElement>(null);
-  const run = useLossRunner();
+  const runner = useLossRunner();
 
   const spec = useMemo(() => toLossSpec(topo, values), [topo, values]);
 
@@ -276,6 +289,8 @@ export default function LossBudget({ labels, presets, simulatorHref }: Props) {
   }, [presets]);
 
   useEffect(() => {
+    // new inputs: the budget in flight belongs to the old ones
+    runner.cancel();
     if (!spec) {
       setBudget(null);
       setError(labels.invalid);
@@ -284,14 +299,14 @@ export default function LossBudget({ labels, presets, simulatorHref }: Props) {
     }
     setBusy(true);
     const id = window.setTimeout(() => {
-      run(spec, (b, err) => {
+      runner.run(spec, (b, err) => {
         setBusy(false);
         setBudget(b);
         setError(b ? null : `${labels.invalid} (${err})`);
       });
     }, 250);
     return () => window.clearTimeout(id);
-  }, [spec, labels, run]);
+  }, [spec, labels, runner]);
 
   // stacked bars with the efficiency on a second axis
   useEffect(() => {

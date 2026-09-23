@@ -186,12 +186,13 @@ interface Try {
  * the set point (the output rises with the duty ratio) and replaced by
  * bisection when they leave it; without a bracket yet, a step goes halfway to
  * the limit. The best try is kept, so an unreachable set point gives the
- * closest output. The forward converter's duty ratio stops at its reset
- * limit (forward.reset.Dmax).
+ * closest output. The search spans the duty ratios the simulator takes (the
+ * open interval (0, 1), less a margin of 1e-6 at each end); the forward
+ * converter's stops at its reset limit (forward.reset.Dmax).
  */
 function regulate(s: LossSpec, R: number, fs: number, Dmax: number | undefined): Try {
-  const lo = 0.005;
-  const hi = Math.min(0.995, Dmax ?? 1);
+  const lo = 1e-6;
+  const hi = Math.min(1 - 1e-6, Dmax ?? 1);
   const tol = 1e-3 * s.V;
   const run = (D: number): Try => {
     const r = simulate(simParams(s, R, fs, D));
@@ -270,7 +271,10 @@ export function lossPoint(s: LossSpec, load: number, fs: number): LossPoint {
     losses.clamp = evaluate('flyback.leak.P', { E_lk: E, f_s: fs });
   }
   const total = BUCKETS.reduce((acc, b) => acc + losses[b], 0);
-  const Pout = (V * V) / R;
+  // the power the load takes, <v_out^2>/R: the output energy of the simulated
+  // period (the capacitor's energy returns to its start value in steady state),
+  // not <v_out>^2/R, which the output ripple would make too small
+  const Pout = r.energy.output / Ts;
   return {
     load,
     fs,

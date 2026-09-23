@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { lossPoint, lossBudget, LOAD_FRACTIONS, FREQ_FACTORS, type LossSpec } from '../src/losses';
+import { simulate } from '../src/sim';
 
 const rel = (a: number, b: number) => Math.abs(a - b) / Math.abs(b);
 
@@ -99,6 +100,36 @@ describe('loss budget', () => {
     expect(p.Vout).toBeLessThan(5);
     // the magnetizing current still resets: no runaway conduction loss
     expect(p.losses.conduction).toBeLessThan(1);
+  });
+
+  it('the duty-ratio search spans the whole range the simulator takes', () => {
+    // ideal parts; a buck at V/V_g = 0.001 (D = 0.001) and a boost at M = 300 (D = 0.9967),
+    // both outside the 0.005 to 0.995 the search once used
+    const ideal = { Ron: 0, RL: 0, VF: 0, Cnode: 0, rd: 0, Qg: 0, Vgs: 0 };
+    const low: LossSpec = { topology: 'buck', Vg: 100, V: 0.1, P: 1, fs: 1e5, L: 1e-4, C: 1e-3, ...ideal };
+    const p = lossPoint(low, 1, low.fs);
+    expect(p.regulated).toBe(true);
+    expect(rel(p.D, 0.001)).toBeLessThan(0.01);
+    const high: LossSpec = { topology: 'boost', Vg: 1, V: 300, P: 1, fs: 1e5, L: 1e-3, C: 1e-4, ...ideal };
+    const q = lossPoint(high, 1, high.fs);
+    expect(q.regulated).toBe(true);
+    expect(rel(q.D, 1 - 1 / 300)).toBeLessThan(1e-3);
+  });
+
+  it('the output power is the power the load takes, <v_out^2>/R, even with a large output ripple', () => {
+    // 20 uH into 0.1 uF: R C = 0.6 us against T_s = 10 us, so v_out follows the inductor's wide ripple
+    const s: LossSpec = { ...buck, L: 2e-5, C: 1e-7, core: undefined };
+    const p = lossPoint(s, 1, s.fs);
+    expect(p.regulated).toBe(true);
+    const r = simulate({ topology: 'buck', Vg: s.Vg, D: p.D, fs: s.fs, L: s.L, Ron: s.Ron, RL: s.RL, VF: s.VF, Cnode: s.Cnode, load: { kind: 'resistive', R: p.R, C: s.C } });
+    const v = r.waveforms.v_out as number[];
+    const t = r.waveforms.t as number[];
+    let v2 = 0;
+    for (let k = 1; k < t.length; k++) v2 += ((t[k]! - t[k - 1]!) * (v[k]! ** 2 + v[k - 1]! ** 2)) / 2;
+    const Pload = (v2 * s.fs) / p.R;
+    expect(rel(p.Pout, Pload)).toBeLessThan(1e-3);
+    // the square of the average would understate it by more than 10 %
+    expect((p.Vout * p.Vout) / p.R).toBeLessThan(0.9 * p.Pout);
   });
 
   it('reports the peak flux density of the core at the peak current', () => {
