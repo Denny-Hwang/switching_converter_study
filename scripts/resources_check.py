@@ -56,6 +56,7 @@ RESOURCES = ROOT / "resources.yaml"
 DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 RESOURCE_TYPES = {"book", "course", "video", "channel", "app-note", "tool", "paper", "datasheet", "lecture", "chapter"}
 TOOL_AGENT = "switching-converter-study-linkcheck/1.0 (+https://github.com/Denny-Hwang/switching_converter_study)"
+CAP = 6_000_000  # bytes kept per response; some pages carry megabytes of inline script before <title>
 BROWSER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 # Titles of interstitial pages served instead of content (consent walls, bot
 # checks). Seeing one is inconclusive, not a mismatch.
@@ -124,9 +125,9 @@ class Fetch:
         return f"{self.how}: {self.error or f'HTTP {self.status}'}"
 
 
-def _curl(url: str, agent: str, http1: bool, how: str) -> Fetch:
+def _curl(url: str, agent: str, http1: bool, how: str, max_time: int = 30) -> Fetch:
     cmd = [
-        "curl", "-sS", "-L", "--compressed", "--max-time", "30", "--connect-timeout", "15",
+        "curl", "-sS", "-L", "--compressed", "--max-time", str(max_time), "--connect-timeout", "15",
         "-A", agent,
         "-H", "Accept: text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.8",
         "-H", "Accept-Language: en-US,en;q=0.9",
@@ -135,7 +136,7 @@ def _curl(url: str, agent: str, http1: bool, how: str) -> Fetch:
     if http1:
         cmd.append("--http1.1")
     try:
-        out = subprocess.run(cmd + [url], capture_output=True, timeout=45)
+        out = subprocess.run(cmd + [url], capture_output=True, timeout=max_time + 15)
     except subprocess.TimeoutExpired:
         return Fetch(how, error="timeout")
     if out.returncode != 0:
@@ -143,14 +144,14 @@ def _curl(url: str, agent: str, http1: bool, how: str) -> Fetch:
     body, _, trailer = out.stdout.rpartition(b"\n__STATUS__")
     code, _, rest = trailer.decode("utf-8", "replace").partition(" ")
     final, _, ctype = rest.partition(" ")
-    return Fetch(how, int(code), final, ctype, body[:600_000])
+    return Fetch(how, int(code), final, ctype, body[:CAP])
 
 
-def _urllib(url: str, agent: str, how: str) -> Fetch:
+def _urllib(url: str, agent: str, how: str, timeout: int = 30) -> Fetch:
     req = urllib.request.Request(url, headers={"User-Agent": agent, "Accept": "text/html,application/pdf,*/*"})
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            return Fetch(how, resp.status, resp.geturl(), resp.headers.get("Content-Type", ""), resp.read(600_000))
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return Fetch(how, resp.status, resp.geturl(), resp.headers.get("Content-Type", ""), resp.read(CAP))
     except urllib.error.HTTPError as exc:
         return Fetch(how, exc.code, url)
     except (urllib.error.URLError, OSError) as exc:
@@ -167,24 +168,32 @@ def attempts(url: str):
     yield _urllib(url, TOOL_AGENT, "urllib tool-UA")
 
 
+def _text(raw: bytes) -> str:
+    return html.unescape(raw.decode("utf-8", "replace")).strip()
+
+
 def page_title(body: bytes) -> str:
-    """<title> in <head>, falling back to og:title / name="title" / itemprop="name"
-    (some sites render <title> client-side)."""
+    """The document <title> (first non-empty one in <head>, else anywhere)."""
     head_end = body.find(b"</head>")
-    head = body[: head_end if head_end > 0 else len(body)]
-    m = re.search(rb"<title[^>]*>(.*?)</title>", head, re.S | re.I)
-    if m and m.group(1).strip():
-        return html.unescape(m.group(1).decode("utf-8", "replace")).strip()
+    for part in ((body[:head_end],) if head_end > 0 else ()) + (body,):
+        for m in re.finditer(rb"<title[^>]*>(.*?)</title>", part, re.S | re.I):
+            if m.group(1).strip():
+                return _text(m.group(1))
+    return ""
+
+
+def title_candidates(body: bytes) -> list[str]:
+    """Every title-like string a page declares: <title>, og:title, name="title",
+    itemprop="name" (some sites render <title> client-side)."""
+    out = [page_title(body)]
     for pattern in (
         rb'<meta[^>]+property="og:title"[^>]+content="([^"]*)"',
         rb'<meta[^>]+content="([^"]*)"[^>]+property="og:title"',
         rb'<meta[^>]+name="title"[^>]+content="([^"]*)"',
         rb'<(?:meta|link)[^>]+itemprop="name"[^>]+content="([^"]*)"',
     ):
-        m = re.search(pattern, body, re.S | re.I)
-        if m and m.group(1).strip():
-            return html.unescape(m.group(1).decode("utf-8", "replace")).strip()
-    return ""
+        out += [_text(m.group(1)) for m in re.finditer(pattern, body, re.S | re.I)]
+    return [t for t in out if t]
 
 
 def judge(t: dict, f: Fetch) -> tuple[str, str]:
@@ -200,29 +209,56 @@ def judge(t: dict, f: Fetch) -> tuple[str, str]:
     title = page_title(f.body)
     if t["kind"] == "login":
         return "ok", title
-    if t["expect"] and norm(t["expect"]) in norm(title):
-        return "ok", title
+    for cand in title_candidates(f.body):
+        if t["expect"] and norm(t["expect"]) in norm(cand):
+            return "ok", cand
     if not title or any(w in norm(title) for w in INTERSTITIAL):
         snippet = re.sub(rb"\s+", b" ", f.body[:160]).decode("utf-8", "replace")
         return "inconclusive", f"{f.how}: no page title (title {title!r}, final URL {f.url}, body starts {snippet!r})"
     return "fail", f"{f.how}: page title {title!r} does not contain {t['expect']!r} (final URL {f.url})"
 
 
+def _slow_get(url: str, how: str, tries: int = 3) -> Fetch:
+    """GET from the Internet Archive, which can take a minute to answer."""
+    f = Fetch(how, error="not tried")
+    for i in range(tries):
+        f = _curl(url, TOOL_AGENT, False, how, max_time=90) if shutil.which("curl") else _urllib(url, TOOL_AGENT, how, 90)
+        if f.status == 200 or f.status in (404, 410):
+            return f
+        time.sleep(5 * (i + 1))
+    return f
+
+
+def latest_capture(url: str) -> tuple[str, str] | None:
+    """(timestamp, original URL) of the most recent HTTP-200 capture, or None."""
+    q = urllib.parse.urlencode({"url": url, "output": "json", "fl": "timestamp,original",
+                                "filter": "statuscode:200", "limit": "-1"})
+    cdx = _slow_get("https://web.archive.org/cdx/search/cdx?" + q, "wayback cdx")
+    if cdx.status == 200:
+        try:
+            rows = json.loads(cdx.body.decode("utf-8") or "[]")
+        except ValueError:
+            rows = []
+        if len(rows) >= 2:
+            return rows[-1][0], rows[-1][1]
+    avail = _slow_get("https://archive.org/wayback/available?" + urllib.parse.urlencode({"url": url}), "wayback available")
+    if avail.status == 200:
+        try:
+            snap = json.loads(avail.body.decode("utf-8")).get("archived_snapshots", {}).get("closest") or {}
+        except ValueError:
+            snap = {}
+        if snap.get("available") and str(snap.get("status")) == "200":
+            return str(snap["timestamp"]), url
+    return None
+
+
 def archived(t: dict) -> tuple[str, str]:
     """Check the latest Internet Archive capture (HTTP 200) of the exact URL."""
-    q = urllib.parse.urlencode({"url": t["url"], "output": "json", "fl": "timestamp,original",
-                                "filter": "statuscode:200", "limit": "-1"})
-    cdx = _urllib("https://web.archive.org/cdx/search/cdx?" + q, TOOL_AGENT, "wayback cdx")
-    if cdx.status != 200:
-        return "fail", f"no archive fallback ({cdx.describe()})"
-    try:
-        rows = json.loads(cdx.body.decode("utf-8") or "[]")
-    except ValueError:
-        return "fail", "no archive fallback (unreadable CDX answer)"
-    if len(rows) < 2:
-        return "fail", "no archive capture of this URL"
-    stamp, original = rows[-1][0], rows[-1][1]
-    snap = _urllib(f"https://web.archive.org/web/{stamp}id_/{original}", TOOL_AGENT, "wayback capture")
+    found = latest_capture(t["url"])
+    if not found:
+        return "fail", "no Internet Archive capture found (or the archive did not answer)"
+    stamp, original = found
+    snap = _slow_get(f"https://web.archive.org/web/{stamp}id_/{original}", "wayback capture")
     verdict, detail = judge(t, snap)
     when = f"{stamp[0:4]}-{stamp[4:6]}-{stamp[6:8]}"
     if verdict == "ok":
