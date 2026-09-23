@@ -5,6 +5,7 @@
  */
 import type { sim } from 'pe-core';
 import { getExample } from './examples';
+import { loadChoiceOf } from './simload';
 
 type Topology = sim.Topology;
 
@@ -24,6 +25,9 @@ const FIELD: Record<string, string> = {
   V_oc: 'Voc',
   R_s: 'Rs',
   C_bus: 'Cbus',
+  V_b: 'Vb',
+  R_b: 'Rb',
+  V_0: 'V0',
 };
 
 export interface PresetSpec {
@@ -50,6 +54,16 @@ export const PRESETS: PresetSpec[] = [
     ko: '플라이백, 전류 제한 전원',
   },
   { id: 'forward', example: 'forward-basic', topology: 'forward', en: 'Forward', ko: '포워드' },
+  { id: 'buck-battery', example: 'sim-buck-battery', topology: 'buck', en: 'Buck charging a battery', ko: '배터리를 충전하는 벅' },
+  { id: 'flyback-battery', example: 'sim-flyback-battery', topology: 'flyback', en: 'Flyback charging a battery (DCM)', ko: '배터리를 충전하는 플라이백(DCM)' },
+  {
+    id: 'flyback-charging',
+    example: 'sim-flyback-charging',
+    topology: 'flyback',
+    en: 'Flyback charging a capacitor from 0 V',
+    ko: '0 V부터 커패시터를 충전하는 플라이백',
+  },
+  { id: 'buck-runaway', example: 'sim-buck-fixed', topology: 'buck', en: 'Buck into a fixed voltage (no steady state)', ko: '고정 전압에 연결된 벅(정상상태 없음)' },
 ];
 
 /** Simulator field values from a synthetic example. */
@@ -68,7 +82,7 @@ export function simulatorHash(example: string, topology: Topology): string {
   const values = presetValues(example, topology);
   const q = new URLSearchParams({
     topo: topology,
-    load: values.V !== undefined && values.R === undefined ? 'fixed' : 'res',
+    load: loadChoiceOf(values),
     src: values.Voc !== undefined ? '1' : '0',
   });
   for (const [k, v] of Object.entries(values)) q.set(k, String(v));

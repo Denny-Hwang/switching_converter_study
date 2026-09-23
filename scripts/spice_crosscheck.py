@@ -89,6 +89,8 @@ CASES: list[dict] = [
     # no steady state, or not from rest within the run: the start-up itself
     {"id": "flyback-fixed-runaway", "topology": "flyback", "Vg": 400, "D": 0.3, "fs": 1e5, "L": 5e-5, "n": 0.25, "load": {"kind": "fixed", "V": 4}, "cycles": 20, "startup": True},
     {"id": "flyback-charging", "topology": "flyback", "Vg": 24, "D": 0.3, "fs": 1e5, "L": 5e-5, "n": 1, "load": {"kind": "network", "C": 1e-4, "V0": 0}, "cycles": 400, "startup": True},
+    # (the same flyback early on: the output is still low, the magnetizing current cannot reset and is near its peak)
+    {"id": "flyback-charging-early", "topology": "flyback", "Vg": 24, "D": 0.3, "fs": 1e5, "L": 5e-5, "n": 1, "load": {"kind": "network", "C": 1e-4, "V0": 0}, "cycles": 15, "startup": True},
     # (the buck's capacitor is still charging at cycle 10; by cycle 30 it has reached V_g and the current has stopped)
     {"id": "buck-charging", "topology": "buck", "Vg": 24, "D": 0.5, "fs": 1e5, "L": 1e-4, "load": {"kind": "network", "C": 22e-6, "V0": 0}, "cycles": 10, "startup": True},
 ]

@@ -38,6 +38,9 @@ exclude = [
   # the URL's latest Internet Archive capture.
   '^https://www\.analog\.com/',
   '^https://www\.st\.com/',
+  # MDPI answers automated clients with a bot check; the urls-online job
+  # opens its PDFs with a browser User-Agent, or their archive captures.
+  '^https://www\.mdpi\.com/',
   # tdk-electronics.tdk.com answers lychee from CI runners with 403 but serves
   # a browser User-Agent: the urls-online job opens its data sheets instead,
   # matches their titles and finds the cited values in their text.

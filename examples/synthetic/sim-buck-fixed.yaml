@@ -1,0 +1,14 @@
+synthetic: true
+label: "Example buck into a fixed output at a duty ratio that cannot balance"
+label_ko: "균형을 이룰 수 없는 듀티비로 고정 출력에 연결된 벅 예제"
+# In CCM the inductor's volt-seconds balance only at D = V/V_g = 0.5. At
+# D = 0.8 its current grows by (V_g D - V) T_s / L every period.
+params:
+  V_g: 24
+  D: 0.8
+  f_s: 1.0e5
+  L: 1.0e-4
+  V: 12
+steps:
+  - def.Ts
+  - buck.ccm.M

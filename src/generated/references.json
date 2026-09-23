@@ -399,6 +399,25 @@
       "year": "2015",
       "doi": "10.1038/ncomms9376"
     },
+    "he2011": {
+      "key": "he2011",
+      "type": "article",
+      "label": "He et al. 2011",
+      "authors": [
+        "Hongwen He",
+        "Rui Xiong",
+        "Jinxin Fan"
+      ],
+      "title": "Evaluation of Lithium-Ion Battery Equivalent Circuit Models for State of Charge Estimation by an Experimental Approach",
+      "verified": true,
+      "journal": "Energies",
+      "number": "4",
+      "volume": "4",
+      "pages": "582–598",
+      "year": "2011",
+      "doi": "10.3390/en4040582",
+      "url": "https://www.mdpi.com/1996-1073/4/4/582/pdf"
+    },
     "benyaakov_youtube": {
       "key": "benyaakov_youtube",
       "type": "misc",

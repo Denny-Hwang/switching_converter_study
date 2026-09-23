@@ -12,6 +12,7 @@ import { isToolHash } from '../lib/hash';
 import { fmtValue } from '../lib/format';
 import { PLOT_CONFIG, axis, baseLayout, coloredTitle, sub, usePlotTheme } from '../lib/plot';
 import { useStateHash } from '../lib/useStateHash';
+import { LOADS, loadChoiceOf, type LoadChoice } from '../lib/simload';
 import type { SimReply } from './simulator.worker';
 import { Choices, FieldLabel, Rich, Sym } from './ToolUi';
 
@@ -97,8 +98,7 @@ const TOPOLOGIES: Topology[] = ['buck', 'boost', 'buckboost', 'flyback', 'forwar
  * both (batr), nothing (cap: C charges from V_0), or an ideal fixed voltage
  * without a capacitor (fixed).
  */
-export type LoadChoice = 'res' | 'bat' | 'batr' | 'cap' | 'fixed';
-export const LOADS: LoadChoice[] = ['res', 'bat', 'batr', 'cap', 'fixed'];
+export type { LoadChoice };
 const hasR = (l: LoadChoice) => l === 'res' || l === 'batr';
 const hasBattery = (l: LoadChoice) => l === 'bat' || l === 'batr';
 
@@ -296,14 +296,6 @@ function loadOf(l: LoadChoice, num: (k: string) => number): SimParams['load'] {
     ...(hasBattery(l) ? { battery: { V: num('Vb'), R: num('Rb') } } : {}),
     ...(l === 'cap' ? { V0: num('V0') } : {}),
   };
-}
-
-/** The load choice a preset's values describe. */
-export function loadOfValues(values: Record<string, number>): LoadChoice {
-  if (values.V !== undefined && values.R === undefined) return 'fixed';
-  if (values.Vb !== undefined) return values.R !== undefined ? 'batr' : 'bat';
-  if (values.V0 !== undefined) return 'cap';
-  return 'res';
 }
 
 function fmt(x: number | undefined): string {
@@ -505,7 +497,7 @@ export function stateFromHash(h: URLSearchParams, presets: SimPreset[]): { fs: F
   return {
     fs: {
       topo,
-      load: (LOADS as string[]).includes(h.get('load') ?? '') ? (h.get('load') as LoadChoice) : base ? loadOfValues(base.values) : 'res',
+      load: (LOADS as string[]).includes(h.get('load') ?? '') ? (h.get('load') as LoadChoice) : base ? loadChoiceOf(base.values) : 'res',
       source: h.get('src') === '1',
     },
     values,
@@ -692,7 +684,7 @@ export default function Simulator({ labels, presets, symbols }: Props) {
       { name: 'i_L', color: cL! },
       { name: 'i_D', color: cD! },
       ...(result.params.topology === 'forward' ? [{ name: 'i_M', color: cM! }] : []),
-      ...(battery ? [{ name: 'i_bat', color: cBat! }] : []),
+      ...(battery ? [{ name: 'i_b', color: cBat! }] : []),
     ];
     const traces: Record<string, unknown>[] = [
       trace(w.i_L, 'i_L', cL!, 'y', 'A'),
@@ -703,7 +695,7 @@ export default function Simulator({ labels, presets, symbols }: Props) {
     ];
     if (src) traces.push(trace(w.v_in, 'v_bus', cB!, 'y5', 'V'));
     if (result.params.topology === 'forward') traces.push(trace(w.i_M, 'i_M', cM!, 'y', 'A', 'dash'));
-    if (battery) traces.push(trace(w.i_bat, 'i_bat', cBat!, 'y', 'A', 'dashdot'));
+    if (battery) traces.push(trace(w.i_bat, 'i_b', cBat!, 'y', 'A', 'dashdot'));
     const rows = src ? 5 : 4;
     const yTitle = (name: string, color: string) => coloredTitle([{ name, color }], 'V');
     import('plotly.js-dist-min').then((mod) => {
@@ -751,7 +743,7 @@ export default function Simulator({ labels, presets, symbols }: Props) {
     for (const k of KEYS) next[k] = p.values[k] !== undefined ? String(p.values[k]) : '';
     setFstate({
       topo: p.topology,
-      load: loadOfValues(p.values),
+      load: loadChoiceOf(p.values),
       source: p.values.Voc !== undefined,
     });
     setValues(next);
