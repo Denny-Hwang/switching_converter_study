@@ -7,6 +7,7 @@ params:
   f_s: 1.0e5
   L: 1.0e-4
   R: 100
+  C: 1.0e-5
 steps:
   - def.Ts
   - K.def

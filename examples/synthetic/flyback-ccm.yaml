@@ -9,6 +9,7 @@ params:
   L_M: 2.0e-4
   R: 5
   V_D: 0
+  C: 1.0e-4
 steps:
   - def.Ts
   - flyback.ccm.M

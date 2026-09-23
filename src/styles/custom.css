@@ -213,3 +213,53 @@
 .pe-explorer__result {
   font-size: var(--sl-text-lg);
 }
+
+/* ---- simulator ------------------------------------------------------------ */
+.pe-sim__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.pe-sim__buttons button {
+  padding: 0.25rem 0.7rem;
+  border: 1px solid var(--sl-color-gray-4);
+  border-radius: 0.35rem;
+  background: var(--sl-color-gray-7, transparent);
+  color: var(--sl-color-text);
+  cursor: pointer;
+}
+.pe-sim__buttons button[aria-pressed='true'] {
+  background: var(--sl-color-accent);
+  border-color: var(--sl-color-accent);
+  color: var(--sl-color-black);
+}
+.pe-sim__buttons button:focus-visible {
+  outline: 2px solid var(--sl-color-accent-high);
+  outline-offset: 2px;
+}
+.pe-sim__status h3 {
+  margin: 0.5rem 0 0.25rem;
+  font-size: var(--sl-text-lg);
+}
+.pe-sim__mode {
+  padding: 0 0.4rem;
+  border-radius: 0.3rem;
+  background: var(--sl-color-gray-6);
+}
+.pe-sim__mode--DCM {
+  background: var(--sl-color-orange-low);
+}
+.pe-sim__mode--CCM {
+  background: var(--sl-color-green-low);
+}
+.pe-sim__error {
+  color: var(--sl-color-red);
+}
+.pe-sim__table {
+  margin: 0.75rem 0;
+  font-size: var(--sl-text-sm);
+}
+.pe-sim__table caption {
+  text-align: left;
+  font-weight: 600;
+}
