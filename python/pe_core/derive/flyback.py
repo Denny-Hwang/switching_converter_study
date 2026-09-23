@@ -1,6 +1,7 @@
 """Flyback converter: DCM conversion ratio, CCM/DCM boundary (K_crit and the
-fixed-output critical input voltage), switch and diode stresses, peak
-current, DCM input power and the loss-free-resistor input resistance.
+fixed-output critical input voltage), switch and diode stresses, the CCM
+magnetizing current and ripples, peak current, DCM input power and the
+loss-free-resistor input resistance.
 
 Conventions (CLAUDE.md): 1:n transformer with n = N_s/N_p, magnetizing
 inductance L_M referred to the primary, K = 2 L_M/(R T_s) with the actual
@@ -135,6 +136,35 @@ def derive() -> Derivation:
         "스위치 온 구간에는 2차 권선 전압 $n V_g$가 출력 전압에 더해져 역바이어스된 다이오드에 걸린다.",
         S("V_R"),
     )
+
+    # ------------------------------------------- CCM current and ripples
+    IM, dIM, dv, C = S("I_M"), S("Delta_i_M"), S("Delta_v"), S("C")
+    cb_ccm = sp.Eq((1 - D) * IM / n, V / R)
+    d.step(
+        "CCM charge balance: while the diode conducts, for $(1 - D) T_s$, the secondary carries $I_M/n$ "
+        "(small ripple); its average equals the load current $V/R$.",
+        "CCM 전하 평형: 다이오드가 도통하는 $(1 - D) T_s$ 동안 2차 측에는 $I_M/n$이 흐르며(소리플 근사), "
+        "그 평균이 부하 전류 $V/R$과 같다.",
+        cb_ccm,
+    )
+    d.result("flyback.IM", sp.solve(cb_ccm, IM)[0], "Solve for $I_M$.", "$I_M$에 대해 푼다.", IM)
+    rip = sp.Eq(2 * dIM, Vg * D * Ts / LM)
+    d.step(
+        "On-interval: $V_g$ across $L_M$ for $D T_s$, so the magnetizing current rises by twice the half-ripple "
+        "$\\Delta i_M$.",
+        "온 구간: $D T_s$ 동안 $L_M$ 양단에 $V_g$가 걸리므로 자화 전류는 리플 절반 $\\Delta i_M$의 두 배만큼 증가한다.",
+        rip,
+    )
+    d.result("flyback.ripple.iM", sp.solve(rip, dIM)[0], "Solve for $\\Delta i_M$.", "$\\Delta i_M$에 대해 푼다.", dIM)
+    ripv = sp.Eq(2 * dv, (V / R) * D * Ts / C)
+    d.step(
+        "While the switch is on the diode is off, so the capacitor alone supplies the load current $V/R$ for "
+        "$D T_s$ and its voltage falls by twice the half-ripple $\\Delta v$.",
+        "스위치가 켜져 있는 동안 다이오드는 꺼져 있으므로 커패시터 혼자 $D T_s$ 동안 부하 전류 $V/R$을 공급하고, "
+        "그 전압은 리플 절반 $\\Delta v$의 두 배만큼 떨어진다.",
+        ripv,
+    )
+    d.result("flyback.ripple.v", sp.solve(ripv, dv)[0], "Solve for $\\Delta v$.", "$\\Delta v$에 대해 푼다.", dv)
 
     # ------------------------------------------------ peak current, power
     d.result(

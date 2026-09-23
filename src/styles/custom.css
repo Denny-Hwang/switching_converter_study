@@ -287,6 +287,24 @@
   font-weight: 600;
 }
 
+/* ---- converter designer --------------------------------------------------- */
+.pe-design__warnings {
+  margin: 0.5rem 0;
+  padding: 0.5rem 0.75rem 0.5rem 1.75rem;
+  border-left: 3px solid var(--sl-color-orange);
+  background: var(--sl-color-orange-low);
+}
+
+/* ---- loss budget ---------------------------------------------------------- */
+.pe-loss .pe-sim__table td:nth-child(2),
+.pe-loss .pe-sim__table td:nth-child(3) {
+  white-space: nowrap;
+}
+.pe-loss__caption {
+  margin: 1rem 0 0;
+  font-weight: 600;
+}
+
 /* ---- tool screenshots ------------------------------------------------------ */
 .pe-shot {
   margin: 1rem 0;

@@ -1722,6 +1722,244 @@
       "value": 71.99391063499999
     },
     {
+      "id": "flyback.IM",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "R": 5.0,
+        "V": 5.0,
+        "n": 0.25
+      },
+      "value": 0.5
+    },
+    {
+      "id": "flyback.IM",
+      "source": "random",
+      "inputs": {
+        "D": 0.641786,
+        "R": 1.02689,
+        "V": 64.4404,
+        "n": 4.95822
+      },
+      "value": 868.5954307883052
+    },
+    {
+      "id": "flyback.IM",
+      "source": "random",
+      "inputs": {
+        "D": 0.928276,
+        "R": 54.8371,
+        "V": 2.81695,
+        "n": 0.462612
+      },
+      "value": 0.33132717003813794
+    },
+    {
+      "id": "flyback.IM",
+      "source": "random",
+      "inputs": {
+        "D": 0.310975,
+        "R": 0.10622,
+        "V": 8.03485,
+        "n": 0.449476
+      },
+      "value": 49.344983028044176
+    },
+    {
+      "id": "flyback.IM",
+      "source": "random",
+      "inputs": {
+        "D": 0.812589,
+        "R": 1730.69,
+        "V": 2.39652,
+        "n": 3.64107
+      },
+      "value": 0.02690269102174932
+    },
+    {
+      "id": "flyback.IM",
+      "source": "random",
+      "inputs": {
+        "D": 0.490269,
+        "R": 3.80814,
+        "V": 2.6121,
+        "n": 0.837283
+      },
+      "value": 1.1266995475566135
+    },
+    {
+      "id": "flyback.IM",
+      "source": "random",
+      "inputs": {
+        "D": 0.180258,
+        "R": 56.6819,
+        "V": 37.0117,
+        "n": 0.363434
+      },
+      "value": 0.28949628888117457
+    },
+    {
+      "id": "flyback.ripple.iM",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "L_M": 0.0002,
+        "T_s": 1e-05,
+        "V_g": 48.0
+      },
+      "value": 0.6
+    },
+    {
+      "id": "flyback.ripple.iM",
+      "source": "random",
+      "inputs": {
+        "D": 0.487666,
+        "L_M": 2.83196e-06,
+        "T_s": 0.000511934,
+        "V_g": 2.00673
+      },
+      "value": 88.45212776181093
+    },
+    {
+      "id": "flyback.ripple.iM",
+      "source": "random",
+      "inputs": {
+        "D": 0.469042,
+        "L_M": 0.000110389,
+        "T_s": 1.214e-05,
+        "V_g": 100.8
+      },
+      "value": 2.5997713717127615
+    },
+    {
+      "id": "flyback.ripple.iM",
+      "source": "random",
+      "inputs": {
+        "D": 0.691695,
+        "L_M": 0.0362125,
+        "T_s": 0.000889276,
+        "V_g": 1.02226
+      },
+      "value": 0.00868208576624609
+    },
+    {
+      "id": "flyback.ripple.iM",
+      "source": "random",
+      "inputs": {
+        "D": 0.789403,
+        "L_M": 0.0162569,
+        "T_s": 1.56766e-06,
+        "V_g": 353.278
+      },
+      "value": 0.013446198330397566
+    },
+    {
+      "id": "flyback.ripple.iM",
+      "source": "random",
+      "inputs": {
+        "D": 0.321073,
+        "L_M": 0.000893328,
+        "T_s": 7.09545e-06,
+        "V_g": 14.9207
+      },
+      "value": 0.019025320702202603
+    },
+    {
+      "id": "flyback.ripple.iM",
+      "source": "random",
+      "inputs": {
+        "D": 0.600122,
+        "L_M": 0.00638432,
+        "T_s": 1.376e-06,
+        "V_g": 16.0535
+      },
+      "value": 0.0010382048936419229
+    },
+    {
+      "id": "flyback.ripple.v",
+      "source": "yaml",
+      "inputs": {
+        "C": 0.0001,
+        "D": 0.5,
+        "R": 5.0,
+        "T_s": 1e-05,
+        "V": 5.0
+      },
+      "value": 0.025
+    },
+    {
+      "id": "flyback.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 9.15995e-07,
+        "D": 0.322312,
+        "R": 348.752,
+        "T_s": 8.96819e-05,
+        "V": 16.9134
+      },
+      "value": 0.7651954696355215
+    },
+    {
+      "id": "flyback.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 0.000139873,
+        "D": 0.598667,
+        "R": 1634.83,
+        "T_s": 8.71954e-05,
+        "V": 29.2382
+      },
+      "value": 0.0033372830460895522
+    },
+    {
+      "id": "flyback.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 0.000530555,
+        "D": 0.56893,
+        "R": 0.229115,
+        "T_s": 4.29615e-05,
+        "V": 206.129
+      },
+      "value": 20.72351583119142
+    },
+    {
+      "id": "flyback.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 0.000270989,
+        "D": 0.577819,
+        "R": 59.2954,
+        "T_s": 9.02844e-06,
+        "V": 2.22779
+      },
+      "value": 0.00036163971941626297
+    },
+    {
+      "id": "flyback.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 1.55136e-06,
+        "D": 0.666387,
+        "R": 600.477,
+        "T_s": 1.91849e-06,
+        "V": 22.7902
+      },
+      "value": 0.015638504879900615
+    },
+    {
+      "id": "flyback.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 7.62856e-07,
+        "D": 0.776494,
+        "R": 20.9572,
+        "T_s": 4.97458e-05,
+        "V": 1.09702
+      },
+      "value": 1.325266588546301
+    },
+    {
       "id": "flyback.Ipk.dcm",
       "source": "yaml",
       "inputs": {
@@ -2362,6 +2600,69 @@
         "k": 15.313
       },
       "value": 880124.8991403896
+    },
+    {
+      "id": "loss.core",
+      "source": "yaml",
+      "inputs": {
+        "P_v": 100000.0,
+        "V_e": 3e-06
+      },
+      "value": 0.3
+    },
+    {
+      "id": "loss.core",
+      "source": "random",
+      "inputs": {
+        "P_v": 2305.02,
+        "V_e": 3.825e-06
+      },
+      "value": 0.0088167015
+    },
+    {
+      "id": "loss.core",
+      "source": "random",
+      "inputs": {
+        "P_v": 353489.0,
+        "V_e": 1.93127e-07
+      },
+      "value": 0.068268270103
+    },
+    {
+      "id": "loss.core",
+      "source": "random",
+      "inputs": {
+        "P_v": 918843.0,
+        "V_e": 4.37849e-05
+      },
+      "value": 40.2314488707
+    },
+    {
+      "id": "loss.core",
+      "source": "random",
+      "inputs": {
+        "P_v": 156618.0,
+        "V_e": 2.60974e-06
+      },
+      "value": 0.40873225932
+    },
+    {
+      "id": "loss.core",
+      "source": "random",
+      "inputs": {
+        "P_v": 2252.92,
+        "V_e": 1.17557e-07
+      },
+      "value": 0.00026484651644
+    },
+    {
+      "id": "loss.core",
+      "source": "random",
+      "inputs": {
+        "P_v": 42627.2,
+        "V_e": 1.20475e-05
+      },
+      "value": 0.513551192
     },
     {
       "id": "mag.L_from_AL",

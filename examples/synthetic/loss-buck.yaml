@@ -1,0 +1,26 @@
+synthetic: true
+label: "Synthetic buck loss-budget example (round numbers, not a real design or real parts)"
+label_ko: "합성 벅 손실 예산 예제 (단순한 어림수이며 실제 설계나 실제 부품이 아님)"
+# Loss-budget preset: operating point, then made-up switch, diode and core data.
+# The Steinmetz coefficients are those of core-loss.yaml.
+params:
+  V_g: 24
+  V: 12
+  P: 24
+  f_s: 1.0e5
+  L: 1.0e-4
+  C: 1.0e-5
+  R_on: 0.05
+  Q_g: 1.0e-8
+  V_GS: 10
+  C_node: 5.0e-10
+  V_F: 0.5
+  r_d: 0.02
+  R_L: 0.03
+  N: 20
+  A_e: 5.0e-5
+  V_e: 3.0e-6
+  k: 1
+  alpha: 1.5
+  beta: 2.5
+steps: []

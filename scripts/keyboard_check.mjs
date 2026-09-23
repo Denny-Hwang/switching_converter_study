@@ -23,10 +23,33 @@ const FOCUSABLE = 'a[href], button, input, select, textarea, summary, [tabindex]
 
 /** Tool pages, with a keyboard action that must change the tool's state. */
 const PAGES = [
-  { path: 'design/explorer/', ready: `${TOOL} select`, action: explorerAction },
-  { path: 'simulate/simulator/', ready: `${TOOL} .pe-sim__table`, action: simulatorAction },
+  { path: 'design/explorer/', ready: [`${TOOL} select`, `${TOOL} .main-svg`], action: explorerAction },
+  { path: 'simulate/simulator/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: simulatorAction },
+  { path: 'design/converter-designer/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: designerAction },
+  { path: 'design/loss-budget/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: lossAction },
 ];
 const LOCALES = ['en', 'ko'];
+
+/**
+ * Wait until the tool is on screen and its set of focusable controls stops
+ * changing: a chart's mode bar adds buttons when the chart is drawn, which
+ * can be seconds after the first result.
+ */
+async function settle(page, ready) {
+  for (const sel of ready) await page.waitForSelector(sel, { timeout: 60000 });
+  const count = () => page.$eval(TOOL, (tool, selector) => tool.querySelectorAll(selector).length, FOCUSABLE);
+  let last = await count();
+  let stableSince = Date.now();
+  const deadline = Date.now() + 60000;
+  while (Date.now() - stableSince < 1000 && Date.now() < deadline) {
+    await page.waitForTimeout(100);
+    const n = await count();
+    if (n !== last) {
+      last = n;
+      stableSince = Date.now();
+    }
+  }
+}
 
 /** Mark the tool's focusable controls with data-kb="<document order>" and return their descriptions. */
 async function markControls(page) {
@@ -149,6 +172,82 @@ async function simulatorAction(page, where, errors) {
   if (!got || topo.trim().length === 0) errors.push(`${where}: the page's own preset link did not load its preset (hash change)`);
 }
 
+/**
+ * An invalid field removes the tool's charts, not only its tables; a new hash
+ * (a link to the same page, the back button) loads its values into the form.
+ */
+async function staleAndHash(page, where, errors, prefix) {
+  await page.waitForSelector(`${TOOL} .main-svg`, { timeout: 60000 });
+  const fs = page.locator(`${TOOL} #${prefix}-fs`);
+  const fsValue = await fs.inputValue();
+  await fs.fill('');
+  await page.waitForFunction((sel) => !document.querySelector(sel), `${TOOL} .main-svg`, { timeout: 10000 }).catch(() => {
+    errors.push(`${where}: a chart stayed on screen with an invalid field`);
+  });
+  await fs.fill(fsValue);
+  const v = page.locator(`${TOOL} #${prefix}-V`);
+  const next = String(Number(await v.inputValue()) + 1);
+  await page.evaluate((value) => {
+    const q = new URLSearchParams(window.location.hash.slice(1));
+    q.set('V', value);
+    window.location.hash = q.toString();
+  }, next);
+  const got = await page
+    .waitForFunction(([sel, value]) => document.querySelector(sel)?.value === value, [`${TOOL} #${prefix}-V`, next], { timeout: 10000 })
+    .then(() => true, () => false);
+  if (!got) errors.push(`${where}: a new URL hash did not load its values`);
+}
+
+/**
+ * A run still in flight when the form becomes invalid must not bring its
+ * result back after the charts were cleared: change a value (a run starts),
+ * empty a field while it runs, and wait longer than the run takes.
+ */
+async function noStaleResult(page, where, errors, prefix, waitMs) {
+  await page.waitForSelector(`${TOOL} .main-svg`, { timeout: 60000 });
+  const v = page.locator(`${TOOL} #${prefix}-V`);
+  const fs = page.locator(`${TOOL} #${prefix}-fs`);
+  const vValue = await v.inputValue();
+  const fsValue = await fs.inputValue();
+  await v.fill(String(Number(vValue) * 1.01));
+  await page.waitForTimeout(700);
+  await fs.fill('');
+  await page.waitForTimeout(waitMs);
+  if ((await page.locator(`${TOOL} .main-svg`).count()) > 0) {
+    errors.push(`${where}: a run started before the form became invalid brought its charts back`);
+  }
+  await fs.fill(fsValue);
+  await v.fill(vValue);
+}
+
+/** Designer: Space on the second topology button selects it and loads that topology's specification. */
+async function designerAction(page, where, errors) {
+  const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
+  const second = buttons.nth(1);
+  const before = await page.locator(`${TOOL} #des-V`).inputValue();
+  await second.focus();
+  await page.keyboard.press('Space');
+  await page.waitForTimeout(100);
+  if ((await second.getAttribute('aria-pressed')) !== 'true') errors.push(`${where}: Space did not select a topology button`);
+  if ((await page.locator(`${TOOL} #des-V`).inputValue()) === before) errors.push(`${where}: the topology's specification was not loaded`);
+  await staleAndHash(page, where, errors, 'des');
+}
+
+/** Loss budget: Space on the second topology button selects it and loads that topology's example. */
+async function lossAction(page, where, errors) {
+  const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
+  const second = buttons.nth(1);
+  const before = await page.locator(`${TOOL} #loss-V`).inputValue();
+  await second.focus();
+  await page.keyboard.press('Space');
+  await page.waitForTimeout(100);
+  if ((await second.getAttribute('aria-pressed')) !== 'true') errors.push(`${where}: Space did not select a topology button`);
+  if ((await page.locator(`${TOOL} #loss-V`).inputValue()) === before) errors.push(`${where}: the topology's example was not loaded`);
+  await staleAndHash(page, where, errors, 'loss');
+  // a budget takes a few seconds (every point is a simulation)
+  await noStaleResult(page, where, errors, 'loss', 10000);
+}
+
 async function main() {
   const { base, stop } = await startPreview();
   const browser = await chromium.launch();
@@ -163,7 +262,7 @@ async function main() {
         const pageErrors = [];
         page.on('pageerror', (e) => pageErrors.push(String(e)));
         await page.goto(url, { waitUntil: 'networkidle' });
-        await page.waitForSelector(p.ready, { timeout: 30000 });
+        await settle(page, p.ready);
         const n = await checkOrder(page, where, errors);
         await p.action(page, where, errors);
         for (const e of pageErrors) errors.push(`${where}: page error: ${e}`);

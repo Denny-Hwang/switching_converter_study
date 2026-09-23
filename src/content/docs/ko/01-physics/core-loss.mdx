@@ -46,6 +46,11 @@ $B_\mathrm{ac}$는 피크 교류 자속 밀도로, 패러데이 법칙(Faraday's
 여자(sinusoidal excitation)에 대해서만 성립합니다. 컨버터의 구형파 전압에
 대해서는 이 식이 추정값을 줍니다.
 
+코어 전체의 손실은 자속 밀도가 유효 체적 전체에서 균일하다고 보고 단위 체적당
+손실에 코어의 유효 체적을 곱한 값입니다 <Cite key="erickson2020" where="Ch. 10" />.
+
+<Eq id="loss.core" />
+
 ### 높은 주파수에서 변화폭이 제한되는 이유
 
 전압과 듀티비(duty ratio)가 고정되어 있으면 자속 변화폭은 스위칭 주파수에
@@ -62,8 +67,9 @@ $B_\mathrm{ac}$는 피크 교류 자속 밀도로, 패러데이 법칙(Faraday's
 
 임의로 정한 이 계수들로는 <Val example="core-loss" name="B_ac" />의 피크 교류
 자속 밀도가 <Val example="core-loss" name="f" />에서 단위 체적당
-<Val example="core-loss" name="P_v" />의 손실을 일으킵니다. 전체 손실은 이 값에
-코어의 체적을 곱해 구합니다.
+<Val example="core-loss" name="P_v" />의 손실을 일으킵니다. 유효 체적이
+<Val example="core-loss" name="V_e" />인 코어라면 전체 손실은
+<Val example="core-loss" name="P" />입니다.
 
 ## 직접 해 보기
 

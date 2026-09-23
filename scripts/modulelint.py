@@ -60,7 +60,7 @@ SECTIONS = {
 }
 BLOCK = ("Eq", "Worked", "TryIt", "TrySim", "GoDeeper", "Quiz")
 SIM_TOPOLOGIES = ("buck", "boost", "buckboost", "flyback", "forward")
-TOOLS = ("Explorer", "Simulator")
+TOOLS = ("Explorer", "Simulator", "ConverterDesigner", "LossBudget")
 TOOL_TAG = re.compile(r"<(" + "|".join(TOOLS) + r")\b")
 SHOT_SECTION = {"en": "Screenshot", "ko": "스크린샷"}
 SHOT_IMPORT = re.compile(r"^import\s+(\w+)\s+from\s+'((?:\.\./)+assets/screenshots/([\w-]+)\.png)';", re.M)

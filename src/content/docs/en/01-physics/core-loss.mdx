@@ -47,6 +47,12 @@ The coefficients hold only for the material, the temperature and the range
 over which they were fitted, and for sinusoidal excitation; for the
 rectangular voltages of a converter the equation gives an estimate.
 
+The loss of the whole core is the loss per unit volume times the core's
+effective volume, with the flux density taken as uniform over it
+<Cite key="erickson2020" where="Ch. 10" />:
+
+<Eq id="loss.core" />
+
 ### Why the swing is limited at high frequency
 
 At a fixed voltage and duty ratio, the flux swing is inversely proportional
@@ -63,8 +69,9 @@ Synthetic Steinmetz coefficients at one operating point:
 
 With these made-up coefficients, a peak ac flux density of
 <Val example="core-loss" name="B_ac" /> at <Val example="core-loss" name="f" />
-dissipates <Val example="core-loss" name="P_v" /> per unit volume. Multiply by
-the core's volume for the total loss.
+dissipates <Val example="core-loss" name="P_v" /> per unit volume. A core with
+an effective volume of <Val example="core-loss" name="V_e" /> then loses
+<Val example="core-loss" name="P" /> in total.
 
 ## Try it
 

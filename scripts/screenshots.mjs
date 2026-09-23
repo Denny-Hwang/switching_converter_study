@@ -18,10 +18,16 @@ import { startPreview } from './preview.mjs';
 
 const OUT = fileURLToPath(new URL('../src/assets/screenshots/', import.meta.url));
 
-/** Each tool, the page whose link sets its state, and what must be on screen before the shot. */
+/**
+ * Each tool, the page whose link sets its state (or `page`: the tool's own
+ * page in its default state, which is a synthetic preset), and what must be
+ * on screen before the shot.
+ */
 const SHOTS = [
   { name: 'explorer', from: '02-theory/ccm-dcm/', link: 'design/explorer/#', ready: ['.pe-tool .main-svg'] },
   { name: 'simulator', from: 'simulate/simulator/', link: 'simulate/simulator/#', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
+  { name: 'designer', page: 'design/converter-designer/', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
+  { name: 'lossbudget', page: 'design/loss-budget/', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
 ];
 const LOCALES = ['en', 'ko'];
 
@@ -32,12 +38,16 @@ async function main() {
   try {
     for (const locale of LOCALES) {
       for (const s of SHOTS) {
-        const from = await browser.newPage();
-        await from.goto(`${base}/${locale}/${s.from}`, { waitUntil: 'networkidle' });
-        const href = await from.locator(`a[href*="${s.link}"]`).first().getAttribute('href');
-        if (!href) throw new Error(`/${locale}/${s.from}: no link into ${s.link}`);
-        const target = new URL(href, from.url()).toString();
-        await from.close();
+        let target = `${base}/${locale}/${s.page}`;
+        let href = target;
+        if (!s.page) {
+          const from = await browser.newPage();
+          await from.goto(`${base}/${locale}/${s.from}`, { waitUntil: 'networkidle' });
+          href = await from.locator(`a[href*="${s.link}"]`).first().getAttribute('href');
+          if (!href) throw new Error(`/${locale}/${s.from}: no link into ${s.link}`);
+          target = new URL(href, from.url()).toString();
+          await from.close();
+        }
         // a fresh page: the tools read their state from the hash when they load
         const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, colorScheme: 'light' });
         await page.goto(target, { waitUntil: 'networkidle' });
@@ -45,7 +55,7 @@ async function main() {
         await page.waitForTimeout(500);
         const file = `${OUT}${s.name}-${locale}.png`;
         await page.locator('.pe-tool').first().screenshot({ path: file, animations: 'disabled' });
-        console.log(`${file} (${href.split('#')[1]})`);
+        console.log(`${file} (${href.split('#')[1] ?? 'default state'})`);
         await page.close();
       }
     }

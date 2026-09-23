@@ -7,5 +7,7 @@ params:
   alpha: 1.5
   B_ac: 0.1
   beta: 2.5
+  V_e: 3.0e-6
 steps:
   - loss.steinmetz
+  - loss.core

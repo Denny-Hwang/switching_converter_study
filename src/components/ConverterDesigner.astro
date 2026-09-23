@@ -1,0 +1,78 @@
+---
+/**
+ * <ConverterDesigner /> -- the converter-designer island with labels in the
+ * page's language and presets from the synthetic design specifications.
+ * State lives in the URL hash.
+ */
+import DesignerIsland from '../tools/ConverterDesigner.tsx';
+import { ui } from '../i18n/ui';
+import { pageLocale } from '../lib/locale';
+import { pageHref } from '../lib/paths';
+import { DESIGN_PRESETS, designValues } from '../lib/designpresets';
+
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const labels = {
+  topology: t['sim.topology'],
+  presets: t['des.presets'],
+  spec: t['des.spec'],
+  optional: t['des.optional'],
+  results: t['des.results'],
+  quantity: t['sim.quantity'],
+  value: t['des.value'],
+  equation: t['sim.formula'],
+  dRange: t['des.dRange'],
+  dReset: t['des.dReset'],
+  lRipple: t['des.lRipple'],
+  lCcm: t['des.lCcm'],
+  lUsed: t['des.lUsed'],
+  binding: { ripple: t['des.bindRipple'], ccm: t['des.bindCcm'], given: t['des.bindGiven'] },
+  cOut: t['des.cOut'],
+  ripple: t['des.ripple'],
+  ipk: t['des.ipk'],
+  vds: t['des.vds'],
+  vr: t['des.vr'],
+  kFull: t['des.kFull'],
+  kLight: t['des.kLight'],
+  kcritMax: t['des.kcritMax'],
+  points: t['des.points'],
+  mode: t['sim.mode'],
+  chart: t['des.chart'],
+  kcritCurve: t['des.kcritCurve'],
+  dBand: t['des.dBand'],
+  simulateAt: t['des.simulateAt'],
+  lossesAt: t['des.lossesAt'],
+  invalid: t['des.invalid'],
+  share: t['des.share'],
+  warnings: {
+    unreachable: t['des.warn.unreachable'],
+    reset: t['des.warn.reset'],
+    dcmFull: t['des.warn.dcmFull'],
+    dcmLight: t['des.warn.dcmLight'],
+  },
+  topologies: {
+    buck: t['sim.buck'],
+    boost: t['sim.boost'],
+    buckboost: t['sim.buckboost'],
+    flyback: t['sim.flyback'],
+    forward: t['sim.forward'],
+  },
+};
+const presets = DESIGN_PRESETS.map((p) => ({
+  id: p.example,
+  label: t[`sim.${p.topology}` as const],
+  topology: p.topology,
+  values: designValues(p.example),
+}));
+const simulatorHref = pageHref(locale, 'simulate/simulator');
+const lossBudgetHref = pageHref(locale, 'design/loss-budget');
+---
+
+<DesignerIsland
+  client:only="react"
+  locale={locale}
+  labels={labels}
+  presets={presets}
+  simulatorHref={simulatorHref}
+  lossBudgetHref={lossBudgetHref}
+/>

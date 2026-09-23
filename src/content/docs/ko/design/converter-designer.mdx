@@ -1,0 +1,118 @@
+---
+title: 컨버터 설계 도구
+description: 입력 전압 범위와 부하 범위에 맞추어 벅, 부스트, 벅-부스트, 플라이백, 포워드 컨버터의 인덕턴스와 출력 커패시턴스를 정합니다. 모든 수식은 수식 카탈로그에서 가져옵니다.
+sidebar:
+  order: 2
+---
+
+import { Image } from 'astro:assets';
+import ConverterDesigner from '../../../../components/ConverterDesigner.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import shot from '../../../../assets/screenshots/designer-ko.png';
+
+토폴로지(topology)를 고르고 입력 전압 범위, 출력 전압, 전부하 전력, CCM을
+유지해야 하는 가장 가벼운 부하, 스위칭 주파수, 그리고 두 가지 리플 목표를
+입력하십시오. 설계 도구는 다음을 보여 줍니다.
+
+- 듀티비(duty ratio) 범위
+- 전류 리플 목표를 만족하는 인덕턴스와, 가장 가벼운 부하에서도 CCM을 유지하는
+  인덕턴스
+- 전압 리플 목표를 만족하는 출력 커패시턴스
+- 입력 범위에서 가장 불리한 지점의 리플, 피크 전류, 스위치 전압과 다이오드
+  전압
+- 듀티비 범위에서 $K$와 $K_\mathrm{crit}$의 비교
+
+각 결과에는 그 값을 계산한 카탈로그 수식의 이름이 붙어 있습니다. 결과 아래의
+링크는 설계한 부품값으로 입력 범위 양 끝에서 [시뮬레이터](../../simulate/simulator/)를
+열므로, 설계를 시간 영역에서 확인할 수 있습니다. 이때 플라이백의 다이오드 전압
+강하를 제외한 부품은 이상적입니다. 다른 링크는 같은 지점에서
+[손실 예산 도구](../loss-budget/)를 엽니다. 스위치와 다이오드 데이터는 그 도구의
+합성 예제를 쓰고, 설계 도구가 코어를 정하지 않으므로 코어 데이터는 비워 둡니다.
+
+<ConverterDesigner />
+
+## 설계 방법
+
+설계 도구는 입력 범위 전체에 걸친 입력 전압 격자와, 범위 안에서 어떤 양이
+최대가 되는 지점들을 살펴보고, 각 결과에서 가장 불리한 값을 취합니다.
+카탈로그 수식만 사용하며, 수식을 입력 중 하나(듀티비, 인덕턴스, 커패시턴스)에
+대해 풀어야 할 때는 카탈로그의 평가 함수 자체에 이분법(bisection)을 적용해 그
+값을 찾습니다. 따라서 도구와 이론 페이지의 결과가 서로 다를 수 없습니다.
+
+1. **듀티비.** 각 입력 전압에서 CCM 변환비를 $D$에 대해 풉니다:
+   <EqRef id="buck.ccm.M" label="벅" />, <EqRef id="boost.ccm.M" label="부스트" />,
+   <EqRef id="buckboost.ccm.M" label="벅-부스트" />,
+   <EqRef id="flyback.ccm.M" label="플라이백" />,
+   <EqRef id="forward.ccm.M" label="포워드" />. 플라이백에서는
+   <EqRef id="flyback.V_crit" label="임계 입력 전압" />을 유도할 때의 전압-초
+   평형과 마찬가지로 다이오드 전압 강하가 출력 전압에 더해집니다.
+2. **리플 목표를 만족하는 인덕턴스.** 전부하에서의 평균 인덕터 전류
+   (<EqRef id="buck.IL" label="벅" />, <EqRef id="boost.IL" label="부스트" />,
+   <EqRef id="buckboost.IL" label="벅-부스트" />, 그리고 플라이백의
+   <EqRef id="flyback.IM" label="자화 전류" />)에 리플 목표를 곱하면 허용 리플이
+   되고, 리플 수식(<EqRef id="buck.ripple.iL" label="벅" />,
+   <EqRef id="boost.ripple.iL" label="부스트" />,
+   <EqRef id="buckboost.ripple.iL" label="벅-부스트" />,
+   <EqRef id="flyback.ripple.iM" label="플라이백" />,
+   <EqRef id="forward.ripple.iL" label="포워드" />)을 인덕턴스에 대해 풉니다.
+   포워드 컨버터의 출력단은 $n V_g$를 입력으로 받는 벅 컨버터이므로 출력
+   인덕터에는 부하 전류가 흐릅니다 <Cite key="erickson2020" where="Ch. 6" />.
+3. **가장 가벼운 부하에서 CCM을 유지하는 인덕턴스.** 듀티비 범위에서 가장 큰
+   $K_\mathrm{crit}$(<EqRef id="Kcrit.buck" label="벅과 포워드" />,
+   <EqRef id="Kcrit.boost" label="부스트" />,
+   <EqRef id="Kcrit.buckboost" label="벅-부스트" />,
+   <EqRef id="Kcrit.flyback" label="플라이백" />)으로 가장 가벼운 부하에서의
+   <EqRef id="L.crit" label="임계 인덕턴스" />를 구합니다. 플라이백에서는 여기서도
+   같은 출력 전류에서 다이오드 전압 강하가 출력 전압에 더해지므로, 출력 전압과
+   다이오드 전압 강하의 합에서 그 전류를 끌어가는 부하를 씁니다. 부하 자체를
+   쓰면 경계가 너무 낮게 나옵니다.
+4. **사용한 인덕턴스.** 직접 입력하지 않으면 두 값 중 큰 값을 씁니다. 이
+   인덕턴스로 전부하와 가장 가벼운 부하에서의 $K$(<EqRef id="K.def" label="정의" />,
+   플라이백은 3단계의 부하 사용)를 그래프에서 $K_\mathrm{crit}$과 비교합니다.
+   $K$가 곡선보다 위에 있는 곳에서 컨버터는 CCM입니다.
+5. **리플과 스트레스.** 사용한 인덕턴스에서의 리플,
+   <EqRef id="ripple.Ipk" label="피크 전류" />, 스위치 전압
+   (<EqRef id="buck.Vds" label="벅" />, <EqRef id="boost.Vds" label="부스트" />,
+   <EqRef id="buckboost.Vds" label="벅-부스트" />,
+   <EqRef id="flyback.Vds_off" label="플라이백" />,
+   <EqRef id="forward.Vds" label="포워드" />)을 구합니다. 벅, 부스트,
+   벅-부스트에서는 다이오드가 스위치와 같은 전압을 차단하며
+   <Cite key="erickson2020" where="Ch. 6" />, 플라이백의 다이오드는
+   <EqRef id="flyback.diode.VR" label="별도의 역전압" />을 차단합니다.
+6. **출력 커패시턴스.** 전압 리플 수식을 $C$에 대해 풉니다:
+   <EqRef id="buck.ripple.v" label="벅과 포워드" />,
+   <EqRef id="boost.ripple.v" label="부스트" />,
+   <EqRef id="buckboost.ripple.v" label="벅-부스트" />,
+   <EqRef id="flyback.ripple.v" label="플라이백" />.
+
+포워드 컨버터에서는 듀티비가 <EqRef id="forward.reset.Dmax" label="리셋 한계" />를
+넘지 않는지도 확인합니다.
+
+## 리플 목표
+
+두 목표 모두 카탈로그의 규약대로 피크-피크 리플의 **절반**을 기준으로 한
+비율입니다 <Cite key="erickson2020" where="Ch. 2" />. 전류 목표는 전부하에서
+인덕터 전류 리플을 평균 인덕터 전류(플라이백은 자화 전류)로 나눈 값이고, 전압
+목표는 출력 전압 리플을 출력 전압으로 나눈 값입니다.
+
+## 한계
+
+- **이상적인 부품.** 스위치, 다이오드(플라이백의 다이오드 전압 강하 제외),
+  인덕터, 커패시터는 이상적입니다. 커패시터의 직렬 저항은 그 자체로 리플을
+  더하므로(<EqRef id="cap.esr.ripple" label="ESR 리플" />), 여기서 구한
+  커패시턴스는 하한값입니다.
+- **CCM 설계만 다룹니다.** 듀티비와 리플은 CCM을 가정하고 인덕턴스도 CCM에
+  맞춰 정하므로, DCM으로 동작하도록 설계하는 컨버터(예: DCM 플라이백)는 여기서
+  정하지 않습니다. 전부하에서 DCM이 되는 구간이 있으면 설계 도구가 알려 주며,
+  그 구간에는 DCM 수식이 적용됩니다.
+- **여기서 정하지 않는 것.** 정격과 열적 한계는 검사하지 않으며, 포워드
+  컨버터의 자화 인덕턴스와 리셋 권선도 정하지 않습니다. 설계는 시뮬레이터에서
+  확인하고, 손실은 [손실 예산 도구](../loss-budget/)로 추정하십시오.
+
+## 스크린샷
+
+<figure class="pe-shot">
+  <Image src={shot} alt="합성 벅 사양을 넣은 컨버터 설계 도구: 입력 칸, 각 결과의 카탈로그 수식 이름이 붙은 설계 표, 입력 범위 양 끝의 동작점, 시뮬레이터 링크, 그리고 K와 K_crit(D)를 비교한 그래프." />
+  <figcaption>합성 벅 사양을 넣은 컨버터 설계 도구.</figcaption>
+</figure>

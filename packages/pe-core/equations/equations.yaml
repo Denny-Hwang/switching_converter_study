@@ -55,6 +55,8 @@ symbol_table:
   Delta_i_L: {latex: "\\Delta i_L", unit: "A", desc: "inductor current ripple, HALF of peak-to-peak (Erickson convention)", range: [0.001, 10], scale: log}
   Delta_i_pp: {latex: "\\Delta i_{L,\\mathrm{pp}}", unit: "A", desc: "inductor current ripple, peak-to-peak"}
   I_L: {latex: "I_L", unit: "A", desc: "dc (average) inductor current", range: [0.001, 100], scale: log}
+  I_M: {latex: "I_M", unit: "A", desc: "dc (average) magnetizing current referred to the primary", range: [0.001, 100], scale: log}
+  Delta_i_M: {latex: "\\Delta i_M", unit: "A", desc: "magnetizing current ripple, HALF of peak-to-peak (Erickson convention)", range: [0.001, 10], scale: log}
   Delta_v: {latex: "\\Delta v", unit: "V", desc: "output voltage ripple, HALF of peak-to-peak (Erickson convention)"}
   U: {latex: "U", unit: "1", desc: "transistor utilization: load power over the transistor's peak voltage times its rms current"}
   I_pk: {latex: "I_\\mathrm{pk}", unit: "A", desc: "peak current", range: [0.001, 100], scale: log}
@@ -111,13 +113,14 @@ symbol_table:
   A_L: {latex: "A_L", unit: "H", desc: "inductance factor: inductance per turn squared", range: [1.0e-8, 1.0e-5], scale: log}
   A_e: {latex: "A_e", unit: "m²", desc: "effective core cross-section area", range: [1.0e-6, 1.0e-3], scale: log}
   l_e: {latex: "l_e", unit: "m", desc: "effective magnetic path length of the core", range: [0.005, 0.3], scale: log}
+  V_e: {latex: "V_e", unit: "m³", desc: "effective core volume ($A_e l_e$)", range: [1.0e-7, 1.0e-4], scale: log}
   l_g: {latex: "l_g", unit: "m", desc: "total air-gap length", range: [1.0e-5, 5.0e-3], scale: log}
   mu_i: {latex: "\\mu_i", unit: "1", desc: "initial relative permeability of the core material", range: [100, 20000], scale: log}
   mu_0: {latex: "\\mu_0", unit: "H/m", desc: "permeability of free space, 4π·10⁻⁷ H/m", value_expr: "4*pi/10**7"}
   B_pk: {latex: "B_\\mathrm{pk}", unit: "T", desc: "peak flux density"}
   Delta_B: {latex: "\\Delta B", unit: "T", desc: "flux-density swing, peak-to-peak"}
   B_ac: {latex: "B_\\mathrm{ac}", unit: "T", desc: "peak AC flux-density amplitude (half the peak-to-peak swing)", range: [0.01, 0.3], scale: log}
-  P_v: {latex: "P_v", unit: "W/m³", desc: "core loss per unit volume"}
+  P_v: {latex: "P_v", unit: "W/m³", desc: "core loss per unit volume", range: [1.0e3, 1.0e6], scale: log}
   k: {latex: "k", unit: "W/m³", desc: "Steinmetz coefficient (with f in Hz and B in T)", range: [0.1, 100], scale: log}
   f: {latex: "f", unit: "Hz", desc: "excitation frequency", range: [1.0e3, 1.0e6], scale: log}
   alpha: {latex: "\\alpha", unit: "1", desc: "Steinmetz frequency exponent", range: [1, 2]}
@@ -171,6 +174,7 @@ assumption_labels:
   no_fringing: {en: "no fringing flux at the gap", ko: "공극의 프린징(fringing) 자속 무시"}
   linear_magnetics: {en: "linear (unsaturated) magnetic material", ko: "선형(비포화) 자성 재료"}
   uniform_flux: {en: "flux density uniform over A_e", ko: "A_e 전체에서 균일한 자속 밀도"}
+  uniform_flux_volume: {en: "flux density uniform over the effective volume V_e", ko: "유효 부피 V_e 전체에서 균일한 자속 밀도"}
   sinusoidal_excitation: {en: "sinusoidal excitation (empirical fit)", ko: "정현파 여자(경험적 피팅)"}
   full_discharge: {en: "the capacitance is fully discharged at every turn-on", ko: "매 턴온마다 커패시턴스가 완전히 방전됨"}
   energy_lost: {en: "all of the stored energy is dissipated every cycle", ko: "저장 에너지가 매 주기 전부 소산됨"}
@@ -555,6 +559,52 @@ equations:
     tests:
       - {inputs: {V: 5.0, n: 0.5, V_g: 10.0}, expect: 10.0}
 
+  - id: flyback.IM
+    title: "Flyback magnetizing current (referred to the primary), CCM"
+    title_ko: "플라이백 자화 전류(1차 측 환산), CCM"
+    lhs: I_M
+    expr: "n*V/((1 - D)*R)"
+    symbols: {n: "turns ratio N_s/N_p", V: "output voltage", D: "duty ratio", R: "load resistance"}
+    assumptions: [ideal, ccm, steady_state, small_ripple, resistive_load]
+    convention: "1:n transformer, $n = N_s/N_p$; the secondary carries $I_M/n$ while the diode conducts"
+    convention_ko: "1:n 변압기, $n = N_s/N_p$; 다이오드가 도통하는 동안 2차 측에는 $I_M/n$이 흐른다"
+    notes: "with $n = 1$ this is the buck-boost's inductor current"
+    notes_ko: "$n = 1$이면 벅-부스트의 인덕터 전류와 같다"
+    cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits); derived here by charge balance"}
+    derived_by: python/pe_core/derive/flyback.py
+    tests:
+      - {inputs: {n: 0.25, V: 5.0, D: 0.5, R: 5.0}, expect: 0.5}
+
+  - id: flyback.ripple.iM
+    title: "Flyback magnetizing current ripple, CCM"
+    title_ko: "플라이백 자화 전류 리플, CCM"
+    lhs: Delta_i_M
+    expr: "V_g*D*T_s/(2*L_M)"
+    symbols: {V_g: "input voltage", D: "duty ratio", T_s: "switching period", L_M: "magnetizing inductance referred to the primary"}
+    assumptions: [ideal, ccm, steady_state]
+    convention: "$\\Delta i_M$ is HALF the peak-to-peak ripple (Erickson)"
+    convention_ko: "$\\Delta i_M$은 피크-피크 리플의 절반(Erickson)"
+    cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits); derived here by volt-seconds on L_M"}
+    derived_by: python/pe_core/derive/flyback.py
+    tests:
+      - {inputs: {V_g: 48.0, D: 0.5, T_s: 1.0e-5, L_M: 2.0e-4}, expect: 0.6}
+
+  - id: flyback.ripple.v
+    title: "Flyback output voltage ripple, CCM"
+    title_ko: "플라이백 출력 전압 리플, CCM"
+    lhs: Delta_v
+    expr: "V*D*T_s/(2*R*C)"
+    symbols: {V: "output voltage", D: "duty ratio", T_s: "switching period", R: "load resistance", C: "output capacitance"}
+    assumptions: [ideal, ccm, steady_state, small_ripple, resistive_load]
+    convention: "$\\Delta v$ is HALF the peak-to-peak ripple (Erickson)"
+    convention_ko: "$\\Delta v$는 피크-피크 리플의 절반(Erickson)"
+    notes: "while the switch is on the diode is off and the capacitor alone supplies the load, as in the buck-boost"
+    notes_ko: "스위치가 켜져 있는 동안 다이오드는 꺼져 있어 벅-부스트와 마찬가지로 커패시터 혼자 부하를 공급한다"
+    cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits); derived here by charge balance"}
+    derived_by: python/pe_core/derive/flyback.py
+    tests:
+      - {inputs: {V: 5.0, D: 0.5, T_s: 1.0e-5, R: 5.0, C: 1.0e-4}, expect: 0.025}
+
   - id: flyback.Ipk.dcm
     title: "Flyback peak magnetizing current, DCM"
     title_ko: "플라이백 피크 자화 전류, DCM"
@@ -681,6 +731,19 @@ equations:
     tests:
       - {inputs: {k: 1.0, f: 1.0e5, alpha: 1.5, B_ac: 0.1, beta: 2.5}, expect: 100000.0}
       - {inputs: {k: 2.0, f: 2.0e4, alpha: 1.2, B_ac: 0.2, beta: 2.6}, expect: 4415.1349166758855}
+
+  - id: loss.core
+    title: "Core loss of a core"
+    title_ko: "코어 전체의 코어 손실"
+    lhs: P
+    expr: "P_v*V_e"
+    symbols: {P_v: "core loss per unit volume", V_e: "effective core volume"}
+    assumptions: [uniform_flux_volume]
+    notes: "the flux density is taken as uniform over the effective volume $V_e = A_e l_e$"
+    notes_ko: "자속 밀도가 유효 부피 $V_e = A_e l_e$ 전체에서 균일하다고 본다"
+    cite: {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: core loss)"}
+    tests:
+      - {inputs: {P_v: 1.0e5, V_e: 3.0e-6}, expect: 0.3}
 
   # =========================================================================
   # Magnetics

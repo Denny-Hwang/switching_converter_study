@@ -79,6 +79,7 @@ const base: Readonly<Record<string, Evaluator>> = {
   'loss.steinmetz': eq(['k', 'f', 'alpha', 'B_ac', 'beta'], ({ k, f, alpha, B_ac, beta }) =>
     k * Math.pow(f, alpha) * Math.pow(B_ac, beta),
   ),
+  'loss.core': eq(['P_v', 'V_e'], ({ P_v, V_e }) => P_v * V_e),
 
   // --- magnetics ------------------------------------------------------------
   'mag.L_from_AL': eq(['A_L', 'N'], ({ A_L, N }) => A_L * sq(N)),
@@ -161,6 +162,9 @@ const topologies: Readonly<Record<string, Evaluator>> = {
 
   // --- voltages and stresses ---------------------------------------------------
   'buckboost.V': eq(['D', 'V_g'], ({ D, V_g }) => (V_g * D) / (1 - D)),
+  'flyback.IM': eq(['n', 'V', 'D', 'R'], ({ n, V, D, R }) => (n * V) / ((1 - D) * R)),
+  'flyback.ripple.iM': eq(['V_g', 'D', 'T_s', 'L_M'], ({ V_g, D, T_s, L_M }) => (V_g * D * T_s) / (2 * L_M)),
+  'flyback.ripple.v': eq(['V', 'D', 'T_s', 'R', 'C'], ({ V, D, T_s, R, C }) => (V * D * T_s) / (2 * R * C)),
   'buck.Vds': eq(['V_g'], ({ V_g }) => V_g),
   'boost.Vds': eq(['V'], ({ V }) => V),
   'buckboost.Vds': eq(['V_g', 'V'], ({ V_g, V }) => V_g + V),
