@@ -6,7 +6,8 @@
 | --- | --- |
 | `equations.yaml` seed set (BUILD_SPEC §3) | ✅ 39 equations, every test value checked against sympy |
 | 02-theory additions (Phase 2a) | ✅ 23 equations: averaging and balance, DCM interval, critical inductance, boost with winding resistance, CCM small-signal parameters, PWM and loop gain |
-| Derivations reproduce the YAML (`pytest`) | ✅ 58 of 62 (`K.def`, `def.Ts` and `def.V` are definitions, `loss.steinmetz` is an empirical law) |
+| 03-topologies additions (Phase 2b) | ✅ 17 equations: dc inductor currents, current and voltage ripple, peak current, buck-boost and forward switch stress, transistor utilization |
+| Derivations reproduce the YAML (`pytest`) | ✅ 74 of 79 (`K.def`, `def.Ts`, `def.V` and `ripple.Ipk` are definitions, `loss.steinmetz` is an empirical law) |
 | TS/Python parity (`vitest`, 1e-9 rel) | ✅ all shared vectors |
 | Strict KaTeX on every generated formula and derivation step (`vitest`) | ✅ |
 | `references.bib` verified (two web-search rounds + CI Crossref + URL title check) | ✅ 23 of 23 verified (`steinmetz1984` DOI confirmed by the CI Crossref job) |
@@ -15,7 +16,7 @@ Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); th
 
 Legend: ✅ done · 🟡 partial · ⬜ not started · ➖ not applicable. "Phase" is the build phase that delivers the module (docs/BUILD_SPEC.md §7); "later" = not scheduled in phases 0–5. 00-foundations and 01-physics are compact refreshers (Phase 2 scope).
 
-_Last updated: Phase 2a (02-theory, EN and KO). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
+_Last updated: Phase 2b (03-topologies, EN and KO). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
 
 "Try it" links open the [equation explorer](../src/content/docs/en/design/explorer.mdx) with a synthetic preset until the Phase 3 design tools and simulator exist; Phase 3 adds tool and simulator presets to every 02/03 page.
 
@@ -142,6 +143,6 @@ _Last updated: Phase 2a (02-theory, EN and KO). `python scripts/modulelint.py` c
 | landing (`index`) | ✅ | ✅ | Phase 0 |
 | about | ✅ | ✅ | Phase 0 |
 | about/equation-pipeline | ✅ | ✅ | Phase 0 acceptance page: one `<Eq>` + Plotly island |
-| 02-theory/derivations | ✅ | ✅ | Phase 1: auto-rendered from `python/pe_core/derive/*.py`; Phase 2a: 10 modules, 58 derived equations |
+| 02-theory/derivations | ✅ | ✅ | auto-rendered from `python/pe_core/derive/*.py`: 11 modules, 74 derived equations (Phase 2b) |
 | design/explorer | ✅ | ✅ | Phase 2a: evaluate and sweep any catalogue equation; state in the URL hash ("Try it" target) |
 | 10-resources/bibliography | ✅ | ✅ | Phase 1: generated from `references.bib` (verified entries only) |
