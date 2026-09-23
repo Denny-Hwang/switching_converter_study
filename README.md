@@ -39,9 +39,9 @@ links to a tool preset, lists the gotchas and ends with a quiz.
 </td>
 <td width="50%" valign="top">
 
-**Design.** Calculators for the converter, its losses, the flyback clamp,
-the harvesting source and the current-sense chain. Each result names the
-equation it comes from.
+**Design.** Calculators for the converter, its magnetics, its losses, the
+flyback clamp, the harvesting source and the current-sense chain. Each
+result names the equation it comes from.
 
 <img src="docs/images/design-en.png" alt="The converter designer: the specification fields beside the design table, where each result names its equation">
 
@@ -91,7 +91,7 @@ flowchart LR
 | 01 Physics | Faraday's law and inductors, transformers, ferrites and B-H, air gap and A_L, core loss |
 | 02 Theory | switching principle, volt-second and charge balance, CCM and DCM, the K parameter, averaged models, small-signal models, the RHP zero, control basics, derivations |
 | 03 Topologies | buck, boost, buck-boost, flyback, forward, comparison |
-| Tools | equation explorer, simulator, converter designer, loss budget, clamp check, source matcher, sense chain |
+| Tools | equation explorer, simulator, converter designer, magnetics designer, loss budget, clamp check, source matcher, sense chain |
 
 ### Run it locally
 
@@ -139,7 +139,7 @@ node scripts/keyboard_check.mjs        # keyboard focus order of the tool pages 
 | 0 | Scaffold, CI, Pages deployment, equation pipeline | done |
 | 1 | Equation engine: derivations, parity, math and citation lints | done |
 | 2 | Core content: foundations, physics, theory, topologies (EN + KO) | done |
-| 3 | Time-domain simulator and design tools | in progress: simulator, converter designer, loss budget, clamp check, source matcher and sense chain done; magnetics designer next |
+| 3 | Time-domain simulator and design tools: simulator, converter designer, magnetics designer, loss budget, clamp check, source matcher, sense chain | done |
 | 4 | Magnetics, bench, harvesting, gotchas, resources | planned |
 | 5 | LTspice/ngspice/CircuitJS library, missions, v0.1.0 | planned |
 
@@ -171,8 +171,8 @@ the citation rules. Documentation: CC BY-SA 4.0 (`LICENSE-DOCS`). Code: MIT
 </td>
 <td width="50%" valign="top">
 
-**설계.** 컨버터, 손실, 플라이백 클램프, 하베스팅 전원, 전류 센싱 체인을 위한
-계산 도구입니다. 모든 결과에 그 값을 낸 수식이 표시됩니다.
+**설계.** 컨버터, 자성 부품, 손실, 플라이백 클램프, 하베스팅 전원, 전류 센싱
+체인을 위한 계산 도구입니다. 모든 결과에 그 값을 낸 수식이 표시됩니다.
 
 <img src="docs/images/design-ko.png" alt="컨버터 설계 도구: 사양 입력란과, 각 결과에 그 수식이 표시된 설계 표">
 
@@ -221,7 +221,7 @@ flowchart LR
 | 01 물리 | 패러데이 법칙과 인덕터, 변압기, 페라이트와 B-H 곡선, 공극과 A_L, 코어 손실 |
 | 02 이론 | 스위칭 원리, 전압-초 평형과 전하 평형, CCM과 DCM, K 파라미터, 평균 모델, 소신호 모델, 우반평면(RHP) 영점, 제어 기초, 유도 과정 |
 | 03 토폴로지 | 벅, 부스트, 벅-부스트, 플라이백, 포워드, 비교 |
-| 도구 | 수식 탐색기, 시뮬레이터, 컨버터 설계 도구, 손실 예산, 클램프 점검, 전원 정합, 센스 체인 |
+| 도구 | 수식 탐색기, 시뮬레이터, 컨버터 설계 도구, 자성 부품 설계 도구, 손실 예산, 클램프 점검, 전원 정합, 센스 체인 |
 
 ### 로컬에서 실행하기
 
@@ -269,7 +269,7 @@ node scripts/keyboard_check.mjs        # 도구 페이지의 키보드 포커스
 | 0 | 골격, CI, Pages 배포, 수식 파이프라인 | 완료 |
 | 1 | 수식 엔진: 유도, 패리티, 수식·인용 린트 | 완료 |
 | 2 | 핵심 콘텐츠: 기초, 물리, 이론, 토폴로지(영어·한국어) | 완료 |
-| 3 | 시간 영역 시뮬레이터와 설계 도구 | 진행 중: 시뮬레이터, 컨버터 설계 도구, 손실 예산, 클램프 점검, 전원 정합, 센스 체인 완료; 다음은 자성 부품 설계 도구 |
+| 3 | 시간 영역 시뮬레이터와 설계 도구: 시뮬레이터, 컨버터 설계, 자성 부품 설계, 손실 예산, 클램프 점검, 전원 정합, 센스 체인 | 완료 |
 | 4 | 자성 부품, 벤치, 하베스팅, 흔한 함정, 자료 모음 | 예정 |
 | 5 | LTspice/ngspice/CircuitJS 라이브러리, 미션, v0.1.0 | 예정 |
 
