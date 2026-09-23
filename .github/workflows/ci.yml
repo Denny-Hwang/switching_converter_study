@@ -53,6 +53,21 @@ jobs:
       - run: python scripts/refcheck.py
       - run: python scripts/resources_check.py
 
+  spice:
+    name: Simulator — cross-checked against ngspice
+    # 24.04's ngspice (42) is the one the fixture was made with
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install ngspice (its XSPICE code models come with it)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ngspice
+          ngspice --version | head -3
+      - name: Run every case again and compare with the committed fixture
+        run: python3 scripts/spice_crosscheck.py --check
+
   refs-online:
     name: References — DOIs checked against Crossref
     runs-on: ubuntu-latest
