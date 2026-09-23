@@ -19,6 +19,7 @@ MODULES = (
     "control",
     "energy",
     "magnetics",
+    "windings",
     "harvesting",
     "sensing",
 )

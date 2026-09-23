@@ -1,0 +1,110 @@
+---
+/**
+ * <MagneticsDesigner /> -- the magnetics-designer island with labels in the
+ * page's language, presets from the magnetics examples (examples/synthetic),
+ * and each table core's data sheet linked to its bibliography entry. State
+ * lives in the URL hash.
+ */
+import MagIsland from '../tools/MagneticsDesigner.tsx';
+import { toolSymbols } from '../i18n/symbols';
+import { ui } from '../i18n/ui';
+import { CORES } from '../lib/cores';
+import { pageLocale } from '../lib/locale';
+import { MAG_PRESETS, magValues } from '../lib/magpresets';
+import { BIBLIOGRAPHY_SLUG, pageHref } from '../lib/paths';
+import { citable } from '../lib/references';
+
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const labels = {
+  siHint: t['tool.siHint'],
+  device: t['mag.device'],
+  devices: { inductor: t['mag.inductor'], flyback: t['mag.flyback'] },
+  presets: t['mag.presets'],
+  core: t['mag.core'],
+  custom: t['mag.custom'],
+  coreSource: t['mag.coreSource'],
+  operating: t['mag.operating'],
+  coreData: t['mag.coreData'],
+  window: t['mag.window'],
+  winding: t['mag.winding'],
+  primary: t['mag.primary'],
+  secondary: t['mag.secondary'],
+  arrangement: t['mag.arrangement'],
+  arrangements: { ps: t['mag.ps'], psp: t['mag.psp'] },
+  optional: t['des.optional'],
+  fewest: t['mag.fewest'],
+  turnsTable: t['mag.turnsTable'],
+  windingsTable: t['mag.windingsTable'],
+  quantity: t['sim.quantity'],
+  value: t['des.value'],
+  equation: t['sim.formula'],
+  primaryCol: t['mag.primaryCol'],
+  secondaryCol: t['mag.secondaryCol'],
+  nmin: t['mag.nmin'],
+  n: t['mag.n'],
+  nP: t['mag.nP'],
+  nFewest: t['mag.nFewest'],
+  nGiven: t['mag.nGiven'],
+  alreq: t['mag.alreq'],
+  mue: t['mag.mue'],
+  gap: t['mag.gap'],
+  bpk: t['mag.bpk'],
+  bpkMin: t['mag.bpkMin'],
+  bac: t['mag.bac'],
+  ns: t['mag.ns'],
+  nActual: t['mag.nActual'],
+  rho: t['mag.rho'],
+  delta: t['mag.delta'],
+  turns: t['mag.turns'],
+  aw: t['mag.aw'],
+  nl: t['mag.nl'],
+  eta: t['mag.eta'],
+  rdc: t['mag.rdc'],
+  phi: t['mag.phi'],
+  fr: t['mag.fr'],
+  rac: t['mag.rac'],
+  pdc: t['mag.pdc'],
+  ku: t['mag.ku'],
+  pdcTotal: t['mag.pdcTotal'],
+  llk: t['mag.llk'],
+  options: t['mag.options'],
+  gapCol: t['mag.gapCol'],
+  alCol: t['mag.alCol'],
+  turnsCol: t['mag.turnsCol'],
+  lCol: t['mag.lCol'],
+  bCol: t['mag.bCol'],
+  fitsCol: t['mag.fitsCol'],
+  useCol: t['mag.useCol'],
+  yes: t['mag.yes'],
+  no: t['mag.no'],
+  use: t['mag.use'],
+  useAria: t['mag.useAria'],
+  chart: t['mag.chart'],
+  freqAxis: t['mag.freqAxis'],
+  invalid: t['mag.invalid'],
+  share: t['mag.share'],
+  plotHint: t['tool.plotHint'],
+  warnings: {
+    needTurns: t['mag.warn.needTurns'],
+    saturation: t['mag.warn.saturation'],
+    window: t['mag.warn.window'],
+    layerFull: t['mag.warn.layerFull'],
+  },
+};
+const PRESET_LABEL: Record<string, string> = { 'mag-inductor': t['mag.presetInductor'], 'mag-flyback': t['mag.presetFlyback'] };
+const presets = MAG_PRESETS.map((p) => ({
+  id: p.example,
+  label: PRESET_LABEL[p.example] ?? p.example,
+  device: p.device,
+  core: p.core,
+  arrangement: p.arrangement,
+  values: magValues(p.example),
+}));
+// a data sheet flagged VERIFY fails the build here, as a <Cite> would
+const coreSources = Object.fromEntries(CORES.map((c) => [c.id, { label: citable(c.cite).label, href: pageHref(locale, BIBLIOGRAPHY_SLUG, c.cite) }]));
+---
+
+<div class="pe-wide">
+  <MagIsland client:only="react" locale={locale} labels={labels} presets={presets} symbols={toolSymbols(locale)} coreSources={coreSources} />
+</div>

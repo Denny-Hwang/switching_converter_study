@@ -35,6 +35,11 @@ points at the intended page rather than a generic landing page.
 
     python scripts/resources_check.py
     python scripts/resources_check.py --online
+    python scripts/resources_check.py --dump KEY   # the text read from a bib entry's PDF
+
+`--dump` prints, page by page, the text the check reads from the PDF of a
+references.bib entry, so that its `urlquotes` can be copied from what the
+check will search.
 """
 
 from __future__ import annotations
@@ -450,12 +455,39 @@ def check_online(t: dict) -> tuple[str, str]:
     return "FAIL", f"{detail}; live: " + " | ".join(notes)
 
 
+def dump(key: str, targets: list[dict]) -> bool:
+    """Print the text the check reads from a bib entry's PDF, page by page."""
+    t = next((x for x in targets if x["src"] == f"bib:{key}"), None)
+    if t is None:
+        print(f"--- {key}: no bib entry with a URL", flush=True)
+        return False
+    fetches = list(attempts(t["url"]))
+    if not any(f.status == 200 and b"%PDF" in f.body[:1024] for f in fetches):
+        # the host does not answer this runner: its latest Internet Archive capture, as the check falls back to
+        if found := latest_capture(t["url"]):
+            stamp, original = found
+            fetches.append(_slow_get(f"https://web.archive.org/web/{stamp}id_/{original}", f"wayback capture {stamp[:8]}"))
+    for f in fetches:
+        if f.status == 200 and b"%PDF" in f.body[:1024]:
+            _, pages = pdf_texts(f.body, MAX_PAGES)
+            print(f"--- {key}: {t['url']} ({f.how}, {len(pages)} pages read)", flush=True)
+            for i, text in enumerate(pages, 1):
+                print(f"--- {key}: page {i}\n{text}", flush=True)
+            return True
+    print(f"--- {key}: no PDF from {t['url']} ({'; '.join(f.describe() for f in fetches)})", flush=True)
+    return False
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--online", action="store_true", help="open every URL and match its title")
+    ap.add_argument("--dump", action="append", default=[], metavar="KEY",
+                    help="print the text read from the PDF of this references.bib entry (repeatable)")
     args = ap.parse_args()
 
     targets, errors = collect()
+    if args.dump:
+        return 0 if all([dump(k, targets) for k in args.dump]) else 1
     archived_ok = []
     if args.online:
         for t in targets:

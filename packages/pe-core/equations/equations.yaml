@@ -155,6 +155,29 @@ symbol_table:
   f: {latex: "f", unit: "Hz", desc: "excitation frequency", meaning: "frequency", meaning_ko: "주파수", range: [1.0e3, 1.0e6], scale: log}
   alpha: {latex: "\\alpha", unit: "1", desc: "Steinmetz frequency exponent", meaning: "Steinmetz frequency exponent", meaning_ko: "스타인메츠 주파수 지수", range: [1, 2]}
   beta: {latex: "\\beta", unit: "1", desc: "Steinmetz flux-density exponent", meaning: "Steinmetz flux-density exponent", meaning_ko: "스타인메츠 자속 밀도 지수", range: [2, 3]}
+  B_max: {latex: "B_\\mathrm{max}", unit: "T", desc: "largest flux density a design allows (below saturation, with margin)", meaning: "largest flux density allowed", meaning_ko: "허용 최대 자속 밀도(flux density)", range: [0.05, 0.5]}
+  rho_w: {latex: "\\rho_w", unit: "Ω·m", desc: "resistivity of the winding conductor", meaning: "conductor resistivity", meaning_ko: "도체 저항률(resistivity)", range: [1.0e-8, 3.0e-8]}
+  MLT: {latex: "\\mathrm{MLT}", unit: "m", desc: "mean length of one turn of a winding", meaning: "mean length per turn", meaning_ko: "1턴 평균 길이(mean length per turn)", range: [0.01, 0.2], scale: log}
+  W_A: {latex: "W_A", unit: "m²", desc: "window area available to a winding (a bobbin's winding area)", meaning: "winding window area", meaning_ko: "권선 창 면적(window area)", range: [1.0e-6, 1.0e-3], scale: log}
+  A_w: {latex: "A_w", unit: "m²", desc: "bare conductor area of one turn", meaning: "bare conductor area of one turn", meaning_ko: "1턴의 도체 단면적(절연 제외)", range: [1.0e-9, 1.0e-5], scale: log}
+  K_u: {latex: "K_u", unit: "1", desc: "window utilization: conductor area over window area", meaning: "window utilization", meaning_ko: "창 이용률(window utilization)"}
+  R_dc: {latex: "R_\\mathrm{dc}", unit: "Ω", desc: "dc resistance of a winding", meaning: "winding dc resistance", meaning_ko: "권선 직류 저항"}
+  delta_s: {latex: "\\delta", unit: "m", desc: "skin (penetration) depth of a conductor", meaning: "skin depth", meaning_ko: "표피 깊이(skin depth)", range: [1.0e-5, 1.0e-3], scale: log}
+  phi_l: {latex: "\\varphi", unit: "1", desc: "conductor layer thickness over the skin depth, h/δ", meaning: "layer thickness over skin depth", meaning_ko: "층 두께 ÷ 표피 깊이", range: [0.1, 10], scale: log}
+  M_l: {latex: "M_\\ell", unit: "1", desc: "number of layers in a winding portion, from zero MMF to its peak", meaning: "layers from zero to peak MMF", meaning_ko: "기자력 0에서 최대까지의 층 수", range: [1, 20]}
+  F_R: {latex: "F_R", unit: "1", desc: "ac resistance factor: ac over dc resistance of a winding", meaning: "ac resistance factor", meaning_ko: "교류 저항 계수(ac resistance factor)"}
+  h_l: {latex: "h", unit: "m", desc: "thickness of a conductor layer (a foil)", meaning: "conductor layer thickness", meaning_ko: "도체 층 두께", range: [1.0e-5, 1.0e-3], scale: log}
+  b_w: {latex: "b_w", unit: "m", desc: "winding breadth: the window's length along the core leg", meaning: "winding breadth", meaning_ko: "권선 폭(winding breadth)", range: [0.002, 0.05], scale: log}
+  h_p: {latex: "h_p", unit: "m", desc: "height (build) of the primary winding", meaning: "primary winding height", meaning_ko: "1차 권선 높이", range: [1.0e-4, 0.01], scale: log}
+  h_s: {latex: "h_s", unit: "m", desc: "height (build) of the secondary winding", meaning: "secondary winding height", meaning_ko: "2차 권선 높이", range: [1.0e-4, 0.01], scale: log}
+  h_g: {latex: "h_g", unit: "m", desc: "spacing between the windings (insulation)", meaning: "spacing between the windings", meaning_ko: "권선 사이 간격", range: [0, 0.005]}
+  rho_20: {latex: "\\rho_{20}", unit: "Ω·m", desc: "resistivity of the conductor at 20 °C (annealed copper: 1.7241e-8 Ω·m)", meaning: "resistivity at 20 °C", meaning_ko: "20 °C 저항률(resistivity)", range: [1.5e-8, 3.0e-8]}
+  alpha_20: {latex: "\\alpha_{20}", unit: "1/K", desc: "temperature coefficient of resistance at 20 °C (annealed copper: 0.00393 per kelvin)", meaning: "temperature coefficient at 20 °C", meaning_ko: "20 °C 저항 온도 계수(temperature coefficient)", range: [0.003, 0.0045]}
+  T_w: {latex: "T_w", unit: "°C", desc: "temperature of the winding", meaning: "winding temperature", meaning_ko: "권선 온도", range: [-40, 150]}
+  d_w: {latex: "d_w", unit: "m", desc: "diameter of one bare round strand", meaning: "bare wire diameter", meaning_ko: "나선(bare wire) 지름", range: [5.0e-5, 2.0e-3], scale: log}
+  k_s: {latex: "k_s", unit: "1", desc: "round strands in parallel in one turn", meaning: "strands in parallel", meaning_ko: "병렬 소선 수", range: [1, 20]}
+  N_l: {latex: "N_\\ell", unit: "1", desc: "turns in one layer of a winding", meaning: "turns per layer", meaning_ko: "층당 턴 수", range: [1, 100]}
+  eta_p: {latex: "\\eta", unit: "1", desc: "porosity (layer copper factor): the share of the winding breadth the conductors of a layer take, each round conductor replaced by a square one of the same area", meaning: "porosity of a layer", meaning_ko: "층의 점유율(porosity)", range: [0.1, 1]}
   # --- refreshers (00-foundations, 01-physics) ----------------------------------
   t: {latex: "t", unit: "s", desc: "duration of a constant excitation", meaning: "duration", meaning_ko: "지속 시간", range: [1.0e-7, 1.0e-3], scale: log}
   V_L: {latex: "V_L", unit: "V", desc: "constant voltage across an inductor", meaning: "inductor voltage", meaning_ko: "인덕터 전압", range: [0.1, 400], scale: log}
@@ -230,6 +253,12 @@ assumption_labels:
   no_kelvin: {en: "a two-terminal shunt whose sense connections share the pads and solder joints with the load current (no Kelvin connection)", ko: "센스 연결이 부하 전류와 같은 패드와 납땜을 공유하는 2단자 션트(켈빈 연결 없음)"}
   uniform_sampling: {en: "uniform sampling at a fixed rate", ko: "일정한 속도의 균일 샘플링"}
   linear_shunt: {en: "the shunt is a linear resistor: its resistance does not change with the current", ko: "션트는 선형 저항: 저항값이 전류에 따라 변하지 않음"}
+  good_conductor: {en: "a good conductor carrying a sinusoidal current (displacement current neglected)", ko: "정현파 전류가 흐르는 양도체(변위 전류 무시)"}
+  uniform_dc_current: {en: "a dc current spread uniformly over the conductor's cross-section", ko: "도체 단면 전체에 고르게 흐르는 직류 전류"}
+  window_field: {en: "one-dimensional field in the winding window: the MMF changes only across the layers, and the field runs along the winding breadth", ko: "권선 창 안의 1차원 자계: 기자력은 층을 가로지르는 방향으로만 변하고, 자계는 권선 폭 방향으로 향함"}
+  dowell_layers: {en: "foil layers spanning the winding breadth, a sinusoidal current, and a one-dimensional field in the window", ko: "권선 폭 전체에 걸친 박판(foil) 층, 정현파 전류, 권선 창 안의 1차원 자계"}
+  linear_temperature: {en: "resistance linear in temperature near 20 °C", ko: "20 °C 부근에서 온도에 선형인 저항"}
+  square_equivalent: {en: "each round conductor replaced by a square conductor of the same area, the layer by a foil of that thickness", ko: "둥근 도체를 같은 면적의 정사각형 도체로, 층을 그 두께의 박판(foil)으로 대치"}
   fixed_clamp: {en: "a clamp whose voltage does not depend on the power it absorbs (a TVS or Zener clamp)", ko: "흡수하는 전력에 따라 전압이 변하지 않는 클램프(TVS 또는 제너 클램프)"}
 
 equations:
@@ -946,6 +975,22 @@ equations:
     tests:
       - {inputs: {L: 1.0e-4, I_pk: 2.0, N: 20.0, A_e: 1.0e-4}, expect: 0.1}
 
+  - id: mag.B_ac
+    title: "AC flux-density amplitude from the current ripple"
+    title_ko: "전류 리플로부터 교류 자속 밀도 진폭"
+    lhs: B_ac
+    expr: "L*Delta_i_L/(N*A_e)"
+    symbols: {L: "inductance", Delta_i_L: "current ripple, half of peak-to-peak", N: "number of turns", A_e: "effective area"}
+    assumptions: [linear_magnetics, uniform_flux]
+    convention: "$\\Delta i_L$ is half the peak-to-peak ripple (Erickson), so $B_\\mathrm{ac}$ is half the peak-to-peak swing $\\Delta B$: the amplitude that core-loss data take"
+    convention_ko: "$\\Delta i_L$은 피크-피크 리플의 절반(Erickson)이므로 $B_\\mathrm{ac}$는 피크-피크 변화폭 $\\Delta B$의 절반, 곧 코어 손실 데이터가 쓰는 진폭이다"
+    notes: "the flux density follows the current, so the ripple alone sets its swing, the quantity core-loss data are given for; the dc current sets where the swing lies, and with it the margin to saturation ($B_\\mathrm{pk}$)"
+    notes_ko: "자속 밀도는 전류를 따르므로 변화폭은 리플만으로 정해지며, 코어 손실 데이터는 이 변화폭에 대해 주어진다; 직류 전류는 변화폭의 위치와 그에 따른 포화까지의 여유($B_\\mathrm{pk}$)를 정한다"
+    cite: {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory); derived here"}
+    derived_by: python/pe_core/derive/magnetics.py
+    tests:
+      - {inputs: {L: 1.0e-4, Delta_i_L: 0.2, N: 20.0, A_e: 5.25e-5}, expect: 0.019047619047619049}
+
   - id: mag.dB_faraday
     title: "Flux-density swing from Faraday's law"
     title_ko: "패러데이 법칙으로 구한 자속 밀도 변화폭"
@@ -961,6 +1006,182 @@ equations:
     derived_by: python/pe_core/derive/magnetics.py
     tests:
       - {inputs: {V_w: 10.0, t_on: 5.0e-6, N: 20.0, A_e: 1.0e-4}, expect: 0.025}
+
+  - id: mag.N_Bmax
+    title: "Fewest turns that keep the peak flux density at a limit"
+    title_ko: "피크 자속 밀도를 한계 이하로 유지하는 최소 턴 수"
+    lhs: N
+    expr: "L*I_pk/(B_max*A_e)"
+    symbols: {L: "inductance", I_pk: "peak current", B_max: "largest flux density allowed", A_e: "effective area"}
+    assumptions: [linear_magnetics, uniform_flux]
+    notes: "more turns lower the peak flux density at the same inductance and current, but lengthen the winding and raise its resistance"
+    notes_ko: "같은 인덕턴스와 전류에서 턴 수를 늘리면 피크 자속 밀도가 낮아지지만, 권선이 길어져 저항이 커진다"
+    cite: {key: erickson2020, where: "Ch. 11 (Inductor Design); derived here"}
+    derived_by: python/pe_core/derive/magnetics.py
+    tests:
+      - {inputs: {L: 1.0e-4, I_pk: 2.0, B_max: 0.25, A_e: 5.0e-5}, expect: 16.0}
+
+  - id: mag.gap_length
+    title: "Air-gap length that gives an inductance with N turns"
+    title_ko: "N 턴으로 인덕턴스를 얻는 공극 길이"
+    lhs: l_g
+    relation: approx
+    expr: "mu_0*A_e*N**2/L - l_e/mu_i"
+    symbols: {mu_0: "permeability of free space", A_e: "effective area", N: "number of turns", L: "inductance", l_e: "effective path length", mu_i: "initial relative permeability"}
+    assumptions: [linear_magnetics, no_fringing, uniform_flux]
+    notes: "a negative result means the ungapped core already gives less than this inductance with N turns: more turns are needed; fringing lets a real gap be somewhat longer than this estimate"
+    notes_ko: "결과가 음수이면 공극 없는 코어로도 N 턴에서 이 인덕턴스보다 작다는 뜻이므로 턴 수를 늘려야 한다; 프린징 때문에 실제 공극은 이 추정보다 조금 길어도 된다"
+    cite: {key: erickson2020, where: "Ch. 11 (Inductor Design); derived here"}
+    derived_by: python/pe_core/derive/magnetics.py
+    tests:
+      - {inputs: {A_e: 5.0e-5, N: 16.0, L: 1.0e-4, l_e: 0.05, mu_i: 2000.0}, expect: 1.358495438638e-4}
+
+  - id: wind.fill
+    title: "Window utilization of a winding"
+    title_ko: "권선의 창 이용률"
+    lhs: K_u
+    expr: "N*A_w/W_A"
+    symbols: {N: "number of turns", A_w: "bare conductor area of one turn", W_A: "window area available to the winding"}
+    assumptions: [definition]
+    notes: "insulation, the bobbin and the gaps between round wires leave only part of the window to copper; a design keeps K_u below what it can wind"
+    notes_ko: "절연, 보빈, 둥근 선 사이의 틈 때문에 창의 일부만 구리가 차지한다; 설계는 K_u를 실제로 감을 수 있는 값 아래로 유지한다"
+    cite: {key: erickson2020, where: "Ch. 11 (Inductor Design)"}
+    tests:
+      - {inputs: {N: 16.0, A_w: 1.0e-6, W_A: 6.1e-5}, expect: 0.26229508196721313}
+
+  - id: wind.dcr
+    title: "DC resistance of a winding"
+    title_ko: "권선의 직류 저항"
+    lhs: R_dc
+    expr: "rho_w*N*MLT/A_w"
+    symbols: {rho_w: "resistivity of the conductor", N: "number of turns", MLT: "mean length per turn", A_w: "bare conductor area of one turn"}
+    assumptions: [uniform_dc_current]
+    notes: "the winding is a conductor $N \\cdot \\mathrm{MLT}$ long; the resistivity of copper rises with temperature"
+    notes_ko: "권선은 길이 $N \\cdot \\mathrm{MLT}$인 도체이다; 구리의 저항률은 온도와 함께 커진다"
+    cite: {key: erickson2020, where: "Ch. 11 (Inductor Design); derived here"}
+    derived_by: python/pe_core/derive/windings.py
+    tests:
+      - {inputs: {rho_w: 1.7241e-8, N: 16.0, MLT: 0.05, A_w: 1.0e-6}, expect: 0.0137928}
+
+  - id: wind.skin_depth
+    title: "Skin depth of a conductor"
+    title_ko: "도체의 표피 깊이"
+    lhs: delta_s
+    expr: "sqrt(rho_w/(pi*mu_0*f))"
+    symbols: {rho_w: "resistivity of the conductor", mu_0: "permeability of free space (a non-magnetic conductor)", f: "frequency"}
+    assumptions: [good_conductor]
+    notes: "the current density falls by a factor $e$ for every skin depth into the conductor; conductors much thicker than $\\delta$ carry the current in a surface layer"
+    notes_ko: "전류 밀도는 도체 안으로 표피 깊이 하나만큼 들어갈 때마다 $e$배 줄어든다; $\\delta$보다 훨씬 두꺼운 도체에서는 전류가 표면층으로만 흐른다"
+    cite: {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: eddy currents in winding conductors); derived here"}
+    derived_by: python/pe_core/derive/windings.py
+    tests:
+      - {inputs: {rho_w: 1.7241e-8, f: 1.0e5}, expect: 2.0897837969378229e-4}
+      - {inputs: {rho_w: 1.7241e-8, f: 1.0e6}, expect: 6.6084766156383301e-5}
+
+  - id: wind.dowell
+    title: "AC resistance factor of a foil winding (Dowell)"
+    title_ko: "박판 권선의 교류 저항 계수 (Dowell)"
+    lhs: F_R
+    expr: "phi_l*((sinh(2*phi_l) + sin(2*phi_l))/(cosh(2*phi_l) - cos(2*phi_l)) + 2*(M_l**2 - 1)/3*(sinh(phi_l) - sin(phi_l))/(cosh(phi_l) + cos(phi_l)))"
+    symbols: {phi_l: "layer thickness over skin depth", M_l: "number of layers from zero MMF to its peak"}
+    assumptions: [dowell_layers]
+    notes: "the first term is the skin effect in each layer, the second the proximity effect of the layers' fields on each other, growing as $M_\\ell^2$; with $\\varphi$ well below 1 the factor tends to 1"
+    notes_ko: "첫째 항은 각 층의 표피 효과, 둘째 항은 층들의 자계가 서로에게 주는 근접 효과로 $M_\\ell^2$에 따라 커진다; $\\varphi$가 1보다 충분히 작으면 계수는 1에 가까워진다"
+    cite:
+      - {key: dowell1966}
+      - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: eddy currents in winding conductors)"}
+    tests:
+      - {inputs: {phi_l: 1.0, M_l: 1.0}, expect: 1.0856357047503276}
+      - {inputs: {phi_l: 1.0, M_l: 3.0}, expect: 1.9399646964915157}
+      - {inputs: {phi_l: 0.5, M_l: 2.0}, expect: 1.0263231266309407}
+
+  - id: xfmr.leakage.ps
+    title: "Leakage inductance of a primary-secondary winding arrangement"
+    title_ko: "1차-2차 권선 배치의 누설 인덕턴스"
+    lhs: L_lk
+    expr: "mu_0*N**2*MLT*(h_p/3 + h_g + h_s/3)/b_w"
+    symbols: {mu_0: "permeability of free space", N: "primary turns", MLT: "mean length per turn", h_p: "primary height", h_g: "spacing between the windings", h_s: "secondary height", b_w: "winding breadth"}
+    assumptions: [window_field]
+    notes: "referred to the primary; each winding counts with a third of its height and the spacing in full, and a broad, low window gives the least leakage"
+    notes_ko: "1차 측으로 환산한 값; 각 권선은 높이의 1/3이, 권선 사이 간격은 전부가 들어가며, 폭이 넓고 높이가 낮은 창일수록 누설이 작다"
+    cite: {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: leakage flux in windings, MMF diagrams); derived here"}
+    derived_by: python/pe_core/derive/windings.py
+    tests:
+      - {inputs: {N: 20.0, MLT: 0.05, h_p: 1.0e-3, h_g: 2.0e-4, h_s: 1.0e-3, b_w: 0.02}, expect: 1.0890854532445e-6}
+
+  - id: xfmr.leakage.psp
+    title: "Leakage inductance with the primary split around the secondary (P-S-P)"
+    title_ko: "1차 권선을 2차 권선 양쪽으로 나눈 배치(P-S-P)의 누설 인덕턴스"
+    lhs: L_lk
+    expr: "mu_0*N**2*MLT*(h_p/3 + 2*h_g + h_s/3)/(4*b_w)"
+    symbols: {mu_0: "permeability of free space", N: "primary turns", MLT: "mean length per turn", h_p: "total primary height (both halves)", h_g: "spacing at each of the two interfaces", h_s: "secondary height", b_w: "winding breadth"}
+    assumptions: [window_field]
+    notes: "splitting the primary halves the peak MMF, so the stored energy, and with it the leakage, falls to about a quarter"
+    notes_ko: "1차 권선을 나누면 최대 기자력이 절반이 되므로 저장 에너지와 누설이 약 1/4로 줄어든다"
+    cite: {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: interleaving the windings); derived here"}
+    derived_by: python/pe_core/derive/windings.py
+    tests:
+      - {inputs: {N: 20.0, MLT: 0.05, h_p: 1.0e-3, h_g: 2.0e-4, h_s: 1.0e-3, b_w: 0.02}, expect: 3.3510321638291e-7}
+
+  - id: wind.rho_T
+    title: "Resistivity of a conductor at its temperature"
+    title_ko: "온도에 따른 도체의 저항률"
+    lhs: rho_w
+    expr: "rho_20*(1 + alpha_20*(T_w - 20))"
+    symbols: {rho_20: "resistivity at 20 °C", alpha_20: "temperature coefficient at 20 °C", T_w: "conductor temperature (°C)"}
+    assumptions: [linear_temperature]
+    notes: "for annealed copper $\\rho_{20} = 1.7241 \\times 10^{-8}\\,\\Omega\\,\\mathrm{m}$ and $\\alpha_{20} = 0.00393$ per kelvin; a winding at 100 °C has about 31 % more resistance than at 20 °C"
+    notes_ko: "풀림 구리는 $\\rho_{20} = 1.7241 \\times 10^{-8}\\,\\Omega\\,\\mathrm{m}$, $\\alpha_{20} = 0.00393$ (켈빈당); 100 °C의 권선은 20 °C일 때보다 저항이 약 31 % 크다"
+    cite: {key: nbs_hb100}
+    tests:
+      - {inputs: {rho_20: 1.7241e-8, alpha_20: 0.00393, T_w: 100.0}, expect: 2.26615704e-8}
+      - {inputs: {rho_20: 1.7241e-8, alpha_20: 0.00393, T_w: 20.0}, expect: 1.7241e-8}
+
+  - id: wind.round_area
+    title: "Copper area of one turn of round strands"
+    title_ko: "둥근 소선으로 감은 1턴의 구리 단면적"
+    lhs: A_w
+    expr: "k_s*pi*d_w**2/4"
+    symbols: {k_s: "strands in parallel", d_w: "bare diameter of one strand"}
+    assumptions: [definition]
+    notes: "the bare diameter, without the insulation; wire tables give both"
+    notes_ko: "절연을 뺀 나선 지름; 전선 표에는 두 지름이 모두 나온다"
+    cite: {key: nbs_hb100}
+    tests:
+      - {inputs: {k_s: 1.0, d_w: 5.0e-4}, expect: 1.96349540849362077e-7}
+      - {inputs: {k_s: 3.0, d_w: 3.0e-4}, expect: 2.12057504117311044e-7}
+
+  - id: wind.porosity
+    title: "Porosity of a layer of round conductors"
+    title_ko: "둥근 도체 층의 점유율(porosity)"
+    lhs: eta_p
+    expr: "N_l*k_s*sqrt(pi/4)*d_w/b_w"
+    symbols: {N_l: "turns in the layer", k_s: "strands in parallel", d_w: "bare diameter of one strand", b_w: "winding breadth"}
+    assumptions: [square_equivalent]
+    notes: "a square of side $\\sqrt{\\pi/4}\\,d_w$ has the strand's area; a layer whose squares fill the whole breadth has porosity 1, and a value above 1 means the turns do not fit in the layer"
+    notes_ko: "한 변이 $\\sqrt{\\pi/4}\\,d_w$인 정사각형이 소선과 같은 면적이다; 정사각형들이 폭 전체를 채우면 점유율은 1이며, 1보다 크면 그 턴들이 한 층에 들어가지 않는다"
+    cite:
+      - {key: dowell1966}
+      - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: foil windings and layers)"}
+    tests:
+      - {inputs: {N_l: 20.0, k_s: 1.0, d_w: 5.0e-4, b_w: 0.0125}, expect: 0.708981540362206411}
+      - {inputs: {N_l: 12.0, k_s: 2.0, d_w: 3.0e-4, b_w: 0.02}, expect: 0.319041693162992885}
+
+  - id: wind.phi_round
+    title: "Dowell's layer thickness for round conductors"
+    title_ko: "둥근 도체에 대한 Dowell의 층 두께 변수"
+    lhs: phi_l
+    expr: "sqrt(eta_p)*sqrt(pi/4)*d_w/delta_s"
+    symbols: {eta_p: "porosity of the layer", d_w: "bare diameter of one strand", delta_s: "skin depth"}
+    assumptions: [square_equivalent]
+    notes: "the equivalent foil is $\\sqrt{\\pi/4}\\,d_w$ thick; its gaps lower its effective conductivity by the porosity, which enters as $\\sqrt{\\eta}$"
+    notes_ko: "등가 박판의 두께는 $\\sqrt{\\pi/4}\\,d_w$이다; 도체 사이의 틈은 유효 전도율을 점유율만큼 낮추며, 이는 $\\sqrt{\\eta}$로 들어간다"
+    cite:
+      - {key: dowell1966}
+      - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: foil windings and layers)"}
+    tests:
+      - {inputs: {eta_p: 0.7, d_w: 5.0e-4, delta_s: 2.0897837969378229e-4}, expect: 1.77403673062017143}
+      - {inputs: {eta_p: 1.0, d_w: 1.0e-3, delta_s: 6.6084766156383301e-5}, expect: 13.4104571597573101}
 
   # =========================================================================
   # Sources, extraction, sensing

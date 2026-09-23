@@ -1,0 +1,21 @@
+synthetic: true
+label: "Buck inductor example"
+label_ko: "벅 인덕터 예제"
+# Magnetics-designer preset, on the E 25/13/7 core in N87 (src/lib/magpresets.ts):
+# a 100 µH output inductor carrying 2 A dc with a 0.2 A half ripple at 100 kHz,
+# wound in one layer of round wire.
+params:
+  L: 1.0e-4
+  I_pk: 2.2
+  I_rms: 2.0
+  Delta_i_L: 0.2
+  f_s: 1.0e5
+  B_max: 0.3
+  T_w: 100
+  b_w: 0.015
+  K_umax: 0.4
+  d_w: 8.0e-4
+  d_o: 8.6e-4
+  k_s: 1
+  M_l: 1
+steps: []

@@ -82,7 +82,11 @@ export function FieldLabel({ htmlFor, sym, symHtml, meaning, unit, note }: Field
         </span>
       )}
       {unit && unit !== '1' && <span className="pe-field__unit">[{unit}]</span>}
-      {note && <span className="pe-field__note">({note})</span>}
+      {note && (
+        <span className="pe-field__note">
+          (<Rich text={note} />)
+        </span>
+      )}
     </label>
   );
 }

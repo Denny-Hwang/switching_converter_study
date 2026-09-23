@@ -168,6 +168,30 @@
       "en": "the shunt is a linear resistor: its resistance does not change with the current",
       "ko": "션트는 선형 저항: 저항값이 전류에 따라 변하지 않음"
     },
+    "good_conductor": {
+      "en": "a good conductor carrying a sinusoidal current (displacement current neglected)",
+      "ko": "정현파 전류가 흐르는 양도체(변위 전류 무시)"
+    },
+    "uniform_dc_current": {
+      "en": "a dc current spread uniformly over the conductor's cross-section",
+      "ko": "도체 단면 전체에 고르게 흐르는 직류 전류"
+    },
+    "window_field": {
+      "en": "one-dimensional field in the winding window: the MMF changes only across the layers, and the field runs along the winding breadth",
+      "ko": "권선 창 안의 1차원 자계: 기자력은 층을 가로지르는 방향으로만 변하고, 자계는 권선 폭 방향으로 향함"
+    },
+    "dowell_layers": {
+      "en": "foil layers spanning the winding breadth, a sinusoidal current, and a one-dimensional field in the window",
+      "ko": "권선 폭 전체에 걸친 박판(foil) 층, 정현파 전류, 권선 창 안의 1차원 자계"
+    },
+    "linear_temperature": {
+      "en": "resistance linear in temperature near 20 °C",
+      "ko": "20 °C 부근에서 온도에 선형인 저항"
+    },
+    "square_equivalent": {
+      "en": "each round conductor replaced by a square conductor of the same area, the layer by a foil of that thickness",
+      "ko": "둥근 도체를 같은 면적의 정사각형 도체로, 층을 그 두께의 박판(foil)으로 대치"
+    },
     "fixed_clamp": {
       "en": "a clamp whose voltage does not depend on the power it absorbs (a TVS or Zener clamp)",
       "ko": "흡수하는 전력에 따라 전압이 변하지 않는 클램프(TVS 또는 제너 클램프)"
@@ -198,6 +222,18 @@
       ],
       "scale": "log"
     },
+    "A_w": {
+      "latex": "A_w",
+      "unit": "m²",
+      "desc": "bare conductor area of one turn",
+      "meaning": "bare conductor area of one turn",
+      "meaning_ko": "1턴의 도체 단면적(절연 제외)",
+      "range": [
+        1e-09,
+        1e-05
+      ],
+      "scale": "log"
+    },
     "B": {
       "latex": "B",
       "unit": "T",
@@ -218,6 +254,18 @@
         0.3
       ],
       "scale": "log"
+    },
+    "B_max": {
+      "latex": "B_\\mathrm{max}",
+      "unit": "T",
+      "desc": "largest flux density a design allows (below saturation, with margin)",
+      "meaning": "largest flux density allowed",
+      "meaning_ko": "허용 최대 자속 밀도(flux density)",
+      "range": [
+        0.05,
+        0.5
+      ],
+      "scale": "linear"
     },
     "B_pk": {
       "latex": "B_\\mathrm{pk}",
@@ -422,6 +470,15 @@
         0.01
       ],
       "scale": "log"
+    },
+    "F_R": {
+      "latex": "F_R",
+      "unit": "1",
+      "desc": "ac resistance factor: ac over dc resistance of a winding",
+      "meaning": "ac resistance factor",
+      "meaning_ko": "교류 저항 계수(ac resistance factor)",
+      "range": null,
+      "scale": "linear"
     },
     "G_c": {
       "latex": "G_c",
@@ -681,6 +738,15 @@
       ],
       "scale": "log"
     },
+    "K_u": {
+      "latex": "K_u",
+      "unit": "1",
+      "desc": "window utilization: conductor area over window area",
+      "meaning": "window utilization",
+      "meaning_ko": "창 이용률(window utilization)",
+      "range": null,
+      "scale": "linear"
+    },
     "L": {
       "latex": "L",
       "unit": "H",
@@ -735,6 +801,30 @@
       "range": null,
       "scale": "linear"
     },
+    "MLT": {
+      "latex": "\\mathrm{MLT}",
+      "unit": "m",
+      "desc": "mean length of one turn of a winding",
+      "meaning": "mean length per turn",
+      "meaning_ko": "1턴 평균 길이(mean length per turn)",
+      "range": [
+        0.01,
+        0.2
+      ],
+      "scale": "log"
+    },
+    "M_l": {
+      "latex": "M_\\ell",
+      "unit": "1",
+      "desc": "number of layers in a winding portion, from zero MMF to its peak",
+      "meaning": "layers from zero to peak MMF",
+      "meaning_ko": "기자력 0에서 최대까지의 층 수",
+      "range": [
+        1.0,
+        20.0
+      ],
+      "scale": "linear"
+    },
     "N": {
       "latex": "N",
       "unit": "1",
@@ -746,6 +836,18 @@
         500.0
       ],
       "scale": "log"
+    },
+    "N_l": {
+      "latex": "N_\\ell",
+      "unit": "1",
+      "desc": "turns in one layer of a winding",
+      "meaning": "turns per layer",
+      "meaning_ko": "층당 턴 수",
+      "range": [
+        1.0,
+        100.0
+      ],
+      "scale": "linear"
     },
     "P": {
       "latex": "P",
@@ -903,6 +1005,15 @@
       ],
       "scale": "log"
     },
+    "R_dc": {
+      "latex": "R_\\mathrm{dc}",
+      "unit": "Ω",
+      "desc": "dc resistance of a winding",
+      "meaning": "winding dc resistance",
+      "meaning_ko": "권선 직류 저항",
+      "range": null,
+      "scale": "linear"
+    },
     "R_esr": {
       "latex": "R_\\mathrm{ESR}",
       "unit": "Ω",
@@ -1016,6 +1127,18 @@
         0.001
       ],
       "scale": "log"
+    },
+    "T_w": {
+      "latex": "T_w",
+      "unit": "°C",
+      "desc": "temperature of the winding",
+      "meaning": "winding temperature",
+      "meaning_ko": "권선 온도",
+      "range": [
+        -40.0,
+        150.0
+      ],
+      "scale": "linear"
     },
     "U": {
       "latex": "U",
@@ -1410,6 +1533,18 @@
       ],
       "scale": "log"
     },
+    "W_A": {
+      "latex": "W_A",
+      "unit": "m²",
+      "desc": "window area available to a winding (a bobbin's winding area)",
+      "meaning": "winding window area",
+      "meaning_ko": "권선 창 면적(window area)",
+      "range": [
+        1e-06,
+        0.001
+      ],
+      "scale": "log"
+    },
     "Z_C": {
       "latex": "|Z_C|",
       "unit": "Ω",
@@ -1449,6 +1584,30 @@
       ],
       "scale": "linear"
     },
+    "alpha_20": {
+      "latex": "\\alpha_{20}",
+      "unit": "1/K",
+      "desc": "temperature coefficient of resistance at 20 °C (annealed copper: 0.00393 per kelvin)",
+      "meaning": "temperature coefficient at 20 °C",
+      "meaning_ko": "20 °C 저항 온도 계수(temperature coefficient)",
+      "range": [
+        0.003,
+        0.0045
+      ],
+      "scale": "linear"
+    },
+    "b_w": {
+      "latex": "b_w",
+      "unit": "m",
+      "desc": "winding breadth: the window's length along the core leg",
+      "meaning": "winding breadth",
+      "meaning_ko": "권선 폭(winding breadth)",
+      "range": [
+        0.002,
+        0.05
+      ],
+      "scale": "log"
+    },
     "beta": {
       "latex": "\\beta",
       "unit": "1",
@@ -1460,6 +1619,30 @@
         3.0
       ],
       "scale": "linear"
+    },
+    "d_w": {
+      "latex": "d_w",
+      "unit": "m",
+      "desc": "diameter of one bare round strand",
+      "meaning": "bare wire diameter",
+      "meaning_ko": "나선(bare wire) 지름",
+      "range": [
+        5e-05,
+        0.002
+      ],
+      "scale": "log"
+    },
+    "delta_s": {
+      "latex": "\\delta",
+      "unit": "m",
+      "desc": "skin (penetration) depth of a conductor",
+      "meaning": "skin depth",
+      "meaning_ko": "표피 깊이(skin depth)",
+      "range": [
+        1e-05,
+        0.001
+      ],
+      "scale": "log"
     },
     "eps_I": {
       "latex": "\\varepsilon_I",
@@ -1504,6 +1687,18 @@
       "meaning": "share of the available power extracted",
       "meaning_ko": "가용 전력 중 추출 비율",
       "range": null,
+      "scale": "linear"
+    },
+    "eta_p": {
+      "latex": "\\eta",
+      "unit": "1",
+      "desc": "porosity (layer copper factor): the share of the winding breadth the conductors of a layer take, each round conductor replaced by a square one of the same area",
+      "meaning": "porosity of a layer",
+      "meaning_ko": "층의 점유율(porosity)",
+      "range": [
+        0.1,
+        1.0
+      ],
       "scale": "linear"
     },
     "f": {
@@ -1593,6 +1788,54 @@
       ],
       "scale": "linear"
     },
+    "h_g": {
+      "latex": "h_g",
+      "unit": "m",
+      "desc": "spacing between the windings (insulation)",
+      "meaning": "spacing between the windings",
+      "meaning_ko": "권선 사이 간격",
+      "range": [
+        0.0,
+        0.005
+      ],
+      "scale": "linear"
+    },
+    "h_l": {
+      "latex": "h",
+      "unit": "m",
+      "desc": "thickness of a conductor layer (a foil)",
+      "meaning": "conductor layer thickness",
+      "meaning_ko": "도체 층 두께",
+      "range": [
+        1e-05,
+        0.001
+      ],
+      "scale": "log"
+    },
+    "h_p": {
+      "latex": "h_p",
+      "unit": "m",
+      "desc": "height (build) of the primary winding",
+      "meaning": "primary winding height",
+      "meaning_ko": "1차 권선 높이",
+      "range": [
+        0.0001,
+        0.01
+      ],
+      "scale": "log"
+    },
+    "h_s": {
+      "latex": "h_s",
+      "unit": "m",
+      "desc": "height (build) of the secondary winding",
+      "meaning": "secondary winding height",
+      "meaning_ko": "2차 권선 높이",
+      "range": [
+        0.0001,
+        0.01
+      ],
+      "scale": "log"
+    },
     "i_Coff": {
       "latex": "i_{C,\\mathrm{off}}",
       "unit": "A",
@@ -1625,6 +1868,18 @@
         100.0
       ],
       "scale": "log"
+    },
+    "k_s": {
+      "latex": "k_s",
+      "unit": "1",
+      "desc": "round strands in parallel in one turn",
+      "meaning": "strands in parallel",
+      "meaning_ko": "병렬 소선 수",
+      "range": [
+        1.0,
+        20.0
+      ],
+      "scale": "linear"
     },
     "l_e": {
       "latex": "l_e",
@@ -1725,6 +1980,18 @@
       "range": null,
       "scale": "linear"
     },
+    "phi_l": {
+      "latex": "\\varphi",
+      "unit": "1",
+      "desc": "conductor layer thickness over the skin depth, h/δ",
+      "meaning": "layer thickness over skin depth",
+      "meaning_ko": "층 두께 ÷ 표피 깊이",
+      "range": [
+        0.1,
+        10.0
+      ],
+      "scale": "log"
+    },
     "r_d": {
       "latex": "r_d",
       "unit": "Ω",
@@ -1736,6 +2003,30 @@
         1.0
       ],
       "scale": "log"
+    },
+    "rho_20": {
+      "latex": "\\rho_{20}",
+      "unit": "Ω·m",
+      "desc": "resistivity of the conductor at 20 °C (annealed copper: 1.7241e-8 Ω·m)",
+      "meaning": "resistivity at 20 °C",
+      "meaning_ko": "20 °C 저항률(resistivity)",
+      "range": [
+        1.5e-08,
+        3e-08
+      ],
+      "scale": "linear"
+    },
+    "rho_w": {
+      "latex": "\\rho_w",
+      "unit": "Ω·m",
+      "desc": "resistivity of the winding conductor",
+      "meaning": "conductor resistivity",
+      "meaning_ko": "도체 저항률(resistivity)",
+      "range": [
+        1e-08,
+        3e-08
+      ],
+      "scale": "linear"
     },
     "t": {
       "latex": "t",
@@ -1841,7 +2132,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 239
+      "yaml_line": 268
     },
     "boost.ccm.M": {
       "id": "boost.ccm.M",
@@ -1876,7 +2167,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 254
+      "yaml_line": 283
     },
     "buckboost.ccm.M": {
       "id": "buckboost.ccm.M",
@@ -1911,7 +2202,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 269
+      "yaml_line": 298
     },
     "flyback.ccm.M": {
       "id": "flyback.ccm.M",
@@ -1948,7 +2239,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 284
+      "yaml_line": 313
     },
     "forward.ccm.M": {
       "id": "forward.ccm.M",
@@ -1985,7 +2276,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 299
+      "yaml_line": 328
     },
     "forward.reset.Dmax": {
       "id": "forward.reset.Dmax",
@@ -2018,7 +2309,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 314
+      "yaml_line": 343
     },
     "buck.ripple.iL": {
       "id": "buck.ripple.iL",
@@ -2061,7 +2352,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 332
+      "yaml_line": 361
     },
     "buck.ripple.iL_pp": {
       "id": "buck.ripple.iL_pp",
@@ -2104,7 +2395,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 346
+      "yaml_line": 375
     },
     "K.def": {
       "id": "K.def",
@@ -2140,7 +2431,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 363
+      "yaml_line": 392
     },
     "Kcrit.buck": {
       "id": "Kcrit.buck",
@@ -2176,7 +2467,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 376
+      "yaml_line": 405
     },
     "Kcrit.boost": {
       "id": "Kcrit.boost",
@@ -2212,7 +2503,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 389
+      "yaml_line": 418
     },
     "Kcrit.buckboost": {
       "id": "Kcrit.buckboost",
@@ -2248,7 +2539,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 404
+      "yaml_line": 433
     },
     "Kcrit.flyback": {
       "id": "Kcrit.flyback",
@@ -2286,7 +2577,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 417
+      "yaml_line": 446
     },
     "L.crit": {
       "id": "L.crit",
@@ -2326,7 +2617,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 432
+      "yaml_line": 461
     },
     "buck.dcm.M": {
       "id": "buck.dcm.M",
@@ -2364,7 +2655,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 450
+      "yaml_line": 479
     },
     "boost.dcm.M": {
       "id": "boost.dcm.M",
@@ -2402,7 +2693,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 465
+      "yaml_line": 494
     },
     "buckboost.dcm.M": {
       "id": "buckboost.dcm.M",
@@ -2440,7 +2731,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 480
+      "yaml_line": 509
     },
     "flyback.dcm.M": {
       "id": "flyback.dcm.M",
@@ -2478,7 +2769,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 495
+      "yaml_line": 524
     },
     "dcm.P_in": {
       "id": "dcm.P_in",
@@ -2522,7 +2813,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 515
+      "yaml_line": 544
     },
     "lfr.R_in": {
       "id": "lfr.R_in",
@@ -2564,7 +2855,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 531
+      "yaml_line": 560
     },
     "flyback.V_crit": {
       "id": "flyback.V_crit",
@@ -2606,7 +2897,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 547
+      "yaml_line": 576
     },
     "flyback.Vds_off": {
       "id": "flyback.Vds_off",
@@ -2646,7 +2937,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 561
+      "yaml_line": 590
     },
     "flyback.Vds_clamped": {
       "id": "flyback.Vds_clamped",
@@ -2688,7 +2979,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 575
+      "yaml_line": 604
     },
     "flyback.diode.VR": {
       "id": "flyback.diode.VR",
@@ -2725,7 +3016,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 589
+      "yaml_line": 618
     },
     "flyback.IM": {
       "id": "flyback.IM",
@@ -2767,7 +3058,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 601
+      "yaml_line": 630
     },
     "flyback.ripple.iM": {
       "id": "flyback.ripple.iM",
@@ -2807,7 +3098,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 617
+      "yaml_line": 646
     },
     "flyback.ripple.v": {
       "id": "flyback.ripple.v",
@@ -2851,7 +3142,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 631
+      "yaml_line": 660
     },
     "flyback.Ipk.dcm": {
       "id": "flyback.Ipk.dcm",
@@ -2891,7 +3182,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 647
+      "yaml_line": 676
     },
     "flyback.leak.E": {
       "id": "flyback.leak.E",
@@ -2925,7 +3216,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 664
+      "yaml_line": 693
     },
     "flyback.leak.P": {
       "id": "flyback.leak.P",
@@ -2960,7 +3251,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 678
+      "yaml_line": 707
     },
     "flyback.V_OR": {
       "id": "flyback.V_OR",
@@ -2997,7 +3288,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 692
+      "yaml_line": 721
     },
     "clamp.Vds": {
       "id": "clamp.Vds",
@@ -3031,7 +3322,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 706
+      "yaml_line": 735
     },
     "clamp.t_reset": {
       "id": "clamp.t_reset",
@@ -3069,7 +3360,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 720
+      "yaml_line": 749
     },
     "clamp.P": {
       "id": "clamp.P",
@@ -3110,7 +3401,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 735
+      "yaml_line": 764
     },
     "clamp.rcd.V": {
       "id": "clamp.rcd.V",
@@ -3152,7 +3443,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 750
+      "yaml_line": 779
     },
     "tvs.R_D": {
       "id": "tvs.R_D",
@@ -3188,7 +3479,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 764
+      "yaml_line": 793
     },
     "tvs.V_clamp": {
       "id": "tvs.V_clamp",
@@ -3224,7 +3515,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 778
+      "yaml_line": 807
     },
     "flyback.V_ceiling": {
       "id": "flyback.V_ceiling",
@@ -3263,7 +3554,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 791
+      "yaml_line": 820
     },
     "dcm.ring.f": {
       "id": "dcm.ring.f",
@@ -3297,7 +3588,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 805
+      "yaml_line": 834
     },
     "loss.cond": {
       "id": "loss.cond",
@@ -3331,7 +3622,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 819
+      "yaml_line": 848
     },
     "loss.sw.cap": {
       "id": "loss.sw.cap",
@@ -3369,7 +3660,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 831
+      "yaml_line": 860
     },
     "loss.gate": {
       "id": "loss.gate",
@@ -3405,7 +3696,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 843
+      "yaml_line": 872
     },
     "loss.diode": {
       "id": "loss.diode",
@@ -3443,7 +3734,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 857
+      "yaml_line": 886
     },
     "loss.steinmetz": {
       "id": "loss.steinmetz",
@@ -3487,7 +3778,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 869
+      "yaml_line": 898
     },
     "loss.core": {
       "id": "loss.core",
@@ -3521,7 +3812,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 887
+      "yaml_line": 916
     },
     "mag.L_from_AL": {
       "id": "mag.L_from_AL",
@@ -3559,7 +3850,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 903
+      "yaml_line": 932
     },
     "mag.AL_gap": {
       "id": "mag.AL_gap",
@@ -3606,7 +3897,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 8,
-      "yaml_line": 917
+      "yaml_line": 946
     },
     "mag.B_pk": {
       "id": "mag.B_pk",
@@ -3649,7 +3940,46 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 935
+      "yaml_line": 964
+    },
+    "mag.B_ac": {
+      "id": "mag.B_ac",
+      "title": "AC flux-density amplitude from the current ripple",
+      "title_ko": "전류 리플로부터 교류 자속 밀도 진폭",
+      "latex": "B_\\mathrm{ac} = \\frac{L \\Delta i_L}{N A_e}",
+      "lhs": "B_ac",
+      "expr": "L*Delta_i_L/(N*A_e)",
+      "relation": "eq",
+      "variables": [
+        "A_e",
+        "Delta_i_L",
+        "L",
+        "N"
+      ],
+      "constants": [],
+      "symbols": {
+        "A_e": "effective area",
+        "Delta_i_L": "current ripple, half of peak-to-peak",
+        "L": "inductance",
+        "N": "number of turns"
+      },
+      "assumptions": [
+        "linear_magnetics",
+        "uniform_flux"
+      ],
+      "convention": "$\\Delta i_L$ is half the peak-to-peak ripple (Erickson), so $B_\\mathrm{ac}$ is half the peak-to-peak swing $\\Delta B$: the amplitude that core-loss data take",
+      "convention_ko": "$\\Delta i_L$은 피크-피크 리플의 절반(Erickson)이므로 $B_\\mathrm{ac}$는 피크-피크 변화폭 $\\Delta B$의 절반, 곧 코어 손실 데이터가 쓰는 진폭이다",
+      "notes": "the flux density follows the current, so the ripple alone sets its swing, the quantity core-loss data are given for; the dc current sets where the swing lies, and with it the margin to saturation ($B_\\mathrm{pk}$)",
+      "notes_ko": "자속 밀도는 전류를 따르므로 변화폭은 리플만으로 정해지며, 코어 손실 데이터는 이 변화폭에 대해 주어진다; 직류 전류는 변화폭의 위치와 그에 따른 포화까지의 여유($B_\\mathrm{pk}$)를 정한다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/magnetics.py",
+      "n_tests": 7,
+      "yaml_line": 978
     },
     "mag.dB_faraday": {
       "id": "mag.dB_faraday",
@@ -3691,7 +4021,482 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 949
+      "yaml_line": 994
+    },
+    "mag.N_Bmax": {
+      "id": "mag.N_Bmax",
+      "title": "Fewest turns that keep the peak flux density at a limit",
+      "title_ko": "피크 자속 밀도를 한계 이하로 유지하는 최소 턴 수",
+      "latex": "N = \\frac{L I_\\mathrm{pk}}{B_\\mathrm{max} A_e}",
+      "lhs": "N",
+      "expr": "L*I_pk/(B_max*A_e)",
+      "relation": "eq",
+      "variables": [
+        "A_e",
+        "B_max",
+        "I_pk",
+        "L"
+      ],
+      "constants": [],
+      "symbols": {
+        "A_e": "effective area",
+        "B_max": "largest flux density allowed",
+        "I_pk": "peak current",
+        "L": "inductance"
+      },
+      "assumptions": [
+        "linear_magnetics",
+        "uniform_flux"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "more turns lower the peak flux density at the same inductance and current, but lengthen the winding and raise its resistance",
+      "notes_ko": "같은 인덕턴스와 전류에서 턴 수를 늘리면 피크 자속 밀도가 낮아지지만, 권선이 길어져 저항이 커진다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 11 (Inductor Design); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/magnetics.py",
+      "n_tests": 7,
+      "yaml_line": 1010
+    },
+    "mag.gap_length": {
+      "id": "mag.gap_length",
+      "title": "Air-gap length that gives an inductance with N turns",
+      "title_ko": "N 턴으로 인덕턴스를 얻는 공극 길이",
+      "latex": "l_g \\approx \\frac{\\mu_0 A_e N^{2}}{L} - \\frac{l_e}{\\mu_i}",
+      "lhs": "l_g",
+      "expr": "mu_0*A_e*N**2/L - l_e/mu_i",
+      "relation": "approx",
+      "variables": [
+        "A_e",
+        "L",
+        "N",
+        "l_e",
+        "mu_i"
+      ],
+      "constants": [
+        "mu_0"
+      ],
+      "symbols": {
+        "A_e": "effective area",
+        "L": "inductance",
+        "N": "number of turns",
+        "l_e": "effective path length",
+        "mu_i": "initial relative permeability",
+        "mu_0": "permeability of free space"
+      },
+      "assumptions": [
+        "linear_magnetics",
+        "no_fringing",
+        "uniform_flux"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "a negative result means the ungapped core already gives less than this inductance with N turns: more turns are needed; fringing lets a real gap be somewhat longer than this estimate",
+      "notes_ko": "결과가 음수이면 공극 없는 코어로도 N 턴에서 이 인덕턴스보다 작다는 뜻이므로 턴 수를 늘려야 한다; 프린징 때문에 실제 공극은 이 추정보다 조금 길어도 된다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 11 (Inductor Design); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/magnetics.py",
+      "n_tests": 7,
+      "yaml_line": 1024
+    },
+    "wind.fill": {
+      "id": "wind.fill",
+      "title": "Window utilization of a winding",
+      "title_ko": "권선의 창 이용률",
+      "latex": "K_u = \\frac{N A_w}{W_A}",
+      "lhs": "K_u",
+      "expr": "N*A_w/W_A",
+      "relation": "eq",
+      "variables": [
+        "A_w",
+        "N",
+        "W_A"
+      ],
+      "constants": [],
+      "symbols": {
+        "A_w": "bare conductor area of one turn",
+        "N": "number of turns",
+        "W_A": "window area available to the winding"
+      },
+      "assumptions": [
+        "definition"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "insulation, the bobbin and the gaps between round wires leave only part of the window to copper; a design keeps K_u below what it can wind",
+      "notes_ko": "절연, 보빈, 둥근 선 사이의 틈 때문에 창의 일부만 구리가 차지한다; 설계는 K_u를 실제로 감을 수 있는 값 아래로 유지한다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 11 (Inductor Design)"
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 7,
+      "yaml_line": 1039
+    },
+    "wind.dcr": {
+      "id": "wind.dcr",
+      "title": "DC resistance of a winding",
+      "title_ko": "권선의 직류 저항",
+      "latex": "R_\\mathrm{dc} = \\frac{\\rho_w N \\mathrm{MLT}}{A_w}",
+      "lhs": "R_dc",
+      "expr": "rho_w*N*MLT/A_w",
+      "relation": "eq",
+      "variables": [
+        "A_w",
+        "MLT",
+        "N",
+        "rho_w"
+      ],
+      "constants": [],
+      "symbols": {
+        "A_w": "bare conductor area of one turn",
+        "MLT": "mean length per turn",
+        "N": "number of turns",
+        "rho_w": "resistivity of the conductor"
+      },
+      "assumptions": [
+        "uniform_dc_current"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the winding is a conductor $N \\cdot \\mathrm{MLT}$ long; the resistivity of copper rises with temperature",
+      "notes_ko": "권선은 길이 $N \\cdot \\mathrm{MLT}$인 도체이다; 구리의 저항률은 온도와 함께 커진다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 11 (Inductor Design); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/windings.py",
+      "n_tests": 7,
+      "yaml_line": 1052
+    },
+    "wind.skin_depth": {
+      "id": "wind.skin_depth",
+      "title": "Skin depth of a conductor",
+      "title_ko": "도체의 표피 깊이",
+      "latex": "\\delta = \\sqrt{\\frac{\\rho_w}{\\pi \\mu_0 f}}",
+      "lhs": "delta_s",
+      "expr": "sqrt(rho_w/(pi*mu_0*f))",
+      "relation": "eq",
+      "variables": [
+        "f",
+        "rho_w"
+      ],
+      "constants": [
+        "mu_0"
+      ],
+      "symbols": {
+        "f": "frequency",
+        "rho_w": "resistivity of the conductor",
+        "mu_0": "permeability of free space (a non-magnetic conductor)"
+      },
+      "assumptions": [
+        "good_conductor"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the current density falls by a factor $e$ for every skin depth into the conductor; conductors much thicker than $\\delta$ carry the current in a surface layer",
+      "notes_ko": "전류 밀도는 도체 안으로 표피 깊이 하나만큼 들어갈 때마다 $e$배 줄어든다; $\\delta$보다 훨씬 두꺼운 도체에서는 전류가 표면층으로만 흐른다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory: eddy currents in winding conductors); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/windings.py",
+      "n_tests": 8,
+      "yaml_line": 1066
+    },
+    "wind.dowell": {
+      "id": "wind.dowell",
+      "title": "AC resistance factor of a foil winding (Dowell)",
+      "title_ko": "박판 권선의 교류 저항 계수 (Dowell)",
+      "latex": "F_R = \\varphi \\left(\\frac{\\sinh{\\left(2 \\varphi \\right)} + \\sin{\\left(2 \\varphi \\right)}}{\\cosh{\\left(2 \\varphi \\right)} - \\cos{\\left(2 \\varphi \\right)}} + \\frac{2 \\left(M_\\ell^{2} - 1\\right) \\left(\\sinh{\\left(\\varphi \\right)} - \\sin{\\left(\\varphi \\right)}\\right)}{3 \\left(\\cosh{\\left(\\varphi \\right)} + \\cos{\\left(\\varphi \\right)}\\right)}\\right)",
+      "lhs": "F_R",
+      "expr": "phi_l*((sinh(2*phi_l) + sin(2*phi_l))/(cosh(2*phi_l) - cos(2*phi_l)) + 2*(M_l**2 - 1)/3*(sinh(phi_l) - sin(phi_l))/(cosh(phi_l) + cos(phi_l)))",
+      "relation": "eq",
+      "variables": [
+        "M_l",
+        "phi_l"
+      ],
+      "constants": [],
+      "symbols": {
+        "M_l": "number of layers from zero MMF to its peak",
+        "phi_l": "layer thickness over skin depth"
+      },
+      "assumptions": [
+        "dowell_layers"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the first term is the skin effect in each layer, the second the proximity effect of the layers' fields on each other, growing as $M_\\ell^2$; with $\\varphi$ well below 1 the factor tends to 1",
+      "notes_ko": "첫째 항은 각 층의 표피 효과, 둘째 항은 층들의 자계가 서로에게 주는 근접 효과로 $M_\\ell^2$에 따라 커진다; $\\varphi$가 1보다 충분히 작으면 계수는 1에 가까워진다",
+      "cites": [
+        {
+          "key": "dowell1966",
+          "where": ""
+        },
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory: eddy currents in winding conductors)"
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 9,
+      "yaml_line": 1081
+    },
+    "xfmr.leakage.ps": {
+      "id": "xfmr.leakage.ps",
+      "title": "Leakage inductance of a primary-secondary winding arrangement",
+      "title_ko": "1차-2차 권선 배치의 누설 인덕턴스",
+      "latex": "L_\\mathrm{lk} = \\frac{\\mu_0 N^{2} \\mathrm{MLT} \\left(\\frac{h_p}{3} + h_g + \\frac{h_s}{3}\\right)}{b_w}",
+      "lhs": "L_lk",
+      "expr": "mu_0*N**2*MLT*(h_p/3 + h_g + h_s/3)/b_w",
+      "relation": "eq",
+      "variables": [
+        "MLT",
+        "N",
+        "b_w",
+        "h_g",
+        "h_p",
+        "h_s"
+      ],
+      "constants": [
+        "mu_0"
+      ],
+      "symbols": {
+        "MLT": "mean length per turn",
+        "N": "primary turns",
+        "b_w": "winding breadth",
+        "h_g": "spacing between the windings",
+        "h_p": "primary height",
+        "h_s": "secondary height",
+        "mu_0": "permeability of free space"
+      },
+      "assumptions": [
+        "window_field"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "referred to the primary; each winding counts with a third of its height and the spacing in full, and a broad, low window gives the least leakage",
+      "notes_ko": "1차 측으로 환산한 값; 각 권선은 높이의 1/3이, 권선 사이 간격은 전부가 들어가며, 폭이 넓고 높이가 낮은 창일수록 누설이 작다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory: leakage flux in windings, MMF diagrams); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/windings.py",
+      "n_tests": 7,
+      "yaml_line": 1098
+    },
+    "xfmr.leakage.psp": {
+      "id": "xfmr.leakage.psp",
+      "title": "Leakage inductance with the primary split around the secondary (P-S-P)",
+      "title_ko": "1차 권선을 2차 권선 양쪽으로 나눈 배치(P-S-P)의 누설 인덕턴스",
+      "latex": "L_\\mathrm{lk} = \\frac{\\mu_0 N^{2} \\mathrm{MLT} \\left(\\frac{h_p}{3} + 2 h_g + \\frac{h_s}{3}\\right)}{4 b_w}",
+      "lhs": "L_lk",
+      "expr": "mu_0*N**2*MLT*(h_p/3 + 2*h_g + h_s/3)/(4*b_w)",
+      "relation": "eq",
+      "variables": [
+        "MLT",
+        "N",
+        "b_w",
+        "h_g",
+        "h_p",
+        "h_s"
+      ],
+      "constants": [
+        "mu_0"
+      ],
+      "symbols": {
+        "MLT": "mean length per turn",
+        "N": "primary turns",
+        "b_w": "winding breadth",
+        "h_g": "spacing at each of the two interfaces",
+        "h_p": "total primary height (both halves)",
+        "h_s": "secondary height",
+        "mu_0": "permeability of free space"
+      },
+      "assumptions": [
+        "window_field"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "splitting the primary halves the peak MMF, so the stored energy, and with it the leakage, falls to about a quarter",
+      "notes_ko": "1차 권선을 나누면 최대 기자력이 절반이 되므로 저장 에너지와 누설이 약 1/4로 줄어든다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory: interleaving the windings); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/windings.py",
+      "n_tests": 7,
+      "yaml_line": 1112
+    },
+    "wind.rho_T": {
+      "id": "wind.rho_T",
+      "title": "Resistivity of a conductor at its temperature",
+      "title_ko": "온도에 따른 도체의 저항률",
+      "latex": "\\rho_w = \\rho_{20} \\left(1 + \\alpha_{20} \\left(T_w - 20\\right)\\right)",
+      "lhs": "rho_w",
+      "expr": "rho_20*(1 + alpha_20*(T_w - 20))",
+      "relation": "eq",
+      "variables": [
+        "T_w",
+        "alpha_20",
+        "rho_20"
+      ],
+      "constants": [],
+      "symbols": {
+        "T_w": "conductor temperature (°C)",
+        "alpha_20": "temperature coefficient at 20 °C",
+        "rho_20": "resistivity at 20 °C"
+      },
+      "assumptions": [
+        "linear_temperature"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "for annealed copper $\\rho_{20} = 1.7241 \\times 10^{-8}\\,\\Omega\\,\\mathrm{m}$ and $\\alpha_{20} = 0.00393$ per kelvin; a winding at 100 °C has about 31 % more resistance than at 20 °C",
+      "notes_ko": "풀림 구리는 $\\rho_{20} = 1.7241 \\times 10^{-8}\\,\\Omega\\,\\mathrm{m}$, $\\alpha_{20} = 0.00393$ (켈빈당); 100 °C의 권선은 20 °C일 때보다 저항이 약 31 % 크다",
+      "cites": [
+        {
+          "key": "nbs_hb100",
+          "where": ""
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 8,
+      "yaml_line": 1126
+    },
+    "wind.round_area": {
+      "id": "wind.round_area",
+      "title": "Copper area of one turn of round strands",
+      "title_ko": "둥근 소선으로 감은 1턴의 구리 단면적",
+      "latex": "A_w = \\frac{k_s \\pi d_w^{2}}{4}",
+      "lhs": "A_w",
+      "expr": "k_s*pi*d_w**2/4",
+      "relation": "eq",
+      "variables": [
+        "d_w",
+        "k_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "d_w": "bare diameter of one strand",
+        "k_s": "strands in parallel"
+      },
+      "assumptions": [
+        "definition"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the bare diameter, without the insulation; wire tables give both",
+      "notes_ko": "절연을 뺀 나선 지름; 전선 표에는 두 지름이 모두 나온다",
+      "cites": [
+        {
+          "key": "nbs_hb100",
+          "where": ""
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 8,
+      "yaml_line": 1140
+    },
+    "wind.porosity": {
+      "id": "wind.porosity",
+      "title": "Porosity of a layer of round conductors",
+      "title_ko": "둥근 도체 층의 점유율(porosity)",
+      "latex": "\\eta = \\frac{N_\\ell k_s \\sqrt{\\frac{\\pi}{4}} d_w}{b_w}",
+      "lhs": "eta_p",
+      "expr": "N_l*k_s*sqrt(pi/4)*d_w/b_w",
+      "relation": "eq",
+      "variables": [
+        "N_l",
+        "b_w",
+        "d_w",
+        "k_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "N_l": "turns in the layer",
+        "b_w": "winding breadth",
+        "d_w": "bare diameter of one strand",
+        "k_s": "strands in parallel"
+      },
+      "assumptions": [
+        "square_equivalent"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "a square of side $\\sqrt{\\pi/4}\\,d_w$ has the strand's area; a layer whose squares fill the whole breadth has porosity 1, and a value above 1 means the turns do not fit in the layer",
+      "notes_ko": "한 변이 $\\sqrt{\\pi/4}\\,d_w$인 정사각형이 소선과 같은 면적이다; 정사각형들이 폭 전체를 채우면 점유율은 1이며, 1보다 크면 그 턴들이 한 층에 들어가지 않는다",
+      "cites": [
+        {
+          "key": "dowell1966",
+          "where": ""
+        },
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory: foil windings and layers)"
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 8,
+      "yaml_line": 1154
+    },
+    "wind.phi_round": {
+      "id": "wind.phi_round",
+      "title": "Dowell's layer thickness for round conductors",
+      "title_ko": "둥근 도체에 대한 Dowell의 층 두께 변수",
+      "latex": "\\varphi = \\frac{\\sqrt{\\eta} \\sqrt{\\frac{\\pi}{4}} d_w}{\\delta}",
+      "lhs": "phi_l",
+      "expr": "sqrt(eta_p)*sqrt(pi/4)*d_w/delta_s",
+      "relation": "eq",
+      "variables": [
+        "d_w",
+        "delta_s",
+        "eta_p"
+      ],
+      "constants": [],
+      "symbols": {
+        "d_w": "bare diameter of one strand",
+        "delta_s": "skin depth",
+        "eta_p": "porosity of the layer"
+      },
+      "assumptions": [
+        "square_equivalent"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the equivalent foil is $\\sqrt{\\pi/4}\\,d_w$ thick; its gaps lower its effective conductivity by the porosity, which enters as $\\sqrt{\\eta}$",
+      "notes_ko": "등가 박판의 두께는 $\\sqrt{\\pi/4}\\,d_w$이다; 도체 사이의 틈은 유효 전도율을 점유율만큼 낮추며, 이는 $\\sqrt{\\eta}$로 들어간다",
+      "cites": [
+        {
+          "key": "dowell1966",
+          "where": ""
+        },
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory: foil windings and layers)"
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 8,
+      "yaml_line": 1170
     },
     "src.Pmax": {
       "id": "src.Pmax",
@@ -3725,7 +4530,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 968
+      "yaml_line": 1189
     },
     "src.cv_power": {
       "id": "src.cv_power",
@@ -3761,7 +4566,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 982
+      "yaml_line": 1203
     },
     "src.cv_extraction": {
       "id": "src.cv_extraction",
@@ -3795,7 +4600,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 997
+      "yaml_line": 1218
     },
     "lfr.Vg": {
       "id": "lfr.Vg",
@@ -3833,7 +4638,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1013
+      "yaml_line": 1234
     },
     "lfr.eta": {
       "id": "lfr.eta",
@@ -3869,7 +4674,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1028
+      "yaml_line": 1249
     },
     "lfr.Vg_power": {
       "id": "lfr.Vg_power",
@@ -3909,7 +4714,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 1043
+      "yaml_line": 1264
     },
     "sense.current_out_monitor": {
       "id": "sense.current_out_monitor",
@@ -3947,7 +4752,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1059
+      "yaml_line": 1280
     },
     "sense.burden": {
       "id": "sense.burden",
@@ -3981,7 +4786,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1073
+      "yaml_line": 1294
     },
     "sense.voltage_out_monitor": {
       "id": "sense.voltage_out_monitor",
@@ -4019,7 +4824,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 8,
-      "yaml_line": 1087
+      "yaml_line": 1308
     },
     "sense.offset_current": {
       "id": "sense.offset_current",
@@ -4057,7 +4862,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1102
+      "yaml_line": 1323
     },
     "sense.pad_error": {
       "id": "sense.pad_error",
@@ -4095,7 +4900,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1118
+      "yaml_line": 1339
     },
     "sense.reading": {
       "id": "sense.reading",
@@ -4137,7 +4942,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 9,
-      "yaml_line": 1134
+      "yaml_line": 1355
     },
     "sense.rel_error": {
       "id": "sense.rel_error",
@@ -4179,7 +4984,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 8,
-      "yaml_line": 1152
+      "yaml_line": 1373
     },
     "sense.filter_R": {
       "id": "sense.filter_R",
@@ -4214,7 +5019,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 8,
-      "yaml_line": 1169
+      "yaml_line": 1390
     },
     "adc.nyquist": {
       "id": "adc.nyquist",
@@ -4247,7 +5052,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1184
+      "yaml_line": 1405
     },
     "def.Ts": {
       "id": "def.Ts",
@@ -4279,7 +5084,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1200
+      "yaml_line": 1421
     },
     "def.V": {
       "id": "def.V",
@@ -4313,7 +5118,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1211
+      "yaml_line": 1432
     },
     "sw.v_avg": {
       "id": "sw.v_avg",
@@ -4348,7 +5153,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1226
+      "yaml_line": 1447
     },
     "vsb.v_off": {
       "id": "vsb.v_off",
@@ -4383,7 +5188,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1240
+      "yaml_line": 1461
     },
     "csb.i_off": {
       "id": "csb.i_off",
@@ -4418,7 +5223,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1254
+      "yaml_line": 1475
     },
     "buck.dcm.D2": {
       "id": "buck.dcm.D2",
@@ -4455,7 +5260,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 7,
-      "yaml_line": 1268
+      "yaml_line": 1489
     },
     "boost.ccm.M_RL": {
       "id": "boost.ccm.M_RL",
@@ -4495,7 +5300,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1284
+      "yaml_line": 1505
     },
     "boost.ccm.eta_RL": {
       "id": "boost.ccm.eta_RL",
@@ -4535,7 +5340,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1298
+      "yaml_line": 1519
     },
     "buck.ss.Gd0": {
       "id": "buck.ss.Gd0",
@@ -4570,7 +5375,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1313
+      "yaml_line": 1534
     },
     "buck.ss.w0": {
       "id": "buck.ss.w0",
@@ -4607,7 +5412,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1327
+      "yaml_line": 1548
     },
     "buck.ss.Q": {
       "id": "buck.ss.Q",
@@ -4646,7 +5451,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1339
+      "yaml_line": 1560
     },
     "boost.ss.Gd0": {
       "id": "boost.ss.Gd0",
@@ -4683,7 +5488,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1351
+      "yaml_line": 1572
     },
     "boost.ss.w0": {
       "id": "boost.ss.w0",
@@ -4722,7 +5527,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1365
+      "yaml_line": 1586
     },
     "boost.ss.Q": {
       "id": "boost.ss.Q",
@@ -4763,7 +5568,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1377
+      "yaml_line": 1598
     },
     "boost.ss.wz": {
       "id": "boost.ss.wz",
@@ -4802,7 +5607,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1389
+      "yaml_line": 1610
     },
     "buckboost.ss.Gd0": {
       "id": "buckboost.ss.Gd0",
@@ -4839,7 +5644,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1403
+      "yaml_line": 1624
     },
     "buckboost.ss.w0": {
       "id": "buckboost.ss.w0",
@@ -4878,7 +5683,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1417
+      "yaml_line": 1638
     },
     "buckboost.ss.Q": {
       "id": "buckboost.ss.Q",
@@ -4919,7 +5724,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1429
+      "yaml_line": 1650
     },
     "buckboost.ss.wz": {
       "id": "buckboost.ss.wz",
@@ -4958,7 +5763,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1441
+      "yaml_line": 1662
     },
     "pwm.d": {
       "id": "pwm.d",
@@ -4992,7 +5797,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1456
+      "yaml_line": 1677
     },
     "loop.T": {
       "id": "loop.T",
@@ -5030,7 +5835,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1471
+      "yaml_line": 1692
     },
     "loop.suppression": {
       "id": "loop.suppression",
@@ -5063,7 +5868,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1485
+      "yaml_line": 1706
     },
     "buck.IL": {
       "id": "buck.IL",
@@ -5101,7 +5906,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1502
+      "yaml_line": 1723
     },
     "ripple.Ipk": {
       "id": "ripple.Ipk",
@@ -5136,7 +5941,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1516
+      "yaml_line": 1737
     },
     "buck.ripple.v": {
       "id": "buck.ripple.v",
@@ -5175,7 +5980,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1529
+      "yaml_line": 1750
     },
     "boost.IL": {
       "id": "boost.IL",
@@ -5215,7 +6020,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1545
+      "yaml_line": 1766
     },
     "boost.ripple.iL": {
       "id": "boost.ripple.iL",
@@ -5256,7 +6061,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1559
+      "yaml_line": 1780
     },
     "boost.ripple.v": {
       "id": "boost.ripple.v",
@@ -5300,7 +6105,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1571
+      "yaml_line": 1792
     },
     "buckboost.V": {
       "id": "buckboost.V",
@@ -5337,7 +6142,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1585
+      "yaml_line": 1806
     },
     "buckboost.IL": {
       "id": "buckboost.IL",
@@ -5377,7 +6182,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1599
+      "yaml_line": 1820
     },
     "buckboost.ripple.iL": {
       "id": "buckboost.ripple.iL",
@@ -5418,7 +6223,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1613
+      "yaml_line": 1834
     },
     "buckboost.ripple.v": {
       "id": "buckboost.ripple.v",
@@ -5462,7 +6267,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1625
+      "yaml_line": 1846
     },
     "buck.Vds": {
       "id": "buck.Vds",
@@ -5496,7 +6301,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1639
+      "yaml_line": 1860
     },
     "boost.Vds": {
       "id": "boost.Vds",
@@ -5531,7 +6336,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1651
+      "yaml_line": 1872
     },
     "buckboost.Vds": {
       "id": "buckboost.Vds",
@@ -5568,7 +6373,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1663
+      "yaml_line": 1884
     },
     "forward.Vds": {
       "id": "forward.Vds",
@@ -5603,7 +6408,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1675
+      "yaml_line": 1896
     },
     "forward.ripple.iL": {
       "id": "forward.ripple.iL",
@@ -5648,7 +6453,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1689
+      "yaml_line": 1910
     },
     "util.buck": {
       "id": "util.buck",
@@ -5683,7 +6488,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1704
+      "yaml_line": 1925
     },
     "util.boost": {
       "id": "util.boost",
@@ -5718,7 +6523,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1718
+      "yaml_line": 1939
     },
     "util.buckboost": {
       "id": "util.buckboost",
@@ -5753,7 +6558,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1732
+      "yaml_line": 1953
     },
     "util.forward": {
       "id": "util.forward",
@@ -5790,7 +6595,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1746
+      "yaml_line": 1967
     },
     "ind.di": {
       "id": "ind.di",
@@ -5827,7 +6632,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1763
+      "yaml_line": 1984
     },
     "cap.dv": {
       "id": "cap.dv",
@@ -5864,7 +6669,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1777
+      "yaml_line": 1998
     },
     "ind.E": {
       "id": "ind.E",
@@ -5899,7 +6704,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1791
+      "yaml_line": 2012
     },
     "cap.E": {
       "id": "cap.E",
@@ -5933,7 +6738,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1803
+      "yaml_line": 2024
     },
     "imp.ZL": {
       "id": "imp.ZL",
@@ -5968,7 +6773,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1815
+      "yaml_line": 2036
     },
     "imp.ZC": {
       "id": "imp.ZC",
@@ -6003,7 +6808,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1829
+      "yaml_line": 2050
     },
     "rc.fc": {
       "id": "rc.fc",
@@ -6037,7 +6842,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1843
+      "yaml_line": 2064
     },
     "rc.gain": {
       "id": "rc.gain",
@@ -6072,7 +6877,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 8,
-      "yaml_line": 1857
+      "yaml_line": 2078
     },
     "fourier.pulse.harm": {
       "id": "fourier.pulse.harm",
@@ -6109,7 +6914,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 8,
-      "yaml_line": 1872
+      "yaml_line": 2093
     },
     "fourier.pulse.rms": {
       "id": "fourier.pulse.rms",
@@ -6143,7 +6948,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1887
+      "yaml_line": 2108
     },
     "passive.f_srf": {
       "id": "passive.f_srf",
@@ -6177,7 +6982,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1899
+      "yaml_line": 2120
     },
     "cap.esr.ripple": {
       "id": "cap.esr.ripple",
@@ -6211,7 +7016,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1913
+      "yaml_line": 2134
     },
     "mag.H_ampere": {
       "id": "mag.H_ampere",
@@ -6247,7 +7052,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1928
+      "yaml_line": 2149
     },
     "mag.B_H": {
       "id": "mag.B_H",
@@ -6284,7 +7089,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1940
+      "yaml_line": 2161
     },
     "xfmr.V2": {
       "id": "xfmr.V2",
@@ -6322,7 +7127,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1953
+      "yaml_line": 2174
     },
     "xfmr.I2": {
       "id": "xfmr.I2",
@@ -6360,7 +7165,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1969
+      "yaml_line": 2190
     }
   }
 }

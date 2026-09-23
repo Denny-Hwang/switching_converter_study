@@ -38,4 +38,8 @@ exclude = [
   # the URL's latest Internet Archive capture.
   '^https://www\.analog\.com/',
   '^https://www\.st\.com/',
+  # tdk-electronics.tdk.com answers lychee from CI runners with 403 but serves
+  # a browser User-Agent: the urls-online job opens its data sheets instead,
+  # matches their titles and finds the cited values in their text.
+  '^https://www\.tdk-electronics\.tdk\.com/',
 ]

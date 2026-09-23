@@ -13,7 +13,18 @@ const PREFIXES: readonly [number, string][] = [
 ];
 
 /** Units to which an SI prefix may be attached directly. */
-const PREFIXABLE = new Set(['V', 'A', 'W', 'Ω', 'H', 'F', 'Hz', 's', 'J', 'C', 'T', 'rad/s', 'H/m', 'W/m³']);
+const PREFIXABLE = new Set(['V', 'A', 'W', 'Ω', 'H', 'F', 'Hz', 's', 'J', 'C', 'T', 'rad/s', 'H/m', 'W/m³', 'Ω·m']);
+
+/**
+ * Lengths, areas and volumes of parts in millimetres, as data sheets give
+ * them (0.25 mm, 52.5 mm², 3020 mm³): the factor to mm, the unit, and the
+ * size in SI below which a value is written so.
+ */
+const MILLI: Record<string, readonly [number, string, number]> = {
+  m: [1e3, 'mm', 1],
+  'm²': [1e6, 'mm²', 1e-2],
+  'm³': [1e9, 'mm³', 1e-3],
+};
 
 function trim(x: number, sig: number): string {
   const s = x.toPrecision(sig);
@@ -28,6 +39,8 @@ export function formatSI(value: number, unit: string, sig = 3): string {
     return minus(abs >= 1e-3 && abs < 1e6 ? String(Number(value.toPrecision(sig))) : trim(value, sig));
   }
   const abs = Math.abs(value);
+  const milli = MILLI[unit];
+  if (milli && abs < milli[2] && abs * milli[0] >= 1e-3) return `${minus(String(Number((value * milli[0]).toPrecision(sig))))} ${milli[1]}`;
   if (!PREFIXABLE.has(unit) || abs === 0) {
     const txt = abs !== 0 && (abs < 1e-3 || abs >= 1e5) ? value.toExponential(sig - 1) : String(Number(value.toPrecision(sig)));
     return `${minus(txt)} ${unit}`;

@@ -1,0 +1,79 @@
+---
+/**
+ * <MagWorked example="mag-inductor" /> -- a magnetics-designer preset worked
+ * through at build time by pe-core (src/lib/magworked.ts): the example's
+ * values, the core's data-sheet values with their citation, and each result
+ * with the catalogue equation it comes from. The table carries the example's
+ * label; the page footer says that example numbers are synthetic.
+ */
+import katex from 'katex';
+import { catalog } from 'pe-core';
+import { REPO_BLOB } from '../config';
+import { ui } from '../i18n/ui';
+import { katexOptions } from '../math/katex-options';
+import { getExample } from '../lib/examples';
+import { formatSI } from '../lib/format';
+import { eqAnchor, eqHomes } from '../lib/eqhomes';
+import { magWorked } from '../lib/magworked';
+import { BIBLIOGRAPHY_SLUG, pageHref } from '../lib/paths';
+import { pageLocale } from '../lib/locale';
+import { citable } from '../lib/references';
+import { symHtml } from '../lib/sym';
+
+interface Props {
+  example: string;
+}
+const { example } = Astro.props;
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const homes = await eqHomes(locale);
+const ex = getExample(example);
+const { rows, cite } = magWorked(example);
+const source = citable(cite);
+const sourceHref = pageHref(locale, BIBLIOGRAPHY_SLUG, cite);
+
+const shown = rows.map((r) => {
+  // the source column: plain text, or a link; a note may carry symbols (n N_p)
+  let how: { text: string; href?: string; html?: string };
+  if (r.kind === 'given') how = { text: t['worked.given'] };
+  else if (r.kind === 'core') how = { text: source.label, href: sourceHref };
+  else if (r.eq) {
+    const meta = catalog.equations[r.eq]!;
+    const home = homes.get(r.eq);
+    how = {
+      text: locale === 'ko' ? meta.title_ko : meta.title,
+      href: home ? pageHref(locale, home, eqAnchor(r.eq)) : `${REPO_BLOB}/packages/pe-core/equations/equations.yaml#L${meta.yaml_line}`,
+    };
+  } else how = { text: '', html: r.note ? symHtml(r.note[locale]) : '' };
+  return {
+    kind: r.kind,
+    symbol: katex.renderToString(r.latex, katexOptions(false)),
+    meaning: symHtml(r.meaning[locale]),
+    value: formatSI(r.value, r.unit, r.unit === '1' && Number.isInteger(r.value) ? 6 : 4),
+    how,
+  };
+});
+const label = locale === 'ko' ? ex.label_ko : ex.label;
+---
+
+<figure class="pe-worked not-content">
+  <figcaption class="pe-worked__label">{label}</figcaption>
+  <table>
+    <thead>
+      <tr><th>{t['worked.symbol']}</th><th>{t['worked.value']}</th><th>{t['worked.source']}</th></tr>
+    </thead>
+    <tbody>
+      {
+        shown.map((r) => (
+          <tr class={r.kind === 'result' ? 'is-computed' : 'is-given'}>
+            <td>
+              <span set:html={r.symbol} /> <span class="pe-worked__meaning" set:html={r.meaning} />
+            </td>
+            <td class="pe-worked__value">{r.value}</td>
+            <td>{r.how.href ? <a href={r.how.href}>{r.how.text}</a> : r.how.html !== undefined ? <span set:html={r.how.html} /> : r.how.text}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</figure>

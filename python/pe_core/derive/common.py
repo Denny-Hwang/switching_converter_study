@@ -12,6 +12,7 @@ equations.yaml with :func:`symbolic_equal`.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Any
@@ -68,9 +69,33 @@ class Derivation:
         self.steps.append(Step(text, text_ko, shown, result_for=eq_id))
 
 
+def differs_numerically(a: sp.Expr, b: sp.Expr, points: int = 3) -> bool:
+    """True when ``a`` and ``b`` clearly differ at one of a few sample points
+    (every free symbol set to a value in 0.15..0.85, evaluated to 50 digits).
+
+    A quick screen before ``simplify``, which can take minutes to give up on
+    transcendental expressions that are not equal. A point where either side
+    does not evaluate to a finite number proves nothing and is skipped."""
+    symbols = sorted((a - b).free_symbols, key=lambda s: s.name)
+    for k in range(points):
+        at = {s: sp.Float(0.15 + 0.7 * ((0.618034 * (i + 1) + 0.414214 * (k + 1)) % 1), 50) for i, s in enumerate(symbols)}
+        try:
+            va, vb = complex(a.evalf(50, subs=at)), complex(b.evalf(50, subs=at))
+        except (TypeError, ValueError):
+            continue
+        if not all(map(math.isfinite, (va.real, va.imag, vb.real, vb.imag))):
+            continue
+        if abs(va - vb) > 1e-20 * max(abs(va), abs(vb)):
+            return True
+    return False
+
+
 def symbolic_equal(a: sp.Expr, b: sp.Expr) -> bool:
     """True when ``a - b`` simplifies to zero (with a few algebraic rewrites
-    that ``simplify`` alone sometimes misses for nested radicals)."""
+    that ``simplify`` alone sometimes misses for nested radicals). Expressions
+    that differ numerically are rejected before any simplification."""
+    if differs_numerically(a, b):
+        return False
     diff = a - b
     if sp.simplify(diff) == 0:
         return True
