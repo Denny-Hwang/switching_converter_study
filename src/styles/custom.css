@@ -1,0 +1,77 @@
+/* Site styles on top of Starlight. Keep small; prefer Starlight tokens. */
+
+/* ---- <Eq> ------------------------------------------------------------ */
+.pe-eq {
+  margin: 1.25rem 0;
+  padding: 0.75rem 1rem 0.5rem;
+  border: 1px solid var(--sl-color-gray-5);
+  border-left: 4px solid var(--sl-color-accent);
+  border-radius: 0.5rem;
+  background: var(--sl-color-gray-7, var(--sl-color-black));
+}
+.pe-eq__math {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}
+.pe-eq__math .katex-display {
+  margin: 0.5rem 0;
+}
+.pe-eq__caption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: var(--sl-text-sm);
+}
+.pe-eq__title {
+  font-weight: 600;
+  color: var(--sl-color-white);
+}
+.pe-eq__badge {
+  display: inline-block;
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--sl-color-green);
+  color: var(--sl-color-green);
+  font-size: var(--sl-text-xs);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.pe-eq__badge:hover,
+.pe-eq__badge:focus-visible {
+  background: var(--sl-color-green-low);
+}
+.pe-eq__details {
+  margin-top: 0.5rem;
+  font-size: var(--sl-text-sm);
+}
+.pe-eq__details summary {
+  cursor: pointer;
+  color: var(--sl-color-gray-2);
+}
+.pe-eq__details dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0.5rem 0 0.25rem;
+}
+.pe-eq__details dt {
+  font-weight: 600;
+}
+.pe-eq__details dd {
+  margin: 0;
+}
+.pe-eq__details ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+/* ---- tool islands ------------------------------------------------------ */
+.pe-tool {
+  margin: 1.25rem 0;
+  padding: 0.75rem;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.5rem;
+}

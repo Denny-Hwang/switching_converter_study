@@ -1,0 +1,79 @@
+---
+/**
+ * <Eq id="flyback.dcm.M" /> -- the only way to show an equation in the docs.
+ *
+ * Renders the LaTeX generated from packages/pe-core/equations/equations.yaml
+ * with strict KaTeX at build time, a "verified by N tests" badge, and an
+ * expander with assumptions, convention and source. An unknown id, or any
+ * KaTeX error, fails the build.
+ */
+import katex from 'katex';
+import { catalog, getEquation } from 'pe-core';
+import { REPO_BLOB } from '../config';
+import { localeOf, ui } from '../i18n/ui';
+import { katexOptions } from '../math/katex-options';
+import { renderInlineMath } from '../math/inline';
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+const eq = getEquation(id);
+
+let routeLocale: string | undefined;
+try {
+  routeLocale = Astro.locals.starlightRoute?.locale;
+} catch {
+  routeLocale = undefined;
+}
+const locale = localeOf(routeLocale);
+const t = ui[locale];
+
+const mathHtml = katex.renderToString(eq.latex, katexOptions(true));
+const title = locale === 'ko' ? eq.title_ko : eq.title;
+const convention = locale === 'ko' && eq.convention_ko ? eq.convention_ko : eq.convention;
+const notes = locale === 'ko' && eq.notes_ko ? eq.notes_ko : eq.notes;
+const anchor = `eq-${id.replace(/\./g, '-')}`;
+const yamlHref = `${REPO_BLOB}/packages/pe-core/equations/equations.yaml#L${eq.yaml_line}`;
+const testsHref = `${REPO_BLOB}/packages/pe-core/test/parity.test.ts`;
+---
+
+<figure class="pe-eq not-content" id={anchor} data-eq-id={id}>
+  <div class="pe-eq__math" set:html={mathHtml} />
+  <figcaption class="pe-eq__caption">
+    <span class="pe-eq__title">{title}</span>
+    <a class="pe-eq__badge" href={testsHref} title={eq.expr}>✓ {t['eq.verified'](eq.n_tests)}</a>
+  </figcaption>
+  <details class="pe-eq__details">
+    <summary>{t['eq.details']}</summary>
+    <dl>
+      <dt>{t['eq.assumptions']}</dt>
+      <dd>
+        <ul>
+          {eq.assumptions.map((a) => <li>{catalog.assumption_labels[a]?.[locale] ?? a}</li>)}
+        </ul>
+      </dd>
+      {convention && (
+        <>
+          <dt>{t['eq.convention']}</dt>
+          <dd set:html={renderInlineMath(convention)} />
+        </>
+      )}
+      {notes && (
+        <>
+          <dt>{t['eq.notes']}</dt>
+          <dd set:html={renderInlineMath(notes)} />
+        </>
+      )}
+      <dt>{t['eq.source']}</dt>
+      <dd>
+        <code>{eq.cite.key}</code>{eq.cite.where && <span>, {eq.cite.where}</span>}
+      </dd>
+      <dt>{t['eq.id']}</dt>
+      <dd>
+        <code>{id}</code> · <a href={yamlHref}>{t['eq.yaml']}</a>
+      </dd>
+    </dl>
+  </details>
+</figure>

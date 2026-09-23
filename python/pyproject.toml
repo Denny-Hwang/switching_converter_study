@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pe_core"
+version = "0.0.1"
+description = "Verification side of the switching-converter learning repository: sympy derivations, LaTeX and test-vector generation."
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = [
+    # Pinned: generated LaTeX depends on the sympy printer; CI diff-checks it.
+    "sympy==1.14.0",
+    "mpmath==1.3.0",
+    "PyYAML==6.0.3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==9.1.1"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pe_core*"]

@@ -1,0 +1,76 @@
+# packages/pe-core/equations/equations.yaml
+#
+# SINGLE SOURCE OF TRUTH for every equation shown on the site.
+#
+#   * LaTeX is GENERATED from `expr` by `python scripts/gen_equations.py`
+#     into equations.generated.json. Never hand-edit the generated files.
+#   * Each entry's `tests` are checked against the sympy evaluation of `expr`
+#     and exported, together with seeded random vectors, to test_vectors.json.
+#     The TypeScript evaluators (packages/pe-core/src/equations.ts) must
+#     reproduce every vector to 1e-9 relative (vitest parity test).
+#   * `derived_by` (optional until Phase 1 completes) names a derivation script
+#     that must reproduce `expr` symbolically (pytest).
+#   * `cite.key` must exist in references.bib (scripts/refcheck.py).
+#
+# Symbol conventions are site-wide; see CLAUDE.md "Symbol conventions".
+# All quantities are SI. `expr` must be sympy-parsable using only names from
+# `symbol_table` plus sympy built-ins (sqrt, pi, exp, ...).
+
+schema_version: 1
+
+# Display form, unit and random-vector range for every symbol that appears
+# in any `expr` or `lhs`. `latex` must use only KaTeX-supported commands.
+symbol_table:
+  D:
+    latex: "D"
+    unit: "1"
+    desc: "duty ratio (switch on-time fraction of T_s)"
+    range: [0.05, 0.95]
+  M:
+    latex: "M"
+    unit: "1"
+    desc: "conversion ratio V/V_g"
+
+# Human-readable labels for the `assumptions` tags (shown in the <Eq> expander).
+assumption_labels:
+  ideal:
+    en: "ideal (lossless) switches and passive components"
+    ko: "이상적(무손실) 스위치와 수동 소자"
+  ccm:
+    en: "continuous conduction mode (CCM)"
+    ko: "연속 전도 모드(CCM)"
+  steady_state:
+    en: "periodic steady state"
+    ko: "주기적 정상상태"
+  small_ripple:
+    en: "small-ripple approximation"
+    ko: "소리플 근사(small-ripple approximation)"
+
+equations:
+  - id: buck.ccm.M
+    title: "Buck conversion ratio, CCM"
+    title_ko: "벅(buck) 변환비, CCM"
+    lhs: M
+    expr: "D"
+    symbols: {D: "duty ratio"}
+    assumptions: [ideal, ccm, steady_state, small_ripple]
+    convention: "$M = V/V_g$"
+    convention_ko: "$M = V/V_g$"
+    cite: {key: erickson2020, where: "Ch. 2"}
+    tests:
+      - {inputs: {D: 0.5}, expect: 0.5}
+      - {inputs: {D: 0.25}, expect: 0.25}
+
+  - id: boost.ccm.M
+    title: "Boost conversion ratio, CCM"
+    title_ko: "부스트(boost) 변환비, CCM"
+    lhs: M
+    expr: "1/(1 - D)"
+    symbols: {D: "duty ratio"}
+    assumptions: [ideal, ccm, steady_state, small_ripple]
+    convention: "$M = V/V_g$"
+    convention_ko: "$M = V/V_g$"
+    cite: {key: erickson2020, where: "Ch. 2"}
+    tests:
+      - {inputs: {D: 0.5}, expect: 2.0}
+      - {inputs: {D: 0.75}, expect: 4.0}

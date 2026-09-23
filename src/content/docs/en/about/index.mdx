@@ -1,0 +1,44 @@
+---
+title: About this project
+description: What this repository is, the rules it follows, and the build roadmap.
+sidebar:
+  order: 1
+---
+
+This is an open learning repository on power electronics for electrical
+engineers: switching-converter theory (CCM/DCM), topologies, magnetics, loss
+modeling and energy-harvesting interfaces, combined with calculators and an
+in-browser converter simulator.
+
+## Principles
+
+- **Verifiable end-to-end.** Every equation lives once, in
+  `packages/pe-core/equations/equations.yaml`. Its LaTeX is generated, its
+  derivation is reproduced in sympy, and the TypeScript engine that powers
+  the tools must agree with the Python reference on shared test vectors to
+  1e-9 relative.
+- **Cited.** Every equation and every device or method claim carries a key
+  from `references.bib`. Entries that are not yet verified cannot be cited on
+  a published page.
+- **Checked.** Math renders with KaTeX in strict mode, links are checked on
+  the built site, and a privacy scan runs in CI.
+- **Private data stays private.** No measured data, identifiers or sizing
+  choices from any real project; every number is textbook-canonical or
+  explicitly synthetic. See `PRIVACY_RULES.md` in the repository.
+- **Bilingual.** English is canonical; Korean mirrors the same pages.
+
+## Roadmap
+
+| Phase | Scope |
+| --- | --- |
+| 0 | Site scaffold, CI, deployment, equation pipeline skeleton |
+| 1 | Equation engine: full seed equation set, derivations, parity tests |
+| 2 | Core content: theory and the main topologies (EN, then KO) |
+| 3 | Time-domain simulator and design tools |
+| 4 | Magnetics, bench practice, energy harvesting, gotchas, resources |
+| 5 | LTspice/ngspice/CircuitJS library, missions, release |
+
+## Licences
+
+Documentation is licensed under CC BY-SA 4.0 (`LICENSE-DOCS`); code under
+the MIT licence (`LICENSE-CODE`).

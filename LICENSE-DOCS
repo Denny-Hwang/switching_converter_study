@@ -1,0 +1,21 @@
+Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+
+Copyright (c) 2026 switching_converter_study contributors
+
+Unless otherwise noted, the documentation and learning content of this
+repository is licensed under the Creative Commons Attribution-ShareAlike 4.0
+International License. This covers the prose content under src/content/,
+docs/, README.md, CONTRIBUTING.md and the other Markdown files, and the
+figures that accompany them.
+
+  Legal code: https://creativecommons.org/licenses/by-sa/4.0/legalcode
+  Deed:       https://creativecommons.org/licenses/by-sa/4.0/
+
+In short (the legal code governs): you may share and adapt the material for
+any purpose, provided you give appropriate credit, link to the license,
+indicate if changes were made, and distribute your contributions under the
+same license.
+
+Source code -- including packages/, python/, scripts/, src/components/,
+src/tools/, src/math/, the site configuration and the simulation netlists
+under sim/ -- is licensed under the MIT License; see LICENSE-CODE.
