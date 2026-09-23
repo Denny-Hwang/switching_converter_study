@@ -33,7 +33,8 @@ const source = citable(cite);
 const sourceHref = pageHref(locale, BIBLIOGRAPHY_SLUG, cite);
 
 const shown = rows.map((r) => {
-  let how: { text: string; href?: string };
+  // the source column: plain text, or a link; a note may carry symbols (n N_p)
+  let how: { text: string; href?: string; html?: string };
   if (r.kind === 'given') how = { text: t['worked.given'] };
   else if (r.kind === 'core') how = { text: source.label, href: sourceHref };
   else if (r.eq) {
@@ -43,7 +44,7 @@ const shown = rows.map((r) => {
       text: locale === 'ko' ? meta.title_ko : meta.title,
       href: home ? pageHref(locale, home, eqAnchor(r.eq)) : `${REPO_BLOB}/packages/pe-core/equations/equations.yaml#L${meta.yaml_line}`,
     };
-  } else how = { text: r.note ? r.note[locale] : '' };
+  } else how = { text: '', html: r.note ? symHtml(r.note[locale]) : '' };
   return {
     kind: r.kind,
     symbol: katex.renderToString(r.latex, katexOptions(false)),
@@ -69,7 +70,7 @@ const label = locale === 'ko' ? ex.label_ko : ex.label;
               <span set:html={r.symbol} /> <span class="pe-worked__meaning" set:html={r.meaning} />
             </td>
             <td class="pe-worked__value">{r.value}</td>
-            <td>{r.how.href ? <a href={r.how.href}>{r.how.text}</a> : r.how.text}</td>
+            <td>{r.how.href ? <a href={r.how.href}>{r.how.text}</a> : r.how.html !== undefined ? <span set:html={r.how.html} /> : r.how.text}</td>
           </tr>
         ))
       }

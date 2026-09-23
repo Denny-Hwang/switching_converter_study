@@ -201,6 +201,8 @@ export function toMagSpec(device: MagDevice, coreId: CoreChoice, arr: Arrangemen
   // a utilization of at most 1; copper's resistivity positive at the temperature
   if (!((core.Amin ?? core.Ae) <= core.Ae) || !(v('KuMax') <= 1) || !(1 + alpha * (v('Tw') - 20) > 0)) return null;
   if (!(v('oP') >= v('dP'))) return null;
+  // the half ripple rides on a dc current of at least zero, so it cannot exceed the peak
+  if (v('dI') > v('Ipk')) return null;
   const spec: MagSpec = {
     device,
     L: v('L'),
@@ -273,7 +275,10 @@ export function stateFromHash(h: URLSearchParams, presets: MagPreset[]): State {
   const core = (CORE_CHOICES as string[]).includes(h.get('core') ?? '') ? (h.get('core') as CoreChoice) : (base?.core ?? CORES[0]!.id);
   const arr = (ARRANGEMENTS as string[]).includes(h.get('arr') ?? '') ? (h.get('arr') as Arrangement) : (base?.arrangement ?? 'ps');
   let values: Record<string, string> = {};
-  for (const k of KEYS) values[k] = h.has(k) ? h.get(k)! : base?.values[k] !== undefined ? String(base.values[k]) : '';
+  for (const k of KEYS) values[k] = base?.values[k] !== undefined ? String(base.values[k]) : '';
+  // an own core's fields missing from the hash start from the preset's core
+  if (base) values = withCore(values, base.core);
+  for (const k of KEYS) if (h.has(k)) values[k] = h.get(k)!;
   if (core !== 'custom') values = withCore(values, core);
   return { device, core, arr, values };
 }

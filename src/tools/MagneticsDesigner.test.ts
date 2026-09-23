@@ -50,6 +50,7 @@ describe('magnetics-designer form', () => {
     expect(toMagSpec('inductor', 'custom', 'ps', { ...inductor, Amin: '0.0001' })).toBeNull(); // A_min above A_e
     expect(toMagSpec('inductor', 'e25', 'ps', { ...inductor, N: '17.5' })).toBeNull();
     expect(toMagSpec('flyback', 'etd29', 'ps', { ...flyback, IrmsS: '' })).toBeNull();
+    expect(toMagSpec('inductor', 'e25', 'ps', { ...inductor, dI: '2.5' })).toBeNull(); // half ripple above the peak
   });
 
   it('accepts the optional fields empty, and zero where zero means something', () => {
@@ -104,6 +105,14 @@ describe('magnetics-designer URL hash', () => {
     expect(back.arr).toBe('psp');
     expect(back.values.Ae).toBe('0.0001');
     expect(back.values.N).toBe('');
+  });
+
+  it('an own core missing from the hash starts from the preset core’s values', () => {
+    const s = stateFromHash(new URLSearchParams('core=custom&Ae=0.00006'), presets);
+    expect(s.core).toBe('custom');
+    expect(s.values.Ae).toBe('0.00006');
+    expect(s.values.le).toBe(inductor.le);
+    expect(resultOf(s.device, s.core, s.arr, s.values)).not.toBeNull();
   });
 
   it('a hash of another device takes that device’s preset for the fields it lacks', () => {
