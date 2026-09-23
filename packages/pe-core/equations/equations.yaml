@@ -162,7 +162,7 @@ symbol_table:
   A_w: {latex: "A_w", unit: "m²", desc: "bare conductor area of one turn", meaning: "bare conductor area of one turn", meaning_ko: "1턴의 도체 단면적(절연 제외)", range: [1.0e-9, 1.0e-5], scale: log}
   K_u: {latex: "K_u", unit: "1", desc: "window utilization: conductor area over window area", meaning: "window utilization", meaning_ko: "창 이용률(window utilization)"}
   R_dc: {latex: "R_\\mathrm{dc}", unit: "Ω", desc: "dc resistance of a winding", meaning: "winding dc resistance", meaning_ko: "권선 직류 저항"}
-  delta_s: {latex: "\\delta", unit: "m", desc: "skin (penetration) depth of a conductor", meaning: "skin depth", meaning_ko: "표피 깊이(skin depth)"}
+  delta_s: {latex: "\\delta", unit: "m", desc: "skin (penetration) depth of a conductor", meaning: "skin depth", meaning_ko: "표피 깊이(skin depth)", range: [1.0e-5, 1.0e-3], scale: log}
   phi_l: {latex: "\\varphi", unit: "1", desc: "conductor layer thickness over the skin depth, h/δ", meaning: "layer thickness over skin depth", meaning_ko: "층 두께 ÷ 표피 깊이", range: [0.1, 10], scale: log}
   M_l: {latex: "M_\\ell", unit: "1", desc: "number of layers in a winding portion, from zero MMF to its peak", meaning: "layers from zero to peak MMF", meaning_ko: "기자력 0에서 최대까지의 층 수", range: [1, 20]}
   F_R: {latex: "F_R", unit: "1", desc: "ac resistance factor: ac over dc resistance of a winding", meaning: "ac resistance factor", meaning_ko: "교류 저항 계수(ac resistance factor)"}
@@ -171,6 +171,13 @@ symbol_table:
   h_p: {latex: "h_p", unit: "m", desc: "height (build) of the primary winding", meaning: "primary winding height", meaning_ko: "1차 권선 높이", range: [1.0e-4, 0.01], scale: log}
   h_s: {latex: "h_s", unit: "m", desc: "height (build) of the secondary winding", meaning: "secondary winding height", meaning_ko: "2차 권선 높이", range: [1.0e-4, 0.01], scale: log}
   h_g: {latex: "h_g", unit: "m", desc: "spacing between the windings (insulation)", meaning: "spacing between the windings", meaning_ko: "권선 사이 간격", range: [0, 0.005]}
+  rho_20: {latex: "\\rho_{20}", unit: "Ω·m", desc: "resistivity of the conductor at 20 °C (annealed copper: 1.7241e-8 Ω·m)", meaning: "resistivity at 20 °C", meaning_ko: "20 °C 저항률(resistivity)", range: [1.5e-8, 3.0e-8]}
+  alpha_20: {latex: "\\alpha_{20}", unit: "1/K", desc: "temperature coefficient of resistance at 20 °C (annealed copper: 0.00393 per kelvin)", meaning: "temperature coefficient at 20 °C", meaning_ko: "20 °C 저항 온도 계수(temperature coefficient)", range: [0.003, 0.0045]}
+  T_w: {latex: "T_w", unit: "°C", desc: "temperature of the winding", meaning: "winding temperature", meaning_ko: "권선 온도", range: [-40, 150]}
+  d_w: {latex: "d_w", unit: "m", desc: "diameter of one bare round strand", meaning: "bare wire diameter", meaning_ko: "나선(bare wire) 지름", range: [5.0e-5, 2.0e-3], scale: log}
+  k_s: {latex: "k_s", unit: "1", desc: "round strands in parallel in one turn", meaning: "strands in parallel", meaning_ko: "병렬 소선 수", range: [1, 20]}
+  N_l: {latex: "N_\\ell", unit: "1", desc: "turns in one layer of a winding", meaning: "turns per layer", meaning_ko: "층당 턴 수", range: [1, 100]}
+  eta_p: {latex: "\\eta", unit: "1", desc: "porosity (layer copper factor): the share of the winding breadth the conductors of a layer take, each round conductor replaced by a square one of the same area", meaning: "porosity of a layer", meaning_ko: "층의 점유율(porosity)", range: [0.1, 1]}
   # --- refreshers (00-foundations, 01-physics) ----------------------------------
   t: {latex: "t", unit: "s", desc: "duration of a constant excitation", meaning: "duration", meaning_ko: "지속 시간", range: [1.0e-7, 1.0e-3], scale: log}
   V_L: {latex: "V_L", unit: "V", desc: "constant voltage across an inductor", meaning: "inductor voltage", meaning_ko: "인덕터 전압", range: [0.1, 400], scale: log}
@@ -250,6 +257,8 @@ assumption_labels:
   uniform_dc_current: {en: "a dc current spread uniformly over the conductor's cross-section", ko: "도체 단면 전체에 고르게 흐르는 직류 전류"}
   window_field: {en: "one-dimensional field in the winding window: the MMF changes only across the layers, and the field runs along the winding breadth", ko: "권선 창 안의 1차원 자계: 기자력은 층을 가로지르는 방향으로만 변하고, 자계는 권선 폭 방향으로 향함"}
   dowell_layers: {en: "foil layers spanning the winding breadth, a sinusoidal current, and a one-dimensional field in the window", ko: "권선 폭 전체에 걸친 박판(foil) 층, 정현파 전류, 권선 창 안의 1차원 자계"}
+  linear_temperature: {en: "resistance linear in temperature near 20 °C", ko: "20 °C 부근에서 온도에 선형인 저항"}
+  square_equivalent: {en: "each round conductor replaced by a square conductor of the same area, the layer by a foil of that thickness", ko: "둥근 도체를 같은 면적의 정사각형 도체로, 층을 그 두께의 박판(foil)으로 대치"}
   fixed_clamp: {en: "a clamp whose voltage does not depend on the power it absorbs (a TVS or Zener clamp)", ko: "흡수하는 전력에 따라 전압이 변하지 않는 클램프(TVS 또는 제너 클램프)"}
 
 equations:
@@ -1097,6 +1106,66 @@ equations:
     derived_by: python/pe_core/derive/windings.py
     tests:
       - {inputs: {N: 20.0, MLT: 0.05, h_p: 1.0e-3, h_g: 2.0e-4, h_s: 1.0e-3, b_w: 0.02}, expect: 3.3510321638291e-7}
+
+  - id: wind.rho_T
+    title: "Resistivity of a conductor at its temperature"
+    title_ko: "온도에 따른 도체의 저항률"
+    lhs: rho_w
+    expr: "rho_20*(1 + alpha_20*(T_w - 20))"
+    symbols: {rho_20: "resistivity at 20 °C", alpha_20: "temperature coefficient at 20 °C", T_w: "conductor temperature (°C)"}
+    assumptions: [linear_temperature]
+    notes: "for annealed copper $\\rho_{20} = 1.7241 \\times 10^{-8}\\,\\Omega\\,\\mathrm{m}$ and $\\alpha_{20} = 0.00393$ per kelvin; a winding at 100 °C has about 31 % more resistance than at 20 °C"
+    notes_ko: "풀림 구리는 $\\rho_{20} = 1.7241 \\times 10^{-8}\\,\\Omega\\,\\mathrm{m}$, $\\alpha_{20} = 0.00393$ (켈빈당); 100 °C의 권선은 20 °C일 때보다 저항이 약 31 % 크다"
+    cite: {key: nbs_hb100}
+    tests:
+      - {inputs: {rho_20: 1.7241e-8, alpha_20: 0.00393, T_w: 100.0}, expect: 2.26615704e-8}
+      - {inputs: {rho_20: 1.7241e-8, alpha_20: 0.00393, T_w: 20.0}, expect: 1.7241e-8}
+
+  - id: wind.round_area
+    title: "Copper area of one turn of round strands"
+    title_ko: "둥근 소선으로 감은 1턴의 구리 단면적"
+    lhs: A_w
+    expr: "k_s*pi*d_w**2/4"
+    symbols: {k_s: "strands in parallel", d_w: "bare diameter of one strand"}
+    assumptions: [definition]
+    notes: "the bare diameter, without the insulation; wire tables give both"
+    notes_ko: "절연을 뺀 나선 지름; 전선 표에는 두 지름이 모두 나온다"
+    cite: {key: nbs_hb100}
+    tests:
+      - {inputs: {k_s: 1.0, d_w: 5.0e-4}, expect: 1.96349540849362077e-7}
+      - {inputs: {k_s: 3.0, d_w: 3.0e-4}, expect: 2.12057504117311044e-7}
+
+  - id: wind.porosity
+    title: "Porosity of a layer of round conductors"
+    title_ko: "둥근 도체 층의 점유율(porosity)"
+    lhs: eta_p
+    expr: "N_l*k_s*sqrt(pi/4)*d_w/b_w"
+    symbols: {N_l: "turns in the layer", k_s: "strands in parallel", d_w: "bare diameter of one strand", b_w: "winding breadth"}
+    assumptions: [square_equivalent]
+    notes: "a square of side $\\sqrt{\\pi/4}\\,d_w$ has the strand's area; a layer whose squares fill the whole breadth has porosity 1, and a value above 1 means the turns do not fit in the layer"
+    notes_ko: "한 변이 $\\sqrt{\\pi/4}\\,d_w$인 정사각형이 소선과 같은 면적이다; 정사각형들이 폭 전체를 채우면 점유율은 1이며, 1보다 크면 그 턴들이 한 층에 들어가지 않는다"
+    cite:
+      - {key: dowell1966}
+      - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: foil windings and layers)"}
+    tests:
+      - {inputs: {N_l: 20.0, k_s: 1.0, d_w: 5.0e-4, b_w: 0.0125}, expect: 0.708981540362206411}
+      - {inputs: {N_l: 12.0, k_s: 2.0, d_w: 3.0e-4, b_w: 0.02}, expect: 0.319041693162992885}
+
+  - id: wind.phi_round
+    title: "Dowell's layer thickness for round conductors"
+    title_ko: "둥근 도체에 대한 Dowell의 층 두께 변수"
+    lhs: phi_l
+    expr: "sqrt(eta_p)*sqrt(pi/4)*d_w/delta_s"
+    symbols: {eta_p: "porosity of the layer", d_w: "bare diameter of one strand", delta_s: "skin depth"}
+    assumptions: [square_equivalent]
+    notes: "the equivalent foil is $\\sqrt{\\pi/4}\\,d_w$ thick; its gaps lower its effective conductivity by the porosity, which enters as $\\sqrt{\\eta}$"
+    notes_ko: "등가 박판의 두께는 $\\sqrt{\\pi/4}\\,d_w$이다; 도체 사이의 틈은 유효 전도율을 점유율만큼 낮추며, 이는 $\\sqrt{\\eta}$로 들어간다"
+    cite:
+      - {key: dowell1966}
+      - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: foil windings and layers)"}
+    tests:
+      - {inputs: {eta_p: 0.7, d_w: 5.0e-4, delta_s: 2.0897837969378229e-4}, expect: 1.77403673062017143}
+      - {inputs: {eta_p: 1.0, d_w: 1.0e-3, delta_s: 6.6084766156383301e-5}, expect: 13.4104571597573101}
 
   # =========================================================================
   # Sources, extraction, sensing

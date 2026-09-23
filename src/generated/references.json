@@ -92,6 +92,19 @@
       "kind": "Literature number",
       "url": "https://www.ti.com/lit/pdf/slup132"
     },
+    "nbs_hb100": {
+      "key": "nbs_hb100",
+      "type": "manual",
+      "label": "National Bureau of Standards 1966",
+      "authors": [],
+      "title": "Copper Wire Tables",
+      "verified": true,
+      "organization": "National Bureau of Standards",
+      "number": "100",
+      "year": "1966",
+      "kind": "Handbook",
+      "url": "https://nvlpubs.nist.gov/nistpubs/Legacy/hb/nbshandbook100.pdf"
+    },
     "balogh2018": {
       "key": "balogh2018",
       "type": "techreport",

@@ -114,6 +114,10 @@ const base: Readonly<Record<string, Evaluator>> = {
   'xfmr.leakage.psp': eq(['N', 'MLT', 'h_p', 'h_g', 'h_s', 'b_w'], ({ N, MLT, h_p, h_g, h_s, b_w }) =>
     (MU_0 * sq(N) * MLT * (h_p / 3 + 2 * h_g + h_s / 3)) / (4 * b_w),
   ),
+  'wind.rho_T': eq(['rho_20', 'alpha_20', 'T_w'], ({ rho_20, alpha_20, T_w }) => rho_20 * (1 + alpha_20 * (T_w - 20))),
+  'wind.round_area': eq(['k_s', 'd_w'], ({ k_s, d_w }) => (k_s * Math.PI * sq(d_w)) / 4),
+  'wind.porosity': eq(['N_l', 'k_s', 'd_w', 'b_w'], ({ N_l, k_s, d_w, b_w }) => (N_l * k_s * Math.sqrt(Math.PI / 4) * d_w) / b_w),
+  'wind.phi_round': eq(['eta_p', 'd_w', 'delta_s'], ({ eta_p, d_w, delta_s }) => (Math.sqrt(eta_p) * Math.sqrt(Math.PI / 4) * d_w) / delta_s),
 
   // --- sources, extraction, sensing -----------------------------------------
   'src.Pmax': eq(['V_oc', 'R_s'], ({ V_oc, R_s }) => sq(V_oc) / (4 * R_s)),
