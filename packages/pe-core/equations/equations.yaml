@@ -1093,7 +1093,7 @@ equations:
     assumptions: [ideal_amplifier]
     notes: "the amplifier multiplies the sense voltage by its gain and adds the REF voltage, so a current of either sign swings the output either side of $V_\\mathrm{REF}$; the output cannot quite reach the supply rails"
     notes_ko: "증폭기가 센스 전압에 이득을 곱하고 REF 전압을 더하므로, 전류의 부호에 따라 출력이 $V_\\mathrm{REF}$ 위아래로 움직인다; 출력은 전원 레일까지 완전히 올라가지 못한다"
-    cite: {key: ti_ina181, where: "Equation 1 (output voltage from the load current, the sense resistor, the gain and V_REF)"}
+    cite: {key: ti_ina181, where: "Equation 1, from its definitions of the load current, the sense resistor, the gain and the REF voltage"}
     derived_by: python/pe_core/derive/sensing.py
     tests:
       - {inputs: {G_sense: 50.0, I_SENSE: 2.0, R_SENSE: 0.01, V_REF: 0.0}, expect: 1.0}

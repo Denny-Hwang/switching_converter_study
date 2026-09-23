@@ -116,9 +116,9 @@
   number      = {SSZTCV6},
   year        = {2024},
   url         = {https://www.ti.com/lit/pdf/ssztcv6},
-  note        = {verified 2026-09-23 (two web-search rounds; ti.com/lit/pdf/ssztcv6, "Technical Article Snubbing the flyback converter Robert Kollman", SSZTCV6, February 2024, a republication of EDN "Power Tips #17"; cited for: the leakage inductance drives the drain above the reflected output voltage until a clamp limits it; the clamp absorbs the average clamp-diode current times the clamp voltage, always more than the leakage energy, "At a Vclamp/Vreset ratio of 1.5, snubber dissipation is almost three times the loss associated with the leakage inductance stored energy", tending to the leakage energy at high clamp voltage; the trade-off between clamp voltage and loss. The closed form in equations.yaml is derived here, not quoted)},
+  note        = {verified 2026-09-23 (two web-search rounds; ti.com/lit/pdf/ssztcv6, "Technical Article Snubbing the flyback converter Robert Kollman", SSZTCV6, February 2024, a republication of EDN "Power Tips #17"; cited for: the leakage inductance drives the drain above the reflected output voltage until a clamp limits it; the clamp absorbs the average clamp-diode current times the clamp voltage, always more than the leakage energy, "the snubber dissipation increases dramatically": "at a Vclamp/Vreset ratio of 1.5 it is almost three times the loss associated with the leakage inductance stored energy" (wording as the CI check reads it in the PDF), tending to the leakage energy at high clamp voltage; the trade-off between clamp voltage and loss. The closed form in equations.yaml is derived here, not quoted)},
   urltitle    = {Snubbing the flyback converter},
-  urlquotes   = {snubber dissipation is almost three times the loss associated with the leakage inductance stored energy},
+  urlquotes   = {at a Vclamp/Vreset ratio of 1.5 it is almost three times the loss associated with the leakage inductance stored energy},
   urlkind     = {pdf}
 }
 
@@ -165,10 +165,10 @@
   type         = {Data sheet},
   number       = {SBOS793H},
   year         = {2023},
-  note         = {verified 2026-09-23 (two independent web-search rounds; ti.com could not be opened from the sandbox; the CI URL check opens it and matches urltitle in the PDF): "INAx181 Bidirectional, Low- and High-Side Voltage Output, Current-Sense Amplifiers" (plural in Rev H; earlier revisions singular), SBOS793H, April 2017, revised November 2023; cited for: four fixed gains, 20, 50, 100 and 200 V/V; the output voltage from the load current, the sense resistor, the gain and the voltage on the REF pin (V_OUT = I_LOAD R_SENSE GAIN + V_REF, its Equation 1; the variables and the REF offset confirmed, the formula read from them); the output swing to within 30 mV of the supply and 5 mV of ground (maximum); "a large sense resistor maximizes the differential input signal ... and reduces the error contribution of the offset voltage"},
+  note         = {verified 2026-09-23 (two independent web-search rounds; ti.com could not be opened from the sandbox; the CI URL check opens it and matches urltitle in the PDF): "INAx181 Bidirectional, Low- and High-Side Voltage Output, Current-Sense Amplifiers" (plural in Rev H; earlier revisions singular), SBOS793H, April 2017, revised November 2023; cited for: four fixed gains, 20, 50, 100 and 200 V/V; the output voltage from the load current, the sense resistor, the gain and the voltage on the REF pin (V_OUT = I_LOAD R_SENSE GAIN + V_REF, its Equation 1; the PDF sets its equations so that they do not extract as text, so the CI check confirms the variables' definitions around them, and the formula is read from those); the output swing to within 30 mV of the supply and 5 mV of ground (maximum); "a large sense resistor maximizes the differential input signal ... and reduces the error contribution of the offset voltage"},
   url          = {https://www.ti.com/lit/ds/symlink/ina181.pdf},
   urltitle     = {Bidirectional, Low- and High-Side Voltage Output, Current-Sense Amplifiers},
-  urlquotes    = {VOUT = (ILOAD × RSENSE × GAIN) + VREF | is the voltage applied to the REF pin | maximum specified output swing to the positive rail | maximizes the differential input signal},
+  urlquotes    = {is the load current to be monitored | is the gain option of the selected device | is the voltage applied to the REF pin | maximum specified output swing to the positive rail | maximizes the differential input signal},
   urlkind      = {pdf}
 }
 

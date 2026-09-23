@@ -3714,7 +3714,7 @@
       "cites": [
         {
           "key": "ti_ina181",
-          "where": "Equation 1 (output voltage from the load current, the sense resistor, the gain and V_REF)"
+          "where": "Equation 1, from its definitions of the load current, the sense resistor, the gain and the REF voltage"
         }
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
