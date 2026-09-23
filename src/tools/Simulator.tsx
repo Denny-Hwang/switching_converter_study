@@ -271,8 +271,11 @@ export function nextAnchor(anchor: number | undefined, raw: string): number | un
   return anchor;
 }
 
-function initialState(presets: SimPreset[]): { fs: FieldState; values: Record<string, string> } {
-  const h = readHash();
+/**
+ * The simulator's state from a URL hash: a field missing from the hash takes
+ * the topology's preset, a field present but empty stays empty (an ideal part).
+ */
+export function stateFromHash(h: URLSearchParams, presets: SimPreset[]): { fs: FieldState; values: Record<string, string> } {
   const first = presets[0];
   const topo = (TOPOLOGIES as string[]).includes(h.get('topo') ?? '') ? (h.get('topo') as Topology) : (first?.topology ?? 'buck');
   const base = presets.find((p) => p.topology === topo) ?? first;
@@ -282,6 +285,17 @@ function initialState(presets: SimPreset[]): { fs: FieldState; values: Record<st
     fs: { topo, load: h.get('load') === 'fixed' ? 'fixed' : 'res', source: h.get('src') === '1' },
     values,
   };
+}
+
+/** The URL hash of the form: every shown field, an empty one as `key=`. */
+export function hashOf(fs: FieldState, values: Record<string, string>): string {
+  const q = new URLSearchParams({ topo: fs.topo, load: fs.load, src: fs.source ? '1' : '0' });
+  for (const f of FIELDS) if (f.show(fs)) q.set(f.key, values[f.key] ?? '');
+  return q.toString();
+}
+
+function initialState(presets: SimPreset[]): { fs: FieldState; values: Record<string, string> } {
+  return stateFromHash(readHash(), presets);
 }
 
 type Done = (result: SimResult | null, error: string | null) => void;
@@ -356,9 +370,7 @@ export default function Simulator({ labels, presets }: Props) {
 
   // URL hash = state
   useEffect(() => {
-    const q = new URLSearchParams({ topo: fstate.topo, load: fstate.load, src: fstate.source ? '1' : '0' });
-    for (const f of FIELDS) if (f.show(fstate) && (values[f.key] ?? '') !== '') q.set(f.key, values[f.key]!);
-    window.history.replaceState(null, '', `#${q.toString()}`);
+    window.history.replaceState(null, '', `#${hashOf(fstate, values)}`);
   }, [fstate, values]);
 
   // simulate (debounced, in a worker; "Simulating…" appears only for a slow run)

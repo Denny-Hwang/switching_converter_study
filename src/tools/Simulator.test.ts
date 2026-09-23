@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sim } from 'pe-core';
-import { compareRows, fromSlider, nextAnchor, parseField, sliderAnchors, toParams } from './Simulator';
+import { compareRows, fromSlider, hashOf, nextAnchor, parseField, sliderAnchors, stateFromHash, toParams, type SimPreset } from './Simulator';
 
 const buck = { topo: 'buck' as const, load: 'res' as const, source: false };
 const values = { Vg: '24', D: '0.5', fs: '100000', L: '0.0001', R: '10', C: '0.00001' };
@@ -136,5 +136,22 @@ describe('compare panel', () => {
     const m = compareRows(r).find((x) => x.label === '|M|')!;
     expect(m.eq).toBe('boost.ccm.M_RL');
     expect(Math.abs(m.sim - m.formula) / m.formula).toBeLessThan(0.005);
+  });
+});
+
+describe('simulator URL hash', () => {
+  const presets: SimPreset[] = [
+    { id: 'b', label: 'b', topology: 'buck', values: { Vg: 24, D: 0.5, fs: 1e5, L: 1e-4, R: 10, C: 1e-5, Ron: 0.05, RL: 0.02 } },
+  ];
+
+  it('an emptied non-ideal part stays empty (ideal) through the hash; a missing one takes the preset', () => {
+    const values: Record<string, string> = { Vg: '24', D: '0.5', fs: '100000', L: '0.0001', R: '10', C: '0.00001', Ron: '', RL: '0.02' };
+    const back = stateFromHash(new URLSearchParams(hashOf(buck, values)), presets);
+    expect(back.fs).toEqual(buck);
+    expect(back.values.Ron).toBe('');
+    expect(back.values.RL).toBe('0.02');
+    expect(toParams(back.fs, back.values)).toEqual(toParams(buck, values));
+    // a link that names only some fields (a "Try it" link) takes the rest from the preset
+    expect(stateFromHash(new URLSearchParams('topo=buck&D=0.4'), presets).values.Ron).toBe('0.05');
   });
 });
