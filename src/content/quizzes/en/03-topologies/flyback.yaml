@@ -33,14 +33,14 @@ questions:
       - 'It is proportional to $n^2$'
     answer: 2
     explain: 'In DCM the energy stored per period in $L_M$ is delivered to the load whatever the turns ratio, and the ratio is $D/\sqrt{K}$.'
-  - q: 'A flyback has $2\,\mu\mathrm{H}$ of leakage inductance and turns off $3\,\mathrm{A}$ at $100\,\mathrm{kHz}$. At least how much power must the clamp dissipate?'
+  - q: 'A flyback has $2\,\mu\mathrm{H}$ of leakage inductance and turns off $3\,\mathrm{A}$ at $100\,\mathrm{kHz}$. At least how much power must a dissipative clamp dissipate?'
     options:
       - '$0.09\,\mathrm{W}$'
       - '$0.45\,\mathrm{W}$'
       - '$0.9\,\mathrm{W}$'
       - '$1.8\,\mathrm{W}$'
     answer: 2
-    explain: 'The leakage stores half of $L_\mathrm{lk}$ times the square of the current, $9\,\mu\mathrm{J}$ per turn-off, and that happens once per period.'
+    explain: 'The leakage stores half of $L_\mathrm{lk}$ times the square of the current, $9\,\mu\mathrm{J}$ per turn-off, and that happens once per period. A dissipative clamp turns all of it into heat.'
   - q: 'A fixed-duty-ratio flyback charges a battery from a current-limited source. The source voltage stops rising at one value. Why?'
     options:
       - 'The source reaches its current limit'

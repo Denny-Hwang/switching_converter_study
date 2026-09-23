@@ -77,8 +77,10 @@ resistor, LFR)처럼 동작합니다(<EqRef id="dcm.P_in" label="DCM 입력 전�
 
 <Eq id="flyback.leak.E" />
 
-클램프(clamp)나 스너버(snubber)가 매 주기 이 에너지를 흡수해야 하며, 이것이 그
-손실 전력의 하한을 정합니다.
+클램프(clamp)나 스너버(snubber)가 매 주기 이 에너지를 받아야 합니다. 소산형
+클램프(dissipative clamp)는 이 에너지를 열로 바꾸므로, 그 결과로 생기는 전력은
+클램프 손실의 하한입니다. 에너지를 입력이나 출력으로 되돌리는 클램프는 이 전력을
+소산하지 않고 처리합니다.
 
 <Eq id="flyback.leak.P" />
 
@@ -111,7 +113,7 @@ resistor, LFR)처럼 동작합니다(<EqRef id="dcm.P_in" label="DCM 입력 전�
 CCM 예제에서는 반사 전압이 입력 전압에 더해지므로, 스위치가 차단하는 전압은
 <Val example="flyback-ccm" name="V_DS" />인 반면 입력은 <Val example="flyback-ccm" name="V_g" />입니다.
 DCM 예제에서는 <Val example="flyback-dcm" name="L_lk" />의 누설 인덕턴스만으로도
-클램프가 소모해야 하는 전력이 최소 <Val example="flyback-dcm" name="P_lk" />입니다.
+소산형 클램프의 손실이 최소 <Val example="flyback-dcm" name="P_lk" />입니다.
 
 ## 직접 해 보기
 
@@ -133,8 +135,9 @@ DCM에서는 2차 측 전류가 0에 도달한 뒤의 링잉(ringing)이 나타�
 ## 주의할 점
 
 - **누설 에너지는 어딘가로 가야 합니다.** 클램프나 스너버가 없으면 턴오프
-  스파이크는 무언가가 항복(breakdown)할 때까지 상승하고, 클램프나 스너버가 있으면
-  클램프가 적어도 앞에서 구한 누설 전력을 소모합니다 <Cite key="erickson2020" where="Ch. 4" />.
+  스파이크는 무언가가 항복(breakdown)할 때까지 상승합니다. 소산형 클램프는 적어도
+  앞에서 구한 누설 전력을 잃으며, 에너지를 회수하는 클램프도 이 전력을 처리할 수
+  있는 정격을 갖추어야 합니다 <Cite key="erickson2020" where="Ch. 4" />.
 - **개루프(open-loop) 플라이백은 부하를 잃어서는 안 됩니다.** DCM에서는 부하가
   제거되면 출력이 상승하고(<EqRef id="flyback.dcm.M" label="DCM 변환비" />는 $K$가
   작아질수록 커집니다), 그와 함께 반사 전압도 상승하며, 이 상승은 클램프가 스위치

@@ -80,8 +80,10 @@ output <Cite key="erickson2020" where="Ch. 4" />:
 
 <Eq id="flyback.leak.E" />
 
-A clamp or snubber must absorb this energy in every period, which sets a
-lower bound on its dissipation:
+A clamp or snubber must take this energy in every period. A dissipative
+clamp turns it into heat, so the resulting power is a lower bound on the
+clamp's loss; a clamp that returns the energy to the input or the output
+processes this power without dissipating it:
 
 <Eq id="flyback.leak.P" />
 
@@ -113,8 +115,8 @@ one charging a fixed output at a fixed duty ratio.
 In the CCM example the reflected voltage adds to the input, so the switch
 blocks <Val example="flyback-ccm" name="V_DS" /> although the input is
 <Val example="flyback-ccm" name="V_g" />. In the DCM example the leakage
-inductance of <Val example="flyback-dcm" name="L_lk" /> alone forces the clamp
-to dissipate at least <Val example="flyback-dcm" name="P_lk" />.
+inductance of <Val example="flyback-dcm" name="L_lk" /> alone means that a
+dissipative clamp loses at least <Val example="flyback-dcm" name="P_lk" />.
 
 ## Try it
 
@@ -136,9 +138,9 @@ the measured input and output voltages.
 ## Gotchas
 
 - **The leakage energy has to go somewhere.** Without a clamp or snubber the
-  turn-off spike rises until something breaks down; with one, the clamp
-  dissipates at least the leakage power above
-  <Cite key="erickson2020" where="Ch. 4" />.
+  turn-off spike rises until something breaks down. A dissipative clamp loses
+  at least the leakage power above, and a clamp that recovers the energy must
+  still be rated to process it <Cite key="erickson2020" where="Ch. 4" />.
 - **An open-loop flyback must not lose its load.** In DCM the output rises as
   the load is removed (<EqRef id="flyback.dcm.M" label="DCM ratio" /> grows
   as $K$ falls), and with it the reflected voltage, until the clamp limits the

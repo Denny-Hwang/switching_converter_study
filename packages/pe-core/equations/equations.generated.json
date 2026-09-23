@@ -1914,8 +1914,8 @@
       ],
       "convention": "",
       "convention_ko": "",
-      "notes": "a lower bound for the clamp dissipation; a clamp that also absorbs reflected-voltage energy dissipates more",
-      "notes_ko": "클램프 손실의 하한; 반사 전압 에너지까지 흡수하는 클램프는 더 많이 소산함",
+      "notes": "a lower bound for the loss of a dissipative clamp, which also absorbs energy from the reflected voltage and so dissipates more; a clamp that returns the energy to the input or the output processes this power instead of dissipating it",
+      "notes_ko": "소산형 클램프 손실의 하한이다. 소산형 클램프는 반사 전압의 에너지도 흡수하므로 더 많이 소산한다. 에너지를 입력이나 출력으로 되돌리는 클램프는 이 전력을 소산하지 않고 처리한다",
       "cites": [
         {
           "key": "erickson2020",
