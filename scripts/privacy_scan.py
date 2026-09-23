@@ -38,9 +38,9 @@ SKIP_FILES = {"package-lock.json"}
 
 EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 EMAIL_OK = re.compile(r"(^|[._-])no-?reply@|@users\.noreply\.github\.com$", re.I)
-# e.g. "12 V", "3.3µH", "100 kHz", "10 mΩ", "1 MΩ", "25 °C", "-40 °C"
+# e.g. "12 V", "3.3µH", "100 kHz", "10 mΩ", "1 MΩ", "25 °C", "-40 °C", "1e5 Hz"
 NUM_UNIT = re.compile(
-    r"(?<![\w.])[-+−]?\d+(?:[.,]\d+)?\s?(?:[kMGmµunp]?(?:V|A|W|Ω|Hz|H|F|J|C)|°C|ohms?)(?![\w])"
+    r"(?<![\w.])[-+−]?\d+(?:[.,]\d+)?(?:[eE][-+−]?\d+)?\s?(?:[kMGmµunp]?(?:V|A|W|Ω|Hz|H|F|J|C)|°C|ohms?)(?![\w])"
 )
 
 
