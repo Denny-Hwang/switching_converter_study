@@ -1,12 +1,14 @@
 /**
  * The sense chain (docs/BUILD_SPEC.md section 5, SenseChain): a shunt, a
  * current-output or voltage-output sense amplifier, an R-C filter and an ADC,
- * checked from zero to the largest current. Every formula is a catalogue
- * equation:
+ * checked from zero to the largest current. Every physical relation is a
+ * catalogue equation (the comparisons, and the solve for a current, are
+ * arithmetic on them):
  *
  *   sense voltage (burden)      sense.burden, and the shunt's dissipation loss.cond
  *   amplifier output            sense.current_out_monitor or sense.voltage_out_monitor
- *   full-scale current, floor   the output equation solved for the current (invert)
+ *   what the amplifier reads    sense.reading (the pad resistance and the offset)
+ *   full-scale current, floor   the output at sense.reading, solved for the current
  *   offset-equivalent current   sense.offset_current
  *   pad error                   sense.pad_error
  *   error of the reading        sense.rel_error (offset and pad together)
@@ -14,11 +16,12 @@
  *                               rc.gain at the Nyquist frequency
  *
  * The chain measures currents from zero up; a voltage-output amplifier's REF
- * voltage sets its output at zero current.
+ * voltage sets its output at zero current. The limits are checked at the worst
+ * case: the output with the pad resistance and the offset's magnitude at the
+ * sign that raises it (clipping, full scale) or lowers it (the floor).
  */
 
-import { evaluate, type Inputs } from './equations';
-import { invert, InvertError } from './invert';
+import { evaluate } from './equations';
 
 export type MonitorKind = 'current' | 'voltage';
 
@@ -43,11 +46,14 @@ export interface SenseSpec {
   /** R-C filter between the amplifier and the ADC (ohm, F); a zero capacitance means no filter. */
   Rf: number;
   Cf: number;
+  /** Converter's switching frequency (Hz), whose ripple the filter should keep from the ADC; optional. */
+  fsw?: number;
   /** Largest acceptable relative error at the smallest current (for example 0.01). */
   errMax: number;
 }
 
 export type SenseWarning =
+  | 'noRange' // the highest output reaches its limit at or below the current where the lowest output leaves the floor
   | 'ampClips' // the amplifier's output would exceed its largest output voltage below the largest current
   | 'adcClips' // the output would exceed the ADC's full scale below the largest current
   | 'floor' // the output at the smallest current lies below the lowest output the amplifier reaches
@@ -62,18 +68,20 @@ export interface SenseResult {
   spec: SenseSpec;
   /** Change of the output voltage per ampere (V/A). */
   gain: number;
-  /** Output voltage at zero current and at the largest current (V). */
+  /** Nominal output voltage (no offset, no pad resistance) at zero current and at the largest current (V). */
   Vout0: number;
   VoutImax: number;
-  /** The output at the largest current as a share of the ADC's full scale. */
+  /** Highest output at the largest current: with the pad resistance and the offset at the sign that raises it (V). */
+  VoutHi: number;
+  /** The highest output at the largest current, within the amplifier's range, as a share of the ADC's full scale. */
   adcUse: number;
   /** Sense voltage and shunt dissipation at the largest current. */
   Vsense: number;
   Pshunt: number;
-  /** Current at which the output reaches the lower of the amplifier's limit and the ADC's full scale (A), and which limit that is. */
+  /** Current at which the highest output reaches the lower of the amplifier's limit and the ADC's full scale (A), and which limit that is. */
   Ifs: number;
   limit: 'amp' | 'adc';
-  /** Current below which the output stays at the amplifier's lowest output (A; 0 when the output starts above it). */
+  /** Current below which the lowest output (the offset at the sign that lowers it) can stay at the amplifier's lowest output (A; 0 when it starts above it). */
   Ifloor: number;
   /** Offset-equivalent current (A), and the relative error it causes at the smallest current. */
   Ios: number;
@@ -87,6 +95,8 @@ export interface SenseResult {
   fc: number;
   fN: number;
   gainAtNyquist: number;
+  /** The filter's gain at the switching frequency, when one is given. */
+  gainAtFsw?: number;
   warnings: SenseWarning[];
 }
 
@@ -103,34 +113,49 @@ function relError(s: SenseSpec, I: number, Rpad: number): number {
   return evaluate('sense.rel_error', { V_OS: s.Vos, I_SENSE: I, R_SENSE: s.Rsense, R_pad: Rpad });
 }
 
-/** The current at which the output reaches the voltage V (the output equation solved for the current); 0 if the output starts at or above V. */
-export function currentAt(s: SenseSpec, V: number): number {
-  const m = s.monitor;
-  const [id, inputs]: [string, Inputs] =
-    m.kind === 'current'
-      ? ['sense.current_out_monitor', { R_SENSE: s.Rsense, R_OUT: m.Rout, R_IN: m.Rin }]
-      : ['sense.voltage_out_monitor', { G_sense: m.G, R_SENSE: s.Rsense, V_REF: m.Vref }];
-  if (!(V > monitorOutput(s, 0))) return 0;
-  // the output rises with the current: bracket around the largest current, widening as needed
+/** The offset's sign for a worst case: +1 raises the output (clipping, full scale), -1 lowers it (the floor). */
+export type OffsetSign = 1 | -1;
+
+/** The current the amplifier reads at the true current I (sense.reading): with the pad resistance, and the offset's magnitude at the sign given. */
+export function readingAt(s: SenseSpec, I: number, sign: OffsetSign): number {
+  return evaluate('sense.reading', { I_SENSE: I, R_SENSE: s.Rsense, R_pad: s.Rpad, V_OS: sign * s.Vos });
+}
+
+/** The amplifier's output at the true current I, at its highest (+1) or lowest (-1), before its output limits. */
+export function outputAt(s: SenseSpec, I: number, sign: OffsetSign): number {
+  return monitorOutput(s, readingAt(s, I, sign));
+}
+
+/**
+ * The true current at which the output, at the worst case given, reaches the
+ * voltage V: 0 when it is there already at zero current, infinity when it
+ * never gets there. The output rises with the current (bisection).
+ */
+export function currentAt(s: SenseSpec, V: number, sign: OffsetSign): number {
+  const f = (I: number) => outputAt(s, I, sign);
+  if (!(f(0) < V)) return 0;
   let hi = Math.max(s.Imax, 1e-12);
-  for (let k = 0; k < 60 && monitorOutput(s, hi) < V; k++) hi *= 4;
-  try {
-    return invert(id, 'I_SENSE', V, inputs, hi * 1e-15, hi);
-  } catch (e) {
-    if (e instanceof InvertError) return 0;
-    throw e;
+  for (let k = 0; k < 400 && f(hi) < V; k++) hi *= 2;
+  if (!(f(hi) >= V)) return Number.POSITIVE_INFINITY;
+  let lo = 0;
+  for (let k = 0; k < 200 && hi - lo > 1e-15 * hi; k++) {
+    const mid = 0.5 * (lo + hi);
+    if (f(mid) < V) lo = mid;
+    else hi = mid;
   }
+  return 0.5 * (lo + hi);
 }
 
 export function senseChain(s: SenseSpec): SenseResult {
   const Vout0 = monitorOutput(s, 0);
   const VoutImax = monitorOutput(s, s.Imax);
   const gain = (VoutImax - Vout0) / s.Imax;
+  const VoutHi = outputAt(s, s.Imax, 1);
   const Vsense = evaluate('sense.burden', { I_SENSE: s.Imax, R_SENSE: s.Rsense });
   const Pshunt = evaluate('loss.cond', { I_rms: s.Imax, R_x: s.Rsense });
   const limit = s.VoutMax <= s.Vfs ? 'amp' : 'adc';
-  const Ifs = currentAt(s, Math.min(s.VoutMax, s.Vfs));
-  const Ifloor = currentAt(s, s.VoutMin);
+  const Ifs = currentAt(s, Math.min(s.VoutMax, s.Vfs), 1);
+  const Ifloor = currentAt(s, s.VoutMin, -1);
   const Ios = evaluate('sense.offset_current', { V_OS: s.Vos, R_SENSE: s.Rsense });
   const padError = evaluate('sense.pad_error', { R_pad: s.Rpad, R_SENSE: s.Rsense });
   // a current-output amplifier is a current source loaded by R_OUT: the capacitor sees R_OUT as well
@@ -139,10 +164,14 @@ export function senseChain(s: SenseSpec): SenseResult {
   const fc = filtered ? evaluate('rc.fc', { R_f: Rfilt, C_f: s.Cf }) : Number.POSITIVE_INFINITY;
   const fN = evaluate('adc.nyquist', { f_samp: s.fsamp });
   const gainAtNyquist = filtered ? evaluate('rc.gain', { f: fN, f_c: fc }) : 1;
+  const gainAtFsw = s.fsw === undefined ? undefined : filtered ? evaluate('rc.gain', { f: s.fsw, f_c: fc }) : 1;
+  // the amplifier cannot drive past its own largest output, so the ADC sees at most that
+  const VoutSeen = Math.min(VoutHi, s.VoutMax);
 
   const warnings: SenseWarning[] = [];
-  if (VoutImax > s.VoutMax) warnings.push('ampClips');
-  if (VoutImax > s.Vfs) warnings.push('adcClips');
+  if (!(Ifs > Ifloor)) warnings.push('noRange');
+  if (VoutHi > s.VoutMax) warnings.push('ampClips');
+  if (VoutSeen > s.Vfs) warnings.push('adcClips');
   if (s.Imin < Ifloor) warnings.push('floor');
   if (s.VburdenMax !== undefined && Vsense > s.VburdenMax) warnings.push('burden');
   if (s.Prating !== undefined && Pshunt > s.Prating) warnings.push('shuntPower');
@@ -157,7 +186,8 @@ export function senseChain(s: SenseSpec): SenseResult {
     gain,
     Vout0,
     VoutImax,
-    adcUse: VoutImax / s.Vfs,
+    VoutHi,
+    adcUse: VoutSeen / s.Vfs,
     Vsense,
     Pshunt,
     Ifs,
@@ -171,6 +201,7 @@ export function senseChain(s: SenseSpec): SenseResult {
     fc,
     fN,
     gainAtNyquist,
+    gainAtFsw,
     warnings,
   };
 }
@@ -188,9 +219,19 @@ export function errorCurve(r: SenseResult, n = 81): { I: number[]; offset: numbe
   return { I, offset: I.map((i) => relError(s, i, 0)), total: I.map((i) => relError(s, i, s.Rpad)) };
 }
 
-/** The output voltage against the current, from zero to beyond the largest current and the full-scale current. */
-export function transferCurve(r: SenseResult, n = 101): { I: number[]; Vout: number[] } {
-  const top = 1.2 * Math.max(r.spec.Imax, r.Ifs);
+/**
+ * The output voltage against the current, from zero to beyond the largest
+ * current and the full-scale current: nominal, highest and lowest (the pad
+ * resistance, and the offset at either sign), before the output limits.
+ */
+export function transferCurve(r: SenseResult, n = 101): { I: number[]; nominal: number[]; high: number[]; low: number[] } {
+  const s = r.spec;
+  const top = 1.2 * Math.max(s.Imax, Number.isFinite(r.Ifs) ? r.Ifs : 0);
   const I = Array.from({ length: n }, (_, k) => (top * k) / (n - 1));
-  return { I, Vout: I.map((i) => monitorOutput(r.spec, i)) };
+  return {
+    I,
+    nominal: I.map((i) => monitorOutput(s, i)),
+    high: I.map((i) => outputAt(s, i, 1)),
+    low: I.map((i) => outputAt(s, i, -1)),
+  };
 }

@@ -17,6 +17,9 @@ describe('sense-chain form', () => {
     const r = senseChain(toSenseSpec('current', cur)!);
     expect(rel(r.Vsense, result('sense-current', 'V_SENSE'))).toBeLessThan(1e-12);
     expect(rel(r.VoutImax, result('sense-current', 'V_OUT'))).toBeLessThan(1e-12);
+    // the limits take the highest output: the pad resistance and the offset raise it
+    expect(rel(r.VoutHi, result('sense-current', 'V_OUThi'))).toBeLessThan(1e-12);
+    expect(r.VoutHi).toBeGreaterThan(r.VoutImax);
     expect(rel(r.Ios, result('sense-current', 'I_OSeq'))).toBeLessThan(1e-12);
     expect(rel(r.padError, result('sense-current', 'eps_pad'))).toBeLessThan(1e-12);
     expect(rel(r.errorAtImin, result('sense-current', 'eps_I'))).toBeLessThan(1e-12);
@@ -32,6 +35,7 @@ describe('sense-chain form', () => {
     const r = senseChain(toSenseSpec('voltage', vol)!);
     expect(rel(r.Vsense, result('sense-voltage', 'V_SENSE'))).toBeLessThan(1e-12);
     expect(rel(r.VoutImax, result('sense-voltage', 'V_OUT'))).toBeLessThan(1e-12);
+    expect(rel(r.VoutHi, result('sense-voltage', 'V_OUThi'))).toBeLessThan(1e-12);
     expect(rel(r.errorAtImin, result('sense-voltage', 'eps_I'))).toBeLessThan(1e-12);
     expect(rel(r.fc, result('sense-voltage', 'f_c'))).toBeLessThan(1e-12);
     expect(rel(r.gainAtNyquist, result('sense-voltage', 'G_lp'))).toBeLessThan(1e-12);
@@ -69,6 +73,24 @@ describe('sense-chain form', () => {
     expect(checkOf('current', { ...cur, Rsense: 'Infinity' })).toBeNull();
     expect(checkOf('current', { ...cur, Rout: '1e308', Rin: '1e-308' })).toBeNull();
     expect(checkOf('current', cur)).not.toBeNull();
+  });
+
+  it("a state whose charts would overflow gives no result, so a chart cannot unmount the tool on a state the URL keeps", () => {
+    // the review's case: I_max/I_min beyond the double range, so the error curve's currents overflow
+    expect(checkOf('current', { ...cur, Rsense: '1', Vos: '0', Imin: '1e-320' })).toBeNull();
+  });
+
+  it('a REF voltage above the amplifier\'s largest output leaves no range, and says so', () => {
+    const r = checkOf('voltage', { ...vol, Vref: '3.25' })!;
+    expect(r.Ifs).toBe(0);
+    expect(r.warnings).toContain('noRange');
+    expect(checkOf('voltage', vol)!.warnings).not.toContain('noRange');
+  });
+
+  it('the switching frequency is optional', () => {
+    expect(checkOf('current', { ...cur, fsw: '' })!.gainAtFsw).toBeUndefined();
+    expect(checkOf('current', { ...cur, fsw: '1e5' })!.gainAtFsw).toBeLessThan(0.02);
+    expect(checkOf('current', { ...cur, fsw: '0' })).toBeNull();
   });
 });
 

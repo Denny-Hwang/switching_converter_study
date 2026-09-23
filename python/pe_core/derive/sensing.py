@@ -64,7 +64,7 @@ def derive() -> Derivation:
     )
 
     Vos = S("V_OS")
-    Imeas = d.local("I_meas", r"I_\mathrm{meas}", positive=True)
+    Imeas = S("I_meas")
     d.step(
         "An input offset voltage adds directly to the sense voltage, so the output of either amplifier reads the "
         "current",
@@ -94,14 +94,21 @@ def derive() -> Derivation:
         "상대 오차: 전류와 무관하며, 션트가 작을수록 커진다.",
         S("eps_pad"),
     )
-    d.step(
-        "With both the offset and the pad resistance, the reading is",
-        "오프셋과 패드 저항이 함께 있으면 측정값은 다음과 같다.",
-        sp.Eq(Imeas, (I * (Rs + Rpad) + Vos) / Rs),
+    reading = (I * (Rs + Rpad) + Vos) / Rs
+    d.result(
+        "sense.reading",
+        reading,
+        "With both, the amplifier sees $I_\\mathrm{SENSE} (R_\\mathrm{SENSE} + R_\\mathrm{pad}) + V_\\mathrm{OS}$ and "
+        "reads it as a current through $R_\\mathrm{SENSE}$. The output is the output equation at this current; the "
+        "offset's sign that raises it bounds the output from above, the other sign from below.",
+        "둘이 함께 있으면 증폭기는 $I_\\mathrm{SENSE} (R_\\mathrm{SENSE} + R_\\mathrm{pad}) + V_\\mathrm{OS}$를 보고 "
+        "이를 $R_\\mathrm{SENSE}$에 흐르는 전류로 읽는다. 출력은 이 전류에서의 출력 식이며, 출력을 높이는 부호의 "
+        "오프셋이 출력의 상한을, 반대 부호가 하한을 준다.",
+        Imeas,
     )
     d.result(
         "sense.rel_error",
-        sp.simplify(((I * (Rs + Rpad) + Vos) / Rs - I) / I),
+        sp.simplify((reading - I) / I),
         "Its relative error is the sum of the two, with no cross term: the offset's share falls as $1/I_\\mathrm{SENSE}$, "
         "the pad's share stays.",
         "상대 오차는 교차 항 없이 두 몫의 합이다: 오프셋의 몫은 $1/I_\\mathrm{SENSE}$로 줄고 패드의 몫은 그대로다.",

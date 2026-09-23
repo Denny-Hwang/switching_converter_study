@@ -11,11 +11,11 @@
 | Simulator compare-panel additions (Phase 3a) | ✅ 2 equations: `buck.Vds`, `boost.Vds` (switch blocking voltages) |
 | Design-tool additions (Phase 3b) | ✅ 4 equations: `flyback.IM`, `flyback.ripple.iM`, `flyback.ripple.v` (flyback CCM current and ripples), `loss.core` (core loss of a whole core) |
 | Design-tool additions (Phase 3c) | ✅ 12 equations: `flyback.V_OR`, `clamp.Vds`, `clamp.t_reset`, `clamp.P`, `clamp.rcd.V`, `tvs.R_D`, `tvs.V_clamp`, `flyback.V_ceiling` (primary clamp), `src.cv_power`, `lfr.Vg`, `lfr.eta`, `lfr.Vg_power` (linear source and loss-free resistor) |
-| Design-tool additions (Phase 3d) | ✅ 7 equations: `sense.burden`, `sense.voltage_out_monitor`, `sense.offset_current`, `sense.pad_error`, `sense.rel_error`, `sense.filter_R` (shunt, voltage-output amplifier, offset, pad resistance, error of the reading, filter behind a current-output amplifier), `adc.nyquist` |
-| Derivations reproduce the YAML (`pytest`) | ✅ 110 of 120 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk`, `mag.B_H`, `loss.core` and `adc.nyquist` are definitions, `loss.steinmetz` is an empirical law, `tvs.R_D` and `tvs.V_clamp` are the TVS model of `st_an316`) |
+| Design-tool additions (Phase 3d) | ✅ 8 equations: `sense.burden`, `sense.voltage_out_monitor`, `sense.offset_current`, `sense.pad_error`, `sense.reading`, `sense.rel_error`, `sense.filter_R` (shunt, voltage-output amplifier, offset, pad resistance, what the amplifier reads, error of the reading, filter behind a current-output amplifier), `adc.nyquist` |
+| Derivations reproduce the YAML (`pytest`) | ✅ 111 of 121 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk`, `mag.B_H`, `loss.core` and `adc.nyquist` are definitions, `loss.steinmetz` is an empirical law, `tvs.R_D` and `tvs.V_clamp` are the TVS model of `st_an316`) |
 | TS/Python parity (`vitest`, 1e-9 rel) | ✅ all shared vectors |
 | Strict KaTeX on every generated formula and derivation step (`vitest`) | ✅ |
-| `references.bib` verified (two web-search rounds + CI Crossref + URL title check) | ✅ 27 of 27 verified (`steinmetz1984` DOI confirmed by the CI Crossref job; `ti_slva630` and `ti_snoa930` added in Phase 2c; `ti_ssztcv6` and `st_an316` added in Phase 3c) |
+| `references.bib` verified (two web-search rounds + CI Crossref + URL title check; PDFs: title and `urlquotes` read from the file) | ✅ 30 of 30 verified (`steinmetz1984` DOI confirmed by the CI Crossref job; `ti_slva630` and `ti_snoa930` added in Phase 2c; `ti_ssztcv6` and `st_an316` added in Phase 3c; `ti_ina181`, `osullivan2012` and `kester_mt002` added in Phase 3d, whose cited statements the CI check also finds in the PDFs) |
 
 ## Simulator and tools (Phase 3)
 
@@ -34,7 +34,7 @@
 | LossBudget (`design/loss-budget`): conduction, capacitive switching, gate drive, core, diode and flyback leakage losses against the load and f_s, with the efficiency; each point simulated with the duty ratio regulated (bracketed search; the forward converter stops at its reset limit); peak flux density shown for a saturation check | ✅ EN and KO, Phase 3b; the conduction, diode and capacitive buckets equal the simulator's own accounting in every topology (tested) |
 | ClampCheck (`design/clamp-check`): TVS or RCD primary clamp of a flyback: reflected voltage, leakage energy and reset time, clamp voltage at the peak current (TVS from its datasheet's V_BR, V_CL and I_PP), switch voltage against its rating, clamp dissipation, open-load output ceiling (TVS; an RCD clamp gives none, and the tool warns); trade-off chart | ✅ EN and KO, Phase 3c |
 | SourceMatcher (`design/source-matcher`): a fixed-duty-ratio flyback on a linear source: loss-free-resistor divider and extraction, CCM taking over at V_g,crit (constant-voltage sink), the loss-free resistor's power limit (CCM or the switch's rating), switch voltage against power, envelope simulation; link to the simulator | ✅ EN and KO, Phase 3c; the operating point matches the simulator's steady state (tested) |
-| SenseChain (`design/sense-chain`): shunt, current-output or voltage-output amplifier, R-C filter and ADC: gain, full-scale current and what sets it, output floor, burden and shunt dissipation, offset-equivalent current, pad error, error at the smallest current, filter corner against the Nyquist frequency (with R_OUT in series for a current output); a warning for each violation; transfer and error charts | ✅ EN and KO, Phase 3d |
+| SenseChain (`design/sense-chain`): shunt, current-output or voltage-output amplifier, R-C filter and ADC: gain, full-scale current and what sets it and output floor (both at the worst case of the offset and the pad resistance), burden and shunt dissipation, offset-equivalent current, pad error, error at the smallest current, filter corner against the Nyquist frequency (with R_OUT in series for a current output); a warning for each violation; transfer and error charts | ✅ EN and KO, Phase 3d; headroom against the supply is the amplifier's output limits at the supply used, entered from its data sheet (the LTC6101 gives absolute limits, not a margin below V+) |
 | Design tool MagneticsDesigner (BUILD_SPEC §5) | ⬜ Phase 3e |
 
 Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); theory uses only `<Eq>` embeds and each Eq has ≥ 1 test vector; "Try it" links a tool preset; "Go deeper" has ≥ 2 verified resources with retrieval dates; a gotchas subsection exists; quiz with ≥ 5 explained questions; build, tests and all lints green.
@@ -168,12 +168,12 @@ _Last updated: Phase 3d (sense chain). `python scripts/modulelint.py` checks eve
 | landing (`index`) | ✅ | ✅ | Phase 0 |
 | about | ✅ | ✅ | Phase 0 |
 | about/equation-pipeline | ✅ | ✅ | Phase 0 acceptance page: one `<Eq>` + Plotly island |
-| 02-theory/derivations | ✅ | ✅ | auto-rendered from `python/pe_core/derive/*.py`: 13 modules, 110 derived equations (Phase 3d) |
+| 02-theory/derivations | ✅ | ✅ | auto-rendered from `python/pe_core/derive/*.py`: 13 modules, 111 derived equations (Phase 3d) |
 | design/explorer | ✅ | ✅ | Phase 2a: evaluate and sweep any catalogue equation; state in the URL hash ("Try it" target); screenshot and keyboard check (Phase 3a) |
 | simulate/simulator | ✅ | ✅ | Phase 3a: the pe-core simulator; state in the URL hash (`<TrySim>` target); screenshot and keyboard check |
 | design/converter-designer | ✅ | ✅ | Phase 3b; state in the URL hash; screenshot and keyboard check |
 | design/loss-budget | ✅ | ✅ | Phase 3b; state in the URL hash; screenshot and keyboard check |
 | design/clamp-check | ✅ | ✅ | Phase 3c; homes the eight clamp equations (`flyback.V_OR`, `clamp.*`, `tvs.*`, `flyback.V_ceiling`); state in the URL hash; screenshot and keyboard check |
 | design/source-matcher | ✅ | ✅ | Phase 3c; homes `src.Pmax`, `src.cv_power`, `src.cv_extraction`, `lfr.Vg`, `lfr.eta`, `lfr.Vg_power` until the harvesting pages (Phase 4); state in the URL hash; screenshot and keyboard check |
-| design/sense-chain | ✅ | ✅ | Phase 3d; homes the seven `sense.*` equations and `adc.nyquist` until the current-sensing bench page (Phase 4); state in the URL hash; screenshot and keyboard check |
+| design/sense-chain | ✅ | ✅ | Phase 3d; homes the eight `sense.*` equations and `adc.nyquist` until the current-sensing bench page (Phase 4); state in the URL hash; screenshot and keyboard check |
 | 10-resources/bibliography | ✅ | ✅ | Phase 1: generated from `references.bib` (verified entries only) |

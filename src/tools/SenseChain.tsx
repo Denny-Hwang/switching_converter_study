@@ -5,9 +5,9 @@
  * what sets it, the output floor, the burden, the offset-equivalent current,
  * the pad error and the error at the smallest current, and the filter's
  * corner against the Nyquist frequency, and flags each violation. The
- * calculation is pe-core's senseChain(), in which every formula is a
- * catalogue equation; each result names its equation. All state lives in the
- * URL hash.
+ * calculation is pe-core's senseChain(), whose physical relations are all
+ * catalogue equations; each result names the equations it comes from. All
+ * state lives in the URL hash.
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { errorCurve, senseChain, transferCurve, type MonitorKind, type SenseResult, type SenseSpec, type SenseWarning } from 'pe-core';
@@ -30,6 +30,7 @@ export interface SenseLabels {
   gain: string;
   vout0: string;
   voutImax: string;
+  voutHi: string;
   adcUse: string;
   ifs: string;
   limitAmp: string;
@@ -45,6 +46,7 @@ export interface SenseLabels {
   fc: string;
   fN: string;
   gainAtNyquist: string;
+  gainAtFsw: string;
   noFilter: string;
   transferChart: string;
   errorChart: string;
@@ -52,6 +54,8 @@ export interface SenseLabels {
   output: string;
   relError: string;
   outputCurve: string;
+  highCurve: string;
+  lowCurve: string;
   voutMax: string;
   voutMin: string;
   vfs: string;
@@ -112,6 +116,7 @@ export const FIELDS: Field[] = [
   { key: 'Cf', label: 'C_f', unit: 'F', group: 'adc', zero: true },
   { key: 'Vfs', label: 'V_FS', unit: 'V', group: 'adc' },
   { key: 'fsamp', label: 'f_samp', unit: 'Hz', group: 'adc' },
+  { key: 'fsw', label: 'f_sw', unit: 'Hz', group: 'adc', optional: true },
 ];
 const KEYS = FIELDS.map((f) => f.key);
 const shownFor = (kind: MonitorKind) => FIELDS.filter((f) => f.group !== (kind === 'current' ? 'voltage' : 'current'));
@@ -149,6 +154,7 @@ export function toSenseSpec(kind: MonitorKind, values: Record<string, string>): 
     fsamp: num(values.fsamp),
     Rf: num(values.Rf),
     Cf: num(values.Cf),
+    fsw: opt('fsw'),
     errMax: num(values.errMax),
   };
   // the smallest current lies within the range, and the amplifier's output range is not empty
@@ -190,16 +196,23 @@ export function hashOf(kind: MonitorKind, values: Record<string, string>): strin
   return q.toString();
 }
 
-/** The check for the form, or null when a field is missing or out of range, or the inputs overflow. */
+/**
+ * The check for the form, or null when a field is missing or out of range,
+ * or the inputs overflow (in the results or in the charts' curves, so that no
+ * chart can fail on a state the URL keeps).
+ */
 export function checkOf(kind: MonitorKind, values: Record<string, string>): SenseResult | null {
   const spec = toSenseSpec(kind, values);
   if (!spec) return null;
   try {
     const r = senseChain(spec);
-    const finite = [r.gain, r.Vout0, r.VoutImax, r.Vsense, r.Pshunt, r.Ifs, r.Ifloor, r.Ios, r.errorAtImin, r.fN, r.gainAtNyquist].every(
-      Number.isFinite,
-    );
-    return finite && r.gain > 0 ? r : null;
+    const numbers = [r.gain, r.Vout0, r.VoutImax, r.VoutHi, r.Vsense, r.Pshunt, r.Ifs, r.Ifloor, r.Ios, r.errorAtImin, r.fN, r.gainAtNyquist];
+    if (r.gainAtFsw !== undefined) numbers.push(r.gainAtFsw);
+    if (!numbers.every(Number.isFinite) || !(r.gain > 0)) return null;
+    const t = transferCurve(r);
+    const e = errorCurve(r);
+    const curves = [t.I, t.nominal, t.high, t.low, e.I, e.offset, e.total];
+    return curves.every((c) => c.every(Number.isFinite)) ? r : null;
   } catch {
     return null;
   }
@@ -256,18 +269,29 @@ export default function SenseChain({ labels, presets }: Props) {
     return () => window.removeEventListener('hashchange', onHash);
   }, [presets]);
 
-  // the output against the current, with the limits it runs into
+  // the output against the current, nominal and at its highest and lowest, within the amplifier's output range
   useEffect(() => {
     if (!result) return draw(transferRef.current, null, {});
     const s = result.spec;
-    const t = transferCurve(result);
+    let t: ReturnType<typeof transferCurve>;
+    try {
+      t = transferCurve(result);
+    } catch {
+      return draw(transferRef.current, null, {}); // checkOf rules this out; never unmount the island over a chart
+    }
     const x = [0, t.I[t.I.length - 1]!];
+    const clamp = (v: number[]) => v.map((y) => Math.min(Math.max(y, s.VoutMin), s.VoutMax));
     const level = (y: number, name: string, dash: string) => ({ x, y: [y, y], name, mode: 'lines', line: { dash } });
     const traces: Record<string, unknown>[] = [
-      { x: t.I, y: t.Vout, name: labels.outputCurve, mode: 'lines' },
+      { x: t.I, y: clamp(t.nominal), name: labels.outputCurve, mode: 'lines' },
       level(s.VoutMax, labels.voutMax, 'dot'),
       level(s.Vfs, labels.vfs, 'dash'),
     ];
+    // the band the pad resistance and the offset open around the nominal output
+    if (s.Vos > 0 || s.Rpad > 0) {
+      traces.splice(1, 0, { x: t.I, y: clamp(t.high), name: labels.highCurve, mode: 'lines', line: { dash: 'dash', width: 1 } });
+      traces.splice(2, 0, { x: t.I, y: clamp(t.low), name: labels.lowCurve, mode: 'lines', line: { dash: 'dash', width: 1 } });
+    }
     if (s.VoutMin > 0) traces.push(level(s.VoutMin, labels.voutMin, 'dot'));
     const vline = (xv: number, text: string) => ({
       shape: { type: 'line', xref: 'x', yref: 'paper', x0: xv, x1: xv, y0: 0, y1: 1, line: { width: 1, dash: 'dashdot', color: 'gray' } },
@@ -278,7 +302,7 @@ export default function SenseChain({ labels, presets }: Props) {
       margin: { t: 24, r: 24, b: 48, l: 64 },
       xaxis: { title: { text: `${labels.current} [A]` }, rangemode: 'tozero' },
       // headroom above the highest line, so that the I_min and I_max labels stay clear of it
-      yaxis: { title: { text: `${labels.output} [V]` }, range: [0, 1.15 * Math.max(...t.Vout, s.VoutMax, s.Vfs)] },
+      yaxis: { title: { text: `${labels.output} [V]` }, range: [0, 1.15 * Math.max(s.VoutMax, s.Vfs)] },
       shapes: marks.map((m) => m.shape),
       annotations: marks.map((m) => m.annotation),
     });
@@ -288,7 +312,12 @@ export default function SenseChain({ labels, presets }: Props) {
   useEffect(() => {
     if (!result || (result.Ios === 0 && result.padError === 0)) return draw(errorRef.current, null, {});
     const s = result.spec;
-    const c = errorCurve(result);
+    let c: ReturnType<typeof errorCurve>;
+    try {
+      c = errorCurve(result);
+    } catch {
+      return draw(errorRef.current, null, {}); // checkOf rules this out; never unmount the island over a chart
+    }
     const traces: Record<string, unknown>[] = [
       { x: c.I, y: c.total, name: labels.totalCurve, mode: 'lines' },
       { x: [c.I[0], c.I[c.I.length - 1]], y: [s.errMax, s.errMax], name: labels.target, mode: 'lines', line: { dash: 'dot' } },
@@ -299,8 +328,8 @@ export default function SenseChain({ labels, presets }: Props) {
       { type: 'line', xref: 'x', yref: 'paper', x0: s.Imin, x1: s.Imin, y0: 0, y1: 1, line: { width: 1, dash: 'dashdot', color: 'gray' } },
     ];
     const annotations: Record<string, unknown>[] = [{ x: Math.log10(s.Imin), y: 1, xref: 'x', yref: 'paper', text: labels.imin, showarrow: false, yanchor: 'bottom' }];
-    if (result.Ifloor > 0) {
-      // below the floor current the output cannot follow the current
+    if (result.Ifloor > c.I[0]!) {
+      // below the floor current the output cannot follow the current (a floor left of the plotted range would stretch it)
       shapes.push({
         type: 'rect',
         xref: 'x',
@@ -356,11 +385,18 @@ export default function SenseChain({ labels, presets }: Props) {
 
   const r = result;
   const outputEq = r?.spec.monitor.kind === 'voltage' ? 'sense.voltage_out_monitor' : 'sense.current_out_monitor';
-  const row = (label: string, value: ReactNode, eq?: string) => (
+  const row = (label: string, value: ReactNode, ...eqs: string[]) => (
     <tr key={label}>
       <th scope="row">{label}</th>
       <td>{value}</td>
-      <td>{eq && <code>{eq}</code>}</td>
+      <td>
+        {eqs.map((eq, k) => (
+          <span key={eq}>
+            {k > 0 && ', '}
+            <code>{eq}</code>
+          </span>
+        ))}
+      </td>
     </tr>
   );
   return (
@@ -426,16 +462,18 @@ export default function SenseChain({ labels, presets }: Props) {
           <tbody>
             {row(labels.gain, fmt(r.gain, 'V/A'), outputEq)}
             {row(labels.vout0, fmt(r.Vout0, 'V'), outputEq)}
-            {row(labels.voutImax, <strong>{fmt(r.VoutImax, 'V')}</strong>, outputEq)}
-            {row(labels.adcUse, pct(r.adcUse))}
+            {row(labels.voutImax, fmt(r.VoutImax, 'V'), outputEq)}
+            {row(labels.voutHi, <strong>{fmt(r.VoutHi, 'V')}</strong>, 'sense.reading', outputEq)}
+            {row(labels.adcUse, pct(r.adcUse), 'sense.reading', outputEq)}
             {row(
               labels.ifs,
               <>
                 <strong>{fmt(r.Ifs, 'A')}</strong> ({r.limit === 'amp' ? labels.limitAmp : labels.limitAdc})
               </>,
+              'sense.reading',
               outputEq,
             )}
-            {r.Ifloor > 0 && row(labels.ifloor, fmt(r.Ifloor, 'A'), outputEq)}
+            {r.Ifloor > 0 && row(labels.ifloor, fmt(r.Ifloor, 'A'), 'sense.reading', outputEq)}
             {row(labels.vsense, fmt(r.Vsense, 'V'), 'sense.burden')}
             {row(labels.pshunt, fmt(r.Pshunt, 'W'), 'loss.cond')}
             {row(labels.ios, fmt(r.Ios, 'A'), 'sense.offset_current')}
@@ -446,6 +484,7 @@ export default function SenseChain({ labels, presets }: Props) {
             {row(labels.fc, Number.isFinite(r.fc) ? fmt(r.fc, 'Hz') : labels.noFilter, 'rc.fc')}
             {row(labels.fN, fmt(r.fN, 'Hz'), 'adc.nyquist')}
             {row(labels.gainAtNyquist, fmt(r.gainAtNyquist), 'rc.gain')}
+            {r.gainAtFsw !== undefined && row(labels.gainAtFsw, fmt(r.gainAtFsw), 'rc.gain')}
           </tbody>
         </table>
       )}

@@ -55,7 +55,7 @@ symbol_table:
   V_SENSE: {latex: "V_\\mathrm{SENSE}", unit: "V", desc: "voltage across the sense resistor: the signal, and the burden on the measured circuit", range: [1.0e-4, 1], scale: log}
   G_sense: {latex: "G", unit: "1", desc: "fixed voltage gain of a voltage-output current-sense amplifier (V/V)", range: [1, 1000], scale: log}
   V_REF: {latex: "V_\\mathrm{REF}", unit: "V", desc: "voltage on the REF pin of a voltage-output current-sense amplifier: its output at zero current", range: [0, 5]}
-  V_OS: {latex: "V_\\mathrm{OS}", unit: "V", desc: "input offset voltage of a sense amplifier", range: [1.0e-6, 1.0e-2], scale: log}
+  V_OS: {latex: "V_\\mathrm{OS}", unit: "V", sign: real, desc: "input offset voltage of a sense amplifier, with its sign (data sheets give its largest magnitude)", range: [1.0e-6, 1.0e-2], scale: log}
   I_OSeq: {latex: "I_\\mathrm{OS,eq}", unit: "A", desc: "offset-equivalent current: the sensed current whose sense voltage equals the amplifier's offset voltage"}
   R_pad: {latex: "R_\\mathrm{pad}", unit: "Ω", desc: "pad and solder resistance in the sense path of a shunt without a Kelvin connection", range: [1.0e-5, 1.0e-2], scale: log}
   eps_pad: {latex: "\\varepsilon_\\mathrm{pad}", unit: "1", desc: "relative gain error from pad and solder resistance in the sense path"}
@@ -67,6 +67,8 @@ symbol_table:
   eps_max: {latex: "\\varepsilon_\\mathrm{max}", unit: "1", desc: "largest acceptable relative error"}
   V_OUTmin: {latex: "V_\\mathrm{OUT,min}", unit: "V", desc: "lowest output voltage a sense amplifier reaches: its swing to ground (data sheet)"}
   eps_I: {latex: "\\varepsilon_I", unit: "1", desc: "relative error of a current reading"}
+  I_meas: {latex: "I_\\mathrm{meas}", unit: "A", sign: real, desc: "current a shunt reading indicates: the true current seen through the pad resistance and the amplifier's offset"}
+  V_OUThi: {latex: "V_\\mathrm{OUT,hi}", unit: "V", desc: "highest output of a sense amplifier at a current: with the pad resistance, and the offset at the sign that raises the output"}
   R_filt: {latex: "R_\\mathrm{filt}", unit: "Ω", desc: "resistance an R-C filter's capacitor sees: the Thevenin resistance of the source plus the filter's series resistor"}
   # --- currents ------------------------------------------------------------
   Delta_i_L: {latex: "\\Delta i_L", unit: "A", desc: "inductor current ripple, HALF of peak-to-peak (Erickson convention)", range: [0.001, 10], scale: log}
@@ -227,6 +229,7 @@ assumption_labels:
   offset_only: {en: "the amplifier's input offset voltage is its only error (no gain error, no bias current)", ko: "증폭기의 입력 오프셋 전압만 오차로 봄(이득 오차, 바이어스 전류 없음)"}
   no_kelvin: {en: "a two-terminal shunt whose sense connections share the pads and solder joints with the load current (no Kelvin connection)", ko: "센스 연결이 부하 전류와 같은 패드와 납땜을 공유하는 2단자 션트(켈빈 연결 없음)"}
   uniform_sampling: {en: "uniform sampling at a fixed rate", ko: "일정한 속도의 균일 샘플링"}
+  linear_shunt: {en: "the shunt is a linear resistor: its resistance does not change with the current", ko: "션트는 선형 저항: 저항값이 전류에 따라 변하지 않음"}
   fixed_clamp: {en: "a clamp whose voltage does not depend on the power it absorbs (a TVS or Zener clamp)", ko: "흡수하는 전력에 따라 전압이 변하지 않는 클램프(TVS 또는 제너 클램프)"}
 
 equations:
@@ -1073,7 +1076,7 @@ equations:
     lhs: V_SENSE
     expr: "I_SENSE*R_SENSE"
     symbols: {I_SENSE: "sensed current", R_SENSE: "sense resistor"}
-    assumptions: [ideal]
+    assumptions: [linear_shunt]
     notes: "the signal the amplifier sees, and the burden: the voltage the shunt takes from the circuit it measures; the shunt dissipates the current times this voltage"
     notes_ko: "증폭기가 보는 신호이자, 션트가 측정 대상 회로에서 빼앗는 전압(부담 전압); 션트는 전류와 이 전압의 곱만큼 소산한다"
     cite: {key: alexander2017, where: "Ch. 2 (Basic Laws: Ohm's law)"}
@@ -1128,13 +1131,31 @@ equations:
     tests:
       - {inputs: {R_pad: 5.0e-4, R_SENSE: 0.005}, expect: 0.1}
 
+  - id: sense.reading
+    title: "Current a shunt reading indicates, with the pad resistance and the offset"
+    title_ko: "패드 저항과 오프셋을 포함한 션트 측정값이 나타내는 전류"
+    lhs: I_meas
+    expr: "I_SENSE*(R_SENSE + R_pad)/R_SENSE + V_OS/R_SENSE"
+    symbols: {I_SENSE: "true current", R_SENSE: "sense resistor", R_pad: "pad and solder resistance in the sense path (0 with a Kelvin connection)", V_OS: "input offset voltage, with its sign"}
+    assumptions: [offset_only]
+    notes: "the amplifier sees $I_\\mathrm{SENSE} (R_\\mathrm{SENSE} + R_\\mathrm{pad}) + V_\\mathrm{OS}$ and treats it as $I_\\mathrm{meas} R_\\mathrm{SENSE}$, so its output is the output equation taken at $I_\\mathrm{meas}$; with the offset's sign that raises it, this bounds the output from above, with the other sign from below"
+    notes_ko: "증폭기는 $I_\\mathrm{SENSE} (R_\\mathrm{SENSE} + R_\\mathrm{pad}) + V_\\mathrm{OS}$를 보고 이를 $I_\\mathrm{meas} R_\\mathrm{SENSE}$로 취급하므로, 출력은 $I_\\mathrm{meas}$에서의 출력 식이다; 출력을 높이는 부호의 오프셋이면 출력의 상한을, 반대 부호면 하한을 준다"
+    cite:
+      - {key: adi_ltc6101, where: "Applications Information: output error due to the amplifier's DC offset voltage; derived here"}
+      - {key: osullivan2012, where: "solder resistance of milliohm shunts"}
+    derived_by: python/pe_core/derive/sensing.py
+    tests:
+      - {inputs: {I_SENSE: 2.0, R_SENSE: 0.01, R_pad: 5.0e-4, V_OS: 1.0e-4}, expect: 2.11}
+      - {inputs: {I_SENSE: 2.0, R_SENSE: 0.01, R_pad: 5.0e-4, V_OS: -1.0e-4}, expect: 2.09}
+      - {inputs: {I_SENSE: 5.0, R_SENSE: 0.005, R_pad: 0.0, V_OS: 2.0e-5}, expect: 5.004}
+
   - id: sense.rel_error
     title: "Relative error of a shunt reading from the offset and the pad resistance"
     title_ko: "오프셋과 패드 저항에 의한 션트 측정값의 상대 오차"
     lhs: eps_I
     expr: "V_OS/(I_SENSE*R_SENSE) + R_pad/R_SENSE"
     symbols: {V_OS: "input offset voltage", I_SENSE: "sensed current", R_SENSE: "sense resistor", R_pad: "pad and solder resistance in the sense path (0 with a Kelvin connection)"}
-    assumptions: [offset_only, no_kelvin]
+    assumptions: [offset_only]
     notes: "the two errors add exactly: the offset's share falls in inverse proportion to the current, so it sets the error at the smallest current, while the pad's share is the same at every current"
     notes_ko: "두 오차는 정확히 더해진다: 오프셋에 의한 몫은 전류에 반비례하여 줄어 가장 작은 전류에서의 오차를 정하고, 패드에 의한 몫은 모든 전류에서 같다"
     cite:

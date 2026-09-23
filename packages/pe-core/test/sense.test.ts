@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { currentAt, errorCurve, senseChain, transferCurve, type SenseSpec } from '../src/sense';
+import { currentAt, errorCurve, outputAt, readingAt, senseChain, transferCurve, type SenseSpec } from '../src/sense';
 
 const rel = (a: number, b: number) => Math.abs(a - b) / Math.abs(b);
 
@@ -17,11 +17,14 @@ describe('sense chain', () => {
     expect(rel(r.gain, 1)).toBeLessThan(1e-12);
     expect(r.Vout0).toBe(0);
     expect(rel(r.VoutImax, 2)).toBeLessThan(1e-12);
-    expect(rel(r.adcUse, 0.8)).toBeLessThan(1e-12);
-    // the ADC's 2.5 V comes before the amplifier's 4 V: 2.5 A full scale
+    // at its highest the output carries the offset too: 1 V/A times (2 A + 0.1 mV/10 mohm)
+    expect(rel(r.VoutHi, 2.01)).toBeLessThan(1e-12);
+    expect(rel(r.adcUse, 2.01 / 2.5)).toBeLessThan(1e-12);
+    // the ADC's 2.5 V comes before the amplifier's 4 V: the highest output reaches it at 2.49 A
     expect(r.limit).toBe('adc');
-    expect(rel(r.Ifs, 2.5)).toBeLessThan(1e-9);
-    expect(r.Ifloor).toBe(0);
+    expect(rel(r.Ifs, 2.49)).toBeLessThan(1e-9);
+    // with the offset at the sign that lowers the output, it stays at 0 V up to 10 mA
+    expect(rel(r.Ifloor, 0.01)).toBeLessThan(1e-9);
     expect(rel(r.Vsense, 0.02)).toBeLessThan(1e-12);
     expect(rel(r.Pshunt, 0.04)).toBeLessThan(1e-12);
     // 0.1 mV over 10 mohm: 10 mA, a fifth of the smallest current
@@ -49,18 +52,40 @@ describe('sense chain', () => {
     const r = senseChain({ ...voltage, monitor: { kind: 'voltage', G: 50, Vref: 0.5 } });
     expect(r.Vout0).toBe(0.5);
     expect(rel(r.gain, 50 * 0.01)).toBeLessThan(1e-12);
-    // (2.5 V - 0.5 V)/(50 * 10 mohm)
-    expect(rel(r.Ifs, 4)).toBeLessThan(1e-9);
+    // (2.5 V - 0.5 V)/(50 * 10 mohm), less the 10 mA the offset adds at its highest
+    expect(rel(r.Ifs, 3.99)).toBeLessThan(1e-9);
     // a REF voltage at the full scale leaves no range at all
-    expect(currentAt({ ...voltage, monitor: { kind: 'voltage', G: 50, Vref: 2.5 } }, 2.5)).toBe(0);
+    expect(currentAt({ ...voltage, monitor: { kind: 'voltage', G: 50, Vref: 2.5 } }, 2.5, 1)).toBe(0);
+  });
+
+  it('the reading: the pad resistance scales the current, the offset shifts it either way', () => {
+    const s = { ...base, Rpad: 5e-4 };
+    expect(rel(readingAt(s, 2, 1), 2.11)).toBeLessThan(1e-12);
+    expect(rel(readingAt(s, 2, -1), 2.09)).toBeLessThan(1e-12);
+    expect(rel(outputAt(s, 2, 1), 2.11)).toBeLessThan(1e-12);
+  });
+
+  it('the upper limits take the highest output: a chain that fits nominally can clip with the pad and the offset', () => {
+    // nominally 2 V at 2 A, below a 2.005 V amplifier limit; with the offset 2.01 V
+    const amp = senseChain({ ...base, VoutMax: 2.005 });
+    expect(amp.VoutImax).toBeLessThan(2.005);
+    expect(amp.warnings).toContain('ampClips');
+    // a 0.5 mohm pad on the 10 mohm shunt: 2.11 V against a 2.05 V full scale
+    const adc = senseChain({ ...base, Vfs: 2.05, Rpad: 5e-4 });
+    expect(adc.VoutImax).toBeLessThan(2.05);
+    expect(adc.warnings).toContain('adcClips');
+    expect(rel(adc.Ifs, (2.05 - 0.01) / 1.05)).toBeLessThan(1e-9);
+    expect(adc.Ifs).toBeLessThan(base.Imax);
   });
 
   it('the output floor: below it the output cannot follow the current; a REF voltage above it removes it', () => {
-    // 20 mV lowest output at 0.5 V/A: currents below 40 mA read as 40 mA
+    // 20 mV lowest output at 0.5 V/A, and a 10 mA offset lowering the reading: the output stays there up to 50 mA
     const r = senseChain({ ...voltage, VoutMin: 0.02, Imin: 0.03 });
-    expect(rel(r.Ifloor, 0.04)).toBeLessThan(1e-9);
+    expect(rel(r.Ifloor, 0.05)).toBeLessThan(1e-9);
     expect(r.warnings).toContain('floor');
-    expect(senseChain({ ...voltage, VoutMin: 0.02, Imin: 0.05 }).warnings).not.toContain('floor');
+    expect(senseChain({ ...voltage, VoutMin: 0.02, Imin: 0.06 }).warnings).not.toContain('floor');
+    // without an offset the floor is the swing alone: 40 mA
+    expect(rel(senseChain({ ...voltage, VoutMin: 0.02, Vos: 0 }).Ifloor, 0.04)).toBeLessThan(1e-9);
     const ref = senseChain({ ...voltage, VoutMin: 0.02, monitor: { kind: 'voltage', G: 50, Vref: 0.1 } });
     expect(ref.Ifloor).toBe(0);
     expect(ref.warnings).not.toContain('floor');
@@ -86,6 +111,31 @@ describe('sense chain', () => {
     expect(none.warnings).toEqual(['aliasing']);
   });
 
+  it('the ADC sees at most what the amplifier can drive: no ADC warning while the amplifier clips below the full scale', () => {
+    // 3 V wanted at 2 A, the amplifier stops at 2.2 V, the ADC reads up to 2.5 V
+    const r = senseChain({ ...base, VoutMax: 2.2, monitor: { kind: 'current', Rin: 100, Rout: 1.5e4 } });
+    expect(r.warnings).toContain('ampClips');
+    expect(r.warnings).not.toContain('adcClips');
+    expect(rel(r.adcUse, 2.2 / 2.5)).toBeLessThan(1e-12);
+  });
+
+  it('no usable range: a REF voltage at the limit, or a floor at or above the full scale', () => {
+    const ref = senseChain({ ...voltage, monitor: { kind: 'voltage', G: 50, Vref: 3.25 }, VoutMax: 3.2, Vfs: 3.3 });
+    expect(ref.Ifs).toBe(0);
+    expect(ref.warnings).toContain('noRange');
+    const floor = senseChain({ ...base, VoutMin: 3, Vfs: 2.5 });
+    expect(floor.Ifloor).toBeGreaterThanOrEqual(floor.Ifs);
+    expect(floor.warnings).toContain('noRange');
+    expect(senseChain(base).warnings).not.toContain('noRange');
+  });
+
+  it("the filter's gain at the switching frequency, when one is given", () => {
+    expect(senseChain(base).gainAtFsw).toBeUndefined();
+    const r = senseChain({ ...base, fsw: 1e5 });
+    expect(rel(r.gainAtFsw!, 1 / Math.sqrt(1 + (1e5 / r.fc) ** 2))).toBeLessThan(1e-12);
+    expect(senseChain({ ...base, fsw: 1e5, Cf: 0 }).gainAtFsw).toBe(1);
+  });
+
   it('flags the offset and the pad error together when neither alone exceeds the target', () => {
     // 0.6 % offset share at 0.5 A and 0.6 % pad error: 1.2 % together against 1 %
     const r = senseChain({ ...base, Imin: 0.5, Vos: 3e-5, Rpad: 6e-5 });
@@ -106,11 +156,17 @@ describe('sense chain', () => {
     expect(c.I[c.I.length - 1]).toBe(2);
   });
 
-  it('the transfer curve runs past the full-scale current and follows the output equation', () => {
-    const r = senseChain(base);
+  it('the transfer curve runs past the full-scale current: nominal, highest and lowest output', () => {
+    const r = senseChain({ ...base, Rpad: 5e-4 });
     const t = transferCurve(r);
     expect(t.I[0]).toBe(0);
-    expect(t.I[t.I.length - 1]).toBeCloseTo(1.2 * 2.5, 12);
-    for (let k = 0; k < t.I.length; k++) expect(t.Vout[k]).toBeCloseTo(t.I[k]!, 12);
+    // 1.2 times the full-scale current, (2.5 V - 0.01 A x 1 V/A)/1.05 A
+    expect(t.I[t.I.length - 1]).toBeCloseTo(1.2 * ((2.5 - 0.01) / 1.05), 9);
+    for (let k = 0; k < t.I.length; k++) {
+      const i = t.I[k]!;
+      expect(t.nominal[k]).toBeCloseTo(i, 12);
+      expect(t.high[k]).toBeCloseTo(1.05 * i + 0.01, 12);
+      expect(t.low[k]).toBeCloseTo(1.05 * i - 0.01, 12);
+    }
   });
 });

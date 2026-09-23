@@ -22,6 +22,8 @@ params:
 steps:
   - sense.burden
   - sense.current_out_monitor
+  - sense.reading
+  - {eq: sense.current_out_monitor, bind: {I_SENSE: I_meas}, as: V_OUThi}
   - sense.offset_current
   - sense.pad_error
   - {eq: sense.rel_error, bind: {I_SENSE: I_min}}

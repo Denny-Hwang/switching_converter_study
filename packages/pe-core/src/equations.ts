@@ -118,6 +118,9 @@ const base: Readonly<Record<string, Evaluator>> = {
   ),
   'sense.offset_current': eq(['V_OS', 'R_SENSE'], ({ V_OS, R_SENSE }) => V_OS / R_SENSE),
   'sense.pad_error': eq(['R_pad', 'R_SENSE'], ({ R_pad, R_SENSE }) => R_pad / R_SENSE),
+  'sense.reading': eq(['I_SENSE', 'R_SENSE', 'R_pad', 'V_OS'], ({ I_SENSE, R_SENSE, R_pad, V_OS }) =>
+    (I_SENSE * (R_SENSE + R_pad)) / R_SENSE + V_OS / R_SENSE,
+  ),
   'sense.rel_error': eq(['V_OS', 'I_SENSE', 'R_SENSE', 'R_pad'], ({ V_OS, I_SENSE, R_SENSE, R_pad }) =>
     V_OS / (I_SENSE * R_SENSE) + R_pad / R_SENSE,
   ),

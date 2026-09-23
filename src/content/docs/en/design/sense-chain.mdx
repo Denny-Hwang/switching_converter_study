@@ -23,14 +23,14 @@ anything above half its sampling rate back into the reading. The sense
 chain takes the whole chain, in SI units, from zero to the largest current:
 
 - the gain, the full-scale current and which limit sets it, and the output
-  floor;
+  floor, each at the worst case of the offset and the pad resistance;
 - the sense voltage (the burden) and the shunt's dissipation at the largest
   current;
 - the offset-equivalent current, the pad error, and the error of the
   reading at the smallest current;
 - the R-C filter's corner against the Nyquist frequency.
 
-It flags each violation, and each result names its equation. Two charts show
+It flags each violation, and each result names the equations it comes from. Two charts show
 the output and the relative error against the current.
 
 <SenseChain />
@@ -73,30 +73,7 @@ its REF pin <Cite key="ti_ina181" where="Equation 1" />:
 
 The REF voltage sets the output at zero current. A current of either sign
 then swings the output to either side of it, and a REF voltage of zero suits
-a current that flows one way only.
-
-### Full scale and the output floor
-
-Two limits cap the output. The amplifier delivers only up to its largest
-output voltage $V_\mathrm{OUT,max}$, which depends on its supply; the ADC
-reads only up to its full scale $V_\mathrm{FS}$. A voltage-output
-amplifier's data sheet gives its output swing as a small voltage short of
-the supply rail and above ground <Cite key="ti_ina181" />. The LTC6101 data
-sheet gives its largest output as fixed values <Cite key="adi_ltc6101" />.
-Enter the values that apply at your supply.
-
-The tool solves the output equation for the current at which the output
-reaches the lower of the two limits: that is the full-scale current. If it
-lies below $I_\mathrm{max}$, the reading clips before the largest current.
-If it lies far above, the ADC's range is partly wasted; the table gives the
-share of the full scale that the largest current uses.
-
-At the bottom, a voltage-output amplifier with its REF pin at zero cannot
-drive its output all the way to ground. Its lowest output
-$V_\mathrm{OUT,min}$, the swing to ground, sets a floor: every current whose
-output would fall below it reads the same. The tool gives the current below
-which that happens, and flags a floor above $I_\mathrm{min}$. A REF voltage
-above the floor removes it.
+a current that flows one way only <Cite key="ti_ina181" />.
 
 ### Offset
 
@@ -128,10 +105,22 @@ connections to the sense resistor in all but the lowest-power applications
 <Cite key="adi_ltc6101" where="Applications Information" />. With a Kelvin
 connection, enter $R_\mathrm{pad}$ as zero.
 
+### What the amplifier reads
+
+With both the offset and the pad resistance, the amplifier sees the load
+current through the shunt and the pads, plus its offset, and reads the sum
+as a current through the shunt alone:
+
+<Eq id="sense.reading" />
+
+The output is the output equation taken at this current. A data sheet gives
+the offset's largest magnitude, not its sign, so the tool takes both signs:
+the one that raises the output for the upper limits, and the one that
+lowers it for the floor.
+
 ### Error at the smallest current
 
-With both the offset and the pad resistance, the two errors add, with no
-cross term:
+Relative to the true current, the two errors add, with no cross term:
 
 <Eq id="sense.rel_error" />
 
@@ -140,6 +129,33 @@ most at $I_\mathrm{min}$. The pad's part is the same at every current. The
 tool flags each part that alone exceeds $\varepsilon_\mathrm{max}$ at
 $I_\mathrm{min}$, and flags the sum when only the two together do. The
 error chart plots both against the current, with the target.
+
+### Full scale and the output floor
+
+Two limits cap the output. The amplifier delivers only up to its largest
+output voltage $V_\mathrm{OUT,max}$, which depends on its supply; the ADC
+reads only up to its full scale $V_\mathrm{FS}$. A voltage-output
+amplifier's data sheet gives its output swing as a small voltage short of
+the supply rail and above ground <Cite key="ti_ina181" />. The LTC6101 data
+sheet gives its largest output as absolute values at stated supply voltages
+<Cite key="adi_ltc6101" />.
+Enter the values that apply at your supply.
+
+The tool takes the highest output, with the pad resistance and the offset
+at the sign that raises it, and solves for the current at which it reaches
+the lower of the two limits: that is the full-scale current. If it lies
+below $I_\mathrm{max}$, the reading can clip before the largest current. If
+it lies far above, the ADC's range is partly wasted; the table gives the
+share of the full scale that the highest output at $I_\mathrm{max}$ uses.
+
+At the bottom, a voltage-output amplifier with its REF pin at zero cannot
+drive its output all the way to ground. Its lowest output
+$V_\mathrm{OUT,min}$, the swing to ground, sets a floor: every current whose
+output would fall below it reads the same. An offset of the sign that
+lowers the output holds the output at the floor up to a current of its own.
+The tool takes the lowest output, gives the current below which it can stay
+at the floor, and flags a floor above $I_\mathrm{min}$. A REF voltage above
+the floor removes it.
 
 ### Filter and sampling
 
@@ -171,8 +187,13 @@ equation):
 <Eq id="sense.filter_R" />
 
 A capacitor straight across $R_\mathrm{OUT}$, with no $R_f$, is a filter of
-this kind too. A voltage-output amplifier drives the filter from a low
-impedance, so there the capacitor sees $R_f$ alone.
+this kind too. The tool takes a voltage-output amplifier's output as an
+ideal voltage source, so there the capacitor sees $R_f$ alone; a real
+amplifier's output resistance adds to $R_f$.
+
+Enter the converter's switching frequency if you know it: the table then
+gives the filter's gain there, the share of the switching ripple that
+reaches the ADC.
 
 ## Worked examples
 
@@ -181,8 +202,12 @@ A current-output amplifier on a two-terminal shunt:
 <Worked example="sense-current" />
 
 At the largest current the output reaches
-<Val example="sense-current" name="V_OUT" />, below the ADC's full scale of
-<Val example="sense-current" name="V_FS" />. The low end is the problem. The
+<Val example="sense-current" name="V_OUT" /> nominally. With the pad
+resistance and the offset, the amplifier reads
+<Val example="sense-current" name="I_meas" />, and its output can reach
+<Val example="sense-current" name="V_OUThi" />: still below the ADC's full
+scale of <Val example="sense-current" name="V_FS" />. The low end is the
+problem. The
 offset-equivalent current, <Val example="sense-current" name="I_OSeq" />, and
 the pad error, <Val example="sense-current" name="eps_pad" />, put the
 reading at <Val example="sense-current" name="I_min" /> off by a fraction of
@@ -197,11 +222,11 @@ A voltage-output amplifier on a Kelvin-connected shunt:
 
 <Worked example="sense-voltage" />
 
-The output at the largest current, <Val example="sense-voltage" name="V_OUT" />,
-stays below the amplifier's largest output of
-<Val example="sense-voltage" name="V_OUTmax" />, and the error at the
-smallest current, <Val example="sense-voltage" name="eps_I" />, meets the
-target. The filter's corner, <Val example="sense-voltage" name="f_c" />,
+The highest output at the largest current,
+<Val example="sense-voltage" name="V_OUThi" />, stays below the amplifier's
+largest output of <Val example="sense-voltage" name="V_OUTmax" />, and the
+error at the smallest current, <Val example="sense-voltage" name="eps_I" />,
+meets the target. The filter's corner, <Val example="sense-voltage" name="f_c" />,
 lies below the Nyquist frequency of <Val example="sense-voltage" name="f_N" />.
 At that frequency the filter still passes a fraction
 <Val example="sense-voltage" name="G_lp" /> of the signal.

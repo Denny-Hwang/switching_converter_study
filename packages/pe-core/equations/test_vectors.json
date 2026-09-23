@@ -4342,6 +4342,105 @@
       "value": 4.244891151545958
     },
     {
+      "id": "sense.reading",
+      "source": "yaml",
+      "inputs": {
+        "I_SENSE": 2.0,
+        "R_SENSE": 0.01,
+        "R_pad": 0.0005,
+        "V_OS": 0.0001
+      },
+      "value": 2.11
+    },
+    {
+      "id": "sense.reading",
+      "source": "yaml",
+      "inputs": {
+        "I_SENSE": 2.0,
+        "R_SENSE": 0.01,
+        "R_pad": 0.0005,
+        "V_OS": -0.0001
+      },
+      "value": 2.09
+    },
+    {
+      "id": "sense.reading",
+      "source": "yaml",
+      "inputs": {
+        "I_SENSE": 5.0,
+        "R_SENSE": 0.005,
+        "R_pad": 0.0,
+        "V_OS": 2e-05
+      },
+      "value": 5.004
+    },
+    {
+      "id": "sense.reading",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 0.0110955,
+        "R_SENSE": 0.456929,
+        "R_pad": 0.00483693,
+        "V_OS": 0.00161154
+      },
+      "value": 0.014739847714447977
+    },
+    {
+      "id": "sense.reading",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 66.3377,
+        "R_SENSE": 0.000879085,
+        "R_pad": 0.000954495,
+        "V_OS": 0.000127122
+      },
+      "value": 138.51061270070585
+    },
+    {
+      "id": "sense.reading",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 83.8506,
+        "R_SENSE": 0.108385,
+        "R_pad": 0.000284471,
+        "V_OS": 1.71961e-06
+      },
+      "value": 84.07069303540712
+    },
+    {
+      "id": "sense.reading",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 0.650575,
+        "R_SENSE": 0.417238,
+        "R_pad": 4.46521e-05,
+        "V_OS": 2.03106e-06
+      },
+      "value": 0.650649491297431
+    },
+    {
+      "id": "sense.reading",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 20.4516,
+        "R_SENSE": 0.000173986,
+        "R_pad": 5.55617e-05,
+        "V_OS": 0.00189558
+      },
+      "value": 37.87774729759866
+    },
+    {
+      "id": "sense.reading",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 0.439907,
+        "R_SENSE": 0.0218556,
+        "R_pad": 2.39178e-05,
+        "V_OS": 1.65852e-06
+      },
+      "value": 0.440464300080739
+    },
+    {
       "id": "sense.rel_error",
       "source": "yaml",
       "inputs": {
