@@ -27,6 +27,8 @@ const PAGES = [
   { path: 'simulate/simulator/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: simulatorAction },
   { path: 'design/converter-designer/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: designerAction },
   { path: 'design/loss-budget/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: lossAction },
+  { path: 'design/clamp-check/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: clampAction },
+  { path: 'design/source-matcher/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: sourceAction },
 ];
 const LOCALES = ['en', 'ko'];
 
@@ -246,6 +248,34 @@ async function lossAction(page, where, errors) {
   await staleAndHash(page, where, errors, 'loss');
   // a budget takes a few seconds (every point is a simulation)
   await noStaleResult(page, where, errors, 'loss', 10000);
+}
+
+/** Clamp check: Space on the second clamp-type button selects the RCD clamp and shows its resistor. */
+async function clampAction(page, where, errors) {
+  const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
+  const second = buttons.nth(1);
+  await second.focus();
+  await page.keyboard.press('Space');
+  await page.waitForTimeout(100);
+  if ((await second.getAttribute('aria-pressed')) !== 'true') errors.push(`${where}: Space did not select a clamp type`);
+  if ((await page.locator(`${TOOL} #clamp-R`).count()) !== 1) errors.push(`${where}: the RCD clamp's resistor field did not appear`);
+  await staleAndHash(page, where, errors, 'clamp');
+}
+
+/** Source matcher: Space on the second envelope button selects the rectified sine and shows its frequency. */
+async function sourceAction(page, where, errors) {
+  const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
+  const second = buttons.nth(1);
+  await second.focus();
+  await page.keyboard.press('Space');
+  await page.waitForTimeout(100);
+  if ((await second.getAttribute('aria-pressed')) !== 'true') errors.push(`${where}: Space did not select an envelope`);
+  if ((await page.locator(`${TOOL} #src-fenv`).count()) !== 1) errors.push(`${where}: the envelope frequency field did not appear`);
+  // an envelope run of a few seconds: the bus settles for 7 R_s C_bus
+  await page.locator(`${TOOL} #src-fenv`).fill('1');
+  await page.locator(`${TOOL} #src-Cbus`).fill('5e-5');
+  await staleAndHash(page, where, errors, 'src');
+  await noStaleResult(page, where, errors, 'src', 10000);
 }
 
 async function main() {

@@ -11,3 +11,16 @@ export { design } from './design';
 export type { DesignPoint, DesignResult, DesignSpec, DesignTopology, DesignWarning } from './design';
 export { BUCKETS, FREQ_FACTORS, LOAD_FRACTIONS, idealDuty, lossBudget, lossPoint } from './losses';
 export type { Bucket, CoreSpec, LossBudget, LossPoint, LossSpec } from './losses';
+export { clampCheck } from './clamp';
+export type { ClampKind, ClampResult, ClampSpec, ClampWarning } from './clamp';
+export {
+  ENVELOPE_MAX_CYCLES,
+  ENVELOPE_SETTLE,
+  envelopeAt,
+  envelopeCycles,
+  envelopePeriod,
+  envelopeRun,
+  matchPoint,
+  matchSource,
+} from './harvesting';
+export type { Envelope, EnvelopeRun, MatchPoint, MatchResult, MatchSpec, SinkMode } from './harvesting';

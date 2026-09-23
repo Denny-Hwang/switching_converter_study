@@ -1,0 +1,71 @@
+---
+/**
+ * <SourceMatcher /> -- the source-matcher island with labels in the page's
+ * language and presets from the synthetic source examples. State lives in
+ * the URL hash.
+ */
+import SourceIsland from '../tools/SourceMatcher.tsx';
+import { ui } from '../i18n/ui';
+import { pageLocale } from '../lib/locale';
+import { pageHref } from '../lib/paths';
+import { SOURCE_PRESETS, sourceValues } from '../lib/sourcepresets';
+
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const labels = {
+  presets: t['sm.presets'],
+  source: t['sm.source'],
+  converter: t['sm.converter'],
+  envelope: t['sm.envelope'],
+  envelopeKinds: { none: t['sm.envNone'], sine: t['sm.envSine'], points: t['sm.envPoints'] },
+  pointsHelp: t['sm.pointsHelp'],
+  results: t['sm.results'],
+  quantity: t['sim.quantity'],
+  value: t['des.value'],
+  equation: t['sim.formula'],
+  rin: t['sm.rin'],
+  etaLfr: t['sm.etaLfr'],
+  vgcrit: t['sm.vgcrit'],
+  voccrit: t['sm.voccrit'],
+  mode: t['sm.mode'],
+  modes: { LFR: t['sm.modeLFR'], CV: t['sm.modeCV'] },
+  vg: t['sm.vg'],
+  power: t['sm.power'],
+  pmax: t['sm.pmax'],
+  eta: t['sm.eta'],
+  vds: t['sm.vds'],
+  pswitch: t['sm.pswitch'],
+  overRating: t['sm.overRating'],
+  extractionChart: t['sm.extractionChart'],
+  amplitude: t['sm.amplitude'],
+  share: t['sm.share'],
+  lfrCurve: t['sm.lfrCurve'],
+  cvCurve: t['sm.cvCurve'],
+  actual: t['sm.actual'],
+  switchChart: t['sm.switchChart'],
+  powerAxis: t['sm.powerAxis'],
+  vdsAxis: t['sm.vdsAxis'],
+  rating: t['sm.rating'],
+  envelopeChart: t['sm.envelopeChart'],
+  time: t['sm.time'],
+  voltage: t['sm.voltage'],
+  vbus: t['sm.vbus'],
+  voc: t['sm.voc'],
+  pIn: t['sm.pIn'],
+  pAvail: t['sm.pAvail'],
+  etaEnvelope: t['sm.etaEnvelope'],
+  running: t['sm.running'],
+  tooLong: t['sm.tooLong'],
+  simulate: t['sm.simulate'],
+  invalid: t['sm.invalid'],
+  shareUrl: t['sm.shareUrl'],
+};
+const PRESET_LABEL: Record<string, string> = {
+  'source-lfr': t['sm.presetConstant'],
+  'source-envelope': t['sm.presetSine'],
+};
+const presets = SOURCE_PRESETS.map((id) => ({ id, label: PRESET_LABEL[id] ?? id, values: sourceValues(id) }));
+const simulatorHref = pageHref(locale, 'simulate/simulator');
+---
+
+<SourceIsland client:only="react" locale={locale} labels={labels} presets={presets} simulatorHref={simulatorHref} />

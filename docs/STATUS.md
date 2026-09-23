@@ -10,10 +10,11 @@
 | 00/01 refresher additions (Phase 2c) | ✅ 16 equations: inductor and capacitor under constant excitation and their energy, impedance, R-C filter corner and gain, pulse-train harmonics and rms value, self-resonance, ESR ripple, Ampère's law, B-H relation, ideal transformer |
 | Simulator compare-panel additions (Phase 3a) | ✅ 2 equations: `buck.Vds`, `boost.Vds` (switch blocking voltages) |
 | Design-tool additions (Phase 3b) | ✅ 4 equations: `flyback.IM`, `flyback.ripple.iM`, `flyback.ripple.v` (flyback CCM current and ripples), `loss.core` (core loss of a whole core) |
-| Derivations reproduce the YAML (`pytest`) | ✅ 94 of 101 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk`, `mag.B_H` and `loss.core` are definitions, `loss.steinmetz` is an empirical law) |
+| Design-tool additions (Phase 3c) | ✅ 10 equations: `flyback.V_OR`, `clamp.Vds`, `clamp.P`, `clamp.rcd.V`, `tvs.R_D`, `tvs.V_clamp`, `flyback.V_ceiling` (primary clamp), `lfr.Vg`, `lfr.eta`, `lfr.Vg_power` (loss-free resistor on a linear source) |
+| Derivations reproduce the YAML (`pytest`) | ✅ 102 of 111 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk`, `mag.B_H` and `loss.core` are definitions, `loss.steinmetz` is an empirical law, `tvs.R_D` and `tvs.V_clamp` are the TVS model of `st_an316`) |
 | TS/Python parity (`vitest`, 1e-9 rel) | ✅ all shared vectors |
 | Strict KaTeX on every generated formula and derivation step (`vitest`) | ✅ |
-| `references.bib` verified (two web-search rounds + CI Crossref + URL title check) | ✅ 25 of 25 verified (`steinmetz1984` DOI confirmed by the CI Crossref job; `ti_slva630` and `ti_snoa930` added in Phase 2c) |
+| `references.bib` verified (two web-search rounds + CI Crossref + URL title check) | ✅ 27 of 27 verified (`steinmetz1984` DOI confirmed by the CI Crossref job; `ti_slva630` and `ti_snoa930` added in Phase 2c; `ti_ssztcv6` and `st_an316` added in Phase 3c) |
 
 ## Simulator and tools (Phase 3)
 
@@ -22,21 +23,23 @@
 | Simulator engine (BUILD_SPEC §4): piecewise-linear intervals, exact matrix-exponential steps at T_s/2000, events located on the exact solution, steady state to 1e-6 within 2000 cycles | ✅ Phase 3a (`packages/pe-core/src/sim`). Events: a bracketing search like the spec's bisection (Illinois regula falsi, fewer steps). Steady state: Newton shooting with the exact cycle Jacobian, accepted when the change per cycle (relative to each state's variation) and the remaining Newton step (relative to its size) are both below 1e-6. The Jacobian is accumulated as J - I, exact also for very slow states. Cases without a steady state are reported as such (tested); a node capacitance that rings faster than three sub-steps per ring at 20000 sub-steps per period is refused (results at three agree with ten times finer sub-steps) |
 | Validation grid: M and Δi_pp within 2 %, mode matches K/K_crit (buck, boost, buck-boost, flyback × 5 duty ratios × 4 values of K/K_crit) | ✅ 80 cases in `packages/pe-core/test/sim.test.ts`, plus forward CCM, energy balance (also with a node capacitance), ringing frequency, and regression cases from three independent reviews (reverse current, very slow states, fast ringing, the node capacitance while the diode conducts, the exact Jacobian against finite differences, the Newton line search, states that do not move within the cycle) |
 | Source-driven mode: bus pinned at V_g,crit within 2 % (constant V_oc) | ✅ Phase 3a |
-| Source-driven mode: sinusoidal and user-drawn V_oc envelopes | ⬜ with the SourceMatcher tool (Phase 3) |
+| Source-driven mode: sinusoidal and user-drawn V_oc envelopes | ✅ in the SourceMatcher tool (Phase 3c): the simulator's source-driven flyback, cycle by cycle over an envelope period after the bus settles |
 | Simulator page (`simulate/simulator`): topology buttons, presets, sliders, waveforms, mode badge, compare-with-formula panel, losses; state in the URL hash; runs in a Web Worker | ✅ EN and KO, Phase 3a |
 | "Try it" simulator links (`<TrySim>`) from 02/03 pages | ✅ 10 pages, EN and KO |
-| Screenshots on tool pages (`scripts/screenshots.mjs`, checked by `modulelint.py`) | ✅ explorer, simulator, converter designer, loss budget |
-| Keyboard focus order of tool pages (`scripts/keyboard_check.mjs`, CI) | ✅ explorer, simulator, converter designer, loss budget |
+| Screenshots on tool pages (`scripts/screenshots.mjs`, checked by `modulelint.py`) | ✅ explorer, simulator, converter designer, loss budget, clamp check, source matcher |
+| Keyboard focus order of tool pages (`scripts/keyboard_check.mjs`, CI) | ✅ explorer, simulator, converter designer, loss budget, clamp check, source matcher |
 | LTspice `.asc`, ngspice `.cir` and Falstad links on the simulator page | ⬜ Phase 5 (`sim/`) |
 | ConverterDesigner (`design/converter-designer`): D range, L or L_M for the ripple target and for CCM at the lightest load, K against K_crit, ripples, stresses, C for the ripple target; each result names its equation, solved with `invert` on the catalogue's evaluator; links to the simulator and the loss budget | 🟡 EN and KO, Phase 3b: CCM target (the designed parts reproduce in the simulator within 2 %, and the CCM boundary, the flyback's diode drop included, matches the simulated mode; tested). A DCM target (BUILD_SPEC §5 "L/L_M for target mode") is not offered yet |
 | LossBudget (`design/loss-budget`): conduction, capacitive switching, gate drive, core, diode and flyback leakage losses against the load and f_s, with the efficiency; each point simulated with the duty ratio regulated (bracketed search; the forward converter stops at its reset limit); peak flux density shown for a saturation check | ✅ EN and KO, Phase 3b; the conduction, diode and capacitive buckets equal the simulator's own accounting in every topology (tested) |
-| Design tools MagneticsDesigner, SenseChain, ClampCheck, SourceMatcher (BUILD_SPEC §5) | ⬜ Phase 3c–3e |
+| ClampCheck (`design/clamp-check`): TVS or RCD primary clamp of a flyback: reflected voltage, leakage energy, clamp voltage at the peak current (TVS from its datasheet's V_BR, V_CL and I_PP), switch voltage against its rating, clamp dissipation, open-load output ceiling; trade-off chart | ✅ EN and KO, Phase 3c |
+| SourceMatcher (`design/source-matcher`): a fixed-duty-ratio flyback on a linear source: loss-free-resistor divider and extraction, CCM taking over at V_g,crit (constant-voltage sink), switch voltage against power, envelope simulation; link to the simulator | ✅ EN and KO, Phase 3c; the operating point matches the simulator's steady state (tested) |
+| Design tools MagneticsDesigner, SenseChain (BUILD_SPEC §5) | ⬜ Phase 3d–3e |
 
 Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); theory uses only `<Eq>` embeds and each Eq has ≥ 1 test vector; "Try it" links a tool preset; "Go deeper" has ≥ 2 verified resources with retrieval dates; a gotchas subsection exists; quiz with ≥ 5 explained questions; build, tests and all lints green.
 
 Legend: ✅ done · 🟡 partial · ⬜ not started · ➖ not applicable. "Phase" is the build phase that delivers the module (docs/BUILD_SPEC.md §7); "later" = not scheduled in phases 0–5. 00-foundations and 01-physics are compact refreshers (Phase 2 scope).
 
-_Last updated: Phase 3b (converter designer and loss budget). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
+_Last updated: Phase 3c (clamp check and source matcher). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
 
 "Try it" links open the [equation explorer](../src/content/docs/en/design/explorer.mdx) with a synthetic preset. Pages whose example is a whole converter also open the [simulator](../src/content/docs/en/simulate/simulator.mdx) with it (`<TrySim>`, Phase 3a); design-tool presets come with the design tools.
 
@@ -163,9 +166,11 @@ _Last updated: Phase 3b (converter designer and loss budget). `python scripts/mo
 | landing (`index`) | ✅ | ✅ | Phase 0 |
 | about | ✅ | ✅ | Phase 0 |
 | about/equation-pipeline | ✅ | ✅ | Phase 0 acceptance page: one `<Eq>` + Plotly island |
-| 02-theory/derivations | ✅ | ✅ | auto-rendered from `python/pe_core/derive/*.py`: 12 modules, 94 derived equations (Phase 3b) |
+| 02-theory/derivations | ✅ | ✅ | auto-rendered from `python/pe_core/derive/*.py`: 13 modules, 102 derived equations (Phase 3c) |
 | design/explorer | ✅ | ✅ | Phase 2a: evaluate and sweep any catalogue equation; state in the URL hash ("Try it" target); screenshot and keyboard check (Phase 3a) |
 | simulate/simulator | ✅ | ✅ | Phase 3a: the pe-core simulator; state in the URL hash (`<TrySim>` target); screenshot and keyboard check |
 | design/converter-designer | ✅ | ✅ | Phase 3b; state in the URL hash; screenshot and keyboard check |
 | design/loss-budget | ✅ | ✅ | Phase 3b; state in the URL hash; screenshot and keyboard check |
+| design/clamp-check | ✅ | ✅ | Phase 3c; homes the seven clamp equations (`flyback.V_OR`, `clamp.*`, `tvs.*`, `flyback.V_ceiling`); state in the URL hash; screenshot and keyboard check |
+| design/source-matcher | ✅ | ✅ | Phase 3c; homes `src.Pmax`, `src.cv_extraction`, `lfr.Vg`, `lfr.eta`, `lfr.Vg_power` until the harvesting pages (Phase 4); state in the URL hash; screenshot and keyboard check |
 | 10-resources/bibliography | ✅ | ✅ | Phase 1: generated from `references.bib` (verified entries only) |
