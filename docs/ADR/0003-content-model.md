@@ -24,7 +24,8 @@ built on these rules, so the mechanics are fixed here.
 2. **Numbers are computed, never typed.** A worked example is a synthetic
    parameter file (`examples/synthetic/*.yaml`: parameters plus an ordered
    list of equation ids) that pe-core evaluates at build time (`runSteps`).
-   `<Worked>` renders the table, with the example's "synthetic" label and a
+   `<Worked>` renders the table, with the example's label (an "example";
+   every page's footer states that example numbers are synthetic) and a
    link from each computed row to the equation's home; `<Val>` places a single
    value in a sentence. Prose never contains a number with a unit unless a
    `<Cite>` on the same line supplies it (`privacy_scan.py`).

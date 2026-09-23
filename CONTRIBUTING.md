@@ -7,7 +7,8 @@ build specification is `docs/BUILD_SPEC.md`.
 
 1. **No private data.** Every number is either from a cited textbook example
    (cite chapter/example) or from `examples/synthetic/*.yaml` (round numbers,
-   labelled "synthetic" on the page). No measured data, identifiers or sizing
+   labelled as an example on the page; the footer of every page states that
+   example numbers are synthetic). No measured data, identifiers or sizing
    copied from a real design.
 2. **One source of truth for equations.** Never type LaTeX for an equation
    into a page. Add it to `packages/pe-core/equations/equations.yaml`,
@@ -149,7 +150,8 @@ so a link can preset it and any view can be shared.
 - `scripts/privacy_scan.py`: no e-mail addresses; no number-with-unit in page
   prose unless the same line carries a `<Cite>` (synthetic values are rendered
   from `examples/synthetic/*.yaml` by components); synthetic examples labelled
-  "synthetic" (and "합성" in Korean); quizzes declare `numbers: synthetic`; the
+  as examples ("example", "예제"), and the footer statement that example
+  numbers are synthetic in place; quizzes declare `numbers: synthetic`; the
   maintainer's local `.private/denylist.txt`, if present.
 - `scripts/refcheck.py`: citation integrity (see above).
 - `scripts/anchorcheck.py` (after `npm run build`): every internal link with a
