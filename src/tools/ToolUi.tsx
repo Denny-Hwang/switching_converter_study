@@ -75,7 +75,7 @@ interface FieldLabelProps {
 export function FieldLabel({ htmlFor, sym, symHtml, meaning, unit, note }: FieldLabelProps) {
   return (
     <label htmlFor={htmlFor} className="pe-field">
-      {symHtml ? <span className="pe-sym pe-sym--tex" aria-label={sym} dangerouslySetInnerHTML={{ __html: symHtml }} /> : <Sym text={sym} />}
+      {symHtml ? <span className="pe-sym pe-sym--tex" dangerouslySetInnerHTML={{ __html: symHtml }} /> : <Sym text={sym} />}
       {meaning && (
         <span className="pe-field__meaning">
           <Rich text={meaning} />
@@ -95,13 +95,16 @@ interface ChoicesProps<T extends string> {
   onPick: (id: T) => void;
   /** Wider cells, for long labels. */
   wide?: boolean;
+  /** Name the group itself (false inside a fieldset whose legend names it). */
+  named?: boolean;
 }
 
 /** Equal-size buttons in a grid, named by `legend` for assistive technology. */
-export function ChoiceButtons<T extends string>({ legend, items, selected, onPick, wide }: ChoicesProps<T>) {
+export function ChoiceButtons<T extends string>({ legend, items, selected, onPick, wide, named = true }: ChoicesProps<T>) {
   const select = selected !== undefined;
+  const name = named ? { role: 'group', 'aria-label': legend } : {};
   return (
-    <div className={`pe-choices${wide ? ' pe-choices--wide' : ''}`} role="group" aria-label={legend} data-choice={select ? 'select' : 'action'}>
+    <div className={`pe-choices${wide ? ' pe-choices--wide' : ''}`} {...name} data-choice={select ? 'select' : 'action'}>
       {items.map((it) => (
         <button key={it.id} type="button" aria-pressed={select ? selected === it.id : undefined} onClick={() => onPick(it.id)}>
           <Rich text={it.label} />
@@ -116,7 +119,7 @@ export function Choices<T extends string>(props: ChoicesProps<T>) {
   return (
     <fieldset className="pe-choices-set">
       <legend>{props.legend}</legend>
-      <ChoiceButtons {...props} />
+      <ChoiceButtons {...props} named={false} />
     </fieldset>
   );
 }

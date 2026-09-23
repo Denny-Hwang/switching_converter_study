@@ -131,12 +131,14 @@ export function toClampSpec(kind: ClampKind, values: Record<string, string>): Cl
 const fmt = (x: number | undefined, unit = '') => fmtValue(x, unit);
 
 /** A value, or a range when its two ends differ; the unit is written once when both ends share it ("60 – 66 V"). */
-function range(r: { low: number; high: number }, unit: string): string {
+export function range(r: { low: number; high: number }, unit: string): string {
   if (Math.abs(r.high - r.low) <= 1e-12 * Math.abs(r.low)) return fmt(r.low, unit);
   const lo = fmt(r.low, unit);
   const hi = fmt(r.high, unit);
-  const suffix = unit ? hi.slice(hi.lastIndexOf(' ')) : '';
-  return `${suffix && lo.endsWith(suffix) ? lo.slice(0, -suffix.length) : lo} – ${hi}`;
+  if (lo === hi) return lo;
+  const i = lo.lastIndexOf(' ');
+  const j = hi.lastIndexOf(' ');
+  return i > 0 && j > 0 && lo.slice(i) === hi.slice(j) ? `${lo.slice(0, i)} – ${hi}` : `${lo} – ${hi}`;
 }
 
 function readHash(): URLSearchParams {
@@ -361,127 +363,129 @@ export default function ClampCheck({ labels, presets, symbols }: Props) {
             )}
           </section>
           {r && (
-            <table className="pe-sim__table">
-              <caption>
-                <Rich text={labels.results} />
-              </caption>
-              <thead>
-                <tr>
-                  <th scope="col">{labels.quantity}</th>
-                  <th scope="col">{labels.value}</th>
-                  <th scope="col">{labels.equation}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">
-                    <Rich text={labels.vor} />
-                  </th>
-                  <td>{fmt(r.VOR, 'V')}</td>
-                  <td>
-                    <code>flyback.V_OR</code>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">
-                    <Rich text={labels.elk} />
-                  </th>
-                  <td>{fmt(r.Elk, 'J')}</td>
-                  <td>
-                    <code>flyback.leak.E</code>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">
-                    <Rich text={labels.plk} />
-                  </th>
-                  <td>{fmt(r.Plk, 'W')}</td>
-                  <td>
-                    <code>flyback.leak.P</code>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">
-                    <Rich text={labels.treset} />
-                  </th>
-                  <td>{fmt(r.tReset, 's')}</td>
-                  <td>
-                    <code>clamp.t_reset</code>
-                  </td>
-                </tr>
-                {r.RD !== undefined && (
+            <div className="pe-scroll">
+              <table className="pe-sim__table">
+                <caption>
+                  <Rich text={labels.results} />
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{labels.quantity}</th>
+                    <th scope="col">{labels.value}</th>
+                    <th scope="col">{labels.equation}</th>
+                  </tr>
+                </thead>
+                <tbody>
                   <tr>
                     <th scope="row">
-                      <Rich text={labels.rd} />
+                      <Rich text={labels.vor} />
                     </th>
-                    <td>{fmt(r.RD, 'Ω')}</td>
+                    <td>{fmt(r.VOR, 'V')}</td>
                     <td>
-                      <code>tvs.R_D</code>
+                      <code>flyback.V_OR</code>
                     </td>
                   </tr>
-                )}
-                <tr>
-                  <th scope="row">
-                    <Rich text={labels.vclamp} />
-                  </th>
-                  <td>
-                    <strong>{range(r.Vclamp, 'V')}</strong>
-                  </td>
-                  <td>
-                    <code>{r.spec.clamp.kind === 'tvs' ? 'tvs.V_clamp' : 'clamp.rcd.V'}</code>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">
-                    <Rich text={labels.vds} />
-                  </th>
-                  <td>
-                    <strong>{fmt(r.Vds, 'V')}</strong>
-                  </td>
-                  <td>
-                    <code>clamp.Vds</code>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">
-                    <Rich text={labels.margin} />
-                  </th>
-                  <td>
-                    {fmt(r.margin, 'V')} ({fmt((100 * r.margin) / r.spec.Vrating, '%')})
-                  </td>
-                  <td />
-                </tr>
-                <tr>
-                  <th scope="row">
-                    <Rich text={labels.pclamp} />
-                  </th>
-                  <td>
-                    <strong>{range(r.P, 'W')}</strong>
-                  </td>
-                  <td>
-                    <code>clamp.P</code>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">
-                    <Rich text={labels.ratio} />
-                  </th>
-                  <td>{range({ low: r.P.low / r.Plk, high: r.P.high / r.Plk }, '×')}</td>
-                  <td />
-                </tr>
-                {r.ceiling && (
                   <tr>
                     <th scope="row">
-                      <Rich text={labels.ceiling} />
+                      <Rich text={labels.elk} />
                     </th>
-                    <td>{range(r.ceiling, 'V')}</td>
+                    <td>{fmt(r.Elk, 'J')}</td>
                     <td>
-                      <code>flyback.V_ceiling</code>
+                      <code>flyback.leak.E</code>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.plk} />
+                    </th>
+                    <td>{fmt(r.Plk, 'W')}</td>
+                    <td>
+                      <code>flyback.leak.P</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.treset} />
+                    </th>
+                    <td>{fmt(r.tReset, 's')}</td>
+                    <td>
+                      <code>clamp.t_reset</code>
+                    </td>
+                  </tr>
+                  {r.RD !== undefined && (
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.rd} />
+                      </th>
+                      <td>{fmt(r.RD, 'Ω')}</td>
+                      <td>
+                        <code>tvs.R_D</code>
+                      </td>
+                    </tr>
+                  )}
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.vclamp} />
+                    </th>
+                    <td>
+                      <strong>{range(r.Vclamp, 'V')}</strong>
+                    </td>
+                    <td>
+                      <code>{r.spec.clamp.kind === 'tvs' ? 'tvs.V_clamp' : 'clamp.rcd.V'}</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.vds} />
+                    </th>
+                    <td>
+                      <strong>{fmt(r.Vds, 'V')}</strong>
+                    </td>
+                    <td>
+                      <code>clamp.Vds</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.margin} />
+                    </th>
+                    <td>
+                      {fmt(r.margin, 'V')} ({fmt((100 * r.margin) / r.spec.Vrating, '%')})
+                    </td>
+                    <td />
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.pclamp} />
+                    </th>
+                    <td>
+                      <strong>{range(r.P, 'W')}</strong>
+                    </td>
+                    <td>
+                      <code>clamp.P</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.ratio} />
+                    </th>
+                    <td>{range({ low: r.P.low / r.Plk, high: r.P.high / r.Plk }, '×')}</td>
+                    <td />
+                  </tr>
+                  {r.ceiling && (
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.ceiling} />
+                      </th>
+                      <td>{range(r.ceiling, 'V')}</td>
+                      <td>
+                        <code>flyback.V_ceiling</code>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           )}
           <p className="pe-chart__title">
             <Rich text={labels.chart} />

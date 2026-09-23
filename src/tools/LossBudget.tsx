@@ -474,61 +474,63 @@ export default function LossBudget({ labels, presets, simulatorHref, symbols }: 
           </section>
           {budget && nominal && (
             <>
-              <table className="pe-sim__table">
-                <caption>
-                  <Rich text={labels.nominal} />
-                </caption>
-                <thead>
-                  <tr>
-                    <th scope="col">{labels.bucket}</th>
-                    <th scope="col">{labels.power}</th>
-                    <th scope="col">{labels.share}</th>
-                    <th scope="col">{labels.equation}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {BUCKET_ORDER.filter((b) => b !== 'clamp' || budget.spec.topology === 'flyback').map((b) => (
-                    <tr key={b}>
-                      <th scope="row">
-                        <Rich text={labels.buckets[b]} />
-                      </th>
-                      <td>{fmt(nominal.losses[b], 'W')}</td>
-                      <td>{fmt((100 * nominal.losses[b]) / nominal.total, '%')}</td>
-                      <td>
-                        {EQUATIONS[b].map((e) => (
-                          <code key={e}>{e} </code>
-                        ))}
-                      </td>
+              <div className="pe-scroll">
+                <table className="pe-sim__table">
+                  <caption>
+                    <Rich text={labels.nominal} />
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">{labels.bucket}</th>
+                      <th scope="col">{labels.power}</th>
+                      <th scope="col">{labels.share}</th>
+                      <th scope="col">{labels.equation}</th>
                     </tr>
-                  ))}
-                  <tr>
-                    <th scope="row">{labels.total}</th>
-                    <td>
-                      <strong>{fmt(nominal.total, 'W')}</strong>
-                    </td>
-                    <td />
-                    <td />
-                  </tr>
-                  <tr>
-                    <th scope="row">{labels.efficiency}</th>
-                    <td>
-                      <strong>{fmt(100 * nominal.eta, '%')}</strong>
-                    </td>
-                    <td />
-                    <td />
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      {labels.mode} · {labels.duty}
-                    </th>
-                    <td>
-                      {nominal.mode} · <i>D</i> = {fmt(nominal.D)}
-                    </td>
-                    <td />
-                    <td />
-                  </tr>
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {BUCKET_ORDER.filter((b) => b !== 'clamp' || budget.spec.topology === 'flyback').map((b) => (
+                      <tr key={b}>
+                        <th scope="row">
+                          <Rich text={labels.buckets[b]} />
+                        </th>
+                        <td>{fmt(nominal.losses[b], 'W')}</td>
+                        <td>{fmt((100 * nominal.losses[b]) / nominal.total, '%')}</td>
+                        <td>
+                          {EQUATIONS[b].map((e) => (
+                            <code key={e}>{e} </code>
+                          ))}
+                        </td>
+                      </tr>
+                    ))}
+                    <tr>
+                      <th scope="row">{labels.total}</th>
+                      <td>
+                        <strong>{fmt(nominal.total, 'W')}</strong>
+                      </td>
+                      <td />
+                      <td />
+                    </tr>
+                    <tr>
+                      <th scope="row">{labels.efficiency}</th>
+                      <td>
+                        <strong>{fmt(100 * nominal.eta, '%')}</strong>
+                      </td>
+                      <td />
+                      <td />
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        {labels.mode} · {labels.duty}
+                      </th>
+                      <td>
+                        {nominal.mode} · <i>D</i> = {fmt(nominal.D)}
+                      </td>
+                      <td />
+                      <td />
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
               {nominal.inputs.Bpk !== undefined && (
                 <p>
                   <Rich text={labels.bpk} />: <strong>{fmt(nominal.inputs.Bpk, 'T')}</strong> <code>mag.B_pk</code>

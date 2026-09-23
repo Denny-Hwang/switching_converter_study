@@ -25,20 +25,26 @@ export function formatSI(value: number, unit: string, sig = 3): string {
   if (unit === '1' || unit === '') {
     // Dimensionless: plain digits (2000, not 2.00e+3) between 1e-3 and 1e6.
     const abs = Math.abs(value);
-    return abs >= 1e-3 && abs < 1e6 ? String(Number(value.toPrecision(sig))) : trim(value, sig);
+    return minus(abs >= 1e-3 && abs < 1e6 ? String(Number(value.toPrecision(sig))) : trim(value, sig));
   }
   const abs = Math.abs(value);
   if (!PREFIXABLE.has(unit) || abs === 0) {
-    const txt = abs !== 0 && (abs < 1e-3 || abs >= 1e4) ? value.toExponential(sig - 1) : trim(value, sig);
-    return `${txt} ${unit}`;
+    const txt = abs !== 0 && (abs < 1e-3 || abs >= 1e5) ? value.toExponential(sig - 1) : String(Number(value.toPrecision(sig)));
+    return `${minus(txt)} ${unit}`;
   }
-  // W/m³ and H/m take prefixes only on large/small magnitudes of the whole unit
+  // the prefix of the value as printed: 999.96 V at 4 digits is 1 kV, 999.6 V stays 999.6 V
+  const printed = Number(abs.toPrecision(sig));
   for (const [scale, prefix] of PREFIXES) {
-    if (abs >= scale * 0.9995) {
-      return `${trim(value / scale, sig)} ${prefix}${unit}`;
+    if (printed >= scale) {
+      return `${minus(trim(value / scale, sig))} ${prefix}${unit}`;
     }
   }
-  return `${value.toExponential(sig - 1)} ${unit}`;
+  return `${minus(value.toExponential(sig - 1))} ${unit}`;
+}
+
+/** A negative number with a true minus sign, not a hyphen. */
+function minus(txt: string): string {
+  return txt.replace(/^-/, '−');
 }
 
 /**

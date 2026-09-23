@@ -285,8 +285,8 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
             raise EquationError(f"symbol_table: {name!r} shadows a sympy built-in")
         if not isinstance(spec, dict) or any(k not in spec for k in ("latex", "unit", "desc", "meaning", "meaning_ko")):
             raise EquationError(f"symbol_table.{name}: needs latex, unit, desc, meaning, meaning_ko")
-        if not str(spec["meaning"]).strip() or not str(spec["meaning_ko"]).strip():
-            raise EquationError(f"symbol_table.{name}: meaning and meaning_ko must not be empty")
+        if not all(isinstance(spec[k], str) and spec[k].strip() for k in ("meaning", "meaning_ko")):
+            raise EquationError(f"symbol_table.{name}: meaning and meaning_ko must be non-empty text")
         sign = spec.get("sign", "positive")
         scale = spec.get("scale", "linear")
         if sign not in ("positive", "real"):

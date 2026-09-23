@@ -486,189 +486,193 @@ export default function ConverterDesigner({ labels, presets, simulatorHref, loss
           </section>
           {r && (
             <>
-              <table className="pe-sim__table">
-                <caption>
-                  <Rich text={labels.results} />
-                </caption>
-                <thead>
-                  <tr>
-                    <th scope="col">{labels.quantity}</th>
-                    <th scope="col">{labels.value}</th>
-                    <th scope="col">{labels.equation}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.dRange} />
-                    </th>
-                    <td>
-                      {fmt(r.D.min)} – {fmt(r.D.max)}
-                    </td>
-                    <td>
-                      <code>{RATIO[topo]}</code>
-                    </td>
-                  </tr>
-                  {r.Dmax !== undefined && (
+              <div className="pe-scroll">
+                <table className="pe-sim__table">
+                  <caption>
+                    <Rich text={labels.results} />
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">{labels.quantity}</th>
+                      <th scope="col">{labels.value}</th>
+                      <th scope="col">{labels.equation}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
                     <tr>
                       <th scope="row">
-                        <Rich text={labels.dReset} />
+                        <Rich text={labels.dRange} />
                       </th>
-                      <td>{fmt(r.Dmax)}</td>
                       <td>
-                        <code>forward.reset.Dmax</code>
+                        {fmt(r.D.min)} – {fmt(r.D.max)}
+                      </td>
+                      <td>
+                        <code>{RATIO[topo]}</code>
                       </td>
                     </tr>
-                  )}
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.lRipple} /> (<Sym text={Lname} />)
-                    </th>
-                    <td>{fmt(r.L.ripple, 'H')}</td>
-                    <td>
-                      <code>{RIPPLE[topo]}</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.lCcm} /> (<Sym text={Lname} />)
-                    </th>
-                    <td>{fmt(r.L.ccm, 'H')}</td>
-                    <td>
-                      <code>L.crit</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.lUsed} /> (<Sym text={Lname} />)
-                    </th>
-                    <td>
-                      <strong>{fmt(r.L.chosen, 'H')}</strong>{' '}
-                      <small>
-                        (<Rich text={labels.binding[r.L.binding]} />)
-                      </small>
-                    </td>
-                    <td />
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.cOut} />
-                    </th>
-                    <td>
-                      <strong>{fmt(r.C, 'F')}</strong>
-                    </td>
-                    <td>
-                      <code>{VRIPPLE[topo]}</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.ripple} />
-                    </th>
-                    <td>{fmt(r.worst.dI, 'A')}</td>
-                    <td>
-                      <code>{RIPPLE[topo]}</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.ipk} />
-                    </th>
-                    <td>{fmt(r.worst.Ipk, 'A')}</td>
-                    <td>
-                      <code>ripple.Ipk</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.vds} />
-                    </th>
-                    <td>{fmt(r.worst.Vds, 'V')}</td>
-                    <td>
-                      <code>{VDS[topo]}</code>
-                    </td>
-                  </tr>
-                  {r.worst.Vr !== undefined && (
+                    {r.Dmax !== undefined && (
+                      <tr>
+                        <th scope="row">
+                          <Rich text={labels.dReset} />
+                        </th>
+                        <td>{fmt(r.Dmax)}</td>
+                        <td>
+                          <code>forward.reset.Dmax</code>
+                        </td>
+                      </tr>
+                    )}
                     <tr>
                       <th scope="row">
-                        <Rich text={labels.vr} />
+                        <Rich text={labels.lRipple} /> (<Sym text={Lname} />)
                       </th>
-                      <td>{fmt(r.worst.Vr, 'V')}</td>
+                      <td>{fmt(r.L.ripple, 'H')}</td>
                       <td>
-                        <code>{VR[topo]}</code>
+                        <code>{RIPPLE[topo]}</code>
                       </td>
                     </tr>
-                  )}
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.kFull} />
-                    </th>
-                    <td>{fmt(r.points[0]!.Kfull)}</td>
-                    <td>
-                      <code>K.def</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.kLight} />
-                    </th>
-                    <td>{fmt(r.points[0]!.Klight)}</td>
-                    <td>
-                      <code>K.def</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.kcritMax} />
-                    </th>
-                    <td>{fmt(r.worst.KcritMax)}</td>
-                    <td>
-                      <code>Kcrit.{topo === 'forward' ? 'buck' : topo}</code>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <table className="pe-sim__table">
-                <caption>
-                  <Rich text={labels.points} />
-                </caption>
-                <thead>
-                  <tr>
-                    <th scope="col">
-                      <Sym text="V_g" /> [V]
-                    </th>
-                    <th scope="col">
-                      <Sym text="D" />
-                    </th>
-                    <th scope="col">
-                      <Sym text={topo === 'flyback' ? 'I_M' : 'I_L'} /> [A]
-                    </th>
-                    <th scope="col">
-                      <Sym text={topo === 'flyback' ? 'Δi_M' : 'Δi_L'} /> [A]
-                    </th>
-                    <th scope="col">
-                      <Sym text="I_pk" /> [A]
-                    </th>
-                    <th scope="col">
-                      <Sym text="K / K_crit" />
-                    </th>
-                    <th scope="col">{labels.mode}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ends.map((p) => (
-                    <tr key={p.Vg}>
-                      <th scope="row">{fmt(p.Vg)}</th>
-                      <td>{fmt(p.D)}</td>
-                      <td>{fmt(p.IL)}</td>
-                      <td>{fmt(p.dI)}</td>
-                      <td>{fmt(p.Ipk)}</td>
-                      <td>{fmt(p.Kfull / p.Kcrit)}</td>
-                      <td>{p.mode}</td>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.lCcm} /> (<Sym text={Lname} />)
+                      </th>
+                      <td>{fmt(r.L.ccm, 'H')}</td>
+                      <td>
+                        <code>L.crit</code>
+                      </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.lUsed} /> (<Sym text={Lname} />)
+                      </th>
+                      <td>
+                        <strong>{fmt(r.L.chosen, 'H')}</strong>{' '}
+                        <small>
+                          (<Rich text={labels.binding[r.L.binding]} />)
+                        </small>
+                      </td>
+                      <td />
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.cOut} />
+                      </th>
+                      <td>
+                        <strong>{fmt(r.C, 'F')}</strong>
+                      </td>
+                      <td>
+                        <code>{VRIPPLE[topo]}</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.ripple} />
+                      </th>
+                      <td>{fmt(r.worst.dI, 'A')}</td>
+                      <td>
+                        <code>{RIPPLE[topo]}</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.ipk} />
+                      </th>
+                      <td>{fmt(r.worst.Ipk, 'A')}</td>
+                      <td>
+                        <code>ripple.Ipk</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.vds} />
+                      </th>
+                      <td>{fmt(r.worst.Vds, 'V')}</td>
+                      <td>
+                        <code>{VDS[topo]}</code>
+                      </td>
+                    </tr>
+                    {r.worst.Vr !== undefined && (
+                      <tr>
+                        <th scope="row">
+                          <Rich text={labels.vr} />
+                        </th>
+                        <td>{fmt(r.worst.Vr, 'V')}</td>
+                        <td>
+                          <code>{VR[topo]}</code>
+                        </td>
+                      </tr>
+                    )}
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.kFull} />
+                      </th>
+                      <td>{fmt(r.points[0]!.Kfull)}</td>
+                      <td>
+                        <code>K.def</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.kLight} />
+                      </th>
+                      <td>{Number.isFinite(r.points[0]!.Klight) ? fmt(r.points[0]!.Klight) : '—'}</td>
+                      <td>
+                        <code>K.def</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.kcritMax} />
+                      </th>
+                      <td>{fmt(r.worst.KcritMax)}</td>
+                      <td>
+                        <code>Kcrit.{topo === 'forward' ? 'buck' : topo}</code>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="pe-scroll">
+                <table className="pe-sim__table">
+                  <caption>
+                    <Rich text={labels.points} />
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">
+                        <Sym text="V_g" /> [V]
+                      </th>
+                      <th scope="col">
+                        <Sym text="D" />
+                      </th>
+                      <th scope="col">
+                        <Sym text={topo === 'flyback' ? 'I_M' : 'I_L'} /> [A]
+                      </th>
+                      <th scope="col">
+                        <Sym text={topo === 'flyback' ? 'Δi_M' : 'Δi_L'} /> [A]
+                      </th>
+                      <th scope="col">
+                        <Sym text="I_pk" /> [A]
+                      </th>
+                      <th scope="col">
+                        <Sym text="K / K_crit" />
+                      </th>
+                      <th scope="col">{labels.mode}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ends.map((p) => (
+                      <tr key={p.Vg}>
+                        <th scope="row">{fmt(p.Vg)}</th>
+                        <td>{fmt(p.D)}</td>
+                        <td>{fmt(p.IL)}</td>
+                        <td>{fmt(p.dI)}</td>
+                        <td>{fmt(p.Ipk)}</td>
+                        <td>{fmt(p.Kfull / p.Kcrit)}</td>
+                        <td>{p.mode}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
               {links.length > 0 && (
                 <p>
                   {links.map((l, i) => (

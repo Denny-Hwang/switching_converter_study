@@ -38,3 +38,10 @@ describe('coloredTitle', () => {
     );
   });
 });
+
+describe('logTicks on a narrow range', () => {
+  it('leaves the ticks to Plotly when fewer than two fit', () => {
+    expect(logTicks(0.012, 0.0125)).toEqual({});
+    expect(logTicks(3.3, 4.1)).toEqual({});
+  });
+});

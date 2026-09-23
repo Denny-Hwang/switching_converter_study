@@ -1474,8 +1474,8 @@
       "latex": "\\varepsilon_\\mathrm{max}",
       "unit": "1",
       "desc": "largest acceptable relative error",
-      "meaning": "error target",
-      "meaning_ko": "오차 목표",
+      "meaning": "relative error target (0.01 = 1 %)",
+      "meaning_ko": "상대 오차 목표(0.01 = 1 %)",
       "range": null,
       "scale": "linear"
     },

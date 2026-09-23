@@ -782,13 +782,6 @@ export default function Simulator({ labels, presets, symbols }: Props) {
           </fieldset>
         </div>
         <div className="pe-split__view">
-          <div
-            ref={plotRef}
-            className="pe-chart"
-            role="img"
-            aria-label={`${labels.topologies[fstate.topo]}: i_L, i_D, v_L, v_DS, v_out`}
-            style={{ height: fstate.source ? 680 : 560 }}
-          />
           <section className="pe-sim__status" aria-live="polite">
             {error && <p className="pe-sim__error">{error}</p>}
             {((busy && !result && !error) || slow) && <p>{labels.running}</p>}
@@ -805,65 +798,76 @@ export default function Simulator({ labels, presets, symbols }: Props) {
               </p>
             )}
           </section>
+          <div
+            ref={plotRef}
+            className="pe-chart"
+            role="img"
+            aria-label={`${labels.topologies[fstate.topo]}: i_L, i_D, v_L, v_DS, v_out`}
+            style={{ height: fstate.source ? 680 : 560, display: error ? 'none' : undefined }}
+          />
           {result && <p className="pe-tool__hint">{labels.plotHint}</p>}
         </div>
       </div>
       {result?.converged && (
         <>
           <h3>{labels.status}</h3>
-          <table className="pe-sim__table">
-            <caption>{labels.compare}</caption>
-            <thead>
-              <tr>
-                <th scope="col">{labels.quantity}</th>
-                <th scope="col">{labels.simulated}</th>
-                <th scope="col">{labels.formula}</th>
-                <th scope="col">{labels.error}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.label}>
-                  <th scope="row">
-                    <Sym text={r.label} /> {symbols[r.label] && <span className="pe-field__meaning">{symbols[r.label]}</span>}{' '}
-                    {r.unit && <span className="pe-field__unit">[{r.unit}]</span>}
-                    {r.eq && <code className="pe-eqid">{r.eq}</code>}
-                  </th>
-                  <td>{fmt(r.sim)}</td>
-                  <td>{fmt(r.formula)}</td>
-                  <td>{pct(((r.sim - r.formula) / Math.abs(r.formula)) * 100)}</td>
+          <div className="pe-scroll">
+            <table className="pe-sim__table">
+              <caption>{labels.compare}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{labels.quantity}</th>
+                  <th scope="col">{labels.simulated}</th>
+                  <th scope="col">{labels.formula}</th>
+                  <th scope="col">{labels.error}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.label}>
+                    <th scope="row">
+                      <Sym text={r.label} /> {symbols[r.label] && <span className="pe-field__meaning">{symbols[r.label]}</span>}{' '}
+                      {r.unit && <span className="pe-field__unit">[{r.unit}]</span>}
+                      {r.eq && <code className="pe-eqid">{r.eq}</code>}
+                    </th>
+                    <td>{fmt(r.sim)}</td>
+                    <td>{fmt(r.formula)}</td>
+                    <td>{pct(((r.sim - r.formula) / Math.abs(r.formula)) * 100)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <p className="pe-tool__hint">
             <Rich text={labels.compareNote} />
           </p>
-          <table className="pe-sim__table">
-            <caption>{labels.losses}</caption>
-            <tbody>
-              <tr>
-                <th scope="row">
-                  <Rich text={labels.conduction} />
-                </th>
-                <td>{fmt(result.losses.conduction)} W</td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.diode}</th>
-                <td>{fmt(result.losses.diode)} W</td>
-              </tr>
-              <tr>
-                <th scope="row">
-                  <Rich text={labels.capacitive} />
-                </th>
-                <td>{fmt(result.losses.capacitive)} W</td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.efficiency}</th>
-                <td>{fmt(eff * 100)} %</td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="pe-scroll">
+            <table className="pe-sim__table">
+              <caption>{labels.losses}</caption>
+              <tbody>
+                <tr>
+                  <th scope="row">
+                    <Rich text={labels.conduction} />
+                  </th>
+                  <td>{fmt(result.losses.conduction)} W</td>
+                </tr>
+                <tr>
+                  <th scope="row">{labels.diode}</th>
+                  <td>{fmt(result.losses.diode)} W</td>
+                </tr>
+                <tr>
+                  <th scope="row">
+                    <Rich text={labels.capacitive} />
+                  </th>
+                  <td>{fmt(result.losses.capacitive)} W</td>
+                </tr>
+                <tr>
+                  <th scope="row">{labels.efficiency}</th>
+                  <td>{fmt(eff * 100)} %</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </>
       )}
       <p className="pe-tool__hint">{labels.share}</p>

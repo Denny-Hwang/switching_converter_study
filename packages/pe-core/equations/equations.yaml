@@ -64,7 +64,7 @@ symbol_table:
   I_min: {latex: "I_\\mathrm{min}", unit: "A", desc: "smallest current a sense chain must resolve", meaning: "smallest current to measure", meaning_ko: "측정할 최소 전류"}
   V_OUTmax: {latex: "V_\\mathrm{OUT,max}", unit: "V", desc: "largest output voltage a sense amplifier delivers at its supply (data sheet)", meaning: "amplifier's largest output", meaning_ko: "증폭기 최대 출력"}
   V_FS: {latex: "V_\\mathrm{FS}", unit: "V", desc: "full-scale input voltage of an ADC", meaning: "ADC full-scale input", meaning_ko: "ADC 풀스케일(full scale) 입력"}
-  eps_max: {latex: "\\varepsilon_\\mathrm{max}", unit: "1", desc: "largest acceptable relative error", meaning: "error target", meaning_ko: "오차 목표"}
+  eps_max: {latex: "\\varepsilon_\\mathrm{max}", unit: "1", desc: "largest acceptable relative error", meaning: "relative error target (0.01 = 1 %)", meaning_ko: "상대 오차 목표(0.01 = 1 %)"}
   V_OUTmin: {latex: "V_\\mathrm{OUT,min}", unit: "V", desc: "lowest output voltage a sense amplifier reaches: its swing to ground (data sheet)", meaning: "amplifier's lowest output", meaning_ko: "증폭기 최저 출력"}
   eps_I: {latex: "\\varepsilon_I", unit: "1", desc: "relative error of a current reading", meaning: "relative error of the reading", meaning_ko: "측정값의 상대 오차"}
   I_meas: {latex: "I_\\mathrm{meas}", unit: "A", sign: real, desc: "current a shunt reading indicates: the true current seen through the pad resistance and the amplifier's offset", meaning: "current the reading indicates", meaning_ko: "측정값이 가리키는 전류"}

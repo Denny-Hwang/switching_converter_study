@@ -515,45 +515,47 @@ export default function SenseChain({ labels, presets, symbols }: Props) {
             )}
           </section>
           {r && (
-            <table className="pe-sim__table">
-              <caption>
-                <Rich text={labels.results} />
-              </caption>
-              <thead>
-                <tr>
-                  <th scope="col">{labels.quantity}</th>
-                  <th scope="col">{labels.value}</th>
-                  <th scope="col">{labels.equation}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {row(labels.gain, fmt(r.gain, 'V/A'), outputEq)}
-                {row(labels.vout0, fmt(r.Vout0, 'V'), outputEq)}
-                {row(labels.voutImax, fmt(r.VoutImax, 'V'), outputEq)}
-                {row(labels.voutHi, <strong>{fmt(r.VoutHi, 'V')}</strong>, 'sense.reading', outputEq)}
-                {row(labels.adcUse, pct(r.adcUse), 'sense.reading', outputEq)}
-                {row(
-                  labels.ifs,
-                  <>
-                    <strong>{fmt(r.Ifs, 'A')}</strong> ({r.limit === 'amp' ? labels.limitAmp : labels.limitAdc})
-                  </>,
-                  'sense.reading',
-                  outputEq,
-                )}
-                {r.Ifloor > 0 && row(labels.ifloor, fmt(r.Ifloor, 'A'), 'sense.reading', outputEq)}
-                {row(labels.vsense, fmt(r.Vsense, 'V'), 'sense.burden')}
-                {row(labels.pshunt, fmt(r.Pshunt, 'W'), 'loss.cond')}
-                {row(labels.ios, fmt(r.Ios, 'A'), 'sense.offset_current')}
-                {row(labels.offsetShare, pct(r.offsetShare), 'sense.rel_error')}
-                {row(labels.padError, pct(r.padError), 'sense.pad_error')}
-                {row(labels.errorAtImin, <strong>{pct(r.errorAtImin)}</strong>, 'sense.rel_error')}
-                {r.spec.monitor.kind === 'current' && row(labels.rfilt, fmt(r.Rfilt, 'Ω'), 'sense.filter_R')}
-                {row(labels.fc, Number.isFinite(r.fc) ? fmt(r.fc, 'Hz') : labels.noFilter, 'rc.fc')}
-                {row(labels.fN, fmt(r.fN, 'Hz'), 'adc.nyquist')}
-                {row(labels.gainAtNyquist, fmt(r.gainAtNyquist), 'rc.gain')}
-                {r.gainAtFsw !== undefined && row(labels.gainAtFsw, fmt(r.gainAtFsw), 'rc.gain')}
-              </tbody>
-            </table>
+            <div className="pe-scroll">
+              <table className="pe-sim__table">
+                <caption>
+                  <Rich text={labels.results} />
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{labels.quantity}</th>
+                    <th scope="col">{labels.value}</th>
+                    <th scope="col">{labels.equation}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {row(labels.gain, fmt(r.gain, 'V/A'), outputEq)}
+                  {row(labels.vout0, fmt(r.Vout0, 'V'), outputEq)}
+                  {row(labels.voutImax, fmt(r.VoutImax, 'V'), outputEq)}
+                  {row(labels.voutHi, <strong>{fmt(r.VoutHi, 'V')}</strong>, 'sense.reading', outputEq)}
+                  {row(labels.adcUse, pct(r.adcUse), 'sense.reading', outputEq)}
+                  {row(
+                    labels.ifs,
+                    <>
+                      <strong>{fmt(r.Ifs, 'A')}</strong> ({r.limit === 'amp' ? labels.limitAmp : labels.limitAdc})
+                    </>,
+                    'sense.reading',
+                    outputEq,
+                  )}
+                  {r.Ifloor > 0 && row(labels.ifloor, fmt(r.Ifloor, 'A'), 'sense.reading', outputEq)}
+                  {row(labels.vsense, fmt(r.Vsense, 'V'), 'sense.burden')}
+                  {row(labels.pshunt, fmt(r.Pshunt, 'W'), 'loss.cond')}
+                  {row(labels.ios, fmt(r.Ios, 'A'), 'sense.offset_current')}
+                  {row(labels.offsetShare, pct(r.offsetShare), 'sense.rel_error')}
+                  {row(labels.padError, pct(r.padError), 'sense.pad_error')}
+                  {row(labels.errorAtImin, <strong>{pct(r.errorAtImin)}</strong>, 'sense.rel_error')}
+                  {r.spec.monitor.kind === 'current' && row(labels.rfilt, fmt(r.Rfilt, 'Ω'), 'sense.filter_R')}
+                  {row(labels.fc, Number.isFinite(r.fc) ? fmt(r.fc, 'Hz') : labels.noFilter, 'rc.fc')}
+                  {row(labels.fN, fmt(r.fN, 'Hz'), 'adc.nyquist')}
+                  {row(labels.gainAtNyquist, fmt(r.gainAtNyquist), 'rc.gain')}
+                  {r.gainAtFsw !== undefined && row(labels.gainAtFsw, fmt(r.gainAtFsw), 'rc.gain')}
+                </tbody>
+              </table>
+            </div>
           )}
           <p className="pe-chart__title">
             <Rich text={labels.transferChart} />

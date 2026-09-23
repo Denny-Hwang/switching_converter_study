@@ -130,8 +130,9 @@ export function tickNumber(v: number): string {
 
 /**
  * Ticks for a logarithmic axis over [lo, hi]: 1-2-5 per decade up to about
- * three decades, decades beyond, and at least two ticks. `format` turns a
- * value into its label (default tickNumber).
+ * three decades, decades beyond, and at least two ticks (else none are set
+ * and Plotly places its own). `format` turns a value into its label (default
+ * tickNumber).
  */
 export function logTicks(lo: number, hi: number, format: (v: number) => string = tickNumber): Record<string, unknown> {
   if (!(lo > 0 && hi > lo) || !Number.isFinite(hi)) return {};
@@ -154,6 +155,8 @@ export function logTicks(lo: number, hi: number, format: (v: number) => string =
     }
     if (vals.length >= 2) break;
   }
+  // a narrow range with no two such ticks in it: leave the ticks to Plotly
+  if (vals.length < 2) return {};
   return { tickmode: 'array', tickvals: vals, ticktext: vals.map(format) };
 }
 

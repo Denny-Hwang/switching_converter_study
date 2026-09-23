@@ -448,7 +448,7 @@ export default function SourceMatcher({ labels, presets, simulatorHref, symbols 
                 y: 0.02,
                 xref: 'x',
                 yref: 'paper',
-                text: sub('V_g,crit'),
+                text: sub('V_g = V_g,crit'),
                 showarrow: false,
                 xanchor: 'left',
                 yanchor: 'bottom',
@@ -613,145 +613,147 @@ export default function SourceMatcher({ labels, presets, simulatorHref, symbols 
           </section>
           {r && pt && (
             <>
-              <table className="pe-sim__table">
-                <caption>
-                  <Rich text={labels.results} />
-                </caption>
-                <thead>
-                  <tr>
-                    <th scope="col">{labels.quantity}</th>
-                    <th scope="col">{labels.value}</th>
-                    <th scope="col">{labels.equation}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.rin} />
-                    </th>
-                    <td>{fmt(r.Rin, 'Ω')}</td>
-                    <td>
-                      <code>lfr.R_in</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.etaLfr} />
-                    </th>
-                    <td>{fmt(100 * r.etaLfr, '%')}</td>
-                    <td>
-                      <code>lfr.eta</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.vgcrit} />
-                    </th>
-                    <td>{fmt(r.Vgcrit, 'V')}</td>
-                    <td>
-                      <code>flyback.V_crit</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.voccrit} />
-                    </th>
-                    <td>{fmt(r.VocCrit, 'V')}</td>
-                    <td>
-                      <code>lfr.Vg</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.mode} />
-                    </th>
-                    <td>
-                      <strong>
-                        <Rich text={labels.modes[pt.mode]} />
-                      </strong>
-                    </td>
-                    <td />
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.vg} />
-                    </th>
-                    <td>{fmt(pt.Vg, 'V')}</td>
-                    <td>
-                      <code>{pt.mode === 'LFR' ? 'lfr.Vg' : 'flyback.V_crit'}</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.pmax} />
-                    </th>
-                    <td>{fmt(pt.Pmax, 'W')}</td>
-                    <td>
-                      <code>src.Pmax</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.eta} />
-                    </th>
-                    <td>
-                      <strong>{fmt(100 * pt.eta, '%')}</strong>
-                    </td>
-                    <td>
-                      <code>{pt.mode === 'LFR' ? 'lfr.eta' : 'src.cv_extraction'}</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.power} />
-                    </th>
-                    <td>{fmt(pt.P, 'W')}</td>
-                    <td />
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.vds} />
-                    </th>
-                    <td>{fmt(pt.Vds, 'V')}</td>
-                    <td>
-                      <code>flyback.Vds_off</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.vdsCcm} />
-                    </th>
-                    <td>{fmt(r.VdsCcm, 'V')}</td>
-                    <td>
-                      <code>flyback.Vds_clamped</code>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Rich text={labels.plfr} />
-                    </th>
-                    <td>
-                      {fmt(r.Plfr, 'W')} (<Rich text={r.limit === 'ccm' ? labels.limitCcm : labels.limitSwitch} />)
-                    </td>
-                    <td>
-                      <code>dcm.P_in</code>
-                    </td>
-                  </tr>
-                  {run && (
+              <div className="pe-scroll">
+                <table className="pe-sim__table">
+                  <caption>
+                    <Rich text={labels.results} />
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">{labels.quantity}</th>
+                      <th scope="col">{labels.value}</th>
+                      <th scope="col">{labels.equation}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
                     <tr>
                       <th scope="row">
-                        <Rich text={labels.etaEnvelope} />
+                        <Rich text={labels.rin} />
                       </th>
+                      <td>{fmt(r.Rin, 'Ω')}</td>
                       <td>
-                        <strong>{fmt(100 * run.eta, '%')}</strong>
-                      </td>
-                      <td>
-                        <code>src.cv_extraction</code>, <code>src.Pmax</code>
+                        <code>lfr.R_in</code>
                       </td>
                     </tr>
-                  )}
-                </tbody>
-              </table>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.etaLfr} />
+                      </th>
+                      <td>{fmt(100 * r.etaLfr, '%')}</td>
+                      <td>
+                        <code>lfr.eta</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.vgcrit} />
+                      </th>
+                      <td>{fmt(r.Vgcrit, 'V')}</td>
+                      <td>
+                        <code>flyback.V_crit</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.voccrit} />
+                      </th>
+                      <td>{fmt(r.VocCrit, 'V')}</td>
+                      <td>
+                        <code>lfr.Vg</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.mode} />
+                      </th>
+                      <td>
+                        <strong>
+                          <Rich text={labels.modes[pt.mode]} />
+                        </strong>
+                      </td>
+                      <td />
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.vg} />
+                      </th>
+                      <td>{fmt(pt.Vg, 'V')}</td>
+                      <td>
+                        <code>{pt.mode === 'LFR' ? 'lfr.Vg' : 'flyback.V_crit'}</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.pmax} />
+                      </th>
+                      <td>{fmt(pt.Pmax, 'W')}</td>
+                      <td>
+                        <code>src.Pmax</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.eta} />
+                      </th>
+                      <td>
+                        <strong>{fmt(100 * pt.eta, '%')}</strong>
+                      </td>
+                      <td>
+                        <code>{pt.mode === 'LFR' ? 'lfr.eta' : 'src.cv_extraction'}</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.power} />
+                      </th>
+                      <td>{fmt(pt.P, 'W')}</td>
+                      <td />
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.vds} />
+                      </th>
+                      <td>{fmt(pt.Vds, 'V')}</td>
+                      <td>
+                        <code>flyback.Vds_off</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.vdsCcm} />
+                      </th>
+                      <td>{fmt(r.VdsCcm, 'V')}</td>
+                      <td>
+                        <code>flyback.Vds_clamped</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.plfr} />
+                      </th>
+                      <td>
+                        {fmt(r.Plfr, 'W')} (<Rich text={r.limit === 'ccm' ? labels.limitCcm : labels.limitSwitch} />)
+                      </td>
+                      <td>
+                        <code>dcm.P_in</code>
+                      </td>
+                    </tr>
+                    {run && (
+                      <tr>
+                        <th scope="row">
+                          <Rich text={labels.etaEnvelope} />
+                        </th>
+                        <td>
+                          <strong>{fmt(100 * run.eta, '%')}</strong>
+                        </td>
+                        <td>
+                          <code>src.cv_extraction</code>, <code>src.Pmax</code>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
               {Cbus > 0 && (
                 <p>
                   <a href={`${simulatorHref}#${simulatorHash(r.spec, Cbus)}`}>▶ {labels.simulate}</a>
