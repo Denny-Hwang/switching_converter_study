@@ -11,6 +11,12 @@ params:
 steps:
   - def.Ts
   - buckboost.ccm.M
+  - buckboost.V
+  - buckboost.IL
+  - buckboost.ripple.iL
+  - ripple.Ipk
+  - buckboost.ripple.v
+  - buckboost.Vds
   - K.def
   - Kcrit.buckboost
   - buckboost.ss.Gd0

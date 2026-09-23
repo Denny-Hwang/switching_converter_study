@@ -1,0 +1,158 @@
+---
+title: Flyback converter
+description: The transformer-isolated buck-boost, covering its CCM and DCM ratios, switch and diode stress, leakage energy, and the input voltage pinned by a fixed duty ratio into a fixed output.
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Compute the flyback's conversion ratio in CCM and DCM with the 1:n turns-ratio convention.
+- Find the switch and diode stress, and the energy the leakage inductance leaves behind at every turn-off.
+- Explain why a fixed duty ratio into a fixed output pins the input voltage of a CCM flyback.
+
+## Theory
+
+### From buck-boost to flyback
+
+Replace the buck-boost's inductor by two coupled windings on one core, with
+turns ratio 1:n, where $n$ is the secondary turns divided by the primary
+turns, and the result is the flyback converter.
+The magnetizing inductance $L_M$, referred to the primary, stores energy
+while the switch is on; the secondary winding and the diode deliver it to
+the output while the switch is off. The windings isolate the output and
+the turns ratio scales the conversion ratio
+<Cite key="erickson2020" where="Ch. 6" />:
+
+<Eq id="flyback.ccm.M" />
+
+$K$ is formed with $L_M$ and the actual load resistance, and the turns
+ratio then appears in the critical value
+(<EqRef id="Kcrit.flyback" label="flyback critical K" />). In DCM the ratio no
+longer depends on the turns ratio <Cite key="erickson2020" where="Ch. 5" />:
+
+<Eq id="flyback.dcm.M" />
+
+### Switch and diode stress
+
+While the switch is off, the secondary is clamped to the output plus the
+diode drop, and that voltage appears on the primary divided by $n$. The
+switch therefore blocks the input voltage plus this reflected voltage
+<Cite key="erickson2020" where="Ch. 6" />:
+
+<Eq id="flyback.Vds_off" />
+
+While the switch is on, the secondary sees $n V_g$, and the diode blocks it
+on top of the output voltage:
+
+<Eq id="flyback.diode.VR" />
+
+A smaller $n$ lowers the diode stress but raises the reflected voltage on
+the switch; the turns ratio trades one stress for the other.
+
+### DCM peak current and the loss-free resistor
+
+In DCM the magnetizing current starts from zero every period, so its peak
+depends only on the input voltage, the on-time and $L_M$
+<Cite key="erickson2020" where="Ch. 5" />:
+
+<Eq id="flyback.Ipk.dcm" />
+
+The energy stored per period sets the input power, and the input behaves as
+a loss-free resistor (<EqRef id="dcm.P_in" label="DCM input power" />,
+<EqRef id="lfr.R_in" label="input resistance" />).
+
+### Leakage inductance
+
+Not all of the primary flux links the secondary. The leakage inductance
+carries the primary current at turn-off, and its energy cannot reach the
+output <Cite key="erickson2020" where="Ch. 4" />:
+
+<Eq id="flyback.leak.E" />
+
+A clamp or snubber must take this energy in every period. A dissipative
+clamp turns it into heat, so the resulting power is a lower bound on the
+clamp's loss; a clamp that returns the energy to the input or the output
+processes this power without dissipating it:
+
+<Eq id="flyback.leak.P" />
+
+### Fixed duty ratio into a fixed output
+
+If the output is held by a battery or a regulated bus, and the duty ratio
+is fixed, CCM volt-second balance leaves only one input voltage that fits:
+
+<Eq id="flyback.V_crit" />
+
+Below it the flyback runs in DCM and draws power like a resistor. When a
+current-limited source drives the input, its voltage rises until it reaches
+this value, where CCM begins and holds the input there: the converter then
+acts as a constant-voltage sink. At that point the switch blocks
+
+<Eq id="flyback.Vds_clamped" />
+
+## Worked example
+
+Three synthetic flybacks: one in CCM with a resistive load, one in DCM, and
+one charging a fixed output at a fixed duty ratio.
+
+<Worked example="flyback-ccm" show={['V_g', 'n', 'D', 'f_s', 'L_M', 'R', 'V_D', 'M', 'V', 'K', 'K_crit', 'V_DS', 'V_R']} />
+
+<Worked example="flyback-dcm" show={['V_g', 'n', 'D', 'f_s', 'L_M', 'R', 'V_D', 'L_lk', 'K', 'K_crit', 'M', 'V', 'I_pk', 'V_DS', 'E_lk', 'P_lk']} />
+
+<Worked example="flyback-battery" />
+
+In the CCM example the reflected voltage adds to the input, so the switch
+blocks <Val example="flyback-ccm" name="V_DS" /> although the input is
+<Val example="flyback-ccm" name="V_g" />. In the DCM example the leakage
+inductance of <Val example="flyback-dcm" name="L_lk" /> alone means that a
+dissipative clamp loses at least <Val example="flyback-dcm" name="P_lk" />.
+
+## Try it
+
+<TryIt eq="flyback.Vds_off" example="flyback-ccm" sweep="n" />
+
+Sweep the turns ratio $n$: a smaller $n$ raises the reflected voltage and the
+switch stress. Then open the diode stress equation and sweep $n$ again to
+see the opposite trend.
+
+## Bench exercise
+
+On a low-power flyback evaluation board, watch the switch voltage while the
+switch is off. You should see a short spike at turn-off (the leakage energy
+being clamped), then a plateau at the input voltage plus the reflected
+output voltage, and, in DCM, ringing once the secondary current has reached
+zero. Measure the plateau and compare it with the switch-stress equation at
+the measured input and output voltages.
+
+## Gotchas
+
+- **The leakage energy has to go somewhere.** Without a clamp or snubber the
+  turn-off spike rises until something breaks down. A dissipative clamp loses
+  at least the leakage power above, and a clamp that recovers the energy must
+  still be rated to process it <Cite key="erickson2020" where="Ch. 4" />.
+- **An open-loop flyback must not lose its load.** In DCM the output rises as
+  the load is removed (<EqRef id="flyback.dcm.M" label="DCM ratio" /> grows
+  as $K$ falls), and with it the reflected voltage, until the clamp limits the
+  switch voltage.
+- **A fixed-duty-ratio flyback from a current-limited source pins its input.**
+  Once CCM begins, the input sits at the critical voltage above instead of
+  rising further.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch6', 'coursera-converter-circuits', 'mit-6334-notes', 'benyaakov-channel']} />
+
+## Quiz
+
+<Quiz id="03-topologies/flyback" />

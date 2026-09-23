@@ -1,0 +1,113 @@
+---
+title: Forward converter
+description: The transformer-isolated buck, covering its conversion ratio, the transformer reset that limits the duty ratio, the switch stress during reset, and the output inductor ripple.
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Compute the forward converter's conversion ratio and output inductor ripple.
+- Explain why the transformer must be reset in every period, and how the reset winding limits the duty ratio.
+- Find the switch stress set by the reset winding, and the trade-off it implies.
+
+## Theory
+
+### A transformer-isolated buck
+
+In the forward converter the transformer passes energy directly while the
+switch is on: the secondary applies $n V_g$ to a buck-type output stage (a
+diode, a freewheeling diode and an L-C filter). Unlike the flyback's
+coupled inductor, the transformer is not meant to store energy
+<Cite key="erickson2020" where="Ch. 6" />. The ratio is the buck's, scaled by
+the turns ratio:
+
+<Eq id="forward.ccm.M" />
+
+The output inductor carries the load current, as in the buck
+(<EqRef id="buck.IL" label="dc inductor current" />). While the switch is on
+it sees $n V_g - V$:
+
+<Eq id="forward.ripple.iL" />
+
+### Transformer reset
+
+A real transformer has a finite magnetizing inductance, so the
+magnetizing current rises while the switch is on. It must return to zero
+before the next period, or it grows from period to period until the core
+saturates <Cite key="erickson2020" where="Ch. 6" />. A reset winding, with
+$n_r$ its turns divided by the primary turns, returns the magnetizing energy
+to the input while the switch is off. Volt-second balance on the magnetizing inductance
+then limits the duty ratio:
+
+<Eq id="forward.reset.Dmax" />
+
+During the reset the reset winding clamps the primary at the input voltage
+scaled by $1/n_r$, with reversed polarity, and the switch blocks
+
+<Eq id="forward.Vds" />
+
+The trade-off is direct: more reset turns (larger $n_r$) lower the switch
+stress but also lower the maximum duty ratio, and fewer turns do the
+opposite. With $n_r = 1$ the duty ratio is limited to one half and the
+switch blocks twice the input voltage.
+
+## Worked example
+
+A synthetic forward converter with equal primary and reset turns:
+
+<Worked example="forward-basic" show={['V_g', 'n', 'n_r', 'D', 'f_s', 'L', 'R', 'D_max', 'M', 'V', 'V_DS', 'Delta_i_L', 'I_L']} />
+
+At the chosen duty ratio of <Val example="forward-basic" name="D" />, below
+the limit of <Val example="forward-basic" name="D_max" />, the transformer
+resets in every period, and the switch must block
+<Val example="forward-basic" name="V_DS" />.
+
+## Try it
+
+<TryIt eq="forward.Vds" example="forward-basic" sweep="n_r" />
+
+Sweep $n_r$: the switch stress falls towards the input voltage as the reset
+winding gets more turns. Then open the reset-limit equation and sweep $n_r$
+again to see the maximum duty ratio fall.
+
+## Bench exercise
+
+On a single-switch forward evaluation board, watch the switch voltage.
+While the switch is off, you should see a plateau at the reset voltage for
+as long as the magnetizing current takes to return to zero, followed by
+ringing that settles at the input voltage. Measure the plateau duration at
+two duty ratios and check that the reset time grows in proportion to the
+on-time.
+
+## Gotchas
+
+- **Exceeding the reset limit saturates the core.** If the duty ratio is
+  pushed past the limit, even during a transient, the magnetizing current
+  does not return to zero and grows from period to period
+  <Cite key="erickson2020" where="Ch. 6" />; a duty-ratio clamp in the
+  controller prevents this.
+- **The reset winding sets the switch rating.** Choosing $n_r$ fixes both the
+  maximum duty ratio and the switch stress; they cannot be chosen
+  independently.
+- **Output stage equals buck.** Output ripple, peak current and the CCM/DCM
+  boundary of the output inductor follow the [buck page](../buck/), with
+  $n V_g$ in place of $V_g$.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch6', 'coursera-converter-circuits', 'mit-6334-notes']} />
+
+## Quiz
+
+<Quiz id="03-topologies/forward" />

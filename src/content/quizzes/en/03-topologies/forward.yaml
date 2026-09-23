@@ -1,0 +1,51 @@
+# Quiz for 03-topologies/forward. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'An ideal forward converter with $n = 0.25$ runs at $D = 0.4$ from $48\,\mathrm{V}$. What is its output voltage?'
+    options:
+      - '$4.8\,\mathrm{V}$'
+      - '$12\,\mathrm{V}$'
+      - '$19.2\,\mathrm{V}$'
+      - '$8\,\mathrm{V}$'
+    answer: 0
+    explain: 'The forward converter is a buck fed with $n V_g$: the output is $n D V_g$.'
+  - q: 'Why must the forward converter''s transformer be reset in every switching period?'
+    options:
+      - 'To discharge the output capacitor'
+      - 'Because otherwise the magnetizing current grows from period to period until the core saturates'
+      - 'To reverse the output polarity'
+      - 'To limit the leakage inductance'
+    answer: 1
+    explain: 'The magnetizing current rises while the switch is on. Volt-second balance on the magnetizing inductance requires a reset interval that brings it back to zero before the next period.'
+  - q: 'A forward converter has equal primary and reset turns ($n_r = 1$). What is its maximum duty ratio?'
+    options:
+      - '0.25'
+      - '0.5'
+      - '0.67'
+      - '1'
+    answer: 1
+    explain: 'The reset winding applies the input voltage in reverse, so the reset takes as long as the on-time, and the two must fit in one period.'
+  - q: 'In that converter, fed from $48\,\mathrm{V}$, what does the switch block during the reset?'
+    options:
+      - '$48\,\mathrm{V}$'
+      - '$72\,\mathrm{V}$'
+      - '$96\,\mathrm{V}$'
+      - '$144\,\mathrm{V}$'
+    answer: 2
+    explain: 'The reset winding clamps the primary at $-V_g/n_r$, and the switch blocks $V_g$ minus that: twice the input voltage for $n_r = 1$.'
+  - q: 'The reset winding is given more turns (larger $n_r$). What happens?'
+    options:
+      - 'Both the switch stress and the maximum duty ratio rise'
+      - 'The switch stress falls and the maximum duty ratio falls'
+      - 'The switch stress rises and the maximum duty ratio falls'
+      - 'Nothing changes'
+    answer: 1
+    explain: 'A larger $n_r$ lowers the reset voltage on the primary, so the switch blocks less, but the reset then takes longer, which lowers the duty-ratio limit.'
+  - q: 'How does the transformer''s role differ between the forward and the flyback converter?'
+    options:
+      - 'There is no difference'
+      - 'The forward transformer passes energy directly while the switch is on; the flyback''s coupled inductor stores it and releases it while the switch is off'
+      - 'The forward transformer stores energy; the flyback transformer does not'
+      - 'Only the flyback transformer provides isolation'
+    answer: 1
+    explain: 'In the forward converter the secondary conducts during the on-interval, so energy flows straight through; in the flyback the diode conducts during the off-interval, delivering the energy stored in $L_M$.'

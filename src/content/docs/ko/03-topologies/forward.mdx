@@ -1,0 +1,108 @@
+---
+title: 포워드 컨버터
+description: 변압기로 절연된 벅 컨버터입니다. 변환비, 듀티비를 제한하는 변압기 리셋, 리셋 동안의 스위치 스트레스, 출력 인덕터 리플을 다룹니다.
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 포워드 컨버터(forward converter)의 변환비(conversion ratio)와 출력 인덕터 리플을 계산합니다.
+- 변압기를 매 주기 리셋(reset)해야 하는 이유와, 리셋 권선(reset winding)이 듀티비(duty ratio)를 제한하는 방식을 설명합니다.
+- 리셋 권선이 정하는 스위치 스트레스(switch stress)를 구하고, 그에 따르는 상충 관계(trade-off)를 파악합니다.
+
+## 이론
+
+### 변압기로 절연된 벅
+
+포워드 컨버터에서는 스위치가 켜져 있는 동안 변압기가 에너지를 직접 전달합니다.
+즉 2차 권선(secondary winding)은 다이오드, 환류 다이오드(freewheeling diode),
+L-C 필터로 이루어진 벅 형태의 출력단(output stage)에 $n V_g$를 인가합니다.
+플라이백의 결합 인덕터(coupled inductor)와 달리, 이 변압기는 에너지 저장을
+목적으로 하지 않습니다 <Cite key="erickson2020" where="Ch. 6" />. 변환비는 벅의
+변환비에 권선비(turns ratio)를 곱한 것입니다.
+
+<Eq id="forward.ccm.M" />
+
+출력 인덕터에는 벅에서와 같이 부하 전류가 흐릅니다(<EqRef id="buck.IL" label="인덕터 직류 전류" />).
+스위치가 켜져 있는 동안 출력 인덕터에는 $n V_g - V$가 걸립니다.
+
+<Eq id="forward.ripple.iL" />
+
+### 변압기 리셋
+
+실제 변압기의 자화 인덕턴스(magnetizing inductance)는 유한하므로, 스위치가 켜져
+있는 동안 자화 전류(magnetizing current)가 증가합니다. 자화 전류는 다음 주기가
+시작되기 전에 0으로 돌아와야 하며, 그렇지 않으면 코어가 포화(saturation)될
+때까지 주기마다 커집니다 <Cite key="erickson2020" where="Ch. 6" />. 리셋 권선은
+스위치가 꺼져 있는 동안 자화 에너지를 입력으로 돌려보냅니다. 여기서 $n_r$은 리셋
+권선의 턴 수를 1차 권선(primary winding)의 턴 수로 나눈 값입니다. 그러면 자화
+인덕턴스에 대한 전압-초 평형(volt-second balance)이 듀티비를 제한합니다.
+
+<Eq id="forward.reset.Dmax" />
+
+리셋 동안 리셋 권선은 1차 권선을 입력 전압의 $1/n_r$배인 역극성 전압으로
+클램프(clamp)하며, 스위치는 다음 전압을 차단(block)합니다.
+
+<Eq id="forward.Vds" />
+
+상충 관계는 명확합니다. 리셋 권선의 턴 수를 늘리면(더 큰 $n_r$) 스위치
+스트레스는 낮아지지만 최대 듀티비도 낮아지며, 턴 수를 줄이면 그 반대가 됩니다.
+$n_r = 1$이면 듀티비는 2분의 1 이하로 제한되고, 스위치는 입력 전압의 두 배를
+차단합니다.
+
+## 풀이 예제
+
+1차 권선과 리셋 권선의 턴 수가 같은 합성(synthetic) 포워드 컨버터입니다.
+
+<Worked example="forward-basic" show={['V_g', 'n', 'n_r', 'D', 'f_s', 'L', 'R', 'D_max', 'M', 'V', 'V_DS', 'Delta_i_L', 'I_L']} />
+
+선택한 듀티비 <Val example="forward-basic" name="D" />에서는 이 값이 한계값
+<Val example="forward-basic" name="D_max" />보다 낮으므로 변압기가 매 주기
+리셋되며, 스위치가 차단해야 하는 전압은 <Val example="forward-basic" name="V_DS" />입니다.
+
+## 직접 해 보기
+
+<TryIt eq="forward.Vds" example="forward-basic" sweep="n_r" />
+
+$n_r$을 스윕(sweep)하십시오. 리셋 권선의 턴 수가 많아질수록 스위치 스트레스는
+입력 전압을 향해 낮아집니다. 그런 다음 리셋 한계 수식을 열고 $n_r$을 다시
+스윕하여 최대 듀티비가 낮아지는 것을 확인하십시오.
+
+## 벤치 실습
+
+단일 스위치 포워드 컨버터의 평가 보드(evaluation board)에서 스위치 전압을
+관찰하십시오. 스위치가 꺼져 있는 동안에는 자화 전류가 0으로 돌아오는 데 걸리는
+시간 동안 리셋 전압에 머무는 평탄 구간(plateau)이 보이고, 이어서 입력 전압으로
+수렴하는 링잉(ringing)이 보여야 합니다. 두 가지 듀티비에서 평탄 구간의 지속
+시간을 측정하고, 리셋 시간이 온 시간(on-time)에 비례하여 늘어나는지
+확인하십시오.
+
+## 주의할 점
+
+- **리셋 한계를 넘으면 코어가 포화됩니다.** 과도 상태(transient) 동안만이라도
+  듀티비가 한계를 넘어서면 자화 전류가 0으로 돌아오지 못하고 주기마다
+  커집니다 <Cite key="erickson2020" where="Ch. 6" />. 제어기의 듀티비
+  클램프(duty-ratio clamp)가 이를 방지합니다.
+- **리셋 권선이 스위치 정격을 정합니다.** $n_r$을 선택하면 최대 듀티비와 스위치
+  스트레스가 함께 정해지며, 둘을 독립적으로 선택할 수는 없습니다.
+- **출력단은 벅과 같습니다.** 출력 리플, 피크 전류(peak current), 출력 인덕터의
+  CCM/DCM 경계는 [벅 페이지](../buck/)를 따르며, $V_g$ 대신 $n V_g$를 사용합니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch6', 'coursera-converter-circuits', 'mit-6334-notes']} />
+
+## 퀴즈
+
+<Quiz id="03-topologies/forward" />

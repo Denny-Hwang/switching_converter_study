@@ -4335,6 +4335,1175 @@
         "T_loop": 1076.79
       },
       "value": 0.0009278245298249196
+    },
+    {
+      "id": "buck.IL",
+      "source": "yaml",
+      "inputs": {
+        "R": 10.0,
+        "V": 12.0
+      },
+      "value": 1.2
+    },
+    {
+      "id": "buck.IL",
+      "source": "random",
+      "inputs": {
+        "R": 176.147,
+        "V": 16.6209
+      },
+      "value": 0.09435812134183381
+    },
+    {
+      "id": "buck.IL",
+      "source": "random",
+      "inputs": {
+        "R": 85.8066,
+        "V": 2.269
+      },
+      "value": 0.02644318735388653
+    },
+    {
+      "id": "buck.IL",
+      "source": "random",
+      "inputs": {
+        "R": 5221.76,
+        "V": 14.8386
+      },
+      "value": 0.002841685561956122
+    },
+    {
+      "id": "buck.IL",
+      "source": "random",
+      "inputs": {
+        "R": 0.190225,
+        "V": 5.27396
+      },
+      "value": 27.72485214877119
+    },
+    {
+      "id": "buck.IL",
+      "source": "random",
+      "inputs": {
+        "R": 217.833,
+        "V": 36.3656
+      },
+      "value": 0.1669425660942098
+    },
+    {
+      "id": "buck.IL",
+      "source": "random",
+      "inputs": {
+        "R": 368.831,
+        "V": 19.5266
+      },
+      "value": 0.05294186226212004
+    },
+    {
+      "id": "ripple.Ipk",
+      "source": "yaml",
+      "inputs": {
+        "Delta_i_L": 0.3,
+        "I_L": 1.2
+      },
+      "value": 1.5
+    },
+    {
+      "id": "ripple.Ipk",
+      "source": "random",
+      "inputs": {
+        "Delta_i_L": 5.23637,
+        "I_L": 0.135181
+      },
+      "value": 5.371551
+    },
+    {
+      "id": "ripple.Ipk",
+      "source": "random",
+      "inputs": {
+        "Delta_i_L": 0.035875,
+        "I_L": 0.472492
+      },
+      "value": 0.508367
+    },
+    {
+      "id": "ripple.Ipk",
+      "source": "random",
+      "inputs": {
+        "Delta_i_L": 0.24452,
+        "I_L": 11.4168
+      },
+      "value": 11.66132
+    },
+    {
+      "id": "ripple.Ipk",
+      "source": "random",
+      "inputs": {
+        "Delta_i_L": 1.27182,
+        "I_L": 0.00487514
+      },
+      "value": 1.27669514
+    },
+    {
+      "id": "ripple.Ipk",
+      "source": "random",
+      "inputs": {
+        "Delta_i_L": 0.00275072,
+        "I_L": 8.43838
+      },
+      "value": 8.44113072
+    },
+    {
+      "id": "ripple.Ipk",
+      "source": "random",
+      "inputs": {
+        "Delta_i_L": 0.00593829,
+        "I_L": 3.70984
+      },
+      "value": 3.71577829
+    },
+    {
+      "id": "buck.ripple.v",
+      "source": "yaml",
+      "inputs": {
+        "C": 1e-05,
+        "Delta_i_L": 0.3,
+        "T_s": 1e-05
+      },
+      "value": 0.0375
+    },
+    {
+      "id": "buck.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 0.000338048,
+        "Delta_i_L": 0.0768313,
+        "T_s": 7.50536e-06
+      },
+      "value": 0.00021322658533995173
+    },
+    {
+      "id": "buck.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 0.00126166,
+        "Delta_i_L": 0.00116575,
+        "T_s": 1.26848e-05
+      },
+      "value": 1.4650644389138119e-06
+    },
+    {
+      "id": "buck.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 5.32197e-05,
+        "Delta_i_L": 0.00259607,
+        "T_s": 3.37781e-05
+      },
+      "value": 0.00020596299882139508
+    },
+    {
+      "id": "buck.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 0.00903578,
+        "Delta_i_L": 0.310002,
+        "T_s": 0.000800204
+      },
+      "value": 0.0034317020833840575
+    },
+    {
+      "id": "buck.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 1.31532e-07,
+        "Delta_i_L": 0.00754857,
+        "T_s": 8.08221e-06
+      },
+      "value": 0.05797935857785558
+    },
+    {
+      "id": "buck.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 8.99616e-07,
+        "Delta_i_L": 0.281576,
+        "T_s": 3.40955e-05
+      },
+      "value": 1.3339683970716394
+    },
+    {
+      "id": "boost.IL",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "R": 20.0,
+        "V": 24.0
+      },
+      "value": 2.4
+    },
+    {
+      "id": "boost.IL",
+      "source": "random",
+      "inputs": {
+        "D": 0.509398,
+        "R": 7608.11,
+        "V": 83.6711
+      },
+      "value": 0.02241658135383087
+    },
+    {
+      "id": "boost.IL",
+      "source": "random",
+      "inputs": {
+        "D": 0.711273,
+        "R": 0.139795,
+        "V": 42.9709
+      },
+      "value": 1064.6219425621555
+    },
+    {
+      "id": "boost.IL",
+      "source": "random",
+      "inputs": {
+        "D": 0.255992,
+        "R": 317.084,
+        "V": 317.276
+      },
+      "value": 1.3448854283566538
+    },
+    {
+      "id": "boost.IL",
+      "source": "random",
+      "inputs": {
+        "D": 0.16423,
+        "R": 8.00741,
+        "V": 2.75671
+      },
+      "value": 0.41191939173801645
+    },
+    {
+      "id": "boost.IL",
+      "source": "random",
+      "inputs": {
+        "D": 0.738636,
+        "R": 161.532,
+        "V": 65.2352
+      },
+      "value": 1.5451749533417476
+    },
+    {
+      "id": "boost.IL",
+      "source": "random",
+      "inputs": {
+        "D": 0.247128,
+        "R": 30.6532,
+        "V": 4.06184
+      },
+      "value": 0.1760053412787717
+    },
+    {
+      "id": "boost.ripple.iL",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "L": 0.0001,
+        "T_s": 1e-05,
+        "V_g": 12.0
+      },
+      "value": 0.3
+    },
+    {
+      "id": "boost.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.409364,
+        "L": 0.00506956,
+        "T_s": 2.47774e-06,
+        "V_g": 8.83464
+      },
+      "value": 0.0008837999522793843
+    },
+    {
+      "id": "boost.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.5541,
+        "L": 0.00194749,
+        "T_s": 0.000775338,
+        "V_g": 98.0738
+      },
+      "value": 10.817502164219595
+    },
+    {
+      "id": "boost.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.806319,
+        "L": 0.000928935,
+        "T_s": 4.19627e-06,
+        "V_g": 1.45165
+      },
+      "value": 0.002643728873316333
+    },
+    {
+      "id": "boost.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.195985,
+        "L": 2.8906e-06,
+        "T_s": 3.80407e-06,
+        "V_g": 18.704
+      },
+      "value": 2.4120584800734797
+    },
+    {
+      "id": "boost.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.596344,
+        "L": 0.000187881,
+        "T_s": 0.000263391,
+        "V_g": 40.3915
+      },
+      "value": 16.883983074925926
+    },
+    {
+      "id": "boost.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.746576,
+        "L": 1.92532e-06,
+        "T_s": 0.000437008,
+        "V_g": 5.72212
+      },
+      "value": 484.8277342179817
+    },
+    {
+      "id": "boost.ripple.v",
+      "source": "yaml",
+      "inputs": {
+        "C": 1e-05,
+        "D": 0.5,
+        "R": 20.0,
+        "T_s": 1e-05,
+        "V": 24.0
+      },
+      "value": 0.3
+    },
+    {
+      "id": "boost.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 0.000169405,
+        "D": 0.775489,
+        "R": 695.973,
+        "T_s": 2.57281e-06,
+        "V": 2.90531
+      },
+      "value": 2.4582566585608833e-05
+    },
+    {
+      "id": "boost.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 3.21972e-07,
+        "D": 0.4385,
+        "R": 0.334463,
+        "T_s": 1.15172e-05,
+        "V": 248.785
+      },
+      "value": 5833.705704278825
+    },
+    {
+      "id": "boost.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 1.66851e-05,
+        "D": 0.194844,
+        "R": 30.5681,
+        "T_s": 2.9533e-06,
+        "V": 27.9075
+      },
+      "value": 0.01574302845996861
+    },
+    {
+      "id": "boost.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 0.000133979,
+        "D": 0.140271,
+        "R": 4.08024,
+        "T_s": 4.15365e-05,
+        "V": 27.5501
+      },
+      "value": 0.14681435946315283
+    },
+    {
+      "id": "boost.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 1.56722e-06,
+        "D": 0.411822,
+        "R": 13.7551,
+        "T_s": 1.36529e-05,
+        "V": 220.27
+      },
+      "value": 28.72540043339139
+    },
+    {
+      "id": "boost.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 4.12286e-06,
+        "D": 0.260686,
+        "R": 1376.93,
+        "T_s": 1.89238e-05,
+        "V": 311.373
+      },
+      "value": 0.13529026986762271
+    },
+    {
+      "id": "buckboost.V",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "V_g": 12.0
+      },
+      "value": 12.0
+    },
+    {
+      "id": "buckboost.V",
+      "source": "random",
+      "inputs": {
+        "D": 0.906062,
+        "V_g": 15.3556
+      },
+      "value": 148.10966432327712
+    },
+    {
+      "id": "buckboost.V",
+      "source": "random",
+      "inputs": {
+        "D": 0.376729,
+        "V_g": 157.142
+      },
+      "value": 94.98267770841254
+    },
+    {
+      "id": "buckboost.V",
+      "source": "random",
+      "inputs": {
+        "D": 0.781452,
+        "V_g": 39.607
+      },
+      "value": 141.620922470121
+    },
+    {
+      "id": "buckboost.V",
+      "source": "random",
+      "inputs": {
+        "D": 0.301252,
+        "V_g": 6.92821
+      },
+      "value": 2.9869668591824237
+    },
+    {
+      "id": "buckboost.V",
+      "source": "random",
+      "inputs": {
+        "D": 0.0852964,
+        "V_g": 2.37671
+      },
+      "value": 0.22162895919946088
+    },
+    {
+      "id": "buckboost.V",
+      "source": "random",
+      "inputs": {
+        "D": 0.404018,
+        "V_g": 381.858
+      },
+      "value": 258.86269290683276
+    },
+    {
+      "id": "buckboost.IL",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "R": 10.0,
+        "V": 12.0
+      },
+      "value": 2.4
+    },
+    {
+      "id": "buckboost.IL",
+      "source": "random",
+      "inputs": {
+        "D": 0.693201,
+        "R": 2.29529,
+        "V": 29.5158
+      },
+      "value": 41.914380788363644
+    },
+    {
+      "id": "buckboost.IL",
+      "source": "random",
+      "inputs": {
+        "D": 0.171751,
+        "R": 16.7223,
+        "V": 51.2909
+      },
+      "value": 3.703253048555443
+    },
+    {
+      "id": "buckboost.IL",
+      "source": "random",
+      "inputs": {
+        "D": 0.383779,
+        "R": 0.274676,
+        "V": 4.71918
+      },
+      "value": 27.881063393886098
+    },
+    {
+      "id": "buckboost.IL",
+      "source": "random",
+      "inputs": {
+        "D": 0.886106,
+        "R": 226.212,
+        "V": 19.8056
+      },
+      "value": 0.768725908434871
+    },
+    {
+      "id": "buckboost.IL",
+      "source": "random",
+      "inputs": {
+        "D": 0.640082,
+        "R": 1.28983,
+        "V": 4.10399
+      },
+      "value": 8.840366152251073
+    },
+    {
+      "id": "buckboost.IL",
+      "source": "random",
+      "inputs": {
+        "D": 0.250747,
+        "R": 0.348634,
+        "V": 171.251
+      },
+      "value": 655.5938741836421
+    },
+    {
+      "id": "buckboost.ripple.iL",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "L": 0.0001,
+        "T_s": 1e-05,
+        "V_g": 12.0
+      },
+      "value": 0.3
+    },
+    {
+      "id": "buckboost.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.86257,
+        "L": 5.89065e-06,
+        "T_s": 5.53213e-05,
+        "V_g": 279.878
+      },
+      "value": 1133.6063584870597
+    },
+    {
+      "id": "buckboost.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.285253,
+        "L": 0.00282604,
+        "T_s": 6.20571e-06,
+        "V_g": 2.53238
+      },
+      "value": 0.0007931261550107426
+    },
+    {
+      "id": "buckboost.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.102759,
+        "L": 3.49995e-05,
+        "T_s": 0.000626012,
+        "V_g": 1.91021
+      },
+      "value": 1.7554635085268744
+    },
+    {
+      "id": "buckboost.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.237844,
+        "L": 0.00968795,
+        "T_s": 0.000599243,
+        "V_g": 95.6071
+      },
+      "value": 0.7032721678525927
+    },
+    {
+      "id": "buckboost.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.244015,
+        "L": 2.26373e-05,
+        "T_s": 0.000969772,
+        "V_g": 190.584
+      },
+      "value": 996.134496965511
+    },
+    {
+      "id": "buckboost.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.698457,
+        "L": 9.05839e-05,
+        "T_s": 2.86883e-06,
+        "V_g": 13.196
+      },
+      "value": 0.14595056627342584
+    },
+    {
+      "id": "buckboost.ripple.v",
+      "source": "yaml",
+      "inputs": {
+        "C": 1e-05,
+        "D": 0.5,
+        "R": 10.0,
+        "T_s": 1e-05,
+        "V": 12.0
+      },
+      "value": 0.3
+    },
+    {
+      "id": "buckboost.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 3.31047e-06,
+        "D": 0.937257,
+        "R": 0.690416,
+        "T_s": 0.00064012,
+        "V": 340.73
+      },
+      "value": 44719.811357751474
+    },
+    {
+      "id": "buckboost.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 1.84281e-07,
+        "D": 0.429252,
+        "R": 666.687,
+        "T_s": 0.000438982,
+        "V": 2.22347
+      },
+      "value": 1.705131084358391
+    },
+    {
+      "id": "buckboost.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 0.00555191,
+        "D": 0.852809,
+        "R": 51.6608,
+        "T_s": 9.08029e-06,
+        "V": 8.14462
+      },
+      "value": 0.00010994836617232736
+    },
+    {
+      "id": "buckboost.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 7.11844e-05,
+        "D": 0.474223,
+        "R": 1.65363,
+        "T_s": 0.000922275,
+        "V": 11.1712
+      },
+      "value": 20.753421664276967
+    },
+    {
+      "id": "buckboost.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 7.72388e-07,
+        "D": 0.505371,
+        "R": 27.7676,
+        "T_s": 0.000137863,
+        "V": 33.5509
+      },
+      "value": 54.49521347943883
+    },
+    {
+      "id": "buckboost.ripple.v",
+      "source": "random",
+      "inputs": {
+        "C": 0.000138767,
+        "D": 0.829611,
+        "R": 226.479,
+        "T_s": 0.00046306,
+        "V": 14.5755
+      },
+      "value": 0.08908223348916496
+    },
+    {
+      "id": "buckboost.Vds",
+      "source": "yaml",
+      "inputs": {
+        "V": 12.0,
+        "V_g": 12.0
+      },
+      "value": 24.0
+    },
+    {
+      "id": "buckboost.Vds",
+      "source": "random",
+      "inputs": {
+        "V": 2.19017,
+        "V_g": 47.9444
+      },
+      "value": 50.134570000000004
+    },
+    {
+      "id": "buckboost.Vds",
+      "source": "random",
+      "inputs": {
+        "V": 97.3508,
+        "V_g": 26.2583
+      },
+      "value": 123.60910000000001
+    },
+    {
+      "id": "buckboost.Vds",
+      "source": "random",
+      "inputs": {
+        "V": 10.5485,
+        "V_g": 250.086
+      },
+      "value": 260.6345
+    },
+    {
+      "id": "buckboost.Vds",
+      "source": "random",
+      "inputs": {
+        "V": 26.1658,
+        "V_g": 1.22071
+      },
+      "value": 27.38651
+    },
+    {
+      "id": "buckboost.Vds",
+      "source": "random",
+      "inputs": {
+        "V": 103.182,
+        "V_g": 36.0277
+      },
+      "value": 139.2097
+    },
+    {
+      "id": "buckboost.Vds",
+      "source": "random",
+      "inputs": {
+        "V": 227.11,
+        "V_g": 7.55819
+      },
+      "value": 234.66819
+    },
+    {
+      "id": "forward.Vds",
+      "source": "yaml",
+      "inputs": {
+        "V_g": 48.0,
+        "n_r": 1.0
+      },
+      "value": 96.0
+    },
+    {
+      "id": "forward.Vds",
+      "source": "random",
+      "inputs": {
+        "V_g": 1.54038,
+        "n_r": 1.66597
+      },
+      "value": 2.464994488856342
+    },
+    {
+      "id": "forward.Vds",
+      "source": "random",
+      "inputs": {
+        "V_g": 12.5023,
+        "n_r": 1.74199
+      },
+      "value": 19.679321682099207
+    },
+    {
+      "id": "forward.Vds",
+      "source": "random",
+      "inputs": {
+        "V_g": 11.5728,
+        "n_r": 1.73893
+      },
+      "value": 18.22792700338714
+    },
+    {
+      "id": "forward.Vds",
+      "source": "random",
+      "inputs": {
+        "V_g": 35.1378,
+        "n_r": 0.266493
+      },
+      "value": 166.99041901813555
+    },
+    {
+      "id": "forward.Vds",
+      "source": "random",
+      "inputs": {
+        "V_g": 3.96485,
+        "n_r": 0.644247
+      },
+      "value": 10.119088979770181
+    },
+    {
+      "id": "forward.Vds",
+      "source": "random",
+      "inputs": {
+        "V_g": 325.467,
+        "n_r": 3.46647
+      },
+      "value": 419.3570379925399
+    },
+    {
+      "id": "forward.ripple.iL",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.4,
+        "L": 0.0001,
+        "T_s": 1e-05,
+        "V": 4.0,
+        "V_g": 20.0,
+        "n": 0.5
+      },
+      "value": 0.12000000000000001
+    },
+    {
+      "id": "forward.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.858888,
+        "L": 6.45794e-05,
+        "T_s": 0.000277035,
+        "V": 1.16023,
+        "V_g": 109.434,
+        "n": 0.11467
+      },
+      "value": 20.980519941767934
+    },
+    {
+      "id": "forward.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.296529,
+        "L": 2.64922e-06,
+        "T_s": 7.38242e-05,
+        "V": 10.9507,
+        "V_g": 10.4153,
+        "n": 5.80503
+      },
+      "value": 204.55711539614245
+    },
+    {
+      "id": "forward.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.628794,
+        "L": 0.000224621,
+        "T_s": 2.18848e-06,
+        "V": 100.637,
+        "V_g": 326.245,
+        "n": 5.93682
+      },
+      "value": 5.624650363977317
+    },
+    {
+      "id": "forward.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.443066,
+        "L": 0.000138155,
+        "T_s": 0.000153071,
+        "V": 3.63108,
+        "V_g": 2.43249,
+        "n": 3.79185
+      },
+      "value": 1.3726985539813035
+    },
+    {
+      "id": "forward.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.204122,
+        "L": 9.6323e-05,
+        "T_s": 0.000720869,
+        "V": 147.069,
+        "V_g": 158.361,
+        "n": 8.9285
+      },
+      "value": 967.640035437703
+    },
+    {
+      "id": "forward.ripple.iL",
+      "source": "random",
+      "inputs": {
+        "D": 0.0655738,
+        "L": 0.000455451,
+        "T_s": 1.61705e-06,
+        "V": 4.67023,
+        "V_g": 150.564,
+        "n": 1.01961
+      },
+      "value": 0.017326876343363138
+    },
+    {
+      "id": "util.buck",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.25
+      },
+      "value": 0.5
+    },
+    {
+      "id": "util.buck",
+      "source": "random",
+      "inputs": {
+        "D": 0.300251
+      },
+      "value": 0.5479516402019433
+    },
+    {
+      "id": "util.buck",
+      "source": "random",
+      "inputs": {
+        "D": 0.713161
+      },
+      "value": 0.8444886026465959
+    },
+    {
+      "id": "util.buck",
+      "source": "random",
+      "inputs": {
+        "D": 0.364833
+      },
+      "value": 0.6040140726837414
+    },
+    {
+      "id": "util.buck",
+      "source": "random",
+      "inputs": {
+        "D": 0.815632
+      },
+      "value": 0.9031234688568336
+    },
+    {
+      "id": "util.buck",
+      "source": "random",
+      "inputs": {
+        "D": 0.624324
+      },
+      "value": 0.790141759433078
+    },
+    {
+      "id": "util.buck",
+      "source": "random",
+      "inputs": {
+        "D": 0.667793
+      },
+      "value": 0.8171860253332774
+    },
+    {
+      "id": "util.boost",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.25
+      },
+      "value": 1.5
+    },
+    {
+      "id": "util.boost",
+      "source": "random",
+      "inputs": {
+        "D": 0.538589
+      },
+      "value": 0.6287227918056021
+    },
+    {
+      "id": "util.boost",
+      "source": "random",
+      "inputs": {
+        "D": 0.283126
+      },
+      "value": 1.3472647679575689
+    },
+    {
+      "id": "util.boost",
+      "source": "random",
+      "inputs": {
+        "D": 0.13837
+      },
+      "value": 2.3163268491881714
+    },
+    {
+      "id": "util.boost",
+      "source": "random",
+      "inputs": {
+        "D": 0.734816
+      },
+      "value": 0.30935562351207624
+    },
+    {
+      "id": "util.boost",
+      "source": "random",
+      "inputs": {
+        "D": 0.426623
+      },
+      "value": 0.8778455973094487
+    },
+    {
+      "id": "util.boost",
+      "source": "random",
+      "inputs": {
+        "D": 0.179719
+      },
+      "value": 1.9349317702433833
+    },
+    {
+      "id": "util.buckboost",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.25
+      },
+      "value": 0.375
+    },
+    {
+      "id": "util.buckboost",
+      "source": "random",
+      "inputs": {
+        "D": 0.905802
+      },
+      "value": 0.08965165674269276
+    },
+    {
+      "id": "util.buckboost",
+      "source": "random",
+      "inputs": {
+        "D": 0.888702
+      },
+      "value": 0.10492172907365
+    },
+    {
+      "id": "util.buckboost",
+      "source": "random",
+      "inputs": {
+        "D": 0.0521066
+      },
+      "value": 0.21637439540298367
+    },
+    {
+      "id": "util.buckboost",
+      "source": "random",
+      "inputs": {
+        "D": 0.237908
+      },
+      "value": 0.37171657397877395
+    },
+    {
+      "id": "util.buckboost",
+      "source": "random",
+      "inputs": {
+        "D": 0.81175
+      },
+      "value": 0.16960792208613076
+    },
+    {
+      "id": "util.buckboost",
+      "source": "random",
+      "inputs": {
+        "D": 0.647095
+      },
+      "value": 0.28388459985244424
+    },
+    {
+      "id": "util.forward",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.25,
+        "n_r": 1.0
+      },
+      "value": 0.25
+    },
+    {
+      "id": "util.forward",
+      "source": "random",
+      "inputs": {
+        "D": 0.766402,
+        "n_r": 0.685117
+      },
+      "value": 0.355928692078529
+    },
+    {
+      "id": "util.forward",
+      "source": "random",
+      "inputs": {
+        "D": 0.119246,
+        "n_r": 0.494771
+      },
+      "value": 0.11430138237906118
+    },
+    {
+      "id": "util.forward",
+      "source": "random",
+      "inputs": {
+        "D": 0.36512,
+        "n_r": 0.535841
+      },
+      "value": 0.21081790584031473
+    },
+    {
+      "id": "util.forward",
+      "source": "random",
+      "inputs": {
+        "D": 0.173271,
+        "n_r": 1.63739
+      },
+      "value": 0.25842868604191405
+    },
+    {
+      "id": "util.forward",
+      "source": "random",
+      "inputs": {
+        "D": 0.0530003,
+        "n_r": 0.28133
+      },
+      "value": 0.05054686390127319
+    },
+    {
+      "id": "util.forward",
+      "source": "random",
+      "inputs": {
+        "D": 0.866186,
+        "n_r": 2.25168
+      },
+      "value": 0.6444725890753218
     }
   ]
 }

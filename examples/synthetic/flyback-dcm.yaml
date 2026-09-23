@@ -1,0 +1,26 @@
+synthetic: true
+label: "Synthetic flyback example in DCM, ideal diode (round numbers, not a real design)"
+label_ko: "DCM 합성 플라이백 예제, 이상적 다이오드 (단순한 어림수이며 실제 설계가 아님)"
+params:
+  V_g: 48
+  n: 0.25
+  D: 0.3
+  f_s: 1.0e5
+  L_M: 5.0e-5
+  R: 20
+  V_D: 0
+  L_lk: 1.0e-6
+steps:
+  - def.Ts
+  - {eq: K.def, bind: {L: L_M}}
+  - Kcrit.flyback
+  - flyback.dcm.M
+  - def.V
+  - flyback.Ipk.dcm
+  - flyback.Vds_off
+  - flyback.leak.E
+  - flyback.leak.P
+  - dcm.P_in
+  - lfr.R_in
+checks:
+  - {when: "K > K_crit", then: {en: "CCM", ko: "CCM"}, else: {en: "DCM", ko: "DCM"}}

@@ -1,0 +1,51 @@
+# Quiz for 03-topologies/flyback. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'An ideal CCM flyback with turns ratio 1:n, $n = 0.5$, runs at $D = 0.5$ from $24\,\mathrm{V}$. What is its output voltage?'
+    options:
+      - '$6\,\mathrm{V}$'
+      - '$12\,\mathrm{V}$'
+      - '$24\,\mathrm{V}$'
+      - '$48\,\mathrm{V}$'
+    answer: 1
+    explain: 'The ratio is $n D/(1 - D)$, the buck-boost ratio scaled by the turns ratio: $0.5$ here, so the output is half the input.'
+  - q: 'A flyback runs from $48\,\mathrm{V}$ with $n = 0.25$ and a $12\,\mathrm{V}$ output (ideal diode). What does the switch block while off, without the leakage spike?'
+    options:
+      - '$60\,\mathrm{V}$'
+      - '$96\,\mathrm{V}$'
+      - '$120\,\mathrm{V}$'
+      - '$144\,\mathrm{V}$'
+    answer: 1
+    explain: 'The output voltage appears on the primary divided by $n$, which is $48\,\mathrm{V}$ here, and adds to the input voltage.'
+  - q: 'In the same flyback, what reverse voltage does the output diode block while the switch is on?'
+    options:
+      - '$12\,\mathrm{V}$'
+      - '$24\,\mathrm{V}$'
+      - '$48\,\mathrm{V}$'
+      - '$60\,\mathrm{V}$'
+    answer: 1
+    explain: 'The secondary sees $n V_g$, which is $12\,\mathrm{V}$ here, and the diode blocks it on top of the output voltage.'
+  - q: 'How does the DCM conversion ratio of a flyback depend on the turns ratio, with $K$ formed from $L_M$ and the actual load?'
+    options:
+      - 'It is proportional to $n$'
+      - 'It is proportional to $1/n$'
+      - 'It does not depend on $n$'
+      - 'It is proportional to $n^2$'
+    answer: 2
+    explain: 'In DCM the energy stored per period in $L_M$ is delivered to the load whatever the turns ratio, and the ratio is $D/\sqrt{K}$.'
+  - q: 'A flyback has $2\,\mu\mathrm{H}$ of leakage inductance and turns off $3\,\mathrm{A}$ at $100\,\mathrm{kHz}$. At least how much power must a dissipative clamp dissipate?'
+    options:
+      - '$0.09\,\mathrm{W}$'
+      - '$0.45\,\mathrm{W}$'
+      - '$0.9\,\mathrm{W}$'
+      - '$1.8\,\mathrm{W}$'
+    answer: 2
+    explain: 'The leakage stores half of $L_\mathrm{lk}$ times the square of the current, $9\,\mu\mathrm{J}$ per turn-off, and that happens once per period. A dissipative clamp turns all of it into heat.'
+  - q: 'A fixed-duty-ratio flyback charges a battery from a current-limited source. The source voltage stops rising at one value. Why?'
+    options:
+      - 'The source reaches its current limit'
+      - 'At that input voltage the flyback enters CCM, and CCM volt-second balance with a fixed output and duty ratio allows only that input voltage'
+      - 'The clamp starts to conduct'
+      - 'The transformer saturates'
+    answer: 1
+    explain: 'Below the critical voltage the flyback is in DCM and behaves as a resistor. At the critical voltage CCM begins, and volt-second balance pins the input: the converter becomes a constant-voltage sink.'

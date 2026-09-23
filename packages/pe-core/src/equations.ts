@@ -137,6 +137,40 @@ const theory: Readonly<Record<string, Evaluator>> = {
   'loop.suppression': eq(['T_loop'], ({ T_loop }) => 1 / (1 + T_loop)),
 };
 
+/** Evaluators added with the 03-topologies pages (Phase 2b). */
+const topologies: Readonly<Record<string, Evaluator>> = {
+  // --- dc currents and peak current -----------------------------------------
+  'buck.IL': eq(['V', 'R'], ({ V, R }) => V / R),
+  'boost.IL': eq(['V', 'D', 'R'], ({ V, D, R }) => V / R / (1 - D)),
+  'buckboost.IL': eq(['V', 'D', 'R'], ({ V, D, R }) => V / R / (1 - D)),
+  'ripple.Ipk': eq(['I_L', 'Delta_i_L'], ({ I_L, Delta_i_L }) => I_L + Delta_i_L),
+
+  // --- current and voltage ripple (half peak-to-peak) -------------------------
+  'buck.ripple.v': eq(['Delta_i_L', 'T_s', 'C'], ({ Delta_i_L, T_s, C }) => {
+    // charge of the positive half-triangle (base T_s/2, height Delta_i_L) = C * 2 Delta_v
+    const charge = 0.5 * (T_s / 2) * Delta_i_L;
+    return charge / (2 * C);
+  }),
+  'boost.ripple.iL': eq(['V_g', 'D', 'T_s', 'L'], ({ V_g, D, T_s, L }) => (V_g / L) * (D * T_s) / 2),
+  'boost.ripple.v': eq(['V', 'D', 'T_s', 'R', 'C'], ({ V, D, T_s, R, C }) => (V / R / C) * (D * T_s) / 2),
+  'buckboost.ripple.iL': eq(['V_g', 'D', 'T_s', 'L'], ({ V_g, D, T_s, L }) => (V_g / L) * (D * T_s) / 2),
+  'buckboost.ripple.v': eq(['V', 'D', 'T_s', 'R', 'C'], ({ V, D, T_s, R, C }) => (V / R / C) * (D * T_s) / 2),
+  'forward.ripple.iL': eq(['n', 'V_g', 'V', 'D', 'T_s', 'L'], ({ n, V_g, V, D, T_s, L }) =>
+    ((n * V_g - V) / L) * (D * T_s) / 2,
+  ),
+
+  // --- voltages and stresses ---------------------------------------------------
+  'buckboost.V': eq(['D', 'V_g'], ({ D, V_g }) => (V_g * D) / (1 - D)),
+  'buckboost.Vds': eq(['V_g', 'V'], ({ V_g, V }) => V_g + V),
+  'forward.Vds': eq(['V_g', 'n_r'], ({ V_g, n_r }) => V_g + V_g / n_r),
+
+  // --- transistor utilization U = P / (V_peak * I_rms) --------------------------
+  'util.buck': eq(['D'], ({ D }) => Math.sqrt(D)),
+  'util.boost': eq(['D'], ({ D }) => (1 - D) / Math.sqrt(D)),
+  'util.buckboost': eq(['D'], ({ D }) => (1 - D) * Math.sqrt(D)),
+  'util.forward': eq(['D', 'n_r'], ({ D, n_r }) => (n_r * Math.sqrt(D)) / (n_r + 1)),
+};
+
 function merge(...groups: Readonly<Record<string, Evaluator>>[]): Readonly<Record<string, Evaluator>> {
   const out: Record<string, Evaluator> = {};
   for (const g of groups) {
@@ -148,7 +182,7 @@ function merge(...groups: Readonly<Record<string, Evaluator>>[]): Readonly<Recor
   return out;
 }
 
-export const evaluators: Readonly<Record<string, Evaluator>> = merge(base, theory);
+export const evaluators: Readonly<Record<string, Evaluator>> = merge(base, theory, topologies);
 
 export function evaluate(id: string, inputs: Inputs): number {
   const fn = evaluators[id];

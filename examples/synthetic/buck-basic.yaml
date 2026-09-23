@@ -15,6 +15,9 @@ steps:
   - def.V
   - buck.ripple.iL
   - buck.ripple.iL_pp
+  - buck.IL
+  - ripple.Ipk
+  - buck.ripple.v
   - K.def
   - Kcrit.buck
   - L.crit

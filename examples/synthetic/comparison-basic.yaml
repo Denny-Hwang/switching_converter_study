@@ -1,0 +1,14 @@
+synthetic: true
+label: "Synthetic comparison at one duty ratio (round numbers, not a real design)"
+label_ko: "한 듀티비에서의 합성 비교 예제 (단순한 어림수이며 실제 설계가 아님)"
+params:
+  D: 0.4
+  n_r: 1
+steps:
+  - {eq: buck.ccm.M, as: M_buck}
+  - {eq: boost.ccm.M, as: M_boost}
+  - {eq: buckboost.ccm.M, as: M_bb}
+  - {eq: util.buck, as: U_buck}
+  - {eq: util.boost, as: U_boost}
+  - {eq: util.buckboost, as: U_bb}
+  - {eq: util.forward, as: U_fwd}
