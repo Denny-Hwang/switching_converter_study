@@ -5504,6 +5504,1061 @@
         "n_r": 2.25168
       },
       "value": 0.6444725890753218
+    },
+    {
+      "id": "ind.di",
+      "source": "yaml",
+      "inputs": {
+        "L": 0.0001,
+        "V_L": 12.0,
+        "t": 5e-06
+      },
+      "value": 0.6
+    },
+    {
+      "id": "ind.di",
+      "source": "random",
+      "inputs": {
+        "L": 0.00486367,
+        "V_L": 11.1903,
+        "t": 5.19534e-06
+      },
+      "value": 0.011953404158176853
+    },
+    {
+      "id": "ind.di",
+      "source": "random",
+      "inputs": {
+        "L": 0.000694481,
+        "V_L": 37.7454,
+        "t": 3.4545e-05
+      },
+      "value": 1.8775385402912388
+    },
+    {
+      "id": "ind.di",
+      "source": "random",
+      "inputs": {
+        "L": 8.16451e-06,
+        "V_L": 3.71043,
+        "t": 2.14019e-07
+      },
+      "value": 0.09726272834132116
+    },
+    {
+      "id": "ind.di",
+      "source": "random",
+      "inputs": {
+        "L": 1.18694e-05,
+        "V_L": 0.379802,
+        "t": 5.23028e-05
+      },
+      "value": 1.6736067573424096
+    },
+    {
+      "id": "ind.di",
+      "source": "random",
+      "inputs": {
+        "L": 3.71064e-06,
+        "V_L": 1.45106,
+        "t": 0.000218789
+      },
+      "value": 85.55827736994158
+    },
+    {
+      "id": "ind.di",
+      "source": "random",
+      "inputs": {
+        "L": 0.000853839,
+        "V_L": 72.2569,
+        "t": 1.18153e-06
+      },
+      "value": 0.09998804816481796
+    },
+    {
+      "id": "cap.dv",
+      "source": "yaml",
+      "inputs": {
+        "C": 1e-05,
+        "I_C": 1.2,
+        "t": 5e-06
+      },
+      "value": 0.6
+    },
+    {
+      "id": "cap.dv",
+      "source": "random",
+      "inputs": {
+        "C": 0.00160839,
+        "I_C": 0.0013074,
+        "t": 1.13156e-05
+      },
+      "value": 9.198027493331842e-06
+    },
+    {
+      "id": "cap.dv",
+      "source": "random",
+      "inputs": {
+        "C": 1.07593e-06,
+        "I_C": 4.77786,
+        "t": 4.98405e-06
+      },
+      "value": 22.13256729805843
+    },
+    {
+      "id": "cap.dv",
+      "source": "random",
+      "inputs": {
+        "C": 0.00108143,
+        "I_C": 15.9396,
+        "t": 3.41479e-06
+      },
+      "value": 0.0503318630738929
+    },
+    {
+      "id": "cap.dv",
+      "source": "random",
+      "inputs": {
+        "C": 0.00527025,
+        "I_C": 56.6236,
+        "t": 0.00021093
+      },
+      "value": 2.266233280774157
+    },
+    {
+      "id": "cap.dv",
+      "source": "random",
+      "inputs": {
+        "C": 3.49089e-07,
+        "I_C": 2.02517,
+        "t": 9.90228e-07
+      },
+      "value": 5.744609651865284
+    },
+    {
+      "id": "cap.dv",
+      "source": "random",
+      "inputs": {
+        "C": 1.72328e-07,
+        "I_C": 33.7958,
+        "t": 1.57507e-05
+      },
+      "value": 3088.9205878325056
+    },
+    {
+      "id": "ind.E",
+      "source": "yaml",
+      "inputs": {
+        "I_L": 2.0,
+        "L": 0.0001
+      },
+      "value": 0.0002
+    },
+    {
+      "id": "ind.E",
+      "source": "random",
+      "inputs": {
+        "I_L": 0.122988,
+        "L": 0.00040254
+      },
+      "value": 3.04441970994288e-06
+    },
+    {
+      "id": "ind.E",
+      "source": "random",
+      "inputs": {
+        "I_L": 4.49752,
+        "L": 3.53245e-06
+      },
+      "value": 3.5726644970990234e-05
+    },
+    {
+      "id": "ind.E",
+      "source": "random",
+      "inputs": {
+        "I_L": 15.0563,
+        "L": 2.72734e-05
+      },
+      "value": 0.003091333110411623
+    },
+    {
+      "id": "ind.E",
+      "source": "random",
+      "inputs": {
+        "I_L": 2.399,
+        "L": 5.78624e-06
+      },
+      "value": 1.665048711712e-05
+    },
+    {
+      "id": "ind.E",
+      "source": "random",
+      "inputs": {
+        "I_L": 0.0580074,
+        "L": 0.00304058
+      },
+      "value": 5.1155606601870806e-06
+    },
+    {
+      "id": "ind.E",
+      "source": "random",
+      "inputs": {
+        "I_L": 1.62657,
+        "L": 0.000601158
+      },
+      "value": 0.0007952508671196771
+    },
+    {
+      "id": "cap.E",
+      "source": "yaml",
+      "inputs": {
+        "C": 1e-05,
+        "V_C": 12.0
+      },
+      "value": 0.00072
+    },
+    {
+      "id": "cap.E",
+      "source": "random",
+      "inputs": {
+        "C": 1.08421e-05,
+        "V_C": 21.4306
+      },
+      "value": 0.0024897289748183776
+    },
+    {
+      "id": "cap.E",
+      "source": "random",
+      "inputs": {
+        "C": 0.000108851,
+        "V_C": 11.8645
+      },
+      "value": 0.0076612795397863745
+    },
+    {
+      "id": "cap.E",
+      "source": "random",
+      "inputs": {
+        "C": 0.000173152,
+        "V_C": 16.4427
+      },
+      "value": 0.023406893695715036
+    },
+    {
+      "id": "cap.E",
+      "source": "random",
+      "inputs": {
+        "C": 0.000243693,
+        "V_C": 1.62555
+      },
+      "value": 0.0003219687515398163
+    },
+    {
+      "id": "cap.E",
+      "source": "random",
+      "inputs": {
+        "C": 0.00855013,
+        "V_C": 0.602707
+      },
+      "value": 0.001552941848176785
+    },
+    {
+      "id": "cap.E",
+      "source": "random",
+      "inputs": {
+        "C": 8.06414e-05,
+        "V_C": 1.6371
+      },
+      "value": 0.00010806336331868701
+    },
+    {
+      "id": "imp.ZL",
+      "source": "yaml",
+      "inputs": {
+        "L": 0.0001,
+        "f": 100000.0
+      },
+      "value": 62.83185307179587
+    },
+    {
+      "id": "imp.ZL",
+      "source": "random",
+      "inputs": {
+        "L": 0.000203753,
+        "f": 5374.52
+      },
+      "value": 6.880556470858144
+    },
+    {
+      "id": "imp.ZL",
+      "source": "random",
+      "inputs": {
+        "L": 3.79896e-05,
+        "f": 13788.5
+      },
+      "value": 3.291255611819414
+    },
+    {
+      "id": "imp.ZL",
+      "source": "random",
+      "inputs": {
+        "L": 0.00718676,
+        "f": 11027.1
+      },
+      "value": 497.93691390560156
+    },
+    {
+      "id": "imp.ZL",
+      "source": "random",
+      "inputs": {
+        "L": 3.53669e-06,
+        "f": 1672.13
+      },
+      "value": 0.03715753551107361
+    },
+    {
+      "id": "imp.ZL",
+      "source": "random",
+      "inputs": {
+        "L": 4.2908e-05,
+        "f": 509024.0
+      },
+      "value": 137.23231819063886
+    },
+    {
+      "id": "imp.ZL",
+      "source": "random",
+      "inputs": {
+        "L": 7.76331e-06,
+        "f": 1939.57
+      },
+      "value": 0.09460895705894524
+    },
+    {
+      "id": "imp.ZC",
+      "source": "yaml",
+      "inputs": {
+        "C": 1e-05,
+        "f": 100000.0
+      },
+      "value": 0.15915494309189532
+    },
+    {
+      "id": "imp.ZC",
+      "source": "random",
+      "inputs": {
+        "C": 0.00137592,
+        "f": 2773.8
+      },
+      "value": 0.041701512246304716
+    },
+    {
+      "id": "imp.ZC",
+      "source": "random",
+      "inputs": {
+        "C": 0.00153122,
+        "f": 434037.0
+      },
+      "value": 0.00023947257582623605
+    },
+    {
+      "id": "imp.ZC",
+      "source": "random",
+      "inputs": {
+        "C": 7.89911e-05,
+        "f": 25700.8
+      },
+      "value": 0.07839625699773312
+    },
+    {
+      "id": "imp.ZC",
+      "source": "random",
+      "inputs": {
+        "C": 0.00227283,
+        "f": 1091.54
+      },
+      "value": 0.06415249082029943
+    },
+    {
+      "id": "imp.ZC",
+      "source": "random",
+      "inputs": {
+        "C": 0.00695621,
+        "f": 764313.0
+      },
+      "value": 2.9934788966327672e-05
+    },
+    {
+      "id": "imp.ZC",
+      "source": "random",
+      "inputs": {
+        "C": 0.000728137,
+        "f": 213905.0
+      },
+      "value": 0.0010218475200275607
+    },
+    {
+      "id": "rc.fc",
+      "source": "yaml",
+      "inputs": {
+        "C_f": 1e-07,
+        "R_f": 1000.0
+      },
+      "value": 1591.5494309189535
+    },
+    {
+      "id": "rc.fc",
+      "source": "random",
+      "inputs": {
+        "C_f": 1.84177e-12,
+        "R_f": 4122.81
+      },
+      "value": 20960006.657890227
+    },
+    {
+      "id": "rc.fc",
+      "source": "random",
+      "inputs": {
+        "C_f": 9.73822e-07,
+        "R_f": 549.354
+      },
+      "value": 297.5008828912031
+    },
+    {
+      "id": "rc.fc",
+      "source": "random",
+      "inputs": {
+        "C_f": 7.26127e-11,
+        "R_f": 3778.89
+      },
+      "value": 580020.4364505918
+    },
+    {
+      "id": "rc.fc",
+      "source": "random",
+      "inputs": {
+        "C_f": 0.000848295,
+        "R_f": 122.54
+      },
+      "value": 1.5310710629020747
+    },
+    {
+      "id": "rc.fc",
+      "source": "random",
+      "inputs": {
+        "C_f": 8.53199e-07,
+        "R_f": 49931.7
+      },
+      "value": 3.7358845035332706
+    },
+    {
+      "id": "rc.fc",
+      "source": "random",
+      "inputs": {
+        "C_f": 1.9802e-09,
+        "R_f": 467467.0
+      },
+      "value": 171.93334692767888
+    },
+    {
+      "id": "rc.gain",
+      "source": "yaml",
+      "inputs": {
+        "f": 1000.0,
+        "f_c": 1000.0
+      },
+      "value": 0.7071067811865476
+    },
+    {
+      "id": "rc.gain",
+      "source": "yaml",
+      "inputs": {
+        "f": 10000.0,
+        "f_c": 1000.0
+      },
+      "value": 0.09950371902099892
+    },
+    {
+      "id": "rc.gain",
+      "source": "random",
+      "inputs": {
+        "f": 60623.8,
+        "f_c": 1660.03
+      },
+      "value": 0.02737222022256438
+    },
+    {
+      "id": "rc.gain",
+      "source": "random",
+      "inputs": {
+        "f": 12742.1,
+        "f_c": 3229550.0
+      },
+      "value": 0.9999922167151164
+    },
+    {
+      "id": "rc.gain",
+      "source": "random",
+      "inputs": {
+        "f": 8676.04,
+        "f_c": 6.28253
+      },
+      "value": 0.0007241239497351582
+    },
+    {
+      "id": "rc.gain",
+      "source": "random",
+      "inputs": {
+        "f": 6824.77,
+        "f_c": 8.40031
+      },
+      "value": 0.0012308551990387624
+    },
+    {
+      "id": "rc.gain",
+      "source": "random",
+      "inputs": {
+        "f": 804403.0,
+        "f_c": 8.04761
+      },
+      "value": 1.000445050502952e-05
+    },
+    {
+      "id": "rc.gain",
+      "source": "random",
+      "inputs": {
+        "f": 542062.0,
+        "f_c": 11.0124
+      },
+      "value": 2.031575723390945e-05
+    },
+    {
+      "id": "fourier.pulse.harm",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "V_pk": 12.0,
+        "h": 1.0
+      },
+      "value": 7.639437268410976
+    },
+    {
+      "id": "fourier.pulse.harm",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.25,
+        "V_pk": 12.0,
+        "h": 3.0
+      },
+      "value": 1.8006326323142121
+    },
+    {
+      "id": "fourier.pulse.harm",
+      "source": "random",
+      "inputs": {
+        "D": 0.33781,
+        "V_pk": 390.729,
+        "h": 5.83911
+      },
+      "value": 3.6744951865367357
+    },
+    {
+      "id": "fourier.pulse.harm",
+      "source": "random",
+      "inputs": {
+        "D": 0.289836,
+        "V_pk": 66.1324,
+        "h": 10.924
+      },
+      "value": 1.9217781484032925
+    },
+    {
+      "id": "fourier.pulse.harm",
+      "source": "random",
+      "inputs": {
+        "D": 0.723845,
+        "V_pk": 0.196355,
+        "h": 9.35251
+      },
+      "value": 0.008846258241063469
+    },
+    {
+      "id": "fourier.pulse.harm",
+      "source": "random",
+      "inputs": {
+        "D": 0.694588,
+        "V_pk": 0.217536,
+        "h": 13.5708
+      },
+      "value": 0.009931153235232172
+    },
+    {
+      "id": "fourier.pulse.harm",
+      "source": "random",
+      "inputs": {
+        "D": 0.30543,
+        "V_pk": 3.29022,
+        "h": 8.08009
+      },
+      "value": 0.25791526048099295
+    },
+    {
+      "id": "fourier.pulse.harm",
+      "source": "random",
+      "inputs": {
+        "D": 0.518816,
+        "V_pk": 0.761479,
+        "h": 13.1434
+      },
+      "value": 0.019860215691777074
+    },
+    {
+      "id": "fourier.pulse.rms",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.25,
+        "V_pk": 12.0
+      },
+      "value": 6.0
+    },
+    {
+      "id": "fourier.pulse.rms",
+      "source": "random",
+      "inputs": {
+        "D": 0.368223,
+        "V_pk": 2.47823
+      },
+      "value": 1.5038241883425858
+    },
+    {
+      "id": "fourier.pulse.rms",
+      "source": "random",
+      "inputs": {
+        "D": 0.908073,
+        "V_pk": 215.693
+      },
+      "value": 205.54003794740376
+    },
+    {
+      "id": "fourier.pulse.rms",
+      "source": "random",
+      "inputs": {
+        "D": 0.685536,
+        "V_pk": 373.587
+      },
+      "value": 309.31920720176106
+    },
+    {
+      "id": "fourier.pulse.rms",
+      "source": "random",
+      "inputs": {
+        "D": 0.419736,
+        "V_pk": 23.0173
+      },
+      "value": 14.912226377425586
+    },
+    {
+      "id": "fourier.pulse.rms",
+      "source": "random",
+      "inputs": {
+        "D": 0.671891,
+        "V_pk": 2.53188
+      },
+      "value": 2.0753556421337405
+    },
+    {
+      "id": "fourier.pulse.rms",
+      "source": "random",
+      "inputs": {
+        "D": 0.207257,
+        "V_pk": 185.137
+      },
+      "value": 84.2845215465843
+    },
+    {
+      "id": "passive.f_srf",
+      "source": "yaml",
+      "inputs": {
+        "C_p": 1e-11,
+        "L": 0.001
+      },
+      "value": 1591549.4309189534
+    },
+    {
+      "id": "passive.f_srf",
+      "source": "random",
+      "inputs": {
+        "C_p": 8.19503e-11,
+        "L": 2.56657e-05
+      },
+      "value": 3470310.2338408614
+    },
+    {
+      "id": "passive.f_srf",
+      "source": "random",
+      "inputs": {
+        "C_p": 8.02196e-09,
+        "L": 0.00349354
+      },
+      "value": 30064.018188355945
+    },
+    {
+      "id": "passive.f_srf",
+      "source": "random",
+      "inputs": {
+        "C_p": 7.86939e-10,
+        "L": 0.000194234
+      },
+      "value": 407086.7528630863
+    },
+    {
+      "id": "passive.f_srf",
+      "source": "random",
+      "inputs": {
+        "C_p": 5.5485e-12,
+        "L": 3.07781e-05
+      },
+      "value": 12178994.469923886
+    },
+    {
+      "id": "passive.f_srf",
+      "source": "random",
+      "inputs": {
+        "C_p": 3.26862e-09,
+        "L": 9.87149e-06
+      },
+      "value": 886026.1909313923
+    },
+    {
+      "id": "passive.f_srf",
+      "source": "random",
+      "inputs": {
+        "C_p": 1.10398e-11,
+        "L": 0.00046364
+      },
+      "value": 2224585.3877969603
+    },
+    {
+      "id": "cap.esr.ripple",
+      "source": "yaml",
+      "inputs": {
+        "Delta_i_pp": 0.6,
+        "R_esr": 0.05
+      },
+      "value": 0.03
+    },
+    {
+      "id": "cap.esr.ripple",
+      "source": "random",
+      "inputs": {
+        "Delta_i_pp": 15.3226,
+        "R_esr": 0.0429041
+      },
+      "value": 0.65740236266
+    },
+    {
+      "id": "cap.esr.ripple",
+      "source": "random",
+      "inputs": {
+        "Delta_i_pp": 14.6722,
+        "R_esr": 0.0720219
+      },
+      "value": 1.05671972118
+    },
+    {
+      "id": "cap.esr.ripple",
+      "source": "random",
+      "inputs": {
+        "Delta_i_pp": 8.3419,
+        "R_esr": 0.0141907
+      },
+      "value": 0.11837740033000002
+    },
+    {
+      "id": "cap.esr.ripple",
+      "source": "random",
+      "inputs": {
+        "Delta_i_pp": 14.6832,
+        "R_esr": 0.0831983
+      },
+      "value": 1.22161727856
+    },
+    {
+      "id": "cap.esr.ripple",
+      "source": "random",
+      "inputs": {
+        "Delta_i_pp": 9.80488,
+        "R_esr": 0.00095754
+      },
+      "value": 0.0093885647952
+    },
+    {
+      "id": "cap.esr.ripple",
+      "source": "random",
+      "inputs": {
+        "Delta_i_pp": 2.60231,
+        "R_esr": 0.147496
+      },
+      "value": 0.38383031576
+    },
+    {
+      "id": "mag.H_ampere",
+      "source": "yaml",
+      "inputs": {
+        "I_w": 2.0,
+        "N": 20.0,
+        "l_e": 0.04
+      },
+      "value": 1000.0
+    },
+    {
+      "id": "mag.H_ampere",
+      "source": "random",
+      "inputs": {
+        "I_w": 0.00519198,
+        "N": 9.68935,
+        "l_e": 0.163801
+      },
+      "value": 0.3071221263179101
+    },
+    {
+      "id": "mag.H_ampere",
+      "source": "random",
+      "inputs": {
+        "I_w": 0.0203381,
+        "N": 1.43873,
+        "l_e": 0.15457
+      },
+      "value": 0.18930604006598953
+    },
+    {
+      "id": "mag.H_ampere",
+      "source": "random",
+      "inputs": {
+        "I_w": 37.6777,
+        "N": 4.15684,
+        "l_e": 0.014909
+      },
+      "value": 10505.075489167617
+    },
+    {
+      "id": "mag.H_ampere",
+      "source": "random",
+      "inputs": {
+        "I_w": 3.06891,
+        "N": 111.281,
+        "l_e": 0.155489
+      },
+      "value": 2196.369992153786
+    },
+    {
+      "id": "mag.H_ampere",
+      "source": "random",
+      "inputs": {
+        "I_w": 48.0916,
+        "N": 8.90942,
+        "l_e": 0.0109835
+      },
+      "value": 39010.175524377475
+    },
+    {
+      "id": "mag.H_ampere",
+      "source": "random",
+      "inputs": {
+        "I_w": 4.07947,
+        "N": 2.12254,
+        "l_e": 0.0125757
+      },
+      "value": 688.5372785451306
+    },
+    {
+      "id": "mag.B_H",
+      "source": "yaml",
+      "inputs": {
+        "H_mag": 100.0,
+        "mu_r": 2000.0
+      },
+      "value": 0.25132741228718347
+    },
+    {
+      "id": "mag.B_H",
+      "source": "random",
+      "inputs": {
+        "H_mag": 4.56548,
+        "mu_r": 12042.4
+      },
+      "value": 0.06908907167307418
+    },
+    {
+      "id": "mag.B_H",
+      "source": "random",
+      "inputs": {
+        "H_mag": 343.204,
+        "mu_r": 12819.9
+      },
+      "value": 5.529003214257131
+    },
+    {
+      "id": "mag.B_H",
+      "source": "random",
+      "inputs": {
+        "H_mag": 2172.16,
+        "mu_r": 10.9409
+      },
+      "value": 0.029864464002576373
+    },
+    {
+      "id": "mag.B_H",
+      "source": "random",
+      "inputs": {
+        "H_mag": 531.605,
+        "mu_r": 9637.25
+      },
+      "value": 6.438015919231465
+    },
+    {
+      "id": "mag.B_H",
+      "source": "random",
+      "inputs": {
+        "H_mag": 1168.35,
+        "mu_r": 980.759
+      },
+      "value": 1.4399424301743238
+    },
+    {
+      "id": "mag.B_H",
+      "source": "random",
+      "inputs": {
+        "H_mag": 6.5264,
+        "mu_r": 39.1811
+      },
+      "value": 0.00032133658694138495
+    },
+    {
+      "id": "xfmr.V2",
+      "source": "yaml",
+      "inputs": {
+        "V_1": 48.0,
+        "n": 0.5
+      },
+      "value": 24.0
+    },
+    {
+      "id": "xfmr.V2",
+      "source": "random",
+      "inputs": {
+        "V_1": 286.559,
+        "n": 0.558169
+      },
+      "value": 159.94835047100003
+    },
+    {
+      "id": "xfmr.V2",
+      "source": "random",
+      "inputs": {
+        "V_1": 1.05434,
+        "n": 0.638228
+      },
+      "value": 0.67290930952
+    },
+    {
+      "id": "xfmr.V2",
+      "source": "random",
+      "inputs": {
+        "V_1": 2.93292,
+        "n": 4.08042
+      },
+      "value": 11.967545426400001
+    },
+    {
+      "id": "xfmr.V2",
+      "source": "random",
+      "inputs": {
+        "V_1": 255.589,
+        "n": 4.39721
+      },
+      "value": 1123.87850669
+    },
+    {
+      "id": "xfmr.V2",
+      "source": "random",
+      "inputs": {
+        "V_1": 219.588,
+        "n": 1.83963
+      },
+      "value": 403.96067244
+    },
+    {
+      "id": "xfmr.V2",
+      "source": "random",
+      "inputs": {
+        "V_1": 2.54784,
+        "n": 7.81826
+      },
+      "value": 19.9196755584
+    },
+    {
+      "id": "xfmr.I2",
+      "source": "yaml",
+      "inputs": {
+        "I_1": 1.0,
+        "n": 0.5
+      },
+      "value": 2.0
+    },
+    {
+      "id": "xfmr.I2",
+      "source": "random",
+      "inputs": {
+        "I_1": 0.875587,
+        "n": 4.66078
+      },
+      "value": 0.1878627611687314
+    },
+    {
+      "id": "xfmr.I2",
+      "source": "random",
+      "inputs": {
+        "I_1": 26.184,
+        "n": 0.116156
+      },
+      "value": 225.4209855711285
+    },
+    {
+      "id": "xfmr.I2",
+      "source": "random",
+      "inputs": {
+        "I_1": 0.130155,
+        "n": 2.06283
+      },
+      "value": 0.06309535928796847
+    },
+    {
+      "id": "xfmr.I2",
+      "source": "random",
+      "inputs": {
+        "I_1": 37.8527,
+        "n": 0.271081
+      },
+      "value": 139.63612352027621
+    },
+    {
+      "id": "xfmr.I2",
+      "source": "random",
+      "inputs": {
+        "I_1": 0.225335,
+        "n": 1.59151
+      },
+      "value": 0.14158566392922445
+    },
+    {
+      "id": "xfmr.I2",
+      "source": "random",
+      "inputs": {
+        "I_1": 0.00240199,
+        "n": 0.31298
+      },
+      "value": 0.007674579845357531
     }
   ]
 }

@@ -171,6 +171,37 @@ const topologies: Readonly<Record<string, Evaluator>> = {
   'util.forward': eq(['D', 'n_r'], ({ D, n_r }) => (n_r * Math.sqrt(D)) / (n_r + 1)),
 };
 
+/** Evaluators added with the 00-foundations and 01-physics refreshers (Phase 2c). */
+const foundations: Readonly<Record<string, Evaluator>> = {
+  // --- element laws under constant excitation, stored energy -------------------
+  'ind.di': eq(['V_L', 't', 'L'], ({ V_L, t, L }) => (V_L / L) * t),
+  'cap.dv': eq(['I_C', 't', 'C'], ({ I_C, t, C }) => (I_C / C) * t),
+  'ind.E': eq(['L', 'I_L'], ({ L, I_L }) => 0.5 * L * sq(I_L)),
+  'cap.E': eq(['C', 'V_C'], ({ C, V_C }) => 0.5 * C * sq(V_C)),
+
+  // --- impedance, R-C filter, self-resonance ------------------------------------
+  'imp.ZL': eq(['f', 'L'], ({ f, L }) => 2 * Math.PI * f * L),
+  'imp.ZC': eq(['f', 'C'], ({ f, C }) => 1 / (2 * Math.PI * f * C)),
+  'rc.fc': eq(['R_f', 'C_f'], ({ R_f, C_f }) => 1 / (2 * Math.PI * R_f * C_f)),
+  'rc.gain': eq(['f', 'f_c'], ({ f, f_c }) => 1 / Math.hypot(1, f / f_c)),
+  'passive.f_srf': eq(['L', 'C_p'], ({ L, C_p }) => 1 / (2 * Math.PI * Math.sqrt(L * C_p))),
+  'cap.esr.ripple': eq(['R_esr', 'Delta_i_pp'], ({ R_esr, Delta_i_pp }) => R_esr * Delta_i_pp),
+
+  // --- rectangular pulse train ---------------------------------------------------
+  'fourier.pulse.harm': eq(['V_pk', 'h', 'D'], ({ V_pk, h, D }) => {
+    // amplitude sqrt(a^2 + b^2) of the cosine and sine coefficients, 2 V |sin(pi h D)| / (pi h)
+    const x = Math.PI * h * D;
+    return (2 * V_pk * Math.abs(Math.sin(x))) / (Math.PI * h);
+  }),
+  'fourier.pulse.rms': eq(['V_pk', 'D'], ({ V_pk, D }) => V_pk * Math.sqrt(D)),
+
+  // --- magnetics and the ideal transformer (1:n, n = N_s/N_p) ----------------------
+  'mag.H_ampere': eq(['N', 'I_w', 'l_e'], ({ N, I_w, l_e }) => (N * I_w) / l_e),
+  'mag.B_H': eq(['mu_r', 'H_mag'], ({ mu_r, H_mag }) => MU_0 * mu_r * H_mag),
+  'xfmr.V2': eq(['n', 'V_1'], ({ n, V_1 }) => n * V_1),
+  'xfmr.I2': eq(['I_1', 'n'], ({ I_1, n }) => I_1 / n),
+};
+
 function merge(...groups: Readonly<Record<string, Evaluator>>[]): Readonly<Record<string, Evaluator>> {
   const out: Record<string, Evaluator> = {};
   for (const g of groups) {
@@ -182,7 +213,7 @@ function merge(...groups: Readonly<Record<string, Evaluator>>[]): Readonly<Recor
   return out;
 }
 
-export const evaluators: Readonly<Record<string, Evaluator>> = merge(base, theory, topologies);
+export const evaluators: Readonly<Record<string, Evaluator>> = merge(base, theory, topologies, foundations);
 
 export function evaluate(id: string, inputs: Inputs): number {
   const fn = evaluators[id];

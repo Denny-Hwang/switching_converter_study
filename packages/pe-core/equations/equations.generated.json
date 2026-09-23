@@ -107,6 +107,30 @@
     "small_ripple_currents": {
       "en": "rms currents computed with small ripple (flat-topped current pulses)",
       "ko": "소리플 근사로 계산한 실효 전류(윗면이 평평한 전류 펄스)"
+    },
+    "constant_excitation": {
+      "en": "constant voltage (inductor) or current (capacitor) during the interval t",
+      "ko": "구간 t 동안 전압(인덕터) 또는 전류(커패시터)가 일정함"
+    },
+    "sinusoidal_steady_state": {
+      "en": "sinusoidal steady state (phasor analysis)",
+      "ko": "정현파 정상상태(페이저 해석)"
+    },
+    "first_order_rc": {
+      "en": "first-order R-C low-pass filter with no load on its output",
+      "ko": "출력에 부하가 없는 1차 R-C 저역통과 필터"
+    },
+    "rectangular_pulse": {
+      "en": "ideal rectangular pulse train between 0 and V_pk with duty ratio D",
+      "ko": "0과 V_pk 사이를 오가는 듀티비 D의 이상적인 직사각형 펄스열"
+    },
+    "uniform_field": {
+      "en": "ungapped core with the field intensity uniform along the path l_e",
+      "ko": "갭이 없는 코어에서 자로 l_e를 따라 자계 세기가 균일함"
+    },
+    "ideal_transformer": {
+      "en": "ideal transformer: perfect coupling, no magnetizing current, no losses",
+      "ko": "이상적 변압기: 완전 결합, 자화 전류 없음, 손실 없음"
     }
   },
   "symbols": {
@@ -130,6 +154,13 @@
       ],
       "scale": "log"
     },
+    "B": {
+      "latex": "B",
+      "unit": "T",
+      "desc": "magnetic flux density",
+      "range": null,
+      "scale": "linear"
+    },
     "B_ac": {
       "latex": "B_\\mathrm{ac}",
       "unit": "T",
@@ -150,10 +181,20 @@
     "C": {
       "latex": "C",
       "unit": "F",
-      "desc": "output filter capacitance",
+      "desc": "capacitance (the output filter capacitor in converter equations)",
       "range": [
         1e-07,
         0.01
+      ],
+      "scale": "log"
+    },
+    "C_f": {
+      "latex": "C_f",
+      "unit": "F",
+      "desc": "capacitance of an R-C filter",
+      "range": [
+        1e-12,
+        0.001
       ],
       "scale": "log"
     },
@@ -161,6 +202,16 @@
       "latex": "C_\\mathrm{node}",
       "unit": "F",
       "desc": "total capacitance at the switch node",
+      "range": [
+        1e-12,
+        1e-08
+      ],
+      "scale": "log"
+    },
+    "C_p": {
+      "latex": "C_p",
+      "unit": "F",
+      "desc": "parasitic (winding) capacitance in parallel with an inductance",
       "range": [
         1e-12,
         1e-08
@@ -198,6 +249,13 @@
       "range": null,
       "scale": "linear"
     },
+    "Delta_i": {
+      "latex": "\\Delta i",
+      "unit": "A",
+      "desc": "change of inductor current during t (the full change, not a half-ripple)",
+      "range": null,
+      "scale": "linear"
+    },
     "Delta_i_L": {
       "latex": "\\Delta i_L",
       "unit": "A",
@@ -219,6 +277,34 @@
       "latex": "\\Delta v",
       "unit": "V",
       "desc": "output voltage ripple, HALF of peak-to-peak (Erickson convention)",
+      "range": null,
+      "scale": "linear"
+    },
+    "Delta_v_C": {
+      "latex": "\\Delta v_C",
+      "unit": "V",
+      "desc": "change of capacitor voltage during t",
+      "range": null,
+      "scale": "linear"
+    },
+    "Delta_v_esr": {
+      "latex": "\\Delta v_\\mathrm{ESR}",
+      "unit": "V",
+      "desc": "ripple voltage across the ESR, peak-to-peak",
+      "range": null,
+      "scale": "linear"
+    },
+    "E_C": {
+      "latex": "E_C",
+      "unit": "J",
+      "desc": "energy stored in a capacitor",
+      "range": null,
+      "scale": "linear"
+    },
+    "E_L": {
+      "latex": "E_L",
+      "unit": "J",
+      "desc": "energy stored in an inductor",
       "range": null,
       "scale": "linear"
     },
@@ -249,6 +335,13 @@
       "range": null,
       "scale": "linear"
     },
+    "G_lp": {
+      "latex": "|G|",
+      "unit": "1",
+      "desc": "magnitude of a first-order low-pass transfer function",
+      "range": null,
+      "scale": "linear"
+    },
     "G_vd": {
       "latex": "G_{vd}",
       "unit": "V",
@@ -268,6 +361,43 @@
         1.0
       ],
       "scale": "linear"
+    },
+    "H_mag": {
+      "latex": "H",
+      "unit": "A/m",
+      "desc": "magnetic field intensity",
+      "range": [
+        1.0,
+        100000.0
+      ],
+      "scale": "log"
+    },
+    "I_1": {
+      "latex": "I_1",
+      "unit": "A",
+      "desc": "primary winding current",
+      "range": [
+        0.001,
+        100.0
+      ],
+      "scale": "log"
+    },
+    "I_2": {
+      "latex": "I_2",
+      "unit": "A",
+      "desc": "secondary winding current",
+      "range": null,
+      "scale": "linear"
+    },
+    "I_C": {
+      "latex": "I_C",
+      "unit": "A",
+      "desc": "constant current into a capacitor",
+      "range": [
+        0.001,
+        100.0
+      ],
+      "scale": "log"
     },
     "I_L": {
       "latex": "I_L",
@@ -316,6 +446,16 @@
       "range": [
         0.001,
         50.0
+      ],
+      "scale": "log"
+    },
+    "I_w": {
+      "latex": "I_w",
+      "unit": "A",
+      "desc": "current in a winding",
+      "range": [
+        0.001,
+        100.0
       ],
       "scale": "log"
     },
@@ -488,6 +628,26 @@
       ],
       "scale": "log"
     },
+    "R_esr": {
+      "latex": "R_\\mathrm{ESR}",
+      "unit": "Ω",
+      "desc": "equivalent series resistance of a capacitor",
+      "range": [
+        0.0001,
+        1.0
+      ],
+      "scale": "log"
+    },
+    "R_f": {
+      "latex": "R_f",
+      "unit": "Ω",
+      "desc": "resistance of an R-C filter",
+      "range": [
+        1.0,
+        1000000.0
+      ],
+      "scale": "log"
+    },
     "R_in": {
       "latex": "R_\\mathrm{in}",
       "unit": "Ω",
@@ -559,6 +719,33 @@
       ],
       "scale": "log"
     },
+    "V_1": {
+      "latex": "V_1",
+      "unit": "V",
+      "desc": "primary winding voltage",
+      "range": [
+        1.0,
+        400.0
+      ],
+      "scale": "log"
+    },
+    "V_2": {
+      "latex": "V_2",
+      "unit": "V",
+      "desc": "secondary winding voltage",
+      "range": null,
+      "scale": "linear"
+    },
+    "V_C": {
+      "latex": "V_C",
+      "unit": "V",
+      "desc": "capacitor voltage",
+      "range": [
+        0.1,
+        400.0
+      ],
+      "scale": "log"
+    },
     "V_D": {
       "latex": "V_D",
       "unit": "V",
@@ -595,6 +782,16 @@
         20.0
       ],
       "scale": "linear"
+    },
+    "V_L": {
+      "latex": "V_L",
+      "unit": "V",
+      "desc": "constant voltage across an inductor",
+      "range": [
+        0.1,
+        400.0
+      ],
+      "scale": "log"
     },
     "V_M": {
       "latex": "V_M",
@@ -667,6 +864,23 @@
       ],
       "scale": "log"
     },
+    "V_pk": {
+      "latex": "V_\\mathrm{pk}",
+      "unit": "V",
+      "desc": "amplitude of a rectangular pulse train",
+      "range": [
+        0.1,
+        400.0
+      ],
+      "scale": "log"
+    },
+    "V_rms": {
+      "latex": "V_\\mathrm{rms}",
+      "unit": "V",
+      "desc": "rms value of a voltage waveform",
+      "range": null,
+      "scale": "linear"
+    },
     "V_sw": {
       "latex": "V_\\mathrm{sw}",
       "unit": "V",
@@ -686,6 +900,27 @@
         400.0
       ],
       "scale": "log"
+    },
+    "Z_C": {
+      "latex": "|Z_C|",
+      "unit": "Ω",
+      "desc": "impedance magnitude of a capacitor",
+      "range": null,
+      "scale": "linear"
+    },
+    "Z_L": {
+      "latex": "|Z_L|",
+      "unit": "Ω",
+      "desc": "impedance magnitude of an inductor",
+      "range": null,
+      "scale": "linear"
+    },
+    "a_h": {
+      "latex": "a_h",
+      "unit": "V",
+      "desc": "amplitude of the h-th harmonic",
+      "range": null,
+      "scale": "linear"
     },
     "alpha": {
       "latex": "\\alpha",
@@ -731,6 +966,16 @@
       ],
       "scale": "log"
     },
+    "f_c": {
+      "latex": "f_c",
+      "unit": "Hz",
+      "desc": "corner (-3 dB) frequency",
+      "range": [
+        1.0,
+        10000000.0
+      ],
+      "scale": "log"
+    },
     "f_ring": {
       "latex": "f_\\mathrm{ring}",
       "unit": "Hz",
@@ -747,6 +992,23 @@
         1000000.0
       ],
       "scale": "log"
+    },
+    "f_srf": {
+      "latex": "f_\\mathrm{srf}",
+      "unit": "Hz",
+      "desc": "self-resonant frequency",
+      "range": null,
+      "scale": "linear"
+    },
+    "h": {
+      "latex": "h",
+      "unit": "1",
+      "desc": "harmonic order (1, 2, 3, ...)",
+      "range": [
+        1.0,
+        20.0
+      ],
+      "scale": "linear"
     },
     "i_Coff": {
       "latex": "i_{C,\\mathrm{off}}",
@@ -812,6 +1074,16 @@
       ],
       "scale": "log"
     },
+    "mu_r": {
+      "latex": "\\mu_r",
+      "unit": "1",
+      "desc": "relative permeability",
+      "range": [
+        1.0,
+        20000.0
+      ],
+      "scale": "log"
+    },
     "n": {
       "latex": "n",
       "unit": "1",
@@ -853,6 +1125,16 @@
       "range": [
         0.001,
         1.0
+      ],
+      "scale": "log"
+    },
+    "t": {
+      "latex": "t",
+      "unit": "s",
+      "desc": "duration of a constant excitation",
+      "range": [
+        1e-07,
+        0.001
       ],
       "scale": "log"
     },
@@ -931,7 +1213,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 159
+      "yaml_line": 196
     },
     "boost.ccm.M": {
       "id": "boost.ccm.M",
@@ -966,7 +1248,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 174
+      "yaml_line": 211
     },
     "buckboost.ccm.M": {
       "id": "buckboost.ccm.M",
@@ -1001,7 +1283,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 189
+      "yaml_line": 226
     },
     "flyback.ccm.M": {
       "id": "flyback.ccm.M",
@@ -1038,7 +1320,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 204
+      "yaml_line": 241
     },
     "forward.ccm.M": {
       "id": "forward.ccm.M",
@@ -1075,7 +1357,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 219
+      "yaml_line": 256
     },
     "forward.reset.Dmax": {
       "id": "forward.reset.Dmax",
@@ -1108,7 +1390,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 234
+      "yaml_line": 271
     },
     "buck.ripple.iL": {
       "id": "buck.ripple.iL",
@@ -1151,7 +1433,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 252
+      "yaml_line": 289
     },
     "buck.ripple.iL_pp": {
       "id": "buck.ripple.iL_pp",
@@ -1194,7 +1476,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 266
+      "yaml_line": 303
     },
     "K.def": {
       "id": "K.def",
@@ -1230,7 +1512,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 283
+      "yaml_line": 320
     },
     "Kcrit.buck": {
       "id": "Kcrit.buck",
@@ -1266,7 +1548,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 296
+      "yaml_line": 333
     },
     "Kcrit.boost": {
       "id": "Kcrit.boost",
@@ -1302,7 +1584,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 309
+      "yaml_line": 346
     },
     "Kcrit.buckboost": {
       "id": "Kcrit.buckboost",
@@ -1338,7 +1620,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 324
+      "yaml_line": 361
     },
     "Kcrit.flyback": {
       "id": "Kcrit.flyback",
@@ -1376,7 +1658,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 337
+      "yaml_line": 374
     },
     "L.crit": {
       "id": "L.crit",
@@ -1416,7 +1698,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 352
+      "yaml_line": 389
     },
     "buck.dcm.M": {
       "id": "buck.dcm.M",
@@ -1454,7 +1736,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 370
+      "yaml_line": 407
     },
     "boost.dcm.M": {
       "id": "boost.dcm.M",
@@ -1492,7 +1774,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 385
+      "yaml_line": 422
     },
     "buckboost.dcm.M": {
       "id": "buckboost.dcm.M",
@@ -1530,7 +1812,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 400
+      "yaml_line": 437
     },
     "flyback.dcm.M": {
       "id": "flyback.dcm.M",
@@ -1568,7 +1850,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 415
+      "yaml_line": 452
     },
     "dcm.P_in": {
       "id": "dcm.P_in",
@@ -1612,7 +1894,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 435
+      "yaml_line": 472
     },
     "lfr.R_in": {
       "id": "lfr.R_in",
@@ -1654,7 +1936,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 451
+      "yaml_line": 488
     },
     "flyback.V_crit": {
       "id": "flyback.V_crit",
@@ -1696,7 +1978,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 467
+      "yaml_line": 504
     },
     "flyback.Vds_off": {
       "id": "flyback.Vds_off",
@@ -1736,7 +2018,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 481
+      "yaml_line": 518
     },
     "flyback.Vds_clamped": {
       "id": "flyback.Vds_clamped",
@@ -1778,7 +2060,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 495
+      "yaml_line": 532
     },
     "flyback.diode.VR": {
       "id": "flyback.diode.VR",
@@ -1815,7 +2097,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 509
+      "yaml_line": 546
     },
     "flyback.Ipk.dcm": {
       "id": "flyback.Ipk.dcm",
@@ -1855,7 +2137,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 521
+      "yaml_line": 558
     },
     "flyback.leak.E": {
       "id": "flyback.leak.E",
@@ -1889,7 +2171,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 538
+      "yaml_line": 575
     },
     "flyback.leak.P": {
       "id": "flyback.leak.P",
@@ -1924,7 +2206,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 552
+      "yaml_line": 589
     },
     "dcm.ring.f": {
       "id": "dcm.ring.f",
@@ -1958,7 +2240,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 566
+      "yaml_line": 603
     },
     "loss.cond": {
       "id": "loss.cond",
@@ -1992,7 +2274,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 580
+      "yaml_line": 617
     },
     "loss.sw.cap": {
       "id": "loss.sw.cap",
@@ -2030,7 +2312,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 592
+      "yaml_line": 629
     },
     "loss.gate": {
       "id": "loss.gate",
@@ -2066,7 +2348,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 604
+      "yaml_line": 641
     },
     "loss.diode": {
       "id": "loss.diode",
@@ -2104,7 +2386,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 618
+      "yaml_line": 655
     },
     "loss.steinmetz": {
       "id": "loss.steinmetz",
@@ -2148,7 +2430,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 630
+      "yaml_line": 667
     },
     "mag.L_from_AL": {
       "id": "mag.L_from_AL",
@@ -2186,7 +2468,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 651
+      "yaml_line": 688
     },
     "mag.AL_gap": {
       "id": "mag.AL_gap",
@@ -2233,7 +2515,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 8,
-      "yaml_line": 665
+      "yaml_line": 702
     },
     "mag.B_pk": {
       "id": "mag.B_pk",
@@ -2276,7 +2558,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 683
+      "yaml_line": 720
     },
     "mag.dB_faraday": {
       "id": "mag.dB_faraday",
@@ -2318,7 +2600,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 697
+      "yaml_line": 734
     },
     "src.Pmax": {
       "id": "src.Pmax",
@@ -2352,7 +2634,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 716
+      "yaml_line": 753
     },
     "src.cv_extraction": {
       "id": "src.cv_extraction",
@@ -2386,7 +2668,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 730
+      "yaml_line": 767
     },
     "sense.current_out_monitor": {
       "id": "sense.current_out_monitor",
@@ -2424,7 +2706,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 746
+      "yaml_line": 783
     },
     "def.Ts": {
       "id": "def.Ts",
@@ -2456,7 +2738,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 763
+      "yaml_line": 800
     },
     "def.V": {
       "id": "def.V",
@@ -2490,7 +2772,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 774
+      "yaml_line": 811
     },
     "sw.v_avg": {
       "id": "sw.v_avg",
@@ -2525,7 +2807,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 789
+      "yaml_line": 826
     },
     "vsb.v_off": {
       "id": "vsb.v_off",
@@ -2560,7 +2842,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 803
+      "yaml_line": 840
     },
     "csb.i_off": {
       "id": "csb.i_off",
@@ -2595,7 +2877,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 817
+      "yaml_line": 854
     },
     "buck.dcm.D2": {
       "id": "buck.dcm.D2",
@@ -2632,7 +2914,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 7,
-      "yaml_line": 831
+      "yaml_line": 868
     },
     "boost.ccm.M_RL": {
       "id": "boost.ccm.M_RL",
@@ -2672,7 +2954,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 847
+      "yaml_line": 884
     },
     "boost.ccm.eta_RL": {
       "id": "boost.ccm.eta_RL",
@@ -2712,7 +2994,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 861
+      "yaml_line": 898
     },
     "buck.ss.Gd0": {
       "id": "buck.ss.Gd0",
@@ -2747,7 +3029,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 876
+      "yaml_line": 913
     },
     "buck.ss.w0": {
       "id": "buck.ss.w0",
@@ -2784,7 +3066,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 890
+      "yaml_line": 927
     },
     "buck.ss.Q": {
       "id": "buck.ss.Q",
@@ -2823,7 +3105,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 902
+      "yaml_line": 939
     },
     "boost.ss.Gd0": {
       "id": "boost.ss.Gd0",
@@ -2860,7 +3142,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 914
+      "yaml_line": 951
     },
     "boost.ss.w0": {
       "id": "boost.ss.w0",
@@ -2899,7 +3181,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 928
+      "yaml_line": 965
     },
     "boost.ss.Q": {
       "id": "boost.ss.Q",
@@ -2940,7 +3222,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 940
+      "yaml_line": 977
     },
     "boost.ss.wz": {
       "id": "boost.ss.wz",
@@ -2979,7 +3261,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 952
+      "yaml_line": 989
     },
     "buckboost.ss.Gd0": {
       "id": "buckboost.ss.Gd0",
@@ -3016,7 +3298,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 966
+      "yaml_line": 1003
     },
     "buckboost.ss.w0": {
       "id": "buckboost.ss.w0",
@@ -3055,7 +3337,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 980
+      "yaml_line": 1017
     },
     "buckboost.ss.Q": {
       "id": "buckboost.ss.Q",
@@ -3096,7 +3378,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 992
+      "yaml_line": 1029
     },
     "buckboost.ss.wz": {
       "id": "buckboost.ss.wz",
@@ -3135,7 +3417,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1004
+      "yaml_line": 1041
     },
     "pwm.d": {
       "id": "pwm.d",
@@ -3169,7 +3451,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1019
+      "yaml_line": 1056
     },
     "loop.T": {
       "id": "loop.T",
@@ -3207,7 +3489,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1034
+      "yaml_line": 1071
     },
     "loop.suppression": {
       "id": "loop.suppression",
@@ -3240,7 +3522,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1048
+      "yaml_line": 1085
     },
     "buck.IL": {
       "id": "buck.IL",
@@ -3278,7 +3560,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1065
+      "yaml_line": 1102
     },
     "ripple.Ipk": {
       "id": "ripple.Ipk",
@@ -3313,7 +3595,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1079
+      "yaml_line": 1116
     },
     "buck.ripple.v": {
       "id": "buck.ripple.v",
@@ -3352,7 +3634,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1092
+      "yaml_line": 1129
     },
     "boost.IL": {
       "id": "boost.IL",
@@ -3392,7 +3674,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1108
+      "yaml_line": 1145
     },
     "boost.ripple.iL": {
       "id": "boost.ripple.iL",
@@ -3433,7 +3715,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1122
+      "yaml_line": 1159
     },
     "boost.ripple.v": {
       "id": "boost.ripple.v",
@@ -3477,7 +3759,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1134
+      "yaml_line": 1171
     },
     "buckboost.V": {
       "id": "buckboost.V",
@@ -3514,7 +3796,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1148
+      "yaml_line": 1185
     },
     "buckboost.IL": {
       "id": "buckboost.IL",
@@ -3554,7 +3836,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1162
+      "yaml_line": 1199
     },
     "buckboost.ripple.iL": {
       "id": "buckboost.ripple.iL",
@@ -3595,7 +3877,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1176
+      "yaml_line": 1213
     },
     "buckboost.ripple.v": {
       "id": "buckboost.ripple.v",
@@ -3639,7 +3921,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1188
+      "yaml_line": 1225
     },
     "buckboost.Vds": {
       "id": "buckboost.Vds",
@@ -3676,7 +3958,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1202
+      "yaml_line": 1239
     },
     "forward.Vds": {
       "id": "forward.Vds",
@@ -3711,7 +3993,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1214
+      "yaml_line": 1251
     },
     "forward.ripple.iL": {
       "id": "forward.ripple.iL",
@@ -3756,7 +4038,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1228
+      "yaml_line": 1265
     },
     "util.buck": {
       "id": "util.buck",
@@ -3791,7 +4073,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1243
+      "yaml_line": 1280
     },
     "util.boost": {
       "id": "util.boost",
@@ -3826,7 +4108,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1257
+      "yaml_line": 1294
     },
     "util.buckboost": {
       "id": "util.buckboost",
@@ -3861,7 +4143,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1271
+      "yaml_line": 1308
     },
     "util.forward": {
       "id": "util.forward",
@@ -3898,7 +4180,577 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1285
+      "yaml_line": 1322
+    },
+    "ind.di": {
+      "id": "ind.di",
+      "title": "Current change of an inductor under a constant voltage",
+      "title_ko": "일정한 전압이 걸린 인덕터의 전류 변화",
+      "latex": "\\Delta i = \\frac{V_L t}{L}",
+      "lhs": "Delta_i",
+      "expr": "V_L*t/L",
+      "relation": "eq",
+      "variables": [
+        "L",
+        "V_L",
+        "t"
+      ],
+      "constants": [],
+      "symbols": {
+        "L": "inductance",
+        "V_L": "constant voltage across the inductor",
+        "t": "duration"
+      },
+      "assumptions": [
+        "ideal",
+        "constant_excitation"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "integrates the inductor law; the current changes linearly while the voltage is constant. This is the full change, not the half-ripple $\\Delta i_L$ of the converter pages",
+      "notes_ko": "인덕터 법칙을 적분한 결과이며, 전압이 일정한 동안 전류는 직선으로 변한다. 컨버터 페이지의 리플 절반 $\\Delta i_L$이 아니라 전체 변화량이다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 6 (Capacitors and Inductors)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/foundations.py",
+      "n_tests": 7,
+      "yaml_line": 1339
+    },
+    "cap.dv": {
+      "id": "cap.dv",
+      "title": "Voltage change of a capacitor under a constant current",
+      "title_ko": "일정한 전류가 흐르는 커패시터의 전압 변화",
+      "latex": "\\Delta v_C = \\frac{I_C t}{C}",
+      "lhs": "Delta_v_C",
+      "expr": "I_C*t/C",
+      "relation": "eq",
+      "variables": [
+        "C",
+        "I_C",
+        "t"
+      ],
+      "constants": [],
+      "symbols": {
+        "C": "capacitance",
+        "I_C": "constant current into the capacitor",
+        "t": "duration"
+      },
+      "assumptions": [
+        "ideal",
+        "constant_excitation"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "integrates the capacitor law, the dual of the inductor law",
+      "notes_ko": "커패시터 법칙을 적분한 결과로, 인덕터 법칙의 쌍대이다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 6 (Capacitors and Inductors)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/foundations.py",
+      "n_tests": 7,
+      "yaml_line": 1353
+    },
+    "ind.E": {
+      "id": "ind.E",
+      "title": "Energy stored in an inductor",
+      "title_ko": "인덕터에 저장된 에너지",
+      "latex": "E_L = \\frac{L I_L^{2}}{2}",
+      "lhs": "E_L",
+      "expr": "L*I_L**2/2",
+      "relation": "eq",
+      "variables": [
+        "I_L",
+        "L"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_L": "inductor current",
+        "L": "inductance"
+      },
+      "assumptions": [
+        "ideal",
+        "linear_magnetics"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 6 (Capacitors and Inductors)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/foundations.py",
+      "n_tests": 7,
+      "yaml_line": 1367
+    },
+    "cap.E": {
+      "id": "cap.E",
+      "title": "Energy stored in a capacitor",
+      "title_ko": "커패시터에 저장된 에너지",
+      "latex": "E_C = \\frac{C V_C^{2}}{2}",
+      "lhs": "E_C",
+      "expr": "C*V_C**2/2",
+      "relation": "eq",
+      "variables": [
+        "C",
+        "V_C"
+      ],
+      "constants": [],
+      "symbols": {
+        "C": "capacitance",
+        "V_C": "capacitor voltage"
+      },
+      "assumptions": [
+        "ideal"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 6 (Capacitors and Inductors)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/foundations.py",
+      "n_tests": 7,
+      "yaml_line": 1379
+    },
+    "imp.ZL": {
+      "id": "imp.ZL",
+      "title": "Impedance magnitude of an inductor",
+      "title_ko": "인덕터 임피던스의 크기",
+      "latex": "|Z_L| = 2 \\pi f L",
+      "lhs": "Z_L",
+      "expr": "2*pi*f*L",
+      "relation": "eq",
+      "variables": [
+        "L",
+        "f"
+      ],
+      "constants": [],
+      "symbols": {
+        "L": "inductance",
+        "f": "frequency"
+      },
+      "assumptions": [
+        "ideal",
+        "sinusoidal_steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the impedance is $j 2\\pi f L$: its magnitude grows in proportion to the frequency and the current lags the voltage by 90°",
+      "notes_ko": "임피던스는 $j 2\\pi f L$이다. 크기는 주파수에 비례하여 커지고, 전류는 전압보다 90° 뒤진다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 9 (Sinusoids and Phasors)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/foundations.py",
+      "n_tests": 7,
+      "yaml_line": 1391
+    },
+    "imp.ZC": {
+      "id": "imp.ZC",
+      "title": "Impedance magnitude of a capacitor",
+      "title_ko": "커패시터 임피던스의 크기",
+      "latex": "|Z_C| = \\frac{1}{2 \\pi f C}",
+      "lhs": "Z_C",
+      "expr": "1/(2*pi*f*C)",
+      "relation": "eq",
+      "variables": [
+        "C",
+        "f"
+      ],
+      "constants": [],
+      "symbols": {
+        "C": "capacitance",
+        "f": "frequency"
+      },
+      "assumptions": [
+        "ideal",
+        "sinusoidal_steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the impedance is $1/(j 2\\pi f C)$: its magnitude falls in inverse proportion to the frequency and the current leads the voltage by 90°",
+      "notes_ko": "임피던스는 $1/(j 2\\pi f C)$이다. 크기는 주파수에 반비례하여 작아지고, 전류는 전압보다 90° 앞선다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 9 (Sinusoids and Phasors)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/foundations.py",
+      "n_tests": 7,
+      "yaml_line": 1405
+    },
+    "rc.fc": {
+      "id": "rc.fc",
+      "title": "Corner frequency of a first-order R-C low-pass filter",
+      "title_ko": "1차 R-C 저역통과 필터의 차단 주파수",
+      "latex": "f_c = \\frac{1}{2 \\pi R_f C_f}",
+      "lhs": "f_c",
+      "expr": "1/(2*pi*R_f*C_f)",
+      "relation": "eq",
+      "variables": [
+        "C_f",
+        "R_f"
+      ],
+      "constants": [],
+      "symbols": {
+        "C_f": "filter capacitance",
+        "R_f": "filter resistance"
+      },
+      "assumptions": [
+        "first_order_rc"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "at $f_c$ the output magnitude is $1/\\sqrt{2}$ of the input (the -3 dB point)",
+      "notes_ko": "$f_c$에서 출력 크기는 입력의 $1/\\sqrt{2}$(-3 dB 지점)이다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 14 (Frequency Response)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/foundations.py",
+      "n_tests": 7,
+      "yaml_line": 1419
+    },
+    "rc.gain": {
+      "id": "rc.gain",
+      "title": "Gain magnitude of a first-order low-pass filter",
+      "title_ko": "1차 저역통과 필터의 이득 크기",
+      "latex": "|G| = \\frac{1}{\\sqrt{1 + \\left(\\frac{f}{f_c}\\right)^{2}}}",
+      "lhs": "G_lp",
+      "expr": "1/sqrt(1 + (f/f_c)**2)",
+      "relation": "eq",
+      "variables": [
+        "f",
+        "f_c"
+      ],
+      "constants": [],
+      "symbols": {
+        "f": "frequency",
+        "f_c": "corner frequency"
+      },
+      "assumptions": [
+        "first_order_rc",
+        "sinusoidal_steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "well above $f_c$ the gain falls in inverse proportion to the frequency: -20 dB per decade on a Bode plot",
+      "notes_ko": "$f_c$보다 충분히 높은 주파수에서 이득은 주파수에 반비례하여 줄어든다. 보드 선도에서는 디케이드당 -20 dB이다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 14 (Frequency Response)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/foundations.py",
+      "n_tests": 8,
+      "yaml_line": 1433
+    },
+    "fourier.pulse.harm": {
+      "id": "fourier.pulse.harm",
+      "title": "Amplitude of the h-th harmonic of a rectangular pulse train",
+      "title_ko": "직사각형 펄스열의 h차 고조파 진폭",
+      "latex": "a_h = \\frac{2 V_\\mathrm{pk} \\left|{\\sin{\\left(\\pi h D \\right)}}\\right|}{\\pi h}",
+      "lhs": "a_h",
+      "expr": "2*V_pk*Abs(sin(pi*h*D))/(pi*h)",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "V_pk",
+        "h"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "V_pk": "pulse amplitude",
+        "h": "harmonic order"
+      },
+      "assumptions": [
+        "rectangular_pulse",
+        "steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the dc component is $D V_\\mathrm{pk}$; the harmonic amplitudes fall as $1/h$ and vanish where $h D$ is an integer",
+      "notes_ko": "직류 성분은 $D V_\\mathrm{pk}$이다. 고조파 진폭은 $1/h$에 비례하여 줄어들며, $h D$가 정수이면 0이 된다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 17 (The Fourier Series)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/foundations.py",
+      "n_tests": 8,
+      "yaml_line": 1448
+    },
+    "fourier.pulse.rms": {
+      "id": "fourier.pulse.rms",
+      "title": "RMS value of a rectangular pulse train",
+      "title_ko": "직사각형 펄스열의 실효값",
+      "latex": "V_\\mathrm{rms} = V_\\mathrm{pk} \\sqrt{D}",
+      "lhs": "V_rms",
+      "expr": "V_pk*sqrt(D)",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "V_pk"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "V_pk": "pulse amplitude"
+      },
+      "assumptions": [
+        "rectangular_pulse"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 11 (AC Power Analysis)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/foundations.py",
+      "n_tests": 7,
+      "yaml_line": 1463
+    },
+    "passive.f_srf": {
+      "id": "passive.f_srf",
+      "title": "Self-resonant frequency of an inductance with parallel parasitic capacitance",
+      "title_ko": "병렬 기생 커패시턴스가 있는 인덕턴스의 자기 공진 주파수",
+      "latex": "f_\\mathrm{srf} = \\frac{1}{2 \\pi \\sqrt{L C_p}}",
+      "lhs": "f_srf",
+      "expr": "1/(2*pi*sqrt(L*C_p))",
+      "relation": "eq",
+      "variables": [
+        "C_p",
+        "L"
+      ],
+      "constants": [],
+      "symbols": {
+        "C_p": "parasitic capacitance in parallel",
+        "L": "inductance"
+      },
+      "assumptions": [
+        "lossless_lc"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "above $f_\\mathrm{srf}$ the component behaves as a capacitor; near it, an impedance measurement reads neither $L$ nor $C_p$",
+      "notes_ko": "$f_\\mathrm{srf}$보다 높은 주파수에서 이 부품은 커패시터처럼 동작한다. 그 근처에서 임피던스를 측정하면 $L$도 $C_p$도 얻을 수 없다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 14 (Frequency Response)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/foundations.py",
+      "n_tests": 7,
+      "yaml_line": 1475
+    },
+    "cap.esr.ripple": {
+      "id": "cap.esr.ripple",
+      "title": "Ripple voltage across a capacitor's series resistance",
+      "title_ko": "커패시터 직렬 저항에 걸리는 리플 전압",
+      "latex": "\\Delta v_\\mathrm{ESR} = R_\\mathrm{ESR} \\Delta i_{L,\\mathrm{pp}}",
+      "lhs": "Delta_v_esr",
+      "expr": "R_esr*Delta_i_pp",
+      "relation": "eq",
+      "variables": [
+        "Delta_i_pp",
+        "R_esr"
+      ],
+      "constants": [],
+      "symbols": {
+        "Delta_i_pp": "peak-to-peak ripple current into the capacitor",
+        "R_esr": "equivalent series resistance"
+      },
+      "assumptions": [
+        "capacitor_takes_ripple"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "peak-to-peak and in phase with the ripple current; it adds to the capacitive ripple",
+      "notes_ko": "피크-피크 값이며 리플 전류와 같은 위상이다. 용량성 리플에 더해진다",
+      "cites": [
+        {
+          "key": "ti_slva630",
+          "where": ""
+        }
+      ],
+      "derived_by": "python/pe_core/derive/foundations.py",
+      "n_tests": 7,
+      "yaml_line": 1489
+    },
+    "mag.H_ampere": {
+      "id": "mag.H_ampere",
+      "title": "Field intensity in an ungapped core from Ampère's law",
+      "title_ko": "앙페르 법칙으로 구한 갭 없는 코어의 자계 세기",
+      "latex": "H = \\frac{N I_w}{l_e}",
+      "lhs": "H_mag",
+      "expr": "N*I_w/l_e",
+      "relation": "eq",
+      "variables": [
+        "I_w",
+        "N",
+        "l_e"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_w": "winding current",
+        "N": "number of turns",
+        "l_e": "effective magnetic path length"
+      },
+      "assumptions": [
+        "uniform_field"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/foundations.py",
+      "n_tests": 7,
+      "yaml_line": 1504
+    },
+    "mag.B_H": {
+      "id": "mag.B_H",
+      "title": "Flux density in a linear magnetic material",
+      "title_ko": "선형 자성 재료의 자속 밀도",
+      "latex": "B = \\mu_0 \\mu_r H",
+      "lhs": "B",
+      "expr": "mu_0*mu_r*H_mag",
+      "relation": "eq",
+      "variables": [
+        "H_mag",
+        "mu_r"
+      ],
+      "constants": [
+        "mu_0"
+      ],
+      "symbols": {
+        "H_mag": "magnetic field intensity",
+        "mu_r": "relative permeability",
+        "mu_0": "permeability of free space"
+      },
+      "assumptions": [
+        "linear_magnetics"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "valid below saturation; a ferrite is close to linear only over part of its B-H curve",
+      "notes_ko": "포화 이하에서만 유효하다. 페라이트는 B-H 곡선의 일부 구간에서만 선형에 가깝다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory)"
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 7,
+      "yaml_line": 1516
+    },
+    "xfmr.V2": {
+      "id": "xfmr.V2",
+      "title": "Ideal transformer: secondary voltage",
+      "title_ko": "이상적 변압기: 2차 전압",
+      "latex": "V_2 = n V_1",
+      "lhs": "V_2",
+      "expr": "n*V_1",
+      "relation": "eq",
+      "variables": [
+        "V_1",
+        "n"
+      ],
+      "constants": [],
+      "symbols": {
+        "V_1": "primary voltage",
+        "n": "turns ratio N_s/N_p"
+      },
+      "assumptions": [
+        "ideal_transformer"
+      ],
+      "convention": "turns ratio 1:n with $n$ the secondary turns divided by the primary turns (site convention)",
+      "convention_ko": "권선비는 1:n이며 $n$은 2차 턴 수를 1차 턴 수로 나눈 값이다(사이트 규약)",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 13 (Magnetically Coupled Circuits)"
+        },
+        {
+          "key": "erickson2020",
+          "where": "Ch. 6 (Converter Circuits)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/foundations.py",
+      "n_tests": 7,
+      "yaml_line": 1529
+    },
+    "xfmr.I2": {
+      "id": "xfmr.I2",
+      "title": "Ideal transformer: secondary current",
+      "title_ko": "이상적 변압기: 2차 전류",
+      "latex": "I_2 = \\frac{I_1}{n}",
+      "lhs": "I_2",
+      "expr": "I_1/n",
+      "relation": "eq",
+      "variables": [
+        "I_1",
+        "n"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_1": "primary current",
+        "n": "turns ratio N_s/N_p"
+      },
+      "assumptions": [
+        "ideal_transformer"
+      ],
+      "convention": "turns ratio 1:n; the secondary current is taken as flowing out of the secondary's dotted terminal",
+      "convention_ko": "권선비는 1:n이며, 2차 전류는 2차 권선의 점 표시 단자에서 흘러나오는 방향을 양으로 한다",
+      "notes": "the power is conserved: the product of the secondary voltage and current equals that of the primary",
+      "notes_ko": "전력이 보존된다. 2차 전압과 전류의 곱은 1차 측의 곱과 같다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 13 (Magnetically Coupled Circuits)"
+        },
+        {
+          "key": "erickson2020",
+          "where": "Ch. 6 (Converter Circuits)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/foundations.py",
+      "n_tests": 7,
+      "yaml_line": 1545
     }
   }
 }
