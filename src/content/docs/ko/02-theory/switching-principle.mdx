@@ -63,11 +63,12 @@ $M(D)$로 요약됩니다.
 
 <Eq id="def.V" />
 
-위와 같이 스위치 노드를 필터링한 회로가 곧 벅 컨버터이므로
-<EqRef id="buck.ccm.M" /> 식이 적용됩니다. 같은 스위치, 인덕터, 커패시터를 다르게
-배치하면 다른 변환비를 얻으며, 그 예로는 <EqRef id="boost.ccm.M" /> 및
-<EqRef id="buckboost.ccm.M" /> 식이 있습니다. 세 변환비는 모두
-[전압-초 평형(volt-second balance) 페이지](../volt-second-charge-balance/)에서 유도됩니다.
+위와 같이 스위치 노드를 필터링한 회로가 곧 벅 컨버터입니다. 출력이 스위치 노드의
+평균이므로 <EqRef id="buck.ccm.M" label="벅 변환비" />를 얻습니다. 같은 스위치,
+인덕터, 커패시터를 다르게 배치하면 <EqRef id="boost.ccm.M" label="부스트" />와
+<EqRef id="buckboost.ccm.M" label="벅-부스트" />처럼 다른 변환비를 얻습니다. 세
+변환비는 모두 [전압-초 평형(volt-second balance) 페이지](../volt-second-charge-balance/)에서
+유도됩니다.
 
 ### 소리플 근사
 

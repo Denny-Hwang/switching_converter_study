@@ -66,11 +66,13 @@ voltage divided by the dc input voltage:
 
 <Eq id="def.V" />
 
-Filtering the switch node, as above, is the buck converter, so
-<EqRef id="buck.ccm.M" />. Other arrangements of the same switch, inductor
-and capacitor give other ratios, for example <EqRef id="boost.ccm.M" /> and
-<EqRef id="buckboost.ccm.M" />. All three are derived on the
-[volt-second balance page](../volt-second-charge-balance/).
+Filtering the switch node, as above, is the buck converter: its output is
+the switch-node average, which gives the
+<EqRef id="buck.ccm.M" label="buck conversion ratio" />. Other arrangements
+of the same switch, inductor and capacitor give other ratios, such as those
+of the <EqRef id="boost.ccm.M" label="boost" /> and the
+<EqRef id="buckboost.ccm.M" label="buck-boost" />. All three are derived on
+the [volt-second balance page](../volt-second-charge-balance/).
 
 ### The small-ripple approximation
 
