@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { evaluate, sim } from 'pe-core';
 import { isToolHash } from '../lib/hash';
+import { useStateHash } from '../lib/useStateHash';
 import type { SimReply } from './simulator.worker';
 
 type Topology = sim.Topology;
@@ -370,9 +371,7 @@ export default function Simulator({ labels, presets }: Props) {
   const params = useMemo(() => toParams(fstate, values), [fstate, values]);
 
   // URL hash = state
-  useEffect(() => {
-    window.history.replaceState(null, '', `#${hashOf(fstate, values)}`);
-  }, [fstate, values]);
+  useStateHash(hashOf(fstate, values), [...KEYS, 'topo', 'load', 'src']);
 
   // simulate (debounced, in a worker; "Simulating…" appears only for a slow run)
   useEffect(() => {

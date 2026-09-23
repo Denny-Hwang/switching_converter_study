@@ -7,6 +7,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import katex from 'katex';
 import { catalog, evaluate } from 'pe-core';
+import { useStateHash } from '../lib/useStateHash';
 
 interface Labels {
   equation: string;
@@ -128,15 +129,16 @@ export default function EquationExplorer({ locale, labels }: Props) {
   }
 
   // URL hash = state
-  useEffect(() => {
+  const stateHash = useMemo(() => {
     const p = new URLSearchParams({ eq: eqId });
     for (const v of meta.variables) p.set(v, values[v] ?? '');
     p.set('sweep', sweep);
     p.set('from', from);
     p.set('to', to);
     p.set('logx', logx ? '1' : '0');
-    window.history.replaceState(null, '', `#${p.toString()}`);
+    return p.toString();
   }, [eqId, meta, values, sweep, from, to, logx]);
+  useStateHash(stateHash, ['eq']);
 
   // rendered equation
   useEffect(() => {

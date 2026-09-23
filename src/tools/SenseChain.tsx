@@ -12,6 +12,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { errorCurve, senseChain, transferCurve, type MonitorKind, type SenseResult, type SenseSpec, type SenseWarning } from 'pe-core';
 import { isToolHash } from '../lib/hash';
+import { useStateHash } from '../lib/useStateHash';
 
 export interface SenseLabels {
   kind: string;
@@ -238,9 +239,7 @@ export default function SenseChain({ labels, presets }: Props) {
 
   const result = useMemo(() => checkOf(kind, values), [kind, values]);
 
-  useEffect(() => {
-    window.history.replaceState(null, '', `#${hashOf(kind, values)}`);
-  }, [kind, values]);
+  useStateHash(hashOf(kind, values), [...KEYS, 'mon']);
 
   // The state follows the URL hash: a link to this page with other values
   // (or the browser's back button) changes only the hash, which does not

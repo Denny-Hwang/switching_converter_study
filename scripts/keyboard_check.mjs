@@ -11,7 +11,9 @@
  *   3. Shift+Tab visits the same controls in reverse;
  *   4. every control shows a focus indicator (outline or box-shadow) when
  *      it is reached by keyboard;
- *   5. the controls respond to the keyboard (a tool-specific action).
+ *   5. the controls respond to the keyboard (a tool-specific action);
+ *   6. in-page anchors leave the inputs alone, and a page opened at one
+ *      keeps it in its URL until the tool's state changes.
  *
  *     npm run build && node scripts/keyboard_check.mjs
  */
@@ -246,6 +248,33 @@ async function anchorKeepsState(page, where, errors) {
   await input.fill(before);
 }
 
+/**
+ * A page opened at an in-page anchor (a link to a section) keeps that anchor
+ * in its URL until the tool's state changes; from the first change on, the
+ * URL holds the state.
+ */
+async function directAnchorKept(browser, url, ready, where, errors) {
+  const probe = await browser.newPage();
+  await probe.goto(url, { waitUntil: 'networkidle' });
+  const id = await probe.evaluate(() => [...document.querySelectorAll('h2[id]')].pop()?.id ?? '');
+  await probe.close();
+  if (!id) return;
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await page.goto(`${url}#${encodeURIComponent(id)}`, { waitUntil: 'networkidle' });
+  await settle(page, ready);
+  const hash = await page.evaluate(() => decodeURIComponent(window.location.hash.slice(1)));
+  if (hash !== id) errors.push(`${where}: opened at #${id}, the tool replaced the anchor with its state (#${hash.slice(0, 40)}…)`);
+  const input = page.locator(`${TOOL} input[type="number"]`).first();
+  if ((await input.count()) > 0) {
+    const before = await input.inputValue();
+    await input.fill(before === '' ? '7' : String(Number(before) * 1.5));
+    await page.waitForTimeout(300);
+    const after = await page.evaluate(() => window.location.hash);
+    if (!after.includes('=')) errors.push(`${where}: after an edit, the URL does not hold the tool's state (${after.slice(0, 40)})`);
+  }
+  await page.close();
+}
+
 /** Designer: Space on the second topology button selects it and loads that topology's specification. */
 async function designerAction(page, where, errors) {
   const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
@@ -336,6 +365,7 @@ async function main() {
         console.log(`${where}: ${n} controls in order`);
         checked++;
         await page.close();
+        await directAnchorKept(browser, url, p.ready, where, errors);
       }
     }
   } finally {

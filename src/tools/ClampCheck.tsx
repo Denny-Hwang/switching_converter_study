@@ -10,6 +10,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { clampCheck, evaluate, type ClampKind, type ClampResult, type ClampSpec, type ClampWarning } from 'pe-core';
 import { isToolHash } from '../lib/hash';
+import { useStateHash } from '../lib/useStateHash';
 
 export interface ClampLabels {
   kind: string;
@@ -188,9 +189,7 @@ export default function ClampCheck({ labels, presets }: Props) {
 
   const result = useMemo(() => checkOf(kind, values), [kind, values]);
 
-  useEffect(() => {
-    window.history.replaceState(null, '', `#${hashOf(kind, values)}`);
-  }, [kind, values]);
+  useStateHash(hashOf(kind, values), [...KEYS, 'clamp']);
 
   // The state follows the URL hash: a link to this page with other values
   // (or the browser's back button) changes only the hash, which does not

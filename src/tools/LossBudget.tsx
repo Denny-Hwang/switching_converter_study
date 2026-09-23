@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Bucket, LossBudget as Budget, LossPoint, LossSpec, sim } from 'pe-core';
 import { isToolHash } from '../lib/hash';
+import { useStateHash } from '../lib/useStateHash';
 import type { LossReply } from './lossbudget.worker';
 
 type Topology = sim.Topology;
@@ -272,9 +273,7 @@ export default function LossBudget({ labels, presets, simulatorHref }: Props) {
 
   const spec = useMemo(() => toLossSpec(topo, values), [topo, values]);
 
-  useEffect(() => {
-    window.history.replaceState(null, '', `#${hashOf(topo, values)}`);
-  }, [topo, values]);
+  useStateHash(hashOf(topo, values), [...KEYS, 'topo']);
 
   // The state follows the URL hash: a link to this page with other values
   // (or the browser's back button) changes only the hash, which does not

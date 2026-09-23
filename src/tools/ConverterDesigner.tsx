@@ -9,6 +9,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { design, InvertError, type DesignResult, type DesignSpec, type DesignTopology, type DesignWarning } from 'pe-core';
 import { isToolHash } from '../lib/hash';
+import { useStateHash } from '../lib/useStateHash';
 
 export interface DesignerLabels {
   topology: string;
@@ -270,9 +271,7 @@ export default function ConverterDesigner({ labels, presets, simulatorHref, loss
   }, [spec]);
   const result = 'result' in outcome ? outcome.result : null;
 
-  useEffect(() => {
-    window.history.replaceState(null, '', `#${hashOf(topo, values)}`);
-  }, [topo, values]);
+  useStateHash(hashOf(topo, values), [...KEYS, 'topo']);
 
   // The state follows the URL hash: a link to this page with other values
   // (or the browser's back button) changes only the hash, which does not
