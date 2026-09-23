@@ -1,0 +1,51 @@
+# Quiz for 02-theory/ccm-dcm. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'Why does a buck converter with a diode rectifier enter DCM at light load?'
+    options:
+      - 'The switching frequency drops at light load'
+      - 'The dc inductor current falls while the ripple stays the same, so the current reaches zero and the diode cannot carry it negative'
+      - 'The duty ratio becomes larger than 0.5'
+      - 'The output capacitor discharges completely'
+    answer: 1
+    explain: 'In CCM the ripple depends only on the applied voltages, $L$ and $T_s$, not on the load. When the dc current falls below the half-ripple, the lower peak would be negative; the diode blocks reverse current, so the current stays at zero for the rest of the period.'
+  - q: 'In DCM, which assumption used for CCM analysis must be dropped for the inductor current?'
+    options:
+      - 'Volt-second balance'
+      - 'Charge balance'
+      - 'The small-ripple approximation'
+      - 'Periodic steady state'
+    answer: 2
+    explain: 'In DCM the ripple is as large as the current itself, so the inductor current cannot be replaced by its dc value. Balance conditions still hold because the circuit is still in periodic steady state.'
+  - q: 'An open-loop buck converter in DCM has its load resistance increased. What happens to the output voltage at a fixed duty ratio?'
+    options:
+      - 'It rises, towards the input voltage'
+      - 'It stays at $D V_g$'
+      - 'It falls towards zero'
+      - 'It oscillates at the switching frequency'
+    answer: 0
+    explain: 'Increasing $R$ lowers $K$, and the DCM ratio rises towards 1 as $K$ goes to zero. Only in CCM is the ratio fixed by $D$ alone.'
+  - q: 'A buck converter runs at $D = 0.5$ and its output measures $0.7$ times the input. What can you conclude?'
+    options:
+      - 'The converter is in CCM with a lossy inductor'
+      - 'The duty ratio measurement is wrong'
+      - 'The converter is in DCM'
+      - 'The converter is in CCM and at no load'
+    answer: 2
+    explain: 'In CCM an ideal buck gives exactly $D$, and losses only lower the ratio. A ratio above $D$ means the inductor current reaches zero: the converter is in DCM, where $M > D$.'
+  - q: 'What causes the ringing on the switch node of a DCM converter during the idle interval?'
+    options:
+      - 'Reverse recovery of the diode at turn-on of the switch'
+      - 'The inductor resonating with the capacitance at the switch node once its current has reached zero'
+      - 'Resonance of the output capacitor with its ESR'
+      - 'Noise from the control loop'
+    answer: 1
+    explain: 'With both switch and diode off, the inductor and the switch-node capacitance form a lightly damped L-C circuit, which rings at its resonant frequency $1/(2\pi\sqrt{L C})$.'
+  - q: 'The diode of a buck converter is replaced by a transistor that is driven as the complement of the main switch. What happens at light load?'
+    options:
+      - 'The converter enters DCM earlier'
+      - 'The converter stays in CCM: the inductor current simply goes negative for part of the period'
+      - 'The output voltage rises towards the input voltage'
+      - 'The switching frequency halves'
+    answer: 1
+    explain: 'DCM exists because the diode cannot conduct in reverse. A synchronous rectifier conducts in both directions, so the current reverses instead of stopping, and the CCM relationships continue to hold.'

@@ -10,9 +10,13 @@ Scans src/content/docs/**/*.md(x) except **/scratch/** (unpublished) and fails o
   * <Eq id="..."> whose id is not in equations.generated.json, has no test
     vectors, or is not a string literal
   * the same <Eq id> embedded twice in one locale (each formula appears once;
-    refer back to it with a link)
+    refer back to it with a link); pages under about/ document the site and
+    may show an equation to demonstrate the pipeline without counting as
+    its home
   * <Derivation module="..."> naming an unknown module, and a derivations page
     that does not render every derivation module
+  * in quizzes (src/content/quizzes/**/*.yaml): hand-typed display math and
+    hand-typed inline equations in questions, options and explanations
 
     python scripts/mathlint.py
 """
@@ -30,6 +34,7 @@ DOCS = ROOT / "src" / "content" / "docs"
 GENERATED = ROOT / "packages" / "pe-core" / "equations" / "equations.generated.json"
 DERIVATIONS = ROOT / "packages" / "pe-core" / "equations" / "derivations.generated.json"
 DERIVATIONS_PAGE = "02-theory/derivations.mdx"
+QUIZZES = ROOT / "src" / "content" / "quizzes"
 LOCALES = ("en", "ko")
 
 RELATIONS = re.compile(r"=|\\approx|\\equiv|\\triangleq|\\coloneqq|\\simeq|\\doteq")
@@ -54,11 +59,44 @@ def line_of(text: str, pos: int) -> int:
     return text.count("\n", 0, pos) + 1
 
 
+# Unit markup in a value such as 0.1\,\Omega or 50\,\mu\mathrm{H}: not a symbol.
+UNIT_MARKUP = re.compile(r"\\mathrm\{[^}]*\}|\\(?:Omega|mu|circ|times|cdot|[,;: !])|[{}^]")
+
+
 def is_hand_equation(body: str) -> bool:
+    """True if at least two sides of a relation contain symbols; a side that is
+    a number with a unit ($R = 10\,\Omega$) is a value, not a symbol."""
     parts = RELATIONS.split(body)
     if len(parts) < 2:
         return False
-    return sum(1 for p in parts if LETTER.search(p)) >= 2
+    return sum(1 for p in parts if LETTER.search(UNIT_MARKUP.sub("", p))) >= 2
+
+
+def math_errors(text: str, where: str) -> list[str]:
+    """Hand-typed display math and inline equations in a piece of prose."""
+    errors = []
+    if re.search(r"\$\$|\\\[|\\begin\{", text):
+        errors.append(f"{where}: display math typed by hand; use <Eq id=\"...\" /> on the page instead")
+    for m in re.finditer(r"(?<![\\$])\$(?!\$)([^$\n]+?)(?<!\\)\$", text):
+        if is_hand_equation(m.group(1)):
+            errors.append(f"{where}: inline equation ${m.group(1)}$ typed by hand; rephrase in words or state a value")
+    return errors
+
+
+def quiz_errors() -> tuple[int, list[str]]:
+    import yaml  # noqa: PLC0415
+
+    errors: list[str] = []
+    files = sorted(QUIZZES.rglob("*.yaml")) if QUIZZES.exists() else []
+    for path in files:
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        rel = path.relative_to(ROOT)
+        for i, q in enumerate(data.get("questions") or [], 1):
+            fields = [("q", q.get("q")), ("explain", q.get("explain"))]
+            fields += [(f"option {j}", o) for j, o in enumerate(q.get("options") or [], 1)]
+            for field, text in fields:
+                errors += math_errors(str(text or ""), f"{rel}: question {i} {field}")
+    return len(files), errors
 
 
 def main() -> int:
@@ -97,7 +135,8 @@ def main() -> int:
                 errors.append(f"{rel}:{ln}: <Eq id=\"{eq_id}\"> is not in equations.generated.json")
             elif catalog[eq_id]["n_tests"] < 1:
                 errors.append(f"{rel}:{ln}: <Eq id=\"{eq_id}\"> has no test vectors")
-            homes[(locale, eq_id)].append(f"{rel}:{ln}")
+            if path.relative_to(DOCS).parts[1:2] != ("about",):
+                homes[(locale, eq_id)].append(f"{rel}:{ln}")
 
         for m in re.finditer(r"<Derivation\b[^>]*\bmodule\s*=\s*\"([^\"]+)\"", text):
             if m.group(1) not in modules:
@@ -120,12 +159,15 @@ def main() -> int:
             if mod not in shown:
                 errors.append(f"{page.relative_to(ROOT)}: derivation module '{mod}' is not rendered")
 
+    n_quizzes, qerr = quiz_errors()
+    errors += qerr
+
     if errors:
         print(f"mathlint: {len(errors)} error(s)", file=sys.stderr)
         for e in errors:
             print("  " + e, file=sys.stderr)
         return 1
-    print(f"mathlint: OK ({len(files)} pages, {len(homes)} <Eq> embeds, {len(modules)} derivation modules)")
+    print(f"mathlint: OK ({len(files)} pages, {len(homes)} <Eq> homes, {len(modules)} derivation modules, {n_quizzes} quizzes)")
     return 0
 
 

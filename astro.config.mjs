@@ -50,6 +50,11 @@ export default defineConfig({
           ],
         },
         {
+          label: 'Design',
+          translations: { ko: '설계' },
+          items: [{ autogenerate: { directory: 'design' } }],
+        },
+        {
           label: 'Resources',
           translations: { ko: '자료' },
           items: [{ autogenerate: { directory: '10-resources' } }],

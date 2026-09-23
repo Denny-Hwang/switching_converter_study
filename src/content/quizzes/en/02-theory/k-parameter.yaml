@@ -1,0 +1,51 @@
+# Quiz for 02-theory/k-parameter. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A converter has $L = 50\,\mu\mathrm{H}$, $R = 5\,\Omega$ and $T_s = 10\,\mu\mathrm{s}$. What is $K$?'
+    options:
+      - '0.5'
+      - '1'
+      - '2'
+      - '4'
+    answer: 2
+    explain: '$K$ is $2L/(R T_s)$: twice $50\,\mu\mathrm{H}$ is $100\,\mu\mathrm{H}$, and $R T_s$ is $50\,\mu\mathrm{s}\cdot\Omega$, so the ratio is 2.'
+  - q: 'A buck converter runs at $D = 0.4$ with $K = 0.5$. In which mode does it operate?'
+    options:
+      - 'CCM'
+      - 'DCM'
+      - 'Exactly at the boundary'
+      - 'It cannot be decided without the input voltage'
+    answer: 1
+    explain: 'For the buck $K_\mathrm{crit}$ is $1 - D$, which is 0.6 here. Since $K$ is below it, the inductor current reaches zero: DCM.'
+  - q: 'Which change pushes a converter towards DCM?'
+    options:
+      - 'A larger inductance'
+      - 'A higher switching frequency'
+      - 'A heavier load (smaller $R$)'
+      - 'A lighter load (larger $R$)'
+    answer: 3
+    explain: 'A larger $R$ lowers $K$. A larger inductance, a higher switching frequency and a heavier load all raise $K$ and push the converter towards CCM.'
+  - q: 'At which duty ratio is the critical value $K_\mathrm{crit}$ of the boost converter largest?'
+    options:
+      - 'As $D$ approaches 0'
+      - '$D = 1/3$'
+      - '$D = 0.5$'
+      - 'As $D$ approaches 1'
+    answer: 1
+    explain: 'The boost value $D(1 - D)^2$ is zero at both ends. Its derivative $(1 - D)(1 - 3D)$ vanishes at $D = 1/3$, where the value is $4/27$.'
+  - q: 'A buck converter must stay in CCM down to a load of $R = 20\,\Omega$, where $K_\mathrm{crit}$ is 0.5, with $T_s = 10\,\mu\mathrm{s}$. What is the smallest inductance that does this?'
+    options:
+      - '$25\,\mu\mathrm{H}$'
+      - '$50\,\mu\mathrm{H}$'
+      - '$100\,\mu\mathrm{H}$'
+      - '$200\,\mu\mathrm{H}$'
+    answer: 1
+    explain: 'The critical inductance is $K_\mathrm{crit} R T_s/2$: half of 0.5 times $200\,\mu\mathrm{s}\cdot\Omega$, that is $50\,\mu\mathrm{H}$.'
+  - q: 'A buck converter regulates a fixed output voltage from a range of input voltages. At which input voltage is it most likely to enter DCM at light load?'
+    options:
+      - 'The lowest input voltage'
+      - 'The highest input voltage'
+      - 'The middle of the range'
+      - 'The input voltage does not matter'
+    answer: 1
+    explain: 'A higher input voltage needs a smaller duty ratio, and the buck value $1 - D$ grows as $D$ shrinks, so the boundary is reached at a larger $K$.'

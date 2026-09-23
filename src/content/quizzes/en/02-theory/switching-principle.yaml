@@ -1,0 +1,51 @@
+# Quiz for 02-theory/switching-principle. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'An ideal switch is either fully on or fully off. How much power does it dissipate?'
+    options:
+      - 'Zero only while it is off'
+      - 'The input voltage times the load current while it is on'
+      - 'Zero in both states, because either its voltage or its current is zero'
+      - 'It depends on the duty ratio'
+    answer: 2
+    explain: 'Power is voltage times current. An ideal switch that is on has no voltage across it, and one that is off carries no current, so the product is zero in both states.'
+  - q: 'A switch node alternates between $12\,\mathrm{V}$ and $0\,\mathrm{V}$ with $D = 0.25$. What is its dc component?'
+    options:
+      - '$3\,\mathrm{V}$'
+      - '$6\,\mathrm{V}$'
+      - '$9\,\mathrm{V}$'
+      - '$12\,\mathrm{V}$'
+    answer: 0
+    explain: 'The dc component is the average over one period: the high level times the fraction of the period spent there, a quarter of $12\,\mathrm{V}$.'
+  - q: 'Why must the corner frequency of the output L-C filter lie well below the switching frequency?'
+    options:
+      - 'So that the inductor current never reaches zero'
+      - 'So that the filter passes the dc component and attenuates the switching harmonics'
+      - 'To make the duty ratio independent of the load'
+      - 'To reduce the conduction loss of the switch'
+    answer: 1
+    explain: 'The switch-node waveform is a dc component plus harmonics at multiples of $f_s$. A low-pass filter whose corner lies well below $f_s$ keeps the dc component and strongly attenuates the harmonics.'
+  - q: 'What does the small-ripple approximation assume?'
+    options:
+      - 'The inductor current ripple is zero'
+      - 'The duty ratio is small'
+      - 'The switching frequency is lower than the filter corner frequency'
+      - 'The switching ripple on a nearly constant quantity, such as the output voltage, is small enough to replace that quantity by its dc value'
+    answer: 3
+    explain: 'It replaces a waveform that has little ripple by its dc value while other quantities are computed, for example the voltage across the inductor. It is never applied to the ripple being computed: the inductor current ripple follows from the slopes that the approximation makes constant.'
+  - q: 'A buck converter in CCM runs at a fixed duty ratio. The switching frequency is doubled. What happens to the dc output voltage?'
+    options:
+      - 'It doubles'
+      - 'It halves'
+      - 'It stays the same'
+      - 'It drops to zero'
+    answer: 2
+    explain: 'In CCM the dc output equals the dc component of the switch node, $D V_g$, which does not depend on $f_s$. Doubling $f_s$ halves the period and the current ripple, not the average.'
+  - q: 'Why does a linear regulator waste power when its input voltage is much higher than its output voltage?'
+    options:
+      - 'It switches too slowly'
+      - 'Its pass transistor carries the whole load current while dropping the input-output difference'
+      - 'Its output capacitor has series resistance'
+      - 'Its duty ratio is limited'
+    answer: 1
+    explain: 'The pass transistor is in series with the load, so it carries the load current and drops the voltage difference; the product of the two is dissipated as heat.'

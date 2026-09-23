@@ -71,6 +71,8 @@ def build_generated(catalog: Catalog, n_tests: dict[str, int]) -> dict[str, Any]
                 "latex": catalog.symbols[name].latex,
                 "unit": catalog.symbols[name].unit,
                 "desc": catalog.symbols[name].desc,
+                "range": list(catalog.symbols[name].range) if catalog.symbols[name].range else None,
+                "scale": catalog.symbols[name].scale,
             }
             for name in used
         },

@@ -1,0 +1,112 @@
+---
+title: 소신호 모델
+description: 평균 모델을 동작점 주위에서 선형화하고, 벅 컨버터의 제어-출력 전달함수와 그 직류 이득, 공진 주파수, Q를 읽어 냅니다.
+sidebar:
+  order: 6
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 소신호 모델(small-signal model)이 무엇이며 언제 유효한지 설명합니다.
+- 벅 컨버터의 제어-출력 전달함수(control-to-output transfer function)를 직류 이득(dc gain), 이중 극점(double pole), 품질 계수(quality factor)로 설명합니다.
+- 회로 값으로부터 $G_{d0}$, $\omega_0$, $Q$를 계산하고 공진 피크(resonant peak)를 예측합니다.
+
+## 이론
+
+### 섭동(perturbation)과 선형화(linearization)
+
+듀티비(duty ratio)가 전압과 전류에 곱해지므로 컨버터의 평균 모델(averaged model)은
+비선형입니다. 피드백 루프를 설계하려면 동작점(operating point) 주위의 작은
+변동에 대한 모델의 응답이 필요합니다. 각 물리량은 직류 값과 작은 교류 변동의
+합으로 씁니다. 예를 들어 듀티비는 $D$와 $\hat{d}(t)$의 합으로 씁니다. 두
+교류 변동의 곱은 버립니다. 남는 것은 선형 회로, 즉 **소신호 모델**이며, 이
+모델은 직류 값보다 훨씬 작은 변동과 스위칭 주파수(switching frequency)보다
+훨씬 낮은 주파수에서 유효합니다 <Cite key="erickson2020" where="Ch. 7" />.
+
+### 벅의 제어-출력 전달함수
+
+벅에서 듀티비는 스위치 노드 전압에 직접 작용하고, 이 전압을 L-C 필터와
+부하가 이어서 걸러 냅니다. 따라서 $\hat{d}$에서 출력 전압 변동까지의
+제어-출력 전달함수 $G_{vd}(s)$는 직류 이득 뒤에 2차 저역통과(low-pass) 응답이
+이어지는 형태입니다. 이 응답은 필터의 공진 각주파수(resonant angular frequency)
+$\omega_0$에 있는 한 쌍의 극점으로 이루어지며, 그 품질 계수 $Q$는 부하가
+정합니다 <Cite key="erickson2020" where="Ch. 8" />. 직류 이득은 정적 특성
+곡선(static characteristic)의 기울기입니다:
+
+<Eq id="buck.ss.Gd0" />
+
+<Eq id="buck.ss.w0" />
+
+<Eq id="buck.ss.Q" />
+
+평균화한 회로에서 세 값을 모두 읽어 내는 유도 과정은
+[유도 과정 페이지](../derivations/#deriv-small_signal)에 있습니다.
+
+### 보드 선도(Bode plot) 읽기
+
+$\omega_0$보다 훨씬 낮은 주파수에서는 크기가 $G_{d0}$에서 평탄하고 위상은
+거의 0입니다. $\omega_0$에서 크기는 정확히 직류 이득의 $Q$배이고 위상은 90°
+떨어진 상태입니다. $\omega_0$보다 높은 주파수에서는 크기가 주파수의 제곱에
+반비례하여 줄어들고 위상은 −180°에 가까워집니다
+<Cite key="erickson2020" where="Ch. 8" />. 경부하(light load, 큰 $R$)에서는
+$Q$가 높아집니다. 즉 공진 피크가 높고 좁아지며 위상이 급격히 변하고, 피드백
+루프는 이를 감당해야 합니다. 헤르츠 단위로 나타내려면 $\omega_0$ 값을 $2\pi$로
+나누십시오.
+
+## 풀이 예제
+
+앞선 페이지들의 합성 벅을 이번에는 소신호 시스템으로 해석합니다:
+
+<Worked example="buck-basic" show={['V_g', 'L', 'C', 'R', 'G_d0', 'omega_0', 'Q']} checks={false} />
+
+직류 이득은 입력 전압과 같으며, 듀티비 단위당 <Val example="buck-basic" name="G_d0" />입니다.
+극점은 <Val example="buck-basic" name="omega_0" />에 있고,
+$Q$ = <Val example="buck-basic" name="Q" />이므로 그 주파수에서의 크기는 직류
+이득에 이 값을 곱한 것과 같습니다.
+
+## 직접 해 보기
+
+<TryIt eq="buck.ss.Q" example="buck-basic" sweep="R" />
+
+$R$을 여러 디케이드에 걸쳐(로그 축) 스윕(sweep)해 보십시오. $Q$는 부하
+저항(load resistance)에 비례하여 커지므로 공진 피크는 경부하에서 가장 높습니다.
+
+## 벤치 실습
+
+주파수 응답 분석기(frequency response analyzer, FRA)로 개루프(open-loop) 벅의
+PWM 변조기(PWM modulator) 제어 입력에 작은 정현파 변동을 주입하고, 제어 입력
+변동에 대한 출력 전압 변동의 비를 주파수에 따라 측정하십시오. 공진 피크를 찾아
+그 주파수를 $\omega_0/(2\pi)$와 비교하십시오. 더 가벼운 부하에서 반복하여,
+피크는 커지지만 그 주파수는 그대로인지 확인하십시오. 주입 진폭은 절반으로
+줄여도 응답이 변하지 않을 만큼 작게 유지하십시오.
+
+## 주의할 점
+
+- **실제 부품은 공진을 감쇠시킵니다.** 이상적인 모델에는 부하 외에는 손실이
+  없습니다. 권선 저항(winding resistance)과 커패시터 직렬 저항은 $Q$를 낮추고,
+  커패시터의 직렬 저항은 영점(zero)을 추가합니다. 커패시터의 임피던스가
+  $1/(sC)$에 그 저항을 더한 값이 되기 때문입니다.
+- **이 모델은 스위칭 주파수보다 훨씬 낮은 주파수에서만 유효하며**, 작은 변동에
+  대해서만 성립합니다 <Cite key="erickson2020" where="Ch. 7" />. $f_s$ 근처에서는
+  평균 모델이 더 이상 회로를 기술하지 못합니다.
+- **DCM에서는 전달함수가 달라집니다.** DCM에서는 인덕터 전류가 더 이상 한
+  주기에서 다음 주기로 상태를 넘기지 않으며, L-C 공진이 저주파 응답에서
+  사라집니다 <Cite key="erickson2020" where="Ch. 15" />.
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch7', 'erickson-ch8', 'coursera-converter-control']} />
+
+## 퀴즈
+
+<Quiz id="02-theory/small-signal" />

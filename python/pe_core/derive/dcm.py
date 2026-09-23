@@ -88,6 +88,15 @@ def derive() -> Derivation:
         Vg * D * Ts / (2 * L),
     )
 
+    Kc = S("K_crit")
+    d.result(
+        "L.crit",
+        sp.solve(sp.Eq(Kc, 2 * L / (R * Ts)), L)[0],
+        "At the boundary $K$ equals $K_\\mathrm{crit}$; solve the definition of $K$ for $L$.",
+        "경계에서 $K$는 $K_\\mathrm{crit}$과 같다; $K$의 정의를 $L$에 대해 푼다.",
+        S("L_crit"),
+    )
+
     sample = {D: 0.3, K: 0.05}
 
     # ----------------------------------------------------------- buck, DCM
@@ -98,7 +107,13 @@ def derive() -> Derivation:
         vs,
     )
     D2_sol = sp.solve(vs, D2)[0]
-    d.step("Solve for $D_2$.", "$D_2$를 구한다.", sp.Eq(D2, D2_sol))
+    d.result(
+        "buck.dcm.D2",
+        sp.simplify(D2_sol.subs(M, S("M"))),
+        "Solve for $D_2$.",
+        "$D_2$를 구한다.",
+        S("D_2"),
+    )
     pk = (Vg - M * Vg) * D * Ts / L
     d.step("Peak inductor current at the end of the on-interval.", "온 구간 끝의 인덕터 피크 전류.", sp.Eq(ipk, pk))
     cb = sp.Eq(pk * (D + D2_sol) / 2, M * Vg / R)

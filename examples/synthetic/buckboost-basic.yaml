@@ -1,0 +1,21 @@
+synthetic: true
+label: "Synthetic buck-boost example (round numbers, not a real design)"
+label_ko: "합성 벅-부스트 예제 (단순한 어림수이며 실제 설계가 아님)"
+params:
+  V_g: 12
+  D: 0.5
+  f_s: 1.0e5
+  L: 1.0e-4
+  C: 1.0e-5
+  R: 10
+steps:
+  - def.Ts
+  - buckboost.ccm.M
+  - K.def
+  - Kcrit.buckboost
+  - buckboost.ss.Gd0
+  - buckboost.ss.w0
+  - buckboost.ss.Q
+  - buckboost.ss.wz
+checks:
+  - {when: "K > K_crit", then: {en: "CCM", ko: "CCM"}, else: {en: "DCM", ko: "DCM"}}

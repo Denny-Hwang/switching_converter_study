@@ -1,0 +1,132 @@
+---
+title: The K parameter
+description: One dimensionless number, K = 2L/(R T_s), compared with a topology-specific critical value, decides whether a converter runs in CCM or DCM.
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Compute $K$ for a converter and $K_\mathrm{crit}(D)$ for its topology.
+- Decide the operating mode, and find the inductance that keeps a converter in CCM down to a given load.
+- Identify the operating point (input voltage and load) that is the worst case for the mode boundary.
+
+## Theory
+
+### The boundary condition
+
+A converter with a diode leaves CCM when the inductor current ripple reaches
+the dc inductor current: at the boundary the half-ripple $\Delta i_L$ equals
+the dc current <Cite key="erickson2020" where="Ch. 5" />. When both sides
+are written in terms of circuit values, the inductance, the load resistance
+and the switching period collect into one dimensionless parameter,
+
+<Eq id="K.def" />
+
+and the boundary becomes a function of the duty ratio alone, the critical
+value $K_\mathrm{crit}(D)$. The converter operates in CCM for
+$K > K_\mathrm{crit}$ and in DCM for $K < K_\mathrm{crit}$
+<Cite key="erickson2020" where="Ch. 5" />.
+
+$K$ compares the time constant $L/R$ with the switching period. A larger
+inductance, a heavier load (smaller $R$) or a higher switching frequency all
+raise $K$ and push the converter towards CCM.
+
+### Critical values of the basic converters
+
+Each topology has its own $K_\mathrm{crit}(D)$, because its dc inductor
+current and its ripple depend on $D$ in different ways:
+
+<Eq id="Kcrit.buck" />
+
+<Eq id="Kcrit.boost" />
+
+<Eq id="Kcrit.buckboost" />
+
+For the flyback, $K$ is formed with the magnetizing inductance referred to
+the primary and with the actual load resistance; the turns ratio then
+appears in the critical value:
+
+<Eq id="Kcrit.flyback" />
+
+The shapes differ. The buck's value is largest at small $D$, approaching 1.
+The boost's value is zero at both ends of the duty-ratio range; setting its
+derivative to zero shows that it peaks at $D = 1/3$, where it is $4/27$.
+The buck-boost's value falls from 1 at small $D$ to zero at large $D$.
+
+### Designing for CCM: the critical inductance
+
+Setting $K$ equal to $K_\mathrm{crit}$ and solving the definition of $K$ for
+$L$ gives the smallest inductance that keeps the converter in CCM at a given
+load:
+
+<Eq id="L.crit" />
+
+Because $K_\mathrm{crit}$ depends on $D$, and $D$ on the input voltage, the
+worst case is the lightest load (largest $R$) at the duty ratio that gives
+the largest $K_\mathrm{crit}$ over the input-voltage range. For a buck with a
+regulated output this is the highest input voltage, where $D$ is smallest.
+
+## Worked example
+
+The synthetic buck at its nominal load, and the same converter with a
+ten-times lighter load:
+
+<Worked example="buck-basic" show={['L', 'R', 'T_s', 'D', 'K', 'K_crit', 'L_crit']} />
+
+<Worked example="buck-light-load" show={['L', 'R', 'T_s', 'D', 'K', 'K_crit', 'L_crit']} />
+
+At the nominal load, $K$ = <Val example="buck-basic" name="K" /> is well above
+$K_\mathrm{crit}$ = <Val example="buck-basic" name="K_crit" />: CCM, with
+margin. Equivalently, the inductance of <Val example="buck-basic" name="L" />
+exceeds the critical <Val example="buck-basic" name="L_crit" />. At the light
+load, $K$ falls to <Val example="buck-light-load" name="K" />, below the same
+critical value, and the critical inductance rises to
+<Val example="buck-light-load" name="L_crit" />: the converter is in DCM.
+
+## Try it
+
+<TryIt eq="Kcrit.boost" example="boost-basic" sweep="D" />
+
+Sweep $D$ from 0 to 1 and find the peak of the boost's critical value. A
+boost whose $K$ lies above that peak stays in CCM at every duty ratio.
+
+## Bench exercise
+
+On a converter with a diode rectifier and an adjustable resistive load,
+watch the inductor current with a current probe and increase the load
+resistance until the current just touches zero at the end of each period.
+Measure the duty ratio and the load resistance at that point, compute $K$
+from the inductance and the switching period, and compare it with
+$K_\mathrm{crit}(D)$ for the topology.
+
+## Gotchas
+
+- **Use consistent quantities in $K$.** For isolated converters, $K$ uses
+  the magnetizing inductance referred to the primary with the actual load
+  resistance on the secondary side; the turns ratio then sits in
+  $K_\mathrm{crit}$. Mixing referred and unreferred values gives the wrong
+  mode <Cite key="erickson2020" where="Ch. 6" />.
+- **Check the whole input-voltage range.** In closed loop the duty ratio moves
+  with the input voltage, and with it $K_\mathrm{crit}$.
+- **Compare with the smallest inductance the inductor will have in
+  operation**, not with its nominal value, since the critical inductance is a
+  minimum.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch5', 'coursera-converter-circuits', 'ti-slva061']} />
+
+## Quiz
+
+<Quiz id="02-theory/k-parameter" />

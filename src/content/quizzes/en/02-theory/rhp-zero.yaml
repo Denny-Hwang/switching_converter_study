@@ -1,0 +1,51 @@
+# Quiz for 02-theory/rhp-zero. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'Right after a step increase of the duty ratio, the output voltage of a boost converter briefly falls. Why?'
+    options:
+      - 'The inductor saturates'
+      - 'The diode now conducts for a shorter part of each period while the inductor current has not risen yet'
+      - 'The output capacitor discharges into the switch'
+      - 'The control loop is unstable'
+    answer: 1
+    explain: 'Energy reaches the output only while the diode conducts. A longer on-interval shortens the diode interval at once, but the inductor current needs time to grow, so the average diode current first drops.'
+  - q: 'How does a right-half-plane zero affect a Bode plot?'
+    options:
+      - 'Its magnitude falls like a pole and its phase leads like a zero'
+      - 'Its magnitude rises like a zero but its phase lags like a pole'
+      - 'It changes only the magnitude'
+      - 'It changes only the phase'
+    answer: 1
+    explain: 'The magnitude of $1 - s/\omega_z$ grows with frequency exactly like that of $1 + s/\omega_z$, but its phase goes towards $-90^\circ$ instead of $+90^\circ$.'
+  - q: 'A boost converter runs at $D = 0.5$ with $R = 10\,\Omega$ and $L = 100\,\mu\mathrm{H}$. Where is its RHP zero?'
+    options:
+      - '$12.5\,\mathrm{krad/s}$'
+      - '$25\,\mathrm{krad/s}$'
+      - '$50\,\mathrm{krad/s}$'
+      - '$100\,\mathrm{krad/s}$'
+    answer: 1
+    explain: 'The zero is at $(1 - D)^2 R/L$: a quarter of $10\,\Omega$ divided by $100\,\mu\mathrm{H}$.'
+  - q: 'Under which conditions is the RHP zero of a boost converter at its lowest frequency?'
+    options:
+      - 'Light load and low duty ratio'
+      - 'Heavy load and high duty ratio'
+      - 'Light load and high duty ratio'
+      - 'It does not depend on the operating point'
+    answer: 1
+    explain: 'The zero is proportional to $(1 - D)^2 R$: a small load resistance (heavy load) and a large duty ratio (low input voltage) both move it down.'
+  - q: 'Why can the RHP zero not be cancelled by the compensator?'
+    options:
+      - 'Cancelling it would need a pole in the right half-plane, which is unstable'
+      - 'Compensators cannot contain poles'
+      - 'The zero is above the switching frequency'
+      - 'It can be cancelled with a left-half-plane zero'
+    answer: 0
+    explain: 'Cancellation places a pole at the same location as the zero. For a right-half-plane zero that pole would be unstable, so the zero has to be lived with by keeping the crossover frequency well below it.'
+  - q: 'With the same $L$ and $C$, how does the double-pole frequency of a CCM boost at $D = 0.5$ compare with that of a buck?'
+    options:
+      - 'It is the same'
+      - 'It is twice as high'
+      - 'It is half as high'
+      - 'It is four times lower'
+    answer: 2
+    explain: 'For the boost $\omega_0$ is $(1 - D)/\sqrt{LC}$, the buck value times $1 - D$, because the inductance appears as $L/(1 - D)^2$ in the averaged model.'

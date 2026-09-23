@@ -1,0 +1,127 @@
+---
+title: The right-half-plane zero
+description: Why the boost and buck-boost outputs first move the wrong way after a duty-ratio step, how to compute the right-half-plane zero, and how it limits a feedback loop.
+sidebar:
+  order: 7
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Explain physically why the boost and the buck-boost have a right-half-plane (RHP) zero.
+- Compute the RHP zero and the double-pole parameters of both converters from circuit values.
+- Know how the RHP zero limits the crossover frequency of a feedback loop.
+
+## Theory
+
+### Why the output first moves the wrong way
+
+In the boost, energy reaches the output only while the diode conducts, that
+is, during the off-interval. A step increase of the duty ratio lengthens the
+on-interval and shortens the off-interval. Eventually the inductor current
+rises and the output rises with it. Immediately after the step, however, the
+inductor current has not changed yet while the diode conducts for a shorter
+part of each period, so the average diode current, and the output voltage,
+first fall <Cite key="erickson2020" where="Ch. 8" />. The buck-boost behaves
+the same way.
+
+A zero in the right half of the $s$-plane produces exactly this: its
+magnitude rises with frequency like that of an ordinary zero, but its phase
+lags like that of a pole.
+
+### Boost control-to-output
+
+The boost's control-to-output transfer function has a dc gain, a pair of
+poles and the RHP zero <Cite key="erickson2020" where="Ch. 8" />:
+
+<Eq id="boost.ss.Gd0" />
+
+<Eq id="boost.ss.w0" />
+
+<Eq id="boost.ss.Q" />
+
+<Eq id="boost.ss.wz" />
+
+The poles belong to the inductor and the capacitor, but seen through the
+dc transformer of the [averaged model](../averaged-models/) the inductance
+appears divided by $(1 - D)^2$, which moves the poles down in frequency as
+$D$ grows.
+
+### Buck-boost control-to-output
+
+<Eq id="buckboost.ss.Gd0" />
+
+<Eq id="buckboost.ss.w0" />
+
+<Eq id="buckboost.ss.Q" />
+
+<Eq id="buckboost.ss.wz" />
+
+The derivations of all eight quantities, from the averaged circuit, are on
+the [derivations page](../derivations/#deriv-small_signal).
+
+### Consequences for control
+
+The RHP zero moves down in frequency as the load gets heavier (smaller $R$)
+and as $D$ increases, so its lowest frequency occurs at full load and minimum
+input voltage. Because it adds phase lag while the magnitude keeps rising,
+the loop crossover frequency has to stay well below the lowest $\omega_z$ over
+the operating range <Cite key="erickson2020" where="Ch. 8" />. A compensator
+cannot cancel the zero: that would take a pole in the right half-plane,
+which is unstable.
+
+## Worked example
+
+The synthetic boost and buck-boost, both at the same duty ratio:
+
+<Worked example="boost-basic" show={['V_g', 'D', 'L', 'C', 'R', 'G_d0', 'omega_0', 'Q', 'omega_z']} checks={false} />
+
+<Worked example="buckboost-basic" show={['V_g', 'D', 'L', 'C', 'R', 'G_d0', 'omega_0', 'Q', 'omega_z']} checks={false} />
+
+In the boost the RHP zero at <Val example="boost-basic" name="omega_z" /> lies
+not far above the double pole at <Val example="boost-basic" name="omega_0" />:
+a loop that crossed over near the poles would already feel the zero's phase
+lag.
+
+## Try it
+
+<TryIt eq="boost.ss.wz" example="boost-basic" sweep="R" />
+
+Sweep $R$ downwards (heavier load): the zero falls in proportion to $R$.
+Then set $R$ back and sweep $D$ instead.
+
+## Bench exercise
+
+On an open-loop boost at low power, apply a small step to the duty ratio,
+for example by stepping the modulator's control input. Watch the output
+voltage with AC coupling, triggered on the step: it dips briefly before it
+rises to its new value. Repeat at a heavier load and compare the size of
+the dip.
+
+## Gotchas
+
+- **Design for the worst case.** The lowest RHP-zero frequency occurs at the
+  heaviest load and the highest duty ratio, that is, the lowest input voltage.
+- **The buck has no RHP zero.** Its duty ratio acts on the switch node, which
+  feeds the output filter directly; the boost and buck-boost deliver energy
+  to the output only during the off-interval <Cite key="erickson2020" where="Ch. 8" />.
+- **Phase margin estimates must include the zero.** Its phase lag starts
+  well below $\omega_z$, over the same frequencies where an ordinary zero's
+  phase lead would start.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch8', 'coursera-converter-control', 'ti-slva061']} />
+
+## Quiz
+
+<Quiz id="02-theory/rhp-zero" />

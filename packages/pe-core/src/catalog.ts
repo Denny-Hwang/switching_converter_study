@@ -33,6 +33,9 @@ export interface SymbolMeta {
   latex: string;
   unit: string;
   desc: string;
+  /** Range used for random test vectors (SI), also a sensible UI default. */
+  range: [number, number] | null;
+  scale: 'linear' | 'log';
 }
 
 export interface Catalog {

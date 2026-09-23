@@ -1,0 +1,51 @@
+# Quiz for 02-theory/control-basics. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A PWM modulator uses a sawtooth of peak amplitude $2\,\mathrm{V}$. What duty ratio does a control voltage of $0.6\,\mathrm{V}$ produce?'
+    options:
+      - '0.12'
+      - '0.3'
+      - '0.6'
+      - '3.3'
+    answer: 1
+    explain: 'The switch is on while the ramp is below the control voltage, so the duty ratio is the control voltage divided by the ramp amplitude.'
+  - q: 'A voltage-mode loop has $G_c = 5$, $G_{vd} = 12\,\mathrm{V}$, $H = 0.25$ and $V_M = 1.5\,\mathrm{V}$ at some frequency. What is the loop-gain magnitude there?'
+    options:
+      - '2.5'
+      - '10'
+      - '40'
+      - '60'
+    answer: 1
+    explain: 'The magnitudes multiply around the loop, and the modulator contributes $1/V_M$: five times 12 times 0.25, divided by 1.5.'
+  - q: 'At dc a loop gain of 19 is measured. What fraction of its effect without feedback does a slow input-voltage disturbance still have at the output?'
+    options:
+      - '19'
+      - '20'
+      - '1/19'
+      - '1/20'
+    answer: 3
+    explain: 'The disturbance is divided by $1 + T$, that is by 20; it reaches the output at a twentieth of its effect without feedback.'
+  - q: 'How much does feedback suppress a disturbance at frequencies well above the crossover frequency?'
+    options:
+      - 'Almost not at all, because the loop gain is much smaller than 1'
+      - 'By the dc loop gain'
+      - 'By the phase margin'
+      - 'Completely'
+    answer: 0
+    explain: 'Where the loop gain magnitude is much smaller than 1, $1 + T$ is close to 1, so the disturbance passes as if there were no feedback.'
+  - q: 'A loop has a small phase margin. What happens to disturbances near the crossover frequency?'
+    options:
+      - 'They are suppressed more strongly'
+      - 'They are unaffected'
+      - 'They can be amplified, because the magnitude of $1 + T$ drops below 1'
+      - 'They are shifted to the switching frequency'
+    answer: 2
+    explain: 'Near crossover the loop-gain magnitude is about 1, and with a phase close to $-180^\circ$ the complex sum $1 + T$ becomes small, so dividing by it amplifies the disturbance.'
+  - q: 'Why does scaling the PWM ramp amplitude with the input voltage keep the loop gain of a buck constant over the input range?'
+    options:
+      - 'Because it keeps the duty ratio constant'
+      - 'Because the buck control-to-output gain is proportional to the input voltage, and the ramp amplitude divides it'
+      - 'Because it changes the switching frequency'
+      - 'Because it removes the right-half-plane zero'
+    answer: 1
+    explain: 'The buck dc gain $G_{d0}$ equals $V_g$, and the modulator contributes $1/V_M$. If $V_M$ is proportional to $V_g$, their product, and with it the loop gain, no longer depends on $V_g$.'

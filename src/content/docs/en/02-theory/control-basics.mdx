@@ -1,0 +1,119 @@
+---
+title: Control basics
+description: The PWM modulator, the loop gain of a voltage-mode feedback loop, and how much feedback suppresses disturbances.
+sidebar:
+  order: 8
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Model a pulse-width modulator (PWM) and compute its small-signal gain.
+- Compute the loop gain of a voltage-mode feedback loop at a given frequency.
+- Quantify how feedback suppresses disturbances, and recognise where it stops helping.
+
+## Theory
+
+### The PWM modulator
+
+A voltage-mode controller compares a control voltage $V_\mathrm{ctrl}$ with a
+sawtooth ramp of peak amplitude $V_M$. The switch is on while the ramp is
+below the control voltage, so the duty ratio is proportional to the control
+voltage:
+
+<Eq id="pwm.d" />
+
+The modulator's small-signal gain, from control voltage to duty ratio, is
+therefore $1/V_M$ <Cite key="erickson2020" where="Ch. 7" />.
+
+### The loop gain
+
+In a voltage-mode loop the output voltage is measured by a sensor of gain
+$H$ (often a resistive divider) and compared with a reference. The
+difference is amplified by the compensator $G_c$ and turned into a duty
+ratio by the modulator, and the converter's control-to-output transfer
+function $G_{vd}$ closes the loop. The **loop gain** is the product of the
+gains around the loop <Cite key="erickson2020" where="Ch. 9" />:
+
+<Eq id="loop.T" />
+
+At each frequency the magnitudes multiply and the phases add. For the buck,
+$G_{vd}$ is the transfer function of the [small-signal page](../small-signal/);
+for the boost and buck-boost it includes the
+[right-half-plane zero](../rhp-zero/).
+
+### What feedback buys
+
+A disturbance that enters the loop, from the input voltage or from the load,
+reaches the output divided by $1 + T$ <Cite key="erickson2020" where="Ch. 9" />:
+
+<Eq id="loop.suppression" />
+
+Where the loop gain is large (at low frequencies), disturbances are
+suppressed by roughly the loop gain, and the output follows the reference
+divided by $H$: it depends on the sensor and the reference, not on the
+converter's gain. Where the loop gain is much smaller than 1 (above the
+crossover frequency), feedback has no effect. Near the crossover the loop
+gain is complex; with a small phase margin the magnitude of $1 + T$ drops
+below 1, and disturbances there are amplified rather than suppressed
+<Cite key="erickson2020" where="Ch. 9" />.
+
+## Worked example
+
+A synthetic voltage-mode buck loop, evaluated at dc:
+
+<Worked example="control-basic" checks={false} />
+
+The modulator turns the control voltage into a duty ratio of
+<Val example="control-basic" name="D" />. At dc the loop gain is
+<Val example="control-basic" name="T_loop" />, so a slow disturbance reaches
+the output scaled by <Val example="control-basic" name="S_dist" /> relative to
+its effect without feedback.
+
+## Try it
+
+<TryIt eq="loop.suppression" example="control-basic" sweep="T_loop" />
+
+Sweep the loop gain over several decades (logarithmic axis): each tenfold
+increase of a large loop gain buys another tenfold suppression.
+
+## Bench exercise
+
+Measure the loop gain of a closed-loop converter by injection. Insert a small
+resistor in the feedback path, between the output and the sensing divider,
+and inject a small sinusoidal signal across it through an isolation
+transformer. The ratio of the signals on the two sides of the resistor,
+measured with a frequency response analyzer, is the loop gain
+<Cite key="erickson2020" where="Ch. 9" />. Find the crossover frequency and
+the phase margin, then compare how the output responds to an input-voltage
+step with the loop's suppression at low frequency.
+
+## Gotchas
+
+- **The modulator gain depends on the ramp amplitude.** A controller whose
+  ramp amplitude scales with the input voltage makes the buck's loop gain
+  independent of the input voltage, since the buck's dc gain equals the
+  input voltage (<EqRef id="buck.ss.Gd0" />).
+- **Use the complex loop gain away from dc.** The real-valued form above is
+  exact only where $T$ is real. Elsewhere, divide by the magnitude of the
+  complex sum $1 + T$; where the loop gain is large, the two agree closely.
+- **A saturated modulator opens the loop.** Once the control voltage leaves
+  the ramp's range, the duty ratio is clamped and the loop gain collapses;
+  the equations on this page no longer apply.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch9', 'erickson-ch7', 'coursera-converter-control']} />
+
+## Quiz
+
+<Quiz id="02-theory/control-basics" />

@@ -91,3 +91,13 @@ def test_wrong_expectation_is_rejected(tmp_path: Path) -> None:
     p.write_text(bad, encoding="utf-8")
     with pytest.raises(EquationError, match="expects"):
         load(p)
+
+
+def test_empty_citation_list_is_rejected(tmp_path: Path) -> None:
+    text = (GENERATED_JSON.parent / "equations.yaml").read_text(encoding="utf-8")
+    first = 'cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}'
+    assert first in text
+    p = tmp_path / "equations.yaml"
+    p.write_text(text.replace(first, "cite: []", 1), encoding="utf-8")
+    with pytest.raises(EquationError, match="at least one citation"):
+        load(p)

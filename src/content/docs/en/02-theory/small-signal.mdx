@@ -1,0 +1,115 @@
+---
+title: Small-signal models
+description: Linearize the averaged model about an operating point and read the buck converter's control-to-output transfer function, its dc gain, resonant frequency and Q.
+sidebar:
+  order: 6
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Explain what a small-signal model is and when it is valid.
+- Describe the buck converter's control-to-output transfer function: dc gain, double pole and quality factor.
+- Compute $G_{d0}$, $\omega_0$ and $Q$ from the circuit values and predict the resonant peak.
+
+## Theory
+
+### Perturb and linearize
+
+The averaged model of a converter is nonlinear, because the duty ratio
+multiplies voltages and currents. To design a feedback loop we need its
+response to small variations about the operating point. Each quantity is
+written as its dc value plus a small ac variation: the duty ratio, for
+example, as $D$ plus $\hat{d}(t)$. Products of two ac variations are
+dropped. What remains is a linear circuit, the **small-signal model**, valid
+for variations much smaller than the dc values and for frequencies well below
+the switching frequency <Cite key="erickson2020" where="Ch. 7" />.
+
+### The buck's control-to-output transfer function
+
+In the buck, the duty ratio acts directly on the switch-node voltage, which
+the L-C filter and the load then filter. The control-to-output transfer
+function $G_{vd}(s)$, from $\hat{d}$ to the output voltage variation, is
+therefore a dc gain followed by a second-order low-pass response: a pair of
+poles at the resonant angular frequency $\omega_0$ of the filter, with a
+quality factor $Q$ set by the load <Cite key="erickson2020" where="Ch. 8" />.
+The dc gain is the slope of the static characteristic:
+
+<Eq id="buck.ss.Gd0" />
+
+<Eq id="buck.ss.w0" />
+
+<Eq id="buck.ss.Q" />
+
+The derivation, which reads all three off the averaged circuit, is on the
+[derivations page](../derivations/#deriv-small_signal).
+
+### Reading the Bode plot
+
+Well below $\omega_0$ the magnitude is flat at $G_{d0}$ and the phase is
+near zero. At $\omega_0$ the magnitude is exactly $Q$ times the dc gain and
+the phase has fallen by 90°; above $\omega_0$ the magnitude falls with the
+square of frequency and the phase approaches −180°
+<Cite key="erickson2020" where="Ch. 8" />. A light load (large $R$) gives a
+high $Q$: a tall, narrow resonant peak and an abrupt phase change, which the
+feedback loop has to accommodate. For hertz, divide $\omega_0$ by $2\pi$.
+
+## Worked example
+
+The synthetic buck from the earlier pages, now read as a small-signal
+system:
+
+<Worked example="buck-basic" show={['V_g', 'L', 'C', 'R', 'G_d0', 'omega_0', 'Q']} checks={false} />
+
+The dc gain equals the input voltage, <Val example="buck-basic" name="G_d0" />
+per unit of duty ratio. The poles sit at <Val example="buck-basic" name="omega_0" />,
+and with $Q$ = <Val example="buck-basic" name="Q" /> the magnitude at that
+frequency is that many times the dc gain.
+
+## Try it
+
+<TryIt eq="buck.ss.Q" example="buck-basic" sweep="R" />
+
+Sweep $R$ over several decades (logarithmic axis): $Q$ grows in proportion
+to the load resistance, so the resonant peak is tallest at light load.
+
+## Bench exercise
+
+With a frequency response analyzer, inject a small sinusoidal variation into
+the control input of an open-loop buck's PWM modulator and measure the ratio
+of output-voltage variation to control-input variation over frequency. Find
+the resonant peak and compare its frequency with $\omega_0/(2\pi)$. Repeat at
+a lighter load and confirm that the peak grows while its frequency stays put.
+Keep the injected amplitude small enough that the response does not change
+when you halve it.
+
+## Gotchas
+
+- **Real components damp the resonance.** The ideal model has no loss other
+  than the load. Winding resistance and capacitor series resistance lower $Q$,
+  and the capacitor's series resistance adds a zero: its impedance is
+  $1/(sC)$ plus that resistance.
+- **The model is only valid well below the switching frequency** and for
+  small variations <Cite key="erickson2020" where="Ch. 7" />. Near $f_s$ the
+  averaged model no longer describes the circuit.
+- **DCM changes the transfer function.** In DCM the inductor current no
+  longer carries a state from one period to the next, and the L-C resonance
+  disappears from the low-frequency response
+  <Cite key="erickson2020" where="Ch. 15" />.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch7', 'erickson-ch8', 'coursera-converter-control']} />
+
+## Quiz
+
+<Quiz id="02-theory/small-signal" />

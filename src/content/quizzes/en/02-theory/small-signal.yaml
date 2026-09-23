@@ -1,0 +1,51 @@
+# Quiz for 02-theory/small-signal. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'Why must the averaged converter model be linearized before a feedback loop can be designed with transfer functions?'
+    options:
+      - 'Because the duty ratio multiplies voltages and currents, which makes the averaged model nonlinear'
+      - 'Because the switches are ideal'
+      - 'Because the inductor current is discontinuous'
+      - 'Because the switching frequency is too high'
+    answer: 0
+    explain: 'Transfer functions describe linear systems. Products such as duty ratio times input voltage are nonlinear; writing each quantity as dc value plus small variation and dropping products of variations gives a linear model around the operating point.'
+  - q: 'What is the control-to-output dc gain $G_{d0}$ of an ideal CCM buck converter with a $24\,\mathrm{V}$ input?'
+    options:
+      - '$12\,\mathrm{V}$'
+      - '$24\,\mathrm{V}$'
+      - '$48\,\mathrm{V}$'
+      - 'It depends on the load'
+    answer: 1
+    explain: 'The static characteristic is $D V_g$, whose slope with respect to $D$ is $V_g$. The gain is in volts per unit of duty ratio and does not depend on the load in the ideal model.'
+  - q: 'A buck filter has $L = 100\,\mu\mathrm{H}$ and $C = 100\,\mu\mathrm{F}$. What is $\omega_0$?'
+    options:
+      - '$1\,\mathrm{krad/s}$'
+      - '$10\,\mathrm{krad/s}$'
+      - '$100\,\mathrm{krad/s}$'
+      - '$1\,\mathrm{Mrad/s}$'
+    answer: 1
+    explain: 'The product $L C$ is $10^{-8}\,\mathrm{s}^2$, whose square root is $10^{-4}\,\mathrm{s}$, so $\omega_0$ is $10^{4}\,\mathrm{rad/s}$.'
+  - q: 'The load resistance of a buck converter is doubled. What happens to the $Q$ of its control-to-output poles?'
+    options:
+      - 'It halves'
+      - 'It is unchanged'
+      - 'It doubles'
+      - 'It quadruples'
+    answer: 2
+    explain: '$Q$ is $R\sqrt{C/L}$, proportional to $R$. A lighter load damps the L-C resonance less, so the peak grows.'
+  - q: 'At the resonant angular frequency $\omega_0$, how large is the magnitude of the second-order control-to-output response?'
+    options:
+      - 'Equal to the dc gain'
+      - '$Q$ times the dc gain'
+      - 'The dc gain divided by $Q$'
+      - 'Zero'
+    answer: 1
+    explain: 'At $\omega_0$ the constant term and the $s^2$ term of the denominator cancel, leaving $j/Q$; the magnitude is $Q$ times the dc gain and the phase is $-90^\circ$.'
+  - q: 'For which perturbations is the small-signal model valid?'
+    options:
+      - 'Any size, at any frequency'
+      - 'Variations much smaller than the dc values, at frequencies well below the switching frequency'
+      - 'Only at the switching frequency'
+      - 'Only in DCM'
+    answer: 1
+    explain: 'Linearization requires the variations to be small; averaging requires the frequencies of interest to be well below the switching frequency.'

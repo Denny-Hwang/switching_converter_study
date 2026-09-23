@@ -332,6 +332,8 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
             if not isinstance(c, dict) or not c.get("key") or set(c) - {"key", "where"}:
                 raise EquationError(f"{where}: each cite needs a key (and optional where)")
             cites.append({"key": str(c["key"]), "where": str(c.get("where", ""))})
+        if not cites:
+            raise EquationError(f"{where}: every equation needs at least one citation (CLAUDE.md rule 3)")
         relation = raw.get("relation", "eq")
         if relation not in ("eq", "approx"):
             raise EquationError(f"{where}: relation must be eq|approx")

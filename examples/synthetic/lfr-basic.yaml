@@ -1,0 +1,11 @@
+synthetic: true
+label: "Synthetic DCM buck-boost example (round numbers, not a real design)"
+label_ko: "합성 DCM 벅-부스트 예제 (단순한 어림수이며 실제 설계가 아님)"
+params:
+  V_g: 10
+  D: 0.5
+  L_M: 1.0e-4
+  f_s: 1.0e5
+steps:
+  - dcm.P_in
+  - lfr.R_in

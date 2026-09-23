@@ -1,0 +1,25 @@
+---
+/**
+ * <Explorer /> -- the equation explorer island with labels in the page's
+ * language. State lives in the URL hash, so "Try it" links can preset it.
+ */
+import EquationExplorer from '../tools/EquationExplorer.tsx';
+import { ui } from '../i18n/ui';
+import { pageLocale } from '../lib/locale';
+
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const labels = {
+  equation: t['explorer.equation'],
+  inputs: t['explorer.inputs'],
+  result: t['explorer.result'],
+  sweep: t['explorer.sweep'],
+  from: t['explorer.from'],
+  to: t['explorer.to'],
+  logx: t['explorer.logx'],
+  invalid: t['explorer.invalid'],
+  share: t['explorer.share'],
+};
+---
+
+<EquationExplorer client:only="react" locale={locale} labels={labels} />

@@ -2,6 +2,83 @@
   "_generated_by": "python scripts/gen_equations.py -- DO NOT EDIT; edit python/pe_core/derive/*.py",
   "derivations": [
     {
+      "module": "averaging",
+      "source": "python/pe_core/derive/averaging.py",
+      "title": "Averaging, balance, and losses in the averaged model",
+      "title_ko": "평균화, 평형 조건, 평균 모델의 손실",
+      "intro": "A switching converter chops a dc input into a pulse train; a low-pass filter keeps its average. Averaging each circuit equation over one period turns the switched circuit into a dc model in which losses such as the inductor winding resistance $R_L$ appear as ordinary resistors.",
+      "intro_ko": "스위칭 컨버터는 직류 입력을 펄스열로 잘게 자르고, 저역통과 필터가 그 평균을 남긴다. 각 회로 방정식을 한 주기에 걸쳐 평균하면 스위칭 회로가 직류 모델이 되며, 인덕터 권선 저항 $R_L$ 같은 손실은 평범한 저항으로 나타난다.",
+      "results": [
+        "sw.v_avg",
+        "vsb.v_off",
+        "csb.i_off",
+        "boost.ccm.M_RL",
+        "boost.ccm.eta_RL"
+      ],
+      "steps": [
+        {
+          "text": "The buck switch node is at $V_g$ for $0 < t < D T_s$ and at $0$ for $D T_s < t < T_s$; average it over one period.",
+          "text_ko": "벅의 스위치 노드는 $0 < t < D T_s$ 동안 $V_g$, $D T_s < t < T_s$ 동안 $0$이다. 한 주기에 걸쳐 평균한다.",
+          "latex": "\\langle v_s \\rangle = \\frac{\\int\\limits_{0}^{T_s} v_s\\, dt}{T_s}",
+          "result_for": null
+        },
+        {
+          "text": "Evaluate the two pieces.",
+          "text_ko": "두 구간을 계산한다.",
+          "latex": "\\langle v_s \\rangle = D V_g",
+          "result_for": "sw.v_avg"
+        },
+        {
+          "text": "With the small-ripple approximation the inductor voltage (or capacitor current) takes one value $x_\\mathrm{on}$ for $D T_s$ and another value $x_\\mathrm{off}$ for $(1 - D) T_s$; its average must be zero.",
+          "text_ko": "소리플 근사를 쓰면 인덕터 전압(또는 커패시터 전류)은 $D T_s$ 동안 $x_\\mathrm{on}$, $(1 - D) T_s$ 동안 $x_\\mathrm{off}$ 값을 가지며, 그 평균은 0이어야 한다.",
+          "latex": "x_\\mathrm{off} \\left(1 - D\\right) + x_\\mathrm{on} D = 0",
+          "result_for": null
+        },
+        {
+          "text": "For the inductor voltage ($x = v_L$): volt-second balance.",
+          "text_ko": "인덕터 전압($x = v_L$)의 경우: 전압-초 평형.",
+          "latex": "v_{L,\\mathrm{off}} = \\frac{D v_{L,\\mathrm{on}}}{-1 + D} = - \\frac{D v_{L,\\mathrm{on}}}{1 - D}",
+          "result_for": "vsb.v_off"
+        },
+        {
+          "text": "For the capacitor current ($x = i_C$): charge balance.",
+          "text_ko": "커패시터 전류($x = i_C$)의 경우: 전하 평형.",
+          "latex": "i_{C,\\mathrm{off}} = \\frac{D i_{C,\\mathrm{on}}}{-1 + D} = - \\frac{D i_{C,\\mathrm{on}}}{1 - D}",
+          "result_for": "csb.i_off"
+        },
+        {
+          "text": "Boost with inductor winding resistance $R_L$, volt-second balance: the inductor sees $V_g - I R_L$ while the switch is on and $V_g - I R_L - V$ while the diode conducts ($I$ = dc inductor current).",
+          "text_ko": "인덕터 권선 저항 $R_L$이 있는 부스트의 전압-초 평형: 인덕터에는 스위치 온 구간에 $V_g - I R_L$, 다이오드 도통 구간에 $V_g - I R_L - V$가 걸린다($I$ = 인덕터 직류 전류).",
+          "latex": "D \\left(V_g - I R_L\\right) + \\left(1 - D\\right) \\left(V_g - V - I R_L\\right) = 0",
+          "result_for": null
+        },
+        {
+          "text": "Charge balance on the output capacitor: $-V/R$ while the switch is on, $I - V/R$ while the diode conducts.",
+          "text_ko": "출력 커패시터의 전하 평형: 스위치 온 구간에 $-V/R$, 다이오드 도통 구간에 $I - V/R$.",
+          "latex": "\\left(1 - D\\right) \\left(I - \\frac{V}{R}\\right) - \\frac{D V}{R} = 0",
+          "result_for": null
+        },
+        {
+          "text": "Solve the two linear equations for $I$.",
+          "text_ko": "두 1차 방정식을 $I$에 대해 푼다.",
+          "latex": "I = \\frac{V_g}{R + R_L - 2 D R + R D^{2}}",
+          "result_for": null
+        },
+        {
+          "text": "and for $M = V/V_g$.",
+          "text_ko": "그리고 $M = V/V_g$에 대해 푼다.",
+          "latex": "M = \\frac{R \\left(1 - D\\right)}{R + R_L - 2 D R + R D^{2}} = \\frac{1}{\\left(1 - D\\right) \\left(1 + \\frac{R_L}{\\left(1 - D\\right)^{2} R}\\right)}",
+          "result_for": "boost.ccm.M_RL"
+        },
+        {
+          "text": "Efficiency is the output power $V^2/R$ over the input power $V_g I$.",
+          "text_ko": "효율은 출력 전력 $V^2/R$을 입력 전력 $V_g I$로 나눈 값이다.",
+          "latex": "\\eta = \\frac{R \\left(-1 + D\\right)^{2}}{R + R_L - 2 D R + R D^{2}} = \\frac{1}{1 + \\frac{R_L}{\\left(1 - D\\right)^{2} R}}",
+          "result_for": "boost.ccm.eta_RL"
+        }
+      ]
+    },
+    {
       "module": "ccm_ratios",
       "source": "python/pe_core/derive/ccm_ratios.py",
       "title": "CCM conversion ratios and ripple by volt-second balance",
@@ -134,6 +211,8 @@
         "Kcrit.buck",
         "Kcrit.boost",
         "Kcrit.buckboost",
+        "L.crit",
+        "buck.dcm.D2",
         "buck.dcm.M",
         "boost.dcm.M",
         "buckboost.dcm.M"
@@ -200,6 +279,12 @@
           "result_for": "Kcrit.buckboost"
         },
         {
+          "text": "At the boundary $K$ equals $K_\\mathrm{crit}$; solve the definition of $K$ for $L$.",
+          "text_ko": "경계에서 $K$는 $K_\\mathrm{crit}$과 같다; $K$의 정의를 $L$에 대해 푼다.",
+          "latex": "L_\\mathrm{crit} = \\frac{K_\\mathrm{crit} R T_s}{2}",
+          "result_for": "L.crit"
+        },
+        {
           "text": "Buck DCM, volt-second balance with $V = M V_g$: $V_g - V$ for $D T_s$, $-V$ for $D_2 T_s$, $0$ for $D_3 T_s$.",
           "text_ko": "벅 DCM, $V = M V_g$로 쓴 전압-초 평형: $D T_s$ 동안 $V_g - V$, $D_2 T_s$ 동안 $-V$, $D_3 T_s$ 동안 $0$.",
           "latex": "D \\left(V_g - M V_g\\right) - D_2 M V_g = 0",
@@ -208,8 +293,8 @@
         {
           "text": "Solve for $D_2$.",
           "text_ko": "$D_2$를 구한다.",
-          "latex": "D_2 = - D + \\frac{D}{M}",
-          "result_for": null
+          "latex": "D_2 = - D + \\frac{D}{M} = \\frac{D \\left(1 - M\\right)}{M}",
+          "result_for": "buck.dcm.D2"
         },
         {
           "text": "Peak inductor current at the end of the on-interval.",
@@ -393,6 +478,194 @@
           "text_ko": "$P = V_g^2/R_\\mathrm{in}$이므로 입력은 아무것도 소산하지 않는 저항(무손실 저항)처럼 동작한다.",
           "latex": "R_\\mathrm{in} = \\frac{2 L_M f_s}{D^{2}}",
           "result_for": "lfr.R_in"
+        }
+      ]
+    },
+    {
+      "module": "small_signal",
+      "source": "python/pe_core/derive/small_signal.py",
+      "title": "Small-signal control-to-output transfer functions (CCM)",
+      "title_ko": "소신호 제어-출력 전달함수(CCM)",
+      "intro": "Averaging removes the switching ripple; perturbing the averaged equations around the operating point ($d = D + \\hat d$, $v = V + \\hat v$, $i = I + \\hat i$) and dropping second-order products gives linear equations whose Laplace transform yields $\\hat v/\\hat d$. Each converter below ends in the standard second-order form with gain $G_{d0}$, poles at $\\omega_0$ with quality factor $Q$, and, for the boost and buck-boost, a zero $\\omega_z$ in the right half-plane.",
+      "intro_ko": "평균화로 스위칭 리플을 없앤 뒤, 평균 방정식을 동작점 주변에서 섭동($d = D + \\hat d$, $v = V + \\hat v$, $i = I + \\hat i$)하고 2차 곱을 버리면 선형 방정식이 되며, 이를 라플라스 변환하면 $\\hat v/\\hat d$를 얻는다. 아래 각 컨버터는 이득 $G_{d0}$, 품질계수 $Q$인 $\\omega_0$의 극점, 그리고 부스트와 벅-부스트의 경우 우반평면 영점 $\\omega_z$를 갖는 표준 2차 형태로 정리된다.",
+      "results": [
+        "buck.ss.Gd0",
+        "buck.ss.w0",
+        "buck.ss.Q",
+        "boost.ss.Gd0",
+        "boost.ss.w0",
+        "boost.ss.Q",
+        "boost.ss.wz",
+        "buckboost.ss.Gd0",
+        "buckboost.ss.w0",
+        "buckboost.ss.Q",
+        "buckboost.ss.wz"
+      ],
+      "steps": [
+        {
+          "text": "Buck, linearised averaged equations ($\\hat v_g = 0$): the inductor sees $d\\,v_g - v$, the capacitor carries $i - v/R$.",
+          "text_ko": "벅의 선형화된 평균 방정식($\\hat v_g = 0$): 인덕터에는 $d\\,v_g - v$가 걸리고 커패시터에는 $i - v/R$이 흐른다.",
+          "latex": "\\left( \\hat i s L = - \\hat v + \\hat d V_g, \\  s \\hat v C = \\hat i - \\frac{\\hat v}{R}\\right)",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $\\hat v/\\hat d$.",
+          "text_ko": "$\\hat v/\\hat d$를 구한다.",
+          "latex": "G_{vd}(s) = \\frac{R V_g}{R + s L + C L R s^{2}}",
+          "result_for": null
+        },
+        {
+          "text": "DC gain: the value at $s = 0$.",
+          "text_ko": "직류 이득: $s = 0$에서의 값.",
+          "latex": "G_{d0} = V_g",
+          "result_for": "buck.ss.Gd0"
+        },
+        {
+          "text": "Poles: $\\omega_0 = 1/\\sqrt{a_2}$ from the $s^2$ coefficient $a_2$.",
+          "text_ko": "극점: $s^2$ 계수 $a_2$로부터 $\\omega_0 = 1/\\sqrt{a_2}$.",
+          "latex": "\\omega_0 = \\frac{1}{\\sqrt{L C}}",
+          "result_for": "buck.ss.w0"
+        },
+        {
+          "text": "$Q = \\sqrt{a_2}/a_1$ from the $s$ coefficient $a_1$.",
+          "text_ko": "$s$ 계수 $a_1$로부터 $Q = \\sqrt{a_2}/a_1$.",
+          "latex": "Q = R \\sqrt{\\frac{C}{L}}",
+          "result_for": "buck.ss.Q"
+        },
+        {
+          "text": "Boost: the averaged inductor voltage is $v_g - d' v$ and the capacitor current $d' i - v/R$ ($d' = 1 - d$). Perturbing $d' = D' - \\hat d$ and linearising:",
+          "text_ko": "부스트: 평균 인덕터 전압은 $v_g - d' v$, 커패시터 전류는 $d' i - v/R$이다($d' = 1 - d$). $d' = D' - \\hat d$로 섭동하고 선형화하면:",
+          "latex": "\\left( \\hat i s L = \\hat d V - \\hat v D', \\  s \\hat v C = \\hat i D' - \\hat d I - \\frac{\\hat v}{R}\\right)",
+          "result_for": null
+        },
+        {
+          "text": "Operating point from the steady state, writing $D' = 1 - D$: $V = V_g/D'$, $I = V/(D' R)$.",
+          "text_ko": "$D' = 1 - D$로 쓴 정상상태 동작점: $V = V_g/D'$, $I = V/(D' R)$.",
+          "latex": "\\left( V = \\frac{V_g}{D'}, \\  I = \\frac{V_g}{D'^{2} R}\\right)",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $\\hat v/\\hat d$.",
+          "text_ko": "$\\hat v/\\hat d$를 구한다.",
+          "latex": "G_{vd}(s) = \\frac{V_g \\left(- s L + R D'^{2}\\right)}{D'^{2} \\left(s L + R D'^{2} + C L R s^{2}\\right)}",
+          "result_for": null
+        },
+        {
+          "text": "DC gain (results are written back with $D' = 1 - D$).",
+          "text_ko": "직류 이득(결과는 $D' = 1 - D$로 되돌려 씀).",
+          "latex": "G_{d0} = \\frac{V_g}{\\left(1 - D\\right)^{2}}",
+          "result_for": "boost.ss.Gd0"
+        },
+        {
+          "text": "Pole frequency.",
+          "text_ko": "극점 주파수.",
+          "latex": "\\omega_0 = \\frac{1 - D}{\\sqrt{L C}}",
+          "result_for": "boost.ss.w0"
+        },
+        {
+          "text": "Quality factor.",
+          "text_ko": "품질계수.",
+          "latex": "Q = \\left(1 - D\\right) R \\sqrt{\\frac{C}{L}}",
+          "result_for": "boost.ss.Q"
+        },
+        {
+          "text": "The numerator vanishes at a positive real $s$: a right-half-plane zero.",
+          "text_ko": "분자가 양의 실수 $s$에서 0이 된다: 우반평면 영점.",
+          "latex": "\\omega_z = \\frac{\\left(1 - D\\right)^{2} R}{L}",
+          "result_for": "boost.ss.wz"
+        },
+        {
+          "text": "Buck-boost: averaged inductor voltage $d\\,v_g + d' v$ and capacitor current $-d' i - v/R$, with the output $v$ negative. Linearised:",
+          "text_ko": "벅-부스트: 평균 인덕터 전압 $d\\,v_g + d' v$, 커패시터 전류 $-d' i - v/R$이며 출력 $v$는 음수이다. 선형화하면:",
+          "latex": "\\left( \\hat i s L = \\hat d \\left(V_g - V\\right) + \\hat v D', \\  s \\hat v C = \\hat d I - \\hat i D' - \\frac{\\hat v}{R}\\right)",
+          "result_for": null
+        },
+        {
+          "text": "Operating point, with $D' = 1 - D$: $V = -D V_g/D'$, $I = D V_g/(D'^2 R)$.",
+          "text_ko": "$D' = 1 - D$로 쓴 동작점: $V = -D V_g/D'$, $I = D V_g/(D'^2 R)$.",
+          "latex": "\\left( V = \\frac{V_g \\left(-1 + D'\\right)}{D'}, \\  I = \\frac{V_g \\left(1 - D'\\right)}{D'^{2} R}\\right)",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $\\hat v/\\hat d$.",
+          "text_ko": "$\\hat v/\\hat d$를 구한다.",
+          "latex": "G_{vd}(s) = \\frac{V_g \\left(- s L \\left(-1 + D'\\right) - R D'^{2}\\right)}{D'^{2} \\left(s L + R D'^{2} + C L R s^{2}\\right)}",
+          "result_for": null
+        },
+        {
+          "text": "The dc gain is negative (inverting output); its magnitude is:",
+          "text_ko": "직류 이득은 음수(반전 출력)이며, 그 크기는:",
+          "latex": "G_{d0} = \\frac{V_g}{\\left(1 - D\\right)^{2}}",
+          "result_for": "buckboost.ss.Gd0"
+        },
+        {
+          "text": "Pole frequency.",
+          "text_ko": "극점 주파수.",
+          "latex": "\\omega_0 = \\frac{1 - D}{\\sqrt{L C}}",
+          "result_for": "buckboost.ss.w0"
+        },
+        {
+          "text": "Quality factor.",
+          "text_ko": "품질계수.",
+          "latex": "Q = \\left(1 - D\\right) R \\sqrt{\\frac{C}{L}}",
+          "result_for": "buckboost.ss.Q"
+        },
+        {
+          "text": "Right-half-plane zero.",
+          "text_ko": "우반평면 영점.",
+          "latex": "\\omega_z = \\frac{R \\left(-1 + D\\right)^{2}}{D L} = \\frac{\\left(1 - D\\right)^{2} R}{D L}",
+          "result_for": "buckboost.ss.wz"
+        }
+      ]
+    },
+    {
+      "module": "control",
+      "source": "python/pe_core/derive/control.py",
+      "title": "PWM modulator, loop gain and disturbance suppression",
+      "title_ko": "PWM 변조기, 루프 이득, 외란 억제",
+      "intro": "A voltage-mode controller compares a control voltage with a periodic ramp to set the duty ratio. Going once around the loop multiplies the gains of the compensator, the modulator, the power stage and the sensor; that product, the loop gain $T$, decides how strongly the loop rejects disturbances.",
+      "intro_ko": "전압 모드 제어기는 제어 전압을 주기적인 램프와 비교해 듀티비를 정한다. 루프를 한 바퀴 돌면 보상기, 변조기, 전력단, 센서의 이득이 곱해지며, 그 곱인 루프 이득 $T$가 외란을 얼마나 강하게 억제하는지 정한다.",
+      "results": [
+        "pwm.d",
+        "loop.T",
+        "loop.suppression"
+      ],
+      "steps": [
+        {
+          "text": "The ramp rises from $0$ to $V_M$ in $T_s$; the switch turns off when it crosses $V_\\mathrm{ctrl}$.",
+          "text_ko": "램프는 $T_s$ 동안 $0$에서 $V_M$까지 증가하며, $V_\\mathrm{ctrl}$을 넘는 순간 스위치가 꺼진다.",
+          "latex": "\\frac{V_M t_\\mathrm{off}}{T_s} = V_\\mathrm{ctrl}",
+          "result_for": null
+        },
+        {
+          "text": "The on-time fraction is $D = t_\\mathrm{off}/T_s$.",
+          "text_ko": "온 시간 비율은 $D = t_\\mathrm{off}/T_s$.",
+          "latex": "D = \\frac{V_\\mathrm{ctrl}}{V_M}",
+          "result_for": "pwm.d"
+        },
+        {
+          "text": "Around the loop: the compensator output drives the modulator (gain $1/V_M$), the power stage turns $\\hat d$ into $\\hat v$ (gain $G_{vd}$), and the sensor feeds back $H \\hat v$.",
+          "text_ko": "루프를 따라가면: 보상기 출력이 변조기(이득 $1/V_M$)를 구동하고, 전력단이 $\\hat d$를 $\\hat v$로 바꾸며(이득 $G_{vd}$), 센서가 $H \\hat v$를 되먹임한다.",
+          "latex": null,
+          "result_for": null
+        },
+        {
+          "text": "The loop gain is the product around the loop.",
+          "text_ko": "루프 이득은 루프를 도는 이득의 곱이다.",
+          "latex": "T = \\frac{G_c G_{vd} H}{V_M}",
+          "result_for": "loop.T"
+        },
+        {
+          "text": "An output disturbance $\\hat v_\\mathrm{dist}$ adds to the controlled output; the controller acts on the error $\\hat v_\\mathrm{ref} - H\\hat v$.",
+          "text_ko": "출력 외란 $\\hat v_\\mathrm{dist}$가 제어된 출력에 더해지고, 제어기는 오차 $\\hat v_\\mathrm{ref} - H\\hat v$에 반응한다.",
+          "latex": "\\hat v = \\hat v_\\mathrm{dist} + \\frac{G_c G_{vd} \\left(\\hat v_\\mathrm{ref} - \\hat v H\\right)}{V_M}",
+          "result_for": null
+        },
+        {
+          "text": "The disturbance reaching the output is divided by $1 + T$.",
+          "text_ko": "출력에 도달하는 외란은 $1 + T$로 나누어진다.",
+          "latex": "S = \\frac{1}{1 + T}",
+          "result_for": "loop.suppression"
         }
       ]
     },

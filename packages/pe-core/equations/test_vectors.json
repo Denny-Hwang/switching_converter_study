@@ -906,6 +906,86 @@
       "value": 5.29873963579811
     },
     {
+      "id": "L.crit",
+      "source": "yaml",
+      "inputs": {
+        "K_crit": 0.5,
+        "R": 10.0,
+        "T_s": 1e-05
+      },
+      "value": 2.5e-05
+    },
+    {
+      "id": "L.crit",
+      "source": "yaml",
+      "inputs": {
+        "K_crit": 0.125,
+        "R": 20.0,
+        "T_s": 1e-05
+      },
+      "value": 1.25e-05
+    },
+    {
+      "id": "L.crit",
+      "source": "random",
+      "inputs": {
+        "K_crit": 0.0180683,
+        "R": 74.3122,
+        "T_s": 6.20749e-06
+      },
+      "value": 4.167383275342608e-06
+    },
+    {
+      "id": "L.crit",
+      "source": "random",
+      "inputs": {
+        "K_crit": 0.149079,
+        "R": 0.194921,
+        "T_s": 0.000253781
+      },
+      "value": 3.6872638056533895e-06
+    },
+    {
+      "id": "L.crit",
+      "source": "random",
+      "inputs": {
+        "K_crit": 0.0313695,
+        "R": 524.517,
+        "T_s": 1.08373e-06
+      },
+      "value": 8.91575786120875e-06
+    },
+    {
+      "id": "L.crit",
+      "source": "random",
+      "inputs": {
+        "K_crit": 0.0173345,
+        "R": 3.16225,
+        "T_s": 0.00040185
+      },
+      "value": 1.1013909345928123e-05
+    },
+    {
+      "id": "L.crit",
+      "source": "random",
+      "inputs": {
+        "K_crit": 0.0537635,
+        "R": 303.168,
+        "T_s": 0.000695989
+      },
+      "value": 0.005672092076713776
+    },
+    {
+      "id": "L.crit",
+      "source": "random",
+      "inputs": {
+        "K_crit": 0.230407,
+        "R": 6924.41,
+        "T_s": 0.000397154
+      },
+      "value": 0.31681620647687997
+    },
+    {
       "id": "buck.dcm.M",
       "source": "yaml",
       "inputs": {
@@ -2799,6 +2879,1462 @@
         "R_SENSE": 0.0343686
       },
       "value": 29.206764099400925
+    },
+    {
+      "id": "def.Ts",
+      "source": "yaml",
+      "inputs": {
+        "f_s": 100000.0
+      },
+      "value": 1e-05
+    },
+    {
+      "id": "def.Ts",
+      "source": "random",
+      "inputs": {
+        "f_s": 34708.5
+      },
+      "value": 2.8811386259849893e-05
+    },
+    {
+      "id": "def.Ts",
+      "source": "random",
+      "inputs": {
+        "f_s": 106665.0
+      },
+      "value": 9.375146486663854e-06
+    },
+    {
+      "id": "def.Ts",
+      "source": "random",
+      "inputs": {
+        "f_s": 5172.64
+      },
+      "value": 0.00019332487859197623
+    },
+    {
+      "id": "def.Ts",
+      "source": "random",
+      "inputs": {
+        "f_s": 54961.9
+      },
+      "value": 1.8194421954117306e-05
+    },
+    {
+      "id": "def.Ts",
+      "source": "random",
+      "inputs": {
+        "f_s": 25506.7
+      },
+      "value": 3.9205385251718176e-05
+    },
+    {
+      "id": "def.Ts",
+      "source": "random",
+      "inputs": {
+        "f_s": 62538.8
+      },
+      "value": 1.5990073362456586e-05
+    },
+    {
+      "id": "def.V",
+      "source": "yaml",
+      "inputs": {
+        "M": 0.5,
+        "V_g": 24.0
+      },
+      "value": 12.0
+    },
+    {
+      "id": "def.V",
+      "source": "random",
+      "inputs": {
+        "M": 1.17079,
+        "V_g": 320.828
+      },
+      "value": 375.62221411999997
+    },
+    {
+      "id": "def.V",
+      "source": "random",
+      "inputs": {
+        "M": 6.28863,
+        "V_g": 122.699
+      },
+      "value": 771.6086123700001
+    },
+    {
+      "id": "def.V",
+      "source": "random",
+      "inputs": {
+        "M": 6.12647,
+        "V_g": 2.80826
+      },
+      "value": 17.2047206422
+    },
+    {
+      "id": "def.V",
+      "source": "random",
+      "inputs": {
+        "M": 18.8989,
+        "V_g": 51.8261
+      },
+      "value": 979.45628129
+    },
+    {
+      "id": "def.V",
+      "source": "random",
+      "inputs": {
+        "M": 8.29272,
+        "V_g": 3.41393
+      },
+      "value": 28.3107655896
+    },
+    {
+      "id": "def.V",
+      "source": "random",
+      "inputs": {
+        "M": 19.6604,
+        "V_g": 42.1212
+      },
+      "value": 828.11964048
+    },
+    {
+      "id": "sw.v_avg",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "V_g": 24.0
+      },
+      "value": 12.0
+    },
+    {
+      "id": "sw.v_avg",
+      "source": "random",
+      "inputs": {
+        "D": 0.226036,
+        "V_g": 2.99931
+      },
+      "value": 0.6779520351599999
+    },
+    {
+      "id": "sw.v_avg",
+      "source": "random",
+      "inputs": {
+        "D": 0.157928,
+        "V_g": 137.352
+      },
+      "value": 21.691726656000004
+    },
+    {
+      "id": "sw.v_avg",
+      "source": "random",
+      "inputs": {
+        "D": 0.447396,
+        "V_g": 98.8761
+      },
+      "value": 44.2367716356
+    },
+    {
+      "id": "sw.v_avg",
+      "source": "random",
+      "inputs": {
+        "D": 0.582084,
+        "V_g": 2.18895
+      },
+      "value": 1.2741527718000003
+    },
+    {
+      "id": "sw.v_avg",
+      "source": "random",
+      "inputs": {
+        "D": 0.300476,
+        "V_g": 10.197
+      },
+      "value": 3.063953772
+    },
+    {
+      "id": "sw.v_avg",
+      "source": "random",
+      "inputs": {
+        "D": 0.138933,
+        "V_g": 8.39139
+      },
+      "value": 1.16584098687
+    },
+    {
+      "id": "vsb.v_off",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.25,
+        "v_Lon": 12.0
+      },
+      "value": -4.0
+    },
+    {
+      "id": "vsb.v_off",
+      "source": "random",
+      "inputs": {
+        "D": 0.399469,
+        "v_Lon": 2.22989
+      },
+      "value": -1.4833071538521743
+    },
+    {
+      "id": "vsb.v_off",
+      "source": "random",
+      "inputs": {
+        "D": 0.292327,
+        "v_Lon": 59.8223
+      },
+      "value": -24.711517172620688
+    },
+    {
+      "id": "vsb.v_off",
+      "source": "random",
+      "inputs": {
+        "D": 0.880005,
+        "v_Lon": 2.98649
+      },
+      "value": -21.901963685570237
+    },
+    {
+      "id": "vsb.v_off",
+      "source": "random",
+      "inputs": {
+        "D": 0.231757,
+        "v_Lon": 154.855
+      },
+      "value": -46.71533646905991
+    },
+    {
+      "id": "vsb.v_off",
+      "source": "random",
+      "inputs": {
+        "D": 0.592237,
+        "v_Lon": 0.204804
+      },
+      "value": -0.29745834356721923
+    },
+    {
+      "id": "vsb.v_off",
+      "source": "random",
+      "inputs": {
+        "D": 0.560347,
+        "v_Lon": 5.95783
+      },
+      "value": -7.593379704016578
+    },
+    {
+      "id": "csb.i_off",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.75,
+        "i_Con": 1.0
+      },
+      "value": -3.0
+    },
+    {
+      "id": "csb.i_off",
+      "source": "random",
+      "inputs": {
+        "D": 0.584677,
+        "i_Con": 2.86764
+      },
+      "value": -4.0369619604019045
+    },
+    {
+      "id": "csb.i_off",
+      "source": "random",
+      "inputs": {
+        "D": 0.777373,
+        "i_Con": 0.0068045
+      },
+      "value": -0.023760076623679963
+    },
+    {
+      "id": "csb.i_off",
+      "source": "random",
+      "inputs": {
+        "D": 0.313152,
+        "i_Con": 16.5961
+      },
+      "value": -7.566596841222512
+    },
+    {
+      "id": "csb.i_off",
+      "source": "random",
+      "inputs": {
+        "D": 0.605784,
+        "i_Con": 0.00829589
+      },
+      "value": -0.012748131551636666
+    },
+    {
+      "id": "csb.i_off",
+      "source": "random",
+      "inputs": {
+        "D": 0.185377,
+        "i_Con": 0.00174712
+      },
+      "value": -0.00039757760858703963
+    },
+    {
+      "id": "csb.i_off",
+      "source": "random",
+      "inputs": {
+        "D": 0.861356,
+        "i_Con": 0.0599747
+      },
+      "value": -0.37260586605406654
+    },
+    {
+      "id": "buck.dcm.D2",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "M": 0.625
+      },
+      "value": 0.3
+    },
+    {
+      "id": "buck.dcm.D2",
+      "source": "random",
+      "inputs": {
+        "D": 0.487309,
+        "M": 0.858955
+      },
+      "value": 0.08001874126700466
+    },
+    {
+      "id": "buck.dcm.D2",
+      "source": "random",
+      "inputs": {
+        "D": 0.616055,
+        "M": 0.839099
+      },
+      "value": 0.11813131174628974
+    },
+    {
+      "id": "buck.dcm.D2",
+      "source": "random",
+      "inputs": {
+        "D": 0.65833,
+        "M": 0.830209
+      },
+      "value": 0.1346389993724472
+    },
+    {
+      "id": "buck.dcm.D2",
+      "source": "random",
+      "inputs": {
+        "D": 0.817399,
+        "M": 0.934799
+      },
+      "value": 0.05701250450524654
+    },
+    {
+      "id": "buck.dcm.D2",
+      "source": "random",
+      "inputs": {
+        "D": 0.152982,
+        "M": 0.674764
+      },
+      "value": 0.07373726777362158
+    },
+    {
+      "id": "buck.dcm.D2",
+      "source": "random",
+      "inputs": {
+        "D": 0.0627161,
+        "M": 0.280654
+      },
+      "value": 0.16074802308393962
+    },
+    {
+      "id": "boost.ccm.M_RL",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "R": 20.0,
+        "R_L": 0.2
+      },
+      "value": 1.9230769230769231
+    },
+    {
+      "id": "boost.ccm.M_RL",
+      "source": "random",
+      "inputs": {
+        "D": 0.552335,
+        "R": 400.182,
+        "R_L": 0.0307758
+      },
+      "value": 2.2329563395431693
+    },
+    {
+      "id": "boost.ccm.M_RL",
+      "source": "random",
+      "inputs": {
+        "D": 0.502003,
+        "R": 104.8,
+        "R_L": 0.693136
+      },
+      "value": 1.9558831393966514
+    },
+    {
+      "id": "boost.ccm.M_RL",
+      "source": "random",
+      "inputs": {
+        "D": 0.196561,
+        "R": 1.43762,
+        "R_L": 0.00183771
+      },
+      "value": 1.2421896767534757
+    },
+    {
+      "id": "boost.ccm.M_RL",
+      "source": "random",
+      "inputs": {
+        "D": 0.68355,
+        "R": 803.571,
+        "R_L": 1.81077
+      },
+      "value": 3.0905129237858064
+    },
+    {
+      "id": "boost.ccm.M_RL",
+      "source": "random",
+      "inputs": {
+        "D": 0.469402,
+        "R": 5413.83,
+        "R_L": 6.98878
+      },
+      "value": 1.8760637096418125
+    },
+    {
+      "id": "boost.ccm.M_RL",
+      "source": "random",
+      "inputs": {
+        "D": 0.909711,
+        "R": 9690.74,
+        "R_L": 0.17175
+      },
+      "value": 11.051519712250194
+    },
+    {
+      "id": "boost.ccm.eta_RL",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "R": 20.0,
+        "R_L": 0.2
+      },
+      "value": 0.9615384615384616
+    },
+    {
+      "id": "boost.ccm.eta_RL",
+      "source": "random",
+      "inputs": {
+        "D": 0.743215,
+        "R": 44.4922,
+        "R_L": 0.0359132
+      },
+      "value": 0.9879066442779454
+    },
+    {
+      "id": "boost.ccm.eta_RL",
+      "source": "random",
+      "inputs": {
+        "D": 0.748958,
+        "R": 148.794,
+        "R_L": 0.0704383
+      },
+      "value": 0.992544433767086
+    },
+    {
+      "id": "boost.ccm.eta_RL",
+      "source": "random",
+      "inputs": {
+        "D": 0.417223,
+        "R": 0.331098,
+        "R_L": 0.646913
+      },
+      "value": 0.14808519788240523
+    },
+    {
+      "id": "boost.ccm.eta_RL",
+      "source": "random",
+      "inputs": {
+        "D": 0.112926,
+        "R": 0.957375,
+        "R_L": 1.10651
+      },
+      "value": 0.4050601391402243
+    },
+    {
+      "id": "boost.ccm.eta_RL",
+      "source": "random",
+      "inputs": {
+        "D": 0.2273,
+        "R": 2.53496,
+        "R_L": 0.00130463
+      },
+      "value": 0.9991387678454705
+    },
+    {
+      "id": "boost.ccm.eta_RL",
+      "source": "random",
+      "inputs": {
+        "D": 0.584138,
+        "R": 3.53164,
+        "R_L": 0.00110087
+      },
+      "value": 0.9982008016327417
+    },
+    {
+      "id": "buck.ss.Gd0",
+      "source": "yaml",
+      "inputs": {
+        "V_g": 24.0
+      },
+      "value": 24.0
+    },
+    {
+      "id": "buck.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "V_g": 21.9664
+      },
+      "value": 21.9664
+    },
+    {
+      "id": "buck.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "V_g": 3.85162
+      },
+      "value": 3.85162
+    },
+    {
+      "id": "buck.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "V_g": 146.423
+      },
+      "value": 146.423
+    },
+    {
+      "id": "buck.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "V_g": 20.4574
+      },
+      "value": 20.4574
+    },
+    {
+      "id": "buck.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "V_g": 392.666
+      },
+      "value": 392.666
+    },
+    {
+      "id": "buck.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "V_g": 50.3352
+      },
+      "value": 50.3352
+    },
+    {
+      "id": "buck.ss.w0",
+      "source": "yaml",
+      "inputs": {
+        "C": 1e-05,
+        "L": 0.0001
+      },
+      "value": 31622.776601683792
+    },
+    {
+      "id": "buck.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 0.00120191,
+        "L": 3.10112e-05
+      },
+      "value": 5179.7015856349535
+    },
+    {
+      "id": "buck.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 5.54581e-07,
+        "L": 0.000179767
+      },
+      "value": 100152.66758708112
+    },
+    {
+      "id": "buck.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 0.00878337,
+        "L": 0.000427371
+      },
+      "value": 516.139250200608
+    },
+    {
+      "id": "buck.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 1.04164e-06,
+        "L": 1.73873e-06
+      },
+      "value": 743062.0849480638
+    },
+    {
+      "id": "buck.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 0.000237627,
+        "L": 3.71671e-06
+      },
+      "value": 33649.04704589637
+    },
+    {
+      "id": "buck.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 0.00016201,
+        "L": 5.70464e-05
+      },
+      "value": 10401.954927008277
+    },
+    {
+      "id": "buck.ss.Q",
+      "source": "yaml",
+      "inputs": {
+        "C": 1e-05,
+        "L": 0.0001,
+        "R": 10.0
+      },
+      "value": 3.1622776601683795
+    },
+    {
+      "id": "buck.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 0.00679226,
+        "L": 0.00048793,
+        "R": 109.72
+      },
+      "value": 409.36828098464895
+    },
+    {
+      "id": "buck.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 5.31272e-07,
+        "L": 2.04847e-06,
+        "R": 13.7059
+      },
+      "value": 6.9799324328951755
+    },
+    {
+      "id": "buck.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 1.08372e-07,
+        "L": 8.68095e-06,
+        "R": 12.2756
+      },
+      "value": 1.3715689513183926
+    },
+    {
+      "id": "buck.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 1.83984e-05,
+        "L": 2.19178e-06,
+        "R": 87.1834
+      },
+      "value": 252.59534930231433
+    },
+    {
+      "id": "buck.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 3.05461e-05,
+        "L": 2.08965e-06,
+        "R": 114.976
+      },
+      "value": 439.5905062501328
+    },
+    {
+      "id": "buck.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 0.00231955,
+        "L": 1.02053e-06,
+        "R": 0.120577
+      },
+      "value": 5.74848570280734
+    },
+    {
+      "id": "boost.ss.Gd0",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "V_g": 12.0
+      },
+      "value": 48.0
+    },
+    {
+      "id": "boost.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "D": 0.29066,
+        "V_g": 1.00299
+      },
+      "value": 1.993369008377527
+    },
+    {
+      "id": "boost.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "D": 0.428568,
+        "V_g": 3.5289
+      },
+      "value": 10.807126564092174
+    },
+    {
+      "id": "boost.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "D": 0.696485,
+        "V_g": 14.393
+      },
+      "value": 156.23955992447247
+    },
+    {
+      "id": "boost.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "D": 0.182402,
+        "V_g": 12.2177
+      },
+      "value": 18.27720639704434
+    },
+    {
+      "id": "boost.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "D": 0.436865,
+        "V_g": 13.5775
+      },
+      "value": 42.814883882019494
+    },
+    {
+      "id": "boost.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "D": 0.726616,
+        "V_g": 22.3034
+      },
+      "value": 298.4179111963855
+    },
+    {
+      "id": "boost.ss.w0",
+      "source": "yaml",
+      "inputs": {
+        "C": 1e-05,
+        "D": 0.5,
+        "L": 0.0001
+      },
+      "value": 15811.388300841896
+    },
+    {
+      "id": "boost.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 2.91596e-07,
+        "D": 0.663594,
+        "L": 0.00482771
+      },
+      "value": 8966.074949177253
+    },
+    {
+      "id": "boost.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 0.000354194,
+        "D": 0.457697,
+        "L": 0.00121859
+      },
+      "value": 825.4534784540572
+    },
+    {
+      "id": "boost.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 1.89146e-05,
+        "D": 0.482076,
+        "L": 9.1155e-06
+      },
+      "value": 39443.66010999038
+    },
+    {
+      "id": "boost.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 0.00230456,
+        "D": 0.714131,
+        "L": 6.78574e-05
+      },
+      "value": 722.8937084569595
+    },
+    {
+      "id": "boost.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 4.32752e-05,
+        "D": 0.80587,
+        "L": 6.42746e-05
+      },
+      "value": 3680.8949349925924
+    },
+    {
+      "id": "boost.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 3.8085e-05,
+        "D": 0.56899,
+        "L": 0.00183484
+      },
+      "value": 1630.4641977400818
+    },
+    {
+      "id": "boost.ss.Q",
+      "source": "yaml",
+      "inputs": {
+        "C": 1e-05,
+        "D": 0.5,
+        "L": 0.0001,
+        "R": 10.0
+      },
+      "value": 1.5811388300841898
+    },
+    {
+      "id": "boost.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 1.89488e-07,
+        "D": 0.198731,
+        "L": 4.24208e-06,
+        "R": 238.835
+      },
+      "value": 40.44620141209193
+    },
+    {
+      "id": "boost.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 5.58014e-06,
+        "D": 0.840326,
+        "L": 2.54294e-06,
+        "R": 0.215055
+      },
+      "value": 0.05086724775858732
+    },
+    {
+      "id": "boost.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 0.00175204,
+        "D": 0.0951715,
+        "L": 0.000499728,
+        "R": 0.281473
+      },
+      "value": 0.4768789800814622
+    },
+    {
+      "id": "boost.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 5.7093e-06,
+        "D": 0.818252,
+        "L": 7.58269e-05,
+        "R": 5104.29
+      },
+      "value": 254.55683504263038
+    },
+    {
+      "id": "boost.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 0.00252477,
+        "D": 0.529339,
+        "L": 0.00197537,
+        "R": 0.244996
+      },
+      "value": 0.1303628632620269
+    },
+    {
+      "id": "boost.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 0.0026184,
+        "D": 0.254786,
+        "L": 3.28729e-05,
+        "R": 0.10848
+      },
+      "value": 0.7214889243226402
+    },
+    {
+      "id": "boost.ss.wz",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "L": 0.0001,
+        "R": 10.0
+      },
+      "value": 25000.0
+    },
+    {
+      "id": "boost.ss.wz",
+      "source": "random",
+      "inputs": {
+        "D": 0.369912,
+        "L": 5.95072e-05,
+        "R": 0.20722
+      },
+      "value": 1382.498187753947
+    },
+    {
+      "id": "boost.ss.wz",
+      "source": "random",
+      "inputs": {
+        "D": 0.233095,
+        "L": 5.81864e-06,
+        "R": 634.588
+      },
+      "value": 64143625.855855785
+    },
+    {
+      "id": "boost.ss.wz",
+      "source": "random",
+      "inputs": {
+        "D": 0.564624,
+        "L": 0.000176755,
+        "R": 139.907
+      },
+      "value": 150036.42461221482
+    },
+    {
+      "id": "boost.ss.wz",
+      "source": "random",
+      "inputs": {
+        "D": 0.610388,
+        "L": 0.000200068,
+        "R": 136.657
+      },
+      "value": 103685.70885104768
+    },
+    {
+      "id": "boost.ss.wz",
+      "source": "random",
+      "inputs": {
+        "D": 0.197123,
+        "L": 0.000514333,
+        "R": 161.928
+      },
+      "value": 202943.71014215445
+    },
+    {
+      "id": "boost.ss.wz",
+      "source": "random",
+      "inputs": {
+        "D": 0.416443,
+        "L": 3.60674e-06,
+        "R": 19.8286
+      },
+      "value": 1872163.5325575233
+    },
+    {
+      "id": "buckboost.ss.Gd0",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "V_g": 12.0
+      },
+      "value": 48.0
+    },
+    {
+      "id": "buckboost.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "D": 0.33591,
+        "V_g": 318.884
+      },
+      "value": 723.0675105110885
+    },
+    {
+      "id": "buckboost.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "D": 0.593291,
+        "V_g": 41.5819
+      },
+      "value": 251.3834971965361
+    },
+    {
+      "id": "buckboost.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "D": 0.80107,
+        "V_g": 2.11766
+      },
+      "value": 53.51255265032016
+    },
+    {
+      "id": "buckboost.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "D": 0.125266,
+        "V_g": 87.7281
+      },
+      "value": 114.65333945090966
+    },
+    {
+      "id": "buckboost.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "D": 0.653975,
+        "V_g": 1.80756
+      },
+      "value": 15.09655200821037
+    },
+    {
+      "id": "buckboost.ss.Gd0",
+      "source": "random",
+      "inputs": {
+        "D": 0.720011,
+        "V_g": 1.52308
+      },
+      "value": 19.42856731663027
+    },
+    {
+      "id": "buckboost.ss.w0",
+      "source": "yaml",
+      "inputs": {
+        "C": 1e-05,
+        "D": 0.5,
+        "L": 0.0001
+      },
+      "value": 15811.388300841896
+    },
+    {
+      "id": "buckboost.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 6.67951e-07,
+        "D": 0.609475,
+        "L": 0.000116652
+      },
+      "value": 44241.561230790045
+    },
+    {
+      "id": "buckboost.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 0.000140052,
+        "D": 0.342581,
+        "L": 7.79234e-06
+      },
+      "value": 19900.484367206675
+    },
+    {
+      "id": "buckboost.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 0.00217565,
+        "D": 0.630153,
+        "L": 2.87207e-05
+      },
+      "value": 1479.5514585706958
+    },
+    {
+      "id": "buckboost.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 6.24256e-06,
+        "D": 0.255881,
+        "L": 7.58403e-06
+      },
+      "value": 108146.1367596058
+    },
+    {
+      "id": "buckboost.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 9.16905e-07,
+        "D": 0.375927,
+        "L": 0.000181621
+      },
+      "value": 48360.43423740159
+    },
+    {
+      "id": "buckboost.ss.w0",
+      "source": "random",
+      "inputs": {
+        "C": 0.000262083,
+        "D": 0.908106,
+        "L": 9.35301e-06
+      },
+      "value": 1856.0600842448796
+    },
+    {
+      "id": "buckboost.ss.Q",
+      "source": "yaml",
+      "inputs": {
+        "C": 1e-05,
+        "D": 0.5,
+        "L": 0.0001,
+        "R": 10.0
+      },
+      "value": 1.5811388300841898
+    },
+    {
+      "id": "buckboost.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 1.40561e-06,
+        "D": 0.284356,
+        "L": 4.5172e-06,
+        "R": 2329.56
+      },
+      "value": 929.969476694835
+    },
+    {
+      "id": "buckboost.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 0.000352627,
+        "D": 0.659606,
+        "L": 8.65087e-05,
+        "R": 0.755683
+      },
+      "value": 0.5193372058195422
+    },
+    {
+      "id": "buckboost.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 0.00113076,
+        "D": 0.250545,
+        "L": 0.000359202,
+        "R": 2846.05
+      },
+      "value": 3784.460114711929
+    },
+    {
+      "id": "buckboost.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 0.000153958,
+        "D": 0.0797207,
+        "L": 0.000645582,
+        "R": 26.2117
+      },
+      "value": 11.779863716812773
+    },
+    {
+      "id": "buckboost.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 0.00170825,
+        "D": 0.376643,
+        "L": 5.28028e-06,
+        "R": 4115.11
+      },
+      "value": 46138.71849827452
+    },
+    {
+      "id": "buckboost.ss.Q",
+      "source": "random",
+      "inputs": {
+        "C": 0.000813993,
+        "D": 0.185248,
+        "L": 0.000755191,
+        "R": 1.29407
+      },
+      "value": 1.0946244303466226
+    },
+    {
+      "id": "buckboost.ss.wz",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5,
+        "L": 0.0001,
+        "R": 10.0
+      },
+      "value": 50000.0
+    },
+    {
+      "id": "buckboost.ss.wz",
+      "source": "random",
+      "inputs": {
+        "D": 0.727361,
+        "L": 6.09917e-05,
+        "R": 7.63675
+      },
+      "value": 12795.692191616816
+    },
+    {
+      "id": "buckboost.ss.wz",
+      "source": "random",
+      "inputs": {
+        "D": 0.538254,
+        "L": 7.72839e-06,
+        "R": 342.326
+      },
+      "value": 17545666.63327749
+    },
+    {
+      "id": "buckboost.ss.wz",
+      "source": "random",
+      "inputs": {
+        "D": 0.372048,
+        "L": 0.00736066,
+        "R": 2007.43
+      },
+      "value": 289053.0620597083
+    },
+    {
+      "id": "buckboost.ss.wz",
+      "source": "random",
+      "inputs": {
+        "D": 0.731177,
+        "L": 0.00406673,
+        "R": 6.47139
+      },
+      "value": 157.2760376096568
+    },
+    {
+      "id": "buckboost.ss.wz",
+      "source": "random",
+      "inputs": {
+        "D": 0.785126,
+        "L": 0.00118995,
+        "R": 0.110966
+      },
+      "value": 5.48390086750283
+    },
+    {
+      "id": "buckboost.ss.wz",
+      "source": "random",
+      "inputs": {
+        "D": 0.365245,
+        "L": 0.00034012,
+        "R": 0.17308
+      },
+      "value": 561.3615953612062
+    },
+    {
+      "id": "pwm.d",
+      "source": "yaml",
+      "inputs": {
+        "V_M": 1.0,
+        "V_ctrl": 0.5
+      },
+      "value": 0.5
+    },
+    {
+      "id": "pwm.d",
+      "source": "random",
+      "inputs": {
+        "V_M": 4.95306,
+        "V_ctrl": 0.0388149
+      },
+      "value": 0.007836549526959093
+    },
+    {
+      "id": "pwm.d",
+      "source": "random",
+      "inputs": {
+        "V_M": 1.51191,
+        "V_ctrl": 0.707846
+      },
+      "value": 0.4681799842583222
+    },
+    {
+      "id": "pwm.d",
+      "source": "random",
+      "inputs": {
+        "V_M": 4.31774,
+        "V_ctrl": 1.28722
+      },
+      "value": 0.2981235553785082
+    },
+    {
+      "id": "pwm.d",
+      "source": "random",
+      "inputs": {
+        "V_M": 3.32605,
+        "V_ctrl": 0.0291978
+      },
+      "value": 0.008778521068534748
+    },
+    {
+      "id": "pwm.d",
+      "source": "random",
+      "inputs": {
+        "V_M": 4.73748,
+        "V_ctrl": 0.47573
+      },
+      "value": 0.10041836588228341
+    },
+    {
+      "id": "pwm.d",
+      "source": "random",
+      "inputs": {
+        "V_M": 1.80909,
+        "V_ctrl": 0.017875
+      },
+      "value": 0.009880658231486547
+    },
+    {
+      "id": "loop.T",
+      "source": "yaml",
+      "inputs": {
+        "G_c": 10.0,
+        "G_vd": 24.0,
+        "H": 0.2,
+        "V_M": 2.0
+      },
+      "value": 24.0
+    },
+    {
+      "id": "loop.T",
+      "source": "random",
+      "inputs": {
+        "G_c": 3.68393,
+        "G_vd": 0.6358,
+        "H": 0.301727,
+        "V_M": 2.51417
+      },
+      "value": 0.28109390428353614
+    },
+    {
+      "id": "loop.T",
+      "source": "random",
+      "inputs": {
+        "G_c": 45.5553,
+        "G_vd": 167.936,
+        "H": 0.0350608,
+        "V_M": 1.02699
+      },
+      "value": 261.1790406133815
+    },
+    {
+      "id": "loop.T",
+      "source": "random",
+      "inputs": {
+        "G_c": 0.0778109,
+        "G_vd": 147.554,
+        "H": 0.888283,
+        "V_M": 1.2174
+      },
+      "value": 8.377404370688536
+    },
+    {
+      "id": "loop.T",
+      "source": "random",
+      "inputs": {
+        "G_c": 0.144864,
+        "G_vd": 1.07549,
+        "H": 0.146818,
+        "V_M": 4.8339
+      },
+      "value": 0.004732040917964476
+    },
+    {
+      "id": "loop.T",
+      "source": "random",
+      "inputs": {
+        "G_c": 3.12655,
+        "G_vd": 337.375,
+        "H": 0.538726,
+        "V_M": 3.22177
+      },
+      "value": 176.3809505153495
+    },
+    {
+      "id": "loop.T",
+      "source": "random",
+      "inputs": {
+        "G_c": 251.855,
+        "G_vd": 2.37692,
+        "H": 0.373596,
+        "V_M": 2.51225
+      },
+      "value": 89.02346723336197
+    },
+    {
+      "id": "loop.suppression",
+      "source": "yaml",
+      "inputs": {
+        "T_loop": 9.0
+      },
+      "value": 0.1
+    },
+    {
+      "id": "loop.suppression",
+      "source": "random",
+      "inputs": {
+        "T_loop": 0.0292262
+      },
+      "value": 0.9716037154903363
+    },
+    {
+      "id": "loop.suppression",
+      "source": "random",
+      "inputs": {
+        "T_loop": 59.8256
+      },
+      "value": 0.016440446127946127
+    },
+    {
+      "id": "loop.suppression",
+      "source": "random",
+      "inputs": {
+        "T_loop": 123.618
+      },
+      "value": 0.008024522942111091
+    },
+    {
+      "id": "loop.suppression",
+      "source": "random",
+      "inputs": {
+        "T_loop": 15.7649
+      },
+      "value": 0.059648432140961175
+    },
+    {
+      "id": "loop.suppression",
+      "source": "random",
+      "inputs": {
+        "T_loop": 924.28
+      },
+      "value": 0.0010807539339443195
+    },
+    {
+      "id": "loop.suppression",
+      "source": "random",
+      "inputs": {
+        "T_loop": 1076.79
+      },
+      "value": 0.0009278245298249196
     }
   ]
 }
