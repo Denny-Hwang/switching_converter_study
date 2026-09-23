@@ -1,0 +1,682 @@
+<svg aria-hidden="true" focusable="false" stroke-linejoin="round" stroke-linecap="butt" xmlns:xlink="http://www.w3.org/1999/xlink" width="336.88pt" height="266.665pt" viewBox="0 0 336.88 266.665" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <g id="fig-balance-figure_1">
+  <g id="fig-balance-patch_1">
+   <path d="M 0 266.665 
+L 336.88 266.665 
+L 336.88 0 
+L 0 0 
+L 0 266.665 
+z
+" style="fill: none"/>
+  </g>
+  <g id="fig-balance-axes_1">
+   <g id="fig-balance-patch_2">
+    <path d="M 43.12 107.041 
+L 333.28 107.041 
+L 333.28 17.393 
+L 43.12 17.393 
+L 43.12 107.041 
+z
+" style="fill: none"/>
+   </g>
+   <g id="fig-balance-FillBetweenPolyCollection_1">
+    <defs>
+     <path id="fig-balance-m3b51bf91e6" d="M 43.12 -236.465 
+L 43.12 -198.045 
+L 90.4931 -198.045 
+L 90.4931 -236.465 
+L 90.4931 -236.465 
+L 43.12 -236.465 
+z
+"/>
+    </defs>
+    <g clip-path="url(#fig-balance-p00ac284109)">
+     <use xlink:href="#fig-balance-m3b51bf91e6" x="0" y="266.665" style="fill: #3b82f6; fill-opacity: 0.18"/>
+    </g>
+   </g>
+   <g id="fig-balance-FillBetweenPolyCollection_2">
+    <defs>
+     <path id="fig-balance-mf8ae14e295" d="M 90.4931 -172.431 
+L 90.4931 -198.045 
+L 161.553 -198.045 
+L 161.553 -172.431 
+L 161.553 -172.431 
+L 90.4931 -172.431 
+z
+"/>
+    </defs>
+    <g clip-path="url(#fig-balance-p00ac284109)">
+     <use xlink:href="#fig-balance-mf8ae14e295" x="0" y="266.665" style="fill: #f97316; fill-opacity: 0.22"/>
+    </g>
+   </g>
+   <g id="fig-balance-FillBetweenPolyCollection_3">
+    <defs>
+     <path id="fig-balance-mbefb480b38" d="M 161.553 -236.465 
+L 161.553 -198.045 
+L 208.926 -198.045 
+L 208.926 -236.465 
+L 208.926 -236.465 
+L 161.553 -236.465 
+z
+"/>
+    </defs>
+    <g clip-path="url(#fig-balance-p00ac284109)">
+     <use xlink:href="#fig-balance-mbefb480b38" x="0" y="266.665" style="fill: #3b82f6; fill-opacity: 0.18"/>
+    </g>
+   </g>
+   <g id="fig-balance-FillBetweenPolyCollection_4">
+    <defs>
+     <path id="fig-balance-mdf376a08f5" d="M 208.926 -172.431 
+L 208.926 -198.045 
+L 279.985 -198.045 
+L 279.985 -172.431 
+L 279.985 -172.431 
+L 208.926 -172.431 
+z
+"/>
+    </defs>
+    <g clip-path="url(#fig-balance-p00ac284109)">
+     <use xlink:href="#fig-balance-mdf376a08f5" x="0" y="266.665" style="fill: #f97316; fill-opacity: 0.22"/>
+    </g>
+   </g>
+   <g id="fig-balance-matplotlib.axis_1">
+    <g id="fig-balance-xtick_1">
+     <g id="fig-balance-line2d_1">
+      <defs>
+       <path id="fig-balance-m8900079513" d="M 0 0 
+L 0 3.5 
+" style="stroke: currentColor; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#fig-balance-m8900079513" x="90.4931" y="68.6202" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-balance-xtick_2">
+     <g id="fig-balance-line2d_2">
+      <g>
+       <use xlink:href="#fig-balance-m8900079513" x="161.553" y="68.6202" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-balance-xtick_3">
+     <g id="fig-balance-line2d_3">
+      <g>
+       <use xlink:href="#fig-balance-m8900079513" x="279.985" y="68.6202" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+   </g>
+   <g id="fig-balance-matplotlib.axis_2">
+    <g id="fig-balance-ytick_1">
+     <g id="fig-balance-line2d_4">
+      <defs>
+       <path id="fig-balance-mfa34f57b25" d="M 0 0 
+L -3.5 0 
+" style="stroke: currentColor; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#fig-balance-mfa34f57b25" x="43.12" y="30.1998" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-balance-text_1">
+      <g style="fill: currentColor" transform="translate(3.6 34.6998) scale(0.12 -0.12)">
+       <defs>
+        <path id="fig-balance-STIXGeneral-Italic-39" d="M 4403 4179 
+L 4403 4077 
+Q 4198 4070 4045 3821 
+L 1658 -115 
+L 1536 -115 
+L 1011 3104 
+Q 902 3776 828 3910 
+Q 755 4045 486 4077 
+L 486 4179 
+L 2022 4179 
+L 2022 4077 
+Q 1722 4045 1629 3981 
+Q 1536 3917 1536 3750 
+Q 1536 3686 1542 3654 
+L 1958 819 
+L 3302 3123 
+Q 3616 3661 3616 3859 
+Q 3616 4032 3219 4077 
+L 3219 4179 
+L 4403 4179 
+z
+" transform="scale(0.015625)"/>
+        <path id="fig-balance-STIXGeneral-Italic-4a" d="M 3014 2342 
+L 2701 2342 
+Q 2758 2227 2758 2016 
+Q 2758 1613 2390 1289 
+Q 2022 966 1574 966 
+Q 1459 966 1376 986 
+Q 1357 992 1331 992 
+Q 1248 992 1174 909 
+Q 1101 826 1101 730 
+Q 1101 576 1555 461 
+Q 2464 243 2464 -352 
+Q 2464 -781 2105 -1049 
+Q 1747 -1318 1120 -1318 
+Q 621 -1318 336 -1142 
+Q 51 -966 51 -627 
+Q 51 -378 195 -202 
+Q 339 -26 800 250 
+Q 627 352 627 499 
+Q 627 806 1120 1037 
+Q 614 1216 614 1728 
+Q 614 2202 1004 2512 
+Q 1395 2822 1901 2822 
+Q 2272 2822 2528 2643 
+Q 2598 2592 2630 2592 
+L 3014 2592 
+L 3014 2342 
+z
+M 2253 2227 
+Q 2253 2477 2166 2579 
+Q 2080 2682 1894 2682 
+Q 1587 2682 1350 2362 
+Q 1114 2042 1114 1581 
+Q 1114 1357 1216 1229 
+Q 1318 1101 1498 1101 
+Q 1818 1101 2042 1478 
+Q 2253 1837 2253 2227 
+z
+M 2080 -576 
+Q 2080 -352 1878 -201 
+Q 1677 -51 1165 109 
+Q 1011 154 947 179 
+Q 902 179 752 57 
+Q 602 -64 531 -154 
+Q 403 -314 403 -525 
+Q 403 -1178 1216 -1178 
+Q 1594 -1178 1837 -1002 
+Q 2080 -826 2080 -576 
+z
+" transform="scale(0.015625)"/>
+        <path id="fig-balance-STIXGeneral-Regular-425" d="M 3974 1408 
+L 410 1408 
+L 410 1830 
+L 3974 1830 
+L 3974 1408 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#fig-balance-STIXGeneral-Italic-39" transform="translate(0 0.703125)"/>
+       <use xlink:href="#fig-balance-STIXGeneral-Italic-4a" transform="translate(61.0999 -14.2969) scale(0.7)"/>
+       <use xlink:href="#fig-balance-STIXGeneral-Regular-425" transform="translate(120.6 0.703125)"/>
+       <use xlink:href="#fig-balance-STIXGeneral-Italic-39" transform="translate(209.1 0.703125)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-balance-ytick_2">
+     <g id="fig-balance-line2d_5">
+      <g>
+       <use xlink:href="#fig-balance-mfa34f57b25" x="43.12" y="94.2338" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-balance-text_2">
+      <g style="fill: currentColor" transform="translate(20.52 98.7338) scale(0.12 -0.12)">
+       <use xlink:href="#fig-balance-STIXGeneral-Regular-425" transform="translate(0 0.703125)"/>
+       <use xlink:href="#fig-balance-STIXGeneral-Italic-39" transform="translate(68.4999 0.703125)"/>
+      </g>
+     </g>
+    </g>
+   </g>
+   <g id="fig-balance-line2d_6">
+    <path d="M 43.12 68.6202 
+L 43.12 30.1998 
+L 90.4931 30.1998 
+L 90.4931 94.2338 
+L 161.553 94.2338 
+L 161.553 30.1998 
+L 208.926 30.1998 
+L 208.926 94.2338 
+L 279.985 94.2338 
+" clip-path="url(#fig-balance-p00ac284109)" style="fill: none; stroke: #3b82f6; stroke-width: 2; stroke-linecap: square"/>
+   </g>
+   <g id="fig-balance-patch_3">
+    <path d="M 43.12 107.041 
+L 43.12 17.393 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-balance-patch_4">
+    <path d="M 43.12 68.6202 
+L 333.28 68.6202 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-balance-text_3">
+    <g style="fill: currentColor" transform="translate(32.14 12.6) scale(0.12 -0.12)">
+     <defs>
+      <path id="fig-balance-STIXGeneral-Italic-59" d="M 1325 448 
+L 1523 653 
+Q 1869 1005 2134 1456 
+Q 2400 1907 2400 2131 
+Q 2400 2208 2285 2317 
+Q 2125 2458 2125 2605 
+Q 2125 2701 2195 2761 
+Q 2266 2822 2368 2822 
+Q 2522 2822 2624 2704 
+Q 2726 2586 2726 2445 
+Q 2726 2074 2323 1453 
+Q 1971 909 1562 474 
+Q 1504 416 1421 326 
+Q 1338 237 1299 192 
+Q 1261 147 1200 86 
+Q 1139 26 1110 -3 
+Q 1082 -32 1043 -64 
+Q 1005 -96 979 -105 
+Q 954 -115 928 -115 
+Q 870 -115 870 58 
+L 870 211 
+Q 870 1094 717 1990 
+Q 653 2355 579 2470 
+Q 506 2586 326 2586 
+Q 198 2586 128 2579 
+L 128 2662 
+Q 480 2720 845 2797 
+Q 915 2822 973 2822 
+Q 1011 2822 1033 2739 
+Q 1056 2656 1165 2093 
+Q 1280 1510 1325 448 
+z
+" transform="scale(0.015625)"/>
+      <path id="fig-balance-STIXGeneral-Italic-2f" d="M 3578 1152 
+L 3206 0 
+L -51 0 
+L -51 102 
+Q 218 128 301 211 
+Q 384 294 474 602 
+L 1254 3405 
+Q 1325 3642 1325 3802 
+Q 1325 3942 1225 4000 
+Q 1126 4058 832 4077 
+L 832 4179 
+L 2579 4179 
+L 2579 4077 
+Q 2285 4058 2147 3955 
+Q 2010 3853 1933 3584 
+L 1165 838 
+Q 1101 595 1101 493 
+Q 1101 346 1241 288 
+Q 1382 230 1773 230 
+Q 2266 230 2480 275 
+Q 2694 320 2925 474 
+Q 3187 646 3450 1190 
+L 3578 1152 
+z
+" transform="scale(0.015625)"/>
+      <path id="fig-balance-STIXGeneral-Regular-b" d="M 1946 -1030 
+L 1869 -1133 
+Q 1126 -710 716 32 
+Q 307 774 307 1613 
+Q 307 3386 1888 4326 
+L 1946 4224 
+Q 1293 3667 1075 3126 
+Q 858 2586 858 1632 
+Q 858 685 1082 96 
+Q 1306 -493 1946 -1030 
+z
+" transform="scale(0.015625)"/>
+      <path id="fig-balance-STIXGeneral-Italic-57" d="M 1894 2739 
+L 1862 2534 
+L 1325 2534 
+L 768 435 
+Q 755 384 755 346 
+Q 755 243 851 243 
+Q 928 243 1030 342 
+Q 1133 442 1370 749 
+L 1453 704 
+Q 1158 256 969 93 
+Q 781 -70 538 -70 
+Q 243 -70 243 166 
+Q 243 230 346 640 
+L 845 2534 
+L 365 2534 
+L 358 2573 
+Q 358 2688 570 2733 
+Q 730 2771 992 2979 
+Q 1254 3187 1421 3437 
+Q 1459 3494 1510 3494 
+Q 1568 3494 1568 3443 
+Q 1568 3411 1562 3398 
+L 1382 2739 
+L 1894 2739 
+z
+" transform="scale(0.015625)"/>
+      <path id="fig-balance-STIXGeneral-Regular-c" d="M 186 4224 
+L 262 4326 
+Q 992 3891 1408 3148 
+Q 1824 2406 1824 1581 
+Q 1824 -166 243 -1133 
+L 186 -1030 
+Q 845 -486 1059 54 
+Q 1274 595 1274 1562 
+Q 1274 2534 1059 3120 
+Q 845 3706 186 4224 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#fig-balance-STIXGeneral-Italic-59" transform="translate(0 0.40625)"/>
+     <use xlink:href="#fig-balance-STIXGeneral-Italic-2f" transform="translate(44.4 -14.5938) scale(0.7)"/>
+     <use xlink:href="#fig-balance-STIXGeneral-Regular-b" transform="translate(87.8199 0.40625)"/>
+     <use xlink:href="#fig-balance-STIXGeneral-Italic-57" transform="translate(121.12 0.40625)"/>
+     <use xlink:href="#fig-balance-STIXGeneral-Regular-c" transform="translate(148.92 0.40625)"/>
+    </g>
+   </g>
+  </g>
+  <g id="fig-balance-axes_2">
+   <g id="fig-balance-patch_5">
+    <path d="M 43.12 228.065 
+L 333.28 228.065 
+L 333.28 138.417 
+L 43.12 138.417 
+L 43.12 228.065 
+z
+" style="fill: none"/>
+   </g>
+   <g id="fig-balance-matplotlib.axis_3">
+    <g id="fig-balance-xtick_4">
+     <g id="fig-balance-line2d_7">
+      <g>
+       <use xlink:href="#fig-balance-m8900079513" x="90.4931" y="228.065" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-balance-text_4">
+      <g style="fill: currentColor" transform="translate(80.8931 244.065) scale(0.12 -0.12)">
+       <defs>
+        <path id="fig-balance-STIXGeneral-Italic-27" d="M 838 4179 
+L 2611 4179 
+Q 3469 4179 3974 3731 
+Q 4480 3283 4480 2458 
+Q 4480 1325 3456 531 
+Q 2778 0 1594 0 
+L -51 0 
+L -51 102 
+Q 224 154 310 230 
+Q 397 307 474 589 
+L 1254 3437 
+Q 1325 3686 1325 3814 
+Q 1325 3949 1222 4009 
+Q 1120 4070 838 4077 
+L 838 4179 
+z
+M 1984 3738 
+L 1229 1037 
+Q 1088 525 1088 429 
+Q 1088 192 1523 192 
+Q 2470 192 3066 768 
+Q 3398 1088 3584 1597 
+Q 3770 2106 3770 2611 
+Q 3770 3386 3270 3763 
+Q 2970 3987 2432 3987 
+Q 2227 3987 2128 3939 
+Q 2029 3891 1984 3738 
+z
+" transform="scale(0.015625)"/>
+        <path id="fig-balance-STIXGeneral-Italic-37" d="M 4051 4179 
+L 3770 3130 
+L 3661 3142 
+Q 3680 3302 3680 3437 
+Q 3680 3955 3034 3955 
+L 2662 3955 
+L 1786 819 
+Q 1696 506 1696 397 
+Q 1696 250 1766 195 
+Q 1837 141 2035 122 
+L 2259 102 
+L 2259 0 
+L 416 0 
+L 416 102 
+Q 749 134 889 230 
+Q 1030 326 1101 582 
+L 2016 3955 
+Q 1254 3955 988 3817 
+Q 723 3680 493 3162 
+L 378 3187 
+L 646 4179 
+L 4051 4179 
+z
+" transform="scale(0.015625)"/>
+        <path id="fig-balance-STIXGeneral-Italic-56" d="M 2342 2829 
+L 2214 1933 
+L 2112 1933 
+Q 2022 2675 1542 2675 
+Q 1370 2675 1267 2579 
+Q 1165 2483 1165 2310 
+Q 1165 2067 1510 1658 
+Q 1946 1152 1946 787 
+Q 1946 397 1686 163 
+Q 1427 -70 1024 -70 
+Q 838 -70 672 -6 
+Q 538 51 390 51 
+Q 262 51 205 -83 
+L 102 -83 
+L 230 934 
+L 333 934 
+Q 461 64 973 64 
+Q 1203 64 1331 192 
+Q 1459 320 1459 557 
+Q 1459 845 1101 1293 
+Q 698 1798 698 2131 
+Q 698 2451 909 2636 
+Q 1120 2822 1472 2822 
+Q 1600 2822 1830 2758 
+Q 1971 2714 2061 2714 
+Q 2189 2714 2253 2829 
+L 2342 2829 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#fig-balance-STIXGeneral-Italic-27" transform="translate(0 0.703125)"/>
+       <use xlink:href="#fig-balance-STIXGeneral-Italic-37" transform="translate(72.1999 0.703125)"/>
+       <use xlink:href="#fig-balance-STIXGeneral-Italic-56" transform="translate(127.8 -14.2969) scale(0.7)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-balance-xtick_5">
+     <g id="fig-balance-line2d_8">
+      <g>
+       <use xlink:href="#fig-balance-m8900079513" x="161.553" y="228.065" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-balance-text_5">
+      <g style="fill: currentColor" transform="translate(156.273 244.065) scale(0.12 -0.12)">
+       <use xlink:href="#fig-balance-STIXGeneral-Italic-37" transform="translate(0 0.703125)"/>
+       <use xlink:href="#fig-balance-STIXGeneral-Italic-56" transform="translate(55.5999 -14.2969) scale(0.7)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-balance-xtick_6">
+     <g id="fig-balance-line2d_9">
+      <g>
+       <use xlink:href="#fig-balance-m8900079513" x="279.985" y="228.065" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-balance-text_6">
+      <g style="fill: currentColor" transform="translate(271.705 244.065) scale(0.12 -0.12)">
+       <defs>
+        <path id="fig-balance-STIXGeneral-Regular-15" d="M 3034 877 
+L 2688 0 
+L 186 0 
+L 186 77 
+L 1325 1286 
+Q 1773 1754 1965 2144 
+Q 2157 2534 2157 2950 
+Q 2157 3379 1920 3616 
+Q 1683 3853 1267 3853 
+Q 922 3853 720 3673 
+Q 518 3494 326 3021 
+L 192 3053 
+Q 301 3648 630 3987 
+Q 960 4326 1523 4326 
+Q 2054 4326 2380 4006 
+Q 2707 3686 2707 3200 
+Q 2707 2477 1888 1613 
+L 832 486 
+L 2330 486 
+Q 2541 486 2665 569 
+Q 2790 653 2944 915 
+L 3034 877 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#fig-balance-STIXGeneral-Regular-15" transform="translate(0 0.40625)"/>
+       <use xlink:href="#fig-balance-STIXGeneral-Italic-37" transform="translate(50 0.40625)"/>
+       <use xlink:href="#fig-balance-STIXGeneral-Italic-56" transform="translate(105.6 -14.5938) scale(0.7)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-balance-text_7">
+     <g style="fill: currentColor" transform="translate(329.92 260.065) scale(0.12 -0.12)">
+      <use xlink:href="#fig-balance-STIXGeneral-Italic-57" transform="translate(0 0.40625)"/>
+     </g>
+    </g>
+   </g>
+   <g id="fig-balance-matplotlib.axis_4">
+    <g id="fig-balance-ytick_3">
+     <g id="fig-balance-line2d_10">
+      <g>
+       <use xlink:href="#fig-balance-mfa34f57b25" x="43.12" y="178.759" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-balance-text_8">
+      <g style="fill: currentColor" transform="translate(32.04 183.259) scale(0.12 -0.12)">
+       <defs>
+        <path id="fig-balance-STIXGeneral-Italic-2c" d="M 2458 4179 
+L 2458 4077 
+Q 2189 4045 2102 3961 
+Q 2016 3878 1933 3584 
+L 1165 838 
+Q 1069 499 1069 352 
+Q 1069 224 1149 179 
+Q 1229 134 1510 102 
+L 1510 0 
+L -51 0 
+L -51 102 
+Q 218 154 317 237 
+Q 416 320 486 582 
+L 1254 3405 
+Q 1338 3699 1338 3802 
+Q 1338 3930 1235 3997 
+Q 1133 4064 877 4077 
+L 877 4179 
+L 2458 4179 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#fig-balance-STIXGeneral-Italic-2c" transform="translate(0 0.703125)"/>
+      </g>
+     </g>
+    </g>
+   </g>
+   <g id="fig-balance-line2d_11">
+    <path d="M 43.12 194.895 
+L 90.4931 162.622 
+L 161.553 194.895 
+L 208.926 162.622 
+L 279.985 194.895 
+" clip-path="url(#fig-balance-p4a827452bc)" style="fill: none; stroke: #22a06b; stroke-width: 2; stroke-linecap: square"/>
+   </g>
+   <g id="fig-balance-LineCollection_1">
+    <path d="M 43.12 178.759 
+L 296.566 178.759 
+" clip-path="url(#fig-balance-p4a827452bc)" style="fill: none; stroke-dasharray: 4,3; stroke-dashoffset: 0; stroke: currentColor"/>
+   </g>
+   <g id="fig-balance-LineCollection_2">
+    <path d="M 208.926 162.622 
+L 296.566 162.622 
+" clip-path="url(#fig-balance-p4a827452bc)" style="fill: none; stroke-dasharray: 0.8,1.6; stroke-dashoffset: 0; stroke: currentColor; stroke-width: 0.8"/>
+   </g>
+   <g id="fig-balance-patch_6">
+    <path d="M 43.12 228.065 
+L 43.12 138.417 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-balance-patch_7">
+    <path d="M 43.12 228.065 
+L 333.28 228.065 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-balance-patch_8">
+    <path d="M 291.829 177.641 
+Q 291.829 170.69 291.829 163.74 
+" style="fill: none; stroke: currentColor; stroke-linecap: round"/>
+    <path d="M 294.229 172.841 
+L 291.829 177.641 
+L 289.429 172.841 
+" style="fill: none; stroke: currentColor; stroke-linecap: round"/>
+    <path d="M 289.429 168.54 
+L 291.829 163.74 
+L 294.229 168.54 
+" style="fill: none; stroke: currentColor; stroke-linecap: round"/>
+   </g>
+   <g id="fig-balance-text_9">
+    <g style="fill: currentColor" transform="translate(298.935 173.69) scale(0.12 -0.12)">
+     <defs>
+      <path id="fig-balance-STIXGeneral-Regular-254" d="M 4320 0 
+L 307 0 
+L 2221 4314 
+L 2349 4314 
+L 4320 0 
+z
+M 3354 589 
+L 2118 3405 
+L 870 589 
+L 3354 589 
+z
+" transform="scale(0.015625)"/>
+      <path id="fig-balance-STIXGeneral-Italic-4c" d="M 1690 3834 
+Q 1690 3699 1597 3603 
+Q 1504 3507 1376 3507 
+Q 1235 3507 1152 3600 
+Q 1069 3693 1069 3846 
+Q 1069 3994 1155 4090 
+Q 1242 4186 1370 4186 
+Q 1498 4186 1594 4080 
+Q 1690 3974 1690 3834 
+z
+M 1421 730 
+L 1504 659 
+Q 1235 243 1049 86 
+Q 864 -70 627 -70 
+Q 314 -70 314 282 
+Q 314 467 454 992 
+L 762 2125 
+Q 819 2330 819 2406 
+Q 819 2502 745 2528 
+Q 672 2554 410 2560 
+L 410 2662 
+Q 704 2688 1434 2822 
+L 1459 2803 
+L 858 608 
+Q 794 390 794 326 
+Q 794 230 883 230 
+Q 1043 230 1421 730 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#fig-balance-STIXGeneral-Regular-254" transform="translate(0 0.59375)"/>
+     <use xlink:href="#fig-balance-STIXGeneral-Italic-4c" transform="translate(72.1999 0.59375)"/>
+     <use xlink:href="#fig-balance-STIXGeneral-Italic-2f" transform="translate(99.9999 -14.4062) scale(0.7)"/>
+    </g>
+   </g>
+   <g id="fig-balance-text_10">
+    <g style="fill: currentColor" transform="translate(33.16 133.624) scale(0.12 -0.12)">
+     <use xlink:href="#fig-balance-STIXGeneral-Italic-4c" transform="translate(0 0.40625)"/>
+     <use xlink:href="#fig-balance-STIXGeneral-Italic-2f" transform="translate(27.8 -14.5938) scale(0.7)"/>
+     <use xlink:href="#fig-balance-STIXGeneral-Regular-b" transform="translate(71.2199 0.40625)"/>
+     <use xlink:href="#fig-balance-STIXGeneral-Italic-57" transform="translate(104.52 0.40625)"/>
+     <use xlink:href="#fig-balance-STIXGeneral-Regular-c" transform="translate(132.32 0.40625)"/>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="fig-balance-p00ac284109">
+   <rect x="43.12" y="17.393" width="290.16" height="89.6477"/>
+  </clipPath>
+  <clipPath id="fig-balance-p4a827452bc">
+   <rect x="43.12" y="138.417" width="290.16" height="89.6477"/>
+  </clipPath>
+ </defs>
+</svg>
