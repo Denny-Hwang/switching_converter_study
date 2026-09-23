@@ -23,12 +23,33 @@ const FOCUSABLE = 'a[href], button, input, select, textarea, summary, [tabindex]
 
 /** Tool pages, with a keyboard action that must change the tool's state. */
 const PAGES = [
-  { path: 'design/explorer/', ready: `${TOOL} select`, action: explorerAction },
-  { path: 'simulate/simulator/', ready: `${TOOL} .pe-sim__table`, action: simulatorAction },
-  { path: 'design/converter-designer/', ready: `${TOOL} .pe-sim__table`, action: designerAction },
-  { path: 'design/loss-budget/', ready: `${TOOL} .pe-sim__table`, action: lossAction },
+  { path: 'design/explorer/', ready: [`${TOOL} select`, `${TOOL} .main-svg`], action: explorerAction },
+  { path: 'simulate/simulator/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: simulatorAction },
+  { path: 'design/converter-designer/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: designerAction },
+  { path: 'design/loss-budget/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: lossAction },
 ];
 const LOCALES = ['en', 'ko'];
+
+/**
+ * Wait until the tool is on screen and its set of focusable controls stops
+ * changing: a chart's mode bar adds buttons when the chart is drawn, which
+ * can be seconds after the first result.
+ */
+async function settle(page, ready) {
+  for (const sel of ready) await page.waitForSelector(sel, { timeout: 60000 });
+  const count = () => page.$eval(TOOL, (tool, selector) => tool.querySelectorAll(selector).length, FOCUSABLE);
+  let last = await count();
+  let stableSince = Date.now();
+  const deadline = Date.now() + 60000;
+  while (Date.now() - stableSince < 1000 && Date.now() < deadline) {
+    await page.waitForTimeout(100);
+    const n = await count();
+    if (n !== last) {
+      last = n;
+      stableSince = Date.now();
+    }
+  }
+}
 
 /** Mark the tool's focusable controls with data-kb="<document order>" and return their descriptions. */
 async function markControls(page) {
@@ -217,7 +238,7 @@ async function main() {
         const pageErrors = [];
         page.on('pageerror', (e) => pageErrors.push(String(e)));
         await page.goto(url, { waitUntil: 'networkidle' });
-        await page.waitForSelector(p.ready, { timeout: 30000 });
+        await settle(page, p.ready);
         const n = await checkOrder(page, where, errors);
         await p.action(page, where, errors);
         for (const e of pageErrors) errors.push(`${where}: page error: ${e}`);
