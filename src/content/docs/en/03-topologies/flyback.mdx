@@ -44,6 +44,26 @@ longer depends on the turns ratio <Cite key="erickson2020" where="Ch. 5" />:
 
 <Eq id="flyback.dcm.M" />
 
+### CCM currents and ripple
+
+In CCM the flyback behaves like the buck-boost with the secondary quantities
+referred to the primary. While the diode conducts, the secondary carries the
+magnetizing current divided by $n$, so charge balance on the output capacitor
+gives the average magnetizing current <Cite key="erickson2020" where="Ch. 6" />:
+
+<Eq id="flyback.IM" />
+
+While the switch is on, $V_g$ across $L_M$ sets the magnetizing-current
+ripple, and the output capacitor alone feeds the load, which sets the output
+ripple:
+
+<Eq id="flyback.ripple.iM" />
+
+<Eq id="flyback.ripple.v" />
+
+The [converter designer](../../design/converter-designer/) solves these for
+$L_M$ and $C$.
+
 ### Switch and diode stress
 
 While the switch is off, the secondary is clamped to the output plus the

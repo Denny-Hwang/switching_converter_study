@@ -603,6 +603,9 @@
         "flyback.Vds_off",
         "flyback.Vds_clamped",
         "flyback.diode.VR",
+        "flyback.IM",
+        "flyback.ripple.iM",
+        "flyback.ripple.v",
         "flyback.Ipk.dcm",
         "dcm.P_in",
         "lfr.R_in"
@@ -679,6 +682,42 @@
           "text_ko": "스위치 온 구간에는 2차 권선 전압 $n V_g$가 출력 전압에 더해져 역바이어스된 다이오드에 걸린다.",
           "latex": "V_R = V + n V_g",
           "result_for": "flyback.diode.VR"
+        },
+        {
+          "text": "CCM charge balance: while the diode conducts, for $(1 - D) T_s$, the secondary carries $I_M/n$ (small ripple); its average equals the load current $V/R$.",
+          "text_ko": "CCM 전하 평형: 다이오드가 도통하는 $(1 - D) T_s$ 동안 2차 측에는 $I_M/n$이 흐르며(소리플 근사), 그 평균이 부하 전류 $V/R$과 같다.",
+          "latex": "\\frac{I_M \\left(1 - D\\right)}{n} = \\frac{V}{R}",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $I_M$.",
+          "text_ko": "$I_M$에 대해 푼다.",
+          "latex": "I_M = - \\frac{V n}{R \\left(-1 + D\\right)} = \\frac{n V}{\\left(1 - D\\right) R}",
+          "result_for": "flyback.IM"
+        },
+        {
+          "text": "On-interval: $V_g$ across $L_M$ for $D T_s$, so the magnetizing current rises by twice the half-ripple $\\Delta i_M$.",
+          "text_ko": "온 구간: $D T_s$ 동안 $L_M$ 양단에 $V_g$가 걸리므로 자화 전류는 리플 절반 $\\Delta i_M$의 두 배만큼 증가한다.",
+          "latex": "2 \\Delta i_M = \\frac{D T_s V_g}{L_M}",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $\\Delta i_M$.",
+          "text_ko": "$\\Delta i_M$에 대해 푼다.",
+          "latex": "\\Delta i_M = \\frac{V_g D T_s}{2 L_M}",
+          "result_for": "flyback.ripple.iM"
+        },
+        {
+          "text": "While the switch is on the diode is off, so the capacitor alone supplies the load current $V/R$ for $D T_s$ and its voltage falls by twice the half-ripple $\\Delta v$.",
+          "text_ko": "스위치가 켜져 있는 동안 다이오드는 꺼져 있으므로 커패시터 혼자 $D T_s$ 동안 부하 전류 $V/R$을 공급하고, 그 전압은 리플 절반 $\\Delta v$의 두 배만큼 떨어진다.",
+          "latex": "2 \\Delta v = \\frac{D T_s V}{C R}",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $\\Delta v$.",
+          "text_ko": "$\\Delta v$에 대해 푼다.",
+          "latex": "\\Delta v = \\frac{V D T_s}{2 R C}",
+          "result_for": "flyback.ripple.v"
         },
         {
           "text": "The DCM peak magnetizing current, with $T_s = 1/f_s$.",
