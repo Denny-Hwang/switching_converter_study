@@ -10,6 +10,8 @@
  * new images up:
  *
  *     npm run build && node scripts/screenshots.mjs && npm run build
+ *
+ * Name tools to shoot only those: `node scripts/screenshots.mjs magnetics`.
  */
 import { mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -27,12 +29,15 @@ const SHOTS = [
   { name: 'explorer', from: '02-theory/ccm-dcm/', link: 'design/explorer/#', ready: ['.pe-tool .main-svg'] },
   { name: 'simulator', from: 'simulate/simulator/', link: 'simulate/simulator/#', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
   { name: 'designer', page: 'design/converter-designer/', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
+  { name: 'magnetics', page: 'design/magnetics-designer/', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
   { name: 'lossbudget', page: 'design/loss-budget/', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
   { name: 'clampcheck', page: 'design/clamp-check/', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
   { name: 'sourcematcher', page: 'design/source-matcher/', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
   { name: 'sensechain', page: 'design/sense-chain/', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
 ];
 const LOCALES = ['en', 'ko'];
+const ONLY = process.argv.slice(2);
+for (const name of ONLY) if (!SHOTS.some((s) => s.name === name)) throw new Error(`no tool named ${name}: ${SHOTS.map((s) => s.name).join(', ')}`);
 
 async function main() {
   mkdirSync(OUT, { recursive: true });
@@ -40,7 +45,7 @@ async function main() {
   const browser = await chromium.launch();
   try {
     for (const locale of LOCALES) {
-      for (const s of SHOTS) {
+      for (const s of SHOTS.filter((s) => ONLY.length === 0 || ONLY.includes(s.name))) {
         let target = `${base}/${locale}/${s.page}`;
         let href = target;
         if (!s.page) {

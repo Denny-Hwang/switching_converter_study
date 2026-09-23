@@ -28,6 +28,7 @@ const PAGES = [
   { path: 'design/explorer/', ready: [`${TOOL} select`, `${TOOL} .main-svg`], action: explorerAction },
   { path: 'simulate/simulator/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: simulatorAction },
   { path: 'design/converter-designer/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: designerAction },
+  { path: 'design/magnetics-designer/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: magAction },
   { path: 'design/loss-budget/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: lossAction },
   { path: 'design/clamp-check/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: clampAction },
   { path: 'design/source-matcher/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: sourceAction },
@@ -301,6 +302,27 @@ async function lossAction(page, where, errors) {
   await staleAndHash(page, where, errors, 'loss');
   // a budget takes a few seconds (every point is a simulation)
   await noStaleResult(page, where, errors, 'loss', 10000);
+}
+
+/**
+ * Magnetics designer: Space on the second device button selects the flyback
+ * and shows the secondary winding; Enter on a data-sheet gapped set's button
+ * uses its turns.
+ */
+async function magAction(page, where, errors) {
+  const second = page.locator(`${TOOL} .pe-choices[data-choice="select"] button`).nth(1);
+  await second.focus();
+  await page.keyboard.press('Space');
+  await page.waitForTimeout(100);
+  if ((await second.getAttribute('aria-pressed')) !== 'true') errors.push(`${where}: Space did not select a device`);
+  if ((await page.locator(`${TOOL} #mag-dS`).count()) !== 1) errors.push(`${where}: the secondary winding's fields did not appear`);
+  const use = page.locator(`${TOOL} .pe-mag__use`).first();
+  const turns = ((await use.getAttribute('aria-label')) ?? '').match(/\d+/)?.[0];
+  await use.focus();
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(100);
+  if (!turns || (await page.locator(`${TOOL} #mag-N`).inputValue()) !== turns) errors.push(`${where}: Enter on a gapped set did not use its turns`);
+  await staleAndHash(page, where, errors, 'mag', 'fs', 'L');
 }
 
 /** Clamp check: Space on the second clamp-type button selects the RCD clamp and shows its resistor. */
