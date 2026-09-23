@@ -160,7 +160,7 @@ export function twoSwitch(p: SimParams): Model {
   if (!hasVc) {
     const guards: Interval['guards'] = [];
     specs.rev = bodyDiode('idle');
-    if (p.topology === 'boost' && (c.resistive || c.src)) {
+    if (p.topology === 'boost' && (c.hasV || c.src)) {
       // The output has fallen below the input (or the bus has risen above
       // the output): the diode conducts again.
       const g = add(vout, lin([VF, '1']), mul(vin, -1));

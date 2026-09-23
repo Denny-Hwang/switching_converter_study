@@ -3,8 +3,8 @@
  *
  * States: the inductor current `i` (for the flyback the magnetizing current
  * referred to the primary, for the forward converter the output-inductor
- * current), the output voltage `v` (resistive load only; a fixed output is a
- * constant), and optionally the switch voltage `vc` (when a node capacitance
+ * current), the output voltage `v` (the voltage of the output capacitor; a
+ * fixed output is a constant), and optionally the switch voltage `vc` (when a node capacitance
  * C_node is given), the forward converter's magnetizing current `iM`, and the
  * input-bus voltage `vbus` (source-driven mode: a Thevenin source V_oc behind
  * R_s charging C_bus).
@@ -26,7 +26,24 @@ import type { Mat, Vec } from '../linalg';
 
 export type Topology = 'buck' | 'boost' | 'buckboost' | 'flyback' | 'forward';
 
-export type Load = { kind: 'resistive'; R: number; C: number } | { kind: 'fixed'; V: number };
+/**
+ * The load at the output:
+ * - resistive: the output capacitor C with a resistor R across it;
+ * - network: the output capacitor C with, across it, a resistor R, a battery
+ *   (its open-circuit voltage V behind its internal resistance R, the Rint
+ *   model), both, or neither (the capacitor alone charges, from V0);
+ * - fixed: an ideal voltage V (a stiff battery or bus), no capacitor.
+ */
+export type Load =
+  | { kind: 'resistive'; R: number; C: number }
+  | { kind: 'network'; C: number; R?: number; battery?: Battery; V0?: number }
+  | { kind: 'fixed'; V: number };
+
+/** A battery as its open-circuit voltage behind its internal resistance (Rint model). */
+export interface Battery {
+  V: number;
+  R: number;
+}
 
 export interface Source {
   /** Open-circuit voltage of the Thevenin source during this cycle. */
@@ -108,19 +125,36 @@ export interface Common {
   Cn: number;
   vin: Lin;
   vout: Lin;
-  resistive: boolean;
+  /** The output is a capacitor voltage (a state), not a fixed voltage. */
+  hasV: boolean;
+  /** Load resistor (Infinity when there is none) and output capacitance (NaN for a fixed output). */
   R: number;
   C: number;
+  battery?: Battery;
   src?: Source;
+}
+
+/** The output capacitor's resistor, battery and capacitance for a load, after checking them. */
+function loadParts(load: Load): { hasV: boolean; R: number; C: number; battery?: Battery } {
+  if (load.kind === 'fixed') return { hasV: false, R: NaN, C: NaN };
+  if (!(load.C > 0)) throw new Error('the output capacitance C must be positive');
+  if (load.kind === 'resistive') {
+    if (!(load.R > 0)) throw new Error('the load resistance R must be positive');
+    return { hasV: true, R: load.R, C: load.C };
+  }
+  if (load.R !== undefined && !(load.R > 0)) throw new Error('the load resistance R must be positive');
+  const b = load.battery;
+  if (b && !(b.R > 0 && Number.isFinite(b.V))) throw new Error("the battery's internal resistance must be positive (an ideal battery is a fixed output)");
+  return { hasV: true, R: load.R ?? Infinity, C: load.C, battery: b };
 }
 
 export function common(p: SimParams, extraStates: string[]): Common {
   if (!(p.D > 0 && p.D < 1)) throw new Error('duty ratio must be between 0 and 1');
   if (!(p.fs > 0 && p.L > 0)) throw new Error('f_s and L must be positive');
-  const resistive = p.load.kind === 'resistive';
+  const parts = loadParts(p.load);
   const Cn = p.Cnode ?? 0;
   const names = ['i'];
-  if (resistive) names.push('v');
+  if (parts.hasV) names.push('v');
   names.push(...extraStates);
   if (Cn > 0 && p.topology !== 'forward') names.push('vc');
   if (p.source) names.push('vbus');
@@ -135,18 +169,25 @@ export function common(p: SimParams, extraStates: string[]): Common {
     VF: p.VF ?? 0,
     Cn,
     vin: p.source ? lin([1, 'vbus']) : lin([p.Vg, '1']),
-    vout: p.load.kind === 'resistive' ? lin([1, 'v']) : lin([p.load.V, '1']),
-    resistive,
-    R: p.load.kind === 'resistive' ? p.load.R : NaN,
-    C: p.load.kind === 'resistive' ? p.load.C : NaN,
+    vout: p.load.kind === 'fixed' ? lin([p.load.V, '1']) : lin([1, 'v']),
+    ...parts,
     src: p.source,
   };
 }
 
-/** dv/dt for a resistive load fed with the current iOut, and dvbus/dt for an input current iIn. */
+/** Current the load draws from the output capacitor's node besides the capacitor: the resistor's and the battery's (charging positive). */
+export function loadCurrent(c: Common): Lin {
+  let out = lin();
+  if (!c.hasV) return out;
+  if (Number.isFinite(c.R)) out = add(out, lin([1 / c.R, 'v']));
+  if (c.battery) out = add(out, lin([1 / c.battery.R, 'v'], [-c.battery.V / c.battery.R, '1']));
+  return out;
+}
+
+/** dv/dt for the output capacitor fed with the current iOut (the load draws its share), and dvbus/dt for an input current iIn. */
 export function loadAndBus(c: Common, iOut: Lin, iIn: Lin): Record<string, Lin> {
   const rows: Record<string, Lin> = {};
-  if (c.resistive) rows.v = mul(add(iOut, lin([-1 / c.R, 'v'])), 1 / c.C);
+  if (c.hasV) rows.v = mul(add(iOut, mul(loadCurrent(c), -1)), 1 / c.C);
   if (c.src) {
     rows.vbus = mul(add(lin([c.src.Voc / c.src.Rs, '1'], [-1 / c.src.Rs, 'vbus']), mul(iIn, -1)), 1 / c.src.Cbus);
   }
@@ -199,16 +240,25 @@ export function outputsFrom(c: Common, L: number, specs: Record<string, Interval
     if (!s) throw new Error(`no outputs for interval ${interval}`);
     const e = (l: Lin) => evalLin(l, c.names, x);
     const i = x[0]!;
+    const iOut = e(s.iOut);
+    const v = e(c.vout);
+    // the load's branches: the resistor, the battery (charging positive; a
+    // fixed output takes the whole output current), and the output capacitor
+    const iR = c.hasV && Number.isFinite(c.R) ? v / c.R : 0;
+    const iBat = c.battery ? (v - c.battery.V) / c.battery.R : c.hasV ? 0 : iOut;
     const out: Record<string, number> = {
       i_L: i,
       v_L: e(s.vL) + c.RL * i,
       v_sw: e(s.vSw),
       i_sw: e(s.iSw),
       i_D: e(s.iD),
-      i_out: e(s.iOut),
+      i_out: iOut,
       i_in: e(s.iIn),
       v_in: e(c.vin),
-      v_out: e(c.vout),
+      v_out: v,
+      i_R: iR,
+      i_bat: iBat,
+      i_C: c.hasV ? iOut - iR - iBat : 0,
     };
     return out;
   };

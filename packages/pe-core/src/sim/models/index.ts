@@ -12,7 +12,7 @@ import type { SimParams } from './common';
 import { forward } from './forward';
 import { twoSwitch } from './two-switch';
 
-export type { Load, SimParams, Source, Topology } from './common';
+export type { Battery, Load, SimParams, Source, Topology } from './common';
 
 export function buildModel(p: SimParams): Model {
   return p.topology === 'forward' ? forward(p) : twoSwitch(p);
