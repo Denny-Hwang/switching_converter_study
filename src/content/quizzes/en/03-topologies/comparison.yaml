@@ -1,0 +1,51 @@
+# Quiz for 03-topologies/comparison. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'An application needs $5\,\mathrm{V}$ from an input that varies between $3\,\mathrm{V}$ and $9\,\mathrm{V}$, without isolation. Which single basic converter can do it?'
+    options:
+      - 'The buck'
+      - 'The boost'
+      - 'The buck-boost (accepting an inverted output)'
+      - 'None of the basic converters'
+    answer: 2
+    explain: 'The output must be above the input at low line and below it at high line; only the buck-boost steps both up and down, at the price of an inverted output.'
+  - q: 'What is the transistor utilization of an ideal CCM buck at $D = 0.25$?'
+    options:
+      - '0.25'
+      - '0.5'
+      - '0.75'
+      - '1'
+    answer: 1
+    explain: 'For the buck the utilization is $\sqrt{D}$: the transistor blocks $V_g$, carries the load current as a pulse of duty ratio $D$, and the load power is $D V_g I$.'
+  - q: 'At which duty ratio is the utilization of the buck-boost and the flyback largest?'
+    options:
+      - '$D = 1/4$'
+      - '$D = 1/3$'
+      - '$D = 1/2$'
+      - '$D = 2/3$'
+    answer: 1
+    explain: 'The utilization is $(1 - D)\sqrt{D}$; its derivative vanishes where $1 - 3D$ is zero.'
+  - q: 'Which of these converters has a right-half-plane zero in its control-to-output transfer function in CCM?'
+    options:
+      - 'The buck'
+      - 'The forward converter'
+      - 'The flyback'
+      - 'None of them'
+    answer: 2
+    explain: 'The flyback, like the boost and the buck-boost, delivers energy to the output only during the off-interval; the buck and the forward converter feed the output through an L-C filter while the switch is on.'
+  - q: 'Why is the transistor utilization of the flyback independent of its turns ratio?'
+    options:
+      - 'The turns ratio only affects the diode'
+      - 'A larger $n$ lowers the reflected voltage on the transistor but raises its current by the same factor, so the product is unchanged'
+      - 'The flyback always runs at $D = 1/3$'
+      - 'The transformer stores no energy'
+    answer: 1
+    explain: 'The transistor blocks $V_g + V/n$ and carries the primary-referred current $n I/(1 - D)$; in the ratio of load power to their product, $n$ cancels.'
+  - q: 'Which converter delivers a continuous current to its output capacitor and draws a pulsed current from its input?'
+    options:
+      - 'The buck'
+      - 'The boost'
+      - 'The buck-boost'
+      - 'The flyback'
+    answer: 0
+    explain: 'The buck''s inductor sits between the switch node and the output, so the output sees the continuous inductor current, while the input sees it only while the switch is on.'

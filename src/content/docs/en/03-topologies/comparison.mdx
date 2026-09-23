@@ -1,0 +1,118 @@
+---
+title: Comparing the basic converters
+description: Conversion range, switch stress and transistor utilization, control difficulty and isolation of the buck, boost, buck-boost, flyback and forward converters, side by side.
+sidebar:
+  order: 6
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Choose between the basic converters by conversion range, isolation and control difficulty.
+- Compare how hard each converter works its transistor, with one number: the transistor utilization.
+- Know which converters have a right-half-plane zero and which draw pulsed input or output current.
+
+## Theory
+
+### Conversion range and isolation
+
+The buck only steps down and the boost only steps up
+(<EqRef id="buck.ccm.M" label="buck" />, <EqRef id="boost.ccm.M" label="boost" />).
+The buck-boost does both, with an inverted output
+(<EqRef id="buckboost.ccm.M" label="buck-boost" />). The flyback and the forward
+converter add a transformer: the output is isolated and the turns ratio
+scales the range (<EqRef id="flyback.ccm.M" label="flyback" />,
+<EqRef id="forward.ccm.M" label="forward" />) <Cite key="erickson2020" where="Ch. 6" />.
+
+### Transistor stress and utilization
+
+A converter that needs a transistor rated for a high voltage and a high rms
+current to deliver a given power uses that transistor poorly. One figure of
+merit is the **transistor utilization**: the load power divided by the
+product of the transistor's peak voltage and its rms current
+<Cite key="erickson2020" where="Ch. 6" />. With small ripple the transistor
+current is a flat pulse lasting $D T_s$, and the utilization depends on the
+duty ratio alone:
+
+<Eq id="util.buck" />
+
+<Eq id="util.boost" />
+
+<Eq id="util.buckboost" />
+
+<Eq id="util.forward" />
+
+The buck approaches full utilization at large duty ratios. The boost is best
+at small duty ratios, where it steps up only a little. The buck-boost and the
+flyback are poorest, because the transistor blocks the sum of input and
+reflected output voltage; their utilization peaks at $D = 1/3$. A forward
+converter with $n_r = 1$ is limited to $D \le 0.5$ and blocks twice the input
+voltage, which caps its utilization too. The derivations are on the
+[derivations page](../../02-theory/derivations/#deriv-topologies).
+
+### Control and current waveforms
+
+The buck and the forward converter feed the output through an L-C filter
+and have no right-half-plane zero. The boost, the buck-boost and the flyback
+deliver energy to the output only during the off-interval, which creates the
+[right-half-plane zero](../../02-theory/rhp-zero/) that limits their loop
+bandwidth. The buck draws a pulsed input current and delivers a continuous
+output current; the boost does the opposite; the buck-boost and the flyback
+pulse at both ports <Cite key="erickson2020" where="Ch. 6" />.
+
+## Worked example
+
+The same duty ratio in every topology:
+
+<Worked example="comparison-basic" />
+
+At this duty ratio the buck's utilization, <Val example="comparison-basic" name="U_buck" />,
+is well above that of the buck-boost, <Val example="comparison-basic" name="U_bb" />:
+for the same load power, the buck-boost needs a transistor with a larger
+product of voltage rating and current rating.
+
+## Try it
+
+<TryIt eq="util.buckboost" example="comparison-basic" sweep="D" />
+
+Sweep $D$ from 0 to 1 and find the maximum of the buck-boost and flyback
+utilization. Then open the buck and boost utilization equations and compare
+the curves.
+
+## Bench exercise
+
+With a current probe and an oscilloscope that computes rms values, measure
+the transistor current and the drain-source voltage of two evaluation
+boards of different topologies delivering similar power. Compute each
+transistor's utilization from the peak voltage, the rms current and the
+measured output power, and compare the results with the equations above at
+the measured duty ratios.
+
+## Gotchas
+
+- **Utilization compares transistors only.** It leaves out diode stress,
+  magnetics size, switching loss and the capacitors' ripple currents; use it
+  as one criterion among several.
+- **The small-ripple assumption flatters converters with large ripple.**
+  A large current ripple raises the rms current above the flat-pulse value
+  and lowers the real utilization.
+- **Isolation is a requirement, not a figure of merit.** If the application
+  needs galvanic isolation, only the transformer-based topologies qualify,
+  whatever their utilization.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch6', 'mit-6334-notes', 'coursera-converter-circuits']} />
+
+## Quiz
+
+<Quiz id="03-topologies/comparison" />

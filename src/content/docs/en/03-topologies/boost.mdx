@@ -1,0 +1,127 @@
+---
+title: Boost converter
+description: The step-up converter in CCM, covering its input-side inductor current, current and voltage ripple, switch stress, and the limits set by losses and the right-half-plane zero.
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Find the boost converter's inductor current, current ripple and peak current at an operating point.
+- Estimate its output voltage ripple, and explain why it is larger than a buck's.
+- State the switch and diode stress, and the two effects that limit a boost at high duty ratio.
+
+## Theory
+
+### Circuit and conversion ratio
+
+The boost converter places the inductor in series with the input, a switch
+from the inductor's far end to ground, and a diode from that node to the
+output capacitor and load <Cite key="erickson2020" where="Ch. 2" />. Storing
+energy in the inductor while the switch is on and releasing it on top of the
+input voltage while the diode conducts raises the output above the input
+(<EqRef id="boost.ccm.M" label="boost conversion ratio" />).
+
+### DC inductor current
+
+The inductor carries the input current. Charge balance on the output
+capacitor, which the diode feeds only during the off-interval, gives
+
+<Eq id="boost.IL" />
+
+so the inductor current exceeds the load current by the factor
+$1/(1 - D)$: at high step-up the inductor, the switch and the diode carry
+much more current than the load.
+
+### Current ripple and peak current
+
+While the switch is on, the inductor sees the input voltage and its current
+rises linearly <Cite key="erickson2020" where="Ch. 2" />:
+
+<Eq id="boost.ripple.iL" />
+
+The switch and the diode carry the inductor current in turn, so both see its
+peak value (<EqRef id="ripple.Ipk" label="peak current" />).
+
+### Output voltage ripple
+
+The diode current reaches the output in pulses. While the switch is on, the
+capacitor alone supplies the load, and its voltage falls
+<Cite key="erickson2020" where="Ch. 2" />:
+
+<Eq id="boost.ripple.v" />
+
+Because the capacitor supplies the full load current for part of every
+period, instead of absorbing only a small triangular ripple, the boost needs
+more output capacitance than a buck for the same ripple. The derivation is
+on the [derivations page](../../02-theory/derivations/#deriv-topologies).
+
+### Stress and limits
+
+With the switch off, the switch blocks the output voltage; with the switch
+on, the diode blocks it <Cite key="erickson2020" where="Ch. 6" />. Two effects
+limit the boost at high duty ratio. The inductor's winding resistance makes
+the ratio peak and then collapse
+(<EqRef id="boost.ccm.M_RL" label="ratio with winding resistance" />), and the
+control-to-output transfer function has a
+[right-half-plane zero](../../02-theory/rhp-zero/) that moves down as $D$
+rises (<EqRef id="boost.ss.wz" label="RHP zero" />).
+
+## Worked example
+
+An ideal synthetic boost:
+
+<Worked example="boost-ideal" show={['V_g', 'D', 'f_s', 'L', 'C', 'R', 'V', 'I_L', 'Delta_i_L', 'I_pk', 'Delta_v', 'K', 'K_crit']} />
+
+At this duty ratio the inductor current, <Val example="boost-ideal" name="I_L" />,
+is twice the load current, and the switch and diode must carry
+<Val example="boost-ideal" name="I_pk" /> at the peak. With the same
+capacitance as the synthetic buck, the output ripple of
+<Val example="boost-ideal" name="Delta_v" /> is several times larger,
+because the capacitor alone feeds the load for half of every period.
+
+## Try it
+
+<TryIt eq="boost.IL" example="boost-ideal" sweep="D" />
+
+Sweep $D$ from 0 to 1: at a fixed output voltage and load, the inductor
+current grows without bound as $D$ approaches 1.
+
+## Bench exercise
+
+On a low-power boost evaluation board supplied from a current-limited bench
+supply, measure the input current with a current probe: it is the inductor
+current, continuous and triangular. Then measure the diode current, or the
+output capacitor current, and see the pulses. Compare the measured output
+ripple with the prediction at the measured duty ratio and load, then halve
+the load resistance and check that the ripple doubles.
+
+## Gotchas
+
+- **The switch cannot disconnect the load.** Even with the switch held off,
+  the inductor and the diode connect the input to the output, so the output
+  follows the input and the capacitor charges through them at power-up.
+- **Low input voltage means high current.** At a fixed output voltage and
+  power, halving the input voltage doubles both the step-up ratio and the
+  input current; the inductor, the switch and the diode must be rated for
+  that current plus the half-ripple.
+- **Past the peak of the lossy ratio, more duty ratio gives less output.**
+  See the [averaged-models page](../../02-theory/averaged-models/).
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch2', 'ti-slva061', 'ti-slva372']} />
+
+## Quiz
+
+<Quiz id="03-topologies/boost" />

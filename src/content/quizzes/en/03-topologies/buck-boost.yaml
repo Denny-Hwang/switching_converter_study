@@ -1,0 +1,51 @@
+# Quiz for 03-topologies/buck-boost. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'An ideal CCM buck-boost runs from $12\,\mathrm{V}$ at $D = 0.75$. What is the magnitude of its output voltage?'
+    options:
+      - '$4\,\mathrm{V}$'
+      - '$9\,\mathrm{V}$'
+      - '$16\,\mathrm{V}$'
+      - '$36\,\mathrm{V}$'
+    answer: 3
+    explain: 'The magnitude is $D V_g/(1 - D)$: three times the input voltage at this duty ratio.'
+  - q: 'An ideal buck-boost has a $12\,\mathrm{V}$ input and a $-24\,\mathrm{V}$ output. What voltage must its switch block while off?'
+    options:
+      - '$12\,\mathrm{V}$'
+      - '$24\,\mathrm{V}$'
+      - '$36\,\mathrm{V}$'
+      - '$48\,\mathrm{V}$'
+    answer: 2
+    explain: 'While the diode conducts, the switch sits between the input and the negative output, so it blocks the input voltage plus the output magnitude.'
+  - q: 'In which interval does the buck-boost inductor deliver current to the output?'
+    options:
+      - 'Only while the switch is on'
+      - 'Only while the diode conducts'
+      - 'In both intervals'
+      - 'Only in DCM'
+    answer: 1
+    explain: 'While the switch is on, the inductor is connected to the input; only when the diode conducts is it connected to the output.'
+  - q: 'A buck-boost delivers $12\,\mathrm{V}$ (magnitude) into $6\,\Omega$ at $D = 0.5$. What is its dc inductor current?'
+    options:
+      - '$1\,\mathrm{A}$'
+      - '$2\,\mathrm{A}$'
+      - '$4\,\mathrm{A}$'
+      - '$6\,\mathrm{A}$'
+    answer: 2
+    explain: 'The load current is $2\,\mathrm{A}$, and it is delivered only during the off-interval, so the inductor current is larger by $1/(1 - D)$.'
+  - q: 'Which of the three basic converters draws a pulsed current at both its input and its output?'
+    options:
+      - 'The buck'
+      - 'The boost'
+      - 'The buck-boost'
+      - 'None of them'
+    answer: 2
+    explain: 'The buck has a continuous output current and the boost a continuous input current; the buck-boost connects the inductor to the input and the output only alternately.'
+  - q: 'Why is the switch stress of a buck-boost higher than that of a buck or a boost at the same input and output magnitudes?'
+    options:
+      - 'Its switch carries no current'
+      - 'Its switch blocks the sum of input voltage and output magnitude, not just one of them'
+      - 'Its switching frequency is higher'
+      - 'It operates only in DCM'
+    answer: 1
+    explain: 'The buck switch blocks $V_g$ and the boost switch blocks $V$; the buck-boost switch sits between the input and the inverted output, so it blocks $V_g + V$.'

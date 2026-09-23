@@ -1,0 +1,51 @@
+# Quiz for 03-topologies/boost. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'An ideal CCM boost delivers $24\,\mathrm{V}$ into $12\,\Omega$ at $D = 0.5$. What is its dc inductor current?'
+    options:
+      - '$1\,\mathrm{A}$'
+      - '$2\,\mathrm{A}$'
+      - '$4\,\mathrm{A}$'
+      - '$8\,\mathrm{A}$'
+    answer: 2
+    explain: 'The load current is $2\,\mathrm{A}$, and the inductor carries the input current, larger by the factor $1/(1 - D)$, which is 2 here.'
+  - q: 'Which interval sets the output voltage ripple of a boost converter?'
+    options:
+      - 'The off-interval, when the diode charges the capacitor'
+      - 'The on-interval, when the capacitor alone supplies the load'
+      - 'The dead time between the two intervals'
+      - 'Neither: the ripple is set by the inductor current ripple alone'
+    answer: 1
+    explain: 'While the switch is on, the diode is off and the capacitor supplies the full load current by itself, so its voltage falls by $2\Delta v$.'
+  - q: 'What voltage must the switch of an ideal boost block while it is off?'
+    options:
+      - 'The input voltage'
+      - 'The output voltage'
+      - 'The sum of input and output voltage'
+      - 'The difference between output and input voltage'
+    answer: 1
+    explain: 'With the diode conducting, the switch node is connected to the output, so the switch blocks $V$.'
+  - q: 'The boost switch is held permanently off. What is the output voltage (ideal diode)?'
+    options:
+      - 'Zero'
+      - 'The input voltage'
+      - 'Twice the input voltage'
+      - 'Undefined: the output floats'
+    answer: 1
+    explain: 'The inductor and the diode still connect the input to the output, so in steady state the output follows the input; the switch cannot disconnect the load.'
+  - q: 'At a fixed output voltage and output power, the input voltage of a boost is halved. What happens to the dc inductor current?'
+    options:
+      - 'It halves'
+      - 'It stays the same'
+      - 'It doubles'
+      - 'It quadruples'
+    answer: 2
+    explain: 'The inductor carries the input current, and the input power, equal to the output power in the ideal converter, is the input voltage times the input current.'
+  - q: 'Why does a boost need more output capacitance than a buck for the same ripple?'
+    options:
+      - 'Its switching frequency is lower'
+      - 'Its capacitor must supply the full load current during every on-interval, instead of absorbing only a small triangular ripple'
+      - 'Its inductor is larger'
+      - 'Its output voltage is higher'
+    answer: 1
+    explain: 'In the buck the inductor feeds the output continuously; in the boost the diode current arrives in pulses, and between pulses the capacitor alone carries the load.'

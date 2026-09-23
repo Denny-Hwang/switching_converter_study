@@ -1,0 +1,122 @@
+---
+title: Buck-boost converter
+description: The inverting converter that can step down or up, covering its output magnitude, inductor current, ripple, and the switch stress set by the sum of input and output voltage.
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Compute the buck-boost's output magnitude, inductor current and ripple at an operating point.
+- Explain why its switch and diode must block the sum of input and output voltage.
+- Compare its currents and stresses with those of the buck and the boost.
+
+## Theory
+
+### Circuit and conversion ratio
+
+The buck-boost converter connects the inductor to the input through the
+switch, and to the output through the diode. While the switch is on, the
+inductor stores energy from the input; while the diode conducts, it releases
+that energy into the output, with the polarity reversed
+<Cite key="erickson2020" where="Ch. 2" />. The conversion ratio is therefore
+negative (<EqRef id="buckboost.ccm.M" label="buck-boost conversion ratio" />).
+Working with the output magnitude:
+
+<Eq id="buckboost.V" />
+
+It steps down for $D < 0.5$ and up for $D > 0.5$.
+
+### Inductor current and ripple
+
+The input and the output are never connected to the inductor at the same
+time, so the inductor current reaches the output only during the
+off-interval. Charge balance gives the same form as in the boost:
+
+<Eq id="buckboost.IL" />
+
+While the switch is on, the inductor sees the input voltage:
+
+<Eq id="buckboost.ripple.iL" />
+
+and the switch and the diode both carry its peak
+(<EqRef id="ripple.Ipk" label="peak current" />).
+
+### Output voltage ripple
+
+As in the boost, the capacitor alone supplies the load while the switch is
+on <Cite key="erickson2020" where="Ch. 2" />:
+
+<Eq id="buckboost.ripple.v" />
+
+Both the input current and the output current of the buck-boost are
+pulsed: the input draws current only during the on-interval, the output
+receives it only during the off-interval.
+
+### Switch stress
+
+While the diode conducts, the far end of the switch sits at the (negative)
+output voltage, so the switch blocks the input voltage plus the output
+magnitude; while the switch is on, the diode blocks the same sum
+<Cite key="erickson2020" where="Ch. 6" />:
+
+<Eq id="buckboost.Vds" />
+
+This sum exceeds both the input and the output voltage: the price of a
+single stage that can step up or down. The small-signal model also has a
+right-half-plane zero (<EqRef id="buckboost.ss.wz" label="RHP zero" />). The
+flyback converter is the transformer-isolated version of this circuit
+(see the [flyback page](../flyback/)).
+
+## Worked example
+
+The synthetic buck-boost of the [volt-second balance page](../../02-theory/volt-second-charge-balance/):
+
+<Worked example="buckboost-basic" show={['V_g', 'D', 'f_s', 'L', 'C', 'R', 'V', 'I_L', 'Delta_i_L', 'I_pk', 'Delta_v', 'V_DS', 'K', 'K_crit']} />
+
+At this duty ratio the output magnitude equals the input voltage, yet the
+switch must block <Val example="buckboost-basic" name="V_DS" /> and carry
+<Val example="buckboost-basic" name="I_pk" /> at the peak.
+
+## Try it
+
+<TryIt eq="buckboost.Vds" example="buckboost-basic" sweep="V" />
+
+Sweep the output magnitude $V$: every volt of output adds a volt to the
+switch stress, on top of the input voltage.
+
+## Bench exercise
+
+On a buck-boost (inverting) evaluation board, measure the output with the
+oscilloscope's ground clip on the converter's ground: the output is
+negative. Measure the switch voltage while it is off and compare it with the
+sum of the input voltage and the output magnitude; then observe the input
+current with a current probe and note that it flows in pulses.
+
+## Gotchas
+
+- **The output is inverted.** A load, a measurement or a feedback divider
+  that assumes a positive output will read or regulate the wrong polarity.
+- **Both terminals see pulsed current.** Input and output capacitors both
+  carry large ripple currents, unlike the buck (continuous output current)
+  or the boost (continuous input current).
+- **Stress grows with both voltages.** At a high step-up ratio the output
+  magnitude dominates the switch stress; at a deep step-down the input does.
+
+## Go deeper
+
+<GoDeeper ids={['ti-slva059', 'erickson-ch6', 'coursera-converter-circuits']} />
+
+## Quiz
+
+<Quiz id="03-topologies/buck-boost" />
