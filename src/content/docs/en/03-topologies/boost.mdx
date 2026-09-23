@@ -69,9 +69,12 @@ on the [derivations page](../../02-theory/derivations/#deriv-topologies).
 ### Stress and limits
 
 With the switch off, the switch blocks the output voltage; with the switch
-on, the diode blocks it <Cite key="erickson2020" where="Ch. 6" />. Two effects
-limit the boost at high duty ratio. The inductor's winding resistance makes
-the ratio peak and then collapse
+on, the diode blocks it <Cite key="erickson2020" where="Ch. 6" />:
+
+<Eq id="boost.Vds" />
+
+Two effects limit the boost at high duty ratio. The inductor's winding
+resistance makes the ratio peak and then collapse
 (<EqRef id="boost.ccm.M_RL" label="ratio with winding resistance" />), and the
 control-to-output transfer function has a
 [right-half-plane zero](../../02-theory/rhp-zero/) that moves down as $D$

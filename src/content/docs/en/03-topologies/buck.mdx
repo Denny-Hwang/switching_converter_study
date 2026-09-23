@@ -71,11 +71,14 @@ The derivation is on the [derivations page](../../02-theory/derivations/#deriv-t
 ### Switch stress and the mode boundary
 
 When the switch is off, it blocks the input voltage; when it is on, the
-diode blocks the input voltage. Both carry the peak inductor current
-<Cite key="erickson2020" where="Ch. 6" />. At light load the inductor current
-reaches zero and the buck enters DCM once $K$ falls below
-<EqRef id="Kcrit.buck" label="its critical value" />; its output then rises
-above $D V_g$ (<EqRef id="buck.dcm.M" label="DCM ratio" />).
+diode blocks the input voltage <Cite key="erickson2020" where="Ch. 6" />:
+
+<Eq id="buck.Vds" />
+
+Both carry the peak inductor current <Cite key="erickson2020" where="Ch. 6" />.
+At light load the inductor current reaches zero and the buck enters DCM once
+$K$ falls below <EqRef id="Kcrit.buck" label="its critical value" />; its
+output then rises above $D V_g$ (<EqRef id="buck.dcm.M" label="DCM ratio" />).
 
 ## Worked example
 

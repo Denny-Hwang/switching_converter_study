@@ -723,6 +723,8 @@
         "buckboost.IL",
         "buckboost.ripple.iL",
         "buckboost.ripple.v",
+        "buck.Vds",
+        "boost.Vds",
         "buckboost.Vds",
         "forward.Vds",
         "forward.ripple.iL",
@@ -827,6 +829,18 @@
           "text_ko": "부스트와 마찬가지로 $D T_s$ 동안 커패시터 혼자 부하를 공급한다.",
           "latex": "\\Delta v = \\frac{V D T_s}{2 R C}",
           "result_for": "buckboost.ripple.v"
+        },
+        {
+          "text": "Buck: while the diode conducts, the switch node sits at ground (ideal diode); the switch between the input and that node blocks $V_g$.",
+          "text_ko": "벅: 다이오드가 도통하는 동안 스위치 노드는 접지 전위에 있으므로(이상적 다이오드), 입력과 그 노드 사이의 스위치는 $V_g$를 차단한다.",
+          "latex": "V_\\mathrm{DS} = V_g",
+          "result_for": "buck.Vds"
+        },
+        {
+          "text": "Boost: while the diode conducts, the switch node is connected to the output; the switch from that node to ground blocks $V$.",
+          "text_ko": "부스트: 다이오드가 도통하는 동안 스위치 노드는 출력에 연결되므로, 그 노드와 접지 사이의 스위치는 $V$를 차단한다.",
+          "latex": "V_\\mathrm{DS} = V",
+          "result_for": "boost.Vds"
         },
         {
           "text": "While the diode conducts, the switch's far end sits at the output, $-V$; the switch blocks $V_g - (-V)$.",

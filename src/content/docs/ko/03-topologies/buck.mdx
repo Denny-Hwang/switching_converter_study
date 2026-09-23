@@ -71,10 +71,14 @@ import Quiz from '../../../../components/Quiz.astro';
 ### 스위치 스트레스와 모드 경계
 
 스위치는 꺼져 있을 때 입력 전압을 차단하고, 스위치가 켜져 있을 때는 다이오드가
-입력 전압을 차단합니다. 둘 모두에 인덕터 피크 전류가 흐릅니다
-<Cite key="erickson2020" where="Ch. 6" />. 경부하(light load)에서는 인덕터
-전류가 0에 도달하며, $K$가 <EqRef id="Kcrit.buck" label="임계값" />(critical value)
-아래로 떨어지면 벅은 DCM으로 들어갑니다. 이때 출력은 $D V_g$보다
+입력 전압을 차단합니다 <Cite key="erickson2020" where="Ch. 6" />.
+
+<Eq id="buck.Vds" />
+
+둘 모두에 인덕터 피크 전류가 흐릅니다 <Cite key="erickson2020" where="Ch. 6" />.
+경부하(light load)에서는 인덕터 전류가 0에 도달하며, $K$가
+<EqRef id="Kcrit.buck" label="임계값" />(critical value) 아래로 떨어지면 벅은
+DCM으로 들어갑니다. 이때 출력은 $D V_g$보다
 높아집니다(<EqRef id="buck.dcm.M" label="DCM 변환비" />).
 
 ## 풀이 예제

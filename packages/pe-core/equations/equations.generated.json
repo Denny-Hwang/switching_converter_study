@@ -3923,6 +3923,75 @@
       "n_tests": 7,
       "yaml_line": 1225
     },
+    "buck.Vds": {
+      "id": "buck.Vds",
+      "title": "Buck switch voltage while off (also the diode's blocking voltage while on)",
+      "title_ko": "벅 스위치의 오프 전압(온 구간 다이오드의 차단 전압과 같음)",
+      "latex": "V_\\mathrm{DS} = V_g",
+      "lhs": "V_DS",
+      "expr": "V_g",
+      "relation": "eq",
+      "variables": [
+        "V_g"
+      ],
+      "constants": [],
+      "symbols": {
+        "V_g": "input voltage"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 6 (Converter Circuits)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/topologies.py",
+      "n_tests": 7,
+      "yaml_line": 1239
+    },
+    "boost.Vds": {
+      "id": "boost.Vds",
+      "title": "Boost switch voltage while off (also the diode's blocking voltage while on)",
+      "title_ko": "부스트 스위치의 오프 전압(온 구간 다이오드의 차단 전압과 같음)",
+      "latex": "V_\\mathrm{DS} = V",
+      "lhs": "V_DS",
+      "expr": "V",
+      "relation": "eq",
+      "variables": [
+        "V"
+      ],
+      "constants": [],
+      "symbols": {
+        "V": "output voltage"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "steady_state",
+        "small_ripple"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 6 (Converter Circuits)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/topologies.py",
+      "n_tests": 7,
+      "yaml_line": 1251
+    },
     "buckboost.Vds": {
       "id": "buckboost.Vds",
       "title": "Buck-boost switch voltage while off (also the diode's blocking voltage)",
@@ -3958,7 +4027,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1239
+      "yaml_line": 1263
     },
     "forward.Vds": {
       "id": "forward.Vds",
@@ -3993,7 +4062,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1251
+      "yaml_line": 1275
     },
     "forward.ripple.iL": {
       "id": "forward.ripple.iL",
@@ -4038,7 +4107,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1265
+      "yaml_line": 1289
     },
     "util.buck": {
       "id": "util.buck",
@@ -4073,7 +4142,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1280
+      "yaml_line": 1304
     },
     "util.boost": {
       "id": "util.boost",
@@ -4108,7 +4177,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1294
+      "yaml_line": 1318
     },
     "util.buckboost": {
       "id": "util.buckboost",
@@ -4143,7 +4212,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1308
+      "yaml_line": 1332
     },
     "util.forward": {
       "id": "util.forward",
@@ -4180,7 +4249,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1322
+      "yaml_line": 1346
     },
     "ind.di": {
       "id": "ind.di",
@@ -4217,7 +4286,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1339
+      "yaml_line": 1363
     },
     "cap.dv": {
       "id": "cap.dv",
@@ -4254,7 +4323,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1353
+      "yaml_line": 1377
     },
     "ind.E": {
       "id": "ind.E",
@@ -4289,7 +4358,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1367
+      "yaml_line": 1391
     },
     "cap.E": {
       "id": "cap.E",
@@ -4323,7 +4392,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1379
+      "yaml_line": 1403
     },
     "imp.ZL": {
       "id": "imp.ZL",
@@ -4358,7 +4427,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1391
+      "yaml_line": 1415
     },
     "imp.ZC": {
       "id": "imp.ZC",
@@ -4393,7 +4462,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1405
+      "yaml_line": 1429
     },
     "rc.fc": {
       "id": "rc.fc",
@@ -4427,7 +4496,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1419
+      "yaml_line": 1443
     },
     "rc.gain": {
       "id": "rc.gain",
@@ -4462,7 +4531,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 8,
-      "yaml_line": 1433
+      "yaml_line": 1457
     },
     "fourier.pulse.harm": {
       "id": "fourier.pulse.harm",
@@ -4499,7 +4568,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 8,
-      "yaml_line": 1448
+      "yaml_line": 1472
     },
     "fourier.pulse.rms": {
       "id": "fourier.pulse.rms",
@@ -4533,7 +4602,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1463
+      "yaml_line": 1487
     },
     "passive.f_srf": {
       "id": "passive.f_srf",
@@ -4567,7 +4636,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1475
+      "yaml_line": 1499
     },
     "cap.esr.ripple": {
       "id": "cap.esr.ripple",
@@ -4601,7 +4670,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1489
+      "yaml_line": 1513
     },
     "mag.H_ampere": {
       "id": "mag.H_ampere",
@@ -4637,7 +4706,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1504
+      "yaml_line": 1528
     },
     "mag.B_H": {
       "id": "mag.B_H",
@@ -4674,7 +4743,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1516
+      "yaml_line": 1540
     },
     "xfmr.V2": {
       "id": "xfmr.V2",
@@ -4712,7 +4781,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1529
+      "yaml_line": 1553
     },
     "xfmr.I2": {
       "id": "xfmr.I2",
@@ -4750,7 +4819,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1545
+      "yaml_line": 1569
     }
   }
 }

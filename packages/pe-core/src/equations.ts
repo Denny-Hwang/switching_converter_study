@@ -161,6 +161,8 @@ const topologies: Readonly<Record<string, Evaluator>> = {
 
   // --- voltages and stresses ---------------------------------------------------
   'buckboost.V': eq(['D', 'V_g'], ({ D, V_g }) => (V_g * D) / (1 - D)),
+  'buck.Vds': eq(['V_g'], ({ V_g }) => V_g),
+  'boost.Vds': eq(['V'], ({ V }) => V),
   'buckboost.Vds': eq(['V_g', 'V'], ({ V_g, V }) => V_g + V),
   'forward.Vds': eq(['V_g', 'n_r'], ({ V_g, n_r }) => V_g + V_g / n_r),
 
