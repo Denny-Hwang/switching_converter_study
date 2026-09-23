@@ -91,7 +91,7 @@ export type MagWarning =
   | 'needTurns' // the ungapped core gives less than the inductance at these turns: no gap helps, more turns do
   | 'saturation' // the peak flux density exceeds B_max (turns given by the user)
   | 'window' // the windings take more of the window than K_u,max
-  | 'layerFull'; // the turns of a layer do not fit in the winding breadth (porosity above 1)
+  | 'layerFull'; // a layer's turns, side by side over their insulation, do not fit in the winding breadth
 
 /** One winding's copper: turns, area, resistance, and Dowell's factor at the switching frequency. */
 export interface WindingResult {
@@ -108,6 +108,8 @@ export interface WindingResult {
   Pdc: number;
   /** Height (build) of the winding: layers times the insulated diameter. */
   height: number;
+  /** Width a layer's turns take side by side over their insulation (turns per layer x strands x insulated diameter). */
+  layerWidth: number;
 }
 
 export interface MagResult {
@@ -168,6 +170,7 @@ function winding(w: MagWinding, N: number, Irms: number, M: number, spec: MagSpe
     Rac: FR * Rdc,
     Pdc: evaluate('loss.cond', { I_rms: Irms, R_x: Rdc }),
     height: layers * (w.dOuter ?? w.d),
+    layerWidth: Nl * w.ks * (w.dOuter ?? w.d),
   };
 }
 
@@ -223,7 +226,8 @@ export function magnetics(spec: MagSpec): MagResult {
     const leak = spec.arrangement === 'psp' ? 'xfmr.leakage.psp' : 'xfmr.leakage.ps';
     Llk = evaluate(leak, { N, MLT: core.MLT, h_p: primary.height, h_g: spec.hg ?? 0, h_s: secondary.height, b_w: spec.bw });
   }
-  for (const w of [primary, secondary]) if (w && w.eta > 1 + 1e-9) warnings.add('layerFull');
+  // Dowell's porosity counts the copper only; whether the turns fit counts their insulation
+  for (const w of [primary, secondary]) if (w && (w.eta > 1 + 1e-9 || w.layerWidth > spec.bw * (1 + 1e-9))) warnings.add('layerFull');
 
   const Ku = evaluate('wind.fill', { N, A_w: primary.Aw, W_A: core.WA }) + (secondary ? evaluate('wind.fill', { N: secondary.N, A_w: secondary.Aw, W_A: core.WA }) : 0);
   if (Ku > spec.KuMax) warnings.add('window');

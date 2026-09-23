@@ -94,6 +94,19 @@ describe('magnetics: an inductor', () => {
     expect(magnetics({ ...inductor, primary: { ...inductor.primary, layers: 1 }, bw: 0.005 }).warnings).toContain('layerFull');
   });
 
+  it('checks that a layer fits with the insulation: ten turns of 1.2 mm over the insulation need 12 mm', () => {
+    // the copper alone (porosity about 0.71) would fit in 10 mm, the insulated turns do not
+    const r = magnetics({ ...inductor, N: 10, primary: { d: 8e-4, ks: 1, layers: 1, dOuter: 1.2e-3 }, bw: 0.01, KuMax: 1 });
+    expect(r.primary.eta).toBeLessThan(1);
+    expect(r.primary.layerWidth).toBeCloseTo(0.012, 12);
+    expect(r.warnings).toContain('layerFull');
+    // strands in parallel lie side by side too
+    const two = magnetics({ ...inductor, N: 10, primary: { d: 5e-4, ks: 2, layers: 1, dOuter: 5.5e-4 }, bw: 0.01, KuMax: 1 });
+    expect(two.primary.layerWidth).toBeCloseTo(0.011, 12);
+    expect(two.warnings).toContain('layerFull');
+    expect(magnetics({ ...inductor, N: 10, primary: { d: 8e-4, ks: 1, layers: 1, dOuter: 9e-4 }, bw: 0.01, KuMax: 1 }).warnings).not.toContain('layerFull');
+  });
+
   it("Dowell's factor tends to 1 at low frequency and grows with it", () => {
     const fr = frCurve(inductor.primary, 16, 2, inductor, [1e2, 1e4, 1e5, 1e6]);
     expect(fr[0]!).toBeCloseTo(1, 4);
