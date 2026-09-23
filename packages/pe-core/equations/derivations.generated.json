@@ -211,6 +211,7 @@
         "Kcrit.buck",
         "Kcrit.boost",
         "Kcrit.buckboost",
+        "L.crit",
         "buck.dcm.D2",
         "buck.dcm.M",
         "boost.dcm.M",
@@ -276,6 +277,12 @@
           "text_ko": "경계 조건 $\\Delta i_L = I_L$에 $L = K R T_s/2$를 넣고 $K$에 대해 푼다.",
           "latex": "K_\\mathrm{crit} = \\left(-1 + D\\right)^{2} = \\left(1 - D\\right)^{2}",
           "result_for": "Kcrit.buckboost"
+        },
+        {
+          "text": "At the boundary $K$ equals $K_\\mathrm{crit}$; solve the definition of $K$ for $L$.",
+          "text_ko": "경계에서 $K$는 $K_\\mathrm{crit}$과 같다; $K$의 정의를 $L$에 대해 푼다.",
+          "latex": "L_\\mathrm{crit} = \\frac{K_\\mathrm{crit} R T_s}{2}",
+          "result_for": "L.crit"
         },
         {
           "text": "Buck DCM, volt-second balance with $V = M V_g$: $V_g - V$ for $D T_s$, $-V$ for $D_2 T_s$, $0$ for $D_3 T_s$.",

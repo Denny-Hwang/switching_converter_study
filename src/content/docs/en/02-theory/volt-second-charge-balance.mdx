@@ -1,0 +1,141 @@
+---
+title: Volt-second and charge balance
+description: The two steady-state conditions that give the dc conversion ratio of any CCM converter, applied to the buck, boost and buck-boost.
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- State inductor volt-second balance and capacitor charge balance, and why they hold in steady state.
+- Use them to find the dc conversion ratio of a converter in continuous conduction mode (CCM).
+- Recognise when the balance conditions do not apply.
+
+## Theory
+
+### Volt-second balance
+
+In periodic steady state every waveform repeats from one switching period to
+the next, so the inductor current ends each period where it began. The
+inductor voltage integrated over one period equals $L$ times that net change
+in current, which is zero: the average inductor voltage over a period is
+zero, $\langle v_L \rangle = 0$ <Cite key="erickson2020" where="Ch. 2" />.
+This is **inductor volt-second balance**.
+
+With the [small-ripple approximation](../switching-principle/), the inductor
+voltage takes one constant value during the on-interval $D T_s$ and another
+during the off-interval $(1 - D) T_s$. Balance fixes the second in terms of
+the first:
+
+<Eq id="vsb.v_off" />
+
+The positive volt-seconds applied while the switch is on must be cancelled by
+negative volt-seconds while it is off.
+
+### Charge balance
+
+The same argument applies to a capacitor: its voltage ends each period where
+it began, so the net charge delivered to it is zero and the average capacitor
+current is zero, $\langle i_C \rangle = 0$. This is **capacitor charge
+balance** <Cite key="erickson2020" where="Ch. 2" />. In two-interval form:
+
+<Eq id="csb.i_off" />
+
+Volt-second balance gives the voltage relations of a converter; charge
+balance gives its dc currents.
+
+### Buck
+
+While the switch is on, the inductor sits between $V_g$ and the output, so
+its voltage is $V_g - V$. While the diode conducts, the inductor's input end
+is grounded and its voltage is $-V$. Balancing the two gives the buck
+conversion ratio <Cite key="erickson2020" where="Ch. 2" />:
+
+<Eq id="buck.ccm.M" />
+
+### Boost
+
+The boost places the inductor at the input. With the switch on, the inductor
+sees $V_g$; with the diode conducting, it sees $V_g - V$. For these to
+balance, $V$ must exceed $V_g$:
+
+<Eq id="boost.ccm.M" />
+
+### Buck-boost
+
+The buck-boost connects the inductor to $V_g$ while the switch is on, and
+to the output while the diode conducts. Its output is inverted, so the
+ratio is negative; its magnitude is below 1 for $D < 0.5$ and above 1 for
+$D > 0.5$:
+
+<Eq id="buckboost.ccm.M" />
+
+The step-by-step sympy derivations of all three ratios are on the
+[derivations page](../derivations/#deriv-ccm_ratios).
+
+## Worked example
+
+Two synthetic interval values, balanced: an inductor that sees a given
+voltage during the on-interval, and a capacitor that receives a given
+current during the on-interval.
+
+<Worked example="balance-basic" checks={false} />
+
+With $D$ = <Val example="balance-basic" name="D" />, the off-interval is
+three times as long as the on-interval, so the off-interval voltage has a
+third of the on-interval magnitude and the opposite sign.
+
+The same balance applied to a synthetic boost and a synthetic buck-boost,
+both run at the same duty ratio:
+
+<Worked example="boost-basic" show={['V_g', 'D', 'M_ideal']} checks={false} />
+
+<Worked example="buckboost-basic" show={['V_g', 'D', 'M']} checks={false} />
+
+## Try it
+
+<TryIt eq="boost.ccm.M" example="boost-basic" sweep="D" />
+
+Sweep $D$ towards 1 and watch the ideal boost ratio grow without bound.
+The [averaged-models page](../averaged-models/) shows why a real boost
+cannot follow this curve.
+
+## Bench exercise
+
+On a low-voltage converter evaluation board, measure the inductor voltage
+with a differential probe (or two probes and the oscilloscope's math
+subtraction). In steady state, read the two plateau voltages and the on and
+off times, and check that the two volt-second areas are equal and opposite.
+Then step the load and look again during the transient: while the inductor
+current is changing, the areas are no longer equal.
+
+## Gotchas
+
+- **Balance holds only in steady state.** During start-up, load steps and
+  line steps the average inductor voltage is not zero; that non-zero average
+  is exactly what changes the inductor current <Cite key="erickson2020" where="Ch. 2" />.
+- **Do not apply the small-ripple approximation to the ripple you are
+  computing, or to the waveform that causes it.** The buck's output-voltage
+  ripple is caused by the inductor current ripple, so the inductor current
+  cannot be treated as constant when that ripple is computed <Cite key="erickson2020" where="Ch. 2" />.
+- **Losses change the balance equations.** Winding resistance and
+  semiconductor drops add terms to the interval voltages and lower the ratio;
+  see the [averaged-models page](../averaged-models/).
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch2', 'coursera-intro-pe', 'ti-slva061']} />
+
+## Quiz
+
+<Quiz id="02-theory/volt-second-charge-balance" />

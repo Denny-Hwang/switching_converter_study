@@ -1,0 +1,133 @@
+---
+title: Averaged models
+description: Averaging a converter over one switching period gives a dc equivalent circuit; losses become ordinary resistors in it. In DCM the averaged switch becomes a loss-free resistor.
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Build the averaged dc model of a converter and add the inductor's winding resistance to it.
+- Predict how that resistance limits the boost converter's conversion ratio and efficiency.
+- Describe the DCM switch network as a loss-free resistor and compute its input resistance.
+
+## Theory
+
+### From switched circuit to dc model
+
+Averaging every circuit equation over one switching period, with the
+small-ripple approximation, removes the switching action: the averaged
+inductor-voltage and capacitor-current equations are those of a dc circuit.
+In that circuit the switch network acts as an ideal **dc transformer**
+whose turns ratio is the conversion ratio. It passes power from input to
+output without loss, and every loss mechanism appears as an ordinary
+resistor or voltage drop around it <Cite key="erickson2020" where="Ch. 3" />.
+One model then gives the output voltage, the currents and the efficiency.
+
+### Boost with inductor winding resistance
+
+Add the inductor's winding resistance $R_L$ to the boost. Volt-second balance
+gains the drop across $R_L$ in both intervals, while charge balance is
+unchanged; solving the two together gives
+<Cite key="erickson2020" where="Ch. 3" />:
+
+<Eq id="boost.ccm.M_RL" />
+
+The ideal ratio <EqRef id="boost.ccm.M" /> is multiplied by a factor that
+falls towards zero as $D$ approaches 1: the inductor carries the input
+current, which grows much faster than the output current as $D$ rises, so the
+loss in $R_L$ eventually takes all the extra input power. Instead of growing
+without bound, the conversion ratio reaches a maximum and then falls. The
+efficiency follows from the same model:
+
+<Eq id="boost.ccm.eta_RL" />
+
+$R_L$ is compared with $(1 - D)^2 R$, the load resistance reflected through
+the dc transformer to the inductor's side. At high $D$ this reflected
+resistance is small, so even a small winding resistance costs efficiency.
+The derivation is on the [derivations page](../derivations/#deriv-averaging).
+
+### DCM: the loss-free resistor
+
+In DCM the inductor current starts from zero in every period. The energy
+stored during the on-interval, and so the power drawn from the input, then
+depends only on the input voltage, the duty ratio, the inductance and the
+switching frequency. For the buck-boost and the flyback, with the
+magnetizing inductance $L_M$:
+
+<Eq id="dcm.P_in" />
+
+The average input current is therefore proportional to the input voltage,
+and the input port behaves like a resistor
+<Cite key="singer1990" /> <Cite key="erickson2020" where="Ch. 15" />:
+
+<Eq id="lfr.R_in" />
+
+This resistor does not dissipate the power it absorbs: it passes that power
+to the output. The averaged DCM switch network is therefore modelled as a
+**loss-free resistor**, a property that energy-harvesting interfaces use to
+present a resistive load to a source.
+
+## Worked example
+
+The synthetic boost with a winding resistance:
+
+<Worked example="boost-basic" show={['V_g', 'D', 'R', 'R_L', 'M_ideal', 'M', 'eta', 'V']} checks={false} />
+
+A winding resistance of <Val example="boost-basic" name="R_L" />, only a
+hundredth of the load resistance, lowers the ratio from
+<Val example="boost-basic" name="M_ideal" /> to
+<Val example="boost-basic" name="M" /> and the efficiency to
+<Val example="boost-basic" name="eta" />, because at this duty ratio it is
+compared with a quarter of the load resistance.
+
+A synthetic buck-boost in DCM, seen from its input:
+
+<Worked example="lfr-basic" />
+
+## Try it
+
+<TryIt eq="boost.ccm.M_RL" example="boost-basic" sweep="D" />
+
+Sweep $D$ from 0 to 1: the ratio peaks and then collapses. Increase $R_L$
+and watch the peak drop and move to a lower duty ratio.
+
+## Bench exercise
+
+On a low-power boost converter supplied from a current-limited bench supply,
+measure the inductor's dc resistance with a four-wire method first. Then, at
+a fixed resistive load, step the duty ratio up in open loop while you
+measure the input and output power with multimeters. Plot the conversion
+ratio and the efficiency against $D$ and compare them with the two equations
+above, using your measured $R_L$. The switch and diode add further losses,
+so the measured efficiency will sit below the prediction.
+
+## Gotchas
+
+- **Past the maximum, more duty gives less output.** Beyond the peak of the
+  ratio, raising $D$ lowers $V$. A feedback loop that assumes the opposite
+  sees its gain change sign there.
+- **$R_L$ is the dc winding resistance only.** Core loss, ac winding loss and
+  switching loss are not in this model; each adds its own loss element
+  <Cite key="erickson2020" where="Ch. 3" />.
+- **The loss-free resistor holds only in DCM.** Once the current no longer
+  returns to zero in each period, the input current is no longer
+  proportional to the input voltage.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch3', 'erickson-ch15', 'coursera-intro-pe']} />
+
+## Quiz
+
+<Quiz id="02-theory/averaged-models" />

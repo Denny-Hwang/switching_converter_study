@@ -1,0 +1,25 @@
+---
+/**
+ * <EqRef id="buck.ccm.M" /> -- link to the page where an equation is
+ * embedded (each formula is shown once; elsewhere it is referenced).
+ * Fails the build if the equation has no home page in this locale.
+ */
+import { getEquation } from 'pe-core';
+import { eqAnchor, eqHomes } from '../lib/eqhomes';
+import { pageHref } from '../lib/paths';
+import { pageLocale } from '../lib/locale';
+
+interface Props {
+  id: string;
+  /** Link text override (defaults to the equation title). */
+  label?: string;
+}
+const { id, label } = Astro.props;
+const eq = getEquation(id);
+const locale = pageLocale(Astro);
+const home = (await eqHomes(locale)).get(id);
+if (!home) throw new Error(`<EqRef id="${id}">: no page in locale "${locale}" embeds <Eq id="${id}" />`);
+const text = label ?? (locale === 'ko' ? eq.title_ko : eq.title);
+---
+
+<a class="pe-eqref" href={pageHref(locale, home, eqAnchor(id))} title={id}>{text}</a>

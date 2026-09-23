@@ -32,7 +32,7 @@ symbol_table:
   D: {latex: "D", unit: "1", desc: "duty ratio: switch on-time divided by T_s", range: [0.05, 0.95]}
   M: {latex: "M", unit: "1", desc: "conversion ratio V/V_g"}
   K: {latex: "K", unit: "1", desc: "dimensionless inductor parameter 2L/(R T_s)", range: [0.001, 10], scale: log}
-  K_crit: {latex: "K_\\mathrm{crit}", unit: "1", desc: "value of K at the CCM/DCM boundary"}
+  K_crit: {latex: "K_\\mathrm{crit}", unit: "1", desc: "value of K at the CCM/DCM boundary", range: [0.001, 1], scale: log}
   n: {latex: "n", unit: "1", desc: "transformer turns ratio N_s/N_p (1:n convention)", range: [0.1, 10], scale: log}
   n_r: {latex: "n_r", unit: "1", desc: "reset-winding to primary turns ratio N_r/N_p", range: [0.25, 4], scale: log}
   D_max: {latex: "D_\\mathrm{max}", unit: "1", desc: "maximum duty ratio"}
@@ -60,6 +60,7 @@ symbol_table:
   I_SENSE: {latex: "I_\\mathrm{SENSE}", unit: "A", desc: "current through the sense resistor", range: [0.001, 100], scale: log}
   # --- passive components and parasitics ----------------------------------
   L: {latex: "L", unit: "H", desc: "inductance", range: [1.0e-6, 1.0e-2], scale: log}
+  L_crit: {latex: "L_\\mathrm{crit}", unit: "H", desc: "critical inductance at the CCM/DCM boundary"}
   L_M: {latex: "L_M", unit: "H", desc: "magnetizing inductance referred to the primary", range: [1.0e-6, 1.0e-1], scale: log}
   L_lk: {latex: "L_\\mathrm{lk}", unit: "H", desc: "leakage inductance referred to the primary", range: [1.0e-8, 1.0e-4], scale: log}
   C_node: {latex: "C_\\mathrm{node}", unit: "F", desc: "total capacitance at the switch node", range: [1.0e-12, 1.0e-8], scale: log}
@@ -342,6 +343,21 @@ equations:
     tests:
       - {inputs: {D: 0.5, n: 0.5}, expect: 1.0}
       - {inputs: {D: 0.2, n: 2.0}, expect: 0.16}
+
+  - id: L.crit
+    title: "Critical inductance at the CCM/DCM boundary"
+    title_ko: "CCM/DCM 경계의 임계 인덕턴스"
+    lhs: L_crit
+    expr: "K_crit*R*T_s/2"
+    symbols: {K_crit: "critical K of the topology at the operating duty ratio", R: "load resistance", T_s: "switching period"}
+    assumptions: [ideal, bcm, steady_state, small_ripple, resistive_load]
+    notes: "the converter stays in CCM for $L > L_\\mathrm{crit}$; check the largest $R$ (lightest load) and the duty ratio that maximises $K_\\mathrm{crit}$ over the input range"
+    notes_ko: "$L > L_\\mathrm{crit}$이면 CCM을 유지한다; 가장 큰 $R$(가장 가벼운 부하)과 입력 범위에서 $K_\\mathrm{crit}$을 최대로 만드는 듀티비에서 확인한다"
+    cite: {key: erickson2020, where: "Ch. 5 (The Discontinuous Conduction Mode)"}
+    derived_by: python/pe_core/derive/dcm.py
+    tests:
+      - {inputs: {K_crit: 0.5, R: 10.0, T_s: 1.0e-5}, expect: 2.5e-5}
+      - {inputs: {K_crit: 0.125, R: 20.0, T_s: 1.0e-5}, expect: 1.25e-5}
 
   # =========================================================================
   # DCM conversion ratios
@@ -814,13 +830,14 @@ equations:
     expr: "D*(1 - M)/M"
     symbols: {D: "duty ratio", M: "conversion ratio V/V_g"}
     ranges: {M: [0.05, 0.95]}
+    constraints: ["D < M"]
     assumptions: [ideal, dcm, steady_state, small_ripple]
-    notes: "the idle interval is $D_3 = 1 - D - D_2$"
-    notes_ko: "휴지 구간은 $D_3 = 1 - D - D_2$"
+    notes: "the idle interval is $D_3 = 1 - D - D_2$; $D_2 \\le 1 - D$ holds exactly when $M \\ge D$, so a DCM buck always has $M > D$"
+    notes_ko: "휴지 구간은 $D_3 = 1 - D - D_2$; $D_2 \\le 1 - D$는 $M \\ge D$일 때에만 성립하므로 DCM 벅은 언제나 $M > D$"
     cite: {key: erickson2020, where: "Ch. 5 (The Discontinuous Conduction Mode)"}
     derived_by: python/pe_core/derive/dcm.py
     tests:
-      - {inputs: {D: 0.5, M: 0.4}, expect: 0.7499999999999999}
+      - {inputs: {D: 0.5, M: 0.625}, expect: 0.3}
 
   - id: boost.ccm.M_RL
     title: "Boost conversion ratio with inductor winding resistance, CCM"

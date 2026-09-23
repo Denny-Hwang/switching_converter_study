@@ -1,0 +1,139 @@
+---
+title: The switching principle
+description: Why an ideal switch and an L-C filter convert dc to dc without loss, how the duty ratio sets the dc output, and what the small-ripple approximation assumes.
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Explain why an ideal switching converter dissipates no power, unlike a linear regulator.
+- Compute the dc component of a switch-node waveform from the duty ratio $D$.
+- State what the output filter must do and what the small-ripple approximation assumes.
+
+## Theory
+
+### Why switch?
+
+A linear regulator lowers a voltage by dropping the difference across a
+transistor that carries the whole load current; that difference times the
+load current is lost as heat. An ideal switch loses nothing: when it is on,
+the voltage across it is zero, and when it is off, the current through it is
+zero, so the product of the two, the power it dissipates, is zero in both
+states <Cite key="erickson2020" where="Ch. 1 (Introduction)" />. Ideal
+inductors and capacitors store and return energy without dissipating any.
+A converter built only from ideal switches and reactive elements can
+therefore, in principle, convert power without loss.
+
+### The switch node and its dc component
+
+Connect a single-pole double-throw switch to the input source. In position 1
+the switch node sees the input voltage $V_g$; in position 2 it is grounded.
+The switch repeats this pattern once every switching period
+
+<Eq id="def.Ts" />
+
+and spends the fraction $D$ of each period, the **duty ratio**, in
+position 1 <Cite key="erickson2020" where="Ch. 2" />. The switch-node voltage
+$v_s(t)$ is therefore a rectangular wave. Its average over one period, its
+dc component, is
+
+<Eq id="sw.v_avg" />
+
+### Filtering: keep the average, reject the harmonics
+
+A Fourier series splits $v_s(t)$ into that dc component plus harmonics at
+multiples of the switching frequency $f_s$. An L-C low-pass filter whose
+corner frequency lies well below $f_s$ passes the dc component and strongly
+attenuates the harmonics, so the output voltage is essentially the dc
+component of the switch node <Cite key="erickson2020" where="Ch. 2" />.
+The duty ratio, a timing quantity, now sets a dc voltage.
+
+### The conversion ratio
+
+A converter is summarised by its conversion ratio $M(D)$, the dc output
+voltage divided by the dc input voltage:
+
+<Eq id="def.V" />
+
+Filtering the switch node, as above, is the buck converter, so
+<EqRef id="buck.ccm.M" />. Other arrangements of the same switch, inductor
+and capacitor give other ratios, for example <EqRef id="boost.ccm.M" /> and
+<EqRef id="buckboost.ccm.M" />. All three are derived on the
+[volt-second balance page](../volt-second-charge-balance/).
+
+### The small-ripple approximation
+
+A real filter leaves some switching ripple on the output. If the filter is
+designed well, the ripple is small compared with the dc value, and in the
+steady-state analysis the output voltage may be replaced by its dc value $V$:
+the **small-ripple approximation** <Cite key="erickson2020" where="Ch. 2" />.
+With it, the voltage across the inductor is constant within each
+subinterval, so the inductor current rises and falls along straight lines;
+the slope of those lines sets the current ripple. Apply the approximation to
+quantities that are nearly constant, never to the ripple you are trying to
+compute.
+
+## Worked example
+
+A synthetic buck converter: its switch node is filtered by an L-C stage into
+a resistive load. The table is computed by pe-core when the site is built;
+each computed row links to the equation that produced it.
+
+<Worked example="buck-basic" show={['V_g', 'D', 'f_s', 'T_s', 'v_s_avg', 'M', 'V', 'Delta_i_L']} checks={false} />
+
+The switch node spends the fraction <Val example="buck-basic" name="D" /> of
+each <Val example="buck-basic" name="T_s" /> period at
+<Val example="buck-basic" name="V_g" />, so its dc component, and with it
+the output, is <Val example="buck-basic" name="V" />. The inductor current
+still carries a triangular ripple of <Val example="buck-basic" name="Delta_i_L" />
+around its dc value (half of peak-to-peak), which the output capacitor
+smooths further.
+
+## Try it
+
+<TryIt eq="sw.v_avg" example="buck-basic" sweep="D" />
+
+Sweep $D$ from 0 to 1: the dc component grows in proportion to it, whatever
+the switching frequency.
+
+## Bench exercise
+
+No power stage is needed. Feed the square-wave output of a function
+generator, at logic level, into an R-C low-pass filter whose corner
+frequency is far below the square wave's frequency. Measure the filter
+output with a multimeter on its dc range while you change the duty cycle,
+and compare each reading with the high level of the square wave times the
+duty ratio. Then look at the same node with an oscilloscope: the remaining
+ripple shrinks when you raise the frequency or the filter's time constant,
+while the dc reading does not change.
+
+## Gotchas
+
+- **The average follows the switch node, not the gate signal.** Diode
+  forward drops, switch resistance and dead time change the switch-node
+  voltage during parts of the period, so the dc output departs from the ideal
+  value set by the commanded duty ratio. The
+  [averaged-models page](../averaged-models/) adds such losses to the model <Cite key="erickson2020" where="Ch. 3" />.
+- **In DCM the switch node does not return to zero for the whole
+  off-interval.** Once the inductor current has fallen to zero, the diode
+  stops conducting and the switch node rings around the output voltage, so
+  the output ends up above $D V_g$; see [CCM and DCM](../ccm-dcm/) <Cite key="erickson2020" where="Ch. 5" />.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch2', 'coursera-intro-pe', 'ti-slva477']} />
+
+## Quiz
+
+<Quiz id="02-theory/switching-principle" />

@@ -1,0 +1,294 @@
+# resources.yaml -- external learning resources ("Go deeper" lists and the
+# 10-resources pages). CLAUDE.md rule 7: a resource is added only with a URL
+# that was opened and matched by title, and carries `retrieved: YYYY-MM-DD`.
+#
+# How entries are verified (docs/ADR/0002-reference-verification.md):
+#   * two independent web-search reviews saw the URL with a matching title;
+#   * CI (scripts/resources_check.py --online) opens every URL and requires the
+#     page title to contain `title_match` (or a PDF signature for urlkind: pdf).
+# Link specific items (a chapter, a course, an app note); link a channel only
+# when a specific video cannot be verified.
+#
+# Fields: id, type (book|chapter|course|lecture|video|channel|app-note|
+# datasheet|tool|paper), title, author, url, tags, level (intro|intermediate|
+# advanced), language (en|ko), retrieved, why, why_ko, title_match,
+# urlkind (html|pdf|login; default html), cite (optional references.bib key).
+
+resources:
+  # --- Erickson & Maksimović, 3rd ed., chapter pages (SpringerLink) ----------
+  - id: erickson-ch2
+    type: chapter
+    title: "Principles of Steady-State Converter Analysis (Ch. 2)"
+    author: "R. W. Erickson, D. Maksimović"
+    url: https://link.springer.com/chapter/10.1007/978-3-030-43881-4_2
+    tags: [switching-principle, volt-second, ripple, buck, boost, buck-boost]
+    level: intro
+    language: en
+    retrieved: 2026-09-23
+    why: "The standard derivation of volt-second and charge balance, the small-ripple approximation and inductor/capacitor ripple."
+    why_ko: "전압-초·전하 평형, 소리플 근사, 인덕터·커패시터 리플을 다루는 표준 유도."
+    title_match: "Principles of Steady-State Converter Analysis"
+    cite: erickson2020
+
+  - id: erickson-ch3
+    type: chapter
+    title: "Steady-State Equivalent Circuit Modeling, Losses, and Efficiency (Ch. 3)"
+    author: "R. W. Erickson, D. Maksimović"
+    url: https://link.springer.com/chapter/10.1007/978-3-030-43881-4_3
+    tags: [averaged-models, losses, efficiency]
+    level: intro
+    language: en
+    retrieved: 2026-09-23
+    why: "DC transformer models and how winding and semiconductor resistances limit the conversion ratio and efficiency."
+    why_ko: "직류 변압기 모델, 그리고 권선·반도체 저항이 변환비와 효율을 어떻게 제한하는지."
+    title_match: "Steady-State Equivalent Circuit Modeling"
+    cite: erickson2020
+
+  - id: erickson-ch5
+    type: chapter
+    title: "The Discontinuous Conduction Mode (Ch. 5)"
+    author: "R. W. Erickson, D. Maksimović"
+    url: https://link.springer.com/chapter/10.1007/978-3-030-43881-4_5
+    tags: [ccm-dcm, k-parameter]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "Origin of DCM, the K and K_crit boundary and the DCM conversion ratios derived with charge balance."
+    why_ko: "DCM의 발생 원리, K와 K_crit 경계, 전하 평형으로 유도한 DCM 변환비."
+    title_match: "The Discontinuous Conduction Mode"
+    cite: erickson2020
+
+  - id: erickson-ch6
+    type: chapter
+    title: "Converter Circuits (Ch. 6)"
+    author: "R. W. Erickson, D. Maksimović"
+    url: https://link.springer.com/chapter/10.1007/978-3-030-43881-4_6
+    tags: [topologies, flyback, forward, isolation]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "How the basic topologies relate, and transformer-isolated versions including the flyback and forward converters."
+    why_ko: "기본 토폴로지 사이의 관계와, 플라이백·포워드를 포함한 변압기 절연형 컨버터."
+    title_match: "Converter Circuits"
+    cite: erickson2020
+
+  - id: erickson-ch7
+    type: chapter
+    title: "AC Equivalent Circuit Modeling (Ch. 7)"
+    author: "R. W. Erickson, D. Maksimović"
+    url: https://link.springer.com/chapter/10.1007/978-3-030-43881-4_7
+    tags: [averaged-models, small-signal, control-basics]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "Averaging, perturbation and linearisation of converter equations, and the small-signal model of the PWM modulator."
+    why_ko: "컨버터 방정식의 평균화·섭동·선형화와 PWM 변조기의 소신호 모델."
+    title_match: "AC Equivalent Circuit Modeling"
+    cite: erickson2020
+
+  - id: erickson-ch8
+    type: chapter
+    title: "Converter Transfer Functions (Ch. 8)"
+    author: "R. W. Erickson, D. Maksimović"
+    url: https://link.springer.com/chapter/10.1007/978-3-030-43881-4_8
+    tags: [small-signal, rhp-zero]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "Bode plots of the control-to-output transfer functions, including the right-half-plane zero of the boost and buck-boost."
+    why_ko: "제어-출력 전달함수의 보드 선도와 부스트·벅-부스트의 우반평면 영점."
+    title_match: "Converter Transfer Functions"
+    cite: erickson2020
+
+  - id: erickson-ch9
+    type: chapter
+    title: "Controller Design (Ch. 9)"
+    author: "R. W. Erickson, D. Maksimović"
+    url: https://link.springer.com/chapter/10.1007/978-3-030-43881-4_9
+    tags: [control-basics]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "Loop gain, crossover frequency, phase margin and the design of PD/PI compensators."
+    why_ko: "루프 이득, 크로스오버 주파수, 위상 여유, PD/PI 보상기 설계."
+    title_match: "Controller Design"
+    cite: erickson2020
+
+  - id: erickson-ch15
+    type: chapter
+    title: "AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode (Ch. 15)"
+    author: "R. W. Erickson, D. Maksimović"
+    url: https://link.springer.com/chapter/10.1007/978-3-030-43881-4_15
+    tags: [averaged-models, ccm-dcm, loss-free-resistor]
+    level: advanced
+    language: en
+    retrieved: 2026-09-23
+    why: "The DCM averaged switch model, in which the input behaves as a loss-free resistor."
+    why_ko: "입력이 무손실 저항처럼 동작하는 DCM 평균 스위치 모델."
+    title_match: "Discontinuous Conduction Mode"
+    cite: erickson2020
+
+  # --- courses -------------------------------------------------------------
+  - id: coursera-intro-pe
+    type: course
+    title: "Introduction to Power Electronics"
+    author: "University of Colorado Boulder (Coursera)"
+    url: https://www.coursera.org/learn/power-electronics
+    tags: [switching-principle, volt-second, averaged-models]
+    level: intro
+    language: en
+    retrieved: 2026-09-23
+    why: "First course of the CU Boulder specialization: steady-state analysis, losses and efficiency."
+    why_ko: "CU Boulder 전문 과정의 첫 강좌: 정상상태 해석, 손실과 효율."
+    title_match: "Introduction to Power Electronics"
+
+  - id: coursera-converter-circuits
+    type: course
+    title: "Converter Circuits"
+    author: "University of Colorado Boulder (Coursera)"
+    url: https://www.coursera.org/learn/converter-circuits
+    tags: [ccm-dcm, topologies, flyback, forward]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "DCM analysis and the isolated converter circuits, following the same textbook."
+    why_ko: "같은 교재를 따르는 DCM 해석과 절연형 컨버터 회로."
+    title_match: "Converter Circuits"
+
+  - id: coursera-converter-control
+    type: course
+    title: "Converter Control"
+    author: "University of Colorado Boulder (Coursera)"
+    url: https://www.coursera.org/learn/converter-control
+    tags: [small-signal, rhp-zero, control-basics]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "Averaged small-signal models, converter transfer functions and feedback loop design."
+    why_ko: "평균 소신호 모델, 컨버터 전달함수, 피드백 루프 설계."
+    title_match: "Converter Control"
+
+  - id: coursera-magnetics
+    type: course
+    title: "Magnetics for Power Electronic Converters"
+    author: "University of Colorado Boulder (Coursera)"
+    url: https://www.coursera.org/learn/magnetics-for-power-electronic-converters-v2
+    tags: [magnetics, core-loss, winding-loss]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "Magnetic circuits, core and winding losses, and inductor and transformer design."
+    why_ko: "자기 회로, 코어·권선 손실, 인덕터·변압기 설계."
+    title_match: "Magnetics for Power Electronic Converters"
+
+  - id: mit-6334
+    type: course
+    title: "6.334 Power Electronics (Spring 2007)"
+    author: "D. Perreault, MIT OpenCourseWare"
+    url: https://ocw.mit.edu/courses/6-334-power-electronics-spring-2007/
+    tags: [switching-principle, topologies, magnetics, control-basics]
+    level: advanced
+    language: en
+    retrieved: 2026-09-23
+    why: "A complete graduate course with lecture notes and problem sets."
+    why_ko: "강의 노트와 연습 문제를 갖춘 대학원 과정 전체."
+    title_match: "Power Electronics"
+
+  - id: mit-6334-notes
+    type: lecture
+    title: "6.334 Lecture Notes"
+    author: "D. Perreault, MIT OpenCourseWare"
+    url: https://ocw.mit.edu/courses/6-334-power-electronics-spring-2007/pages/lecture-notes/
+    tags: [switching-principle, topologies, magnetics]
+    level: advanced
+    language: en
+    retrieved: 2026-09-23
+    why: "Chapter-style notes on dc/dc converters, magnetics and isolated converters."
+    why_ko: "dc/dc 컨버터, 자성 부품, 절연형 컨버터를 다루는 장 단위 강의 노트."
+    title_match: "Lecture Notes"
+
+  # --- application notes -----------------------------------------------------
+  - id: ti-slva057
+    type: app-note
+    title: "Understanding Buck Power Stages in Switchmode Power Supplies (SLVA057)"
+    author: "E. Rogers, Texas Instruments"
+    url: https://www.ti.com/lit/pdf/slva057
+    tags: [buck, ccm-dcm, small-signal]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "Steady-state and small-signal analysis of the buck power stage in CCM and DCM, with component requirements."
+    why_ko: "CCM·DCM 벅 전력단의 정상상태·소신호 해석과 부품 요구 조건."
+    title_match: "(pdf)"
+    urlkind: pdf
+
+  - id: ti-slva061
+    type: app-note
+    title: "Understanding Boost Power Stages in Switchmode Power Supplies (SLVA061)"
+    author: "E. Rogers, Texas Instruments"
+    url: https://www.ti.com/lit/pdf/slva061
+    tags: [boost, ccm-dcm, small-signal, rhp-zero]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "The boost counterpart: steady-state and small-signal analysis in CCM and DCM."
+    why_ko: "부스트판: CCM·DCM의 정상상태·소신호 해석."
+    title_match: "(pdf)"
+    urlkind: pdf
+
+  - id: ti-slva059
+    type: app-note
+    title: "Understanding Buck-Boost Power Stages in Switch Mode Power Supplies (SLVA059)"
+    author: "E. Rogers, Texas Instruments"
+    url: https://www.ti.com/lit/pdf/slva059
+    tags: [buck-boost, ccm-dcm, small-signal, rhp-zero]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "The inverting buck-boost power stage analysed the same way."
+    why_ko: "반전형 벅-부스트 전력단을 같은 방식으로 해석."
+    title_match: "(pdf)"
+    urlkind: pdf
+
+  - id: ti-slva477
+    type: app-note
+    title: "Basic Calculation of a Buck Converter's Power Stage (SLVA477)"
+    author: "B. Hauke, Texas Instruments"
+    url: https://www.ti.com/lit/pdf/slva477
+    tags: [buck, ripple, design]
+    level: intro
+    language: en
+    retrieved: 2026-09-23
+    why: "A compact CCM design-calculation checklist: duty ratio, inductor ripple, capacitors."
+    why_ko: "간결한 CCM 설계 계산 점검표: 듀티비, 인덕터 리플, 커패시터."
+    title_match: "(pdf)"
+    urlkind: pdf
+
+  - id: ti-slva372
+    type: app-note
+    title: "Basic Calculation of a Boost Converter's Power Stage (SLVA372)"
+    author: "B. Hauke, Texas Instruments"
+    url: https://www.ti.com/lit/pdf/slva372
+    tags: [boost, ripple, design]
+    level: intro
+    language: en
+    retrieved: 2026-09-23
+    why: "The boost version of the same checklist."
+    why_ko: "같은 점검표의 부스트판."
+    title_match: "(pdf)"
+    urlkind: pdf
+
+  # --- video ---------------------------------------------------------------------
+  - id: benyaakov-channel
+    type: channel
+    title: "Sam Ben-Yaakov — power electronics videos"
+    author: "S. Ben-Yaakov"
+    url: https://www.youtube.com/user/sambenyaakov
+    tags: [intuition, dcm, flyback, magnetics]
+    level: intro
+    language: en
+    retrieved: 2026-09-23
+    why: "Intuitive, equation-light explanations of converter behaviour; linked as a channel until specific videos are verified."
+    why_ko: "수식을 최소화한 직관적 설명; 개별 영상이 검증될 때까지 채널로 연결."
+    title_match: "Sam Ben-Yaakov"
+    cite: benyaakov_youtube

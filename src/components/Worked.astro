@@ -1,0 +1,87 @@
+---
+/**
+ * <Worked example="buck-basic" show={['T_s', 'K', 'K_crit']} /> -- a worked
+ * example computed by pe-core at build time from a synthetic parameter set
+ * (examples/synthetic/<example>.yaml). The table always carries the
+ * example's "synthetic" label (PRIVACY_RULES.md).
+ */
+import katex from 'katex';
+import { catalog } from 'pe-core';
+import { REPO_BLOB } from '../config';
+import { ui } from '../i18n/ui';
+import { katexOptions } from '../math/katex-options';
+import { getExample } from '../lib/examples';
+import { formatSI } from '../lib/format';
+import { eqAnchor, eqHomes } from '../lib/eqhomes';
+import { pageHref } from '../lib/paths';
+import { pageLocale } from '../lib/locale';
+
+interface Props {
+  example: string;
+  /** Context names to show, in order (default: every param and result). */
+  show?: string[];
+  /** Show the example's checks (e.g. CCM/DCM). Default true. */
+  checks?: boolean;
+}
+const { example, show, checks = true } = Astro.props;
+const ex = getExample(example);
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const homes = await eqHomes(locale);
+
+const names = show ?? [...Object.keys(ex.params), ...ex.results.map((r) => r.name)];
+const rows = names.map((name) => {
+  if (name in ex.params) {
+    const sym = catalog.symbols[name];
+    if (!sym) throw new Error(`<Worked example="${example}">: param ${name} is not a known symbol`);
+    return { name, latex: sym.latex, value: formatSI(ex.params[name]!, sym.unit), given: true as const };
+  }
+  const r = ex.results.find((x) => x.name === name);
+  if (!r) throw new Error(`<Worked example="${example}">: "${name}" is neither a param nor a step result`);
+  const sym = catalog.symbols[r.symbol]!;
+  const meta = catalog.equations[r.eq]!;
+  const home = homes.get(r.eq);
+  const href = home ? pageHref(locale, home, eqAnchor(r.eq)) : `${REPO_BLOB}/packages/pe-core/equations/equations.yaml#L${meta.yaml_line}`;
+  return {
+    name,
+    latex: sym.latex,
+    value: formatSI(r.value, sym.unit),
+    given: false as const,
+    title: locale === 'ko' ? meta.title_ko : meta.title,
+    href,
+  };
+});
+const label = locale === 'ko' ? ex.label_ko : ex.label;
+---
+
+<figure class="pe-worked not-content">
+  <figcaption class="pe-worked__label">{label}</figcaption>
+  <table>
+    <thead>
+      <tr><th>{t['worked.symbol']}</th><th>{t['worked.value']}</th><th>{t['worked.source']}</th></tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((r) => (
+          <tr class={r.given ? 'is-given' : 'is-computed'}>
+            <td set:html={katex.renderToString(r.latex, katexOptions(false))} />
+            <td class="pe-worked__value">{r.value}</td>
+            <td>{r.given ? t['worked.given'] : <a href={r.href}>{r.title}</a>}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  {
+    checks && ex.checkResults.length > 0 && (
+      <p class="pe-worked__checks">
+        {t['worked.checks']}:{' '}
+        {ex.checkResults.map((c) => (
+          <span>
+            <code>{c.when}</code> → <strong>{c.text[locale]}</strong>{' '}
+          </span>
+        ))}
+      </p>
+    )
+  }
+</figure>

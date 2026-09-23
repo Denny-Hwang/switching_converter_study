@@ -1,0 +1,32 @@
+---
+/**
+ * <Val example="buck-basic" name="V" /> -- one value from a synthetic example,
+ * formatted with its unit. Lets prose mention numbers without typing them.
+ */
+import { catalog } from 'pe-core';
+import { getExample } from '../lib/examples';
+import { formatSI } from '../lib/format';
+
+interface Props {
+  example: string;
+  name: string;
+  sig?: number;
+}
+const { example, name, sig = 3 } = Astro.props;
+const ex = getExample(example);
+let value: number | undefined;
+let symbol = name;
+if (name in ex.params) value = ex.params[name];
+else {
+  const r = ex.results.find((x) => x.name === name);
+  if (r) {
+    value = r.value;
+    symbol = r.symbol;
+  }
+}
+if (value === undefined) throw new Error(`<Val example="${example}" name="${name}">: unknown name`);
+const unit = catalog.symbols[symbol]?.unit;
+if (unit === undefined) throw new Error(`<Val>: no unit for symbol ${symbol}`);
+---
+
+<span class="pe-val" title={`${example}: ${name}`}>{formatSI(value, unit, sig)}</span>

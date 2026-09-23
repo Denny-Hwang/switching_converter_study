@@ -1,0 +1,41 @@
+---
+/**
+ * <TryIt eq="buck.dcm.M" example="buck-light-load" sweep="K" /> -- deep link
+ * into the equation explorer with the inputs preset (in the URL hash) from a
+ * synthetic example.
+ */
+import { getEquation } from 'pe-core';
+import { ui } from '../i18n/ui';
+import { getExample } from '../lib/examples';
+import { pageHref } from '../lib/paths';
+import { pageLocale } from '../lib/locale';
+
+interface Props {
+  eq: string;
+  example: string;
+  /** Input to sweep on the plot (defaults to the first variable). */
+  sweep?: string;
+  /** Map equation inputs to example context names, e.g. {M: 'M_dcm'}. */
+  bind?: Record<string, string>;
+}
+const { eq, example, sweep, bind = {} } = Astro.props;
+const meta = getEquation(eq);
+const ex = getExample(example);
+const params = new URLSearchParams({ eq });
+for (const v of meta.variables) {
+  const val = ex.context[bind[v] ?? v];
+  if (val === undefined) throw new Error(`<TryIt eq="${eq}" example="${example}">: no value for input ${v}`);
+  params.set(v, String(val));
+}
+const sw = sweep ?? meta.variables[0];
+if (!sw || !meta.variables.includes(sw)) throw new Error(`<TryIt eq="${eq}">: cannot sweep "${sweep}"`);
+params.set('sweep', sw);
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const href = `${pageHref(locale, 'design/explorer')}#${params.toString()}`;
+---
+
+<p class="pe-tryit">
+  <a class="pe-tryit__link" href={href}>▶ {t['tryit.open']}: {locale === 'ko' ? meta.title_ko : meta.title}</a>
+  <br /><small>{t['tryit.preset']} <code>{example}</code></small>
+</p>

@@ -1,0 +1,48 @@
+---
+/**
+ * <Quiz id="02-theory/ccm-dcm" /> -- renders src/content/quizzes/<locale>/<id>.yaml.
+ * Answers and explanations sit in <details> so the page needs no JavaScript.
+ */
+import { getEntry } from 'astro:content';
+import { ui } from '../i18n/ui';
+import { renderInlineMath } from '../math/inline';
+import { pageLocale } from '../lib/locale';
+
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+const locale = pageLocale(Astro);
+const entry = await getEntry('quizzes', `${locale}/${id}`);
+if (!entry) throw new Error(`<Quiz id="${id}">: missing src/content/quizzes/${locale}/${id}.yaml`);
+const t = ui[locale];
+const letters = 'ABCDEF';
+for (const [i, q] of entry.data.questions.entries()) {
+  if (q.answer >= q.options.length) throw new Error(`quiz ${locale}/${id} question ${i + 1}: answer index out of range`);
+}
+---
+
+<p class="pe-quiz__note not-content"><small>{t['quiz.synthetic']}</small></p>
+<ol class="pe-quiz not-content">
+  {
+    entry.data.questions.map((q) => (
+      <li class="pe-quiz__q">
+        <p set:html={renderInlineMath(q.q)} />
+        <ol class="pe-quiz__options" type="A">
+          {q.options.map((o) => (
+            <li set:html={renderInlineMath(o)} />
+          ))}
+        </ol>
+        <details>
+          <summary>{t['quiz.answer']}</summary>
+          <p>
+            <strong>
+              {t['quiz.correct']}: {letters[q.answer]}
+            </strong>{' '}
+            <span set:html={renderInlineMath(q.explain)} />
+          </p>
+        </details>
+      </li>
+    ))
+  }
+</ol>

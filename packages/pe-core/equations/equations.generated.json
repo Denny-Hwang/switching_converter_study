@@ -105,417 +105,755 @@
     "A_L": {
       "latex": "A_L",
       "unit": "H",
-      "desc": "inductance factor: inductance per turn squared"
+      "desc": "inductance factor: inductance per turn squared",
+      "range": [
+        1e-08,
+        1e-05
+      ],
+      "scale": "log"
     },
     "A_e": {
       "latex": "A_e",
       "unit": "m²",
-      "desc": "effective core cross-section area"
+      "desc": "effective core cross-section area",
+      "range": [
+        1e-06,
+        0.001
+      ],
+      "scale": "log"
     },
     "B_ac": {
       "latex": "B_\\mathrm{ac}",
       "unit": "T",
-      "desc": "peak AC flux-density amplitude (half the peak-to-peak swing)"
+      "desc": "peak AC flux-density amplitude (half the peak-to-peak swing)",
+      "range": [
+        0.01,
+        0.3
+      ],
+      "scale": "log"
     },
     "B_pk": {
       "latex": "B_\\mathrm{pk}",
       "unit": "T",
-      "desc": "peak flux density"
+      "desc": "peak flux density",
+      "range": null,
+      "scale": "linear"
     },
     "C": {
       "latex": "C",
       "unit": "F",
-      "desc": "output filter capacitance"
+      "desc": "output filter capacitance",
+      "range": [
+        1e-07,
+        0.01
+      ],
+      "scale": "log"
     },
     "C_node": {
       "latex": "C_\\mathrm{node}",
       "unit": "F",
-      "desc": "total capacitance at the switch node"
+      "desc": "total capacitance at the switch node",
+      "range": [
+        1e-12,
+        1e-08
+      ],
+      "scale": "log"
     },
     "D": {
       "latex": "D",
       "unit": "1",
-      "desc": "duty ratio: switch on-time divided by T_s"
+      "desc": "duty ratio: switch on-time divided by T_s",
+      "range": [
+        0.05,
+        0.95
+      ],
+      "scale": "linear"
     },
     "D_2": {
       "latex": "D_2",
       "unit": "1",
-      "desc": "diode-conduction interval as a fraction of T_s (DCM)"
+      "desc": "diode-conduction interval as a fraction of T_s (DCM)",
+      "range": null,
+      "scale": "linear"
     },
     "D_max": {
       "latex": "D_\\mathrm{max}",
       "unit": "1",
-      "desc": "maximum duty ratio"
+      "desc": "maximum duty ratio",
+      "range": null,
+      "scale": "linear"
     },
     "Delta_B": {
       "latex": "\\Delta B",
       "unit": "T",
-      "desc": "flux-density swing, peak-to-peak"
+      "desc": "flux-density swing, peak-to-peak",
+      "range": null,
+      "scale": "linear"
     },
     "Delta_i_L": {
       "latex": "\\Delta i_L",
       "unit": "A",
-      "desc": "inductor current ripple, HALF of peak-to-peak (Erickson convention)"
+      "desc": "inductor current ripple, HALF of peak-to-peak (Erickson convention)",
+      "range": null,
+      "scale": "linear"
     },
     "Delta_i_pp": {
       "latex": "\\Delta i_{L,\\mathrm{pp}}",
       "unit": "A",
-      "desc": "inductor current ripple, peak-to-peak"
+      "desc": "inductor current ripple, peak-to-peak",
+      "range": null,
+      "scale": "linear"
     },
     "E_lk": {
       "latex": "E_\\mathrm{lk}",
       "unit": "J",
-      "desc": "energy stored in the leakage inductance at turn-off"
+      "desc": "energy stored in the leakage inductance at turn-off",
+      "range": [
+        1e-09,
+        0.01
+      ],
+      "scale": "log"
     },
     "G_c": {
       "latex": "G_c",
       "unit": "1",
-      "desc": "compensator gain magnitude"
+      "desc": "compensator gain magnitude",
+      "range": [
+        0.01,
+        1000.0
+      ],
+      "scale": "log"
     },
     "G_d0": {
       "latex": "G_{d0}",
       "unit": "V",
-      "desc": "dc gain of the control-to-output transfer function (magnitude)"
+      "desc": "dc gain of the control-to-output transfer function (magnitude)",
+      "range": null,
+      "scale": "linear"
     },
     "G_vd": {
       "latex": "G_{vd}",
       "unit": "V",
-      "desc": "control-to-output gain magnitude"
+      "desc": "control-to-output gain magnitude",
+      "range": [
+        0.1,
+        1000.0
+      ],
+      "scale": "log"
     },
     "H": {
       "latex": "H",
       "unit": "1",
-      "desc": "sensor (feedback divider) gain"
+      "desc": "sensor (feedback divider) gain",
+      "range": [
+        0.01,
+        1.0
+      ],
+      "scale": "linear"
     },
     "I_SENSE": {
       "latex": "I_\\mathrm{SENSE}",
       "unit": "A",
-      "desc": "current through the sense resistor"
+      "desc": "current through the sense resistor",
+      "range": [
+        0.001,
+        100.0
+      ],
+      "scale": "log"
     },
     "I_avg": {
       "latex": "I_\\mathrm{avg}",
       "unit": "A",
-      "desc": "average current"
+      "desc": "average current",
+      "range": [
+        0.001,
+        50.0
+      ],
+      "scale": "log"
     },
     "I_pk": {
       "latex": "I_\\mathrm{pk}",
       "unit": "A",
-      "desc": "peak current"
+      "desc": "peak current",
+      "range": [
+        0.001,
+        100.0
+      ],
+      "scale": "log"
     },
     "I_rms": {
       "latex": "I_\\mathrm{rms}",
       "unit": "A",
-      "desc": "rms current"
+      "desc": "rms current",
+      "range": [
+        0.001,
+        50.0
+      ],
+      "scale": "log"
     },
     "K": {
       "latex": "K",
       "unit": "1",
-      "desc": "dimensionless inductor parameter 2L/(R T_s)"
+      "desc": "dimensionless inductor parameter 2L/(R T_s)",
+      "range": [
+        0.001,
+        10.0
+      ],
+      "scale": "log"
     },
     "K_crit": {
       "latex": "K_\\mathrm{crit}",
       "unit": "1",
-      "desc": "value of K at the CCM/DCM boundary"
+      "desc": "value of K at the CCM/DCM boundary",
+      "range": [
+        0.001,
+        1.0
+      ],
+      "scale": "log"
     },
     "L": {
       "latex": "L",
       "unit": "H",
-      "desc": "inductance"
+      "desc": "inductance",
+      "range": [
+        1e-06,
+        0.01
+      ],
+      "scale": "log"
     },
     "L_M": {
       "latex": "L_M",
       "unit": "H",
-      "desc": "magnetizing inductance referred to the primary"
+      "desc": "magnetizing inductance referred to the primary",
+      "range": [
+        1e-06,
+        0.1
+      ],
+      "scale": "log"
+    },
+    "L_crit": {
+      "latex": "L_\\mathrm{crit}",
+      "unit": "H",
+      "desc": "critical inductance at the CCM/DCM boundary",
+      "range": null,
+      "scale": "linear"
     },
     "L_lk": {
       "latex": "L_\\mathrm{lk}",
       "unit": "H",
-      "desc": "leakage inductance referred to the primary"
+      "desc": "leakage inductance referred to the primary",
+      "range": [
+        1e-08,
+        0.0001
+      ],
+      "scale": "log"
     },
     "M": {
       "latex": "M",
       "unit": "1",
-      "desc": "conversion ratio V/V_g"
+      "desc": "conversion ratio V/V_g",
+      "range": null,
+      "scale": "linear"
     },
     "N": {
       "latex": "N",
       "unit": "1",
-      "desc": "number of turns"
+      "desc": "number of turns",
+      "range": [
+        1.0,
+        500.0
+      ],
+      "scale": "log"
     },
     "P": {
       "latex": "P",
       "unit": "W",
-      "desc": "power"
+      "desc": "power",
+      "range": null,
+      "scale": "linear"
     },
     "P_lk": {
       "latex": "P_\\mathrm{lk}",
       "unit": "W",
-      "desc": "leakage energy per cycle times switching frequency"
+      "desc": "leakage energy per cycle times switching frequency",
+      "range": null,
+      "scale": "linear"
     },
     "P_max": {
       "latex": "P_\\mathrm{max}",
       "unit": "W",
-      "desc": "maximum power available from a linear source"
+      "desc": "maximum power available from a linear source",
+      "range": null,
+      "scale": "linear"
     },
     "P_v": {
       "latex": "P_v",
       "unit": "W/m³",
-      "desc": "core loss per unit volume"
+      "desc": "core loss per unit volume",
+      "range": null,
+      "scale": "linear"
     },
     "Q": {
       "latex": "Q",
       "unit": "1",
-      "desc": "quality factor of the LC poles"
+      "desc": "quality factor of the LC poles",
+      "range": null,
+      "scale": "linear"
     },
     "Q_g": {
       "latex": "Q_g",
       "unit": "C",
-      "desc": "total gate charge at V_GS"
+      "desc": "total gate charge at V_GS",
+      "range": [
+        1e-09,
+        5e-07
+      ],
+      "scale": "log"
     },
     "R": {
       "latex": "R",
       "unit": "Ω",
-      "desc": "load resistance"
+      "desc": "load resistance",
+      "range": [
+        0.1,
+        10000.0
+      ],
+      "scale": "log"
     },
     "R_IN": {
       "latex": "R_\\mathrm{IN}",
       "unit": "Ω",
-      "desc": "gain-setting input resistor of a current-output sense amplifier"
+      "desc": "gain-setting input resistor of a current-output sense amplifier",
+      "range": [
+        10.0,
+        10000.0
+      ],
+      "scale": "log"
     },
     "R_L": {
       "latex": "R_L",
       "unit": "Ω",
-      "desc": "inductor winding (copper) resistance"
+      "desc": "inductor winding (copper) resistance",
+      "range": [
+        0.001,
+        10.0
+      ],
+      "scale": "log"
     },
     "R_OUT": {
       "latex": "R_\\mathrm{OUT}",
       "unit": "Ω",
-      "desc": "output resistor of a current-output sense amplifier"
+      "desc": "output resistor of a current-output sense amplifier",
+      "range": [
+        1000.0,
+        1000000.0
+      ],
+      "scale": "log"
     },
     "R_SENSE": {
       "latex": "R_\\mathrm{SENSE}",
       "unit": "Ω",
-      "desc": "current-sense (shunt) resistor"
+      "desc": "current-sense (shunt) resistor",
+      "range": [
+        0.0001,
+        1.0
+      ],
+      "scale": "log"
     },
     "R_in": {
       "latex": "R_\\mathrm{in}",
       "unit": "Ω",
-      "desc": "emulated (loss-free) input resistance"
+      "desc": "emulated (loss-free) input resistance",
+      "range": null,
+      "scale": "linear"
     },
     "R_s": {
       "latex": "R_s",
       "unit": "Ω",
-      "desc": "source (Thevenin) resistance"
+      "desc": "source (Thevenin) resistance",
+      "range": [
+        1.0,
+        10000000.0
+      ],
+      "scale": "log"
     },
     "R_x": {
       "latex": "R_x",
       "unit": "Ω",
-      "desc": "resistance carrying the current (R_DS(on), winding DCR, ESR, ...)"
+      "desc": "resistance carrying the current (R_DS(on), winding DCR, ESR, ...)",
+      "range": [
+        0.001,
+        10.0
+      ],
+      "scale": "log"
     },
     "S_dist": {
       "latex": "S",
       "unit": "1",
-      "desc": "fraction of an output disturbance that remains with the loop closed"
+      "desc": "fraction of an output disturbance that remains with the loop closed",
+      "range": null,
+      "scale": "linear"
     },
     "T_loop": {
       "latex": "T",
       "unit": "1",
-      "desc": "loop gain magnitude"
+      "desc": "loop gain magnitude",
+      "range": [
+        0.01,
+        10000.0
+      ],
+      "scale": "log"
     },
     "T_s": {
       "latex": "T_s",
       "unit": "s",
-      "desc": "switching period"
+      "desc": "switching period",
+      "range": [
+        1e-06,
+        0.001
+      ],
+      "scale": "log"
     },
     "V": {
       "latex": "V",
       "unit": "V",
-      "desc": "output voltage (magnitude, where the topology inverts)"
+      "desc": "output voltage (magnitude, where the topology inverts)",
+      "range": [
+        1.0,
+        400.0
+      ],
+      "scale": "log"
     },
     "V_D": {
       "latex": "V_D",
       "unit": "V",
-      "desc": "forward drop of the output diode"
+      "desc": "forward drop of the output diode",
+      "range": [
+        0.1,
+        1.5
+      ],
+      "scale": "linear"
     },
     "V_DS": {
       "latex": "V_\\mathrm{DS}",
       "unit": "V",
-      "desc": "switch drain-source voltage while the switch is off"
+      "desc": "switch drain-source voltage while the switch is off",
+      "range": null,
+      "scale": "linear"
     },
     "V_F": {
       "latex": "V_F",
       "unit": "V",
-      "desc": "diode forward-voltage intercept"
+      "desc": "diode forward-voltage intercept",
+      "range": [
+        0.2,
+        1.5
+      ],
+      "scale": "linear"
     },
     "V_GS": {
       "latex": "V_\\mathrm{GS}",
       "unit": "V",
-      "desc": "gate-drive voltage amplitude"
+      "desc": "gate-drive voltage amplitude",
+      "range": [
+        3.0,
+        20.0
+      ],
+      "scale": "linear"
     },
     "V_M": {
       "latex": "V_M",
       "unit": "V",
-      "desc": "peak-to-peak amplitude of the PWM ramp"
+      "desc": "peak-to-peak amplitude of the PWM ramp",
+      "range": [
+        0.5,
+        5.0
+      ],
+      "scale": "linear"
     },
     "V_OUT": {
       "latex": "V_\\mathrm{OUT}",
       "unit": "V",
-      "desc": "output voltage of a current-output sense amplifier across R_OUT"
+      "desc": "output voltage of a current-output sense amplifier across R_OUT",
+      "range": null,
+      "scale": "linear"
     },
     "V_R": {
       "latex": "V_R",
       "unit": "V",
-      "desc": "reverse voltage across the output diode while the switch is on"
+      "desc": "reverse voltage across the output diode while the switch is on",
+      "range": null,
+      "scale": "linear"
     },
     "V_c": {
       "latex": "V_c",
       "unit": "V",
-      "desc": "voltage held by a constant-voltage sink"
+      "desc": "voltage held by a constant-voltage sink",
+      "range": [
+        0.01,
+        1000.0
+      ],
+      "scale": "log"
     },
     "V_ctrl": {
       "latex": "V_\\mathrm{ctrl}",
       "unit": "V",
-      "desc": "PWM control voltage"
+      "desc": "PWM control voltage",
+      "range": [
+        0.01,
+        5.0
+      ],
+      "scale": "log"
     },
     "V_g": {
       "latex": "V_g",
       "unit": "V",
-      "desc": "input (generator) voltage"
+      "desc": "input (generator) voltage",
+      "range": [
+        1.0,
+        400.0
+      ],
+      "scale": "log"
     },
     "V_gcrit": {
       "latex": "V_{g,\\mathrm{crit}}",
       "unit": "V",
-      "desc": "input voltage at the CCM/DCM boundary for a fixed D and a fixed output voltage"
+      "desc": "input voltage at the CCM/DCM boundary for a fixed D and a fixed output voltage",
+      "range": null,
+      "scale": "linear"
     },
     "V_oc": {
       "latex": "V_\\mathrm{oc}",
       "unit": "V",
-      "desc": "open-circuit (Thevenin) voltage of a linear source"
+      "desc": "open-circuit (Thevenin) voltage of a linear source",
+      "range": [
+        0.1,
+        1000.0
+      ],
+      "scale": "log"
     },
     "V_sw": {
       "latex": "V_\\mathrm{sw}",
       "unit": "V",
-      "desc": "voltage across C_node when the switch turns on"
+      "desc": "voltage across C_node when the switch turns on",
+      "range": [
+        1.0,
+        800.0
+      ],
+      "scale": "log"
     },
     "V_w": {
       "latex": "V_w",
       "unit": "V",
-      "desc": "voltage applied across a winding during t_on"
+      "desc": "voltage applied across a winding during t_on",
+      "range": [
+        1.0,
+        400.0
+      ],
+      "scale": "log"
     },
     "alpha": {
       "latex": "\\alpha",
       "unit": "1",
-      "desc": "Steinmetz frequency exponent"
+      "desc": "Steinmetz frequency exponent",
+      "range": [
+        1.0,
+        2.0
+      ],
+      "scale": "linear"
     },
     "beta": {
       "latex": "\\beta",
       "unit": "1",
-      "desc": "Steinmetz flux-density exponent"
+      "desc": "Steinmetz flux-density exponent",
+      "range": [
+        2.0,
+        3.0
+      ],
+      "scale": "linear"
     },
     "eta": {
       "latex": "\\eta",
       "unit": "1",
-      "desc": "efficiency P_out/P_in"
+      "desc": "efficiency P_out/P_in",
+      "range": null,
+      "scale": "linear"
     },
     "eta_ext": {
       "latex": "\\eta_\\mathrm{ext}",
       "unit": "1",
-      "desc": "extracted power as a fraction of the available maximum"
+      "desc": "extracted power as a fraction of the available maximum",
+      "range": null,
+      "scale": "linear"
     },
     "f": {
       "latex": "f",
       "unit": "Hz",
-      "desc": "excitation frequency"
+      "desc": "excitation frequency",
+      "range": [
+        1000.0,
+        1000000.0
+      ],
+      "scale": "log"
     },
     "f_ring": {
       "latex": "f_\\mathrm{ring}",
       "unit": "Hz",
-      "desc": "ringing frequency"
+      "desc": "ringing frequency",
+      "range": null,
+      "scale": "linear"
     },
     "f_s": {
       "latex": "f_s",
       "unit": "Hz",
-      "desc": "switching frequency 1/T_s"
+      "desc": "switching frequency 1/T_s",
+      "range": [
+        1000.0,
+        1000000.0
+      ],
+      "scale": "log"
     },
     "i_Coff": {
       "latex": "i_{C,\\mathrm{off}}",
       "unit": "A",
-      "desc": "capacitor current during the off-interval"
+      "desc": "capacitor current during the off-interval",
+      "range": null,
+      "scale": "linear"
     },
     "i_Con": {
       "latex": "i_{C,\\mathrm{on}}",
       "unit": "A",
-      "desc": "capacitor current during the on-interval"
+      "desc": "capacitor current during the on-interval",
+      "range": [
+        0.001,
+        100.0
+      ],
+      "scale": "log"
     },
     "k": {
       "latex": "k",
       "unit": "W/m³",
-      "desc": "Steinmetz coefficient (with f in Hz and B in T)"
+      "desc": "Steinmetz coefficient (with f in Hz and B in T)",
+      "range": [
+        0.1,
+        100.0
+      ],
+      "scale": "log"
     },
     "l_e": {
       "latex": "l_e",
       "unit": "m",
-      "desc": "effective magnetic path length of the core"
+      "desc": "effective magnetic path length of the core",
+      "range": [
+        0.005,
+        0.3
+      ],
+      "scale": "log"
     },
     "l_g": {
       "latex": "l_g",
       "unit": "m",
-      "desc": "total air-gap length"
+      "desc": "total air-gap length",
+      "range": [
+        1e-05,
+        0.005
+      ],
+      "scale": "log"
     },
     "mu_0": {
       "latex": "\\mu_0",
       "unit": "H/m",
-      "desc": "permeability of free space, 4π·10⁻⁷ H/m"
+      "desc": "permeability of free space, 4π·10⁻⁷ H/m",
+      "range": null,
+      "scale": "linear"
     },
     "mu_i": {
       "latex": "\\mu_i",
       "unit": "1",
-      "desc": "initial relative permeability of the core material"
+      "desc": "initial relative permeability of the core material",
+      "range": [
+        100.0,
+        20000.0
+      ],
+      "scale": "log"
     },
     "n": {
       "latex": "n",
       "unit": "1",
-      "desc": "transformer turns ratio N_s/N_p (1:n convention)"
+      "desc": "transformer turns ratio N_s/N_p (1:n convention)",
+      "range": [
+        0.1,
+        10.0
+      ],
+      "scale": "log"
     },
     "n_r": {
       "latex": "n_r",
       "unit": "1",
-      "desc": "reset-winding to primary turns ratio N_r/N_p"
+      "desc": "reset-winding to primary turns ratio N_r/N_p",
+      "range": [
+        0.25,
+        4.0
+      ],
+      "scale": "log"
     },
     "omega_0": {
       "latex": "\\omega_0",
       "unit": "rad/s",
-      "desc": "angular resonant (corner) frequency of the LC poles"
+      "desc": "angular resonant (corner) frequency of the LC poles",
+      "range": null,
+      "scale": "linear"
     },
     "omega_z": {
       "latex": "\\omega_z",
       "unit": "rad/s",
-      "desc": "angular frequency of the right-half-plane zero"
+      "desc": "angular frequency of the right-half-plane zero",
+      "range": null,
+      "scale": "linear"
     },
     "r_d": {
       "latex": "r_d",
       "unit": "Ω",
-      "desc": "diode dynamic (slope) resistance"
+      "desc": "diode dynamic (slope) resistance",
+      "range": [
+        0.001,
+        1.0
+      ],
+      "scale": "log"
     },
     "t_on": {
       "latex": "t_\\mathrm{on}",
       "unit": "s",
-      "desc": "switch on-time"
+      "desc": "switch on-time",
+      "range": [
+        1e-07,
+        0.001
+      ],
+      "scale": "log"
     },
     "v_Loff": {
       "latex": "v_{L,\\mathrm{off}}",
       "unit": "V",
-      "desc": "inductor voltage during the off-interval"
+      "desc": "inductor voltage during the off-interval",
+      "range": null,
+      "scale": "linear"
     },
     "v_Lon": {
       "latex": "v_{L,\\mathrm{on}}",
       "unit": "V",
-      "desc": "inductor voltage during the on-interval"
+      "desc": "inductor voltage during the on-interval",
+      "range": [
+        0.1,
+        400.0
+      ],
+      "scale": "log"
     },
     "v_s_avg": {
       "latex": "\\langle v_s \\rangle",
       "unit": "V",
-      "desc": "average (dc component) of the switch-node voltage"
+      "desc": "average (dc component) of the switch-node voltage",
+      "range": null,
+      "scale": "linear"
     }
   },
   "constants": {
@@ -558,7 +896,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 153
+      "yaml_line": 154
     },
     "boost.ccm.M": {
       "id": "boost.ccm.M",
@@ -593,7 +931,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 168
+      "yaml_line": 169
     },
     "buckboost.ccm.M": {
       "id": "buckboost.ccm.M",
@@ -628,7 +966,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 183
+      "yaml_line": 184
     },
     "flyback.ccm.M": {
       "id": "flyback.ccm.M",
@@ -665,7 +1003,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 198
+      "yaml_line": 199
     },
     "forward.ccm.M": {
       "id": "forward.ccm.M",
@@ -702,7 +1040,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 213
+      "yaml_line": 214
     },
     "forward.reset.Dmax": {
       "id": "forward.reset.Dmax",
@@ -735,7 +1073,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 228
+      "yaml_line": 229
     },
     "buck.ripple.iL": {
       "id": "buck.ripple.iL",
@@ -778,7 +1116,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 246
+      "yaml_line": 247
     },
     "buck.ripple.iL_pp": {
       "id": "buck.ripple.iL_pp",
@@ -821,7 +1159,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 260
+      "yaml_line": 261
     },
     "K.def": {
       "id": "K.def",
@@ -857,7 +1195,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 277
+      "yaml_line": 278
     },
     "Kcrit.buck": {
       "id": "Kcrit.buck",
@@ -893,7 +1231,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 290
+      "yaml_line": 291
     },
     "Kcrit.boost": {
       "id": "Kcrit.boost",
@@ -929,7 +1267,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 303
+      "yaml_line": 304
     },
     "Kcrit.buckboost": {
       "id": "Kcrit.buckboost",
@@ -965,7 +1303,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 318
+      "yaml_line": 319
     },
     "Kcrit.flyback": {
       "id": "Kcrit.flyback",
@@ -1003,7 +1341,47 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 331
+      "yaml_line": 332
+    },
+    "L.crit": {
+      "id": "L.crit",
+      "title": "Critical inductance at the CCM/DCM boundary",
+      "title_ko": "CCM/DCM 경계의 임계 인덕턴스",
+      "latex": "L_\\mathrm{crit} = \\frac{K_\\mathrm{crit} R T_s}{2}",
+      "lhs": "L_crit",
+      "expr": "K_crit*R*T_s/2",
+      "relation": "eq",
+      "variables": [
+        "K_crit",
+        "R",
+        "T_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "K_crit": "critical K of the topology at the operating duty ratio",
+        "R": "load resistance",
+        "T_s": "switching period"
+      },
+      "assumptions": [
+        "ideal",
+        "bcm",
+        "steady_state",
+        "small_ripple",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the converter stays in CCM for $L > L_\\mathrm{crit}$; check the largest $R$ (lightest load) and the duty ratio that maximises $K_\\mathrm{crit}$ over the input range",
+      "notes_ko": "$L > L_\\mathrm{crit}$이면 CCM을 유지한다; 가장 큰 $R$(가장 가벼운 부하)과 입력 범위에서 $K_\\mathrm{crit}$을 최대로 만드는 듀티비에서 확인한다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 5 (The Discontinuous Conduction Mode)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/dcm.py",
+      "n_tests": 8,
+      "yaml_line": 347
     },
     "buck.dcm.M": {
       "id": "buck.dcm.M",
@@ -1041,7 +1419,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 349
+      "yaml_line": 365
     },
     "boost.dcm.M": {
       "id": "boost.dcm.M",
@@ -1079,7 +1457,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 364
+      "yaml_line": 380
     },
     "buckboost.dcm.M": {
       "id": "buckboost.dcm.M",
@@ -1117,7 +1495,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 379
+      "yaml_line": 395
     },
     "flyback.dcm.M": {
       "id": "flyback.dcm.M",
@@ -1155,7 +1533,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 394
+      "yaml_line": 410
     },
     "dcm.P_in": {
       "id": "dcm.P_in",
@@ -1199,7 +1577,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 414
+      "yaml_line": 430
     },
     "lfr.R_in": {
       "id": "lfr.R_in",
@@ -1241,7 +1619,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 430
+      "yaml_line": 446
     },
     "flyback.V_crit": {
       "id": "flyback.V_crit",
@@ -1283,7 +1661,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 446
+      "yaml_line": 462
     },
     "flyback.Vds_off": {
       "id": "flyback.Vds_off",
@@ -1323,7 +1701,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 460
+      "yaml_line": 476
     },
     "flyback.Vds_clamped": {
       "id": "flyback.Vds_clamped",
@@ -1365,7 +1743,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 474
+      "yaml_line": 490
     },
     "flyback.diode.VR": {
       "id": "flyback.diode.VR",
@@ -1402,7 +1780,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 488
+      "yaml_line": 504
     },
     "flyback.Ipk.dcm": {
       "id": "flyback.Ipk.dcm",
@@ -1442,7 +1820,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 500
+      "yaml_line": 516
     },
     "flyback.leak.E": {
       "id": "flyback.leak.E",
@@ -1476,7 +1854,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 517
+      "yaml_line": 533
     },
     "flyback.leak.P": {
       "id": "flyback.leak.P",
@@ -1511,7 +1889,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 531
+      "yaml_line": 547
     },
     "dcm.ring.f": {
       "id": "dcm.ring.f",
@@ -1545,7 +1923,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 545
+      "yaml_line": 561
     },
     "loss.cond": {
       "id": "loss.cond",
@@ -1579,7 +1957,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 559
+      "yaml_line": 575
     },
     "loss.sw.cap": {
       "id": "loss.sw.cap",
@@ -1617,7 +1995,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 571
+      "yaml_line": 587
     },
     "loss.gate": {
       "id": "loss.gate",
@@ -1653,7 +2031,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 583
+      "yaml_line": 599
     },
     "loss.diode": {
       "id": "loss.diode",
@@ -1691,7 +2069,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 597
+      "yaml_line": 613
     },
     "loss.steinmetz": {
       "id": "loss.steinmetz",
@@ -1735,7 +2113,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 609
+      "yaml_line": 625
     },
     "mag.L_from_AL": {
       "id": "mag.L_from_AL",
@@ -1773,7 +2151,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 630
+      "yaml_line": 646
     },
     "mag.AL_gap": {
       "id": "mag.AL_gap",
@@ -1820,7 +2198,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 8,
-      "yaml_line": 644
+      "yaml_line": 660
     },
     "mag.B_pk": {
       "id": "mag.B_pk",
@@ -1863,7 +2241,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 662
+      "yaml_line": 678
     },
     "mag.dB_faraday": {
       "id": "mag.dB_faraday",
@@ -1905,7 +2283,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 676
+      "yaml_line": 692
     },
     "src.Pmax": {
       "id": "src.Pmax",
@@ -1939,7 +2317,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 695
+      "yaml_line": 711
     },
     "src.cv_extraction": {
       "id": "src.cv_extraction",
@@ -1973,7 +2351,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 709
+      "yaml_line": 725
     },
     "sense.current_out_monitor": {
       "id": "sense.current_out_monitor",
@@ -2011,7 +2389,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 725
+      "yaml_line": 741
     },
     "def.Ts": {
       "id": "def.Ts",
@@ -2043,7 +2421,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 742
+      "yaml_line": 758
     },
     "def.V": {
       "id": "def.V",
@@ -2077,7 +2455,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 753
+      "yaml_line": 769
     },
     "sw.v_avg": {
       "id": "sw.v_avg",
@@ -2112,7 +2490,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 768
+      "yaml_line": 784
     },
     "vsb.v_off": {
       "id": "vsb.v_off",
@@ -2147,7 +2525,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 782
+      "yaml_line": 798
     },
     "csb.i_off": {
       "id": "csb.i_off",
@@ -2182,7 +2560,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 796
+      "yaml_line": 812
     },
     "buck.dcm.D2": {
       "id": "buck.dcm.D2",
@@ -2209,8 +2587,8 @@
       ],
       "convention": "",
       "convention_ko": "",
-      "notes": "the idle interval is $D_3 = 1 - D - D_2$",
-      "notes_ko": "휴지 구간은 $D_3 = 1 - D - D_2$",
+      "notes": "the idle interval is $D_3 = 1 - D - D_2$; $D_2 \\le 1 - D$ holds exactly when $M \\ge D$, so a DCM buck always has $M > D$",
+      "notes_ko": "휴지 구간은 $D_3 = 1 - D - D_2$; $D_2 \\le 1 - D$는 $M \\ge D$일 때에만 성립하므로 DCM 벅은 언제나 $M > D$",
       "cites": [
         {
           "key": "erickson2020",
@@ -2219,7 +2597,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 7,
-      "yaml_line": 810
+      "yaml_line": 826
     },
     "boost.ccm.M_RL": {
       "id": "boost.ccm.M_RL",
@@ -2259,7 +2637,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 825
+      "yaml_line": 842
     },
     "boost.ccm.eta_RL": {
       "id": "boost.ccm.eta_RL",
@@ -2299,7 +2677,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 839
+      "yaml_line": 856
     },
     "buck.ss.Gd0": {
       "id": "buck.ss.Gd0",
@@ -2334,7 +2712,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 854
+      "yaml_line": 871
     },
     "buck.ss.w0": {
       "id": "buck.ss.w0",
@@ -2371,7 +2749,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 868
+      "yaml_line": 885
     },
     "buck.ss.Q": {
       "id": "buck.ss.Q",
@@ -2410,7 +2788,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 880
+      "yaml_line": 897
     },
     "boost.ss.Gd0": {
       "id": "boost.ss.Gd0",
@@ -2447,7 +2825,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 892
+      "yaml_line": 909
     },
     "boost.ss.w0": {
       "id": "boost.ss.w0",
@@ -2486,7 +2864,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 906
+      "yaml_line": 923
     },
     "boost.ss.Q": {
       "id": "boost.ss.Q",
@@ -2527,7 +2905,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 918
+      "yaml_line": 935
     },
     "boost.ss.wz": {
       "id": "boost.ss.wz",
@@ -2566,7 +2944,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 930
+      "yaml_line": 947
     },
     "buckboost.ss.Gd0": {
       "id": "buckboost.ss.Gd0",
@@ -2603,7 +2981,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 944
+      "yaml_line": 961
     },
     "buckboost.ss.w0": {
       "id": "buckboost.ss.w0",
@@ -2642,7 +3020,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 958
+      "yaml_line": 975
     },
     "buckboost.ss.Q": {
       "id": "buckboost.ss.Q",
@@ -2683,7 +3061,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 970
+      "yaml_line": 987
     },
     "buckboost.ss.wz": {
       "id": "buckboost.ss.wz",
@@ -2722,7 +3100,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 982
+      "yaml_line": 999
     },
     "pwm.d": {
       "id": "pwm.d",
@@ -2756,7 +3134,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 997
+      "yaml_line": 1014
     },
     "loop.T": {
       "id": "loop.T",
@@ -2794,7 +3172,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1012
+      "yaml_line": 1029
     },
     "loop.suppression": {
       "id": "loop.suppression",
@@ -2827,7 +3205,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1026
+      "yaml_line": 1043
     }
   }
 }

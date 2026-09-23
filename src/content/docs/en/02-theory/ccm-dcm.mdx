@@ -1,0 +1,146 @@
+---
+title: CCM and DCM
+description: Why a converter with a diode enters the discontinuous conduction mode at light load, how the extra interval is found, and how the DCM conversion ratio depends on the load.
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Explain why the discontinuous conduction mode (DCM) appears at light load when the second switch is a diode.
+- Compute the diode-conduction interval and the DCM conversion ratio of the buck, boost and buck-boost.
+- Recognise DCM on an oscilloscope from its waveforms.
+
+## Theory
+
+### Where DCM comes from
+
+In the basic converters the second switch is a diode, which conducts in one
+direction only. The inductor current is a dc value plus a triangular ripple.
+When the load gets lighter, the dc value falls but the ripple does not: in
+CCM the ripple depends only on the applied voltages, $L$ and $T_s$. Once the
+lower peak of the ripple reaches zero, the diode stops conducting before the
+period ends, and the inductor current stays at zero until the switch turns
+on again <Cite key="erickson2020" where="Ch. 5" />. Each period now has three
+subintervals: the switch conducts for $D T_s$, the diode for $D_2 T_s$, and
+neither for the remaining $D_3 T_s$. This is the **discontinuous conduction
+mode (DCM)**. The normal case, in which the inductor current never reaches
+zero, is the **continuous conduction mode (CCM)**.
+
+Which mode a converter runs in is decided by the dimensionless parameter
+<EqRef id="K.def" label="K" /> and its critical value; see the
+[K-parameter page](../k-parameter/).
+
+### Analysing DCM
+
+Volt-second balance and charge balance still hold, but two things change
+<Cite key="erickson2020" where="Ch. 5" />:
+
+1. The diode interval $D_2$ is a new unknown, so a second equation is needed.
+2. The inductor current ripple is no longer small compared with its dc value,
+   so the small-ripple approximation must not be applied to the inductor
+   current. Its average is computed from the actual triangular waveform.
+
+For the buck, volt-second balance over the switch and diode intervals gives
+the diode interval in terms of the conversion ratio:
+
+<Eq id="buck.dcm.D2" />
+
+Charge balance then sets the average inductor current, a triangle that
+starts and ends at zero, equal to the load current. Solving the two
+conditions together gives the buck DCM conversion ratio:
+
+<Eq id="buck.dcm.M" />
+
+The boost and the buck-boost follow the same route, with the average diode
+current set equal to the load current:
+
+<Eq id="boost.dcm.M" />
+
+<Eq id="buckboost.dcm.M" />
+
+The derivations, step by step, are on the
+[derivations page](../derivations/#deriv-dcm).
+
+### What changes in DCM
+
+- **The conversion ratio depends on the load.** In CCM, $M$ is a function
+  of $D$ alone; in DCM it also depends on $K$, and so on $R$. As the load is
+  removed, $K$ goes to zero: the buck output rises towards $V_g$, and the
+  boost and buck-boost outputs rise without bound, as the equations above
+  show. An open-loop converter must therefore never run without a load.
+- **The peak inductor current no longer depends on the load.** Each period
+  starts from zero current, so the peak is set by the voltage applied during
+  $D T_s$, by $L$ and by $T_s$.
+- **The switch node rings during the idle interval.** A real switch node has
+  capacitance, from the switch and the diode. When the inductor current
+  reaches zero, that capacitance and the inductor form a lightly damped L-C
+  circuit, which rings at
+
+<Eq id="dcm.ring.f" />
+
+## Worked example
+
+The synthetic buck from the [switching-principle page](../switching-principle/),
+now with a ten-times lighter load:
+
+<Worked example="buck-light-load" />
+
+The CCM formula would predict an output ratio of
+<Val example="buck-light-load" name="M_ccm" />. In DCM the ratio is
+<Val example="buck-light-load" name="M_dcm" />, so the output is
+<Val example="buck-light-load" name="V_dcm" /> rather than half the input.
+The diode conducts for a fraction <Val example="buck-light-load" name="D_2" />
+of the period; together with the switch's <Val example="buck-light-load" name="D" />,
+that leaves an idle interval.
+
+## Try it
+
+<TryIt eq="buck.dcm.M" example="buck-light-load" sweep="K" />
+
+Sweep $K$ over several decades (logarithmic axis). At small $K$ the ratio
+approaches 1. As $K$ grows the ratio falls, and it equals the CCM value $D$
+exactly where $K$ reaches $K_\mathrm{crit}$. Beyond that point the converter
+is in CCM and this formula no longer applies, although the explorer keeps
+plotting it.
+
+## Bench exercise
+
+Take a buck converter with a diode rectifier, such as a low-voltage
+evaluation board with an asynchronous controller in fixed-frequency mode,
+and a resistive load you can vary. Watch the inductor current with a
+current probe, and the switch node with a voltage probe, while you lighten
+the load. Note the load at which the current first touches zero, the
+appearance of the idle interval, and the ringing on the switch node during
+it. Check that, with the duty ratio held fixed, the output voltage rises as
+the load gets lighter.
+
+## Gotchas
+
+- **Synchronous rectification removes DCM.** DCM arises because the diode
+  cannot carry reverse current. A transistor driven as the complement of the
+  main switch conducts in both directions, so the inductor current simply
+  goes negative at light load and the converter stays in CCM <Cite key="erickson2020" where="Ch. 5" />.
+- **"Light load" is relative.** Whether a given load is light depends on
+  $L$, $T_s$ and $D$ as well as on $R$; compare $K$ with $K_\mathrm{crit}$
+  rather than trusting intuition.
+- **Do not use CCM formulas in DCM.** Ripple, peak current and conversion
+  ratio all follow different expressions once the current reaches zero.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch5', 'coursera-converter-circuits', 'ti-slva057']} />
+
+## Quiz
+
+<Quiz id="02-theory/ccm-dcm" />

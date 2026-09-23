@@ -1,0 +1,51 @@
+# Quiz for 02-theory/volt-second-charge-balance. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'Why is the average inductor voltage over one period zero in periodic steady state?'
+    options:
+      - 'Because the inductor has no resistance'
+      - 'Because the inductor current ends each period at the value it started with, so the integral of $v_L$ over the period is zero'
+      - 'Because the switch is ideal'
+      - 'Because the output capacitor is large'
+    answer: 1
+    explain: 'The integral of the inductor voltage over a period equals $L$ times the change in inductor current over that period. In periodic steady state the current returns to its starting value, so the integral, and the average, are zero. No ideality assumption is needed.'
+  - q: 'An inductor sees $+10\,\mathrm{V}$ during the on-interval, with $D = 0.2$. What voltage must it see during the off-interval in steady state?'
+    options:
+      - '$-10\,\mathrm{V}$'
+      - '$-2.5\,\mathrm{V}$'
+      - '$+2.5\,\mathrm{V}$'
+      - '$-40\,\mathrm{V}$'
+    answer: 1
+    explain: 'The positive volt-seconds, $10\,\mathrm{V}$ for $0.2\,T_s$, must be cancelled during the off-interval of $0.8\,T_s$, which takes a quarter of the magnitude with the opposite sign.'
+  - q: 'Which condition gives the dc currents in a converter, for example the dc inductor current of a boost?'
+    options:
+      - 'Inductor volt-second balance'
+      - 'The small-ripple approximation alone'
+      - 'Capacitor charge balance'
+      - 'Kirchhoff''s voltage law around the switch'
+    answer: 2
+    explain: 'Volt-second balance relates voltages; charge balance on the output capacitor relates the currents flowing into it during each interval, and so fixes the dc inductor current in terms of the load current.'
+  - q: 'An ideal boost converter in CCM runs at $D = 0.75$ from a $5\,\mathrm{V}$ input. What is its output voltage?'
+    options:
+      - '$6.7\,\mathrm{V}$'
+      - '$15\,\mathrm{V}$'
+      - '$20\,\mathrm{V}$'
+      - '$3.75\,\mathrm{V}$'
+    answer: 2
+    explain: 'The boost ratio is $1/(1 - D)$, which is 4 at this duty ratio, so the output is four times the input.'
+  - q: 'For which duty ratios is the output magnitude of an ideal CCM buck-boost larger than its input voltage?'
+    options:
+      - '$D > 0.5$'
+      - '$D < 0.5$'
+      - 'For every $D$'
+      - 'For no $D$: it can only step down'
+    answer: 0
+    explain: 'The magnitude of the ratio is $D/(1 - D)$, which exceeds 1 exactly when $D$ exceeds $1 - D$, that is for $D > 0.5$.'
+  - q: 'During a load step, the average inductor voltage over a switching period is not zero. What does that tell you?'
+    options:
+      - 'The converter has entered DCM'
+      - 'The small-ripple approximation is violated'
+      - 'The inductor is saturating'
+      - 'The inductor current is changing from one period to the next'
+    answer: 3
+    explain: 'A non-zero average inductor voltage means a net change of inductor current over the period. Volt-second balance holds only in steady state; during a transient the imbalance is what moves the current to its new value.'

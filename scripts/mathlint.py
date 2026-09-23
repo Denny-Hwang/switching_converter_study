@@ -10,7 +10,9 @@ Scans src/content/docs/**/*.md(x) except **/scratch/** (unpublished) and fails o
   * <Eq id="..."> whose id is not in equations.generated.json, has no test
     vectors, or is not a string literal
   * the same <Eq id> embedded twice in one locale (each formula appears once;
-    refer back to it with a link)
+    refer back to it with a link); pages under about/ document the site and
+    may show an equation to demonstrate the pipeline without counting as
+    its home
   * <Derivation module="..."> naming an unknown module, and a derivations page
     that does not render every derivation module
 
@@ -97,7 +99,8 @@ def main() -> int:
                 errors.append(f"{rel}:{ln}: <Eq id=\"{eq_id}\"> is not in equations.generated.json")
             elif catalog[eq_id]["n_tests"] < 1:
                 errors.append(f"{rel}:{ln}: <Eq id=\"{eq_id}\"> has no test vectors")
-            homes[(locale, eq_id)].append(f"{rel}:{ln}")
+            if path.relative_to(DOCS).parts[1:2] != ("about",):
+                homes[(locale, eq_id)].append(f"{rel}:{ln}")
 
         for m in re.finditer(r"<Derivation\b[^>]*\bmodule\s*=\s*\"([^\"]+)\"", text):
             if m.group(1) not in modules:

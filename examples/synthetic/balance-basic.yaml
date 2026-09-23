@@ -1,6 +1,6 @@
 synthetic: true
 label: "Synthetic balance example (round numbers, not a real design)"
-label_ko: "합성 평형 예제(라운드 넘버이며 실제 설계가 아님)"
+label_ko: "합성 평형 예제 (단순한 어림수이며 실제 설계가 아님)"
 params:
   D: 0.25
   v_Lon: 12

@@ -1,0 +1,51 @@
+# Quiz for 02-theory/averaged-models. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'In the averaged dc model of a converter in CCM, what does the switch network become?'
+    options:
+      - 'A resistor equal to the load resistance'
+      - 'An ideal dc transformer whose turns ratio is the conversion ratio'
+      - 'A short circuit'
+      - 'A current source equal to the inductor current'
+    answer: 1
+    explain: 'Averaged over a period, the switches transfer power from input to output without loss, scaling voltage by $M(D)$ and current by its inverse, like an ideal transformer that also works at dc.'
+  - q: 'In a boost converter with inductor winding resistance, what happens to the conversion ratio as $D$ approaches 1?'
+    options:
+      - 'It grows without bound, as in the ideal case'
+      - 'It settles at a constant value'
+      - 'It reaches a maximum and then falls towards zero'
+      - 'It oscillates'
+    answer: 2
+    explain: 'The ideal ratio is multiplied by a factor that falls to zero as $D$ approaches 1: the inductor current grows so fast that the loss in the winding resistance takes all the additional input power.'
+  - q: 'A boost converter runs at $D = 0.5$ with $R_L = 0.1\,\Omega$ and $R = 10\,\Omega$. What is its efficiency, if only $R_L$ causes loss?'
+    options:
+      - 'About 99 %'
+      - 'About 96 %'
+      - 'About 90 %'
+      - 'About 80 %'
+    answer: 1
+    explain: '$R_L$ is compared with $(1 - D)^2 R$, a quarter of $10\,\Omega$. The efficiency is $1/(1 + 0.1/2.5)$, about 0.96.'
+  - q: 'Why does the same winding resistance cost more efficiency in a boost at high duty ratio?'
+    options:
+      - 'The winding heats up and its resistance rises'
+      - 'The switching frequency increases'
+      - 'It is compared with $(1 - D)^2 R$, the load resistance reflected to the inductor side, which shrinks as $D$ grows'
+      - 'The output voltage falls'
+    answer: 2
+    explain: 'Through the dc transformer the load appears as $(1 - D)^2 R$ on the inductor side, in series with $R_L$. The efficiency is the share of power that reaches this reflected resistance.'
+  - q: 'In DCM, how does the input port of a buck-boost converter behave, averaged over a period?'
+    options:
+      - 'Like a resistor whose absorbed power is passed to the output instead of dissipated'
+      - 'Like a constant-current sink'
+      - 'Like a constant-voltage source'
+      - 'Like an open circuit'
+    answer: 0
+    explain: 'Each period starts from zero current, so the average input current is proportional to the input voltage: a resistance. The energy is stored in the inductor and delivered to the output, not dissipated, hence a loss-free resistor.'
+  - q: 'A DCM buck-boost has $L_M = 50\,\mu\mathrm{H}$, $f_s = 100\,\mathrm{kHz}$ and $D = 0.5$. What is its input resistance?'
+    options:
+      - '$20\,\Omega$'
+      - '$40\,\Omega$'
+      - '$80\,\Omega$'
+      - '$160\,\Omega$'
+    answer: 1
+    explain: 'The input resistance is $2 L_M f_s/D^2$: twice $50\,\mu\mathrm{H}$ times $100\,\mathrm{kHz}$ is $10\,\Omega$, divided by 0.25.'

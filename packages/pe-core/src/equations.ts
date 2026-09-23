@@ -103,6 +103,9 @@ const theory: Readonly<Record<string, Evaluator>> = {
   'def.Ts': eq(['f_s'], ({ f_s }) => 1 / f_s),
   'def.V': eq(['M', 'V_g'], ({ M, V_g }) => M * V_g),
 
+  // --- CCM/DCM boundary in terms of L ------------------------------------------
+  'L.crit': eq(['K_crit', 'R', 'T_s'], ({ K_crit, R, T_s }) => (K_crit * R * T_s) / 2),
+
   // --- averaging and balance --------------------------------------------------
   'sw.v_avg': eq(['D', 'V_g'], ({ D, V_g }) => D * V_g),
   'vsb.v_off': eq(['D', 'v_Lon'], ({ D, v_Lon }) => (-D * v_Lon) / (1 - D)),
