@@ -31,8 +31,11 @@ exclude = [
   # redirect. Every DOI is verified more strongly by the refs-online CI job
   # (scripts/refcheck.py --online: Crossref record + title match).
   '^https://doi\.org/',
-  # analog.com rejects lychee's HTTP/2 client ("HTTP/2 protocol error").
-  # These URLs are opened over HTTP/1.1 and title/PDF-checked by the
-  # urls-online CI job (scripts/resources_check.py --online).
+  # analog.com and st.com reject lychee's HTTP/2 client ("HTTP/2 protocol
+  # error"). The urls-online CI job (scripts/resources_check.py --online)
+  # checks these URLs instead: it opens them over HTTP/1.1 and, when the
+  # runner cannot reach the host, requires the same title or PDF signature on
+  # the URL's latest Internet Archive capture.
   '^https://www\.analog\.com/',
+  '^https://www\.st\.com/',
 ]
