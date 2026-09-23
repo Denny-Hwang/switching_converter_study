@@ -28,3 +28,5 @@ export {
 export type { Envelope, EnvelopeRun, MatchPoint, MatchResult, MatchSpec, SinkMode } from './harvesting';
 export { currentAt, errorCurve, monitorOutput, outputAt, readingAt, senseChain, transferCurve } from './sense';
 export type { MonitorKind, OffsetSign, SenseResult, SenseSpec, SenseWarning } from './sense';
+export { COPPER, frCurve, magnetics } from './magnetics';
+export type { Arrangement, MagCore, MagDevice, MagResult, MagSpec, MagWarning, MagWinding, WindingResult } from './magnetics';
