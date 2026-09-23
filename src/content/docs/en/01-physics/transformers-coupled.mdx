@@ -1,0 +1,117 @@
+---
+title: Transformers and coupled inductors
+description: The ideal transformer with the 1:n convention, the magnetizing and leakage inductances of a real transformer, and how a transformer differs from a coupled inductor.
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Apply the ideal-transformer relations with the site's 1:n turns-ratio convention.
+- Add the magnetizing and leakage inductances to model a real transformer.
+- Tell a transformer, which passes energy through, from a coupled inductor, which stores it.
+
+## Theory
+
+### The ideal transformer
+
+Two windings on one core, with perfect coupling, no magnetizing current and
+no loss, form an ideal transformer. With the turns ratio written 1:n, where
+$n$ is the number of secondary turns divided by the number of primary turns,
+the voltage is multiplied by $n$ and the current divided by $n$
+<Cite key="alexander2017" where="Ch. 13" />, <Cite key="erickson2020" where="Ch. 6" />:
+
+<Eq id="xfmr.V2" />
+
+<Eq id="xfmr.I2" />
+
+The power is conserved, and an impedance connected to the secondary appears
+at the primary divided by $n^2$ <Cite key="alexander2017" where="Ch. 13" />.
+
+### Magnetizing inductance
+
+A real core has a finite permeability, so it takes a current to set up the
+flux, even with the secondary open. This magnetizing current is modelled by
+an inductance $L_M$ in parallel with the primary of an ideal transformer,
+referred to the primary <Cite key="erickson2020" where="Ch. 6" />. It grows
+while a voltage is applied to the winding, which is why a transformer must be
+reset in every period (see the [forward converter](../../03-topologies/forward/)).
+
+### Leakage inductance
+
+Not all of the flux links both windings. The flux that links only one of
+them appears as a leakage inductance in series with that winding
+<Cite key="erickson2020" where="Ch. 10" />. It slows the transfer of current
+from one winding to the other, and in a flyback its energy must be absorbed
+at every turn-off (see the [flyback page](../../03-topologies/flyback/)).
+
+### Transformer or coupled inductor
+
+A transformer transfers energy from the primary to the secondary while both
+windings conduct, and ideally stores none. A flyback's coupled inductor works
+differently: its magnetizing inductance stores energy while the primary
+conducts and releases it through the secondary afterwards
+<Cite key="erickson2020" where="Ch. 6" />. The two are therefore designed for
+different goals: the transformer for a small magnetizing current, the coupled
+inductor for a specified magnetizing inductance and stored energy
+<Cite key="erickson2020" where="Ch. 10" />.
+
+## Worked example
+
+A synthetic ideal transformer:
+
+<Worked example="transformer-ideal" />
+
+With a turns ratio of <Val example="transformer-ideal" name="n" />, the
+secondary has <Val example="transformer-ideal" name="V_2" /> across it and
+carries <Val example="transformer-ideal" name="I_2" />: the voltage steps down
+by the same factor by which the current steps up.
+
+## Try it
+
+<TryIt eq="xfmr.V2" example="transformer-ideal" sweep="n" />
+
+Sweep $n$ over its logarithmic range: below one the transformer steps down,
+above one it steps up. Then compare with the flyback's conversion ratio
+(<EqRef id="flyback.ccm.M" label="flyback conversion ratio" />), in which the
+same factor multiplies the buck-boost ratio.
+
+## Bench exercise
+
+Drive the primary of a small signal transformer from a function generator
+with a sine wave within its rated frequency range, with the secondary open.
+Measure both winding voltages to find the turns ratio. Then measure the
+primary current with the secondary open, which is the magnetizing current,
+and with the secondary shorted, which is limited by the leakage inductance,
+and estimate both inductances from the voltage, current and frequency.
+
+## Gotchas
+
+- **Check the turns-ratio convention.** Data sheets and textbooks write turns
+  ratios in different directions; this site always uses 1:n with $n$ the
+  secondary turns divided by the primary turns.
+- **The magnetizing current is not load current.** It flows with no load at
+  all, and the net volt-seconds on the winding must be zero in every period,
+  or the magnetizing current grows until the core saturates
+  <Cite key="erickson2020" where="Ch. 6" />.
+- **Mind the dots.** Reversing one winding inverts the secondary voltage; in a
+  flyback the winding polarity is chosen so that the diode blocks while the
+  switch is on <Cite key="erickson2020" where="Ch. 6" />.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch10', 'erickson-ch6', 'coursera-magnetics']} />
+
+## Quiz
+
+<Quiz id="01-physics/transformers-coupled" />

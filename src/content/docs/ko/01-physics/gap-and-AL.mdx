@@ -1,0 +1,103 @@
+---
+title: 공극과 인덕턴스 계수
+description: 공극이 있는 코어의 자기저항, 인덕턴스 계수 A_L, 그리고 전력용 인덕터에 공극을 두는 이유를 다룹니다.
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 공극(에어 갭, air gap)이 있는 코어의 인덕턴스 계수(inductance factor)를 그 치수로부터, 인덕턴스를 턴 수(number of turns)로부터 계산합니다.
+- 공극을 두면 인덕턴스가 코어 재료보다는 공극에 의존하게 되는 이유를 설명합니다.
+- 공극이 주어진 전류에서 인덕터가 도달하는 자속 밀도(flux density)를 어떻게 낮추는지 설명합니다.
+
+## 이론
+
+### 자기 회로(magnetic circuit)
+
+자로(magnetic path)는 저항 회로처럼 동작합니다. 권선의 기자력(magnetomotive force),
+즉 턴 수와 전류의 곱은 직렬로 연결된 자기저항(reluctance), 여기서는 코어의
+자기저항과 공극의 자기저항을 통해 자속(flux)을 흐르게 합니다
+<Cite key="erickson2020" where="Ch. 10" />. 코어의 자기저항은 자로 길이를
+투자율(permeability)과 단면적으로 나눈 값이고, 공극의 자기저항은 공극 길이를
+진공 투자율(permeability of free space)과 단면적으로 나눈 값입니다. 코어의
+비투자율(relative permeability)이 크기 때문에, 짧은 공극이라도 전체
+자기저항에서 지배적일 수 있습니다.
+
+### 인덕턴스 계수
+
+턴 수 제곱당 인덕턴스, 즉 인덕턴스 계수 $A_L$은 전체 자기저항의 역수입니다
+<Cite key="dixon2001" />, <Cite key="erickson2020" where="Ch. 10" />.
+
+<Eq id="mag.AL_gap" />
+
+<Eq id="mag.L_from_AL" />
+
+공극 항이 지배적이면 $A_L$은 공극 길이와 단면적에 의존하고 $\mu_i$에는 거의
+의존하지 않습니다. 즉 공극은 인덕턴스를 코어 재료의 편차에 둔감하게 만듭니다
+<Cite key="erickson2020" where="Ch. 10" />.
+
+### 전력용 인덕터에 공극을 두는 이유
+
+코어 재료는 특정 자속 밀도에서 포화(saturation)되며, 공극은 이 한계를 바꾸지
+않습니다. 그러나 공극은 인덕턴스 계수를 낮추므로 주어진 인덕턴스를 얻으려면 더
+많은 턴이 필요하고, 주어진 전류에서 자속 밀도는 낮아집니다(<EqRef id="mag.B_pk" label="피크 자속 밀도" />).
+그 결과 공극이 있는 인덕터는 포화되기 전까지 더 많은 전류를 흘릴 수 있습니다.
+
+## 풀이 예제
+
+공극이 있는 합성(synthetic) 코어입니다.
+
+<Worked example="gapped-core" />
+
+주어진 공극에서 인덕턴스 계수는 <Val example="gapped-core" name="A_L" />이며,
+<Val example="gapped-core" name="N" />턴이면 인덕턴스는
+<Val example="gapped-core" name="L" />입니다. 여기서는 공극의 자기저항이 코어의
+자기저항보다 훨씬 크므로, 결과는 $\mu_i$에 거의 의존하지 않습니다.
+
+## 직접 해 보기
+
+<TryIt eq="mag.AL_gap" example="gapped-core" sweep="l_g" />
+
+$l_g$를 로그 축에서 스윕(sweep)하십시오. 공극이 작을 때는 코어 재료가 $A_L$을
+정하고 공극이 클 때는 공극이 정하며, 이때 $A_L$은 공극 길이에 반비례하여
+감소합니다. 작은 공극과 큰 공극에서 각각 $\mu_i$를 절반으로 줄여, 재료가
+어디에서 여전히 영향을 미치는지 확인하십시오.
+
+## 벤치 실습
+
+공극이 없는 페라이트(ferrite) 코어 반쪽 한 쌍에 감은 권선의 인덕턴스를
+측정하십시오. 그런 다음 플라스틱 필름처럼 두께를 알고 있는 얇은 비자성
+스페이서(spacer)를 두 반쪽 사이에 끼우고 다시 측정하십시오. 자속 경로가
+스페이서를 가로지르는 곳을 모두 셈에 넣어, 그 변화를 수식과 비교하십시오.
+측정한 인덕턴스는 예측보다 다소 크게 나옵니다. 공극 주위에서 자속의
+프린징(fringing)이 일어나기 때문입니다 <Cite key="dixon2001" />.
+
+## 주의할 점
+
+- **프린징은 실제 $A_L$을 더 크게 만듭니다.** 자속이 공극 주위에서 바깥쪽으로
+  불룩하게 퍼져 공극의 유효 단면적(effective area)을 넓히므로, 단순한 수식은
+  인덕턴스를 과소평가합니다 <Cite key="dixon2001" />.
+- **공극이 지정된 코어에는 제조사의 $A_L$을 사용하십시오.** 이 수식은 공극을
+  이해하고 맞춤형 공극을 추정하는 데 쓰입니다. 프린징은 계산하기 어려우므로,
+  공극이 지정된 카탈로그 코어는 제조사가 측정한 $A_L$로 더 잘 기술됩니다.
+- **인덕턴스는 턴 수의 제곱에 비례합니다.** 같은 코어에서 턴 수를 두 배로 늘리면
+  인덕턴스는 네 배가 됩니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['ti-slup132', 'erickson-ch10', 'coursera-magnetics']} />
+
+## 퀴즈
+
+<Quiz id="01-physics/gap-and-AL" />

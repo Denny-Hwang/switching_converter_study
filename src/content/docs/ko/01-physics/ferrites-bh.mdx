@@ -1,0 +1,103 @@
+---
+title: 자성 재료와 B-H 곡선
+description: 투자율과 B-H 곡선의 선형 구간, 포화와 히스테리시스, 페라이트와 철 합금의 비교, 그리고 인덕터의 피크 자속 밀도를 다룹니다.
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 투자율(permeability)을 통해 자속 밀도(flux density)와 자계 세기(field intensity)를 관련짓습니다.
+- 포화(saturation)와, 인덕터를 피크 전류(peak current)에서 점검해야 하는 이유를 설명합니다.
+- 인덕턴스, 피크 전류, 턴 수, 코어 단면적으로부터 인덕터의 피크 자속 밀도(peak flux density)를 계산합니다.
+
+## 이론
+
+### 투자율
+
+선형 자성 재료(linear magnetic material)에서 자속 밀도는 자계 세기에 비례합니다.
+그 비례 계수가 투자율이며, 진공 투자율(permeability of free space)에 재료의
+비투자율(relative permeability)을 곱한 형태로 씁니다 <Cite key="erickson2020" where="Ch. 10" />.
+
+<Eq id="mag.B_H" />
+
+### 포화와 히스테리시스
+
+이 선형 관계는 포화 자속 밀도(saturation flux density)까지만 성립합니다. 그
+이상에서는 재료의 투자율이 진공의 투자율 쪽으로 급락하고, 인덕터의 인덕턴스가
+급격히 떨어집니다 <Cite key="erickson2020" where="Ch. 10" />. 실제 코어의 B-H
+곡선에는 히스테리시스(hysteresis)도 나타납니다. 자속 밀도는 증가할 때와 감소할 때
+서로 다른 경로를 따르며, 두 경로 사이의 면적은 매 사이클 손실되는 에너지입니다([코어 손실(core loss) 페이지](../core-loss/) 참고)
+<Cite key="erickson2020" where="Ch. 10" />.
+
+### 페라이트와 철 합금
+
+페라이트(ferrite)는 철 합금(iron alloy)보다 낮은 자속 밀도에서 포화되지만, 높은
+비저항(resistivity)이 와전류 손실(eddy-current loss)을 낮게 유지하므로 높은 스위칭
+주파수(switching frequency)에 적합합니다 <Cite key="erickson2020" where="Ch. 10" />.
+
+### 인덕터의 피크 자속 밀도
+
+인덕터의 쇄교 자속(flux linkage)은 인덕턴스에 전류를 곱한 값이며, 이를 턴 수와
+코어 단면적으로 나누면 자속 밀도가 됩니다. 피크 전류에서는 다음과 같습니다
+<Cite key="dixon2001" />, <Cite key="erickson2020" where="Ch. 10" />.
+
+<Eq id="mag.B_pk" />
+
+이 값은 기동(start-up)과 부하 과도 상태(load transient)를 포함하여, 인덕터에
+흐르게 될 가장 큰 피크 전류에서도 포화 자속 밀도보다 낮게 유지되어야 합니다.
+
+## 풀이 예제
+
+합성(synthetic) 코어 재료와 인덕터입니다.
+
+<Worked example="ferrite-bh" />
+
+주어진 비투자율을 갖는 재료에서 <Val example="ferrite-bh" name="H_mag" />의 자계는
+<Val example="ferrite-bh" name="B" />의 자속 밀도를 만듭니다. 인덕터는 피크
+전류에서 <Val example="ferrite-bh" name="B_pk" />에 도달합니다. 이 값을 코어 재료
+데이터시트(data sheet)의 포화 자속 밀도와 비교하십시오.
+
+## 직접 해 보기
+
+<TryIt eq="mag.B_pk" example="ferrite-bh" sweep="N" />
+
+인덕턴스를 고정한 채 $N$을 스윕(sweep)하십시오. 턴 수가 많을수록 피크 자속 밀도는
+낮아집니다. 그러나 주어진 코어에서는 인덕턴스 자체가 턴 수의 제곱에 비례하여
+커집니다(<EqRef id="mag.L_from_AL" label="인덕턴스 계수(inductance factor)로 구한 인덕턴스" />).
+[공극(에어 갭, air gap) 페이지](../gap-and-al/)는 공극이 이 문제를 어떻게 해결하는지
+보여 줍니다.
+
+## 벤치 실습
+
+충전된 커패시터를 트랜지스터를 통해 정해진 시간 동안 인덕터로 방전시키고, 전류
+프로브(current probe)로 인덕터 전류를 관찰하십시오. 코어가 선형인 동안에는 전류가
+직선으로 증가하고, 코어가 포화되면 기울기가 급격히 커집니다. 꺾이는 지점(knee)의
+전류를 읽어 피크 자속 식 및 데이터시트의 포화 자속 밀도와 비교하고, 전류가 부품
+정격 안에 머물도록 펄스 길이를 제한하십시오.
+
+## 주의할 점
+
+- **포화는 급격하게 일어납니다.** 포화를 넘어서면 인덕턴스가 급락하고 전류가
+  가파르게 상승합니다 <Cite key="erickson2020" where="Ch. 10" />. 평균 전류가 아니라
+  최악 조건의 피크 전류를 기준으로 설계하십시오.
+- **코어의 투자율은 정밀한 값이 아닙니다.** 공극이 있으면 인덕턴스는 재료 대신
+  주로 공극 길이에 의해 정해집니다 <Cite key="erickson2020" where="Ch. 10" /> ([공극 페이지](../gap-and-al/) 참고).
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch10', 'ti-slup132', 'coursera-magnetics']} />
+
+## 퀴즈
+
+<Quiz id="01-physics/ferrites-bh" />

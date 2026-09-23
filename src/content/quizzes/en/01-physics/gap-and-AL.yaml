@@ -1,0 +1,51 @@
+# Quiz for 01-physics/gap-and-AL. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A core has $A_L = 250\,\mathrm{nH}$ per turn squared. How many turns give $100\,\mu\mathrm{H}$?'
+    options:
+      - '4'
+      - '20'
+      - '40'
+      - '400'
+    answer: 1
+    explain: 'The turns squared are the inductance divided by $A_L$, 400; their square root is 20.'
+  - q: 'The turns on a given core are doubled. What happens to the inductance?'
+    options:
+      - 'It doubles'
+      - 'It quadruples'
+      - 'It is unchanged'
+      - 'It halves'
+    answer: 1
+    explain: 'The inductance is $A_L$ times the square of the turns.'
+  - q: 'Why does a gap make the inductance nearly independent of the core material?'
+    options:
+      - 'The gap''s reluctance dominates the total, and it depends only on the gap length and the area'
+      - 'The gap raises the material''s permeability'
+      - 'The gap removes hysteresis'
+      - 'The gap shortens the magnetic path'
+    answer: 0
+    explain: 'With a large relative permeability, the core''s reluctance is small compared with even a short gap''s.'
+  - q: 'Compared with the simple equation, how does fringing flux around a gap change the real $A_L$?'
+    options:
+      - 'It makes it smaller'
+      - 'It makes it larger'
+      - 'It has no effect'
+      - 'It makes it depend on the current'
+    answer: 1
+    explain: 'Fringing widens the gap''s effective area, lowering its reluctance and raising $A_L$.'
+  - q: 'A core has an effective area of $1\,\mathrm{cm^2}$ and a total gap of $1\,\mathrm{mm}$; its own reluctance is negligible. What is $A_L$, ignoring fringing?'
+    options:
+      - '$12.6\,\mathrm{nH}$'
+      - '$126\,\mathrm{nH}$'
+      - '$1.26\,\mu\mathrm{H}$'
+      - '$12.6\,\mu\mathrm{H}$'
+    answer: 1
+    explain: '$\mu_0$ times the area divided by the gap: $4\pi \times 10^{-7} \times 10^{-4}/10^{-3}$.'
+  - q: 'At the same inductance and current, how does a gapped core compare with an ungapped one of the same size?'
+    options:
+      - 'It reaches a lower flux density, because it needs more turns for the same inductance'
+      - 'It reaches a higher flux density'
+      - 'It saturates at a higher flux density because the gap raises the material''s limit'
+      - 'There is no difference'
+    answer: 0
+    explain: 'The peak flux density is the inductance times the current divided by the turns and the area; the gap does not change the material''s limit, but more turns lower the flux density.'

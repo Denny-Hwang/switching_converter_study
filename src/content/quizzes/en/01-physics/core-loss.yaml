@@ -1,0 +1,51 @@
+# Quiz for 01-physics/core-loss. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'Which two mechanisms make up core loss?'
+    options:
+      - 'Hysteresis and eddy currents'
+      - 'Winding resistance and skin effect'
+      - 'Leakage inductance and fringing'
+      - 'Saturation and fringing'
+    answer: 0
+    explain: 'Hysteresis loses the energy enclosed by the B-H loop in every cycle; eddy currents dissipate power in the resistance of the core material.'
+  - q: 'At a fixed frequency, the flux amplitude in a core is halved. With a Steinmetz exponent $\beta = 2.5$, by roughly what factor does the core loss fall?'
+    options:
+      - '2'
+      - '2.5'
+      - '5.7'
+      - '32'
+    answer: 2
+    explain: 'The loss scales with the amplitude to the power $\beta$, so it falls by $2^{2.5}$, about 5.7.'
+  - q: 'A transformer''s flux density swings $0.2\,\mathrm{T}$ peak-to-peak. Which value goes into the Steinmetz equation as $B_\mathrm{ac}$?'
+    options:
+      - '$0.05\,\mathrm{T}$'
+      - '$0.1\,\mathrm{T}$'
+      - '$0.2\,\mathrm{T}$'
+      - '$0.4\,\mathrm{T}$'
+    answer: 1
+    explain: '$B_\mathrm{ac}$ is the peak ac amplitude, half of the peak-to-peak swing.'
+  - q: 'Why is the Steinmetz equation only an estimate for a converter''s rectangular waveforms?'
+    options:
+      - 'Its coefficients are fitted for sinusoidal excitation over a limited range'
+      - 'It ignores the frequency'
+      - 'It applies only to air-core inductors'
+      - 'It gives the winding loss, not the core loss'
+    answer: 0
+    explain: 'The coefficients come from measurements with sinusoidal flux; other waveforms and conditions outside the fitted range change the loss.'
+  - q: 'At high switching frequencies, what usually limits the flux swing in a transformer?'
+    options:
+      - 'Saturation'
+      - 'Core loss'
+      - 'The winding capacitance'
+      - 'Nothing'
+    answer: 1
+    explain: 'The swing that keeps the core loss acceptable is usually well below the saturation flux density.'
+  - q: 'A core material loses $10^5\,\mathrm{W/m^3}$ at the operating point. What is the loss in a core of $2\,\mathrm{cm^3}$?'
+    options:
+      - '$0.02\,\mathrm{W}$'
+      - '$0.2\,\mathrm{W}$'
+      - '$2\,\mathrm{W}$'
+      - '$20\,\mathrm{W}$'
+    answer: 1
+    explain: 'The volume is $2 \times 10^{-6}\,\mathrm{m^3}$, and the loss per unit volume times the volume is $0.2\,\mathrm{W}$.'

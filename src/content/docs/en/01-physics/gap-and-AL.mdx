@@ -1,0 +1,106 @@
+---
+title: Air gaps and the inductance factor
+description: The reluctance of a core with an air gap, the inductance factor A_L, and why power inductors are gapped.
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Compute the inductance factor of a gapped core from its dimensions, and the inductance from the turns.
+- Explain why a gap makes the inductance depend on the gap rather than on the core material.
+- Explain how a gap lowers the flux density that an inductor reaches at a given current.
+
+## Theory
+
+### Magnetic circuits
+
+A magnetic path behaves like a resistive circuit: the winding's
+magnetomotive force, its turns times its current, drives the flux through
+reluctances in series, here the core's and the gap's
+<Cite key="erickson2020" where="Ch. 10" />. The core's reluctance is its path
+length divided by its permeability and area; the gap's is the gap length
+divided by the permeability of free space and the area. Because the core's
+relative permeability is large, even a short gap can dominate the total.
+
+### The inductance factor
+
+The inductance per turn squared, the inductance factor $A_L$, is the inverse
+of the total reluctance <Cite key="dixon2001" />,
+<Cite key="erickson2020" where="Ch. 10" />:
+
+<Eq id="mag.AL_gap" />
+
+<Eq id="mag.L_from_AL" />
+
+When the gap term dominates, $A_L$ depends on the gap length and the area and
+hardly on $\mu_i$: the gap makes the inductance insensitive to the spread of
+the core material <Cite key="erickson2020" where="Ch. 10" />.
+
+### Why power inductors are gapped
+
+The core material saturates at a given flux density, and a gap does not
+change that limit. It lowers the inductance factor, however, so a given
+inductance needs more turns, and at a given current the flux density falls
+(<EqRef id="mag.B_pk" label="peak flux density" />): the gapped inductor
+carries more current before it saturates.
+
+## Worked example
+
+A synthetic gapped core:
+
+<Worked example="gapped-core" />
+
+With the given gap, the inductance factor is
+<Val example="gapped-core" name="A_L" />, and
+<Val example="gapped-core" name="N" /> turns give
+<Val example="gapped-core" name="L" />. The gap's reluctance is much larger
+than the core's here, so the result barely depends on $\mu_i$.
+
+## Try it
+
+<TryIt eq="mag.AL_gap" example="gapped-core" sweep="l_g" />
+
+Sweep $l_g$ on its logarithmic axis: for small gaps the core material sets
+$A_L$, for large gaps the gap does, and $A_L$ then falls in inverse
+proportion to the gap length. Halve $\mu_i$ at a small gap and at a large gap
+to see where the material still matters.
+
+## Bench exercise
+
+Measure the inductance of a winding on a pair of ungapped ferrite core
+halves. Then place thin non-magnetic spacers of known thickness, such as
+plastic film, between the halves and measure again. Compare the change with
+the equation, counting every place where the flux path crosses a spacer.
+The measured inductance is somewhat larger than predicted, because the flux
+fringes around the gap <Cite key="dixon2001" />.
+
+## Gotchas
+
+- **Fringing makes the real $A_L$ larger.** The flux bulges out around the
+  gap, which widens its effective area, so the simple equation underestimates
+  the inductance <Cite key="dixon2001" />.
+- **Use the manufacturer's $A_L$ for a specified gap.** The equation serves to
+  understand a gap and to estimate a custom one. Because fringing is hard to
+  calculate, a catalogue core with a specified gap is better described by the
+  manufacturer's measured $A_L$.
+- **Turns multiply as a square.** Doubling the turns on the same core
+  quadruples the inductance.
+
+## Go deeper
+
+<GoDeeper ids={['ti-slup132', 'erickson-ch10', 'coursera-magnetics']} />
+
+## Quiz
+
+<Quiz id="01-physics/gap-and-AL" />

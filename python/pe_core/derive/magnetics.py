@@ -40,7 +40,7 @@ def derive() -> Derivation:
     rc = le / (mu0 * mui * Ae)
     rg = lg / (mu0 * Ae)
     d.step("Core reluctance (relative permeability $\\mu_i$).", "코어 자기저항(비투자율 $\\mu_i$).", sp.Eq(Rc, rc))
-    d.step("Gap reluctance (no fringing: the gap area equals $A_e$).", "갭 자기저항(프린징 무시: 갭 면적 = $A_e$).", sp.Eq(Rg, rg))
+    d.step("Gap reluctance (no fringing: the gap area equals $A_e$).", "공극 자기저항(프린징 무시: 공극 면적 = $A_e$).", sp.Eq(Rg, rg))
     d.step("They are in series.", "두 자기저항은 직렬이다.", sp.Eq(Rtot, rc + rg))
     d.step(
         "Flux linkage $\\lambda = N\\Phi = N (N i/\\mathcal{R})$, so $L = \\lambda/i = N^2/\\mathcal{R}$.",

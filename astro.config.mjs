@@ -43,6 +43,16 @@ export default defineConfig({
           translations: { ko: '학습' },
           items: [
             {
+              label: '00 · Foundations',
+              translations: { ko: '00 · 기초' },
+              items: [{ autogenerate: { directory: '00-foundations' } }],
+            },
+            {
+              label: '01 · Physics',
+              translations: { ko: '01 · 물리' },
+              items: [{ autogenerate: { directory: '01-physics' } }],
+            },
+            {
               label: '02 · Theory',
               translations: { ko: '02 · 이론' },
               items: [{ autogenerate: { directory: '02-theory' } }],

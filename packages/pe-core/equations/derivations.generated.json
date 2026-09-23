@@ -2,6 +2,231 @@
   "_generated_by": "python scripts/gen_equations.py -- DO NOT EDIT; edit python/pe_core/derive/*.py",
   "derivations": [
     {
+      "module": "foundations",
+      "source": "python/pe_core/derive/foundations.py",
+      "title": "Refreshers: reactive elements, impedance, Fourier series, magnetics, the ideal transformer",
+      "title_ko": "기초 복습: 리액티브 소자, 임피던스, 푸리에 급수, 자기학, 이상적 변압기",
+      "intro": "Circuit laws and magnetics that the converter pages build on. The element laws are integrated for constant excitation, impedances follow from the phasor form of the same laws, the Fourier coefficients and the rms value of a pulse train are computed over one period, and the ideal transformer follows from Faraday's and Ampère's laws with a lossless core of zero reluctance.",
+      "intro_ko": "컨버터 페이지들이 바탕으로 삼는 회로 법칙과 자기학이다. 소자 법칙을 일정한 여기 조건에서 적분하고, 같은 법칙의 페이저 형태로부터 임피던스를 구하며, 한 주기에 걸쳐 펄스열의 푸리에 계수와 실효값을 계산한다. 이상적 변압기는 자기저항이 0인 무손실 코어에서 패러데이 법칙과 앙페르 법칙으로부터 얻는다.",
+      "results": [
+        "ind.di",
+        "cap.dv",
+        "ind.E",
+        "cap.E",
+        "imp.ZL",
+        "imp.ZC",
+        "rc.fc",
+        "rc.gain",
+        "passive.f_srf",
+        "fourier.pulse.harm",
+        "fourier.pulse.rms",
+        "cap.esr.ripple",
+        "mag.H_ampere",
+        "xfmr.V2",
+        "xfmr.I2"
+      ],
+      "steps": [
+        {
+          "text": "Inductor law: $v = L\\,\\mathrm{d}i/\\mathrm{d}t$. With a constant voltage $V_L$ the slope of the current is constant; integrate it over the interval $t$.",
+          "text_ko": "인덕터 법칙은 $v = L\\,\\mathrm{d}i/\\mathrm{d}t$이다. 전압 $V_L$이 일정하면 전류의 기울기도 일정하므로, 구간 $t$에 걸쳐 적분한다.",
+          "latex": "\\int\\limits_{0}^{t} \\frac{V_L}{L}\\, d\\tau",
+          "result_for": null
+        },
+        {
+          "text": "Evaluate the integral.",
+          "text_ko": "적분을 계산한다.",
+          "latex": "\\Delta i = \\frac{V_L t}{L}",
+          "result_for": "ind.di"
+        },
+        {
+          "text": "Capacitor law, the dual: $i = C\\,\\mathrm{d}v/\\mathrm{d}t$, integrated for a constant current $I_C$.",
+          "text_ko": "쌍대인 커패시터 법칙 $i = C\\,\\mathrm{d}v/\\mathrm{d}t$를 일정한 전류 $I_C$에 대해 적분한다.",
+          "latex": "\\int\\limits_{0}^{t} \\frac{I_C}{C}\\, d\\tau",
+          "result_for": null
+        },
+        {
+          "text": "Evaluate the integral.",
+          "text_ko": "적분을 계산한다.",
+          "latex": "\\Delta v_C = \\frac{I_C t}{C}",
+          "result_for": "cap.dv"
+        },
+        {
+          "text": "Energy delivered to an inductor: $\\int v\\,i\\,\\mathrm{d}t = \\int L\\,i\\,\\mathrm{d}i$, from zero current to $I_L$.",
+          "text_ko": "인덕터에 전달되는 에너지는 $\\int v\\,i\\,\\mathrm{d}t = \\int L\\,i\\,\\mathrm{d}i$이며, 전류 0에서 $I_L$까지 적분한다.",
+          "latex": "\\int\\limits_{0}^{I_L} L i\\, di",
+          "result_for": null
+        },
+        {
+          "text": "Evaluate the integral.",
+          "text_ko": "적분을 계산한다.",
+          "latex": "E_L = \\frac{L I_L^{2}}{2}",
+          "result_for": "ind.E"
+        },
+        {
+          "text": "Energy delivered to a capacitor: $\\int v\\,i\\,\\mathrm{d}t = \\int C\\,v\\,\\mathrm{d}v$, from zero voltage to $V_C$.",
+          "text_ko": "커패시터에 전달되는 에너지는 $\\int v\\,i\\,\\mathrm{d}t = \\int C\\,v\\,\\mathrm{d}v$이며, 전압 0에서 $V_C$까지 적분한다.",
+          "latex": "\\int\\limits_{0}^{V_C} C v\\, dv",
+          "result_for": null
+        },
+        {
+          "text": "Evaluate the integral.",
+          "text_ko": "적분을 계산한다.",
+          "latex": "E_C = \\frac{C V_C^{2}}{2}",
+          "result_for": "cap.E"
+        },
+        {
+          "text": "In sinusoidal steady state $\\mathrm{d}/\\mathrm{d}t$ becomes multiplication by $j\\omega$, with $\\omega = 2\\pi f$. The inductor law gives the inductor's impedance.",
+          "text_ko": "정현파 정상상태에서 $\\mathrm{d}/\\mathrm{d}t$는 $j\\omega$를 곱하는 것이 되며, $\\omega = 2\\pi f$이다. 인덕터 법칙으로부터 인덕터의 임피던스를 얻는다.",
+          "latex": "Z_L = 2 \\pi i L f",
+          "result_for": null
+        },
+        {
+          "text": "Its magnitude.",
+          "text_ko": "그 크기.",
+          "latex": "|Z_L| = 2 \\pi f L",
+          "result_for": "imp.ZL"
+        },
+        {
+          "text": "The capacitor law gives the capacitor's impedance.",
+          "text_ko": "커패시터 법칙으로부터 커패시터의 임피던스를 얻는다.",
+          "latex": "Z_C = - \\frac{i}{2 \\pi C f}",
+          "result_for": null
+        },
+        {
+          "text": "Its magnitude.",
+          "text_ko": "그 크기.",
+          "latex": "|Z_C| = \\frac{1}{2 \\pi f C}",
+          "result_for": "imp.ZC"
+        },
+        {
+          "text": "Unloaded R-C low-pass filter: the output is the capacitor's share of the divider formed by $R_f$ and the capacitor's impedance.",
+          "text_ko": "부하가 없는 R-C 저역통과 필터에서 출력은 $R_f$와 커패시터 임피던스로 이루어진 분압기에서 커패시터가 차지하는 몫이다.",
+          "latex": "G(j\\omega) = - \\frac{i}{2 \\pi C_f R_f f - i}",
+          "result_for": null
+        },
+        {
+          "text": "Squared magnitude.",
+          "text_ko": "크기의 제곱.",
+          "latex": "\\left|{G(j\\omega)}\\right|^{2} = \\frac{1}{1 + 4 \\pi^{2} C_f^{2} R_f^{2} f^{2}}",
+          "result_for": null
+        },
+        {
+          "text": "The corner (-3 dB) frequency is where the squared magnitude falls to one half.",
+          "text_ko": "차단(-3 dB) 주파수는 크기의 제곱이 1/2로 떨어지는 주파수이다.",
+          "latex": "f_c = \\frac{1}{2 \\pi R_f C_f}",
+          "result_for": "rc.fc"
+        },
+        {
+          "text": "Write the magnitude with $f_c$ in place of $R_f C_f$.",
+          "text_ko": "$R_f C_f$ 대신 $f_c$로 크기를 나타낸다.",
+          "latex": "|G| = \\frac{f_c}{\\sqrt{f^{2} + f_c^{2}}} = \\frac{1}{\\sqrt{1 + \\left(\\frac{f}{f_c}\\right)^{2}}}",
+          "result_for": "rc.gain"
+        },
+        {
+          "text": "An inductance with a parasitic capacitance in parallel: the admittances add.",
+          "text_ko": "기생 커패시턴스가 병렬로 붙은 인덕턴스에서는 어드미턴스가 더해진다.",
+          "latex": "Y = 2 \\pi i C_p f - \\frac{i}{2 \\pi L f}",
+          "result_for": null
+        },
+        {
+          "text": "At resonance the admittance is zero (the impedance is infinite for the lossless model).",
+          "text_ko": "공진에서 어드미턴스는 0이다(무손실 모델에서는 임피던스가 무한대).",
+          "latex": "f_\\mathrm{srf} = \\frac{1}{2 \\pi \\sqrt{L C_p}}",
+          "result_for": "passive.f_srf"
+        },
+        {
+          "text": "A pulse train of height $V_\\mathrm{pk}$ and width $D T$ in every period $T$. Its cosine coefficient for the harmonic $h$:",
+          "text_ko": "주기 $T$마다 높이 $V_\\mathrm{pk}$, 폭 $D T$인 펄스열이다. $h$차 고조파의 코사인 계수는",
+          "latex": "a_{h,\\cos} = \\frac{V_\\mathrm{pk} \\sin{\\left(2 \\pi D h \\right)}}{\\pi h}",
+          "result_for": null
+        },
+        {
+          "text": "and its sine coefficient:",
+          "text_ko": "사인 계수는",
+          "latex": "a_{h,\\sin} = \\frac{2 V_\\mathrm{pk} \\sin^{2}{\\left(\\pi D h \\right)}}{\\pi h}",
+          "result_for": null
+        },
+        {
+          "text": "The squared amplitude of the harmonic is the sum of their squares; with $1 - \\cos 2x = 2\\sin^2 x$ it is a perfect square.",
+          "text_ko": "고조파 진폭의 제곱은 두 계수의 제곱의 합이며, $1 - \\cos 2x = 2\\sin^2 x$를 쓰면 완전제곱이 된다.",
+          "latex": "a_h^{2} = \\frac{4 V_\\mathrm{pk}^{2} \\sin^{2}{\\left(\\pi D h \\right)}}{\\pi^{2} h^{2}}",
+          "result_for": null
+        },
+        {
+          "text": "Take the non-negative root.",
+          "text_ko": "음이 아닌 제곱근을 취한다.",
+          "latex": "a_h = \\frac{2 V_\\mathrm{pk} \\left|{\\sin{\\left(\\pi h D \\right)}}\\right|}{\\pi h}",
+          "result_for": "fourier.pulse.harm"
+        },
+        {
+          "text": "The mean square over one period: the pulse contributes $V_\\mathrm{pk}^2$ during $D T$.",
+          "text_ko": "한 주기의 제곱 평균: 펄스는 $D T$ 동안 $V_\\mathrm{pk}^2$를 기여한다.",
+          "latex": "V_\\mathrm{rms}^{2} = D V_\\mathrm{pk}^{2}",
+          "result_for": null
+        },
+        {
+          "text": "The rms value is its square root.",
+          "text_ko": "실효값은 그 제곱근이다.",
+          "latex": "V_\\mathrm{rms} = V_\\mathrm{pk} \\sqrt{D}",
+          "result_for": "fourier.pulse.rms"
+        },
+        {
+          "text": "The ripple current flows through the capacitor's series resistance, whose voltage follows the current at every instant. The difference between its extremes:",
+          "text_ko": "리플 전류는 커패시터의 직렬 저항을 흐르며, 그 전압은 매 순간 전류를 따른다. 최댓값과 최솟값의 차는",
+          "latex": "\\Delta v_\\mathrm{ESR} = i_{C,\\mathrm{max}} R_\\mathrm{ESR} - i_{C,\\mathrm{min}} R_\\mathrm{ESR}",
+          "result_for": null
+        },
+        {
+          "text": "The current's peak-to-peak value is its maximum minus its minimum.",
+          "text_ko": "전류의 피크-피크 값은 최댓값에서 최솟값을 뺀 값이다.",
+          "latex": "\\Delta v_\\mathrm{ESR} = R_\\mathrm{ESR} \\Delta i_{L,\\mathrm{pp}}",
+          "result_for": "cap.esr.ripple"
+        },
+        {
+          "text": "Ampère's law around the core: the line integral of $H$ equals the enclosed current, $N$ turns each carrying $I_w$. In an ungapped core with a uniform field it is $H$ times the path length.",
+          "text_ko": "코어를 한 바퀴 도는 앙페르 법칙: $H$의 선적분은 감싸인 전류, 즉 각각 $I_w$가 흐르는 $N$턴과 같다. 균일한 자계를 갖는 공극이 없는 코어에서 선적분은 $H$와 자로 길이의 곱이다.",
+          "latex": "H l_e = I_w N",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $H$.",
+          "text_ko": "$H$에 대해 푼다.",
+          "latex": "H = \\frac{N I_w}{l_e}",
+          "result_for": "mag.H_ampere"
+        },
+        {
+          "text": "Faraday's law for two windings on one core: each winding voltage is its number of turns times the rate of change of the common flux. For the primary:",
+          "text_ko": "한 코어에 감긴 두 권선에 대한 패러데이 법칙: 각 권선 전압은 턴 수에 공통 자속의 변화율을 곱한 값이다. 1차 권선은",
+          "latex": "V_1 = N_p \\mathrm{d}\\Phi/\\mathrm{d}t",
+          "result_for": null
+        },
+        {
+          "text": "and for the secondary:",
+          "text_ko": "2차 권선은",
+          "latex": "V_2 = N_s \\mathrm{d}\\Phi/\\mathrm{d}t",
+          "result_for": null
+        },
+        {
+          "text": "Divide the two: the flux term cancels, and the ratio of the turns is $n$ (1:n convention).",
+          "text_ko": "두 식을 나누면 자속 항이 소거되고, 턴 수의 비가 $n$이 된다(1:n 규약).",
+          "latex": "V_2 = n V_1",
+          "result_for": "xfmr.V2"
+        },
+        {
+          "text": "Ampère's law with a core of zero reluctance (ideal): the net magnetomotive force is zero.",
+          "text_ko": "자기저항이 0인 코어(이상적)에서 앙페르 법칙: 순 기자력은 0이다.",
+          "latex": "I_1 N_p - I_2 N_s = 0",
+          "result_for": null
+        },
+        {
+          "text": "Solve for the secondary current, with $N_s = n N_p$.",
+          "text_ko": "$N_s = n N_p$로 놓고 2차 전류에 대해 푼다.",
+          "latex": "I_2 = \\frac{I_1}{n}",
+          "result_for": "xfmr.I2"
+        }
+      ]
+    },
+    {
       "module": "averaging",
       "source": "python/pe_core/derive/averaging.py",
       "title": "Averaging, balance, and losses in the averaged model",
@@ -182,7 +407,7 @@
         },
         {
           "text": "Buck ripple: during the on-interval the inductor current rises with slope $(V_g - V)/L$ for $D T_s$, which is the full peak-to-peak ripple, i.e. $2\\Delta i_L$.",
-          "text_ko": "벅 리플: 온 구간 $D T_s$ 동안 인덕터 전류가 기울기 $(V_g - V)/L$로 증가하며, 이 증가량이 피크-투-피크 리플, 즉 $2\\Delta i_L$이다.",
+          "text_ko": "벅 리플: 온 구간 $D T_s$ 동안 인덕터 전류가 기울기 $(V_g - V)/L$로 증가하며, 이 증가량이 피크-피크 리플, 즉 $2\\Delta i_L$이다.",
           "latex": "2 \\Delta i_L = \\frac{D T_s \\left(V_g - V\\right)}{L}",
           "result_for": null
         },
@@ -194,7 +419,7 @@
         },
         {
           "text": "The peak-to-peak value, with $T_s = 1/f_s$.",
-          "text_ko": "$T_s = 1/f_s$로 쓴 피크-투-피크 값.",
+          "text_ko": "$T_s = 1/f_s$로 쓴 피크-피크 값.",
           "latex": "\\Delta i_{L,\\mathrm{pp}} = \\frac{\\left(V_g - V\\right) D}{L f_s}",
           "result_for": "buck.ripple.iL_pp"
         }
@@ -1014,7 +1239,7 @@
         },
         {
           "text": "Gap reluctance (no fringing: the gap area equals $A_e$).",
-          "text_ko": "갭 자기저항(프린징 무시: 갭 면적 = $A_e$).",
+          "text_ko": "공극 자기저항(프린징 무시: 공극 면적 = $A_e$).",
           "latex": "\\mathcal{R}_g = \\frac{l_g}{A_e \\mu_0}",
           "result_for": null
         },

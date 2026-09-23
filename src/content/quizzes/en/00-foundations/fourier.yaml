@@ -1,0 +1,51 @@
+# Quiz for 00-foundations/fourier. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A pulse train switches between $0$ and $10\,\mathrm{V}$ with $D = 0.3$. What is its dc component?'
+    options:
+      - '$0.3\,\mathrm{V}$'
+      - '$3\,\mathrm{V}$'
+      - '$5\,\mathrm{V}$'
+      - '$7\,\mathrm{V}$'
+    answer: 1
+    explain: 'The dc component is the average: the pulse height times the fraction of the period it lasts.'
+  - q: 'What is the rms value of a pulse train between $0$ and $10\,\mathrm{V}$ at $D = 0.25$?'
+    options:
+      - '$2.5\,\mathrm{V}$'
+      - '$5\,\mathrm{V}$'
+      - '$7.07\,\mathrm{V}$'
+      - '$10\,\mathrm{V}$'
+    answer: 1
+    explain: 'The mean square is $0.25 \times 100\,\mathrm{V^2}$, and its square root is $5\,\mathrm{V}$, twice the average.'
+  - q: 'At $D = 0.5$, which harmonics of a rectangular pulse train are missing?'
+    options:
+      - 'None'
+      - 'The odd harmonics'
+      - 'The even harmonics'
+      - 'All harmonics above the third'
+    answer: 2
+    explain: 'A harmonic vanishes where $h D$ is an integer; at $D = 0.5$ that is every even $h$.'
+  - q: 'Apart from the zeros, how do the harmonic amplitudes of a rectangular pulse train fall with the harmonic order $h$?'
+    options:
+      - 'As $1/h$'
+      - 'As $1/h^2$'
+      - 'Exponentially'
+      - 'They do not fall'
+    answer: 0
+    explain: 'The amplitude is $2 V_\mathrm{pk} |\sin(\pi h D)|/(\pi h)$: the envelope falls as $1/h$.'
+  - q: 'What is the amplitude of the fundamental of a pulse train between $0$ and $12\,\mathrm{V}$ at $D = 0.5$?'
+    options:
+      - '$6\,\mathrm{V}$'
+      - '$7.64\,\mathrm{V}$'
+      - '$12\,\mathrm{V}$'
+      - '$3.82\,\mathrm{V}$'
+    answer: 1
+    explain: 'With $h = 1$ and $D = 0.5$ the sine term is 1, so the amplitude is $2 \times 12/\pi$.'
+  - q: 'Why does a buck converter''s output equal the average of its switch-node voltage?'
+    options:
+      - 'The L-C filter passes the dc component and strongly attenuates the harmonics, the lowest of which is at the switching frequency'
+      - 'The switch-node voltage has no harmonics'
+      - 'The diode removes the harmonics'
+      - 'The load resistor averages the voltage'
+    answer: 0
+    explain: 'The output keeps the dc component and a small residue of the harmonics: the ripple.'

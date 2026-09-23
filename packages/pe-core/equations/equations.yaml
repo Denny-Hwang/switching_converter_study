@@ -94,7 +94,7 @@ symbol_table:
   D_2: {latex: "D_2", unit: "1", desc: "diode-conduction interval as a fraction of T_s (DCM)"}
   R_L: {latex: "R_L", unit: "Ω", desc: "inductor winding (copper) resistance", range: [0.001, 10], scale: log}
   eta: {latex: "\\eta", unit: "1", desc: "efficiency P_out/P_in"}
-  C: {latex: "C", unit: "F", desc: "output filter capacitance", range: [1.0e-7, 1.0e-2], scale: log}
+  C: {latex: "C", unit: "F", desc: "capacitance (the output filter capacitor in converter equations)", range: [1.0e-7, 1.0e-2], scale: log}
   G_d0: {latex: "G_{d0}", unit: "V", desc: "dc gain of the control-to-output transfer function (magnitude)"}
   omega_0: {latex: "\\omega_0", unit: "rad/s", desc: "angular resonant (corner) frequency of the LC poles"}
   Q: {latex: "Q", unit: "1", desc: "quality factor of the LC poles"}
@@ -122,6 +122,37 @@ symbol_table:
   f: {latex: "f", unit: "Hz", desc: "excitation frequency", range: [1.0e3, 1.0e6], scale: log}
   alpha: {latex: "\\alpha", unit: "1", desc: "Steinmetz frequency exponent", range: [1, 2]}
   beta: {latex: "\\beta", unit: "1", desc: "Steinmetz flux-density exponent", range: [2, 3]}
+  # --- refreshers (00-foundations, 01-physics) ----------------------------------
+  t: {latex: "t", unit: "s", desc: "duration of a constant excitation", range: [1.0e-7, 1.0e-3], scale: log}
+  V_L: {latex: "V_L", unit: "V", desc: "constant voltage across an inductor", range: [0.1, 400], scale: log}
+  I_C: {latex: "I_C", unit: "A", desc: "constant current into a capacitor", range: [0.001, 100], scale: log}
+  V_C: {latex: "V_C", unit: "V", desc: "capacitor voltage", range: [0.1, 400], scale: log}
+  Delta_i: {latex: "\\Delta i", unit: "A", desc: "change of inductor current during t (the full change, not a half-ripple)"}
+  Delta_v_C: {latex: "\\Delta v_C", unit: "V", desc: "change of capacitor voltage during t"}
+  E_L: {latex: "E_L", unit: "J", desc: "energy stored in an inductor"}
+  E_C: {latex: "E_C", unit: "J", desc: "energy stored in a capacitor"}
+  Z_L: {latex: "|Z_L|", unit: "Ω", desc: "impedance magnitude of an inductor"}
+  Z_C: {latex: "|Z_C|", unit: "Ω", desc: "impedance magnitude of a capacitor"}
+  R_f: {latex: "R_f", unit: "Ω", desc: "resistance of an R-C filter", range: [1, 1.0e6], scale: log}
+  C_f: {latex: "C_f", unit: "F", desc: "capacitance of an R-C filter", range: [1.0e-12, 1.0e-3], scale: log}
+  f_c: {latex: "f_c", unit: "Hz", desc: "corner (-3 dB) frequency", range: [1, 1.0e7], scale: log}
+  G_lp: {latex: "|G|", unit: "1", desc: "magnitude of a first-order low-pass transfer function"}
+  h: {latex: "h", unit: "1", desc: "harmonic order (1, 2, 3, ...)", range: [1, 20]}
+  V_pk: {latex: "V_\\mathrm{pk}", unit: "V", desc: "amplitude of a rectangular pulse train", range: [0.1, 400], scale: log}
+  a_h: {latex: "a_h", unit: "V", desc: "amplitude of the h-th harmonic"}
+  V_rms: {latex: "V_\\mathrm{rms}", unit: "V", desc: "rms value of a voltage waveform"}
+  C_p: {latex: "C_p", unit: "F", desc: "parasitic (winding) capacitance in parallel with an inductance", range: [1.0e-12, 1.0e-8], scale: log}
+  f_srf: {latex: "f_\\mathrm{srf}", unit: "Hz", desc: "self-resonant frequency"}
+  R_esr: {latex: "R_\\mathrm{ESR}", unit: "Ω", desc: "equivalent series resistance of a capacitor", range: [1.0e-4, 1], scale: log}
+  Delta_v_esr: {latex: "\\Delta v_\\mathrm{ESR}", unit: "V", desc: "ripple voltage across the ESR, peak-to-peak"}
+  I_w: {latex: "I_w", unit: "A", desc: "current in a winding", range: [0.001, 100], scale: log}
+  H_mag: {latex: "H", unit: "A/m", desc: "magnetic field intensity", range: [1, 1.0e5], scale: log}
+  mu_r: {latex: "\\mu_r", unit: "1", desc: "relative permeability", range: [1, 20000], scale: log}
+  B: {latex: "B", unit: "T", desc: "magnetic flux density"}
+  V_1: {latex: "V_1", unit: "V", desc: "primary winding voltage", range: [1, 400], scale: log}
+  V_2: {latex: "V_2", unit: "V", desc: "secondary winding voltage"}
+  I_1: {latex: "I_1", unit: "A", desc: "primary winding current", range: [0.001, 100], scale: log}
+  I_2: {latex: "I_2", unit: "A", desc: "secondary winding current"}
 
 # Human-readable labels for the `assumptions` tags (shown in the <Eq> expander).
 assumption_labels:
@@ -137,7 +168,7 @@ assumption_labels:
   definition: {en: "definition", ko: "정의"}
   linear_source: {en: "linear (Thevenin) source V_oc behind R_s", ko: "선형(테브난) 전원: R_s 뒤의 V_oc"}
   lossless_converter: {en: "lossless converter (input power equals output power)", ko: "무손실 컨버터(입력 전력 = 출력 전력)"}
-  no_fringing: {en: "no fringing flux at the gap", ko: "갭의 프린징(fringing) 자속 무시"}
+  no_fringing: {en: "no fringing flux at the gap", ko: "공극의 프린징(fringing) 자속 무시"}
   linear_magnetics: {en: "linear (unsaturated) magnetic material", ko: "선형(비포화) 자성 재료"}
   uniform_flux: {en: "flux density uniform over A_e", ko: "A_e 전체에서 균일한 자속 밀도"}
   sinusoidal_excitation: {en: "sinusoidal excitation (empirical fit)", ko: "정현파 여자(경험적 피팅)"}
@@ -151,6 +182,12 @@ assumption_labels:
   inductor_resistance: {en: "inductor winding resistance R_L; all other components ideal", ko: "인덕터 권선 저항 R_L 외 나머지 소자는 이상적"}
   capacitor_takes_ripple: {en: "the whole inductor ripple current flows into the output capacitor; the load draws only dc", ko: "인덕터 리플 전류 전체가 출력 커패시터로 흐르고 부하는 직류만 받음"}
   small_ripple_currents: {en: "rms currents computed with small ripple (flat-topped current pulses)", ko: "소리플 근사로 계산한 실효 전류(윗면이 평평한 전류 펄스)"}
+  constant_excitation: {en: "constant voltage (inductor) or current (capacitor) during the interval t", ko: "구간 t 동안 전압(인덕터) 또는 전류(커패시터)가 일정함"}
+  sinusoidal_steady_state: {en: "sinusoidal steady state (phasor analysis)", ko: "정현파 정상상태(페이저 해석)"}
+  first_order_rc: {en: "first-order R-C low-pass filter with no load on its output", ko: "출력에 부하가 없는 1차 R-C 저역통과 필터"}
+  rectangular_pulse: {en: "ideal rectangular pulse train between 0 and V_pk with duty ratio D", ko: "0과 V_pk 사이를 오가는 듀티비 D의 이상적인 직사각형 펄스열"}
+  uniform_field: {en: "ungapped core with the field intensity uniform along the path l_e", ko: "공극이 없는 코어에서 자로 l_e를 따라 자계 세기가 균일함"}
+  ideal_transformer: {en: "ideal transformer: perfect coupling, no magnetizing current, no losses", ko: "이상적 변압기: 완전 결합, 자화 전류 없음, 손실 없음"}
 
 equations:
   # =========================================================================
@@ -251,13 +288,13 @@ equations:
   # =========================================================================
   - id: buck.ripple.iL
     title: "Buck inductor current ripple (half peak-to-peak), CCM"
-    title_ko: "벅 인덕터 전류 리플(피크-투-피크의 절반), CCM"
+    title_ko: "벅 인덕터 전류 리플(피크-피크의 절반), CCM"
     lhs: Delta_i_L
     expr: "(V_g - V)*D*T_s/(2*L)"
     symbols: {V_g: "input voltage", V: "output voltage", D: "duty ratio", T_s: "switching period", L: "filter inductance"}
     assumptions: [ideal, ccm, steady_state, small_ripple]
     convention: "$\\Delta i_L$ is HALF the peak-to-peak ripple (Erickson)"
-    convention_ko: "$\\Delta i_L$은 피크-투-피크 리플의 절반(Erickson 규약)"
+    convention_ko: "$\\Delta i_L$은 피크-피크 리플의 절반(Erickson 규약)"
     cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
     derived_by: python/pe_core/derive/ccm_ratios.py
     tests:
@@ -265,13 +302,13 @@ equations:
 
   - id: buck.ripple.iL_pp
     title: "Buck inductor current ripple, peak-to-peak, CCM"
-    title_ko: "벅 인덕터 전류 리플(피크-투-피크), CCM"
+    title_ko: "벅 인덕터 전류 리플(피크-피크), CCM"
     lhs: Delta_i_pp
     expr: "(V_g - V)*D/(L*f_s)"
     symbols: {V_g: "input voltage", V: "output voltage", D: "duty ratio", L: "filter inductance", f_s: "switching frequency"}
     assumptions: [ideal, ccm, steady_state, small_ripple]
     convention: "peak-to-peak; twice the Erickson $\\Delta i_L$"
-    convention_ko: "피크-투-피크 값; Erickson의 $\\Delta i_L$의 두 배"
+    convention_ko: "피크-피크 값; Erickson의 $\\Delta i_L$의 두 배"
     cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
     derived_by: python/pe_core/derive/ccm_ratios.py
     tests:
@@ -635,7 +672,7 @@ equations:
     symbols: {k: "coefficient", f: "frequency", alpha: "frequency exponent", B_ac: "peak AC flux density", beta: "flux exponent"}
     assumptions: [sinusoidal_excitation]
     convention: "$B_\\mathrm{ac}$ is the peak AC amplitude, half the peak-to-peak swing $\\Delta B$; $k$, $\\alpha$, $\\beta$ are fitted per material and valid only over the fitted range"
-    convention_ko: "$B_\\mathrm{ac}$는 피크 교류 진폭(피크-투-피크 $\\Delta B$의 절반); $k$, $\\alpha$, $\\beta$는 재료별 피팅값이며 피팅 범위 안에서만 유효"
+    convention_ko: "$B_\\mathrm{ac}$는 피크 교류 진폭(피크-피크 $\\Delta B$의 절반); $k$, $\\alpha$, $\\beta$는 재료별 피팅값이며 피팅 범위 안에서만 유효"
     notes: "Steinmetz's original law gives loss per cycle proportional to $B^{1.6}$; the frequency term is the empirical extension used with ferrite data"
     notes_ko: "스타인메츠의 원래 법칙은 주기당 손실이 $B^{1.6}$에 비례; 주파수 항은 페라이트 데이터에 쓰이는 경험적 확장"
     cite:
@@ -664,14 +701,14 @@ equations:
 
   - id: mag.AL_gap
     title: "Inductance factor of a gapped core"
-    title_ko: "갭이 있는 코어의 인덕턴스 계수"
+    title_ko: "공극이 있는 코어의 인덕턴스 계수"
     lhs: A_L
     relation: approx
     expr: "mu_0*A_e/(l_g + l_e/mu_i)"
     symbols: {mu_0: "permeability of free space", A_e: "effective area", l_g: "gap length", l_e: "effective path length", mu_i: "initial relative permeability"}
     assumptions: [linear_magnetics, no_fringing, uniform_flux]
     notes: "fringing makes the real $A_L$ larger than this estimate; use the manufacturer's $A_L$ for a specified gap"
-    notes_ko: "프린징 때문에 실제 $A_L$은 이 추정보다 큼; 갭이 지정된 코어는 제조사 $A_L$ 사용"
+    notes_ko: "프린징 때문에 실제 $A_L$은 이 추정보다 큼; 공극이 지정된 코어는 제조사 $A_L$ 사용"
     cite:
       - {key: dixon2001}
       - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: magnetic circuits)"}
@@ -702,7 +739,7 @@ equations:
     symbols: {V_w: "winding voltage during t_on", t_on: "on-time", N: "number of turns", A_e: "effective area"}
     assumptions: [uniform_flux]
     convention: "$\\Delta B$ is the peak-to-peak swing; the AC amplitude used in core-loss formulas is $\\Delta B/2$"
-    convention_ko: "$\\Delta B$는 피크-투-피크 변화폭; 코어 손실식의 교류 진폭은 $\\Delta B/2$"
+    convention_ko: "$\\Delta B$는 피크-피크 변화폭; 코어 손실식의 교류 진폭은 $\\Delta B/2$"
     cite:
       - {key: dixon2001}
       - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory)"}
@@ -1091,13 +1128,13 @@ equations:
 
   - id: buck.ripple.v
     title: "Buck output voltage ripple (half peak-to-peak), CCM"
-    title_ko: "벅 출력 전압 리플(피크-투-피크의 절반), CCM"
+    title_ko: "벅 출력 전압 리플(피크-피크의 절반), CCM"
     lhs: Delta_v
     expr: "Delta_i_L*T_s/(8*C)"
     symbols: {Delta_i_L: "inductor current ripple, half of peak-to-peak", T_s: "switching period", C: "output capacitance"}
     assumptions: [ideal, ccm, steady_state, capacitor_takes_ripple]
     convention: "$\\Delta v$ is HALF the peak-to-peak ripple, like $\\Delta i_L$ (Erickson)"
-    convention_ko: "$\\Delta v$는 $\\Delta i_L$과 마찬가지로 피크-투-피크 리플의 절반(Erickson 규약)"
+    convention_ko: "$\\Delta v$는 $\\Delta i_L$과 마찬가지로 피크-피크 리플의 절반(Erickson 규약)"
     notes: "ideal capacitor; a capacitor's series resistance adds a ripple term of its own"
     notes_ko: "이상적 커패시터; 커패시터의 직렬 저항은 별도의 리플 항을 더한다"
     cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
@@ -1121,7 +1158,7 @@ equations:
 
   - id: boost.ripple.iL
     title: "Boost inductor current ripple (half peak-to-peak), CCM"
-    title_ko: "부스트 인덕터 전류 리플(피크-투-피크의 절반), CCM"
+    title_ko: "부스트 인덕터 전류 리플(피크-피크의 절반), CCM"
     lhs: Delta_i_L
     expr: "V_g*D*T_s/(2*L)"
     symbols: {V_g: "input voltage", D: "duty ratio", T_s: "switching period", L: "inductance"}
@@ -1133,7 +1170,7 @@ equations:
 
   - id: boost.ripple.v
     title: "Boost output voltage ripple (half peak-to-peak), CCM"
-    title_ko: "부스트 출력 전압 리플(피크-투-피크의 절반), CCM"
+    title_ko: "부스트 출력 전압 리플(피크-피크의 절반), CCM"
     lhs: Delta_v
     expr: "V*D*T_s/(2*R*C)"
     symbols: {V: "output voltage", D: "duty ratio", T_s: "switching period", R: "load resistance", C: "output capacitance"}
@@ -1175,7 +1212,7 @@ equations:
 
   - id: buckboost.ripple.iL
     title: "Buck-boost inductor current ripple (half peak-to-peak), CCM"
-    title_ko: "벅-부스트 인덕터 전류 리플(피크-투-피크의 절반), CCM"
+    title_ko: "벅-부스트 인덕터 전류 리플(피크-피크의 절반), CCM"
     lhs: Delta_i_L
     expr: "V_g*D*T_s/(2*L)"
     symbols: {V_g: "input voltage", D: "duty ratio", T_s: "switching period", L: "inductance"}
@@ -1187,7 +1224,7 @@ equations:
 
   - id: buckboost.ripple.v
     title: "Buck-boost output voltage ripple (half peak-to-peak), CCM"
-    title_ko: "벅-부스트 출력 전압 리플(피크-투-피크의 절반), CCM"
+    title_ko: "벅-부스트 출력 전압 리플(피크-피크의 절반), CCM"
     lhs: Delta_v
     expr: "V*D*T_s/(2*R*C)"
     symbols: {V: "output voltage magnitude", D: "duty ratio", T_s: "switching period", R: "load resistance", C: "output capacitance"}
@@ -1227,7 +1264,7 @@ equations:
 
   - id: forward.ripple.iL
     title: "Forward converter output inductor ripple (half peak-to-peak), CCM"
-    title_ko: "포워드 컨버터 출력 인덕터 리플(피크-투-피크의 절반), CCM"
+    title_ko: "포워드 컨버터 출력 인덕터 리플(피크-피크의 절반), CCM"
     lhs: Delta_i_L
     expr: "(n*V_g - V)*D*T_s/(2*L)"
     symbols: {n: "turns ratio N_s/N_p", V_g: "input voltage", V: "output voltage", D: "duty ratio", T_s: "switching period", L: "output inductance"}
@@ -1295,3 +1332,230 @@ equations:
     derived_by: python/pe_core/derive/topologies.py
     tests:
       - {inputs: {D: 0.25, n_r: 1.0}, expect: 0.25}
+
+  # =========================================================================
+  # Refreshers: 00-foundations and 01-physics (Phase 2c)
+  # =========================================================================
+  - id: ind.di
+    title: "Current change of an inductor under a constant voltage"
+    title_ko: "일정한 전압이 걸린 인덕터의 전류 변화"
+    lhs: Delta_i
+    expr: "V_L*t/L"
+    symbols: {V_L: "constant voltage across the inductor", t: "duration", L: "inductance"}
+    assumptions: [ideal, constant_excitation]
+    notes: "integrates the inductor law; the current changes linearly while the voltage is constant. This is the full change, not the half-ripple $\\Delta i_L$ of the converter pages"
+    notes_ko: "인덕터 법칙을 적분한 결과이며, 전압이 일정한 동안 전류는 직선으로 변한다. 컨버터 페이지의 리플 절반 $\\Delta i_L$이 아니라 전체 변화량이다"
+    cite: {key: alexander2017, where: "Ch. 6 (Capacitors and Inductors)"}
+    derived_by: python/pe_core/derive/foundations.py
+    tests:
+      - {inputs: {V_L: 12.0, t: 5.0e-6, L: 1.0e-4}, expect: 0.6}
+
+  - id: cap.dv
+    title: "Voltage change of a capacitor under a constant current"
+    title_ko: "일정한 전류가 흐르는 커패시터의 전압 변화"
+    lhs: Delta_v_C
+    expr: "I_C*t/C"
+    symbols: {I_C: "constant current into the capacitor", t: "duration", C: "capacitance"}
+    assumptions: [ideal, constant_excitation]
+    notes: "integrates the capacitor law, the dual of the inductor law"
+    notes_ko: "커패시터 법칙을 적분한 결과로, 인덕터 법칙의 쌍대이다"
+    cite: {key: alexander2017, where: "Ch. 6 (Capacitors and Inductors)"}
+    derived_by: python/pe_core/derive/foundations.py
+    tests:
+      - {inputs: {I_C: 1.2, t: 5.0e-6, C: 1.0e-5}, expect: 0.6}
+
+  - id: ind.E
+    title: "Energy stored in an inductor"
+    title_ko: "인덕터에 저장된 에너지"
+    lhs: E_L
+    expr: "L*I_L**2/2"
+    symbols: {L: "inductance", I_L: "inductor current"}
+    assumptions: [ideal, linear_magnetics]
+    cite: {key: alexander2017, where: "Ch. 6 (Capacitors and Inductors)"}
+    derived_by: python/pe_core/derive/foundations.py
+    tests:
+      - {inputs: {L: 1.0e-4, I_L: 2.0}, expect: 2.0e-4}
+
+  - id: cap.E
+    title: "Energy stored in a capacitor"
+    title_ko: "커패시터에 저장된 에너지"
+    lhs: E_C
+    expr: "C*V_C**2/2"
+    symbols: {C: "capacitance", V_C: "capacitor voltage"}
+    assumptions: [ideal]
+    cite: {key: alexander2017, where: "Ch. 6 (Capacitors and Inductors)"}
+    derived_by: python/pe_core/derive/foundations.py
+    tests:
+      - {inputs: {C: 1.0e-5, V_C: 12.0}, expect: 7.2e-4}
+
+  - id: imp.ZL
+    title: "Impedance magnitude of an inductor"
+    title_ko: "인덕터 임피던스의 크기"
+    lhs: Z_L
+    expr: "2*pi*f*L"
+    symbols: {f: "frequency", L: "inductance"}
+    assumptions: [ideal, sinusoidal_steady_state]
+    notes: "the impedance is $j 2\\pi f L$: its magnitude grows in proportion to the frequency and the current lags the voltage by 90°"
+    notes_ko: "임피던스는 $j 2\\pi f L$이다. 크기는 주파수에 비례하여 커지고, 전류는 전압보다 90° 뒤진다"
+    cite: {key: alexander2017, where: "Ch. 9 (Sinusoids and Phasors)"}
+    derived_by: python/pe_core/derive/foundations.py
+    tests:
+      - {inputs: {f: 1.0e5, L: 1.0e-4}, expect: 62.83185307179586}
+
+  - id: imp.ZC
+    title: "Impedance magnitude of a capacitor"
+    title_ko: "커패시터 임피던스의 크기"
+    lhs: Z_C
+    expr: "1/(2*pi*f*C)"
+    symbols: {f: "frequency", C: "capacitance"}
+    assumptions: [ideal, sinusoidal_steady_state]
+    notes: "the impedance is $1/(j 2\\pi f C)$: its magnitude falls in inverse proportion to the frequency and the current leads the voltage by 90°"
+    notes_ko: "임피던스는 $1/(j 2\\pi f C)$이다. 크기는 주파수에 반비례하여 작아지고, 전류는 전압보다 90° 앞선다"
+    cite: {key: alexander2017, where: "Ch. 9 (Sinusoids and Phasors)"}
+    derived_by: python/pe_core/derive/foundations.py
+    tests:
+      - {inputs: {f: 1.0e5, C: 1.0e-5}, expect: 0.15915494309189535}
+
+  - id: rc.fc
+    title: "Corner frequency of a first-order R-C low-pass filter"
+    title_ko: "1차 R-C 저역통과 필터의 차단 주파수"
+    lhs: f_c
+    expr: "1/(2*pi*R_f*C_f)"
+    symbols: {R_f: "filter resistance", C_f: "filter capacitance"}
+    assumptions: [first_order_rc]
+    notes: "at $f_c$ the output magnitude is $1/\\sqrt{2}$ of the input (the -3 dB point)"
+    notes_ko: "$f_c$에서 출력 크기는 입력의 $1/\\sqrt{2}$(-3 dB 지점)이다"
+    cite: {key: alexander2017, where: "Ch. 14 (Frequency Response)"}
+    derived_by: python/pe_core/derive/foundations.py
+    tests:
+      - {inputs: {R_f: 1000.0, C_f: 1.0e-7}, expect: 1591.5494309189535}
+
+  - id: rc.gain
+    title: "Gain magnitude of a first-order low-pass filter"
+    title_ko: "1차 저역통과 필터의 이득 크기"
+    lhs: G_lp
+    expr: "1/sqrt(1 + (f/f_c)**2)"
+    symbols: {f: "frequency", f_c: "corner frequency"}
+    assumptions: [first_order_rc, sinusoidal_steady_state]
+    notes: "well above $f_c$ the gain falls in inverse proportion to the frequency: -20 dB per decade on a Bode plot"
+    notes_ko: "$f_c$보다 충분히 높은 주파수에서 이득은 주파수에 반비례하여 줄어든다. 보드 선도에서는 디케이드당 -20 dB이다"
+    cite: {key: alexander2017, where: "Ch. 14 (Frequency Response)"}
+    derived_by: python/pe_core/derive/foundations.py
+    tests:
+      - {inputs: {f: 1000.0, f_c: 1000.0}, expect: 0.7071067811865476}
+      - {inputs: {f: 1.0e4, f_c: 1000.0}, expect: 0.09950371902099892}
+
+  - id: fourier.pulse.harm
+    title: "Amplitude of the h-th harmonic of a rectangular pulse train"
+    title_ko: "직사각형 펄스열의 h차 고조파 진폭"
+    lhs: a_h
+    expr: "2*V_pk*Abs(sin(pi*h*D))/(pi*h)"
+    symbols: {V_pk: "pulse amplitude", h: "harmonic order", D: "duty ratio"}
+    assumptions: [rectangular_pulse, steady_state]
+    notes: "the dc component is $D V_\\mathrm{pk}$; the harmonic amplitudes fall as $1/h$ and vanish where $h D$ is an integer"
+    notes_ko: "직류 성분은 $D V_\\mathrm{pk}$이다. 고조파 진폭은 $1/h$에 비례하여 줄어들며, $h D$가 정수이면 0이 된다"
+    cite: {key: alexander2017, where: "Ch. 17 (The Fourier Series)"}
+    derived_by: python/pe_core/derive/foundations.py
+    tests:
+      - {inputs: {V_pk: 12.0, h: 1.0, D: 0.5}, expect: 7.639437268410976}
+      - {inputs: {V_pk: 12.0, h: 3.0, D: 0.25}, expect: 1.8006326323142129}
+
+  - id: fourier.pulse.rms
+    title: "RMS value of a rectangular pulse train"
+    title_ko: "직사각형 펄스열의 실효값"
+    lhs: V_rms
+    expr: "V_pk*sqrt(D)"
+    symbols: {V_pk: "pulse amplitude", D: "duty ratio"}
+    assumptions: [rectangular_pulse]
+    cite: {key: alexander2017, where: "Ch. 11 (AC Power Analysis)"}
+    derived_by: python/pe_core/derive/foundations.py
+    tests:
+      - {inputs: {V_pk: 12.0, D: 0.25}, expect: 6.0}
+
+  - id: passive.f_srf
+    title: "Self-resonant frequency of an inductance with parallel parasitic capacitance"
+    title_ko: "병렬 기생 커패시턴스가 있는 인덕턴스의 자기 공진 주파수"
+    lhs: f_srf
+    expr: "1/(2*pi*sqrt(L*C_p))"
+    symbols: {L: "inductance", C_p: "parasitic capacitance in parallel"}
+    assumptions: [lossless_lc]
+    notes: "above $f_\\mathrm{srf}$ the component behaves as a capacitor; near it, an impedance measurement reads neither $L$ nor $C_p$"
+    notes_ko: "$f_\\mathrm{srf}$보다 높은 주파수에서 이 부품은 커패시터처럼 동작한다. 그 근처에서 임피던스를 측정하면 $L$도 $C_p$도 얻을 수 없다"
+    cite: {key: alexander2017, where: "Ch. 14 (Frequency Response)"}
+    derived_by: python/pe_core/derive/foundations.py
+    tests:
+      - {inputs: {L: 1.0e-3, C_p: 1.0e-11}, expect: 1591549.4309189534}
+
+  - id: cap.esr.ripple
+    title: "Ripple voltage across a capacitor's series resistance"
+    title_ko: "커패시터 직렬 저항에 걸리는 리플 전압"
+    lhs: Delta_v_esr
+    expr: "R_esr*Delta_i_pp"
+    symbols: {R_esr: "equivalent series resistance", Delta_i_pp: "peak-to-peak ripple current into the capacitor"}
+    ranges: {Delta_i_pp: [0.001, 20]}
+    assumptions: [capacitor_takes_ripple]
+    notes: "peak-to-peak and in phase with the ripple current; it adds to the capacitive ripple"
+    notes_ko: "피크-피크 값이며 리플 전류와 같은 위상이다. 용량성 리플에 더해진다"
+    cite: {key: ti_slva630}
+    derived_by: python/pe_core/derive/foundations.py
+    tests:
+      - {inputs: {R_esr: 0.05, Delta_i_pp: 0.6}, expect: 0.03}
+
+  - id: mag.H_ampere
+    title: "Field intensity in an ungapped core from Ampère's law"
+    title_ko: "앙페르 법칙으로 구한 공극이 없는 코어의 자계 세기"
+    lhs: H_mag
+    expr: "N*I_w/l_e"
+    symbols: {N: "number of turns", I_w: "winding current", l_e: "effective magnetic path length"}
+    assumptions: [uniform_field]
+    cite: {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory)"}
+    derived_by: python/pe_core/derive/foundations.py
+    tests:
+      - {inputs: {N: 20.0, I_w: 2.0, l_e: 0.04}, expect: 1000.0}
+
+  - id: mag.B_H
+    title: "Flux density in a linear magnetic material"
+    title_ko: "선형 자성 재료의 자속 밀도"
+    lhs: B
+    expr: "mu_0*mu_r*H_mag"
+    symbols: {mu_0: "permeability of free space", mu_r: "relative permeability", H_mag: "magnetic field intensity"}
+    assumptions: [linear_magnetics]
+    notes: "valid below saturation; a ferrite is close to linear only over part of its B-H curve"
+    notes_ko: "포화 이하에서만 유효하다. 페라이트는 B-H 곡선의 일부 구간에서만 선형에 가깝다"
+    cite: {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory)"}
+    tests:
+      - {inputs: {mu_r: 2000.0, H_mag: 100.0}, expect: 0.25132741228718347}
+
+  - id: xfmr.V2
+    title: "Ideal transformer: secondary voltage"
+    title_ko: "이상적 변압기: 2차 전압"
+    lhs: V_2
+    expr: "n*V_1"
+    symbols: {n: "turns ratio N_s/N_p", V_1: "primary voltage"}
+    assumptions: [ideal_transformer]
+    convention: "turns ratio 1:n with $n$ the secondary turns divided by the primary turns (site convention)"
+    convention_ko: "권선비는 1:n이며 $n$은 2차 턴 수를 1차 턴 수로 나눈 값이다(사이트 규약)"
+    cite:
+      - {key: alexander2017, where: "Ch. 13 (Magnetically Coupled Circuits)"}
+      - {key: erickson2020, where: "Ch. 6 (Converter Circuits)"}
+    derived_by: python/pe_core/derive/foundations.py
+    tests:
+      - {inputs: {n: 0.5, V_1: 48.0}, expect: 24.0}
+
+  - id: xfmr.I2
+    title: "Ideal transformer: secondary current"
+    title_ko: "이상적 변압기: 2차 전류"
+    lhs: I_2
+    expr: "I_1/n"
+    symbols: {I_1: "primary current", n: "turns ratio N_s/N_p"}
+    assumptions: [ideal_transformer]
+    convention: "turns ratio 1:n; the secondary current is taken as flowing out of the secondary's dotted terminal"
+    convention_ko: "권선비는 1:n이며, 2차 전류는 2차 권선의 점 표시 단자에서 흘러나오는 방향을 양으로 한다"
+    notes: "the power is conserved: the product of the secondary voltage and current equals that of the primary"
+    notes_ko: "전력이 보존된다. 2차 전압과 전류의 곱은 1차 측의 곱과 같다"
+    cite:
+      - {key: alexander2017, where: "Ch. 13 (Magnetically Coupled Circuits)"}
+      - {key: erickson2020, where: "Ch. 6 (Converter Circuits)"}
+    derived_by: python/pe_core/derive/foundations.py
+    tests:
+      - {inputs: {I_1: 1.0, n: 0.5}, expect: 2.0}

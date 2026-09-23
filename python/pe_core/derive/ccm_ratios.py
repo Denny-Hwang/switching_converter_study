@@ -120,7 +120,7 @@ def derive() -> Derivation:
         "Buck ripple: during the on-interval the inductor current rises with slope $(V_g - V)/L$ for $D T_s$, "
         "which is the full peak-to-peak ripple, i.e. $2\\Delta i_L$.",
         "벅 리플: 온 구간 $D T_s$ 동안 인덕터 전류가 기울기 $(V_g - V)/L$로 증가하며, 이 증가량이 "
-        "피크-투-피크 리플, 즉 $2\\Delta i_L$이다.",
+        "피크-피크 리플, 즉 $2\\Delta i_L$이다.",
         sp.Eq(2 * S("Delta_i_L"), slope * D * Ts),
     )
     d.result("buck.ripple.iL", sp.simplify(slope * D * Ts / 2), "Half of it is Erickson's $\\Delta i_L$.", "그 절반이 Erickson의 $\\Delta i_L$이다.", S("Delta_i_L"))
@@ -128,7 +128,7 @@ def derive() -> Derivation:
         "buck.ripple.iL_pp",
         sp.simplify((slope * D * Ts).subs(Ts, 1 / fs)),
         "The peak-to-peak value, with $T_s = 1/f_s$.",
-        "$T_s = 1/f_s$로 쓴 피크-투-피크 값.",
+        "$T_s = 1/f_s$로 쓴 피크-피크 값.",
         S("Delta_i_pp"),
     )
     return d

@@ -8,6 +8,7 @@ derivations page. ``MODULES`` fixes the page order.
 """
 
 MODULES = (
+    "foundations",
     "averaging",
     "ccm_ratios",
     "dcm",

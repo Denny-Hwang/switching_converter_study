@@ -1,0 +1,16 @@
+synthetic: true
+label: "Synthetic inductor and capacitor example (round numbers, not a real design)"
+label_ko: "합성 인덕터·커패시터 예제 (단순한 어림수이며 실제 설계가 아님)"
+params:
+  V_L: 12
+  t: 5.0e-6
+  L: 1.0e-4
+  I_C: 1.2
+  C: 1.0e-5
+  I_L: 2
+  V_C: 12
+steps:
+  - ind.di
+  - cap.dv
+  - ind.E
+  - cap.E

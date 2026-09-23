@@ -14,6 +14,10 @@ describe('formatSI', () => {
   it('rounds to significant figures and drops trailing zeros', () => {
     expect(formatSI(0.9615384615384615, '1')).toBe('0.962');
     expect(formatSI(0.5, '1')).toBe('0.5');
+    expect(formatSI(2000, '1')).toBe('2000');
+    expect(formatSI(12345, '1')).toBe('12300');
+    expect(formatSI(2.5e6, '1')).toBe('2.50e+6');
+    expect(formatSI(2e-4, '1')).toBe('0.0002');
     expect(formatSI(15.705, 'V', 3)).toBe('15.7 V');
   });
 

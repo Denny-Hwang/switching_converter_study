@@ -1,0 +1,125 @@
+---
+title: Circuit laws and energy storage
+description: Kirchhoff's laws, the inductor and capacitor under a constant voltage or current, the energy they store, and why inductor current and capacitor voltage cannot jump.
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Apply Kirchhoff's current and voltage laws to a switched circuit, one interval at a time.
+- Compute how much an inductor's current and a capacitor's voltage change under a constant voltage or current.
+- Explain why inductor current and capacitor voltage cannot change instantly, and what that means for a switch.
+
+## Theory
+
+### Kirchhoff's laws
+
+The currents entering a node sum to zero (Kirchhoff's current law), and the
+voltages around a closed loop sum to zero (Kirchhoff's voltage law)
+<Cite key="alexander2017" where="Ch. 2" />. A switching converter is a
+different linear circuit in each interval of the switching period. Within
+one interval both laws apply as usual, and the element laws below join the
+intervals together <Cite key="erickson2020" where="Ch. 2" />.
+
+### The inductor under a constant voltage
+
+The voltage across an inductor is its inductance times the rate of change of
+its current <Cite key="alexander2017" where="Ch. 6" />. With a constant
+voltage across it, the current changes at a constant rate, that is,
+linearly in time:
+
+<Eq id="ind.di" />
+
+This is the whole change during the interval. The converter pages use the
+half-ripple $\Delta i_L$, which is half of the peak-to-peak change of the
+inductor current (Erickson's convention).
+
+### The capacitor under a constant current
+
+The dual law: the current into a capacitor is its capacitance times the
+rate of change of its voltage, so a constant current changes the voltage
+linearly <Cite key="alexander2017" where="Ch. 6" />:
+
+<Eq id="cap.dv" />
+
+### Stored energy
+
+An inductor stores energy in its magnetic field, a capacitor in its electric
+field <Cite key="alexander2017" where="Ch. 6" />:
+
+<Eq id="ind.E" />
+
+<Eq id="cap.E" />
+
+The current through an inductor cannot change instantly, and neither can the
+voltage across a capacitor: a jump would change the stored energy in zero
+time <Cite key="alexander2017" where="Ch. 6" />. When a transistor turns off,
+the inductor current therefore has to continue somewhere, and a converter
+gives it a path through a diode or a second switch
+<Cite key="erickson2020" where="Ch. 4" />. In steady state the current also
+ends every period where it started, which is
+[volt-second balance](../../02-theory/volt-second-charge-balance/).
+
+## Worked example
+
+A synthetic inductor and capacitor, each under a constant excitation:
+
+<Worked example="lc-elements" />
+
+During the interval the inductor current rises by
+<Val example="lc-elements" name="Delta_i" /> and the capacitor voltage by
+<Val example="lc-elements" name="Delta_v_C" />. At the given current the
+inductor stores <Val example="lc-elements" name="E_L" />; at the given voltage
+the capacitor stores <Val example="lc-elements" name="E_C" />.
+
+## Try it
+
+<TryIt eq="ind.di" example="lc-elements" sweep="L" />
+
+Sweep $L$ over its logarithmic range: the current change falls in inverse
+proportion to the inductance. This is why a larger inductor gives a smaller
+current ripple at the same voltages and switching frequency.
+
+## Bench exercise
+
+Drive a resistor in series with an inductor from a function generator with a
+square wave whose period is much shorter than the inductance divided by the
+resistance. The inductor current, seen with a current probe, is then close to
+a triangle: during each half-period the inductor sees an almost constant
+voltage. Measure the slope of each ramp and compare it with the inductor
+equation at the measured voltage across the inductor. Repeat with a capacitor
+in place of the inductor, a period much shorter than the resistance times
+the capacitance, and the voltage across the capacitor.
+
+## Gotchas
+
+- **The half-ripple is half.** The change on this page is the whole change
+  during the interval; the converter pages' $\Delta i_L$ is half of the
+  peak-to-peak ripple. Mixing the two conventions doubles or halves a result.
+- **Never leave an inductor's current without a path.** Its current cannot
+  stop instantly <Cite key="alexander2017" where="Ch. 6" />, so opening the
+  only path forces a large voltage across the switch until something
+  conducts.
+- **A discharged capacitor across a stiff source draws a surge.** Its voltage
+  cannot jump <Cite key="alexander2017" where="Ch. 6" />, so connecting it
+  directly to a voltage source draws a current limited only by the resistance
+  in the loop.
+
+## Go deeper
+
+<GoDeeper ids={['mit-6002', 'mit-6002-notes']} />
+
+## Quiz
+
+<Quiz id="00-foundations/circuit-laws" />

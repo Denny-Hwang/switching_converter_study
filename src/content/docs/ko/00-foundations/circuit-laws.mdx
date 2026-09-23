@@ -1,0 +1,122 @@
+---
+title: 회로 법칙과 에너지 저장
+description: 키르히호프 법칙, 일정한 전압 또는 전류가 가해진 인덕터와 커패시터, 이들이 저장하는 에너지, 그리고 인덕터 전류와 커패시터 전압이 급변할 수 없는 이유.
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 스위칭 회로(switched circuit)에 키르히호프 전류 법칙과 전압 법칙(Kirchhoff's current and voltage laws)을 한 구간씩 적용합니다.
+- 일정한 전압 또는 전류가 가해질 때 인덕터 전류와 커패시터 전압이 얼마나 변하는지 계산합니다.
+- 인덕터 전류와 커패시터 전압이 순간적으로 변할 수 없는 이유와, 그것이 스위치에 대해 무엇을 의미하는지 설명합니다.
+
+## 이론
+
+### 키르히호프 법칙
+
+노드(node)로 들어가는 전류의 합은 0이고(키르히호프 전류 법칙), 닫힌
+루프(loop)를 따라 도는 전압의 합은 0입니다(키르히호프 전압 법칙)
+<Cite key="alexander2017" where="Ch. 2" />. 스위칭 컨버터는 스위칭
+주기(switching period)의 구간마다 서로 다른 선형 회로입니다. 한 구간
+안에서는 두 법칙이 평소와 같이 적용되며, 아래의 소자 법칙(element law)이
+구간과 구간을 이어 줍니다 <Cite key="erickson2020" where="Ch. 2" />.
+
+### 일정한 전압이 걸린 인덕터
+
+인덕터 양단의 전압은 인덕턴스에 인덕터 전류의 변화율을 곱한 값입니다
+<Cite key="alexander2017" where="Ch. 6" />. 양단 전압이 일정하면 전류는
+일정한 변화율로, 즉 시간에 대해 선형적으로 변합니다.
+
+<Eq id="ind.di" />
+
+이는 구간 동안의 전체 변화량입니다. 컨버터 페이지에서는 인덕터 전류의
+피크-피크(peak-to-peak) 변화량의 절반인 리플의 절반(half-ripple) $\Delta i_L$을
+사용합니다(Erickson의 규약).
+
+### 일정한 전류가 흐르는 커패시터
+
+쌍대(dual) 법칙에 따르면 커패시터로 흘러 들어가는 전류는 커패시턴스에
+커패시터 전압의 변화율을 곱한 값이며, 따라서 일정한 전류는 전압을 선형적으로
+변화시킵니다 <Cite key="alexander2017" where="Ch. 6" />.
+
+<Eq id="cap.dv" />
+
+### 저장 에너지
+
+인덕터는 자계(magnetic field)에, 커패시터는 전계(electric field)에 에너지를
+저장합니다 <Cite key="alexander2017" where="Ch. 6" />.
+
+<Eq id="ind.E" />
+
+<Eq id="cap.E" />
+
+인덕터에 흐르는 전류는 순간적으로 변할 수 없으며, 커패시터 양단의 전압도
+마찬가지입니다. 값이 순간적으로 바뀌려면 저장 에너지(stored energy)도
+순간적으로 바뀌어야 하기 때문입니다 <Cite key="alexander2017" where="Ch. 6" />. 따라서
+트랜지스터가 꺼질 때 인덕터 전류는 어딘가로 계속 흘러야 하며, 컨버터는
+다이오드나 두 번째 스위치를 통해 이 전류에 경로를 제공합니다
+<Cite key="erickson2020" where="Ch. 4" />. 정상상태(steady state)에서는 또한
+전류가 매 주기의 끝에서 그 주기를 시작한 값으로 돌아오며, 이것이
+[전압-초 평형(volt-second balance)](../../02-theory/volt-second-charge-balance/)입니다.
+
+## 풀이 예제
+
+각각 일정한 여기(excitation)가 가해진 합성(synthetic) 인덕터와 커패시터입니다.
+
+<Worked example="lc-elements" />
+
+구간 동안 인덕터 전류는 <Val example="lc-elements" name="Delta_i" />만큼,
+커패시터 전압은 <Val example="lc-elements" name="Delta_v_C" />만큼 상승합니다.
+주어진 전류에서 인덕터가 저장하는 에너지는 <Val example="lc-elements" name="E_L" />이며,
+주어진 전압에서 커패시터가 저장하는 에너지는 <Val example="lc-elements" name="E_C" />입니다.
+
+## 직접 해 보기
+
+<TryIt eq="ind.di" example="lc-elements" sweep="L" />
+
+$L$을 로그 범위에 걸쳐 스윕(sweep)하십시오. 전류 변화량은 인덕턴스에
+반비례하여 줄어듭니다. 이것이 전압과 스위칭 주파수(switching frequency)가
+같을 때 인덕터가 클수록 전류 리플(current ripple)이 작아지는 이유입니다.
+
+## 벤치 실습
+
+저항과 인덕터의 직렬 회로를 함수 발생기(function generator)의 구형파(square
+wave)로 구동하되, 구형파의 주기는 인덕턴스를 저항으로 나눈 값보다 훨씬 짧게
+하십시오. 그러면 전류 프로브(current probe)로 관찰한 인덕터 전류는 삼각파에 가깝습니다.
+각 반주기 동안 인덕터에 거의 일정한 전압이 걸리기 때문입니다. 각
+램프(ramp)의 기울기를 측정하고, 이를 측정한 인덕터 양단 전압에서 인덕터 식이
+주는 값과 비교하십시오. 인덕터 대신 커패시터를 넣고, 주기를 저항과
+커패시턴스의 곱보다 훨씬 짧게 하여, 커패시터 양단 전압을 대상으로 같은 과정을
+반복하십시오.
+
+## 주의할 점
+
+- **리플의 절반(half-ripple)은 말 그대로 절반입니다.** 이 페이지의 변화량은 구간 동안의 전체
+  변화량이며, 컨버터 페이지의 $\Delta i_L$은 피크-피크 리플의 절반입니다. 두
+  규약을 섞으면 결과가 두 배가 되거나 절반이 됩니다.
+- **인덕터 전류를 절대 경로 없이 두지 마십시오.** 인덕터 전류는 순간적으로
+  멈출 수 없습니다 <Cite key="alexander2017" where="Ch. 6" />. 따라서 유일한
+  경로를 끊으면 무언가가 도통할 때까지 스위치 양단에 큰 전압이 걸리게 됩니다.
+- **강한 전원(stiff source) 양단에 연결한 방전된 커패시터는 서지 전류(surge)를
+  끌어옵니다.** 커패시터 전압은 급변할 수 없습니다
+  <Cite key="alexander2017" where="Ch. 6" />. 따라서 커패시터를 전압원에 직접
+  연결하면 루프 안의 저항으로만 제한되는 전류가 흐릅니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['mit-6002', 'mit-6002-notes']} />
+
+## 퀴즈
+
+<Quiz id="00-foundations/circuit-laws" />

@@ -107,6 +107,36 @@
       "kind": "Application Report",
       "url": "https://www.ti.com/lit/pdf/slua618"
     },
+    "ti_slva630": {
+      "key": "ti_slva630",
+      "type": "techreport",
+      "label": "Singh 2014",
+      "authors": [
+        "Surinder P. Singh"
+      ],
+      "title": "Output Ripple Voltage for Buck Switching Regulator",
+      "verified": true,
+      "institution": "Texas Instruments",
+      "number": "SLVA630A",
+      "year": "2014",
+      "kind": "Application Report",
+      "url": "https://www.ti.com/lit/pdf/slva630"
+    },
+    "ti_snoa930": {
+      "key": "ti_snoa930",
+      "type": "techreport",
+      "label": "Texas Instruments 2021",
+      "authors": [
+        "Texas Instruments"
+      ],
+      "title": "Sensor Design for Inductive Sensing Applications Using LDC",
+      "verified": true,
+      "institution": "Texas Instruments",
+      "number": "SNOA930C",
+      "year": "2021",
+      "kind": "Application Report",
+      "url": "https://www.ti.com/lit/pdf/snoa930"
+    },
     "adi_ltc6101": {
       "key": "adi_ltc6101",
       "type": "manual",

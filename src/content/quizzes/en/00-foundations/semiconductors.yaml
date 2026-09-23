@@ -1,0 +1,51 @@
+# Quiz for 00-foundations/semiconductors. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'At every turn-on, a transistor discharges $100\,\mathrm{pF}$ at the switch node from $48\,\mathrm{V}$, at $200\,\mathrm{kHz}$. What is the capacitive turn-on loss?'
+    options:
+      - '$11.5\,\mathrm{mW}$'
+      - '$23\,\mathrm{mW}$'
+      - '$46\,\mathrm{mW}$'
+      - '$2.3\,\mathrm{mW}$'
+    answer: 1
+    explain: 'The stored energy is half the capacitance times the square of the voltage, about $115\,\mathrm{nJ}$, lost $2 \times 10^5$ times per second.'
+  - q: 'A MOSFET with a total gate charge of $30\,\mathrm{nC}$ is driven with $12\,\mathrm{V}$ at $100\,\mathrm{kHz}$. What is the gate-drive power?'
+    options:
+      - '$3.6\,\mathrm{mW}$'
+      - '$18\,\mathrm{mW}$'
+      - '$36\,\mathrm{mW}$'
+      - '$360\,\mathrm{mW}$'
+    answer: 2
+    explain: 'The gate charge times the drive voltage is the energy per period, $360\,\mathrm{nJ}$, taken $10^5$ times per second.'
+  - q: 'The switching frequency is doubled. What happens to the capacitive turn-on loss and to the gate-drive power?'
+    options:
+      - 'Both double'
+      - 'Both are unchanged'
+      - 'The first doubles, the second is unchanged'
+      - 'Both quadruple'
+    answer: 0
+    explain: 'Each is a fixed energy lost once per period, so both are proportional to the switching frequency.'
+  - q: 'Where is the gate-drive power dissipated?'
+    options:
+      - 'In the MOSFET''s channel'
+      - 'In the driver and the gate resistances'
+      - 'In the load'
+      - 'Nowhere: the gate charge is recovered'
+    answer: 1
+    explain: 'The gate charge flows through the driver and the gate resistances on its way in and out, and they turn its energy into heat.'
+  - q: 'A diode with a $0.5\,\mathrm{V}$ forward voltage and $20\,\mathrm{m}\Omega$ of slope resistance carries $2\,\mathrm{A}$ on average and $2.5\,\mathrm{A}$ rms. What is its conduction loss?'
+    options:
+      - '$1\,\mathrm{W}$'
+      - '$1.125\,\mathrm{W}$'
+      - '$1.25\,\mathrm{W}$'
+      - '$0.125\,\mathrm{W}$'
+    answer: 1
+    explain: 'The forward voltage times the average current gives $1\,\mathrm{W}$, and the slope resistance times the square of the rms current adds $0.125\,\mathrm{W}$.'
+  - q: 'Why do low-voltage converters often replace the output diode by a synchronous rectifier?'
+    options:
+      - 'Diodes cannot block low voltages'
+      - 'The diode''s fixed forward voltage is a large fraction of a low output voltage, so it costs much of the efficiency'
+      - 'A synchronous rectifier needs no gate drive'
+      - 'Diodes switch too slowly at any voltage'
+    answer: 1
+    explain: 'The forward voltage takes a fixed voltage from the output path whatever the load; a transistor that is on drops only its on-resistance times the current.'

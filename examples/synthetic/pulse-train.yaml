@@ -1,0 +1,11 @@
+synthetic: true
+label: "Synthetic rectangular pulse train (round numbers, not a real design)"
+label_ko: "합성 직사각형 펄스열 (단순한 어림수이며 실제 설계가 아님)"
+params:
+  V_pk: 12
+  D: 0.25
+  h: 1
+steps:
+  - {eq: sw.v_avg, bind: {V_g: V_pk}}
+  - fourier.pulse.harm
+  - fourier.pulse.rms
