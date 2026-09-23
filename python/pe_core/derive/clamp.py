@@ -38,7 +38,6 @@ def derive() -> Derivation:
     Vor, Vcl, Llk, Ipk, fs, Rcl = S("V_OR"), S("V_clamp"), S("L_lk"), S("I_pk"), S("f_s"), S("R_clamp")
     vs = d.local("v_s", "v_s", real=True)
     t = d.local("t", "t", nonnegative=True)
-    tr = d.local("t_r", "t_r", positive=True)
     i = d.local("i_lk", r"i_\mathrm{lk}", real=True)
     E = d.local("E_clamp", r"E_\mathrm{clamp}", positive=True)
 
@@ -74,8 +73,21 @@ def derive() -> Derivation:
         sp.Eq(i, it),
     )
     tr_sol = sp.solve(sp.Eq(it, 0), t)[0]
-    d.step("It reaches zero after", "전류가 0이 되는 시간:", sp.Eq(tr, tr_sol))
-    Ecl = sp.simplify(sp.integrate(Vcl * it, (t, 0, tr_sol)))
+    # shown in a tidy form, checked against the solver's
+    tr_show = Llk * Ipk / (Vcl - Vor)
+    if sp.simplify(tr_sol - tr_show) != 0:
+        raise ValueError(f"reset time {tr_sol} differs from {tr_show}")
+    d.result(
+        "clamp.t_reset",
+        tr_show,
+        "It reaches zero after this time, which must fit in the off-time.",
+        "전류는 이 시간 뒤에 0이 되며, 이 시간은 오프 시간 안에 들어가야 한다.",
+        S("t_r"),
+    )
+    Ecl_int = sp.integrate(Vcl * it, (t, 0, tr_sol))
+    Ecl = sp.Rational(1, 2) * Llk * Ipk**2 * Vcl / (Vcl - Vor)
+    if sp.simplify(Ecl_int - Ecl) != 0:
+        raise ValueError(f"clamp energy {Ecl_int} differs from {Ecl}")
     d.step(
         "The clamp absorbs its voltage times this falling current: more than the leakage energy "
         "$\\tfrac12 L_\\mathrm{lk} I_\\mathrm{pk}^2$, because the reflected voltage keeps driving the current meanwhile.",
@@ -83,7 +95,7 @@ def derive() -> Derivation:
         "누설 에너지 $\\tfrac12 L_\\mathrm{lk} I_\\mathrm{pk}^2$보다 많다.",
         sp.Eq(E, Ecl),
     )
-    Pcl = sp.simplify(Ecl * fs)
+    Pcl = Ecl * fs
     d.result(
         "clamp.P",
         Pcl,
@@ -111,10 +123,12 @@ def derive() -> Derivation:
     # ------------------------------------------------------- output ceiling
     Vomax = S("V_omax")
     d.step(
-        "With the load removed and the duty ratio fixed, the output keeps charging and its reflected voltage "
-        "rises until it reaches the clamp voltage; from then on the clamp takes the energy.",
-        "부하를 떼고 듀티비를 고정하면 출력은 계속 충전되고, 반사 전압은 클램프 전압에 도달할 때까지 오른다. "
-        "그 뒤에는 클램프가 에너지를 가져간다.",
+        "With the load removed and no regulation, the output keeps charging and its reflected voltage rises "
+        "until it reaches the clamp voltage; from then on the clamp takes all of the input power. This holds "
+        "for a clamp whose voltage does not depend on that power (a TVS); an RCD clamp's voltage rises with it.",
+        "부하를 떼고 레귤레이션이 없으면 출력은 계속 충전되고, 반사 전압은 클램프 전압에 도달할 때까지 오른다. "
+        "그 뒤에는 클램프가 입력 전력을 모두 가져간다. 이는 전압이 그 전력에 따라 변하지 않는 클램프(TVS)에 "
+        "해당하며, RCD 클램프의 전압은 그 전력에 따라 올라간다.",
         sp.Eq((Vomax + VD) / n, Vcl),
     )
     d.result(

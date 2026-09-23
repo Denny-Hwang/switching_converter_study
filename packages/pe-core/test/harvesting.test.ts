@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { evaluate } from '../src/equations';
 import {
+  busTimeConstant,
   ENVELOPE_MAX_CYCLES,
   ENVELOPE_SETTLE,
   envelopeCycles,
@@ -50,11 +51,29 @@ describe('source matcher', () => {
     }
   });
 
-  it('the switch rating caps the power a loss-free resistor can draw', () => {
+  it('CCM caps the loss-free resistor at V_g,crit, or the switch rating earlier when it lies below the CCM plateau', () => {
+    // plateau (V + V_D)/(n D) = 5.5/(0.1 * 0.2) = 275 V; at V_g,crit = 220 V the resistor draws 220^2/10 kohm
     const m = matchSource(s);
-    const Vg = evaluate('lfr.Vg_power', { P: m.Pswitch, R_in: m.Rin });
-    expect(rel(Vg + m.VOR, s.Vrating)).toBeLessThan(1e-9);
-    expect(m.switchCurve.Vds.every((v, k) => k === 0 || v > m.switchCurve.Vds[k - 1]!)).toBe(true);
+    expect(m.limit).toBe('ccm');
+    expect(rel(m.VdsCcm, 275)).toBeLessThan(1e-12);
+    expect(rel(m.Plfr, (220 * 220) / 1e4)).toBeLessThan(1e-12);
+    // a 250 V switch reaches its rating at V_g = 250 - 55 V, before CCM
+    const low = matchSource({ ...s, Vrating: 250 });
+    expect(low.limit).toBe('switch');
+    expect(rel(evaluate('lfr.Vg_power', { P: low.Plfr, R_in: low.Rin }) + low.VOR, 250)).toBeLessThan(1e-9);
+    expect(matchSource({ ...s, Vrating: 50 }).Plfr).toBe(0);
+    // the curve: the resistor's branch rising to the plateau, which it keeps; the operating point lies on it
+    const c = m.switchCurve;
+    expect(c.Vds.every((v, k) => k === 0 || v >= c.Vds[k - 1]!)).toBe(true);
+    expect(rel(c.Vds[c.Vds.length - 1]!, m.VdsCcm)).toBeLessThan(1e-12);
+    for (const Voc of [150, 800]) {
+      const q = matchSource({ ...s, Voc });
+      const k = q.switchCurve.P.findIndex((p) => p >= q.point.P);
+      const [p0, p1] = [q.switchCurve.P[k - 1]!, q.switchCurve.P[k]!];
+      const [v0, v1] = [q.switchCurve.Vds[k - 1]!, q.switchCurve.Vds[k]!];
+      const onCurve = v0 + ((v1 - v0) * (q.point.P - p0)) / (p1 - p0);
+      expect(Math.abs(onCurve - q.point.Vds)).toBeLessThan(0.01 * q.point.Vds);
+    }
   });
 
   it('envelope: a constant amplitude settles at the steady state of the simulator', () => {
@@ -110,7 +129,8 @@ describe('source matcher', () => {
     for (const Cbus of [1e-6, 1e-5]) {
       const a = envelopeRun({ ...s, Voc: 800 }, Cbus, e);
       const b = envelopeRun({ ...s, Voc: 800 }, Cbus, e, { settle: 2 * ENVELOPE_SETTLE });
-      expect(a.settle).toBe(envelopeCycles({ ...s, Voc: 800 }, Cbus, e).settle);
+      expect(a.settled).toBe(true);
+      expect(a.settle).toBeGreaterThanOrEqual(envelopeCycles({ ...s, Voc: 800 }, Cbus, e).settle);
       let worst = 0;
       for (let k = 0; k < a.Vbus.length; k++) worst = Math.max(worst, Math.abs(a.Vbus[k]! - b.Vbus[k]!));
       expect(worst).toBeLessThan(1e-3 * matchSource(s).Vgcrit);
@@ -128,4 +148,53 @@ describe('source matcher', () => {
     expect(() => envelopeRun({ ...s, fs: 1e5 }, 1e-6, e)).toThrow(/switching cycles needed/);
     expect(performance.now() - t0).toBeLessThan(100);
   });
+
+  it('envelope: a period shorter than 20 switching cycles is refused (the amplitude is held for a whole cycle)', () => {
+    // |sin(2 pi 1 kHz t)| has a 0.5 ms period: 5 cycles at 10 kHz
+    expect(() => envelopeRun(s, 1e-5, { kind: 'sine', f: 1000 })).toThrow(/fewer than 20/);
+  });
+
+  it('envelope: at zero amplitude the bus feeds the source back, and that energy counts', () => {
+    // 10 ms at full amplitude, then 10 ms at none: the bus discharges into R_s, P = -v^2/R_s
+    const e: Envelope = { kind: 'points', t: [0, 0.01, 0.0101, 0.02], v: [1, 1, 0, 0] };
+    const r = envelopeRun({ ...s, Voc: 800 }, 1e-5, e);
+    expect(r.settled).toBe(true);
+    let off = 0;
+    for (let k = 0; k < r.t.length; k++) {
+      if (r.Voc[k] !== 0 || r.Vbus[k]! < 1) continue;
+      off++;
+      expect(r.P[k]!).toBeLessThan(0);
+      expect(rel(r.P[k]!, -(r.Vbus[k]! ** 2) / s.Rs)).toBeLessThan(0.02);
+    }
+    expect(off).toBeGreaterThan(10);
+    // counting only the power in would overstate the share
+    const got = r.P.reduce((a, p) => a + p, 0);
+    const gotIn = r.P.reduce((a, p) => a + Math.max(p, 0), 0);
+    const avail = r.Pmax.reduce((a, p) => a + p, 0);
+    expect(rel(r.eta, got / avail)).toBeLessThan(1e-12);
+    expect(r.eta).toBeLessThan(0.95 * (gotIn / avail));
+  });
+
+  it('envelope: a bus held in CCM settles too, underdamped (weak source) or with a slow mode (stiff source)', () => {
+    const constant: Envelope = { kind: 'points', t: [0, 0.02], v: [1, 1] };
+    // weak source: R_s C_bus = 0.1 s, the CCM mode rings with a decay time 2 R_s C_bus
+    // stiff source: R_s = 10 ohm, C_bus = 0.5 mF, the slow CCM root about L_M/(D^2 R_s)
+    for (const [Rs, Cbus] of [[1e4, 1e-5], [10, 5e-4]] as const) {
+      const spec = { ...s, Voc: 800, Rs };
+      const m = matchSource(spec);
+      expect(m.point.mode).toBe('CV');
+      const r = envelopeRun(spec, Cbus, constant);
+      expect(r.settled).toBe(true);
+      // the bus ripple shifts its cycle average from V_g,crit (CCM fixes the average over the on-time):
+      // compare with the simulator's steady state
+      const ss = simulate({
+        topology: 'flyback', Vg: 0, D: s.D, fs: s.fs, n: s.n, L: s.LM, VF: s.VD,
+        load: { kind: 'fixed', V: s.V }, source: { Voc: 800, Rs, Cbus },
+      });
+      for (const v of [r.Vbus[0]!, r.Vbus[r.Vbus.length - 1]!]) expect(rel(v, ss.avg.v_in!)).toBeLessThan(1e-3);
+      expect(Math.abs(r.eta - m.point.eta)).toBeLessThan(2e-3);
+    }
+    // the slow CCM root sets the settling time of the stiff source
+    expect(busTimeConstant({ ...s, Rs: 10 }, 5e-4)).toBeGreaterThan(5 * 10 * 5e-4);
+  }, 30000);
 });

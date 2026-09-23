@@ -9,6 +9,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { clampCheck, evaluate, type ClampKind, type ClampResult, type ClampSpec, type ClampWarning } from 'pe-core';
+import { isToolHash } from '../lib/hash';
 
 export interface ClampLabels {
   kind: string;
@@ -24,6 +25,7 @@ export interface ClampLabels {
   vor: string;
   elk: string;
   plk: string;
+  treset: string;
   rd: string;
   vclamp: string;
   vds: string;
@@ -84,10 +86,11 @@ export const FIELDS: Field[] = [
 const KEYS = FIELDS.map((f) => f.key);
 const shownFor = (kind: ClampKind) => FIELDS.filter((f) => f.group === 'operating' || f.group === kind);
 
-/** A number field's value; an empty field is NaN, never 0. */
+/** A number field's value; an empty or non-finite field is NaN, never 0. */
 function num(raw: string | undefined): number {
   const t = (raw ?? '').trim();
-  return t === '' ? Number.NaN : Number(t);
+  const v = t === '' ? Number.NaN : Number(t);
+  return Number.isFinite(v) ? v : Number.NaN;
 }
 
 /** The clamp check's specification from the form, or null when a field is missing or out of range. */
@@ -144,11 +147,24 @@ export function stateFromHash(h: URLSearchParams, presets: ClampPreset[]): { kin
   return { kind, values };
 }
 
-/** The URL hash of the form: every shown field, an empty one as `key=`. */
+/** The URL hash of the form: every field (the other clamp's too), an empty one as `key=`. */
 export function hashOf(kind: ClampKind, values: Record<string, string>): string {
   const q = new URLSearchParams({ clamp: kind });
-  for (const f of shownFor(kind)) q.set(f.key, values[f.key] ?? '');
+  for (const f of FIELDS) q.set(f.key, values[f.key] ?? '');
   return q.toString();
+}
+
+/** The check for the form, or null when a field is missing or out of range, or the inputs overflow. */
+export function checkOf(kind: ClampKind, values: Record<string, string>): ClampResult | null {
+  const spec = toClampSpec(kind, values);
+  if (!spec) return null;
+  try {
+    const r = clampCheck(spec);
+    const finite = [r.VOR, r.Elk, r.Plk, r.Vclamp.low, r.Vclamp.high, r.Vds].every(Number.isFinite);
+    return finite ? r : null;
+  } catch {
+    return null;
+  }
 }
 
 /** Clamp dissipation and switch voltage against the clamp voltage, for the trade-off chart (catalogue equations). */
@@ -170,8 +186,7 @@ export default function ClampCheck({ labels, presets }: Props) {
   const [values, setValues] = useState<Record<string, string>>(init.values);
   const plotRef = useRef<HTMLDivElement>(null);
 
-  const spec = useMemo(() => toClampSpec(kind, values), [kind, values]);
-  const result = useMemo(() => (spec ? clampCheck(spec) : null), [spec]);
+  const result = useMemo(() => checkOf(kind, values), [kind, values]);
 
   useEffect(() => {
     window.history.replaceState(null, '', `#${hashOf(kind, values)}`);
@@ -182,7 +197,9 @@ export default function ClampCheck({ labels, presets }: Props) {
   // remount the island. Our own replaceState() fires no hashchange.
   useEffect(() => {
     const onHash = () => {
-      const next = stateFromHash(readHash(), presets);
+      const h = readHash();
+      if (!isToolHash(h, [...KEYS, 'clamp'])) return; // an in-page anchor, not a new state
+      const next = stateFromHash(h, presets);
       setKind(next.kind);
       setValues(next.values);
     };
@@ -352,6 +369,13 @@ export default function ClampCheck({ labels, presets }: Props) {
                 <code>flyback.leak.P</code>
               </td>
             </tr>
+            <tr>
+              <th scope="row">{labels.treset}</th>
+              <td>{fmt(r.tReset, 's')}</td>
+              <td>
+                <code>clamp.t_reset</code>
+              </td>
+            </tr>
             {r.RD !== undefined && (
               <tr>
                 <th scope="row">{labels.rd}</th>
@@ -400,13 +424,15 @@ export default function ClampCheck({ labels, presets }: Props) {
               <td>{range({ low: r.P.low / r.Plk, high: r.P.high / r.Plk }, '×')}</td>
               <td />
             </tr>
-            <tr>
-              <th scope="row">{labels.ceiling}</th>
-              <td>{range(r.ceiling, 'V')}</td>
-              <td>
-                <code>flyback.V_ceiling</code>
-              </td>
-            </tr>
+            {r.ceiling && (
+              <tr>
+                <th scope="row">{labels.ceiling}</th>
+                <td>{range(r.ceiling, 'V')}</td>
+                <td>
+                  <code>flyback.V_ceiling</code>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       )}

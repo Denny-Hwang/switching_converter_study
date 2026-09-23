@@ -46,7 +46,13 @@ def derive() -> Derivation:
         "$V_c$의 정전압 싱크(예: 입력이 고정 전압에 묶인 컨버터)는 $I = (V_\\mathrm{oc} - V_c)/R_s$를 끌어온다.",
         sp.Eq(I, Ic),
     )
-    d.step("The power it absorbs.", "싱크가 흡수하는 전력.", sp.Eq(P, Vc * Ic))
+    d.result(
+        "src.cv_power",
+        Vc * Ic,
+        "The power it absorbs: negative when $V_c > V_\\mathrm{oc}$, when the sink returns energy to the source.",
+        "싱크가 흡수하는 전력. $V_c > V_\\mathrm{oc}$이면 음수이며, 싱크가 전원으로 에너지를 되돌려 보낸다.",
+        S("P"),
+    )
     d.result(
         "src.cv_extraction",
         sp.simplify(Vc * Ic / Pmax),

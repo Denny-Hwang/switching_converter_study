@@ -8,6 +8,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { design, InvertError, type DesignResult, type DesignSpec, type DesignTopology, type DesignWarning } from 'pe-core';
+import { isToolHash } from '../lib/hash';
 
 export interface DesignerLabels {
   topology: string;
@@ -278,7 +279,9 @@ export default function ConverterDesigner({ labels, presets, simulatorHref, loss
   // remount the island. Our own replaceState() fires no hashchange.
   useEffect(() => {
     const onHash = () => {
-      const next = stateFromHash(readHash(), presets);
+      const h = readHash();
+      if (!isToolHash(h, [...KEYS, 'topo'])) return; // an in-page anchor, not a new state
+      const next = stateFromHash(h, presets);
       setTopo(next.topo);
       setValues(next.values);
     };

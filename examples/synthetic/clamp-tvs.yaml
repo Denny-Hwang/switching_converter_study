@@ -20,6 +20,8 @@ steps:
   - flyback.leak.E
   - flyback.leak.P
   - tvs.R_D
+  # the leakage current resets slowest at the lowest clamp voltage, V_BR
+  - {eq: clamp.t_reset, bind: {V_clamp: V_BR}}
   # the TVS's voltage at the peak current: the switch's worst case
   - {eq: tvs.V_clamp, as: V_clamp}
   - clamp.Vds

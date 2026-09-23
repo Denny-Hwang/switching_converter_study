@@ -17,6 +17,6 @@ steps:
   - flyback.leak.E
   - flyback.leak.P
   - clamp.rcd.V
+  - clamp.t_reset
   - clamp.Vds
   - clamp.P
-  - flyback.V_ceiling

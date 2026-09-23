@@ -84,6 +84,7 @@ symbol_table:
   T_s: {latex: "T_s", unit: "s", desc: "switching period", range: [1.0e-6, 1.0e-3], scale: log}
   f_s: {latex: "f_s", unit: "Hz", desc: "switching frequency 1/T_s", range: [1.0e3, 1.0e6], scale: log}
   t_on: {latex: "t_\\mathrm{on}", unit: "s", desc: "switch on-time", range: [1.0e-7, 1.0e-3], scale: log}
+  t_r: {latex: "t_r", unit: "s", desc: "time the leakage current takes to fall to zero after turn-off (clamp conducting)"}
   f_ring: {latex: "f_\\mathrm{ring}", unit: "Hz", desc: "ringing frequency"}
   P: {latex: "P", unit: "W", desc: "power", range: [1.0e-4, 1000], scale: log}
   P_max: {latex: "P_\\mathrm{max}", unit: "W", desc: "maximum power available from a linear source"}
@@ -207,6 +208,7 @@ assumption_labels:
   rcd_small_ripple: {en: "RCD clamp: the capacitor's voltage ripple is small and its resistor dissipates the clamp energy", ko: "RCD 클램프: 커패시터의 전압 리플이 작고 저항이 클램프 에너지를 소산함"}
   tvs_linear: {en: "TVS modelled by its breakdown voltage and a constant dynamic resistance", ko: "TVS를 항복 전압과 일정한 동저항으로 모델링"}
   open_load: {en: "fixed duty ratio, no regulation, load removed", ko: "고정 듀티비, 레귤레이션 없음, 부하 제거"}
+  fixed_clamp: {en: "a clamp whose voltage does not depend on the power it absorbs (a TVS or Zener clamp)", ko: "흡수하는 전력에 따라 전압이 변하지 않는 클램프(TVS 또는 제너 클램프)"}
 
 equations:
   # =========================================================================
@@ -693,6 +695,21 @@ equations:
     tests:
       - {inputs: {V_g: 48.0, V_clamp: 75.0}, expect: 123.0}
 
+  - id: clamp.t_reset
+    title: "Time the leakage current takes to fall to zero in a flyback's primary clamp"
+    title_ko: "플라이백 1차 측 클램프에서 누설 전류가 0으로 떨어지는 시간"
+    lhs: t_r
+    expr: "L_lk*I_pk/(V_clamp - V_OR)"
+    symbols: {L_lk: "leakage inductance", I_pk: "peak primary current at turn-off", V_clamp: "clamp voltage", V_OR: "reflected output voltage"}
+    assumptions: [constant_clamp]
+    constraints: ["V_clamp > V_OR"]
+    notes: "the leakage inductance sees $V_\\mathrm{clamp} - V_\\mathrm{OR}$ while the clamp conducts; the closer the clamp voltage is to $V_\\mathrm{OR}$, the longer the reset, which must fit in the off-time"
+    notes_ko: "클램프가 도통하는 동안 누설 인덕턴스에는 $V_\\mathrm{clamp} - V_\\mathrm{OR}$가 걸린다; 클램프 전압이 $V_\\mathrm{OR}$에 가까울수록 리셋이 길어지며, 이 시간은 오프 시간 안에 들어가야 한다"
+    cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis); derived here"}
+    derived_by: python/pe_core/derive/clamp.py
+    tests:
+      - {inputs: {L_lk: 2.0e-6, I_pk: 2.0, V_clamp: 75.0, V_OR: 50.0}, expect: 1.6e-7}
+
   - id: clamp.P
     title: "Power dissipated in a flyback's primary clamp"
     title_ko: "플라이백 1차 측 클램프의 소산 전력"
@@ -730,8 +747,8 @@ equations:
     symbols: {V_CL: "clamping voltage at I_PP", V_BR: "breakdown voltage", I_PP: "peak pulse current"}
     assumptions: [tvs_linear]
     constraints: ["V_CL > V_BR"]
-    notes: "the resistance that, in series with the breakdown voltage, gives the datasheet's clamping voltage at its peak pulse current; it applies to the datasheet's pulse duration and grows for longer pulses"
-    notes_ko: "항복 전압과 직렬로 두었을 때 데이터시트의 피크 펄스 전류에서의 클램핑 전압을 주는 저항; 데이터시트의 펄스 폭에 해당하며 펄스가 길수록 커진다"
+    notes: "the resistance that, in series with the breakdown voltage, gives the datasheet's clamping voltage at its peak pulse current; it applies to the datasheet's pulse, since the dynamic resistance depends on the pulse duration"
+    notes_ko: "항복 전압과 직렬로 두었을 때 데이터시트의 피크 펄스 전류에서의 클램핑 전압을 주는 저항; 동저항은 펄스 폭에 따라 달라지므로 데이터시트의 그 펄스에 해당한다"
     cite: {key: st_an316, where: "clamping voltage = breakdown voltage + dynamic resistance x peak current, solved for the dynamic resistance at the datasheet's clamping voltage and peak pulse current"}
     tests:
       - {inputs: {V_CL: 90.0, V_BR: 60.0, I_PP: 10.0}, expect: 3.0}
@@ -755,9 +772,9 @@ equations:
     lhs: V_omax
     expr: "n*V_clamp - V_D"
     symbols: {n: "turns ratio N_s/N_p", V_clamp: "clamp voltage", V_D: "output-diode drop"}
-    assumptions: [ideal, diode_drop, open_load]
-    notes: "without a load and without regulation the output charges until its reflected voltage reaches the clamp voltage; from then on the clamp takes the energy"
-    notes_ko: "부하와 레귤레이션이 없으면 출력은 반사 전압이 클램프 전압에 도달할 때까지 충전되고, 그 뒤에는 클램프가 에너지를 가져간다"
+    assumptions: [ideal, diode_drop, open_load, fixed_clamp]
+    notes: "without a load and without regulation the output charges until its reflected voltage reaches the clamp voltage; from then on the clamp takes all of the input power, which it must be rated for. An RCD clamp's voltage rises with that power (the resistor must dissipate it), so this bound does not hold for it"
+    notes_ko: "부하와 레귤레이션이 없으면 출력은 반사 전압이 클램프 전압에 도달할 때까지 충전되고, 그 뒤에는 클램프가 입력 전력을 모두 가져가므로 클램프는 그 전력을 견뎌야 한다. RCD 클램프의 전압은 그 전력에 따라 올라가므로(저항이 그 전력을 소산해야 함) 이 한계가 성립하지 않는다"
     cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits: the flyback's transformer model); derived here"}
     derived_by: python/pe_core/derive/clamp.py
     tests:
@@ -939,6 +956,21 @@ equations:
     derived_by: python/pe_core/derive/harvesting.py
     tests:
       - {inputs: {V_oc: 10.0, R_s: 25.0}, expect: 1.0}
+
+  - id: src.cv_power
+    title: "Power from a linear source into a constant-voltage sink"
+    title_ko: "선형 전원에서 정전압 싱크로 들어가는 전력"
+    lhs: P
+    expr: "V_c*(V_oc - V_c)/R_s"
+    symbols: {V_c: "sink voltage", V_oc: "open-circuit voltage", R_s: "source resistance"}
+    assumptions: [linear_source]
+    notes: "the source current $(V_\\mathrm{oc} - V_c)/R_s$ times the sink voltage; negative when $V_c > V_\\mathrm{oc}$, when the sink returns energy to the source"
+    notes_ko: "전원 전류 $(V_\\mathrm{oc} - V_c)/R_s$에 싱크 전압을 곱한 값; $V_c > V_\\mathrm{oc}$이면 음수이며 싱크가 전원으로 에너지를 되돌려 보냄"
+    cite: {key: alexander2017, where: "Sec. 4.8 (Maximum Power Transfer); derived here"}
+    derived_by: python/pe_core/derive/harvesting.py
+    tests:
+      - {inputs: {V_c: 5.0, V_oc: 10.0, R_s: 25.0}, expect: 1.0}
+      - {inputs: {V_c: 5.0, V_oc: 2.5, R_s: 25.0}, expect: -0.5}
 
   - id: src.cv_extraction
     title: "Extraction fraction of a constant-voltage sink"

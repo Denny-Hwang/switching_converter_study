@@ -87,3 +87,17 @@ describe('the operating point, opened in the simulator', () => {
     });
   }
 });
+
+describe('source-matcher robustness', () => {
+  const lfr = strings(sourceValues('source-lfr'));
+  it('a value too large for a number is invalid, not infinite', () => {
+    expect(toMatchSpec({ ...lfr, Voc: '1e400' })).toBeNull();
+    expect(toEnvelope('sine', { fenv: '1e400' })).toBeNull();
+  });
+
+  it('the hash keeps the envelope points while another envelope is shown', () => {
+    const values: Record<string, string> = { ...lfr, pts: '0 0; 0.5 1; 1 0' };
+    const presets: SourcePreset[] = [{ id: 'source-lfr', label: 'lfr', values: sourceValues('source-lfr') }];
+    expect(stateFromHash(new URLSearchParams(hashOf('none', values)), presets).values.pts).toBe(values.pts);
+  });
+});

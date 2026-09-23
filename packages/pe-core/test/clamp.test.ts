@@ -18,8 +18,8 @@ describe('clamp check', () => {
     expect(rel(r.P.high, 0.4 * (60 / 10))).toBeLessThan(1e-12);
     expect(r.Vds).toBe(72 + 66);
     expect(r.margin).toBe(150 - 138);
-    expect(rel(r.ceiling.low, 0.25 * 60 - 0.5)).toBeLessThan(1e-12);
-    expect(rel(r.ceiling.high, 0.25 * 66 - 0.5)).toBeLessThan(1e-12);
+    expect(rel(r.ceiling!.low, 0.25 * 60 - 0.5)).toBeLessThan(1e-12);
+    expect(rel(r.ceiling!.high, 0.25 * 66 - 0.5)).toBeLessThan(1e-12);
     expect(r.warnings).toEqual([]);
   });
 
@@ -31,6 +31,30 @@ describe('clamp check', () => {
     expect(rel(r.P.low, 1.2)).toBeLessThan(1e-12);
     expect(rel(r.P.low, r.Vclamp.low ** 2 / 4687.5)).toBeLessThan(1e-12);
     expect(rel(r.Vds, 147)).toBeLessThan(1e-12);
+    // without a load the resistor must dissipate all of the input power, so the loaded clamp
+    // voltage bounds nothing: no ceiling, and a warning
+    expect(r.ceiling).toBeUndefined();
+    expect(r.warnings).toEqual(['rcdOpenLoad']);
+  });
+
+  it('the leakage reset time, and a warning when it would not fit in a switching period', () => {
+    // 2 uH * 2 A / (66 V - 50 V) at the TVS's peak voltage; the reset is slowest at V_BR: 2 uH * 2 A / 10 V
+    const tvs = clampCheck({ ...base, clamp: { kind: 'tvs', VBR: 60, VCL: 90, IPP: 10 } });
+    expect(rel(tvs.tReset, 4e-7)).toBeLessThan(1e-12);
+    // an RCD resistor so small that the clamp voltage sits on V_OR: the reset never ends within a period
+    for (const R of [1e-12, 1e-3]) {
+      const r = clampCheck({ ...base, clamp: { kind: 'rcd', R } });
+      expect(r.tReset).toBeGreaterThan(1 / base.fs);
+      expect(r.warnings).toContain('slowReset');
+      expect(r.warnings).not.toContain('belowReflected');
+    }
+    // a TVS just above V_OR
+    const close = clampCheck({ ...base, clamp: { kind: 'tvs', VBR: 50.01, VCL: 90, IPP: 10 } });
+    expect(close.warnings).toContain('slowReset');
+  });
+
+  it('refuses a TVS whose clamping voltage is not above its breakdown voltage', () => {
+    expect(() => clampCheck({ ...base, clamp: { kind: 'tvs', VBR: 60, VCL: 60, IPP: 10 } })).toThrow(/V_CL/);
   });
 
   it('flags a clamp at or below the reflected voltage and a switch voltage above the rating', () => {

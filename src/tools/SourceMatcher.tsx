@@ -14,6 +14,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ENVELOPE_MAX_CYCLES,
+  ENVELOPE_MIN_CYCLES,
   envelopeCycles,
   evaluate,
   matchSource,
@@ -23,6 +24,7 @@ import {
   type MatchSpec,
   type SinkMode,
 } from 'pe-core';
+import { isToolHash } from '../lib/hash';
 import type { EnvelopeReply } from './sourcematch.worker';
 
 export type EnvelopeKind = 'none' | 'sine' | 'points';
@@ -49,8 +51,13 @@ export interface SourceLabels {
   pmax: string;
   eta: string;
   vds: string;
-  pswitch: string;
+  vdsCcm: string;
+  plfr: string;
+  limitCcm: string;
+  limitSwitch: string;
   overRating: string;
+  /** The bus capacitor is small against the switching period: the averaged values are approximate. */
+  ripple: string;
   extractionChart: string;
   amplitude: string;
   share: string;
@@ -72,6 +79,10 @@ export interface SourceLabels {
   running: string;
   /** "{n}" and "{max}" are replaced by the cycles needed and the limit. */
   tooLong: string;
+  /** "{n}" and "{min}" are replaced by the cycles in an envelope period and the least allowed. */
+  tooFast: string;
+  /** Prefix of an error from the envelope simulation (the error follows in parentheses). */
+  runFailed: string;
   simulate: string;
   invalid: string;
   shareUrl: string;
@@ -115,10 +126,11 @@ export const FIELDS: Field[] = [
 const KEYS = [...FIELDS.map((f) => f.key), 'pts'];
 const ENVELOPES: EnvelopeKind[] = ['none', 'sine', 'points'];
 
-/** A number field's value; an empty field is NaN, never 0. */
+/** A number field's value; an empty or non-finite field is NaN, never 0. */
 function num(raw: string | undefined): number {
   const t = (raw ?? '').trim();
-  return t === '' ? Number.NaN : Number(t);
+  const v = t === '' ? Number.NaN : Number(t);
+  return Number.isFinite(v) ? v : Number.NaN;
 }
 
 /** The source matcher's specification from the form, or null when a field is missing or out of range. */
@@ -194,7 +206,7 @@ export function stateFromHash(h: URLSearchParams, presets: SourcePreset[]): { en
 export function hashOf(env: EnvelopeKind, values: Record<string, string>): string {
   const q = new URLSearchParams({ env });
   for (const f of FIELDS) q.set(f.key, values[f.key] ?? '');
-  if (env === 'points') q.set('pts', values.pts ?? '');
+  q.set('pts', values.pts ?? '');
   return q.toString();
 }
 
@@ -297,9 +309,13 @@ export default function SourceMatcher({ labels, presets, simulatorHref }: Props)
   const envelope = useMemo(() => toEnvelope(env, values), [env, values]);
   const Cbus = num(values.Cbus);
   const envelopeValid = env === 'none' || (envelope !== null && Cbus > 0);
-  // switching cycles the envelope run would need; too many are refused before the run starts
-  const cycles = env !== 'none' && spec && envelope && Cbus > 0 ? envelopeCycles(spec, Cbus, envelope).total : 0;
+  // switching cycles the envelope run would need; too many, or too few per period, are refused before it starts
+  const need = env !== 'none' && spec && envelope && Cbus > 0 ? envelopeCycles(spec, Cbus, envelope) : null;
+  const cycles = need?.total ?? 0;
   const tooLong = cycles > ENVELOPE_MAX_CYCLES;
+  const tooFast = need !== null && need.period < ENVELOPE_MIN_CYCLES;
+  // the averages assume a bus that hardly ripples over a switching period
+  const rippling = !!result && Cbus > 0 && ((spec!.Rs * result.Rin) / (spec!.Rs + result.Rin)) * Cbus < 10 / spec!.fs;
 
   useEffect(() => {
     window.history.replaceState(null, '', `#${hashOf(env, values)}`);
@@ -310,7 +326,9 @@ export default function SourceMatcher({ labels, presets, simulatorHref }: Props)
   // remount the island. Our own replaceState() fires no hashchange.
   useEffect(() => {
     const onHash = () => {
-      const next = stateFromHash(readHash(), presets);
+      const h = readHash();
+      if (!isToolHash(h, [...KEYS, 'env'])) return; // an in-page anchor, not a new state
+      const next = stateFromHash(h, presets);
       setEnv(next.env);
       setValues(next.values);
     };
@@ -324,7 +342,7 @@ export default function SourceMatcher({ labels, presets, simulatorHref }: Props)
     runner.cancel();
     setRun(null);
     setRunError(null);
-    if (env === 'none' || !spec || !envelope || !(Cbus > 0) || tooLong) {
+    if (env === 'none' || !spec || !envelope || !(Cbus > 0) || tooLong || tooFast) {
       setBusy(false);
       return;
     }
@@ -337,7 +355,7 @@ export default function SourceMatcher({ labels, presets, simulatorHref }: Props)
       });
     }, 300);
     return () => window.clearTimeout(id);
-  }, [env, spec, envelope, Cbus, tooLong, runner]);
+  }, [env, spec, envelope, Cbus, tooLong, tooFast, runner]);
 
   // extraction against the amplitude, and the switch voltage against the power
   useEffect(() => {
@@ -508,7 +526,17 @@ export default function SourceMatcher({ labels, presets, simulatorHref }: Props)
           </p>
         )}
         {busy && <p>{labels.running}</p>}
-        {runError && <p className="pe-sim__error">{runError}</p>}
+        {tooFast && need && (
+          <p className="pe-sim__error">
+            {labels.tooFast.replace('{n}', need.period.toLocaleString()).replace('{min}', String(ENVELOPE_MIN_CYCLES))}
+          </p>
+        )}
+        {rippling && <p className="pe-sim__error">{labels.ripple}</p>}
+        {runError && (
+          <p className="pe-sim__error">
+            {labels.runFailed} ({runError})
+          </p>
+        )}
       </section>
       {r && pt && (
         <>
@@ -593,8 +621,17 @@ export default function SourceMatcher({ labels, presets, simulatorHref }: Props)
                 </td>
               </tr>
               <tr>
-                <th scope="row">{labels.pswitch}</th>
-                <td>{fmt(r.Pswitch, 'W')}</td>
+                <th scope="row">{labels.vdsCcm}</th>
+                <td>{fmt(r.VdsCcm, 'V')}</td>
+                <td>
+                  <code>flyback.Vds_clamped</code>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">{labels.plfr}</th>
+                <td>
+                  {fmt(r.Plfr, 'W')} ({r.limit === 'ccm' ? labels.limitCcm : labels.limitSwitch})
+                </td>
                 <td>
                   <code>dcm.P_in</code>
                 </td>

@@ -21,11 +21,12 @@ across the primary conducts <Cite key="ti_ssztcv6" />. The clamp check takes
 the worst-case operating point and the clamp's data, all in SI units. It
 shows:
 
-- the reflected voltage and the leakage energy;
+- the reflected voltage, the leakage energy and the time the leakage
+  current takes to fall to zero;
 - the clamp voltage at the actual peak current, and the switch voltage
   against its rating;
 - the clamp dissipation;
-- the output voltage the flyback runs up to without a load.
+- with a TVS, the output voltage the flyback runs up to without a load.
 
 Each result names its equation. The chart shows how the dissipation and the
 switch voltage trade against the clamp voltage.
@@ -96,11 +97,20 @@ voltage:
 The margin is the switch's rating minus this voltage, at the highest clamp
 voltage.
 
-### Clamp dissipation
+### Reset time and clamp dissipation
 
 While the clamp conducts, the magnetizing inductance holds the primary at
 $V_\mathrm{OR}$. The leakage inductance therefore sees
-$V_\mathrm{clamp} - V_\mathrm{OR}$, and its current falls linearly to zero.
+$V_\mathrm{clamp} - V_\mathrm{OR}$, and its current falls linearly to zero
+<Cite key="erickson2020" where="Ch. 2" />:
+
+<Eq id="clamp.t_reset" />
+
+The reset must fit in the off-time. The closer the clamp voltage is to
+$V_\mathrm{OR}$, the longer it takes; the tool warns when it would take a
+whole switching period or more. The clamp would then conduct energy meant
+for the output, and the equations here no longer hold.
+
 Meanwhile the reflected voltage keeps driving current into the clamp. So the
 clamp absorbs more than the leakage energy, and the closer the clamp voltage
 is to $V_\mathrm{OR}$, the more it absorbs <Cite key="ti_ssztcv6" />:
@@ -113,15 +123,23 @@ bound. The table shows both, and their ratio to the leakage power.
 
 ### Output voltage without a load
 
-With the load removed and the duty ratio unchanged (a failed feedback loop,
-for example), the output keeps charging. It stops only when its reflected
-voltage reaches the clamp voltage, and from then on the clamp takes the
-energy:
+With the load removed and no regulation, the output keeps charging. It
+stops only when its reflected voltage reaches the clamp voltage, and from
+then on the clamp takes all of the input power. A TVS holds its voltage
+while it does, so the output stops at:
 
 <Eq id="flyback.V_ceiling" />
 
 The output capacitor and everything on the output must withstand this
-voltage.
+voltage, and the TVS must be rated for the whole input power, far more than
+its dissipation in normal operation.
+
+An RCD clamp gives no such bound. Its voltage is where its resistor
+dissipates the clamp's power (the power balance behind the RCD equation
+above), so at no load, with the whole input power to dissipate, the clamp
+voltage rises far above its loaded value. The output and the switch voltage
+rise with it. The tool shows no ceiling for an RCD clamp and warns instead:
+limit the input power at no load, or add a fixed-voltage clamp.
 
 ## Choosing the clamp voltage
 
@@ -151,13 +169,15 @@ The same flyback with an RCD clamp:
 This resistor sets a clamp voltage whose switch voltage,
 <Val example="clamp-rcd" name="V_DS" />, leaves little margin to the
 <Val example="clamp-rcd" name="V_rating" /> rating. A smaller resistor lowers
-the clamp voltage, but the dissipation rises.
+the clamp voltage, but the dissipation rises. Without a load, this clamp
+would not hold the switch within its rating at all (see above).
 
 ## Limitations
 
 - **Ideal clamp.** The clamp holds a constant voltage while it conducts (for
   the RCD clamp, the capacitor's ripple is small), and the leakage current
-  falls linearly. The clamp diode's reverse recovery, and the ringing of the
+  falls linearly. The off-time is not an input: the tool compares the reset
+  time with the whole switching period only. The clamp diode's reverse recovery, and the ringing of the
   leakage inductance with the switch-node capacitance after the clamp stops,
   are not modelled.
 - **TVS data.** The dynamic resistance derived from the datasheet's

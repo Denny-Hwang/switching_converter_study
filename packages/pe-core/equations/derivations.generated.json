@@ -755,6 +755,7 @@
       "results": [
         "flyback.V_OR",
         "clamp.Vds",
+        "clamp.t_reset",
         "clamp.P",
         "clamp.rcd.V",
         "flyback.V_ceiling"
@@ -785,27 +786,27 @@
           "result_for": null
         },
         {
-          "text": "It reaches zero after",
-          "text_ko": "전류가 0이 되는 시간:",
-          "latex": "t_r = - \\frac{I_\\mathrm{pk} L_\\mathrm{lk}}{V_\\mathrm{OR} - V_\\mathrm{clamp}}",
-          "result_for": null
+          "text": "It reaches zero after this time, which must fit in the off-time.",
+          "text_ko": "전류는 이 시간 뒤에 0이 되며, 이 시간은 오프 시간 안에 들어가야 한다.",
+          "latex": "t_r = \\frac{L_\\mathrm{lk} I_\\mathrm{pk}}{V_\\mathrm{clamp} - V_\\mathrm{OR}}",
+          "result_for": "clamp.t_reset"
         },
         {
           "text": "The clamp absorbs its voltage times this falling current: more than the leakage energy $\\tfrac12 L_\\mathrm{lk} I_\\mathrm{pk}^2$, because the reflected voltage keeps driving the current meanwhile.",
           "text_ko": "클램프는 자기 전압과 이 감소하는 전류의 곱을 흡수한다. 그동안 반사 전압이 전류를 계속 밀어 주므로 누설 에너지 $\\tfrac12 L_\\mathrm{lk} I_\\mathrm{pk}^2$보다 많다.",
-          "latex": "E_\\mathrm{clamp} = - \\frac{L_\\mathrm{lk} V_\\mathrm{clamp} I_\\mathrm{pk}^{2}}{- 2 V_\\mathrm{clamp} + 2 V_\\mathrm{OR}}",
+          "latex": "E_\\mathrm{clamp} = \\frac{L_\\mathrm{lk} V_\\mathrm{clamp} I_\\mathrm{pk}^{2}}{2 \\left(V_\\mathrm{clamp} - V_\\mathrm{OR}\\right)}",
           "result_for": null
         },
         {
           "text": "Once per switching period.",
           "text_ko": "스위칭 주기마다 한 번씩.",
-          "latex": "P_\\mathrm{clamp} = - \\frac{L_\\mathrm{lk} V_\\mathrm{clamp} f_s I_\\mathrm{pk}^{2}}{- 2 V_\\mathrm{clamp} + 2 V_\\mathrm{OR}} = \\frac{L_\\mathrm{lk} I_\\mathrm{pk}^{2} f_s V_\\mathrm{clamp}}{2 \\left(V_\\mathrm{clamp} - V_\\mathrm{OR}\\right)}",
+          "latex": "P_\\mathrm{clamp} = \\frac{L_\\mathrm{lk} V_\\mathrm{clamp} f_s I_\\mathrm{pk}^{2}}{2 \\left(V_\\mathrm{clamp} - V_\\mathrm{OR}\\right)} = \\frac{L_\\mathrm{lk} I_\\mathrm{pk}^{2} f_s V_\\mathrm{clamp}}{2 \\left(V_\\mathrm{clamp} - V_\\mathrm{OR}\\right)}",
           "result_for": "clamp.P"
         },
         {
           "text": "In an RCD clamp the capacitor holds $V_\\mathrm{clamp}$ and the resistor dissipates the clamp power.",
           "text_ko": "RCD 클램프에서는 커패시터가 $V_\\mathrm{clamp}$를 유지하고 저항이 클램프 전력을 소산한다.",
-          "latex": "\\frac{V_\\mathrm{clamp}^{2}}{R_\\mathrm{clamp}} = - \\frac{L_\\mathrm{lk} V_\\mathrm{clamp} f_s I_\\mathrm{pk}^{2}}{- 2 V_\\mathrm{clamp} + 2 V_\\mathrm{OR}}",
+          "latex": "\\frac{V_\\mathrm{clamp}^{2}}{R_\\mathrm{clamp}} = \\frac{L_\\mathrm{lk} V_\\mathrm{clamp} f_s I_\\mathrm{pk}^{2}}{2 \\left(V_\\mathrm{clamp} - V_\\mathrm{OR}\\right)}",
           "result_for": null
         },
         {
@@ -815,8 +816,8 @@
           "result_for": "clamp.rcd.V"
         },
         {
-          "text": "With the load removed and the duty ratio fixed, the output keeps charging and its reflected voltage rises until it reaches the clamp voltage; from then on the clamp takes the energy.",
-          "text_ko": "부하를 떼고 듀티비를 고정하면 출력은 계속 충전되고, 반사 전압은 클램프 전압에 도달할 때까지 오른다. 그 뒤에는 클램프가 에너지를 가져간다.",
+          "text": "With the load removed and no regulation, the output keeps charging and its reflected voltage rises until it reaches the clamp voltage; from then on the clamp takes all of the input power. This holds for a clamp whose voltage does not depend on that power (a TVS); an RCD clamp's voltage rises with it.",
+          "text_ko": "부하를 떼고 레귤레이션이 없으면 출력은 계속 충전되고, 반사 전압은 클램프 전압에 도달할 때까지 오른다. 그 뒤에는 클램프가 입력 전력을 모두 가져간다. 이는 전압이 그 전력에 따라 변하지 않는 클램프(TVS)에 해당하며, RCD 클램프의 전압은 그 전력에 따라 올라간다.",
           "latex": "\\frac{V_D + V_\\mathrm{o,max}}{n} = V_\\mathrm{clamp}",
           "result_for": null
         },
@@ -1444,6 +1445,7 @@
       "intro_ko": "선형 에너지원은 테브난 등가회로, 즉 전원 저항 $R_s$ 뒤의 개방 전압 $V_\\mathrm{oc}$로 모델링한다. 가용 전력 중 얼마가 컨버터에 도달하는지는 컨버터 입력이 어떻게 보이는지에 달려 있다.",
       "results": [
         "src.Pmax",
+        "src.cv_power",
         "src.cv_extraction",
         "lfr.Vg",
         "lfr.eta",
@@ -1475,10 +1477,10 @@
           "result_for": null
         },
         {
-          "text": "The power it absorbs.",
-          "text_ko": "싱크가 흡수하는 전력.",
-          "latex": "P_L = \\frac{V_c \\left(V_\\mathrm{oc} - V_c\\right)}{R_s}",
-          "result_for": null
+          "text": "The power it absorbs: negative when $V_c > V_\\mathrm{oc}$, when the sink returns energy to the source.",
+          "text_ko": "싱크가 흡수하는 전력. $V_c > V_\\mathrm{oc}$이면 음수이며, 싱크가 전원으로 에너지를 되돌려 보낸다.",
+          "latex": "P = \\frac{V_c \\left(V_\\mathrm{oc} - V_c\\right)}{R_s}",
+          "result_for": "src.cv_power"
         },
         {
           "text": "Normalise by $P_\\mathrm{max}$.",

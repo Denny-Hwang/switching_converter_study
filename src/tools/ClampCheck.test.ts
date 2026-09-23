@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { clampCheck } from 'pe-core';
 import { clampValues } from '../lib/clamppresets';
 import { getExample } from '../lib/examples';
-import { hashOf, stateFromHash, toClampSpec, tradeoff, type ClampPreset } from './ClampCheck';
+import { checkOf, hashOf, stateFromHash, toClampSpec, tradeoff, type ClampPreset } from './ClampCheck';
 
 const strings = (v: Record<string, number>) => Object.fromEntries(Object.entries(v).map(([k, x]) => [k, String(x)]));
 const rel = (a: number, b: number) => Math.abs(a - b) / Math.abs(b);
@@ -73,5 +73,24 @@ describe('clamp-check URL hash', () => {
     const back = stateFromHash(new URLSearchParams('clamp=rcd'), presets);
     expect(back.values.R).toBe(String(clampValues('clamp-rcd').R));
     expect(stateFromHash(new URLSearchParams(''), presets).kind).toBe('tvs');
+  });
+});
+
+describe('clamp-check robustness', () => {
+  const tvs = strings(clampValues('clamp-tvs'));
+  it('a value too large for a number, or one that overflows the check, gives the invalid message, not a crash', () => {
+    expect(checkOf('tvs', tvs)).not.toBeNull();
+    for (const [k, v] of [['Ipk', '1e400'], ['Vg', 'Infinity'], ['Ipk', '1e200'], ['Llk', '1e308']] as const) {
+      expect(checkOf('tvs', { ...tvs, [k]: v })).toBeNull();
+    }
+    expect(checkOf('rcd', { ...strings(clampValues('clamp-rcd')), R: '1e308' })).toBeNull();
+  });
+
+  it("the hash keeps the other clamp type's values too", () => {
+    const presets: ClampPreset[] = [{ id: 't', label: 't', kind: 'tvs', values: clampValues('clamp-tvs') }];
+    const values: Record<string, string> = { ...tvs, VBR: '55', R: '3300' };
+    const back = stateFromHash(new URLSearchParams(hashOf('rcd', values)), presets);
+    expect(back.values.VBR).toBe('55');
+    expect(back.values.R).toBe('3300');
   });
 });

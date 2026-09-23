@@ -222,6 +222,27 @@ async function noStaleResult(page, where, errors, prefix, waitMs) {
   await v.fill(vValue);
 }
 
+/**
+ * Following an in-page anchor (a heading, an equation link) changes the URL
+ * hash too; it must not reset the tool's inputs to a preset.
+ */
+async function anchorKeepsState(page, where, errors) {
+  const input = page.locator(`${TOOL} input[type="number"]`).first();
+  if ((await input.count()) === 0) return;
+  const before = await input.inputValue();
+  const next = before === '' ? '7' : String(Number(before) * 1.5);
+  await input.fill(next);
+  await page.waitForTimeout(300);
+  const id = await page.evaluate(() => [...document.querySelectorAll('h2[id]')].pop()?.id ?? '');
+  if (!id) return;
+  await page.evaluate((h) => {
+    window.location.hash = h;
+  }, id);
+  await page.waitForTimeout(300);
+  if ((await input.inputValue()) !== next) errors.push(`${where}: following the in-page anchor #${id} reset the tool's inputs`);
+  await input.fill(before);
+}
+
 /** Designer: Space on the second topology button selects it and loads that topology's specification. */
 async function designerAction(page, where, errors) {
   const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
@@ -295,6 +316,7 @@ async function main() {
         await settle(page, p.ready);
         const n = await checkOrder(page, where, errors);
         await p.action(page, where, errors);
+        await anchorKeepsState(page, where, errors);
         for (const e of pageErrors) errors.push(`${where}: page error: ${e}`);
         console.log(`${where}: ${n} controls in order`);
         checked++;

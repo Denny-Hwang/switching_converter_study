@@ -73,6 +73,7 @@ const base: Readonly<Record<string, Evaluator>> = {
   'flyback.leak.P': eq(['E_lk', 'f_s'], ({ E_lk, f_s }) => E_lk * f_s),
   'flyback.V_OR': eq(['V', 'V_D', 'n'], ({ V, V_D, n }) => (V + V_D) / n),
   'clamp.Vds': eq(['V_g', 'V_clamp'], ({ V_g, V_clamp }) => V_g + V_clamp),
+  'clamp.t_reset': eq(['L_lk', 'I_pk', 'V_clamp', 'V_OR'], ({ L_lk, I_pk, V_clamp, V_OR }) => (L_lk * I_pk) / (V_clamp - V_OR)),
   'clamp.P': eq(['L_lk', 'I_pk', 'f_s', 'V_clamp', 'V_OR'], ({ L_lk, I_pk, f_s, V_clamp, V_OR }) =>
     (L_lk * sq(I_pk) * f_s * V_clamp) / (2 * (V_clamp - V_OR)),
   ),
@@ -100,6 +101,7 @@ const base: Readonly<Record<string, Evaluator>> = {
 
   // --- sources, extraction, sensing -----------------------------------------
   'src.Pmax': eq(['V_oc', 'R_s'], ({ V_oc, R_s }) => sq(V_oc) / (4 * R_s)),
+  'src.cv_power': eq(['V_c', 'V_oc', 'R_s'], ({ V_c, V_oc, R_s }) => (V_c * (V_oc - V_c)) / R_s),
   'src.cv_extraction': eq(['V_c', 'V_oc'], ({ V_c, V_oc }) => {
     const x = V_c / V_oc;
     return 4 * x * (1 - x);

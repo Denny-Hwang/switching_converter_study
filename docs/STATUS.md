@@ -10,8 +10,8 @@
 | 00/01 refresher additions (Phase 2c) | ✅ 16 equations: inductor and capacitor under constant excitation and their energy, impedance, R-C filter corner and gain, pulse-train harmonics and rms value, self-resonance, ESR ripple, Ampère's law, B-H relation, ideal transformer |
 | Simulator compare-panel additions (Phase 3a) | ✅ 2 equations: `buck.Vds`, `boost.Vds` (switch blocking voltages) |
 | Design-tool additions (Phase 3b) | ✅ 4 equations: `flyback.IM`, `flyback.ripple.iM`, `flyback.ripple.v` (flyback CCM current and ripples), `loss.core` (core loss of a whole core) |
-| Design-tool additions (Phase 3c) | ✅ 10 equations: `flyback.V_OR`, `clamp.Vds`, `clamp.P`, `clamp.rcd.V`, `tvs.R_D`, `tvs.V_clamp`, `flyback.V_ceiling` (primary clamp), `lfr.Vg`, `lfr.eta`, `lfr.Vg_power` (loss-free resistor on a linear source) |
-| Derivations reproduce the YAML (`pytest`) | ✅ 102 of 111 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk`, `mag.B_H` and `loss.core` are definitions, `loss.steinmetz` is an empirical law, `tvs.R_D` and `tvs.V_clamp` are the TVS model of `st_an316`) |
+| Design-tool additions (Phase 3c) | ✅ 12 equations: `flyback.V_OR`, `clamp.Vds`, `clamp.t_reset`, `clamp.P`, `clamp.rcd.V`, `tvs.R_D`, `tvs.V_clamp`, `flyback.V_ceiling` (primary clamp), `src.cv_power`, `lfr.Vg`, `lfr.eta`, `lfr.Vg_power` (linear source and loss-free resistor) |
+| Derivations reproduce the YAML (`pytest`) | ✅ 104 of 113 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk`, `mag.B_H` and `loss.core` are definitions, `loss.steinmetz` is an empirical law, `tvs.R_D` and `tvs.V_clamp` are the TVS model of `st_an316`) |
 | TS/Python parity (`vitest`, 1e-9 rel) | ✅ all shared vectors |
 | Strict KaTeX on every generated formula and derivation step (`vitest`) | ✅ |
 | `references.bib` verified (two web-search rounds + CI Crossref + URL title check) | ✅ 27 of 27 verified (`steinmetz1984` DOI confirmed by the CI Crossref job; `ti_slva630` and `ti_snoa930` added in Phase 2c; `ti_ssztcv6` and `st_an316` added in Phase 3c) |
@@ -31,8 +31,8 @@
 | LTspice `.asc`, ngspice `.cir` and Falstad links on the simulator page | ⬜ Phase 5 (`sim/`) |
 | ConverterDesigner (`design/converter-designer`): D range, L or L_M for the ripple target and for CCM at the lightest load, K against K_crit, ripples, stresses, C for the ripple target; each result names its equation, solved with `invert` on the catalogue's evaluator; links to the simulator and the loss budget | 🟡 EN and KO, Phase 3b: CCM target (the designed parts reproduce in the simulator within 2 %, and the CCM boundary, the flyback's diode drop included, matches the simulated mode; tested). A DCM target (BUILD_SPEC §5 "L/L_M for target mode") is not offered yet |
 | LossBudget (`design/loss-budget`): conduction, capacitive switching, gate drive, core, diode and flyback leakage losses against the load and f_s, with the efficiency; each point simulated with the duty ratio regulated (bracketed search; the forward converter stops at its reset limit); peak flux density shown for a saturation check | ✅ EN and KO, Phase 3b; the conduction, diode and capacitive buckets equal the simulator's own accounting in every topology (tested) |
-| ClampCheck (`design/clamp-check`): TVS or RCD primary clamp of a flyback: reflected voltage, leakage energy, clamp voltage at the peak current (TVS from its datasheet's V_BR, V_CL and I_PP), switch voltage against its rating, clamp dissipation, open-load output ceiling; trade-off chart | ✅ EN and KO, Phase 3c |
-| SourceMatcher (`design/source-matcher`): a fixed-duty-ratio flyback on a linear source: loss-free-resistor divider and extraction, CCM taking over at V_g,crit (constant-voltage sink), switch voltage against power, envelope simulation; link to the simulator | ✅ EN and KO, Phase 3c; the operating point matches the simulator's steady state (tested) |
+| ClampCheck (`design/clamp-check`): TVS or RCD primary clamp of a flyback: reflected voltage, leakage energy and reset time, clamp voltage at the peak current (TVS from its datasheet's V_BR, V_CL and I_PP), switch voltage against its rating, clamp dissipation, open-load output ceiling (TVS; an RCD clamp gives none, and the tool warns); trade-off chart | ✅ EN and KO, Phase 3c |
+| SourceMatcher (`design/source-matcher`): a fixed-duty-ratio flyback on a linear source: loss-free-resistor divider and extraction, CCM taking over at V_g,crit (constant-voltage sink), the loss-free resistor's power limit (CCM or the switch's rating), switch voltage against power, envelope simulation; link to the simulator | ✅ EN and KO, Phase 3c; the operating point matches the simulator's steady state (tested) |
 | Design tools MagneticsDesigner, SenseChain (BUILD_SPEC §5) | ⬜ Phase 3d–3e |
 
 Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); theory uses only `<Eq>` embeds and each Eq has ≥ 1 test vector; "Try it" links a tool preset; "Go deeper" has ≥ 2 verified resources with retrieval dates; a gotchas subsection exists; quiz with ≥ 5 explained questions; build, tests and all lints green.
@@ -166,11 +166,11 @@ _Last updated: Phase 3c (clamp check and source matcher). `python scripts/module
 | landing (`index`) | ✅ | ✅ | Phase 0 |
 | about | ✅ | ✅ | Phase 0 |
 | about/equation-pipeline | ✅ | ✅ | Phase 0 acceptance page: one `<Eq>` + Plotly island |
-| 02-theory/derivations | ✅ | ✅ | auto-rendered from `python/pe_core/derive/*.py`: 13 modules, 102 derived equations (Phase 3c) |
+| 02-theory/derivations | ✅ | ✅ | auto-rendered from `python/pe_core/derive/*.py`: 13 modules, 104 derived equations (Phase 3c) |
 | design/explorer | ✅ | ✅ | Phase 2a: evaluate and sweep any catalogue equation; state in the URL hash ("Try it" target); screenshot and keyboard check (Phase 3a) |
 | simulate/simulator | ✅ | ✅ | Phase 3a: the pe-core simulator; state in the URL hash (`<TrySim>` target); screenshot and keyboard check |
 | design/converter-designer | ✅ | ✅ | Phase 3b; state in the URL hash; screenshot and keyboard check |
 | design/loss-budget | ✅ | ✅ | Phase 3b; state in the URL hash; screenshot and keyboard check |
-| design/clamp-check | ✅ | ✅ | Phase 3c; homes the seven clamp equations (`flyback.V_OR`, `clamp.*`, `tvs.*`, `flyback.V_ceiling`); state in the URL hash; screenshot and keyboard check |
-| design/source-matcher | ✅ | ✅ | Phase 3c; homes `src.Pmax`, `src.cv_extraction`, `lfr.Vg`, `lfr.eta`, `lfr.Vg_power` until the harvesting pages (Phase 4); state in the URL hash; screenshot and keyboard check |
+| design/clamp-check | ✅ | ✅ | Phase 3c; homes the eight clamp equations (`flyback.V_OR`, `clamp.*`, `tvs.*`, `flyback.V_ceiling`); state in the URL hash; screenshot and keyboard check |
+| design/source-matcher | ✅ | ✅ | Phase 3c; homes `src.Pmax`, `src.cv_power`, `src.cv_extraction`, `lfr.Vg`, `lfr.eta`, `lfr.Vg_power` until the harvesting pages (Phase 4); state in the URL hash; screenshot and keyboard check |
 | 10-resources/bibliography | ✅ | ✅ | Phase 1: generated from `references.bib` (verified entries only) |

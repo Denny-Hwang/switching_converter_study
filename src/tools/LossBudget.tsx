@@ -8,6 +8,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Bucket, LossBudget as Budget, LossPoint, LossSpec, sim } from 'pe-core';
+import { isToolHash } from '../lib/hash';
 import type { LossReply } from './lossbudget.worker';
 
 type Topology = sim.Topology;
@@ -280,7 +281,9 @@ export default function LossBudget({ labels, presets, simulatorHref }: Props) {
   // remount the island. Our own replaceState() fires no hashchange.
   useEffect(() => {
     const onHash = () => {
-      const next = stateFromHash(readHash(), presets);
+      const h = readHash();
+      if (!isToolHash(h, [...KEYS, 'topo'])) return; // an in-page anchor, not a new state
+      const next = stateFromHash(h, presets);
       setTopo(next.topo);
       setValues(next.values);
     };

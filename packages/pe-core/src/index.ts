@@ -15,7 +15,9 @@ export { clampCheck } from './clamp';
 export type { ClampKind, ClampResult, ClampSpec, ClampWarning } from './clamp';
 export {
   ENVELOPE_MAX_CYCLES,
+  ENVELOPE_MIN_CYCLES,
   ENVELOPE_SETTLE,
+  busTimeConstant,
   envelopeAt,
   envelopeCycles,
   envelopePeriod,

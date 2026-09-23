@@ -24,6 +24,7 @@ const labels = {
   vor: t['cc.vor'],
   elk: t['cc.elk'],
   plk: t['cc.plk'],
+  treset: t['cc.treset'],
   rd: t['cc.rd'],
   vclamp: t['cc.vclamp'],
   vds: t['cc.vds'],
@@ -39,7 +40,12 @@ const labels = {
   design: t['cc.design'],
   invalid: t['cc.invalid'],
   share: t['cc.share'],
-  warnings: { belowReflected: t['cc.warn.belowReflected'], overRating: t['cc.warn.overRating'] },
+  warnings: {
+    belowReflected: t['cc.warn.belowReflected'],
+    overRating: t['cc.warn.overRating'],
+    rcdOpenLoad: t['cc.warn.rcdOpenLoad'],
+    slowReset: t['cc.warn.slowReset'],
+  },
 };
 const PRESET_LABEL = { tvs: t['cc.presetTvs'], rcd: t['cc.presetRcd'] };
 const presets = CLAMP_PRESETS.map((p) => ({

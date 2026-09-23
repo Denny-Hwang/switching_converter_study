@@ -2296,6 +2296,83 @@
       "value": 110.80586000000001
     },
     {
+      "id": "clamp.t_reset",
+      "source": "yaml",
+      "inputs": {
+        "I_pk": 2.0,
+        "L_lk": 2e-06,
+        "V_OR": 50.0,
+        "V_clamp": 75.0
+      },
+      "value": 1.6e-07
+    },
+    {
+      "id": "clamp.t_reset",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.328213,
+        "L_lk": 9.96138e-06,
+        "V_OR": 8.49209,
+        "V_clamp": 71.2436
+      },
+      "value": 5.21016054265467e-08
+    },
+    {
+      "id": "clamp.t_reset",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.5979,
+        "L_lk": 9.59583e-08,
+        "V_OR": 17.7162,
+        "V_clamp": 25.6588
+      },
+      "value": 7.22351214589681e-09
+    },
+    {
+      "id": "clamp.t_reset",
+      "source": "random",
+      "inputs": {
+        "I_pk": 39.9837,
+        "L_lk": 1.75563e-07,
+        "V_OR": 4.02123,
+        "V_clamp": 53.227
+      },
+      "value": 1.4265925161012621e-07
+    },
+    {
+      "id": "clamp.t_reset",
+      "source": "random",
+      "inputs": {
+        "I_pk": 4.14621,
+        "L_lk": 2.01195e-07,
+        "V_OR": 14.0899,
+        "V_clamp": 241.257
+      },
+      "value": 3.672172250955354e-09
+    },
+    {
+      "id": "clamp.t_reset",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.00597514,
+        "L_lk": 2.43898e-06,
+        "V_OR": 20.9195,
+        "V_clamp": 229.679
+      },
+      "value": 6.980878454489496e-11
+    },
+    {
+      "id": "clamp.t_reset",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.0109475,
+        "L_lk": 6.32426e-06,
+        "V_OR": 7.30979,
+        "V_clamp": 56.4442
+      },
+      "value": 1.409090622030467e-09
+    },
+    {
       "id": "clamp.P",
       "source": "yaml",
       "inputs": {
@@ -3542,6 +3619,86 @@
         "V_oc": 0.527637
       },
       "value": 1.3218156099563195e-08
+    },
+    {
+      "id": "src.cv_power",
+      "source": "yaml",
+      "inputs": {
+        "R_s": 25.0,
+        "V_c": 5.0,
+        "V_oc": 10.0
+      },
+      "value": 1.0
+    },
+    {
+      "id": "src.cv_power",
+      "source": "yaml",
+      "inputs": {
+        "R_s": 25.0,
+        "V_c": 5.0,
+        "V_oc": 2.5
+      },
+      "value": -0.5
+    },
+    {
+      "id": "src.cv_power",
+      "source": "random",
+      "inputs": {
+        "R_s": 65271.3,
+        "V_c": 0.112268,
+        "V_oc": 22.306
+      },
+      "value": 3.8173682831137114e-05
+    },
+    {
+      "id": "src.cv_power",
+      "source": "random",
+      "inputs": {
+        "R_s": 78430.5,
+        "V_c": 0.136306,
+        "V_oc": 0.533561
+      },
+      "value": 6.903977410573692e-07
+    },
+    {
+      "id": "src.cv_power",
+      "source": "random",
+      "inputs": {
+        "R_s": 1.0861,
+        "V_c": 1.27464,
+        "V_oc": 6.37676
+      },
+      "value": 5.987815336341036
+    },
+    {
+      "id": "src.cv_power",
+      "source": "random",
+      "inputs": {
+        "R_s": 1.60672,
+        "V_c": 0.074453,
+        "V_oc": 0.130984
+      },
+      "value": 0.0026195619292720567
+    },
+    {
+      "id": "src.cv_power",
+      "source": "random",
+      "inputs": {
+        "R_s": 4381.15,
+        "V_c": 2.92167,
+        "V_oc": 10.7222
+      },
+      "value": 0.005201961696152838
+    },
+    {
+      "id": "src.cv_power",
+      "source": "random",
+      "inputs": {
+        "R_s": 6321.28,
+        "V_c": 3.14118,
+        "V_oc": 50.5638
+      },
+      "value": 0.02356531991805457
     },
     {
       "id": "src.cv_extraction",

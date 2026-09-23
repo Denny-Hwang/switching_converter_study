@@ -72,11 +72,14 @@ source amplitude <Cite key="alexander2017" where="Sec. 4.8" />:
 <Eq id="src.cv_extraction" />
 
 The tool finds the source amplitude at which this starts by solving the
-divider equation for $V_\mathrm{oc}$. The extraction chart shows both regimes:
-a flat share while the flyback is a resistor, then a falling share once CCM
-holds the bus.
+divider equation for $V_\mathrm{oc}$. The extraction chart shows both regimes.
+While the flyback is a resistor, the share is flat. Once CCM holds the bus,
+the share is the constant-voltage sink's, which is 1 where the source
+amplitude is twice the critical voltage and falls beyond. If $R_\mathrm{in}$
+is larger than $R_s$, the bus reaches the critical voltage below that
+amplitude, and the share first rises to 1.
 
-### More power needs a higher switch voltage
+### More power needs a higher switch voltage, up to the critical voltage
 
 Through the same input resistance, a larger power needs a higher bus
 voltage:
@@ -84,11 +87,15 @@ voltage:
 <Eq id="lfr.Vg_power" />
 
 The switch blocks the bus voltage plus the reflected output voltage
-(<EqRef id="flyback.Vds_off" label="switch voltage" />). Its rating therefore
-caps the power the resistor can draw: the tool gives
-<EqRef id="dcm.P_in" label="the power a DCM converter draws" /> at the bus
-voltage where the switch voltage reaches the rating. The switch chart plots
-the switch voltage against the power.
+(<EqRef id="flyback.Vds_off" label="switch voltage" />). That holds up to the
+critical voltage: there CCM holds the bus, and the switch voltage stays at
+<EqRef id="flyback.Vds_clamped" label="its CCM value" /> whatever power the
+source then pushes in. The largest power the flyback draws as a resistor is
+therefore <EqRef id="dcm.P_in" label="the power a DCM converter draws" /> at
+the critical voltage. If the switch's rating lies below the CCM value, the
+rating caps it earlier, where the switch voltage reaches the rating; the
+tool says which limit applies. The switch chart plots the switch voltage
+against the power: the resistor's rising branch, then the CCM plateau.
 
 ### A varying source amplitude
 
@@ -96,11 +103,25 @@ With an envelope, the source amplitude follows a rectified sine or points
 you enter, as a fraction of $V_\mathrm{oc}$. The tool then simulates the flyback
 cycle by cycle with the [simulator](../../simulate/simulator/)'s
 source-driven model, each switching cycle at the source amplitude of its
-start. The run starts from an empty bus, seven time constants $R_s C_\mathrm{bus}$
-before an envelope period, and shows that period. Its bus voltage and power
-are averaged over each switching cycle. The power drawn is the power the
-source delivers into the bus, and its sum over the period, divided by the
-available energy, gives the share over the envelope. The number of
+start, so an envelope period must span at least twenty switching cycles.
+
+The run starts from an empty bus, seven slowest time constants of the bus
+before an envelope period. While the flyback is a resistor, that time
+constant is at most $R_s C_\mathrm{bus}$; once CCM holds the bus, the averaged
+bus and magnetizing inductance form a second-order system
+<Cite key="erickson2020" where="Ch. 7" />, whose slower mode can take much
+longer, with a stiff source above all. The tool then repeats the
+envelope period until it repeats itself, and shows the last one. Its bus
+voltage and power are averaged over each switching cycle.
+
+The power drawn is the power the source delivers into the bus at the bus
+voltage <Cite key="alexander2017" where="Sec. 4.8" />:
+
+<Eq id="src.cv_power" />
+
+It is negative while the bus feeds the source back, when the source
+amplitude falls below the bus voltage. Its sum over the period, divided by
+the available energy, gives the share over the envelope. The number of
 switching cycles in a run is limited, to keep it within a few seconds; the
 tool says so when an envelope would need more.
 
@@ -132,6 +153,12 @@ peaks.
 - **Ideal flyback.** Apart from the output diode's drop, the flyback is
   loss-free: the envelope simulation has no on-resistance, winding resistance
   or node capacitance. The output is a fixed voltage (a battery, for example).
+  The switch voltage leaves out the spike from the leakage inductance at
+  turn-off; the [clamp check](../clamp-check/) sizes the clamp for it.
+- **Averaged bus.** The operating point and the charts use averages: they
+  assume the bus capacitor holds the bus nearly constant over a switching
+  period. With a small capacitor the bus ripples, and the tool says so; the
+  simulator link shows the difference.
 - **Slow envelope.** Each switching cycle sees a constant source amplitude,
   so the envelope must change little within one switching period.
 

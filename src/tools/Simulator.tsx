@@ -8,6 +8,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { evaluate, sim } from 'pe-core';
+import { isToolHash } from '../lib/hash';
 import type { SimReply } from './simulator.worker';
 
 type Topology = sim.Topology;
@@ -411,7 +412,9 @@ export default function Simulator({ labels, presets }: Props) {
   // remount the island. Our own replaceState() fires no hashchange.
   useEffect(() => {
     const onHash = () => {
-      const next = initialState(presets);
+      const h = readHash();
+      if (!isToolHash(h, [...KEYS, 'topo', 'load', 'src'])) return; // an in-page anchor, not a new state
+      const next = stateFromHash(h, presets);
       setFstate(next.fs);
       setValues(next.values);
       setAnchors(sliderAnchors(next.values));
