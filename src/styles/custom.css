@@ -562,6 +562,34 @@ html:lang(ko) body {
   background: var(--sl-color-orange-low);
 }
 
+/* ---- magnetics designer ---------------------------------------------------- */
+.pe-mag .pe-sim__table td {
+  white-space: nowrap;
+}
+.pe-mag__use {
+  margin: 0;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--sl-color-gray-4);
+  border-radius: 0.4rem;
+  background: var(--sl-color-gray-7, transparent);
+  color: var(--sl-color-text);
+  font: inherit;
+  font-size: var(--sl-text-sm);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.pe-mag__use:hover {
+  border-color: var(--sl-color-accent);
+}
+.pe-mag__use:focus-visible {
+  outline: 2px solid var(--sl-color-accent-high);
+  outline-offset: 2px;
+}
+/* the gapped set whose turns the design uses */
+.pe-mag__options tr[aria-current='true'] td {
+  font-weight: 600;
+}
+
 /* ---- loss budget ---------------------------------------------------------- */
 .pe-loss .pe-sim__table td:nth-child(3) {
   white-space: nowrap;

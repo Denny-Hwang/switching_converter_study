@@ -1,0 +1,31 @@
+synthetic: true
+label: "Flyback transformer example"
+label_ko: "플라이백 변압기 예제"
+# Magnetics-designer preset, on the ETD 29/16/10 core in N87 (src/lib/magpresets.ts),
+# primary then secondary. The operating point is the converter designer's flyback
+# example (design-flyback.yaml) at its lowest input voltage, 36 V, with
+# L_M = 0.6 mH (its ripple-target inductance, 0.58 mH, rounded up): D = 0.5814,
+# I_M = 1.1945 A, Delta_i_M = 0.1744 A; the rms currents are those of the
+# trapezoidal primary and secondary pulses, rounded.
+params:
+  L_M: 6.0e-4
+  I_pk: 1.37
+  I_rms: 0.914
+  Delta_i_M: 0.174
+  f_s: 1.0e5
+  B_max: 0.3
+  n: 0.25
+  I_rms_s: 3.1
+  T_w: 100
+  b_w: 0.019
+  K_umax: 0.4
+  h_g: 1.0e-4
+  d_w: 5.0e-4
+  d_o: 5.6e-4
+  k_s: 1
+  M_l: 2
+  d_ws: 6.3e-4
+  d_os: 6.9e-4
+  k_ss: 2
+  M_ls: 1
+steps: []
