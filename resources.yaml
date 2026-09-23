@@ -5,7 +5,8 @@
 # How entries are verified (docs/ADR/0002-reference-verification.md):
 #   * two independent web-search reviews saw the URL with a matching title;
 #   * CI (scripts/resources_check.py --online) opens every URL and requires the
-#     page title to contain `title_match` (or a PDF signature for urlkind: pdf).
+#     page title to contain `title_match`; for urlkind: pdf, the PDF's own
+#     title or the text of its first two pages must contain it.
 # Link specific items (a chapter, a course, an app note); link a channel only
 # when a specific video cannot be verified.
 #
@@ -299,7 +300,9 @@ resources:
     retrieved: 2026-09-23
     why: "Steady-state and small-signal analysis of the buck power stage in CCM and DCM, with component requirements."
     why_ko: "CCM·DCM 벅 전력단의 정상상태·소신호 해석과 부품 요구 조건."
-    title_match: "(pdf)"
+    # The PDF's title field reads "Understanding Buck Power Stages Mode Power Supplies", and its
+    # text uses a font without a Unicode map: match the words that are there.
+    title_match: "Understanding Buck Power Stages"
     urlkind: pdf
 
   - id: ti-slva061
@@ -313,12 +316,12 @@ resources:
     retrieved: 2026-09-23
     why: "The boost counterpart: steady-state and small-signal analysis in CCM and DCM."
     why_ko: "부스트판: CCM·DCM의 정상상태·소신호 해석."
-    title_match: "(pdf)"
+    title_match: "Understanding Boost Power Stages in Switchmode Power Supplies"
     urlkind: pdf
 
   - id: ti-slva059
     type: app-note
-    title: "Understanding Buck-Boost Power Stages in Switch Mode Power Supplies (SLVA059)"
+    title: "Understanding Inverting Buck-Boost Power Stages in Switch Mode Power Supplies (SLVA059)"
     author: "E. Rogers, Texas Instruments"
     url: https://www.ti.com/lit/pdf/slva059
     tags: [buck-boost, ccm-dcm, small-signal, rhp-zero]
@@ -327,7 +330,7 @@ resources:
     retrieved: 2026-09-23
     why: "The inverting buck-boost power stage analysed the same way."
     why_ko: "반전형 벅-부스트 전력단을 같은 방식으로 해석."
-    title_match: "(pdf)"
+    title_match: "Understanding Inverting Buck-Boost Power Stages in Switch Mode Power Supplies"
     urlkind: pdf
 
   - id: ti-slva477
@@ -341,7 +344,7 @@ resources:
     retrieved: 2026-09-23
     why: "A compact CCM design-calculation checklist: duty ratio, inductor ripple, capacitors."
     why_ko: "간결한 CCM 설계 계산 점검표: 듀티비, 인덕터 리플, 커패시터."
-    title_match: "(pdf)"
+    title_match: "Basic Calculation of a Buck Converter's Power Stage"
     urlkind: pdf
 
   - id: ti-slva372
@@ -355,7 +358,7 @@ resources:
     retrieved: 2026-09-23
     why: "The boost version of the same checklist."
     why_ko: "같은 점검표의 부스트판."
-    title_match: "(pdf)"
+    title_match: "Basic Calculation of a Boost Converter's Power Stage"
     urlkind: pdf
 
   - id: ti-slva630
@@ -369,7 +372,7 @@ resources:
     retrieved: 2026-09-23
     why: "Buck output ripple with the capacitor's charge, series resistance (ESR) and series inductance (ESL) taken into account."
     why_ko: "커패시터의 전하, 직렬 저항(ESR), 직렬 인덕턴스(ESL)를 모두 고려한 벅 출력 리플."
-    title_match: "(pdf)"
+    title_match: "Output Ripple Voltage for Buck Switching Regulator"
     urlkind: pdf
     cite: ti_slva630
 
@@ -384,7 +387,7 @@ resources:
     retrieved: 2026-09-23
     why: "Written for inductive sensing; its explanation of the capacitance between turns, the self-resonant frequency and how to measure it applies to any wound inductor."
     why_ko: "유도형 센싱을 위한 문서이지만, 턴 사이 커패시턴스, 자기 공진 주파수, 그 측정 방법에 대한 설명은 모든 권선 인덕터에 적용된다."
-    title_match: "(pdf)"
+    title_match: "Sensor Design for Inductive Sensing Applications Using LDC"
     urlkind: pdf
     cite: ti_snoa930
 
@@ -399,7 +402,7 @@ resources:
     retrieved: 2026-09-23
     why: "MOSFET switching behaviour, gate charge and gate-drive power, and practical gate-drive circuits."
     why_ko: "MOSFET 스위칭 동작, 게이트 전하와 게이트 구동 전력, 실용적인 게이트 구동 회로."
-    title_match: "(pdf)"
+    title_match: "Fundamentals of MOSFET and IGBT Gate Driver Circuits"
     urlkind: pdf
     cite: balogh2018
 

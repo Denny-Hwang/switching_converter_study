@@ -25,6 +25,7 @@ import {
   type SinkMode,
 } from 'pe-core';
 import { isToolHash } from '../lib/hash';
+import { useStateHash } from '../lib/useStateHash';
 import type { EnvelopeReply } from './sourcematch.worker';
 
 export type EnvelopeKind = 'none' | 'sine' | 'points';
@@ -317,9 +318,7 @@ export default function SourceMatcher({ labels, presets, simulatorHref }: Props)
   // the averages assume a bus that hardly ripples over a switching period
   const rippling = !!result && Cbus > 0 && ((spec!.Rs * result.Rin) / (spec!.Rs + result.Rin)) * Cbus < 10 / spec!.fs;
 
-  useEffect(() => {
-    window.history.replaceState(null, '', `#${hashOf(env, values)}`);
-  }, [env, values]);
+  useStateHash(hashOf(env, values), [...KEYS, 'env']);
 
   // The state follows the URL hash: a link to this page with other values
   // (or the browser's back button) changes only the hash, which does not

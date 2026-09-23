@@ -4065,6 +4065,598 @@
       "value": 29.206764099400925
     },
     {
+      "id": "sense.burden",
+      "source": "yaml",
+      "inputs": {
+        "I_SENSE": 2.0,
+        "R_SENSE": 0.01
+      },
+      "value": 0.02
+    },
+    {
+      "id": "sense.burden",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 4.53612,
+        "R_SENSE": 0.699131
+      },
+      "value": 3.17134211172
+    },
+    {
+      "id": "sense.burden",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 82.9646,
+        "R_SENSE": 0.000257347
+      },
+      "value": 0.0213506909162
+    },
+    {
+      "id": "sense.burden",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 0.001076,
+        "R_SENSE": 0.000183655
+      },
+      "value": 1.9761277999999998e-07
+    },
+    {
+      "id": "sense.burden",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 0.00428603,
+        "R_SENSE": 0.0808461
+      },
+      "value": 0.000346508809983
+    },
+    {
+      "id": "sense.burden",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 0.0464162,
+        "R_SENSE": 0.827693
+      },
+      "value": 0.0384183638266
+    },
+    {
+      "id": "sense.burden",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 2.62478,
+        "R_SENSE": 0.000987782
+      },
+      "value": 0.0025927104379599997
+    },
+    {
+      "id": "sense.voltage_out_monitor",
+      "source": "yaml",
+      "inputs": {
+        "G_sense": 50.0,
+        "I_SENSE": 2.0,
+        "R_SENSE": 0.01,
+        "V_REF": 0.0
+      },
+      "value": 1.0
+    },
+    {
+      "id": "sense.voltage_out_monitor",
+      "source": "yaml",
+      "inputs": {
+        "G_sense": 20.0,
+        "I_SENSE": 1.0,
+        "R_SENSE": 0.01,
+        "V_REF": 1.5
+      },
+      "value": 1.7
+    },
+    {
+      "id": "sense.voltage_out_monitor",
+      "source": "random",
+      "inputs": {
+        "G_sense": 1.87111,
+        "I_SENSE": 0.00272471,
+        "R_SENSE": 0.0137252,
+        "V_REF": 1.42663
+      },
+      "value": 1.4266999742556046
+    },
+    {
+      "id": "sense.voltage_out_monitor",
+      "source": "random",
+      "inputs": {
+        "G_sense": 62.6069,
+        "I_SENSE": 1.537,
+        "R_SENSE": 0.000233282,
+        "V_REF": 1.37843
+      },
+      "value": 1.4008779815939947
+    },
+    {
+      "id": "sense.voltage_out_monitor",
+      "source": "random",
+      "inputs": {
+        "G_sense": 4.89177,
+        "I_SENSE": 0.00163917,
+        "R_SENSE": 0.0779473,
+        "V_REF": 3.38468
+      },
+      "value": 3.3853050159532834
+    },
+    {
+      "id": "sense.voltage_out_monitor",
+      "source": "random",
+      "inputs": {
+        "G_sense": 15.3789,
+        "I_SENSE": 0.243041,
+        "R_SENSE": 0.000104711,
+        "V_REF": 1.58831
+      },
+      "value": 1.5887013786434296
+    },
+    {
+      "id": "sense.voltage_out_monitor",
+      "source": "random",
+      "inputs": {
+        "G_sense": 1.24384,
+        "I_SENSE": 2.2008,
+        "R_SENSE": 0.000623116,
+        "V_REF": 0.317884
+      },
+      "value": 0.31958974457725237
+    },
+    {
+      "id": "sense.voltage_out_monitor",
+      "source": "random",
+      "inputs": {
+        "G_sense": 35.4015,
+        "I_SENSE": 1.24935,
+        "R_SENSE": 0.000592324,
+        "V_REF": 2.74691
+      },
+      "value": 2.7731078176547443
+    },
+    {
+      "id": "sense.offset_current",
+      "source": "yaml",
+      "inputs": {
+        "R_SENSE": 0.01,
+        "V_OS": 0.0001
+      },
+      "value": 0.01
+    },
+    {
+      "id": "sense.offset_current",
+      "source": "random",
+      "inputs": {
+        "R_SENSE": 0.000393692,
+        "V_OS": 0.00040724
+      },
+      "value": 1.0344126880911981
+    },
+    {
+      "id": "sense.offset_current",
+      "source": "random",
+      "inputs": {
+        "R_SENSE": 0.0699211,
+        "V_OS": 0.000123887
+      },
+      "value": 0.001771811370244461
+    },
+    {
+      "id": "sense.offset_current",
+      "source": "random",
+      "inputs": {
+        "R_SENSE": 0.027936,
+        "V_OS": 0.000107535
+      },
+      "value": 0.003849334192439863
+    },
+    {
+      "id": "sense.offset_current",
+      "source": "random",
+      "inputs": {
+        "R_SENSE": 0.000547274,
+        "V_OS": 6.94777e-05
+      },
+      "value": 0.12695231273548532
+    },
+    {
+      "id": "sense.offset_current",
+      "source": "random",
+      "inputs": {
+        "R_SENSE": 0.808363,
+        "V_OS": 0.000282533
+      },
+      "value": 0.00034951253335444596
+    },
+    {
+      "id": "sense.offset_current",
+      "source": "random",
+      "inputs": {
+        "R_SENSE": 0.000646587,
+        "V_OS": 3.14491e-05
+      },
+      "value": 0.04863862094350798
+    },
+    {
+      "id": "sense.pad_error",
+      "source": "yaml",
+      "inputs": {
+        "R_SENSE": 0.005,
+        "R_pad": 0.0005
+      },
+      "value": 0.1
+    },
+    {
+      "id": "sense.pad_error",
+      "source": "random",
+      "inputs": {
+        "R_SENSE": 0.0410814,
+        "R_pad": 0.000110252
+      },
+      "value": 0.0026837449551378486
+    },
+    {
+      "id": "sense.pad_error",
+      "source": "random",
+      "inputs": {
+        "R_SENSE": 0.455838,
+        "R_pad": 0.000719108
+      },
+      "value": 0.001577551674059644
+    },
+    {
+      "id": "sense.pad_error",
+      "source": "random",
+      "inputs": {
+        "R_SENSE": 0.0412939,
+        "R_pad": 4.10266e-05
+      },
+      "value": 0.0009935268889593861
+    },
+    {
+      "id": "sense.pad_error",
+      "source": "random",
+      "inputs": {
+        "R_SENSE": 0.000621936,
+        "R_pad": 0.0028088
+      },
+      "value": 4.516220318489363
+    },
+    {
+      "id": "sense.pad_error",
+      "source": "random",
+      "inputs": {
+        "R_SENSE": 0.339467,
+        "R_pad": 2.25661e-05
+      },
+      "value": 6.647509183514156e-05
+    },
+    {
+      "id": "sense.pad_error",
+      "source": "random",
+      "inputs": {
+        "R_SENSE": 0.000503636,
+        "R_pad": 0.00213788
+      },
+      "value": 4.244891151545958
+    },
+    {
+      "id": "sense.reading",
+      "source": "yaml",
+      "inputs": {
+        "I_SENSE": 2.0,
+        "R_SENSE": 0.01,
+        "R_pad": 0.0005,
+        "V_OS": 0.0001
+      },
+      "value": 2.11
+    },
+    {
+      "id": "sense.reading",
+      "source": "yaml",
+      "inputs": {
+        "I_SENSE": 2.0,
+        "R_SENSE": 0.01,
+        "R_pad": 0.0005,
+        "V_OS": -0.0001
+      },
+      "value": 2.09
+    },
+    {
+      "id": "sense.reading",
+      "source": "yaml",
+      "inputs": {
+        "I_SENSE": 5.0,
+        "R_SENSE": 0.005,
+        "R_pad": 0.0,
+        "V_OS": 2e-05
+      },
+      "value": 5.004
+    },
+    {
+      "id": "sense.reading",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 0.0110955,
+        "R_SENSE": 0.456929,
+        "R_pad": 0.00483693,
+        "V_OS": 0.00161154
+      },
+      "value": 0.014739847714447977
+    },
+    {
+      "id": "sense.reading",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 66.3377,
+        "R_SENSE": 0.000879085,
+        "R_pad": 0.000954495,
+        "V_OS": 0.000127122
+      },
+      "value": 138.51061270070585
+    },
+    {
+      "id": "sense.reading",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 83.8506,
+        "R_SENSE": 0.108385,
+        "R_pad": 0.000284471,
+        "V_OS": 1.71961e-06
+      },
+      "value": 84.07069303540712
+    },
+    {
+      "id": "sense.reading",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 0.650575,
+        "R_SENSE": 0.417238,
+        "R_pad": 4.46521e-05,
+        "V_OS": 2.03106e-06
+      },
+      "value": 0.650649491297431
+    },
+    {
+      "id": "sense.reading",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 20.4516,
+        "R_SENSE": 0.000173986,
+        "R_pad": 5.55617e-05,
+        "V_OS": 0.00189558
+      },
+      "value": 37.87774729759866
+    },
+    {
+      "id": "sense.reading",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 0.439907,
+        "R_SENSE": 0.0218556,
+        "R_pad": 2.39178e-05,
+        "V_OS": 1.65852e-06
+      },
+      "value": 0.440464300080739
+    },
+    {
+      "id": "sense.rel_error",
+      "source": "yaml",
+      "inputs": {
+        "I_SENSE": 0.2,
+        "R_SENSE": 0.01,
+        "R_pad": 0.0005,
+        "V_OS": 0.0001
+      },
+      "value": 0.09999999999999999
+    },
+    {
+      "id": "sense.rel_error",
+      "source": "yaml",
+      "inputs": {
+        "I_SENSE": 0.5,
+        "R_SENSE": 0.005,
+        "R_pad": 0.0,
+        "V_OS": 2e-05
+      },
+      "value": 0.008
+    },
+    {
+      "id": "sense.rel_error",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 0.679693,
+        "R_SENSE": 0.0133311,
+        "R_pad": 1.37815e-05,
+        "V_OS": 7.439e-05
+      },
+      "value": 0.009243646112176063
+    },
+    {
+      "id": "sense.rel_error",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 0.687933,
+        "R_SENSE": 0.00039409,
+        "R_pad": 0.000277432,
+        "V_OS": 0.0017428
+      },
+      "value": 7.132427225920114
+    },
+    {
+      "id": "sense.rel_error",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 0.00160823,
+        "R_SENSE": 0.0986488,
+        "R_pad": 0.000764031,
+        "V_OS": 0.00131683
+      },
+      "value": 8.307967683691354
+    },
+    {
+      "id": "sense.rel_error",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 1.51951,
+        "R_SENSE": 0.0264343,
+        "R_pad": 0.000100241,
+        "V_OS": 2.46751e-06
+      },
+      "value": 0.0038535117378351437
+    },
+    {
+      "id": "sense.rel_error",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 0.0156783,
+        "R_SENSE": 0.00796943,
+        "R_pad": 3.19936e-05,
+        "V_OS": 0.000334768
+      },
+      "value": 2.683292102839168
+    },
+    {
+      "id": "sense.rel_error",
+      "source": "random",
+      "inputs": {
+        "I_SENSE": 1.93179,
+        "R_SENSE": 0.00283439,
+        "R_pad": 1.74274e-05,
+        "V_OS": 4.24861e-05
+      },
+      "value": 0.013907939820128027
+    },
+    {
+      "id": "sense.filter_R",
+      "source": "yaml",
+      "inputs": {
+        "R_OUT": 10000.0,
+        "R_f": 1000.0
+      },
+      "value": 11000.0
+    },
+    {
+      "id": "sense.filter_R",
+      "source": "yaml",
+      "inputs": {
+        "R_OUT": 10000.0,
+        "R_f": 0.0
+      },
+      "value": 10000.0
+    },
+    {
+      "id": "sense.filter_R",
+      "source": "random",
+      "inputs": {
+        "R_OUT": 34130.2,
+        "R_f": 4426.18
+      },
+      "value": 38556.38
+    },
+    {
+      "id": "sense.filter_R",
+      "source": "random",
+      "inputs": {
+        "R_OUT": 246707.0,
+        "R_f": 798719.0
+      },
+      "value": 1045426.0
+    },
+    {
+      "id": "sense.filter_R",
+      "source": "random",
+      "inputs": {
+        "R_OUT": 19383.5,
+        "R_f": 2.33152
+      },
+      "value": 19385.83152
+    },
+    {
+      "id": "sense.filter_R",
+      "source": "random",
+      "inputs": {
+        "R_OUT": 250960.0,
+        "R_f": 156.103
+      },
+      "value": 251116.103
+    },
+    {
+      "id": "sense.filter_R",
+      "source": "random",
+      "inputs": {
+        "R_OUT": 2380.79,
+        "R_f": 95968.7
+      },
+      "value": 98349.48999999999
+    },
+    {
+      "id": "sense.filter_R",
+      "source": "random",
+      "inputs": {
+        "R_OUT": 21533.6,
+        "R_f": 77204.5
+      },
+      "value": 98738.1
+    },
+    {
+      "id": "adc.nyquist",
+      "source": "yaml",
+      "inputs": {
+        "f_samp": 10000.0
+      },
+      "value": 5000.0
+    },
+    {
+      "id": "adc.nyquist",
+      "source": "random",
+      "inputs": {
+        "f_samp": 9674.64
+      },
+      "value": 4837.32
+    },
+    {
+      "id": "adc.nyquist",
+      "source": "random",
+      "inputs": {
+        "f_samp": 163.148
+      },
+      "value": 81.574
+    },
+    {
+      "id": "adc.nyquist",
+      "source": "random",
+      "inputs": {
+        "f_samp": 2.00613
+      },
+      "value": 1.003065
+    },
+    {
+      "id": "adc.nyquist",
+      "source": "random",
+      "inputs": {
+        "f_samp": 11209.3
+      },
+      "value": 5604.65
+    },
+    {
+      "id": "adc.nyquist",
+      "source": "random",
+      "inputs": {
+        "f_samp": 49647100.0
+      },
+      "value": 24823550.0
+    },
+    {
+      "id": "adc.nyquist",
+      "source": "random",
+      "inputs": {
+        "f_samp": 116.773
+      },
+      "value": 58.3865
+    },
+    {
       "id": "def.Ts",
       "source": "yaml",
       "inputs": {

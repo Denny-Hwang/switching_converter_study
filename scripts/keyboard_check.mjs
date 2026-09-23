@@ -11,7 +11,9 @@
  *   3. Shift+Tab visits the same controls in reverse;
  *   4. every control shows a focus indicator (outline or box-shadow) when
  *      it is reached by keyboard;
- *   5. the controls respond to the keyboard (a tool-specific action).
+ *   5. the controls respond to the keyboard (a tool-specific action);
+ *   6. in-page anchors leave the inputs alone, and a page opened at one
+ *      keeps it in its URL until the tool's state changes.
  *
  *     npm run build && node scripts/keyboard_check.mjs
  */
@@ -29,6 +31,7 @@ const PAGES = [
   { path: 'design/loss-budget/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: lossAction },
   { path: 'design/clamp-check/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: clampAction },
   { path: 'design/source-matcher/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: sourceAction },
+  { path: 'design/sense-chain/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: senseAction },
 ];
 const LOCALES = ['en', 'ko'];
 
@@ -177,25 +180,27 @@ async function simulatorAction(page, where, errors) {
 /**
  * An invalid field removes the tool's charts, not only its tables; a new hash
  * (a link to the same page, the back button) loads its values into the form.
+ * `required` is a field that must not be empty, `key` a field set through the
+ * hash (by default the switching frequency and the output voltage).
  */
-async function staleAndHash(page, where, errors, prefix) {
+async function staleAndHash(page, where, errors, prefix, required = 'fs', key = 'V') {
   await page.waitForSelector(`${TOOL} .main-svg`, { timeout: 60000 });
-  const fs = page.locator(`${TOOL} #${prefix}-fs`);
+  const fs = page.locator(`${TOOL} #${prefix}-${required}`);
   const fsValue = await fs.inputValue();
   await fs.fill('');
   await page.waitForFunction((sel) => !document.querySelector(sel), `${TOOL} .main-svg`, { timeout: 10000 }).catch(() => {
     errors.push(`${where}: a chart stayed on screen with an invalid field`);
   });
   await fs.fill(fsValue);
-  const v = page.locator(`${TOOL} #${prefix}-V`);
+  const v = page.locator(`${TOOL} #${prefix}-${key}`);
   const next = String(Number(await v.inputValue()) + 1);
-  await page.evaluate((value) => {
+  await page.evaluate(([k, value]) => {
     const q = new URLSearchParams(window.location.hash.slice(1));
-    q.set('V', value);
+    q.set(k, value);
     window.location.hash = q.toString();
-  }, next);
+  }, [key, next]);
   const got = await page
-    .waitForFunction(([sel, value]) => document.querySelector(sel)?.value === value, [`${TOOL} #${prefix}-V`, next], { timeout: 10000 })
+    .waitForFunction(([sel, value]) => document.querySelector(sel)?.value === value, [`${TOOL} #${prefix}-${key}`, next], { timeout: 10000 })
     .then(() => true, () => false);
   if (!got) errors.push(`${where}: a new URL hash did not load its values`);
 }
@@ -241,6 +246,33 @@ async function anchorKeepsState(page, where, errors) {
   await page.waitForTimeout(300);
   if ((await input.inputValue()) !== next) errors.push(`${where}: following the in-page anchor #${id} reset the tool's inputs`);
   await input.fill(before);
+}
+
+/**
+ * A page opened at an in-page anchor (a link to a section) keeps that anchor
+ * in its URL until the tool's state changes; from the first change on, the
+ * URL holds the state.
+ */
+async function directAnchorKept(browser, url, ready, where, errors) {
+  const probe = await browser.newPage();
+  await probe.goto(url, { waitUntil: 'networkidle' });
+  const id = await probe.evaluate(() => [...document.querySelectorAll('h2[id]')].pop()?.id ?? '');
+  await probe.close();
+  if (!id) return;
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await page.goto(`${url}#${encodeURIComponent(id)}`, { waitUntil: 'networkidle' });
+  await settle(page, ready);
+  const hash = await page.evaluate(() => decodeURIComponent(window.location.hash.slice(1)));
+  if (hash !== id) errors.push(`${where}: opened at #${id}, the tool replaced the anchor with its state (#${hash.slice(0, 40)}…)`);
+  const input = page.locator(`${TOOL} input[type="number"]`).first();
+  if ((await input.count()) > 0) {
+    const before = await input.inputValue();
+    await input.fill(before === '' ? '7' : String(Number(before) * 1.5));
+    await page.waitForTimeout(300);
+    const after = await page.evaluate(() => window.location.hash);
+    if (!after.includes('=')) errors.push(`${where}: after an edit, the URL does not hold the tool's state (${after.slice(0, 40)})`);
+  }
+  await page.close();
 }
 
 /** Designer: Space on the second topology button selects it and loads that topology's specification. */
@@ -299,6 +331,18 @@ async function sourceAction(page, where, errors) {
   await noStaleResult(page, where, errors, 'src', 10000);
 }
 
+/** Sense chain: Space on the second amplifier-type button selects the voltage output and shows its gain. */
+async function senseAction(page, where, errors) {
+  const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
+  const second = buttons.nth(1);
+  await second.focus();
+  await page.keyboard.press('Space');
+  await page.waitForTimeout(100);
+  if ((await second.getAttribute('aria-pressed')) !== 'true') errors.push(`${where}: Space did not select an amplifier type`);
+  if ((await page.locator(`${TOOL} #sense-G`).count()) !== 1) errors.push(`${where}: the voltage-output amplifier's gain field did not appear`);
+  await staleAndHash(page, where, errors, 'sense', 'Rsense', 'Imax');
+}
+
 async function main() {
   const { base, stop } = await startPreview();
   const browser = await chromium.launch();
@@ -321,6 +365,7 @@ async function main() {
         console.log(`${where}: ${n} controls in order`);
         checked++;
         await page.close();
+        await directAnchorKept(browser, url, p.ready, where, errors);
       }
     }
   } finally {

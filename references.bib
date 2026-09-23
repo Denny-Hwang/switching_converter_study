@@ -91,6 +91,7 @@
   year        = {2018},
   url         = {https://www.ti.com/lit/pdf/slua618},
   note        = {verified 2026-09-23 (ti.com/lit/pdf/slua618; SLUA618A, March 2017, revised October 2018; gate-drive power V_DRV Q_G f_DRV)},
+  urltitle    = {Fundamentals of MOSFET and IGBT Gate Driver Circuits},
   urlkind     = {pdf}
 }
 
@@ -103,6 +104,7 @@
   year        = {2014},
   url         = {https://www.ti.com/lit/pdf/slva630},
   note        = {verified 2026-09-23 (ti.com/lit/pdf/slva630, "Output Ripple Voltage for Buck Switching Regulator (Rev. A)"; SLVA630A, January 2014, revised October 2014; ripple from the capacitor's charge, ESR and ESL)},
+  urltitle    = {Output Ripple Voltage for Buck Switching Regulator},
   urlkind     = {pdf}
 }
 
@@ -114,7 +116,9 @@
   number      = {SSZTCV6},
   year        = {2024},
   url         = {https://www.ti.com/lit/pdf/ssztcv6},
-  note        = {verified 2026-09-23 (two web-search rounds; ti.com/lit/pdf/ssztcv6, "Technical Article Snubbing the flyback converter Robert Kollman", SSZTCV6, February 2024, a republication of EDN "Power Tips #17"; cited for: the leakage inductance drives the drain above the reflected output voltage until a clamp limits it; the clamp absorbs the average clamp-diode current times the clamp voltage, always more than the leakage energy, "At a Vclamp/Vreset ratio of 1.5, snubber dissipation is almost three times the loss associated with the leakage inductance stored energy", tending to the leakage energy at high clamp voltage; the trade-off between clamp voltage and loss. The closed form in equations.yaml is derived here, not quoted)},
+  note        = {verified 2026-09-23 (two web-search rounds; ti.com/lit/pdf/ssztcv6, "Technical Article Snubbing the flyback converter Robert Kollman", SSZTCV6, February 2024, a republication of EDN "Power Tips #17"; cited for: the leakage inductance drives the drain above the reflected output voltage until a clamp limits it; the clamp absorbs the average clamp-diode current times the clamp voltage, always more than the leakage energy, "the snubber dissipation increases dramatically": "at a Vclamp/Vreset ratio of 1.5 it is almost three times the loss associated with the leakage inductance stored energy" (wording as the CI check reads it in the PDF), tending to the leakage energy at high clamp voltage; the trade-off between clamp voltage and loss. The closed form in equations.yaml is derived here, not quoted)},
+  urltitle    = {Snubbing the flyback converter},
+  urlquotes   = {at a Vclamp/Vreset ratio of 1.5 it is almost three times the loss associated with the leakage inductance stored energy},
   urlkind     = {pdf}
 }
 
@@ -127,6 +131,7 @@
   year        = {2022},
   url         = {https://www.st.com/resource/en/application_note/an316-tvs-clamping-protection-mode-stmicroelectronics.pdf},
   note        = {verified 2026-09-23 (two web-search rounds; st.com AN316 "TVS clamping protection mode", Rev 6, 14 June 2022, earlier titled "Transil clamping protection mode"; cited for: the clamping voltage at the application current, "VCL typ. = VBR typ. + RD typ." times the peak current; the datasheet VCL is the maximum value for a standard current pulse of peak IPP; RD depends on the pulse duration (read from curves) and VBR rises with temperature; the maximum RD it lists equals (VCL max - VBR max)/IPP)},
+  urltitle    = {TVS clamping protection mode},
   urlkind     = {pdf}
 }
 
@@ -139,6 +144,7 @@
   year        = {2021},
   url         = {https://www.ti.com/lit/pdf/snoa930},
   note        = {verified 2026-09-23 (two web-search rounds: ti.com/lit/pdf/snoa930, "Sensor Design for Inductive Sensing Applications Using LDC"; SNOA930C, March 2015, revised May 2021; the 2015 original, "LDC Sensor Design", is attributed to C. Oberhauser, the author of rev. C was not seen; cited for: parasitic capacitance across the turns, self-resonance frequency where the winding path and the capacitive path are matched, low SRF of many-turn wire-wound inductors, SRF read where the impedance phase crosses 0 deg, sensor frequency kept below 75 % of the SRF)},
+  urltitle    = {Sensor Design for Inductive Sensing Applications Using LDC},
   urlkind     = {pdf}
 }
 
@@ -146,8 +152,50 @@
   title        = {{LTC6101/LTC6101HV}: High Voltage, High-Side Current Sense Amplifier in {SOT-23}},
   organization = {Analog Devices},
   type         = {Data sheet, Rev. I},
-  note         = {verified 2026-09-23 (analog.com product page and data-sheet PDF; V_SENSE is forced across R_IN and the resulting current flows through R_OUT)},
+  note         = {verified 2026-09-23 (analog.com product page and data-sheet PDF; V_SENSE is forced across R_IN and the resulting current flows through R_OUT). Re-verified for Phase 3d in two independent web-search rounds (the vendor host could not be opened from the sandbox; the CI URL check opens it and matches urltitle in the PDF): the current revision is Rev I (the revision table dates it 05/18, a product-page listing 03/12, which is Rev H's date: no year given here); cited also for: the output error due to the amplifier's DC offset voltage, E_OUT(V_OS) = V_OS R_OUT/R_IN, "the DC offset voltage of the amplifier adds directly to the value of the sense voltage", the dominant error at low currents; the output's maximum voltage given as absolute values (absolute maximum 9 V on OUT; 8 V in the electrical characteristics for 12 V to 60 V supplies), not relative to the supply; "Kelvin connection of the IN- and IN+ inputs to the sense resistor should be used in all but the lowest power applications"},
   url          = {https://www.analog.com/media/en/technical-documentation/data-sheets/ltc6101.pdf},
+  urltitle     = {High Voltage, High-Side Current Sense Amplifier in SOT-23},
+  urlquotes    = {adds directly to the value of the sense voltage | should be used in all but the lowest power applications | applications information | maximum output voltage},
+  urlkind      = {pdf}
+}
+
+@manual{ti_ina181,
+  title        = {{INAx181} Bidirectional, Low- and High-Side Voltage Output, Current-Sense Amplifiers},
+  organization = {Texas Instruments},
+  type         = {Data sheet},
+  number       = {SBOS793H},
+  year         = {2023},
+  note         = {verified 2026-09-23 (two independent web-search rounds; ti.com could not be opened from the sandbox; the CI URL check opens it and matches urltitle in the PDF): "INAx181 Bidirectional, Low- and High-Side Voltage Output, Current-Sense Amplifiers" (plural in Rev H; earlier revisions singular), SBOS793H, April 2017, revised November 2023; cited for: four fixed gains, 20, 50, 100 and 200 V/V; the output voltage from the load current, the sense resistor, the gain and the voltage on the REF pin (V_OUT = I_LOAD R_SENSE GAIN + V_REF, its Equation 1; the PDF sets its equations so that they do not extract as text, so the CI check confirms the variables' definitions around them, and the formula is read from those); the output swing to within 30 mV of the supply and 5 mV of ground (maximum); "a large sense resistor maximizes the differential input signal ... and reduces the error contribution of the offset voltage"},
+  url          = {https://www.ti.com/lit/ds/symlink/ina181.pdf},
+  urltitle     = {Bidirectional, Low- and High-Side Voltage Output, Current-Sense Amplifiers},
+  urlquotes    = {is the load current to be monitored | is the gain option of the selected device | is the voltage applied to the REF pin | maximum specified output swing to the positive rail | maximizes the differential input signal},
+  urlkind      = {pdf}
+}
+
+@article{osullivan2012,
+  author  = {O'Sullivan, Marcus},
+  title   = {Optimize High-Current Sensing Accuracy by Improving Pad Layout of Low-Value Shunt Resistors},
+  journal = {Analog Dialogue},
+  volume  = {46},
+  number  = {2},
+  year    = {2012},
+  note    = {verified 2026-09-23 (two independent web-search rounds; analog.com could not be opened from the sandbox; the CI URL check opens it and matches urltitle in the PDF): Analog Dialogue Vol. 46, No. 2, June 2012 web edition 46-06 ("Back Burner"); author Marcus O'Sullivan (not Paul Blanchard, as first assumed); cited for: with very low value resistors, a few milliohms or less, "the resistance of the solder becomes a substantial portion of the sense element resistance and adds significantly to the measurement error"; 4-terminal resistors and Kelvin sensing reduce it; a 4-pad (split-pad) layout for a 2-pad resistor removes the solder joint resistance from the measurement},
+  url     = {https://www.analog.com/media/en/analog-dialogue/volume-46/number-2/articles/optimize-high-current-sensing-accuracy.pdf},
+  urltitle = {Optimize High-Current Sensing Accuracy by Improving Pad Layout of Low-Value Shunt Resistors},
+  urlquotes = {the resistance of the solder becomes a substantial portion of the sense element resistance | removes the solder joint resistance from the measurement},
+  urlkind = {pdf}
+}
+
+@manual{kester_mt002,
+  author       = {Kester, Walt},
+  title        = {What the Nyquist Criterion Means to Your Sampled Data System Design},
+  organization = {Analog Devices},
+  type         = {Tutorial},
+  number       = {MT-002},
+  note         = {verified 2026-09-23 (two independent web-search rounds; analog.com could not be opened from the sandbox; the CI URL check opens it and matches urltitle in the PDF): Analog Devices tutorial MT-002 by Walt Kester (the revision and year are not given here: the evidence split between Rev.A and Rev.0, and 10/08 and 2009); cited for: "the Nyquist bandwidth is defined to be the frequency spectrum from dc to fs/2"; any component outside the Nyquist bandwidth is aliased back into the first Nyquist zone; "an antialiasing filter is used in almost all sampling ADC applications to remove these unwanted signals"},
+  url          = {https://www.analog.com/media/en/training-seminars/tutorials/MT-002.pdf},
+  urltitle     = {What the Nyquist Criterion Means to Your Sampled Data System Design},
+  urlquotes    = {the frequency spectrum from dc to fs/2 | antialiasing filter is used in almost all sampling ADC applications},
   urlkind      = {pdf}
 }
 

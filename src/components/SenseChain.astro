@@ -1,0 +1,88 @@
+---
+/**
+ * <SenseChain /> -- the sense-chain island with labels in the page's language
+ * and presets from the synthetic sense examples. State lives in the URL hash.
+ */
+import SenseIsland from '../tools/SenseChain.tsx';
+import { ui } from '../i18n/ui';
+import { pageLocale } from '../lib/locale';
+import { SENSE_PRESETS, senseValues } from '../lib/sensepresets';
+
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const labels = {
+  kind: t['sc.kind'],
+  kinds: { current: t['sc.current'], voltage: t['sc.voltage'] },
+  presets: t['sc.presets'],
+  range: t['sc.range'],
+  shunt: t['sc.shunt'],
+  amplifier: { current: t['sc.ampCurrent'], voltage: t['sc.ampVoltage'] },
+  adc: t['sc.adc'],
+  optional: t['sc.optional'],
+  results: t['sc.results'],
+  quantity: t['sim.quantity'],
+  value: t['des.value'],
+  equation: t['sim.formula'],
+  gain: t['sc.gain'],
+  vout0: t['sc.vout0'],
+  voutImax: t['sc.voutImax'],
+  voutHi: t['sc.voutHi'],
+  adcUse: t['sc.adcUse'],
+  ifs: t['sc.ifs'],
+  limitAmp: t['sc.limitAmp'],
+  limitAdc: t['sc.limitAdc'],
+  ifloor: t['sc.ifloor'],
+  vsense: t['sc.vsense'],
+  pshunt: t['sc.pshunt'],
+  ios: t['sc.ios'],
+  offsetShare: t['sc.offsetShare'],
+  padError: t['sc.padError'],
+  errorAtImin: t['sc.errorAtImin'],
+  rfilt: t['sc.rfilt'],
+  fc: t['sc.fc'],
+  fN: t['sc.fN'],
+  gainAtNyquist: t['sc.gainAtNyquist'],
+  gainAtFsw: t['sc.gainAtFsw'],
+  noFilter: t['sc.noFilter'],
+  transferChart: t['sc.transferChart'],
+  errorChart: t['sc.errorChart'],
+  current: t['sc.currentAxis'],
+  output: t['sc.outputAxis'],
+  relError: t['sc.relError'],
+  outputCurve: t['sc.outputCurve'],
+  highCurve: t['sc.highCurve'],
+  lowCurve: t['sc.lowCurve'],
+  voutMax: t['sc.voutMax'],
+  voutMin: t['sc.voutMin'],
+  vfs: t['sc.vfs'],
+  imax: t['sc.imax'],
+  imin: t['sc.imin'],
+  offsetCurve: t['sc.offsetCurve'],
+  totalCurve: t['sc.totalCurve'],
+  target: t['sc.target'],
+  noError: t['sc.noError'],
+  invalid: t['sc.invalid'],
+  share: t['sc.share'],
+  warnings: {
+    noRange: t['sc.warn.noRange'],
+    ampClips: t['sc.warn.ampClips'],
+    adcClips: t['sc.warn.adcClips'],
+    floor: t['sc.warn.floor'],
+    burden: t['sc.warn.burden'],
+    shuntPower: t['sc.warn.shuntPower'],
+    offset: t['sc.warn.offset'],
+    pad: t['sc.warn.pad'],
+    combined: t['sc.warn.combined'],
+    aliasing: t['sc.warn.aliasing'],
+  },
+};
+const PRESET_LABEL = { current: t['sc.presetCurrent'], voltage: t['sc.presetVoltage'] };
+const presets = SENSE_PRESETS.map((p) => ({
+  id: p.example,
+  label: PRESET_LABEL[p.kind],
+  kind: p.kind,
+  values: senseValues(p.example),
+}));
+---
+
+<SenseIsland client:only="react" locale={locale} labels={labels} presets={presets} />

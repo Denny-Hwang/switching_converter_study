@@ -152,6 +152,22 @@
       "en": "fixed duty ratio, no regulation, load removed",
       "ko": "고정 듀티비, 레귤레이션 없음, 부하 제거"
     },
+    "offset_only": {
+      "en": "the amplifier's input offset voltage is its only error (no gain error, no bias current)",
+      "ko": "증폭기의 입력 오프셋 전압만 오차로 봄(이득 오차, 바이어스 전류 없음)"
+    },
+    "no_kelvin": {
+      "en": "a two-terminal shunt whose sense connections share the pads and solder joints with the load current (no Kelvin connection)",
+      "ko": "센스 연결이 부하 전류와 같은 패드와 납땜을 공유하는 2단자 션트(켈빈 연결 없음)"
+    },
+    "uniform_sampling": {
+      "en": "uniform sampling at a fixed rate",
+      "ko": "일정한 속도의 균일 샘플링"
+    },
+    "linear_shunt": {
+      "en": "the shunt is a linear resistor: its resistance does not change with the current",
+      "ko": "션트는 선형 저항: 저항값이 전류에 따라 변하지 않음"
+    },
     "fixed_clamp": {
       "en": "a clamp whose voltage does not depend on the power it absorbs (a TVS or Zener clamp)",
       "ko": "흡수하는 전력에 따라 전압이 변하지 않는 클램프(TVS 또는 제너 클램프)"
@@ -383,6 +399,16 @@
       "range": null,
       "scale": "linear"
     },
+    "G_sense": {
+      "latex": "G",
+      "unit": "1",
+      "desc": "fixed voltage gain of a voltage-output current-sense amplifier (V/V)",
+      "range": [
+        1.0,
+        1000.0
+      ],
+      "scale": "log"
+    },
     "G_vd": {
       "latex": "G_{vd}",
       "unit": "V",
@@ -460,6 +486,13 @@
       ],
       "scale": "log"
     },
+    "I_OSeq": {
+      "latex": "I_\\mathrm{OS,eq}",
+      "unit": "A",
+      "desc": "offset-equivalent current: the sensed current whose sense voltage equals the amplifier's offset voltage",
+      "range": null,
+      "scale": "linear"
+    },
     "I_PP": {
       "latex": "I_\\mathrm{PP}",
       "unit": "A",
@@ -489,6 +522,20 @@
         50.0
       ],
       "scale": "log"
+    },
+    "I_meas": {
+      "latex": "I_\\mathrm{meas}",
+      "unit": "A",
+      "desc": "current a shunt reading indicates: the true current seen through the pad resistance and the amplifier's offset",
+      "range": null,
+      "scale": "linear"
+    },
+    "I_min": {
+      "latex": "I_\\mathrm{min}",
+      "unit": "A",
+      "desc": "smallest current a sense chain must resolve",
+      "range": null,
+      "scale": "linear"
     },
     "I_pk": {
       "latex": "I_\\mathrm{pk}",
@@ -742,6 +789,13 @@
       ],
       "scale": "log"
     },
+    "R_filt": {
+      "latex": "R_\\mathrm{filt}",
+      "unit": "Ω",
+      "desc": "resistance an R-C filter's capacitor sees: the Thevenin resistance of the source plus the filter's series resistor",
+      "range": null,
+      "scale": "linear"
+    },
     "R_in": {
       "latex": "R_\\mathrm{in}",
       "unit": "Ω",
@@ -749,6 +803,16 @@
       "range": [
         1.0,
         10000000.0
+      ],
+      "scale": "log"
+    },
+    "R_pad": {
+      "latex": "R_\\mathrm{pad}",
+      "unit": "Ω",
+      "desc": "pad and solder resistance in the sense path of a shunt without a Kelvin connection",
+      "range": [
+        1e-05,
+        0.01
       ],
       "scale": "log"
     },
@@ -890,6 +954,13 @@
       ],
       "scale": "linear"
     },
+    "V_FS": {
+      "latex": "V_\\mathrm{FS}",
+      "unit": "V",
+      "desc": "full-scale input voltage of an ADC",
+      "range": null,
+      "scale": "linear"
+    },
     "V_GS": {
       "latex": "V_\\mathrm{GS}",
       "unit": "V",
@@ -930,10 +1001,41 @@
       ],
       "scale": "log"
     },
+    "V_OS": {
+      "latex": "V_\\mathrm{OS}",
+      "unit": "V",
+      "desc": "input offset voltage of a sense amplifier, with its sign (data sheets give its largest magnitude)",
+      "range": [
+        1e-06,
+        0.01
+      ],
+      "scale": "log"
+    },
     "V_OUT": {
       "latex": "V_\\mathrm{OUT}",
       "unit": "V",
-      "desc": "output voltage of a current-output sense amplifier across R_OUT",
+      "desc": "output voltage of a current-sense amplifier (across R_OUT for a current-output one)",
+      "range": null,
+      "scale": "linear"
+    },
+    "V_OUThi": {
+      "latex": "V_\\mathrm{OUT,hi}",
+      "unit": "V",
+      "desc": "highest output of a sense amplifier at a current: with the pad resistance, and the offset at the sign that raises the output",
+      "range": null,
+      "scale": "linear"
+    },
+    "V_OUTmax": {
+      "latex": "V_\\mathrm{OUT,max}",
+      "unit": "V",
+      "desc": "largest output voltage a sense amplifier delivers at its supply (data sheet)",
+      "range": null,
+      "scale": "linear"
+    },
+    "V_OUTmin": {
+      "latex": "V_\\mathrm{OUT,min}",
+      "unit": "V",
+      "desc": "lowest output voltage a sense amplifier reaches: its swing to ground (data sheet)",
       "range": null,
       "scale": "linear"
     },
@@ -943,6 +1045,26 @@
       "desc": "reverse voltage across the output diode while the switch is on",
       "range": null,
       "scale": "linear"
+    },
+    "V_REF": {
+      "latex": "V_\\mathrm{REF}",
+      "unit": "V",
+      "desc": "voltage on the REF pin of a voltage-output current-sense amplifier: its output at zero current",
+      "range": [
+        0.0,
+        5.0
+      ],
+      "scale": "linear"
+    },
+    "V_SENSE": {
+      "latex": "V_\\mathrm{SENSE}",
+      "unit": "V",
+      "desc": "voltage across the sense resistor: the signal, and the burden on the measured circuit",
+      "range": [
+        0.0001,
+        1.0
+      ],
+      "scale": "log"
     },
     "V_c": {
       "latex": "V_c",
@@ -1103,6 +1225,27 @@
       ],
       "scale": "linear"
     },
+    "eps_I": {
+      "latex": "\\varepsilon_I",
+      "unit": "1",
+      "desc": "relative error of a current reading",
+      "range": null,
+      "scale": "linear"
+    },
+    "eps_max": {
+      "latex": "\\varepsilon_\\mathrm{max}",
+      "unit": "1",
+      "desc": "largest acceptable relative error",
+      "range": null,
+      "scale": "linear"
+    },
+    "eps_pad": {
+      "latex": "\\varepsilon_\\mathrm{pad}",
+      "unit": "1",
+      "desc": "relative gain error from pad and solder resistance in the sense path",
+      "range": null,
+      "scale": "linear"
+    },
     "eta": {
       "latex": "\\eta",
       "unit": "1",
@@ -1126,6 +1269,13 @@
         1000000.0
       ],
       "scale": "log"
+    },
+    "f_N": {
+      "latex": "f_N",
+      "unit": "Hz",
+      "desc": "Nyquist frequency: half the sampling rate, the upper edge of the Nyquist bandwidth",
+      "range": null,
+      "scale": "linear"
     },
     "f_c": {
       "latex": "f_c",
@@ -1151,6 +1301,16 @@
       "range": [
         1000.0,
         1000000.0
+      ],
+      "scale": "log"
+    },
+    "f_samp": {
+      "latex": "f_\\mathrm{samp}",
+      "unit": "Hz",
+      "desc": "sampling rate of an ADC",
+      "range": [
+        1.0,
+        1000000000.0
       ],
       "scale": "log"
     },
@@ -1381,7 +1541,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 217
+      "yaml_line": 239
     },
     "boost.ccm.M": {
       "id": "boost.ccm.M",
@@ -1416,7 +1576,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 232
+      "yaml_line": 254
     },
     "buckboost.ccm.M": {
       "id": "buckboost.ccm.M",
@@ -1451,7 +1611,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 247
+      "yaml_line": 269
     },
     "flyback.ccm.M": {
       "id": "flyback.ccm.M",
@@ -1488,7 +1648,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 262
+      "yaml_line": 284
     },
     "forward.ccm.M": {
       "id": "forward.ccm.M",
@@ -1525,7 +1685,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 277
+      "yaml_line": 299
     },
     "forward.reset.Dmax": {
       "id": "forward.reset.Dmax",
@@ -1558,7 +1718,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 292
+      "yaml_line": 314
     },
     "buck.ripple.iL": {
       "id": "buck.ripple.iL",
@@ -1601,7 +1761,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 310
+      "yaml_line": 332
     },
     "buck.ripple.iL_pp": {
       "id": "buck.ripple.iL_pp",
@@ -1644,7 +1804,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 324
+      "yaml_line": 346
     },
     "K.def": {
       "id": "K.def",
@@ -1680,7 +1840,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 341
+      "yaml_line": 363
     },
     "Kcrit.buck": {
       "id": "Kcrit.buck",
@@ -1716,7 +1876,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 354
+      "yaml_line": 376
     },
     "Kcrit.boost": {
       "id": "Kcrit.boost",
@@ -1752,7 +1912,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 367
+      "yaml_line": 389
     },
     "Kcrit.buckboost": {
       "id": "Kcrit.buckboost",
@@ -1788,7 +1948,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 382
+      "yaml_line": 404
     },
     "Kcrit.flyback": {
       "id": "Kcrit.flyback",
@@ -1826,7 +1986,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 395
+      "yaml_line": 417
     },
     "L.crit": {
       "id": "L.crit",
@@ -1866,7 +2026,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 410
+      "yaml_line": 432
     },
     "buck.dcm.M": {
       "id": "buck.dcm.M",
@@ -1904,7 +2064,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 428
+      "yaml_line": 450
     },
     "boost.dcm.M": {
       "id": "boost.dcm.M",
@@ -1942,7 +2102,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 443
+      "yaml_line": 465
     },
     "buckboost.dcm.M": {
       "id": "buckboost.dcm.M",
@@ -1980,7 +2140,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 458
+      "yaml_line": 480
     },
     "flyback.dcm.M": {
       "id": "flyback.dcm.M",
@@ -2018,7 +2178,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 473
+      "yaml_line": 495
     },
     "dcm.P_in": {
       "id": "dcm.P_in",
@@ -2062,7 +2222,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 493
+      "yaml_line": 515
     },
     "lfr.R_in": {
       "id": "lfr.R_in",
@@ -2104,7 +2264,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 509
+      "yaml_line": 531
     },
     "flyback.V_crit": {
       "id": "flyback.V_crit",
@@ -2146,7 +2306,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 525
+      "yaml_line": 547
     },
     "flyback.Vds_off": {
       "id": "flyback.Vds_off",
@@ -2186,7 +2346,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 539
+      "yaml_line": 561
     },
     "flyback.Vds_clamped": {
       "id": "flyback.Vds_clamped",
@@ -2228,7 +2388,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 553
+      "yaml_line": 575
     },
     "flyback.diode.VR": {
       "id": "flyback.diode.VR",
@@ -2265,7 +2425,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 567
+      "yaml_line": 589
     },
     "flyback.IM": {
       "id": "flyback.IM",
@@ -2307,7 +2467,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 579
+      "yaml_line": 601
     },
     "flyback.ripple.iM": {
       "id": "flyback.ripple.iM",
@@ -2347,7 +2507,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 595
+      "yaml_line": 617
     },
     "flyback.ripple.v": {
       "id": "flyback.ripple.v",
@@ -2391,7 +2551,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 609
+      "yaml_line": 631
     },
     "flyback.Ipk.dcm": {
       "id": "flyback.Ipk.dcm",
@@ -2431,7 +2591,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 625
+      "yaml_line": 647
     },
     "flyback.leak.E": {
       "id": "flyback.leak.E",
@@ -2465,7 +2625,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 642
+      "yaml_line": 664
     },
     "flyback.leak.P": {
       "id": "flyback.leak.P",
@@ -2500,7 +2660,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 656
+      "yaml_line": 678
     },
     "flyback.V_OR": {
       "id": "flyback.V_OR",
@@ -2537,7 +2697,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 670
+      "yaml_line": 692
     },
     "clamp.Vds": {
       "id": "clamp.Vds",
@@ -2571,7 +2731,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 684
+      "yaml_line": 706
     },
     "clamp.t_reset": {
       "id": "clamp.t_reset",
@@ -2609,7 +2769,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 698
+      "yaml_line": 720
     },
     "clamp.P": {
       "id": "clamp.P",
@@ -2650,7 +2810,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 713
+      "yaml_line": 735
     },
     "clamp.rcd.V": {
       "id": "clamp.rcd.V",
@@ -2692,7 +2852,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 728
+      "yaml_line": 750
     },
     "tvs.R_D": {
       "id": "tvs.R_D",
@@ -2728,7 +2888,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 742
+      "yaml_line": 764
     },
     "tvs.V_clamp": {
       "id": "tvs.V_clamp",
@@ -2764,7 +2924,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 756
+      "yaml_line": 778
     },
     "flyback.V_ceiling": {
       "id": "flyback.V_ceiling",
@@ -2803,7 +2963,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 769
+      "yaml_line": 791
     },
     "dcm.ring.f": {
       "id": "dcm.ring.f",
@@ -2837,7 +2997,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 783
+      "yaml_line": 805
     },
     "loss.cond": {
       "id": "loss.cond",
@@ -2871,7 +3031,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 797
+      "yaml_line": 819
     },
     "loss.sw.cap": {
       "id": "loss.sw.cap",
@@ -2909,7 +3069,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 809
+      "yaml_line": 831
     },
     "loss.gate": {
       "id": "loss.gate",
@@ -2945,7 +3105,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 821
+      "yaml_line": 843
     },
     "loss.diode": {
       "id": "loss.diode",
@@ -2983,7 +3143,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 835
+      "yaml_line": 857
     },
     "loss.steinmetz": {
       "id": "loss.steinmetz",
@@ -3027,7 +3187,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 847
+      "yaml_line": 869
     },
     "loss.core": {
       "id": "loss.core",
@@ -3061,7 +3221,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 865
+      "yaml_line": 887
     },
     "mag.L_from_AL": {
       "id": "mag.L_from_AL",
@@ -3099,7 +3259,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 881
+      "yaml_line": 903
     },
     "mag.AL_gap": {
       "id": "mag.AL_gap",
@@ -3146,7 +3306,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 8,
-      "yaml_line": 895
+      "yaml_line": 917
     },
     "mag.B_pk": {
       "id": "mag.B_pk",
@@ -3189,7 +3349,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 913
+      "yaml_line": 935
     },
     "mag.dB_faraday": {
       "id": "mag.dB_faraday",
@@ -3231,7 +3391,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 927
+      "yaml_line": 949
     },
     "src.Pmax": {
       "id": "src.Pmax",
@@ -3265,7 +3425,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 946
+      "yaml_line": 968
     },
     "src.cv_power": {
       "id": "src.cv_power",
@@ -3301,7 +3461,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 960
+      "yaml_line": 982
     },
     "src.cv_extraction": {
       "id": "src.cv_extraction",
@@ -3335,7 +3495,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 975
+      "yaml_line": 997
     },
     "lfr.Vg": {
       "id": "lfr.Vg",
@@ -3373,7 +3533,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 991
+      "yaml_line": 1013
     },
     "lfr.eta": {
       "id": "lfr.eta",
@@ -3409,7 +3569,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1006
+      "yaml_line": 1028
     },
     "lfr.Vg_power": {
       "id": "lfr.Vg_power",
@@ -3449,7 +3609,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 1021
+      "yaml_line": 1043
     },
     "sense.current_out_monitor": {
       "id": "sense.current_out_monitor",
@@ -3487,7 +3647,307 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1037
+      "yaml_line": 1059
+    },
+    "sense.burden": {
+      "id": "sense.burden",
+      "title": "Voltage across a current-sense resistor",
+      "title_ko": "전류 센스 저항 양단 전압",
+      "latex": "V_\\mathrm{SENSE} = I_\\mathrm{SENSE} R_\\mathrm{SENSE}",
+      "lhs": "V_SENSE",
+      "expr": "I_SENSE*R_SENSE",
+      "relation": "eq",
+      "variables": [
+        "I_SENSE",
+        "R_SENSE"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_SENSE": "sensed current",
+        "R_SENSE": "sense resistor"
+      },
+      "assumptions": [
+        "linear_shunt"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the signal the amplifier sees, and the burden: the voltage the shunt takes from the circuit it measures; the shunt dissipates the current times this voltage",
+      "notes_ko": "증폭기가 보는 신호이자, 션트가 측정 대상 회로에서 빼앗는 전압(부담 전압); 션트는 전류와 이 전압의 곱만큼 소산한다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 2 (Basic Laws: Ohm's law)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/sensing.py",
+      "n_tests": 7,
+      "yaml_line": 1073
+    },
+    "sense.voltage_out_monitor": {
+      "id": "sense.voltage_out_monitor",
+      "title": "Output of a fixed-gain voltage-output current-sense amplifier",
+      "title_ko": "고정 이득 전압 출력형 전류 센스 증폭기의 출력",
+      "latex": "V_\\mathrm{OUT} = G I_\\mathrm{SENSE} R_\\mathrm{SENSE} + V_\\mathrm{REF}",
+      "lhs": "V_OUT",
+      "expr": "G_sense*I_SENSE*R_SENSE + V_REF",
+      "relation": "eq",
+      "variables": [
+        "G_sense",
+        "I_SENSE",
+        "R_SENSE",
+        "V_REF"
+      ],
+      "constants": [],
+      "symbols": {
+        "G_sense": "fixed voltage gain",
+        "I_SENSE": "sensed current",
+        "R_SENSE": "sense resistor",
+        "V_REF": "voltage on the REF pin"
+      },
+      "assumptions": [
+        "ideal_amplifier"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the amplifier multiplies the sense voltage by its gain and adds the REF voltage, so a current of either sign swings the output either side of $V_\\mathrm{REF}$; the output cannot quite reach the supply rails",
+      "notes_ko": "증폭기가 센스 전압에 이득을 곱하고 REF 전압을 더하므로, 전류의 부호에 따라 출력이 $V_\\mathrm{REF}$ 위아래로 움직인다; 출력은 전원 레일까지 완전히 올라가지 못한다",
+      "cites": [
+        {
+          "key": "ti_ina181",
+          "where": "Equation 1, from its definitions of the load current, the sense resistor, the gain and the REF voltage"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/sensing.py",
+      "n_tests": 8,
+      "yaml_line": 1087
+    },
+    "sense.offset_current": {
+      "id": "sense.offset_current",
+      "title": "Current equivalent to a sense amplifier's input offset voltage",
+      "title_ko": "센스 증폭기의 입력 오프셋 전압에 해당하는 전류",
+      "latex": "I_\\mathrm{OS,eq} = \\frac{V_\\mathrm{OS}}{R_\\mathrm{SENSE}}",
+      "lhs": "I_OSeq",
+      "expr": "V_OS/R_SENSE",
+      "relation": "eq",
+      "variables": [
+        "R_SENSE",
+        "V_OS"
+      ],
+      "constants": [],
+      "symbols": {
+        "R_SENSE": "sense resistor",
+        "V_OS": "input offset voltage"
+      },
+      "assumptions": [
+        "offset_only"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the offset adds directly to the sense voltage, so the output reads it as this current: the error floor at small currents; a larger sense resistor lowers it",
+      "notes_ko": "오프셋이 센스 전압에 그대로 더해지므로 출력은 이를 이 전류로 읽는다: 작은 전류에서의 오차 하한; 센스 저항이 클수록 작아진다",
+      "cites": [
+        {
+          "key": "adi_ltc6101",
+          "where": "Applications Information: output error due to the amplifier's DC offset voltage"
+        },
+        {
+          "key": "ti_ina181",
+          "where": "selecting the current-sense resistor"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/sensing.py",
+      "n_tests": 7,
+      "yaml_line": 1102
+    },
+    "sense.pad_error": {
+      "id": "sense.pad_error",
+      "title": "Gain error from pad and solder resistance in a shunt's sense path",
+      "title_ko": "션트 센스 경로의 패드와 납땜 저항에 의한 이득 오차",
+      "latex": "\\varepsilon_\\mathrm{pad} = \\frac{R_\\mathrm{pad}}{R_\\mathrm{SENSE}}",
+      "lhs": "eps_pad",
+      "expr": "R_pad/R_SENSE",
+      "relation": "eq",
+      "variables": [
+        "R_SENSE",
+        "R_pad"
+      ],
+      "constants": [],
+      "symbols": {
+        "R_SENSE": "sense resistor",
+        "R_pad": "pad and solder resistance in the sense path"
+      },
+      "assumptions": [
+        "no_kelvin"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the sense connections see the current through $R_\\mathrm{SENSE} + R_\\mathrm{pad}$, so the reading is high by this fraction, which grows as the shunt's value falls; a Kelvin connection takes $R_\\mathrm{pad}$ out of the sense path",
+      "notes_ko": "센스 연결이 $R_\\mathrm{SENSE} + R_\\mathrm{pad}$에 흐르는 전류를 보므로 측정값이 이 비율만큼 크게 나오며, 션트 값이 작을수록 커진다; 켈빈 연결은 $R_\\mathrm{pad}$를 센스 경로에서 뺀다",
+      "cites": [
+        {
+          "key": "osullivan2012",
+          "where": "solder resistance of milliohm shunts; Kelvin and split-pad sensing; derived here"
+        },
+        {
+          "key": "adi_ltc6101",
+          "where": "Kelvin connection of the inputs to the sense resistor"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/sensing.py",
+      "n_tests": 7,
+      "yaml_line": 1118
+    },
+    "sense.reading": {
+      "id": "sense.reading",
+      "title": "Current a shunt reading indicates, with the pad resistance and the offset",
+      "title_ko": "패드 저항과 오프셋을 포함한 션트 측정값이 나타내는 전류",
+      "latex": "I_\\mathrm{meas} = \\frac{I_\\mathrm{SENSE} \\left(R_\\mathrm{SENSE} + R_\\mathrm{pad}\\right)}{R_\\mathrm{SENSE}} + \\frac{V_\\mathrm{OS}}{R_\\mathrm{SENSE}}",
+      "lhs": "I_meas",
+      "expr": "I_SENSE*(R_SENSE + R_pad)/R_SENSE + V_OS/R_SENSE",
+      "relation": "eq",
+      "variables": [
+        "I_SENSE",
+        "R_SENSE",
+        "R_pad",
+        "V_OS"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_SENSE": "true current",
+        "R_SENSE": "sense resistor",
+        "R_pad": "pad and solder resistance in the sense path (0 with a Kelvin connection)",
+        "V_OS": "input offset voltage, with its sign"
+      },
+      "assumptions": [
+        "offset_only"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the amplifier sees $I_\\mathrm{SENSE} (R_\\mathrm{SENSE} + R_\\mathrm{pad}) + V_\\mathrm{OS}$ and treats it as $I_\\mathrm{meas} R_\\mathrm{SENSE}$, so its output is the output equation taken at $I_\\mathrm{meas}$; with the offset's sign that raises it, this bounds the output from above, with the other sign from below",
+      "notes_ko": "증폭기는 $I_\\mathrm{SENSE} (R_\\mathrm{SENSE} + R_\\mathrm{pad}) + V_\\mathrm{OS}$를 보고 이를 $I_\\mathrm{meas} R_\\mathrm{SENSE}$로 취급하므로, 출력은 $I_\\mathrm{meas}$에서의 출력 식이다; 출력을 높이는 부호의 오프셋이면 출력의 상한을, 반대 부호면 하한을 준다",
+      "cites": [
+        {
+          "key": "adi_ltc6101",
+          "where": "Applications Information: output error due to the amplifier's DC offset voltage; derived here"
+        },
+        {
+          "key": "osullivan2012",
+          "where": "solder resistance of milliohm shunts"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/sensing.py",
+      "n_tests": 9,
+      "yaml_line": 1134
+    },
+    "sense.rel_error": {
+      "id": "sense.rel_error",
+      "title": "Relative error of a shunt reading from the offset and the pad resistance",
+      "title_ko": "오프셋과 패드 저항에 의한 션트 측정값의 상대 오차",
+      "latex": "\\varepsilon_I = \\frac{V_\\mathrm{OS}}{I_\\mathrm{SENSE} R_\\mathrm{SENSE}} + \\frac{R_\\mathrm{pad}}{R_\\mathrm{SENSE}}",
+      "lhs": "eps_I",
+      "expr": "V_OS/(I_SENSE*R_SENSE) + R_pad/R_SENSE",
+      "relation": "eq",
+      "variables": [
+        "I_SENSE",
+        "R_SENSE",
+        "R_pad",
+        "V_OS"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_SENSE": "sensed current",
+        "R_SENSE": "sense resistor",
+        "R_pad": "pad and solder resistance in the sense path (0 with a Kelvin connection)",
+        "V_OS": "input offset voltage"
+      },
+      "assumptions": [
+        "offset_only"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the two errors add exactly: the offset's share falls in inverse proportion to the current, so it sets the error at the smallest current, while the pad's share is the same at every current",
+      "notes_ko": "두 오차는 정확히 더해진다: 오프셋에 의한 몫은 전류에 반비례하여 줄어 가장 작은 전류에서의 오차를 정하고, 패드에 의한 몫은 모든 전류에서 같다",
+      "cites": [
+        {
+          "key": "adi_ltc6101",
+          "where": "Applications Information: output error due to the amplifier's DC offset voltage; derived here"
+        },
+        {
+          "key": "osullivan2012",
+          "where": "solder resistance of milliohm shunts"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/sensing.py",
+      "n_tests": 8,
+      "yaml_line": 1152
+    },
+    "sense.filter_R": {
+      "id": "sense.filter_R",
+      "title": "Resistance an R-C filter's capacitor sees behind a current-output sense amplifier",
+      "title_ko": "전류 출력형 센스 증폭기 뒤 R-C 필터의 커패시터가 보는 저항",
+      "latex": "R_\\mathrm{filt} = R_\\mathrm{OUT} + R_f",
+      "lhs": "R_filt",
+      "expr": "R_OUT + R_f",
+      "relation": "eq",
+      "variables": [
+        "R_OUT",
+        "R_f"
+      ],
+      "constants": [],
+      "symbols": {
+        "R_OUT": "output resistor",
+        "R_f": "series resistor of the R-C filter"
+      },
+      "assumptions": [
+        "ideal_amplifier",
+        "first_order_rc"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the amplifier's output is a current source loaded by $R_\\mathrm{OUT}$; its Thevenin equivalent puts $R_\\mathrm{OUT}$ in series with $R_f$, so the capacitor sees both and the corner frequency is lower than $R_f C_f$ alone gives; with no load on the filter the dc output stays $I_\\mathrm{OUT} R_\\mathrm{OUT}$",
+      "notes_ko": "증폭기 출력은 $R_\\mathrm{OUT}$이 부하로 걸린 전류원이다; 테브난 등가로 바꾸면 $R_\\mathrm{OUT}$이 $R_f$와 직렬이 되므로 커패시터는 둘을 함께 보며, 차단 주파수는 $R_f C_f$만으로 계산한 값보다 낮다; 필터에 부하가 없으면 직류 출력은 그대로 $I_\\mathrm{OUT} R_\\mathrm{OUT}$이다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 4 (Circuit Theorems: Thevenin's and Norton's theorems); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/sensing.py",
+      "n_tests": 8,
+      "yaml_line": 1169
+    },
+    "adc.nyquist": {
+      "id": "adc.nyquist",
+      "title": "Nyquist frequency of a sampled signal",
+      "title_ko": "샘플링된 신호의 나이퀴스트 주파수",
+      "latex": "f_N = \\frac{f_\\mathrm{samp}}{2}",
+      "lhs": "f_N",
+      "expr": "f_samp/2",
+      "relation": "eq",
+      "variables": [
+        "f_samp"
+      ],
+      "constants": [],
+      "symbols": {
+        "f_samp": "sampling rate"
+      },
+      "assumptions": [
+        "uniform_sampling",
+        "definition"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the Nyquist bandwidth runs from dc to $f_N$; any component above it aliases back into that band, so an anti-aliasing filter removes it before the ADC",
+      "notes_ko": "나이퀴스트 대역폭은 직류부터 $f_N$까지이다; 그보다 높은 성분은 이 대역으로 되접혀 들어오므로(에일리어싱) ADC 앞의 안티에일리어싱 필터가 제거한다",
+      "cites": [
+        {
+          "key": "kester_mt002",
+          "where": ""
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 7,
+      "yaml_line": 1184
     },
     "def.Ts": {
       "id": "def.Ts",
@@ -3519,7 +3979,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1054
+      "yaml_line": 1200
     },
     "def.V": {
       "id": "def.V",
@@ -3553,7 +4013,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1065
+      "yaml_line": 1211
     },
     "sw.v_avg": {
       "id": "sw.v_avg",
@@ -3588,7 +4048,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1080
+      "yaml_line": 1226
     },
     "vsb.v_off": {
       "id": "vsb.v_off",
@@ -3623,7 +4083,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1094
+      "yaml_line": 1240
     },
     "csb.i_off": {
       "id": "csb.i_off",
@@ -3658,7 +4118,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1108
+      "yaml_line": 1254
     },
     "buck.dcm.D2": {
       "id": "buck.dcm.D2",
@@ -3695,7 +4155,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 7,
-      "yaml_line": 1122
+      "yaml_line": 1268
     },
     "boost.ccm.M_RL": {
       "id": "boost.ccm.M_RL",
@@ -3735,7 +4195,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1138
+      "yaml_line": 1284
     },
     "boost.ccm.eta_RL": {
       "id": "boost.ccm.eta_RL",
@@ -3775,7 +4235,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1152
+      "yaml_line": 1298
     },
     "buck.ss.Gd0": {
       "id": "buck.ss.Gd0",
@@ -3810,7 +4270,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1167
+      "yaml_line": 1313
     },
     "buck.ss.w0": {
       "id": "buck.ss.w0",
@@ -3847,7 +4307,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1181
+      "yaml_line": 1327
     },
     "buck.ss.Q": {
       "id": "buck.ss.Q",
@@ -3886,7 +4346,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1193
+      "yaml_line": 1339
     },
     "boost.ss.Gd0": {
       "id": "boost.ss.Gd0",
@@ -3923,7 +4383,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1205
+      "yaml_line": 1351
     },
     "boost.ss.w0": {
       "id": "boost.ss.w0",
@@ -3962,7 +4422,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1219
+      "yaml_line": 1365
     },
     "boost.ss.Q": {
       "id": "boost.ss.Q",
@@ -4003,7 +4463,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1231
+      "yaml_line": 1377
     },
     "boost.ss.wz": {
       "id": "boost.ss.wz",
@@ -4042,7 +4502,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1243
+      "yaml_line": 1389
     },
     "buckboost.ss.Gd0": {
       "id": "buckboost.ss.Gd0",
@@ -4079,7 +4539,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1257
+      "yaml_line": 1403
     },
     "buckboost.ss.w0": {
       "id": "buckboost.ss.w0",
@@ -4118,7 +4578,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1271
+      "yaml_line": 1417
     },
     "buckboost.ss.Q": {
       "id": "buckboost.ss.Q",
@@ -4159,7 +4619,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1283
+      "yaml_line": 1429
     },
     "buckboost.ss.wz": {
       "id": "buckboost.ss.wz",
@@ -4198,7 +4658,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1295
+      "yaml_line": 1441
     },
     "pwm.d": {
       "id": "pwm.d",
@@ -4232,7 +4692,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1310
+      "yaml_line": 1456
     },
     "loop.T": {
       "id": "loop.T",
@@ -4270,7 +4730,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1325
+      "yaml_line": 1471
     },
     "loop.suppression": {
       "id": "loop.suppression",
@@ -4303,7 +4763,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1339
+      "yaml_line": 1485
     },
     "buck.IL": {
       "id": "buck.IL",
@@ -4341,7 +4801,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1356
+      "yaml_line": 1502
     },
     "ripple.Ipk": {
       "id": "ripple.Ipk",
@@ -4376,7 +4836,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1370
+      "yaml_line": 1516
     },
     "buck.ripple.v": {
       "id": "buck.ripple.v",
@@ -4415,7 +4875,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1383
+      "yaml_line": 1529
     },
     "boost.IL": {
       "id": "boost.IL",
@@ -4455,7 +4915,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1399
+      "yaml_line": 1545
     },
     "boost.ripple.iL": {
       "id": "boost.ripple.iL",
@@ -4496,7 +4956,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1413
+      "yaml_line": 1559
     },
     "boost.ripple.v": {
       "id": "boost.ripple.v",
@@ -4540,7 +5000,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1425
+      "yaml_line": 1571
     },
     "buckboost.V": {
       "id": "buckboost.V",
@@ -4577,7 +5037,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1439
+      "yaml_line": 1585
     },
     "buckboost.IL": {
       "id": "buckboost.IL",
@@ -4617,7 +5077,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1453
+      "yaml_line": 1599
     },
     "buckboost.ripple.iL": {
       "id": "buckboost.ripple.iL",
@@ -4658,7 +5118,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1467
+      "yaml_line": 1613
     },
     "buckboost.ripple.v": {
       "id": "buckboost.ripple.v",
@@ -4702,7 +5162,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1479
+      "yaml_line": 1625
     },
     "buck.Vds": {
       "id": "buck.Vds",
@@ -4736,7 +5196,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1493
+      "yaml_line": 1639
     },
     "boost.Vds": {
       "id": "boost.Vds",
@@ -4771,7 +5231,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1505
+      "yaml_line": 1651
     },
     "buckboost.Vds": {
       "id": "buckboost.Vds",
@@ -4808,7 +5268,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1517
+      "yaml_line": 1663
     },
     "forward.Vds": {
       "id": "forward.Vds",
@@ -4843,7 +5303,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1529
+      "yaml_line": 1675
     },
     "forward.ripple.iL": {
       "id": "forward.ripple.iL",
@@ -4888,7 +5348,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1543
+      "yaml_line": 1689
     },
     "util.buck": {
       "id": "util.buck",
@@ -4923,7 +5383,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1558
+      "yaml_line": 1704
     },
     "util.boost": {
       "id": "util.boost",
@@ -4958,7 +5418,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1572
+      "yaml_line": 1718
     },
     "util.buckboost": {
       "id": "util.buckboost",
@@ -4993,7 +5453,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1586
+      "yaml_line": 1732
     },
     "util.forward": {
       "id": "util.forward",
@@ -5030,7 +5490,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1600
+      "yaml_line": 1746
     },
     "ind.di": {
       "id": "ind.di",
@@ -5067,7 +5527,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1617
+      "yaml_line": 1763
     },
     "cap.dv": {
       "id": "cap.dv",
@@ -5104,7 +5564,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1631
+      "yaml_line": 1777
     },
     "ind.E": {
       "id": "ind.E",
@@ -5139,7 +5599,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1645
+      "yaml_line": 1791
     },
     "cap.E": {
       "id": "cap.E",
@@ -5173,7 +5633,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1657
+      "yaml_line": 1803
     },
     "imp.ZL": {
       "id": "imp.ZL",
@@ -5208,7 +5668,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1669
+      "yaml_line": 1815
     },
     "imp.ZC": {
       "id": "imp.ZC",
@@ -5243,7 +5703,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1683
+      "yaml_line": 1829
     },
     "rc.fc": {
       "id": "rc.fc",
@@ -5277,7 +5737,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1697
+      "yaml_line": 1843
     },
     "rc.gain": {
       "id": "rc.gain",
@@ -5312,7 +5772,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 8,
-      "yaml_line": 1711
+      "yaml_line": 1857
     },
     "fourier.pulse.harm": {
       "id": "fourier.pulse.harm",
@@ -5349,7 +5809,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 8,
-      "yaml_line": 1726
+      "yaml_line": 1872
     },
     "fourier.pulse.rms": {
       "id": "fourier.pulse.rms",
@@ -5383,7 +5843,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1741
+      "yaml_line": 1887
     },
     "passive.f_srf": {
       "id": "passive.f_srf",
@@ -5417,7 +5877,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1753
+      "yaml_line": 1899
     },
     "cap.esr.ripple": {
       "id": "cap.esr.ripple",
@@ -5451,7 +5911,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1767
+      "yaml_line": 1913
     },
     "mag.H_ampere": {
       "id": "mag.H_ampere",
@@ -5487,7 +5947,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1782
+      "yaml_line": 1928
     },
     "mag.B_H": {
       "id": "mag.B_H",
@@ -5524,7 +5984,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1794
+      "yaml_line": 1940
     },
     "xfmr.V2": {
       "id": "xfmr.V2",
@@ -5562,7 +6022,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1807
+      "yaml_line": 1953
     },
     "xfmr.I2": {
       "id": "xfmr.I2",
@@ -5600,7 +6060,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1823
+      "yaml_line": 1969
     }
   }
 }
