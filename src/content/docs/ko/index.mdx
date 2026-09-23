@@ -1,0 +1,43 @@
+---
+title: 스위칭 컨버터를 배우고, 설계하고, 시뮬레이션하기
+description: 스위칭 전력 컨버터를 위한 공개·검증 가능·이중 언어(영어/한국어) 학습 저장소입니다.
+template: splash
+hero:
+  title: 스위칭 컨버터 스터디
+  tagline: 교과서의 변환비를 외우는 단계에서 벗어나, 컨버터를 설계하고 시뮬레이션하고 측정하며 — 측정값이 공식과 다른 이유까지 설명할 수 있도록.
+  actions:
+    - text: 프로젝트 소개
+      link: about/
+      icon: right-arrow
+      variant: primary
+    - text: GitHub 소스
+      link: https://github.com/Denny-Hwang/switching_converter_study
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title="학습 (Learn)" icon="open-book">
+    전압-초 평형(volt-second balance)에서 CCM/DCM, 토폴로지, 자성 부품,
+    손실, 에너지 하베스팅 인터페이스까지. 모든 수식은 하나의 원본 파일에서
+    생성되고 테스트로 검증됩니다.
+  </Card>
+  <Card title="설계 (Design)" icon="setting">
+    컨버터, 자성 부품, 손실 예산, 전류 센싱 체인, 클램프 계산기 — 모두
+    같은 검증된 수식 엔진을 사용합니다.
+  </Card>
+  <Card title="시뮬레이션 (Simulate)" icon="rocket">
+    브라우저에서 동작하는 시간 영역 컨버터 시뮬레이터와, 토폴로지별
+    LTspice·ngspice·CircuitJS 파일.
+  </Card>
+  <Card title="검증 (Verify)" icon="approve-check">
+    유도 과정은 sympy로 재현되고, TypeScript와 Python 구현은 1e-9까지
+    일치하며, 인용과 링크는 CI에서 검사합니다.
+  </Card>
+</CardGrid>
+
+이 사이트는 단계적으로 구축되고 있습니다. 원칙과 로드맵은 [소개](about/)를,
+모든 페이지의 기반이 되는 검증 체인은 [수식 파이프라인 점검](about/equation-pipeline/)을
+참고하세요.

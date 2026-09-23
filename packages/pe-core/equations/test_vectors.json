@@ -1,0 +1,135 @@
+{
+  "_generated_by": "python scripts/gen_equations.py -- DO NOT EDIT",
+  "tolerance_rel": 1e-09,
+  "random_per_equation": 6,
+  "vectors": [
+    {
+      "id": "buck.ccm.M",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5
+      },
+      "value": 0.5
+    },
+    {
+      "id": "buck.ccm.M",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.25
+      },
+      "value": 0.25
+    },
+    {
+      "id": "buck.ccm.M",
+      "source": "random",
+      "inputs": {
+        "D": 0.842069
+      },
+      "value": 0.842069
+    },
+    {
+      "id": "buck.ccm.M",
+      "source": "random",
+      "inputs": {
+        "D": 0.290528
+      },
+      "value": 0.290528
+    },
+    {
+      "id": "buck.ccm.M",
+      "source": "random",
+      "inputs": {
+        "D": 0.457109
+      },
+      "value": 0.457109
+    },
+    {
+      "id": "buck.ccm.M",
+      "source": "random",
+      "inputs": {
+        "D": 0.83574
+      },
+      "value": 0.83574
+    },
+    {
+      "id": "buck.ccm.M",
+      "source": "random",
+      "inputs": {
+        "D": 0.544614
+      },
+      "value": 0.544614
+    },
+    {
+      "id": "buck.ccm.M",
+      "source": "random",
+      "inputs": {
+        "D": 0.215084
+      },
+      "value": 0.215084
+    },
+    {
+      "id": "boost.ccm.M",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.5
+      },
+      "value": 2.0
+    },
+    {
+      "id": "boost.ccm.M",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.75
+      },
+      "value": 4.0
+    },
+    {
+      "id": "boost.ccm.M",
+      "source": "random",
+      "inputs": {
+        "D": 0.131187
+      },
+      "value": 1.1509956688032983
+    },
+    {
+      "id": "boost.ccm.M",
+      "source": "random",
+      "inputs": {
+        "D": 0.566881
+      },
+      "value": 2.3088342926539815
+    },
+    {
+      "id": "boost.ccm.M",
+      "source": "random",
+      "inputs": {
+        "D": 0.84658
+      },
+      "value": 6.518055012384305
+    },
+    {
+      "id": "boost.ccm.M",
+      "source": "random",
+      "inputs": {
+        "D": 0.774635
+      },
+      "value": 4.437246244980364
+    },
+    {
+      "id": "boost.ccm.M",
+      "source": "random",
+      "inputs": {
+        "D": 0.462699
+      },
+      "value": 1.8611541761507981
+    },
+    {
+      "id": "boost.ccm.M",
+      "source": "random",
+      "inputs": {
+        "D": 0.173486
+      },
+      "value": 1.2099008607234722
+    }
+  ]
+}

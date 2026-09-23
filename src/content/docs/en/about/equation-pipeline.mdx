@@ -1,0 +1,32 @@
+---
+title: Equation pipeline check
+description: One equation, rendered from the single source of truth, with its verification badge — and the same engine running in the browser.
+sidebar:
+  order: 2
+---
+
+import Eq from '../../../../components/Eq.astro';
+import PipelinePlot from '../../../../tools/PipelinePlot.tsx';
+
+This page exercises the chain that every later page depends on:
+
+1. `packages/pe-core/equations/equations.yaml` holds the expression, its
+   assumptions, its citation and hand-checked test values.
+2. `python scripts/gen_equations.py` parses it with sympy, generates the
+   LaTeX and the shared test vectors, and fails if a test value disagrees
+   with the expression.
+3. The TypeScript engine is tested against those vectors (1e-9 relative),
+   and every generated formula is rendered by KaTeX in strict mode.
+4. The docs embed the result with `<Eq id="…" />`; nobody types LaTeX.
+
+<Eq id="buck.ccm.M" />
+
+Open the expander under the equation for its assumptions and source; the
+badge links to the parity test.
+
+## The same engine in the browser
+
+The chart below is a React island that calls the TypeScript evaluators for
+the two equations currently in the catalogue and plots them with Plotly.
+
+<PipelinePlot client:only="react" label="Conversion ratio versus duty ratio for the two catalogue equations" xTitle="D" />

@@ -1,0 +1,102 @@
+{
+  "_generated_by": "python scripts/gen_equations.py -- DO NOT EDIT; edit equations.yaml instead",
+  "_source": "packages/pe-core/equations/equations.yaml",
+  "sympy_version": "1.14.0",
+  "schema_version": 1,
+  "assumption_labels": {
+    "ideal": {
+      "en": "ideal (lossless) switches and passive components",
+      "ko": "이상적(무손실) 스위치와 수동 소자"
+    },
+    "ccm": {
+      "en": "continuous conduction mode (CCM)",
+      "ko": "연속 전도 모드(CCM)"
+    },
+    "steady_state": {
+      "en": "periodic steady state",
+      "ko": "주기적 정상상태"
+    },
+    "small_ripple": {
+      "en": "small-ripple approximation",
+      "ko": "소리플 근사(small-ripple approximation)"
+    }
+  },
+  "symbols": {
+    "D": {
+      "latex": "D",
+      "unit": "1",
+      "desc": "duty ratio (switch on-time fraction of T_s)"
+    },
+    "M": {
+      "latex": "M",
+      "unit": "1",
+      "desc": "conversion ratio V/V_g"
+    }
+  },
+  "equations": {
+    "buck.ccm.M": {
+      "id": "buck.ccm.M",
+      "title": "Buck conversion ratio, CCM",
+      "title_ko": "벅(buck) 변환비, CCM",
+      "latex": "M = D",
+      "lhs": "M",
+      "expr": "D",
+      "relation": "eq",
+      "variables": [
+        "D"
+      ],
+      "symbols": {
+        "D": "duty ratio"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "steady_state",
+        "small_ripple"
+      ],
+      "convention": "$M = V/V_g$",
+      "convention_ko": "$M = V/V_g$",
+      "notes": "",
+      "notes_ko": "",
+      "cite": {
+        "key": "erickson2020",
+        "where": "Ch. 2"
+      },
+      "derived_by": null,
+      "n_tests": 8,
+      "yaml_line": 50
+    },
+    "boost.ccm.M": {
+      "id": "boost.ccm.M",
+      "title": "Boost conversion ratio, CCM",
+      "title_ko": "부스트(boost) 변환비, CCM",
+      "latex": "M = \\frac{1}{1 - D}",
+      "lhs": "M",
+      "expr": "1/(1 - D)",
+      "relation": "eq",
+      "variables": [
+        "D"
+      ],
+      "symbols": {
+        "D": "duty ratio"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "steady_state",
+        "small_ripple"
+      ],
+      "convention": "$M = V/V_g$",
+      "convention_ko": "$M = V/V_g$",
+      "notes": "",
+      "notes_ko": "",
+      "cite": {
+        "key": "erickson2020",
+        "where": "Ch. 2"
+      },
+      "derived_by": null,
+      "n_tests": 8,
+      "yaml_line": 64
+    }
+  }
+}

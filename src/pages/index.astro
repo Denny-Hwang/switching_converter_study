@@ -1,0 +1,28 @@
+---
+/**
+ * Root of the site: redirect to the canonical English docs, or to Korean
+ * when the browser prefers Korean. No tracking, no cookies.
+ */
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const en = `${base}/en/`;
+const ko = `${base}/ko/`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Switching Converter Study</title>
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={en} />
+    <script is:inline define:vars={{ en, ko }}>
+      var lang = (navigator.languages && navigator.languages[0]) || navigator.language || '';
+      location.replace(/^ko\b/i.test(lang) ? ko : en);
+    </script>
+    <meta http-equiv="refresh" content={`1; url=${en}`} />
+  </head>
+  <body>
+    <p><a href={en}>English</a> · <a href={ko}>한국어</a></p>
+  </body>
+</html>

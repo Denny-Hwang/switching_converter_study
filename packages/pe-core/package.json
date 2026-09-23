@@ -1,0 +1,20 @@
+{
+  "name": "pe-core",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Power-electronics equation engine: evaluators (parity-checked against Python/sympy vectors), mode detection, and later the time-domain simulator.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./equations/equations.generated.json": "./equations/equations.generated.json",
+    "./equations/test_vectors.json": "./equations/test_vectors.json"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "katex": "^0.18.7",
+    "vitest": "^5.0.1"
+  }
+}

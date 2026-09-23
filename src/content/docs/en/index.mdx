@@ -1,0 +1,43 @@
+---
+title: Learn, design and simulate switching converters
+description: An open, verifiable, bilingual learning repository on switching power converters.
+template: splash
+hero:
+  title: Switching Converter Study
+  tagline: Go from quoting the textbook conversion ratio to designing, simulating and measuring a converter — and explaining why the measurement disagrees with the formula.
+  actions:
+    - text: About this project
+      link: about/
+      icon: right-arrow
+      variant: primary
+    - text: Source on GitHub
+      link: https://github.com/Denny-Hwang/switching_converter_study
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title="Learn" icon="open-book">
+    Theory from volt-second balance to CCM/DCM, topologies, magnetics, losses
+    and energy-harvesting interfaces. Every equation is generated from one
+    source file and checked by tests.
+  </Card>
+  <Card title="Design" icon="setting">
+    Calculators for converters, magnetics, loss budgets, sense chains and
+    clamps, all driven by the same tested equation engine.
+  </Card>
+  <Card title="Simulate" icon="rocket">
+    An in-browser time-domain converter simulator, plus LTspice, ngspice and
+    CircuitJS files for every topology.
+  </Card>
+  <Card title="Verify" icon="approve-check">
+    Derivations are reproduced in sympy, TypeScript and Python agree to
+    1e-9, citations and links are checked in CI.
+  </Card>
+</CardGrid>
+
+This site is being built in phases. See [About](about/) for the principles
+and the roadmap, and [the equation pipeline check](about/equation-pipeline/)
+for the verification chain that every page builds on.

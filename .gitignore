@@ -1,0 +1,22 @@
+# Maintainer-local privacy denylist (see PRIVACY_RULES.md). NEVER commit.
+.private/
+
+# Node / Astro
+node_modules/
+dist/
+.astro/
+_linkcheck/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+build/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json

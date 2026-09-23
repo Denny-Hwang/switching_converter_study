@@ -1,0 +1,30 @@
+# lychee.toml -- link check of the BUILT site (CLAUDE.md rule 3).
+#
+# CI (job "site") mirrors dist/ under the Pages base path and runs:
+#   lychee --config lychee.toml --root-dir "$PWD/_linkcheck" _linkcheck
+# so root-relative links such as /switching_converter_study/en/ resolve to
+# local files. Any dead internal or external link fails the build.
+
+max_concurrency = 8
+max_retries = 3
+retry_wait_time = 4
+timeout = 30
+max_redirects = 10
+no_progress = true
+user_agent = "Mozilla/5.0 (compatible; switching-converter-study-linkcheck/1.0; +https://github.com/Denny-Hwang/switching_converter_study)"
+
+# 429 = rate limited: the URL exists but the host throttles CI runners.
+accept = ["200..=299", "429"]
+
+# Only web links and local files; ignore mailto:, data:, etc.
+scheme = ["https", "http", "file"]
+
+exclude = [
+  # Our own deployed site: the local mirror is checked instead (and the site
+  # may not be deployed yet when a pull request is built).
+  '^https://denny-hwang\.github\.io/switching_converter_study',
+  # Links into this repository's default branch (the <Eq> badges): a file
+  # added by a pull request only exists there after merge. vitest
+  # (packages/pe-core/test/repo-links.test.ts) checks the targets instead.
+  '^https://github\.com/Denny-Hwang/switching_converter_study/(blob|tree|edit)/',
+]
