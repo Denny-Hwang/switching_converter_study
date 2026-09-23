@@ -43,7 +43,7 @@ export const CORES: readonly CoreEntry[] = [
         { g: 0.5e-3, AL: 151e-9 },
         { g: 1.0e-3, AL: 91e-9 },
       ],
-      // the coil former's winding cross-section A_N and average length of turn l_N
+      // the coil former's winding cross-section A_N and average length of turn l_N (B66208, one section)
       WA: 61e-6,
       MLT: 50e-3,
     },
@@ -65,6 +65,7 @@ export const CORES: readonly CoreEntry[] = [
         { g: 0.5e-3, AL: 201e-9 },
         { g: 1.0e-3, AL: 124e-9 },
       ],
+      // the coil former's A_N and l_N (B66359, one section)
       WA: 97e-6,
       MLT: 52.8e-3,
     },

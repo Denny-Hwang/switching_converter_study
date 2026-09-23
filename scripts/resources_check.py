@@ -461,14 +461,20 @@ def dump(key: str, targets: list[dict]) -> bool:
     if t is None:
         print(f"--- {key}: no bib entry with a URL", flush=True)
         return False
-    for f in attempts(t["url"]):
+    fetches = list(attempts(t["url"]))
+    if not any(f.status == 200 and b"%PDF" in f.body[:1024] for f in fetches):
+        # the host does not answer this runner: its latest Internet Archive capture, as the check falls back to
+        if found := latest_capture(t["url"]):
+            stamp, original = found
+            fetches.append(_slow_get(f"https://web.archive.org/web/{stamp}id_/{original}", f"wayback capture {stamp[:8]}"))
+    for f in fetches:
         if f.status == 200 and b"%PDF" in f.body[:1024]:
             _, pages = pdf_texts(f.body, MAX_PAGES)
             print(f"--- {key}: {t['url']} ({f.how}, {len(pages)} pages read)", flush=True)
             for i, text in enumerate(pages, 1):
                 print(f"--- {key}: page {i}\n{text}", flush=True)
             return True
-    print(f"--- {key}: no PDF from {t['url']}", flush=True)
+    print(f"--- {key}: no PDF from {t['url']} ({'; '.join(f.describe() for f in fetches)})", flush=True)
     return False
 
 
