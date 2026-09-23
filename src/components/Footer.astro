@@ -1,0 +1,15 @@
+---
+/**
+ * Starlight's footer, followed by the site's one statement about example
+ * numbers (PRIVACY_RULES.md): every page says it once, here, instead of a
+ * "synthetic" label on every table and preset.
+ */
+import Default from '@astrojs/starlight/components/Footer.astro';
+import { ui } from '../i18n/ui';
+import { pageLocale } from '../lib/locale';
+
+const t = ui[pageLocale(Astro)];
+---
+
+<Default><slot /></Default>
+<p class="pe-footnote">{t['site.synthetic']}</p>

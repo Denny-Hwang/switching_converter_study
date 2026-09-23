@@ -26,9 +26,9 @@ import Quiz from '../../../../components/Quiz.astro';
 
 ### From buck-boost to flyback
 
-Replace the buck-boost's inductor by two coupled windings on one core, with
-turns ratio 1:n, where $n$ is the secondary turns divided by the primary
-turns, and the result is the flyback converter.
+The flyback converter replaces the buck-boost's inductor by two coupled
+windings on one core, with turns ratio 1:n, where $n$ is the secondary turns
+divided by the primary turns.
 The magnetizing inductance $L_M$, referred to the primary, stores energy
 while the switch is on; the secondary winding and the diode deliver it to
 the output while the switch is off. The windings isolate the output and
@@ -79,7 +79,7 @@ on top of the output voltage:
 <Eq id="flyback.diode.VR" />
 
 A smaller $n$ lowers the diode stress but raises the reflected voltage on
-the switch; the turns ratio trades one stress for the other.
+the switch.
 
 ### DCM peak current and the loss-free resistor
 
@@ -127,7 +127,7 @@ acts as a constant-voltage sink. At that point the switch blocks
 
 ## Worked example
 
-Three synthetic flybacks: one in CCM with a resistive load, one in DCM, and
+Three flyback examples: one in CCM with a resistive load, one in DCM, and
 one charging a fixed output at a fixed duty ratio.
 
 <Worked example="flyback-ccm" show={['V_g', 'n', 'D', 'f_s', 'L_M', 'R', 'V_D', 'M', 'V', 'K', 'K_crit', 'V_DS', 'V_R']} />

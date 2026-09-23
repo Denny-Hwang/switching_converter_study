@@ -8,11 +8,10 @@ sidebar:
 import Derivation from '../../../../components/Derivation.astro';
 
 Each section below is generated from a script in `python/pe_core/derive/`.
-The same script runs under `pytest`, which fails unless the derived result
-simplifies to exactly the expression stored in `equations.yaml`, that is,
-unless the symbolic difference is zero. The prose and headings are
-written by hand; every formula on this page is printed by sympy from those
-scripts.
+The same script runs under `pytest`, which fails unless the symbolic
+difference between the derived result and the expression stored in
+`equations.yaml` simplifies to zero. The prose and headings are written by
+hand; every formula on this page is printed by sympy from those scripts.
 
 ## Refreshers: element laws, impedance, Fourier series, magnetics, the ideal transformer
 

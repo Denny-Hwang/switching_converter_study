@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic flyback loss-budget example (round numbers, not a real design or real parts)"
-label_ko: "합성 플라이백 손실 예산 예제 (단순한 어림수이며 실제 설계나 실제 부품이 아님)"
+label: "Flyback loss-budget example"
+label_ko: "플라이백 손실 예산 예제"
 # Loss-budget preset (see loss-buck.yaml); 1:n transformer, n = N_s/N_p, and a
 # leakage inductance L_lk referred to the primary.
 params:

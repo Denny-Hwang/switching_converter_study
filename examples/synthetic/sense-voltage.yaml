@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic sense chain with a fixed-gain voltage-output amplifier and a Kelvin-connected shunt (round numbers, not a real design)"
-label_ko: "고정 이득 전압 출력형 증폭기와 켈빈 연결 션트를 쓰는 합성 센스 체인 (단순한 어림수이며 실제 설계가 아님)"
+label: "Example sense chain: fixed-gain voltage-output amplifier, Kelvin-connected shunt"
+label_ko: "센스 체인 예제: 고정 이득 전압 출력형 증폭기, 켈빈 연결 션트"
 # SenseChain preset: I_SENSE is the largest current; the shunt is Kelvin-connected (R_pad = 0).
 params:
   I_SENSE: 5

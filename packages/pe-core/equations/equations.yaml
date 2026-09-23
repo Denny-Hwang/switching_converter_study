@@ -55,7 +55,7 @@ symbol_table:
   V_SENSE: {latex: "V_\\mathrm{SENSE}", unit: "V", desc: "voltage across the sense resistor: the signal, and the burden on the measured circuit", meaning: "voltage across the shunt", meaning_ko: "션트 양단 전압", range: [1.0e-4, 1], scale: log}
   G_sense: {latex: "G", unit: "1", desc: "fixed voltage gain of a voltage-output current-sense amplifier (V/V)", meaning: "amplifier gain", meaning_ko: "증폭기 이득(gain)", range: [1, 1000], scale: log}
   V_REF: {latex: "V_\\mathrm{REF}", unit: "V", desc: "voltage on the REF pin of a voltage-output current-sense amplifier: its output at zero current", meaning: "REF-pin voltage", meaning_ko: "REF 핀 전압", range: [0, 5]}
-  V_OS: {latex: "V_\\mathrm{OS}", unit: "V", sign: real, desc: "input offset voltage of a sense amplifier, with its sign (data sheets give its largest magnitude)", meaning: "amplifier input offset", meaning_ko: "증폭기 입력 오프셋 전압(offset)", range: [1.0e-6, 1.0e-2], scale: log}
+  V_OS: {latex: "V_\\mathrm{OS}", unit: "V", sign: real, desc: "input offset voltage of a sense amplifier, with its sign (data sheets give its largest magnitude)", meaning: "amplifier input offset", meaning_ko: "증폭기 입력 오프셋 전압", range: [1.0e-6, 1.0e-2], scale: log}
   I_OSeq: {latex: "I_\\mathrm{OS,eq}", unit: "A", desc: "offset-equivalent current: the sensed current whose sense voltage equals the amplifier's offset voltage", meaning: "offset-equivalent current", meaning_ko: "오프셋 등가 전류"}
   R_pad: {latex: "R_\\mathrm{pad}", unit: "Ω", desc: "pad and solder resistance in the sense path of a shunt without a Kelvin connection", meaning: "pad and solder resistance", meaning_ko: "패드·납땜 저항", range: [1.0e-5, 1.0e-2], scale: log}
   eps_pad: {latex: "\\varepsilon_\\mathrm{pad}", unit: "1", desc: "relative gain error from pad and solder resistance in the sense path", meaning: "error from pad resistance", meaning_ko: "패드 저항에 의한 오차"}
@@ -63,7 +63,7 @@ symbol_table:
   f_N: {latex: "f_N", unit: "Hz", desc: "Nyquist frequency: half the sampling rate, the upper edge of the Nyquist bandwidth", meaning: "Nyquist frequency", meaning_ko: "나이퀴스트 주파수(Nyquist frequency)"}
   I_min: {latex: "I_\\mathrm{min}", unit: "A", desc: "smallest current a sense chain must resolve", meaning: "smallest current to measure", meaning_ko: "측정할 최소 전류"}
   V_OUTmax: {latex: "V_\\mathrm{OUT,max}", unit: "V", desc: "largest output voltage a sense amplifier delivers at its supply (data sheet)", meaning: "amplifier's largest output", meaning_ko: "증폭기 최대 출력"}
-  V_FS: {latex: "V_\\mathrm{FS}", unit: "V", desc: "full-scale input voltage of an ADC", meaning: "ADC full-scale input", meaning_ko: "ADC 풀스케일(full scale) 입력"}
+  V_FS: {latex: "V_\\mathrm{FS}", unit: "V", desc: "full-scale input voltage of an ADC", meaning: "ADC full-scale input", meaning_ko: "ADC 풀스케일 입력"}
   eps_max: {latex: "\\varepsilon_\\mathrm{max}", unit: "1", desc: "largest acceptable relative error", meaning: "relative error target (0.01 = 1 %)", meaning_ko: "상대 오차 목표(0.01 = 1 %)"}
   V_OUTmin: {latex: "V_\\mathrm{OUT,min}", unit: "V", desc: "lowest output voltage a sense amplifier reaches: its swing to ground (data sheet)", meaning: "amplifier's lowest output", meaning_ko: "증폭기 최저 출력"}
   eps_I: {latex: "\\varepsilon_I", unit: "1", desc: "relative error of a current reading", meaning: "relative error of the reading", meaning_ko: "측정값의 상대 오차"}
@@ -71,7 +71,7 @@ symbol_table:
   V_OUThi: {latex: "V_\\mathrm{OUT,hi}", unit: "V", desc: "highest output of a sense amplifier at a current: with the pad resistance, and the offset at the sign that raises the output", meaning: "highest output (worst case)", meaning_ko: "최대 출력(최악 조건)"}
   R_filt: {latex: "R_\\mathrm{filt}", unit: "Ω", desc: "resistance an R-C filter's capacitor sees: the Thevenin resistance of the source plus the filter's series resistor", meaning: "resistance the filter capacitor sees", meaning_ko: "필터 커패시터가 보는 저항"}
   # --- currents ------------------------------------------------------------
-  Delta_i_L: {latex: "\\Delta i_L", unit: "A", desc: "inductor current ripple, HALF of peak-to-peak (Erickson convention)", meaning: "inductor ripple, half peak-to-peak", meaning_ko: "인덕터 전류 리플(ripple), 피크-피크의 절반", range: [0.001, 10], scale: log}
+  Delta_i_L: {latex: "\\Delta i_L", unit: "A", desc: "inductor current ripple, HALF of peak-to-peak (Erickson convention)", meaning: "inductor ripple, half peak-to-peak", meaning_ko: "인덕터 전류 리플, 피크-피크의 절반", range: [0.001, 10], scale: log}
   Delta_i_pp: {latex: "\\Delta i_{L,\\mathrm{pp}}", unit: "A", desc: "inductor current ripple, peak-to-peak", meaning: "inductor ripple, peak-to-peak", meaning_ko: "인덕터 전류 리플, 피크-피크"}
   I_L: {latex: "I_L", unit: "A", desc: "dc (average) inductor current", meaning: "dc inductor current", meaning_ko: "인덕터 직류 전류", range: [0.001, 100], scale: log}
   I_M: {latex: "I_M", unit: "A", desc: "dc (average) magnetizing current referred to the primary", meaning: "dc magnetizing current", meaning_ko: "자화 직류 전류(magnetizing current)", range: [0.001, 100], scale: log}

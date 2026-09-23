@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic fixed-duty-ratio flyback charging a fixed output from a current-limited source (round numbers, not a real design)"
-label_ko: "전류 제한 전원으로 고정 출력을 충전하는 고정 듀티비 합성 플라이백 (단순한 어림수이며 실제 설계가 아님)"
+label: "Example fixed-duty-ratio flyback charging a fixed output from a current-limited source"
+label_ko: "전류 제한 전원으로 고정 출력을 충전하는 고정 듀티비 플라이백 예제"
 params:
   V: 5
   V_D: 0.5

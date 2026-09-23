@@ -28,7 +28,7 @@ import Quiz from '../../../../components/Quiz.astro';
 실제 인덕터에는 권선의 저항이 있고
 <Cite key="erickson2020" where="Ch. 3" />, 실제 커패시터에는 등가 직렬
 저항(equivalent series resistance, ESR)이 있습니다 <Cite key="ti_slva630" />.
-저항에 전류가 흐르면 그 실효값의 제곱에 비례하는 전력이 소산됩니다
+저항에 전류가 흐르면 그 실효값의 제곱에 비례하는 전력이 소산(dissipation)됩니다
 <Cite key="erickson2020" where="Ch. 3" />.
 
 <Eq id="loss.cond" />
@@ -62,7 +62,7 @@ import Quiz from '../../../../components/Quiz.astro';
 
 <Eq id="cap.esr.ripple" />
 
-이 항은 용량성 리플(<EqRef id="buck.ripple.v" label="벅 출력 리플" />)에
+이 항은 용량성(capacitive) 리플(<EqRef id="buck.ripple.v" label="벅 출력 리플" />)에
 더해지며, 커패시터의 직렬 인덕턴스(series inductance, ESL)는 스위칭
 에지(switching edge)에서 계단형 변화(step)를 더합니다 <Cite key="ti_slva630" />.
 두 항은 서로 다른 순간에 최대가 되므로, 두 항의 피크-피크(peak-to-peak) 값의
@@ -70,7 +70,7 @@ import Quiz from '../../../../components/Quiz.astro';
 
 ## 풀이 예제
 
-합성(synthetic) 권선, 인덕터, 출력 커패시터입니다.
+권선, 인덕터, 출력 커패시터 예제입니다.
 
 <Worked example="passives-real" />
 

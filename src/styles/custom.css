@@ -23,6 +23,26 @@ html:lang(ko) body {
 .pe-eq__math .katex-display {
   margin: 0.5rem 0;
 }
+/* what each symbol means, under the equation */
+.pe-eq__where {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1.25rem;
+  margin: 0 0 0.6rem;
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-2);
+}
+.pe-eq__where > div {
+  display: flex;
+  gap: 0.4rem;
+  align-items: baseline;
+}
+.pe-eq__where dt {
+  color: var(--sl-color-white);
+}
+.pe-eq__where dd {
+  margin: 0;
+}
 .pe-eq__caption {
   display: flex;
   flex-wrap: wrap;
@@ -378,6 +398,11 @@ html:lang(ko) body {
 .pe-worked tr.is-given td {
   color: var(--sl-color-gray-2);
 }
+.pe-worked__meaning {
+  margin-left: 0.25rem;
+  font-size: var(--sl-text-xs);
+  color: var(--sl-color-gray-3);
+}
 .pe-worked__value {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -517,6 +542,13 @@ html:lang(ko) body {
 /* ---- loss budget ---------------------------------------------------------- */
 .pe-loss .pe-sim__table td:nth-child(3) {
   white-space: nowrap;
+}
+
+/* ---- footer ---------------------------------------------------------------- */
+.pe-footnote {
+  margin: 1rem 0 0;
+  font-size: var(--sl-text-xs);
+  color: var(--sl-color-gray-3);
 }
 
 /* ---- tool screenshots ------------------------------------------------------ */

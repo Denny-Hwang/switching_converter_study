@@ -29,7 +29,7 @@ import shot from '../../../../assets/screenshots/designer-ko.png';
 열므로, 설계를 시간 영역에서 확인할 수 있습니다. 이때 플라이백의 다이오드 전압
 강하를 제외한 부품은 이상적입니다. 다른 링크는 같은 지점에서
 [손실 예산 도구](../loss-budget/)를 엽니다. 스위치와 다이오드 데이터는 그 도구의
-합성 예제를 쓰고, 설계 도구가 코어를 정하지 않으므로 코어 데이터는 비워 둡니다.
+예제를 쓰고, 설계 도구가 코어를 정하지 않으므로 코어 데이터는 비워 둡니다.
 
 <ConverterDesigner />
 
@@ -38,21 +38,23 @@ import shot from '../../../../assets/screenshots/designer-ko.png';
 설계 도구는 입력 범위 전체에 걸친 입력 전압 격자와, 범위 안에서 어떤 양이
 최대가 되는 지점들을 살펴보고, 각 결과에서 가장 불리한 값을 취합니다.
 카탈로그 수식만 사용하며, 수식을 입력 중 하나(듀티비, 인덕턴스, 커패시턴스)에
-대해 풀어야 할 때는 카탈로그의 평가 함수 자체에 이분법(bisection)을 적용해 그
-값을 찾습니다. 따라서 도구와 이론 페이지의 결과가 서로 다를 수 없습니다.
+대해 풀어야 할 때는 카탈로그의 평가 함수(evaluator) 자체에 이분법(bisection)을
+적용해 그 값을 찾습니다. 따라서 도구와 이론 페이지의 결과가 서로 다를 수
+없습니다.
 
-1. **듀티비.** 각 입력 전압에서 CCM 변환비를 $D$에 대해 풉니다:
+1. **듀티비.** 각 입력 전압에서 CCM 변환비(conversion ratio)를 $D$에 대해 풉니다:
    <EqRef id="buck.ccm.M" label="벅" />, <EqRef id="boost.ccm.M" label="부스트" />,
    <EqRef id="buckboost.ccm.M" label="벅-부스트" />,
    <EqRef id="flyback.ccm.M" label="플라이백" />,
    <EqRef id="forward.ccm.M" label="포워드" />. 플라이백에서는
-   <EqRef id="flyback.V_crit" label="임계 입력 전압" />을 유도할 때의 전압-초
-   평형과 마찬가지로 다이오드 전압 강하가 출력 전압에 더해집니다.
+   <EqRef id="flyback.V_crit" label="임계 입력 전압(critical input voltage)" />을
+   유도할 때의 전압-초 평형(volt-second balance)과 마찬가지로 다이오드 전압
+   강하가 출력 전압에 더해집니다.
 2. **리플 목표를 만족하는 인덕턴스.** 전부하에서의 평균 인덕터 전류
    (<EqRef id="buck.IL" label="벅" />, <EqRef id="boost.IL" label="부스트" />,
    <EqRef id="buckboost.IL" label="벅-부스트" />, 그리고 플라이백의
-   <EqRef id="flyback.IM" label="자화 전류" />)에 리플 목표를 곱하면 허용 리플이
-   되고, 리플 수식(<EqRef id="buck.ripple.iL" label="벅" />,
+   <EqRef id="flyback.IM" label="자화 전류" />)에
+   리플 목표를 곱하면 허용 리플이 되고, 리플 수식(<EqRef id="buck.ripple.iL" label="벅" />,
    <EqRef id="boost.ripple.iL" label="부스트" />,
    <EqRef id="buckboost.ripple.iL" label="벅-부스트" />,
    <EqRef id="flyback.ripple.iM" label="플라이백" />,
@@ -78,7 +80,7 @@ import shot from '../../../../assets/screenshots/designer-ko.png';
    <EqRef id="buckboost.Vds" label="벅-부스트" />,
    <EqRef id="flyback.Vds_off" label="플라이백" />,
    <EqRef id="forward.Vds" label="포워드" />)을 구합니다. 벅, 부스트,
-   벅-부스트에서는 다이오드가 스위치와 같은 전압을 차단하며
+   벅-부스트에서는 다이오드가 스위치와 같은 전압을 차단(blocking)하며
    <Cite key="erickson2020" where="Ch. 6" />, 플라이백의 다이오드는
    <EqRef id="flyback.diode.VR" label="별도의 역전압" />을 차단합니다.
 6. **출력 커패시턴스.** 전압 리플 수식을 $C$에 대해 풉니다:
@@ -114,6 +116,6 @@ import shot from '../../../../assets/screenshots/designer-ko.png';
 ## 스크린샷
 
 <figure class="pe-shot">
-  <Image src={shot} alt="합성 벅 사양을 넣은 컨버터 설계 도구: 입력 칸, 각 결과의 카탈로그 수식 이름이 붙은 설계 표, 입력 범위 양 끝의 동작점, 시뮬레이터 링크, 그리고 K와 K_crit(D)를 비교한 그래프." />
-  <figcaption>합성 벅 사양을 넣은 컨버터 설계 도구.</figcaption>
+  <Image src={shot} alt="벅 설계 사양 예제를 넣은 컨버터 설계 도구: 입력 칸, 각 결과의 카탈로그 수식 이름이 붙은 설계 표, 입력 범위 양 끝의 동작점, 시뮬레이터 링크, 그리고 K와 K_crit(D)를 비교한 그래프." />
+  <figcaption>벅 설계 사양 예제를 넣은 컨버터 설계 도구.</figcaption>
 </figure>

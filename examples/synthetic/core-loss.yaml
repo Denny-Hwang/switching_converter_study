@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic Steinmetz parameters (round numbers, not a real material)"
-label_ko: "합성 스타인메츠 파라미터 (단순한 어림수이며 실제 재료가 아님)"
+label: "Example Steinmetz parameters"
+label_ko: "스타인메츠 파라미터 예제"
 params:
   k: 1
   f: 1.0e5

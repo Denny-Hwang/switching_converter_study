@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic switch and diode loss example (round numbers, not a real design)"
-label_ko: "합성 스위치·다이오드 손실 예제 (단순한 어림수이며 실제 설계가 아님)"
+label: "Switch and diode loss example"
+label_ko: "스위치·다이오드 손실 예제"
 params:
   C_node: 1.0e-10
   V_sw: 48

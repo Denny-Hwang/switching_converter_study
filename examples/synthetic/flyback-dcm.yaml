@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic flyback example in DCM, ideal diode (round numbers, not a real design)"
-label_ko: "DCM 합성 플라이백 예제, 이상적 다이오드 (단순한 어림수이며 실제 설계가 아님)"
+label: "Flyback example in DCM, ideal diode"
+label_ko: "DCM 플라이백 예제, 이상적 다이오드"
 params:
   V_g: 48
   n: 0.25

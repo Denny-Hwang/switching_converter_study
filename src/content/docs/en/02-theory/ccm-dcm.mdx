@@ -70,7 +70,7 @@ current set equal to the load current:
 
 <Eq id="buckboost.dcm.M" />
 
-The derivations, step by step, are on the
+The step-by-step derivations are on the
 [derivations page](../derivations/#deriv-dcm).
 
 ### What changes in DCM
@@ -78,8 +78,8 @@ The derivations, step by step, are on the
 - **The conversion ratio depends on the load.** In CCM, $M$ is a function
   of $D$ alone; in DCM it also depends on $K$, and so on $R$. As the load is
   removed, $K$ goes to zero: the buck output rises towards $V_g$, and the
-  boost and buck-boost outputs rise without bound, as the equations above
-  show. An open-loop converter must therefore never run without a load.
+  boost and buck-boost outputs rise without bound. An open-loop converter
+  must therefore never run without a load.
 - **The peak inductor current no longer depends on the load.** Each period
   starts from zero current, so the peak is set by the voltage applied during
   $D T_s$, by $L$ and by $T_s$.
@@ -92,7 +92,7 @@ The derivations, step by step, are on the
 
 ## Worked example
 
-The synthetic buck from the [switching-principle page](../switching-principle/),
+The buck example from the [switching-principle page](../switching-principle/),
 now with a ten-times lighter load:
 
 <Worked example="buck-light-load" />
@@ -135,8 +135,7 @@ the load gets lighter.
   main switch conducts in both directions, so the inductor current simply
   goes negative at light load and the converter stays in CCM <Cite key="erickson2020" where="Ch. 5" />.
 - **"Light load" is relative.** Whether a given load is light depends on
-  $L$, $T_s$ and $D$ as well as on $R$; compare $K$ with $K_\mathrm{crit}$
-  rather than trusting intuition.
+  $L$, $T_s$ and $D$ as well as on $R$; compare $K$ with $K_\mathrm{crit}$.
 - **Do not use CCM formulas in DCM.** Ripple, peak current and conversion
   ratio all follow different expressions once the current reaches zero.
 

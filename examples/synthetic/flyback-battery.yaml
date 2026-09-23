@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic flyback charging a fixed output at a fixed duty ratio (round numbers, not a real design)"
-label_ko: "고정 듀티비로 고정 출력을 충전하는 합성 플라이백 예제 (단순한 어림수이며 실제 설계가 아님)"
+label: "Example flyback charging a fixed output at a fixed duty ratio"
+label_ko: "고정 듀티비로 고정 출력을 충전하는 플라이백 예제"
 params:
   V: 12
   V_D: 0.5

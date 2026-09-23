@@ -28,7 +28,8 @@ compact refresher with links out).
 
 - Privacy: `PRIVACY_RULES.md`. All example numbers come from (a) cited textbook
   examples or (b) `examples/synthetic/*.yaml`, which are round-number synthetic
-  parameter sets clearly labeled "synthetic".
+  parameter sets, each labeled as an example where it appears; every page's
+  footer states that example numbers are synthetic.
 - Equations: `packages/pe-core/equations/equations.yaml` is the single source of
   truth; LaTeX is generated; docs embed `<Eq id="…" />`; CI diff-checks.
 - Citations: `references.bib` keys everywhere; `VERIFY`-flagged entries cannot be
@@ -401,7 +402,9 @@ This is a public repository. The following may never appear in any committed fil
 4. Any personal information.
 
 Allowed sources of numbers: (a) cited textbook examples (cite chapter/example),
-(b) examples/synthetic/*.yaml (round numbers, labeled "synthetic" in the page),
+(b) examples/synthetic/*.yaml (round numbers; each is labeled as an example
+where it appears, and every page's footer states that example numbers are
+synthetic),
 (c) vendor datasheet values for generic parts, with citation, used only to
 illustrate a general point.
 

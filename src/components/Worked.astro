@@ -2,8 +2,9 @@
 /**
  * <Worked example="buck-basic" show={['T_s', 'K', 'K_crit']} /> -- a worked
  * example computed by pe-core at build time from a synthetic parameter set
- * (examples/synthetic/<example>.yaml). The table always carries the
- * example's "synthetic" label (PRIVACY_RULES.md).
+ * (examples/synthetic/<example>.yaml). The table carries the example's label;
+ * the page footer says that example numbers are synthetic (PRIVACY_RULES.md).
+ * Each symbol shows what it means (the catalogue's `meaning`).
  */
 import katex from 'katex';
 import { catalog } from 'pe-core';
@@ -15,6 +16,7 @@ import { formatSI } from '../lib/format';
 import { eqAnchor, eqHomes } from '../lib/eqhomes';
 import { pageHref } from '../lib/paths';
 import { pageLocale } from '../lib/locale';
+import { symHtml } from '../lib/sym';
 
 interface Props {
   example: string;
@@ -29,12 +31,15 @@ const locale = pageLocale(Astro);
 const t = ui[locale];
 const homes = await eqHomes(locale);
 
+/** What a symbol is, in the page's language, with subscripts. */
+const meaningOf = (s: { meaning: string; meaning_ko: string }) => symHtml(locale === 'ko' ? s.meaning_ko : s.meaning);
+
 const names = show ?? [...Object.keys(ex.params), ...ex.results.map((r) => r.name)];
 const rows = names.map((name) => {
   if (name in ex.params) {
     const sym = catalog.symbols[name];
     if (!sym) throw new Error(`<Worked example="${example}">: param ${name} is not a known symbol`);
-    return { name, latex: sym.latex, value: formatSI(ex.params[name]!, sym.unit), given: true as const };
+    return { name, latex: sym.latex, meaning: meaningOf(sym), value: formatSI(ex.params[name]!, sym.unit), given: true as const };
   }
   const r = ex.results.find((x) => x.name === name);
   if (!r) throw new Error(`<Worked example="${example}">: "${name}" is neither a param nor a step result`);
@@ -51,6 +56,7 @@ const rows = names.map((name) => {
   return {
     name,
     latex,
+    meaning: meaningOf(own ?? lhs),
     value: formatSI(r.value, lhs.unit),
     given: false as const,
     title: locale === 'ko' ? meta.title_ko : meta.title,
@@ -81,7 +87,10 @@ function conditionHtml(when: string): string {
       {
         rows.map((r) => (
           <tr class={r.given ? 'is-given' : 'is-computed'}>
-            <td set:html={katex.renderToString(r.latex, katexOptions(false))} />
+            <td>
+              <span set:html={katex.renderToString(r.latex, katexOptions(false))} />{' '}
+              <span class="pe-worked__meaning" set:html={r.meaning} />
+            </td>
             <td class="pe-worked__value">{r.value}</td>
             <td>{r.given ? t['worked.given'] : <a href={r.href}>{r.title}</a>}</td>
           </tr>

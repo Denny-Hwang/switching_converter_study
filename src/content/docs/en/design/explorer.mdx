@@ -13,17 +13,17 @@ import shot from '../../../../assets/screenshots/explorer-en.png';
 Pick an equation, set its inputs in SI units, and sweep one input to see
 how the result moves. The calculation runs in your browser with the same
 TypeScript evaluators that the test suite checks against the sympy vectors
-(1e-9 relative), so the numbers here are the numbers on the theory pages.
+(1e-9 relative), so the numbers here match the theory pages.
 
-The "Try it" links on the learning pages open this explorer with the inputs
-of a synthetic example already filled in. Every view is stored in the URL
-hash, so a bookmark or a shared link reproduces it exactly.
+The "Try it" links on the learning pages open this explorer with an
+example's inputs filled in. Every view is stored in the URL hash, so a
+bookmark or a shared link reproduces it exactly.
 
 <Explorer />
 
-The explorer evaluates one formula at a time and does not check whether the
-formula's assumptions hold (for example, a CCM ratio at a DCM operating
-point). Each equation's assumptions are listed under it on its home page.
+The explorer evaluates one formula at a time and does not check whether its
+assumptions hold (for example, a CCM ratio at a DCM operating point). Each
+equation's assumptions are listed under it on its home page.
 The [simulator](../../simulate/simulator/) finds the mode from the circuit
 itself, and the [converter designer](../converter-designer/) combines the
 formulas of a topology and checks the operating mode over an input range.

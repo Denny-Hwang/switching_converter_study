@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic forward converter example (round numbers, not a real design)"
-label_ko: "합성 포워드 컨버터 예제 (단순한 어림수이며 실제 설계가 아님)"
+label: "Forward converter example"
+label_ko: "포워드 컨버터 예제"
 params:
   V_g: 48
   n: 0.5

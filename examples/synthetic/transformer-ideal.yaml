@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic ideal transformer (round numbers, not a real design)"
-label_ko: "합성 이상적 변압기 (단순한 어림수이며 실제 설계가 아님)"
+label: "Ideal transformer example"
+label_ko: "이상적 변압기 예제"
 params:
   n: 0.25
   V_1: 48

@@ -16,7 +16,7 @@ import PipelinePlot from '../../../../tools/PipelinePlot.tsx';
 2. `python scripts/gen_equations.py`가 sympy로 이를 파싱하여 LaTeX와 공유
    테스트 벡터를 생성하며, 테스트 값이 수식과 다르면 실패합니다.
 3. TypeScript 엔진은 이 벡터에 대해 상대오차 1e-9로 테스트되고, 생성된
-   모든 수식은 KaTeX 엄격 모드로 렌더링됩니다.
+   모든 수식은 KaTeX 엄격 모드(strict mode)로 렌더링됩니다.
 4. 문서는 `<Eq id="…" />`로 결과를 삽입합니다. 누구도 LaTeX를 직접 입력하지
    않습니다.
 
@@ -24,12 +24,12 @@ import PipelinePlot from '../../../../tools/PipelinePlot.tsx';
 
 수식 아래의 펼침 메뉴에서 가정과 출처를 확인할 수 있으며, 배지는 패리티
 테스트로 연결됩니다. 이 페이지는 파이프라인을 보여 주기 위해서만 수식을
-표시합니다. 수식을 설명하는 본래 위치는
-<EqRef id="buck.ccm.M" label="전압-초 평형 페이지" />입니다.
+표시하며, 수식의 설명은
+<EqRef id="buck.ccm.M" label="전압-초 평형 페이지" />에 있습니다.
 
 ## 브라우저에서 동작하는 같은 엔진
 
-아래 차트는 CCM에서 이상적인 벅과 부스트 변환비의 TypeScript 평가 함수를
+아래 차트는 CCM에서 이상적인 벅과 부스트 변환비(conversion ratio)의 TypeScript 평가 함수(evaluator)를
 브라우저에서 호출해 Plotly로 그리는 React 아일랜드입니다.
 [수식 탐색기](../../design/explorer/)는 카탈로그의 모든 수식에 대해 같은
 일을 합니다.

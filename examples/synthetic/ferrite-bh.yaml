@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic core-material and inductor example (round numbers, not a real material or design)"
-label_ko: "합성 코어 재료·인덕터 예제 (단순한 어림수이며 실제 재료나 설계가 아님)"
+label: "Core-material and inductor example"
+label_ko: "코어 재료·인덕터 예제"
 params:
   mu_r: 2000
   H_mag: 100

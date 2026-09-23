@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic sense chain with a current-output amplifier and a two-terminal shunt (round numbers, not a real design)"
-label_ko: "전류 출력형 증폭기와 2단자 션트를 쓰는 합성 센스 체인 (단순한 어림수이며 실제 설계가 아님)"
+label: "Example sense chain: current-output amplifier, two-terminal shunt"
+label_ko: "센스 체인 예제: 전류 출력형 증폭기, 2단자 션트"
 # SenseChain preset: I_SENSE is the largest current; R_pad is the pad and solder resistance
 # in the sense path of a two-terminal shunt without a Kelvin connection. The filter is a
 # series resistor R_f and a capacitor C_f after the output resistor R_OUT.

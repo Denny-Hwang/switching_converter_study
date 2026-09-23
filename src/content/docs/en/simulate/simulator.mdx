@@ -15,10 +15,10 @@ import Val from '../../../../components/Val.astro';
 import TrySim from '../../../../components/TrySim.astro';
 import shot from '../../../../assets/screenshots/simulator-en.png';
 
-Pick a topology or a synthetic preset and set the parameters in SI units:
-type a value, or drag its slider, which spans one decade either side of the
-value (the duty ratio's slider spans 0 to 1). The simulator then computes one
-period of the periodic steady state and shows:
+Pick a topology or a preset and set the parameters in SI units: type a
+value, or drag its slider, which spans one decade either side of the value
+(0 to 1 for the duty ratio). The simulator computes one period of the
+periodic steady state and shows:
 
 - the waveforms: inductor current and voltage, diode current, switch voltage
   and output voltage;
@@ -27,8 +27,8 @@ period of the periodic steady state and shows:
   operating point;
 - the losses and the efficiency computed from the waveforms.
 
-Everything runs in your browser with the same `pe-core` engine that the test
-suite validates. The URL holds the whole state, and the "Try it" links on the
+Everything runs in your browser on the `pe-core` engine that the test suite
+validates. The URL holds the whole state, and the "Try it" links on the
 learning pages open the simulator with a preset.
 
 <Simulator />
@@ -132,7 +132,7 @@ against the equations:
 
 ## Worked example: a flyback that pins its source
 
-A synthetic flyback with a fixed duty ratio charges a fixed output from a
+A flyback with a fixed duty ratio charges a fixed output from a
 current-limited source:
 
 <Worked example="flyback-source" show={['V', 'V_D', 'D', 'n', 'f_s', 'L_M', 'V_oc', 'R_s', 'V_gcrit', 'P_max', 'eta_ext', 'P_dcm']} />
@@ -144,8 +144,7 @@ At that voltage the source can deliver a fraction
 <Val example="flyback-source" name="P_dcm" /> that the converter would draw
 in DCM, so the magnetizing current grows until CCM holds the input at the
 critical voltage. Open the preset and compare the simulated input voltage
-with the equation (the [screenshot](#screenshot) at the end of this page shows
-the result):
+with the equation (the [screenshot](#screenshot) below shows the result):
 
 <TrySim example="flyback-source" topology="flyback" />
 

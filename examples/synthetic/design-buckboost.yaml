@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic buck-boost design specification (round numbers, not a real design)"
-label_ko: "합성 벅-부스트 설계 사양 (단순한 어림수이며 실제 설계가 아님)"
+label: "Example buck-boost specification"
+label_ko: "벅-부스트 설계 사양 예제"
 # Converter-designer preset (see design-buck.yaml); V is the output magnitude.
 params:
   V_gmin: 9

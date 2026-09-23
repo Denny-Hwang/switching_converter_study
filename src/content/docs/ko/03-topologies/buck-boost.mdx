@@ -28,7 +28,7 @@ import Quiz from '../../../../components/Quiz.astro';
 
 벅-부스트 컨버터는 스위치를 통해 인덕터를 입력에 연결하고, 다이오드를 통해
 인덕터를 출력에 연결합니다. 스위치가 켜져 있는 동안 인덕터는 입력으로부터
-에너지를 저장하고, 다이오드가 도통하는 동안에는 극성이 반전된 채로 그 에너지를
+에너지를 저장하고, 다이오드가 도통(conduction)하는 동안에는 극성이 반전된 채로 그 에너지를
 출력에 방출합니다 <Cite key="erickson2020" where="Ch. 2" />. 따라서
 변환비(conversion ratio)는 음수입니다(<EqRef id="buckboost.ccm.M" label="벅-부스트 변환비" />).
 출력 전압의 크기로 나타내면 다음과 같습니다.
@@ -74,12 +74,12 @@ $D < 0.5$이면 강압(step down)하고, $D > 0.5$이면 승압(step up)합니�
 이 합은 입력 전압보다도, 출력 전압보다도 큽니다. 이는 승압과 강압을 모두 할 수
 있는 단일 단(single stage)의 대가입니다. 또한 소신호 모델(small-signal model)에는
 우반평면(right-half-plane, RHP) 영점도 있습니다(<EqRef id="buckboost.ss.wz" label="RHP 영점" />).
-플라이백 컨버터는 이 회로를 변압기로 절연한 형태입니다([플라이백 페이지](../flyback/) 참고).
+플라이백 컨버터는 이 회로를 변압기로 절연(isolation)한 형태입니다([플라이백 페이지](../flyback/) 참고).
 
 ## 풀이 예제
 
-[전압-초 평형(volt-second balance) 페이지](../../02-theory/volt-second-charge-balance/)에서
-사용한 합성(synthetic) 벅-부스트입니다.
+[전압-초 평형(volt-second balance) 페이지](../../02-theory/volt-second-charge-balance/)의
+벅-부스트 예제입니다.
 
 <Worked example="buckboost-basic" show={['V_g', 'D', 'f_s', 'L', 'C', 'R', 'V', 'I_L', 'Delta_i_L', 'I_pk', 'Delta_v', 'V_DS', 'K', 'K_crit']} />
 

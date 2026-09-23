@@ -14,7 +14,7 @@ import shot from '../../../../assets/screenshots/designer-en.png';
 
 Pick a topology and give the input-voltage range, the output voltage, the
 full-load power, the lightest load that must stay in CCM, the switching
-frequency and two ripple targets. The designer then gives:
+frequency and two ripple targets. The designer gives:
 
 - the duty-ratio range;
 - the inductance for the current-ripple target and the one that keeps the
@@ -26,11 +26,11 @@ frequency and two ripple targets. The designer then gives:
 
 Each result names the catalogue equation it comes from. The links under the
 results open the [simulator](../../simulate/simulator/) with the designed parts
-at either end of the input range, so you can check the design in the time
-domain; the parts there are ideal, apart from the flyback's diode drop. Other
-links open the [loss budget](../loss-budget/) at the same points, with the
-switch and diode data of its synthetic example and no core data, because the
-designer does not size the core.
+at either end of the input range, to check the design in the time domain;
+the parts there are ideal, apart from the flyback's diode drop. Other links
+open the [loss budget](../loss-budget/) at the same points, with the switch
+and diode data of its example and no core data, because the designer does
+not size the core.
 
 <ConverterDesigner />
 
@@ -124,6 +124,6 @@ output-voltage ripple over the output voltage.
 ## Screenshot
 
 <figure class="pe-shot">
-  <Image src={shot} alt="The converter designer with the synthetic buck specification: the input fields, the design table naming the catalogue equation of each result, the operating points at the ends of the input range, links to the simulator, and the chart of K against K_crit(D)." />
-  <figcaption>The converter designer with the synthetic buck specification.</figcaption>
+  <Image src={shot} alt="The converter designer with the example buck specification: the input fields, the design table naming the catalogue equation of each result, the operating points at the ends of the input range, links to the simulator, and the chart of K against K_crit(D)." />
+  <figcaption>The converter designer with the example buck specification.</figcaption>
 </figure>
