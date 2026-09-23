@@ -25,6 +25,17 @@ describe('formatSI', () => {
     expect(formatSI(999.8, 'V')).toBe('1 kV');
   });
 
+  it('writes lengths, areas and volumes of parts in millimetres, and resistivity with a prefix', () => {
+    expect(formatSI(2.5e-4, 'm')).toBe('0.25 mm');
+    expect(formatSI(0.0575, 'm')).toBe('57.5 mm');
+    expect(formatSI(52.5e-6, 'm²')).toBe('52.5 mm²');
+    expect(formatSI(1.9634954e-7, 'm²')).toBe('0.196 mm²');
+    expect(formatSI(3.02e-6, 'm³')).toBe('3020 mm³');
+    expect(formatSI(1.7241e-8, 'Ω·m', 5)).toBe('17.241 nΩ·m');
+    // beyond the size of a part: plain SI
+    expect(formatSI(2, 'm')).toBe('2 m');
+  });
+
   it('handles zero, negative and non-finite values', () => {
     expect(formatSI(0, 'V')).toBe('0 V');
     expect(formatSI(-4, 'V')).toBe('−4 V');
