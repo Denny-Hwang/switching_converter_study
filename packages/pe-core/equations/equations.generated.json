@@ -1611,6 +1611,10 @@
         {
           "key": "erickson2020",
           "where": "Ch. 10 (Basic Magnetics Theory: core loss)"
+        },
+        {
+          "key": "steinmetz1984",
+          "where": ""
         }
       ],
       "derived_by": null,
@@ -1653,7 +1657,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 603
+      "yaml_line": 605
     },
     "mag.AL_gap": {
       "id": "mag.AL_gap",
@@ -1700,7 +1704,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 8,
-      "yaml_line": 617
+      "yaml_line": 619
     },
     "mag.B_pk": {
       "id": "mag.B_pk",
@@ -1743,7 +1747,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 635
+      "yaml_line": 637
     },
     "mag.dB_faraday": {
       "id": "mag.dB_faraday",
@@ -1785,7 +1789,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 649
+      "yaml_line": 651
     },
     "src.Pmax": {
       "id": "src.Pmax",
@@ -1819,7 +1823,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 668
+      "yaml_line": 670
     },
     "src.cv_extraction": {
       "id": "src.cv_extraction",
@@ -1853,7 +1857,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 682
+      "yaml_line": 684
     },
     "sense.current_out_monitor": {
       "id": "sense.current_out_monitor",
@@ -1891,7 +1895,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 698
+      "yaml_line": 700
     }
   }
 }

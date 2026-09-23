@@ -8,7 +8,7 @@
 | Derivations reproduce the YAML (`pytest`) | ✅ 37 of 39 (`K.def` is a definition, `loss.steinmetz` an empirical law) |
 | TS/Python parity (`vitest`, 1e-9 rel) | ✅ all shared vectors |
 | Strict KaTeX on every generated formula and derivation step (`vitest`) | ✅ |
-| `references.bib` verified (two rounds + CI Crossref) | ✅ 22 of 23 verified; `steinmetz1984` DOI pending the CI Crossref check |
+| `references.bib` verified (two web-search rounds + CI Crossref + URL title check) | ✅ 23 of 23 verified (`steinmetz1984` DOI confirmed by the CI Crossref job) |
 
 Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); theory uses only `<Eq>` embeds and each Eq has ≥ 1 test vector; "Try it" links a tool preset; "Go deeper" has ≥ 2 verified resources with retrieval dates; a gotchas subsection exists; quiz with ≥ 5 explained questions; build, tests and all lints green.
 

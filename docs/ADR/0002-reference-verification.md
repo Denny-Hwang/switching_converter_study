@@ -33,13 +33,20 @@ Verification has three layers.
    reconciled; they agreed on existence and identifiers for every entry.
 3. **Mechanical checks in CI.** `python scripts/refcheck.py --online` resolves
    every DOI in Crossref and compares the Crossref title (and volume, issue,
-   pages, year) with `references.bib`; lychee opens every URL rendered on the
-   built site, including all bibliography links.
+   pages, year) with `references.bib`; `python scripts/resources_check.py
+   --online` opens every URL in `references.bib` and `resources.yaml` over
+   HTTP/1.1 and requires the page title to contain the expected text
+   (`urltitle` in the bib entry, `title_match` in resources.yaml) or a PDF
+   signature; lychee opens every URL rendered on the built site. lychee
+   skips `doi.org` links (publishers answer bots with 403; the Crossref check
+   is stronger) and `www.analog.com` (rejects lychee's HTTP/2 client; covered
+   by resources_check).
 
 An identifier seen only in search-result summaries, but never in a result
 URL or title, keeps its `VERIFY` flag until layer 3 confirms it. In Phase 1
-this applied to one entry: the DOI of the 1984 reprint of Steinmetz's
-hysteresis paper.
+this applied to one entry, the DOI of the 1984 reprint of Steinmetz's
+hysteresis paper; the Crossref record matched title, volume, issue, pages
+and year, and the flag was cleared.
 
 A verified entry records how it was verified in its `note`
 (`verified YYYY-MM-DD (evidence)`). `refcheck.py` rejects entries that neither

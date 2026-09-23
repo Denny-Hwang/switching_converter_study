@@ -47,6 +47,7 @@ jobs:
       - run: python scripts/mathlint.py
       - run: python scripts/privacy_scan.py
       - run: python scripts/refcheck.py
+      - run: python scripts/resources_check.py
 
   refs-online:
     name: References — DOIs checked against Crossref
@@ -60,6 +61,19 @@ jobs:
           cache-dependency-path: python/pyproject.toml
       - run: pip install -e "python[dev]"
       - run: python scripts/refcheck.py --online
+
+  urls-online:
+    name: Resources — every URL opened and title-matched
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: python/pyproject.toml
+      - run: pip install -e "python[dev]"
+      - run: python scripts/resources_check.py --online
 
   site:
     name: Site — strict KaTeX build + link check

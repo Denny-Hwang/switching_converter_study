@@ -592,7 +592,9 @@ equations:
     convention_ko: "$B_\\mathrm{ac}$는 피크 교류 진폭(피크-투-피크 $\\Delta B$의 절반); $k$, $\\alpha$, $\\beta$는 재료별 피팅값이며 피팅 범위 안에서만 유효"
     notes: "Steinmetz's original law gives loss per cycle proportional to $B^{1.6}$; the frequency term is the empirical extension used with ferrite data"
     notes_ko: "스타인메츠의 원래 법칙은 주기당 손실이 $B^{1.6}$에 비례; 주파수 항은 페라이트 데이터에 쓰이는 경험적 확장"
-    cite: {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: core loss)"}
+    cite:
+      - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: core loss)"}
+      - {key: steinmetz1984}
     tests:
       - {inputs: {k: 1.0, f: 1.0e5, alpha: 1.5, B_ac: 0.1, beta: 2.5}, expect: 100000.0}
       - {inputs: {k: 2.0, f: 2.0e4, alpha: 1.2, B_ac: 0.2, beta: 2.6}, expect: 4415.1349166758855}
