@@ -300,7 +300,9 @@ resources:
     retrieved: 2026-09-23
     why: "Steady-state and small-signal analysis of the buck power stage in CCM and DCM, with component requirements."
     why_ko: "CCM·DCM 벅 전력단의 정상상태·소신호 해석과 부품 요구 조건."
-    title_match: "Understanding Buck Power Stages in Switchmode Power Supplies"
+    # The PDF's title field reads "Understanding Buck Power Stages Mode Power Supplies", and its
+    # text uses a font without a Unicode map: match the words that are there.
+    title_match: "Understanding Buck Power Stages"
     urlkind: pdf
 
   - id: ti-slva061
@@ -319,7 +321,7 @@ resources:
 
   - id: ti-slva059
     type: app-note
-    title: "Understanding Buck-Boost Power Stages in Switch Mode Power Supplies (SLVA059)"
+    title: "Understanding Inverting Buck-Boost Power Stages in Switch Mode Power Supplies (SLVA059)"
     author: "E. Rogers, Texas Instruments"
     url: https://www.ti.com/lit/pdf/slva059
     tags: [buck-boost, ccm-dcm, small-signal, rhp-zero]
@@ -328,7 +330,7 @@ resources:
     retrieved: 2026-09-23
     why: "The inverting buck-boost power stage analysed the same way."
     why_ko: "반전형 벅-부스트 전력단을 같은 방식으로 해석."
-    title_match: "Understanding Buck-Boost Power Stages in Switch Mode Power Supplies"
+    title_match: "Understanding Inverting Buck-Boost Power Stages in Switch Mode Power Supplies"
     urlkind: pdf
 
   - id: ti-slva477

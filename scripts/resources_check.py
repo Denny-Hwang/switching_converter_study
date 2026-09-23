@@ -41,6 +41,7 @@ import argparse
 import html
 import io
 import json
+import logging
 import re
 import shutil
 import subprocess
@@ -228,6 +229,8 @@ def pdf_texts(body: bytes, pages: int = 2) -> list[tuple[str, str]]:
     be parsed at all."""
     from pypdf import PdfReader  # noqa: PLC0415 - only the online check needs it
 
+    # pypdf warns about every font it cannot fully decode; the result below says what it could read
+    logging.getLogger("pypdf").setLevel(logging.ERROR)
     reader = PdfReader(io.BytesIO(body), strict=False)
     out: list[tuple[str, str]] = []
     try:
