@@ -342,7 +342,16 @@ export default function LossBudget({ labels, presets, simulatorHref }: Props) {
             margin: { t: 16, r: 64, b: 56, l: 64 },
             xaxis: { title: { text: xTitle }, type: typeof x[0] === 'string' ? 'category' : 'linear' },
             yaxis: { title: { text: labels.lossAxis } },
-            yaxis2: { title: { text: `${labels.efficiency} [%]` }, overlaying: 'y', side: 'right', range: etaRange, tickformat: '.1f' },
+            // an overlaying axis syncs its ticks to the first axis by default: give it its own
+            yaxis2: {
+              title: { text: `${labels.efficiency} [%]` },
+              overlaying: 'y',
+              side: 'right',
+              range: etaRange,
+              tickformat: '.1f',
+              tickmode: 'auto',
+              showgrid: false,
+            },
             legend: { orientation: 'h', y: -0.3 },
             paper_bgcolor: 'rgba(0,0,0,0)',
             plot_bgcolor: 'rgba(0,0,0,0)',
