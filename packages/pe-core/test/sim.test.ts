@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { evaluate } from '../src/equations';
-import { affineStep, analyticM, analyticRipplePP, buildModel, expm, runTransient, simulate, type SimParams, type Topology } from '../src/sim';
+import { affineStep, analyticM, analyticRipplePP, buildModel, expm, runTransient, simulate, stepsFor, type SimParams, type Topology } from '../src/sim';
 
 const rel = (a: number, b: number) => Math.abs(a - b) / Math.abs(b);
 
@@ -200,6 +200,85 @@ describe('losses and energy', () => {
     const f = evaluate('dcm.ring.f', { L_M: p.L, C_node: p.Cnode! });
     expect(rel(1 / period, f)).toBeLessThan(0.02);
     expect(r.losses.capacitive).toBeGreaterThan(0);
+  });
+});
+
+describe('reviewed cases (energy accounting, reverse current, slow and fast states)', () => {
+  const powers = (r: ReturnType<typeof simulate>) => ({ Pin: r.energy.input * (1 / (r.waveforms.t as number[]).at(-1)!), Pout: r.energy.output * (1 / (r.waveforms.t as number[]).at(-1)!) });
+
+  // With a node capacitance the inductor charges it after turn-off, so the
+  // energy that the switch later dissipates at turn-on comes from the circuit.
+  for (const [name, p] of [
+    ['flyback CCM', { topology: 'flyback', Vg: 24, D: 0.45, fs: 1e5, n: 0.5, L: 2e-4, Ron: 0.05, Cnode: 2e-9, load: { kind: 'resistive', R: 8, C: 1e-3 } }],
+    ['flyback DCM', { topology: 'flyback', Vg: 24, D: 0.45, fs: 1e5, n: 0.5, L: 5e-6, Ron: 0.05, Cnode: 1e-9, load: { kind: 'resistive', R: 50, C: 1e-3 } }],
+    ['boost CCM', { topology: 'boost', Vg: 24, D: 0.45, fs: 1e5, L: 2e-4, Ron: 0.05, Cnode: 2e-9, load: { kind: 'resistive', R: 8, C: 1e-3 } }],
+    ['buck DCM', { topology: 'buck', Vg: 24, D: 0.45, fs: 1e5, L: 5e-6, Ron: 0.05, Cnode: 1e-9, load: { kind: 'resistive', R: 50, C: 1e-3 } }],
+  ] as [string, SimParams][]) {
+    it(`${name} with a node capacitance: input power = output power + losses`, () => {
+      const r = simulate(p);
+      expect(r.converged).toBe(true);
+      expect(r.losses.capacitive).toBeGreaterThan(0);
+      const { Pin, Pout } = powers(r);
+      expect(Math.abs(Pin - Pout - r.losses.total) / r.losses.total).toBeLessThan(1e-3);
+    });
+  }
+
+  it('a ringing buck still delivers its inductor current to the output (charge balance)', () => {
+    const r = simulate({ topology: 'buck', Vg: 24, D: 0.45, fs: 1e5, L: 5e-6, Ron: 0.05, Cnode: 1e-9, load: { kind: 'resistive', R: 50, C: 1e-3 } });
+    expect(r.mode).toBe('DCM');
+    expect(rel(r.avg.i_out!, r.avg.v_out! / 50)).toBeLessThan(1e-6);
+    expect(rel(r.avg.i_L!, r.avg.i_out!)).toBeLessThan(1e-6);
+  });
+
+  it('a forward converter with its output held above n V_g: the rectifier blocks, no current flows', () => {
+    const r = simulate({ topology: 'forward', Vg: 48, D: 0.4, fs: 1e5, n: 0.5, nr: 1, LM: 1e-3, L: 1e-4, VF: 0.5, load: { kind: 'fixed', V: 30 } });
+    expect(r.converged).toBe(true);
+    expect(r.min.i_L!).toBeGreaterThanOrEqual(0);
+    expect(r.max.i_L!).toBe(0);
+    expect(r.losses.diode).toBe(0);
+  });
+
+  it('a buck with its output held above its input has no steady state (the body diode conducts backwards)', () => {
+    const r = simulate({ topology: 'buck', Vg: 24, D: 0.5, fs: 1e5, L: 1e-4, VF: 0.5, load: { kind: 'fixed', V: 30 } });
+    expect(r.converged).toBe(false);
+    expect(r.max.i_L!).toBeLessThan(0);
+  });
+
+  it('a very slow output capacitor (a time constant of 1e6 periods) still converges to the hand value', () => {
+    const r = simulate({ topology: 'buck', Vg: 24, D: 0.5, fs: 1e5, L: 1e-4, Ron: 0.05, RL: 0.1, VF: 0.5, load: { kind: 'resistive', R: 10, C: 1 } });
+    expect(r.converged).toBe(true);
+    // CCM buck with losses: V (1 + (R_L + D R_on)/R) = D V_g - (1 - D) V_F
+    expect(rel(r.avg.v_out!, (0.5 * 24 - 0.5 * 0.5) / (1 + (0.1 + 0.5 * 0.05) / 10))).toBeLessThan(1e-5);
+  });
+
+  it('a source-driven flyback on a 1 F bus converges to the loss-free-resistor divider', () => {
+    const r = simulate({
+      topology: 'flyback', Vg: 0, D: 0.2, fs: 1e4, n: 0.1, L: 0.02, VF: 0.5,
+      load: { kind: 'fixed', V: 5 }, source: { Voc: 200, Rs: 1e4, Cbus: 1 },
+    });
+    expect(r.converged).toBe(true);
+    expect(r.mode).toBe('DCM');
+    const Rin = evaluate('lfr.R_in', { L_M: 0.02, f_s: 1e4, D: 0.2 });
+    expect(rel(r.avg.v_in!, (200 * Rin) / (Rin + 1e4))).toBeLessThan(1e-4);
+  });
+
+  it('a node capacitance that rings fast gets finer sub-steps, and the result matches a much finer run', () => {
+    const p: SimParams = { topology: 'flyback', Vg: 24, D: 0.3, fs: 1e5, n: 1, L: 2.08e-5, Ron: 0.05, Cnode: 5e-13, load: { kind: 'resistive', R: 50, C: 1e-4 } };
+    const ringPeriod = 2 * Math.PI * Math.sqrt(p.L * p.Cnode!);
+    expect(stepsFor(p)).toBeGreaterThanOrEqual(Math.min(20000, 20 / (p.fs * ringPeriod)));
+    const r = simulate(p);
+    const fine = simulate(p, { stepsPerPeriod: 40000 });
+    expect(rel(r.avg.v_out!, fine.avg.v_out!)).toBeLessThan(1e-3);
+    expect(Math.abs(r.losses.capacitive - fine.losses.capacitive)).toBeLessThan(0.02 * Math.max(fine.losses.capacitive, 1e-6) + 1e-9);
+  });
+
+  it('a source-driven boost with a small bus capacitor: the diode conducts again when the bus exceeds the output', () => {
+    const p: SimParams = { topology: 'boost', Vg: 0, D: 0.3, fs: 1e5, L: 1e-4, VF: 0.5, load: { kind: 'fixed', V: 12 }, source: { Voc: 20, Rs: 10, Cbus: 1e-7 } };
+    const r = simulate(p);
+    const w = r.waveforms;
+    const vin = w.v_in as number[];
+    const iv = w.interval as string[];
+    for (let k = 0; k < vin.length; k++) if (iv[k] === 'idle') expect(vin[k]! - 12.5).toBeLessThan(1e-6);
   });
 });
 

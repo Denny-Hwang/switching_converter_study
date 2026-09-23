@@ -19,7 +19,7 @@
 | Item | State |
 | --- | --- |
 | Simulator engine (BUILD_SPEC §4): piecewise-linear intervals, exact matrix-exponential steps at T_s/2000, bisection on events, steady state to 1e-6 (relative to each state's variation within the cycle) within 2000 cycles | ✅ Phase 3a (`packages/pe-core/src/sim`); cases without a steady state are reported as such (tested) |
-| Validation grid: M and Δi_pp within 2 %, mode matches K/K_crit (buck, boost, buck-boost, flyback × 5 duty ratios × 4 values of K/K_crit) | ✅ 80 cases in `packages/pe-core/test/sim.test.ts`, plus forward CCM, energy balance, ringing frequency |
+| Validation grid: M and Δi_pp within 2 %, mode matches K/K_crit (buck, boost, buck-boost, flyback × 5 duty ratios × 4 values of K/K_crit) | ✅ 80 cases in `packages/pe-core/test/sim.test.ts`, plus forward CCM, energy balance (also with a node capacitance), ringing frequency, and regression cases from an independent review (reverse current, very slow states, fast ringing) |
 | Source-driven mode: bus pinned at V_g,crit within 2 % (constant V_oc) | ✅ Phase 3a |
 | Source-driven mode: sinusoidal and user-drawn V_oc envelopes | ⬜ with the SourceMatcher tool (Phase 3) |
 | Simulator page (`simulate/simulator`): topology buttons, presets, sliders, waveforms, mode badge, compare-with-formula panel, losses; state in the URL hash; runs in a Web Worker | ✅ EN and KO, Phase 3a |

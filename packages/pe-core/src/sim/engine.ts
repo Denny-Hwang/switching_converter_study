@@ -14,9 +14,10 @@
  * confirmed by the spec's criterion: the largest change of any state between
  * two consecutive cycles, relative to how far that state moves within the
  * cycle (its total variation), is below `tol` (default 1e-6), within at most
- * `maxCycles` cycles (default 2000). A change relative to the state's peak
- * would not do: a state that grows without bound (a fixed output fed in CCM
- * from a fixed input has no steady state) passes it once it is large enough.
+ * `maxCycles` cycles (default 2000); changes at the level of the rounding
+ * noise of a cycle are ignored. A change relative to the state's peak would
+ * not do: a state that grows without bound (a fixed output fed in CCM from a
+ * fixed input has no steady state) passes it once it is large enough.
  */
 
 import { addScaled, affineStep, identity, matvec, solveVec, zeros, type Mat, type Vec } from './linalg';
@@ -246,7 +247,7 @@ export function runCycle(model: Model, x0: Vec, opts: RunOptions = {}): CycleRun
 }
 
 export interface SteadyOptions extends RunOptions {
-  /** Largest change of any state between consecutive cycles, relative to its total variation within the cycle. */
+  /** Largest change of any state between consecutive cycles (beyond rounding noise), relative to its total variation within the cycle. */
   tol?: number;
   maxCycles?: number;
 }
@@ -263,20 +264,25 @@ export interface SteadyResult {
   run: CycleRun;
 }
 
+/** Rounding noise of one simulated cycle, relative to a state's magnitude (about five times the noise seen with 2000 steps). */
+const CYCLE_NOISE = 1e-12;
+
 /**
- * Convergence measure: the largest change of a state over one cycle, relative
- * to that state's total variation within the cycle. The floor, 1e-12 of the
- * state's peak, lets a state that barely moves (a very large capacitor)
- * converge to rounding level; it is far below any growth that a Newton step
- * could reach, so a state that grows without bound never passes.
+ * Convergence measure: the largest change of a state over one cycle, beyond
+ * the rounding noise of the cycle's arithmetic, relative to that state's
+ * total variation within the cycle. A state that barely moves (a very large
+ * capacitor) converges once its change is at rounding level. A state that
+ * grows by the same amount every cycle never passes: the measure does not
+ * shrink as the state grows, until the state is some 1e12 times its growth
+ * per cycle, which neither the plain cycles nor the line search can reach.
  */
 function relativeChange(x: Vec, r: CycleRun): number {
   let worst = 0;
   for (let j = 0; j < x.length; j++) {
-    const change = Math.abs(r.x[j]! - x[j]!);
-    if (change === 0) continue;
-    const scale = Math.max(r.variation[j]!, 1e-12 * r.maxAbs[j]!);
-    worst = Math.max(worst, scale > 0 ? change / scale : Infinity);
+    const excess = Math.abs(r.x[j]! - x[j]!) - CYCLE_NOISE * r.maxAbs[j]!;
+    if (excess <= 0) continue;
+    const v = r.variation[j]!;
+    worst = Math.max(worst, v > 0 ? excess / v : Infinity);
   }
   return worst;
 }
@@ -297,9 +303,19 @@ export function steadyState(model: Model, x0: Vec, opts: SteadyOptions = {}): St
   let res = relativeChange(x, r);
   for (let it = 0; it < 40 && res >= tol && cycles + n + 1 < maxCycles; it++) {
     const f = r.x.map((v, i) => v - x[i]!);
+    // Line-search merit: the squared residual, each state scaled by how far it
+    // moves within the base cycle. The scales stay fixed during the search,
+    // so the Newton direction is a descent direction for it.
+    const scale = x.map((_, j) => Math.max(r.variation[j]!, CYCLE_NOISE * r.maxAbs[j]!, Number.MIN_VALUE));
+    const merit = (xv: Vec, run: CycleRun) => run.x.reduce((acc, v, j) => acc + ((v - xv[j]!) / scale[j]!) ** 2, 0);
+    const m0 = merit(x, r);
     const J = zeros(n);
     for (let j = 0; j < n; j++) {
-      const h = 1e-7 * Math.max(Math.abs(x[j]!), r.maxAbs[j]!, 1e-9);
+      // The cycle map is affine between events, so a step far above the
+      // rounding noise of a cycle (about 1e-13 of the state) loses nothing
+      // there and still resolves slow states, whose Jacobian entry differs
+      // from 1 by as little as 1e-8 (a time constant of 1e8 periods).
+      const h = 1e-4 * Math.max(Math.abs(x[j]!), r.maxAbs[j]!, 1e-9);
       const xp = x.slice();
       xp[j]! += h;
       const rp = map(xp);
@@ -314,15 +330,25 @@ export function steadyState(model: Model, x0: Vec, opts: SteadyOptions = {}): St
     } catch {
       break;
     }
+    // Trust region: a step may move a state by at most ten times its size in
+    // the base cycle. A map that only shifts a state (no steady state) has a
+    // Jacobian of 1 to rounding and asks for an enormous step, at whose
+    // magnitude rounding would hide the shift.
+    let shrink = 1;
+    for (let j = 0; j < n; j++) {
+      const limit = 10 * Math.max(Math.abs(x[j]!), r.maxAbs[j]!, r.variation[j]!, 1e-9);
+      if (Math.abs(delta[j]!) > limit) shrink = Math.min(shrink, limit / Math.abs(delta[j]!));
+    }
+    if (!Number.isFinite(shrink)) break;
+    delta = delta.map((v) => v * shrink);
     let accepted = false;
     for (let lambda = 1; lambda > 1e-3 && cycles < maxCycles; lambda /= 2) {
       const xt = x.map((v, i) => v + lambda * delta[i]!);
       const rt = map(xt);
-      const rest = relativeChange(xt, rt);
-      if (rest < res) {
+      if (merit(xt, rt) < (1 - 1e-4 * lambda) * m0) {
         x = xt;
         r = rt;
-        res = rest;
+        res = relativeChange(xt, rt);
         accepted = true;
         break;
       }

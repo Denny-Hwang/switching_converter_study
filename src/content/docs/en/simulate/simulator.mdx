@@ -40,17 +40,24 @@ DCM, the idle interval <Cite key="erickson2020" where="Ch. 2" />,
 <Cite key="erickson2020" where="Ch. 5" />.
 
 - **Switches and diodes.** The transistor is an ideal switch with an optional
-  on-resistance. The diode is a constant forward drop that blocks ideally,
-  with no reverse recovery. The inductor can have a winding resistance.
+  on-resistance and an ideal body diode. The diode is a constant forward drop
+  that blocks ideally, with no reverse recovery. The inductor can have a
+  winding resistance. A current that would reverse through a diode stops
+  instead: the forward converter's rectifier blocks while its output is
+  above $n V_g$, and a negative inductor current at turn-off flows on through
+  the switch's body diode.
 - **Transformers.** They are ideal (1:n with $n$ the secondary turns over
   the primary turns) except for the magnetizing inductance. There is no
   leakage inductance.
-- **Transitions are instantaneous.** An optional capacitance across the
-  switch makes the idle interval of DCM ring
+- **Transitions.** Without a capacitance across the switch they are
+  instantaneous. With one, the inductor current charges it after turn-off
+  until the diode takes over, and the idle interval of DCM rings
   (<EqRef id="dcm.ring.f" label="ringing frequency" />). The switch's body
   diode clamps the ringing at zero switch voltage, and the energy in the
   capacitance is lost at every turn-on
-  (<EqRef id="loss.sw.cap" label="capacitive turn-on loss" />).
+  (<EqRef id="loss.sw.cap" label="capacitive turn-on loss" />). The input
+  energy therefore equals the output energy plus the losses, also with the
+  capacitance.
 - **Source-driven mode.** The input can be a Thevenin source charging a bus
   capacitor instead of a fixed voltage. With a fixed output and a fixed duty
   ratio, this reproduces the constant-voltage sink of the flyback
@@ -61,7 +68,8 @@ DCM, the idle interval <Cite key="erickson2020" where="Ch. 2" />,
 - **Within an interval** the state (inductor current, capacitor voltages)
   obeys a linear differential equation. The simulator advances it with the
   exact solution of that equation (a matrix exponential) over sub-steps of
-  one two-thousandth of the switching period.
+  one two-thousandth of the switching period, or shorter, so that one ring
+  of the capacitance across the switch spans at least twenty sub-steps.
 - **Events** such as the diode current reaching zero or a clamp starting to
   conduct are located inside a sub-step by bisection on the same exact
   solution. The gate edges fall exactly at the start of the period and at the
@@ -69,7 +77,8 @@ DCM, the idle interval <Cite key="erickson2020" where="Ch. 2" />,
 - **The periodic steady state** is found by Newton iteration on the map from
   one period's initial state to the next. It is accepted when, for every
   state, the change over one period is below one part in a million of how far
-  that state moves within the period, within at most two thousand periods.
+  that state moves within the period, within at most two thousand periods;
+  changes at the level of the arithmetic's rounding errors are ignored.
   A change measured against the state's peak would not do: a current that
   grows by the same amount every period would pass once it had grown large
   enough.
@@ -120,7 +129,8 @@ the result):
 - **Fixed duty ratio.** There is no control loop and no core loss.
 - **A periodic steady state must exist.** A fixed output fed from a fixed
   input in CCM, for example, has none, because the inductor current grows
-  without bound. Nor has a forward converter above its reset limit
+  without bound; neither has a buck whose output is held above its input,
+  whose current flows backwards through the body diode. Nor has a forward converter above its reset limit
   (<EqRef id="forward.reset.Dmax" label="maximum duty ratio" />), because its
   magnetizing current walks up from one period to the next. The status line
   then reports that no steady state was reached.

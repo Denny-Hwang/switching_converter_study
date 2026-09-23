@@ -9,13 +9,15 @@
  * input-bus voltage `vbus` (source-driven mode: a Thevenin source V_oc behind
  * R_s charging C_bus).
  *
- * Switches are ideal apart from the on-resistance R_on; the diode is a
- * constant forward drop V_F that blocks ideally; the inductor may have a
- * winding resistance R_L. Transitions are instantaneous: the node capacitance
- * is charged or discharged at the edges, and the energy lost when the switch
- * discharges it at turn-on is counted as capacitive switching loss. The
- * transformers are ideal except for the magnetizing inductance (turns ratio
- * 1:n with n = N_s/N_p, CLAUDE.md conventions).
+ * Switches are ideal apart from the on-resistance R_on and have an ideal body
+ * diode; the diode is a constant forward drop V_F that blocks ideally; the
+ * inductor may have a winding resistance R_L. Without a node capacitance the
+ * transitions are instantaneous. With one, the inductor current charges it
+ * after turn-off until the diode takes over (the "rise" interval), it rings
+ * in the DCM idle interval, and the switch discharges it at turn-on, where
+ * its energy is counted as capacitive switching loss. The transformers are
+ * ideal except for the magnetizing inductance (turns ratio 1:n with
+ * n = N_s/N_p, CLAUDE.md conventions).
  */
 
 import type { Edge, Interval, Model } from './engine';
@@ -211,9 +213,13 @@ function outputsFrom(c: Common, L: number, specs: Record<string, IntervalSpec>) 
 // ---------------------------------------------------------------------------
 // Buck, boost, buck-boost and flyback share one structure: an on-interval,
 // an off-interval with the diode conducting, and an idle interval once the
-// inductor current reaches zero. With a node capacitance, the idle interval
-// rings (the inductance with C_node), clamped by the switch's body diode at
-// zero switch voltage and ended early if the ringing turns the diode on.
+// inductor current reaches zero. With a node capacitance, the inductor
+// current first charges it after turn-off ("rise") until the diode takes
+// over, and the idle interval rings (the inductance with C_node), clamped by
+// the switch's body diode at zero switch voltage and ended early if the
+// ringing turns the diode on. A current that is negative at turn-off (a buck
+// whose output is held above its input) flows on through the body diode
+// ("rev") instead of vanishing.
 // ---------------------------------------------------------------------------
 
 function twoSwitch(p: SimParams): Model {
@@ -295,49 +301,58 @@ function twoSwitch(p: SimParams): Model {
       ],
     },
   };
+  // The switch's body diode conducts a negative inductor current: the switch
+  // voltage is held at zero and the current returns to the input.
+  const bodyDiode = (next: string): IntervalSpec => ({
+    gate: false,
+    vL: add(vin, mul(ringW, -1), lin([-RL, 'i'])),
+    iOut: onOut,
+    iIn: iL,
+    vSw: zero,
+    iSw: zero,
+    iD: zero,
+    qc: zero,
+    guards: [{ c: unit(c, 'i', -1), d: 0, next, reset: (x) => setState(c, x, { i: 0 }) }],
+  });
   if (!hasVc) {
     const guards: Interval['guards'] = [];
-    if (p.topology === 'boost' && c.resistive) {
-      // The output has fallen below the input: the diode conducts again.
+    specs.rev = bodyDiode('idle');
+    if (p.topology === 'boost' && (c.resistive || c.src)) {
+      // The output has fallen below the input (or the bus has risen above
+      // the output): the diode conducts again.
       const g = add(vout, lin([VF, '1']), mul(vin, -1));
+      const forward = (x: Vec) => evalLin(g, c.names, x) <= 0;
       guards.push({ c: c.names.map((k) => g[k] ?? 0), d: g['1'] ?? 0, next: 'off' });
+      // A reverse current that ends while the diode is forward-biased hands over to it directly.
+      const toIdle = specs.rev.guards[0]!;
+      specs.rev.guards = [
+        { ...toIdle, next: 'off', when: forward },
+        { ...toIdle, when: (x) => !forward(x) },
+      ];
     }
     specs.idle = { gate: false, vL: zero, iOut: zero, iIn: alwaysIn ? iL : zero, vSw: idleVsw, iSw: zero, iD: zero, guards };
   } else {
-    // Ringing: L di/dt = vin - vc - w, C_node dvc/dt = i.
+    // Switch and diode off, the inductor current flows through C_node:
+    // L di/dt = vin - vc - w, C_node dvc/dt = i.
     const ringVL = add(vin, mul(vc, -1), mul(ringW, -1), lin([-RL, 'i']));
     const high = add(offVsw, mul(vc, -1)); // > 0 while the diode stays off
-    specs.ring = {
+    const diodeOn = { c: c.names.map((k) => high[k] ?? 0), d: high['1'] ?? 0, next: 'off', when: (x: Vec) => x[0]! > 0 };
+    const nodeSpec = (guards: Interval['guards']): IntervalSpec => ({
       gate: false,
       vL: ringVL,
-      iOut: zero,
+      iOut: onOut,
       iIn: iL,
       vSw: vc,
       iSw: zero,
       iD: zero,
       qc: iL,
-      guards: [
-        { c: unit(c, 'vc'), d: 0, next: 'clamp', reset: (x) => setState(c, x, { vc: 0 }) },
-        {
-          c: c.names.map((k) => high[k] ?? 0),
-          d: high['1'] ?? 0,
-          next: 'off',
-          when: (x) => x[0]! > 0,
-        },
-      ],
-    };
-    // Body diode of the switch conducts: the switch voltage is held at zero.
-    specs.clamp = {
-      gate: false,
-      vL: add(vin, mul(ringW, -1), lin([-RL, 'i'])),
-      iOut: zero,
-      iIn: iL,
-      vSw: zero,
-      iSw: iL,
-      iD: zero,
-      qc: zero,
-      guards: [{ c: unit(c, 'i', -1), d: 0, next: 'ring', reset: (x) => setState(c, x, { i: 0 }) }],
-    };
+      guards,
+    });
+    // After turn-off the current charges C_node up to the diode's turn-on voltage.
+    specs.rise = nodeSpec([diodeOn, { c: unit(c, 'i'), d: 0, next: 'ring' }]);
+    // DCM idle: the inductance rings with C_node.
+    specs.ring = nodeSpec([{ c: unit(c, 'vc'), d: 0, next: 'clamp', reset: (x) => setState(c, x, { vc: 0 }) }, diodeOn]);
+    specs.clamp = bodyDiode('ring');
   }
 
   const intervals: Record<string, Interval> = {};
@@ -357,10 +372,13 @@ function twoSwitch(p: SimParams): Model {
       return { interval: 'on', x: setState(c, x, { vc: 0 }), loss: 0.5 * c.Cn * x[jc]! ** 2 };
     },
     turnOff(x: Vec): Edge {
-      if (x[0]! > 0) {
-        return { interval: 'off', x: hasVc ? setState(c, x, { vc: evalLin(offVsw, c.names, x) }) : x };
+      const i = x[0]!;
+      if (i > 0) {
+        // The node voltage starts from the on-state voltage R_on i.
+        return hasVc ? { interval: 'rise', x: setState(c, x, { vc: Ron * i }) } : { interval: 'off', x };
       }
-      return { interval: toIdle, x: setState(c, x, hasVc ? { i: 0, vc: 0 } : { i: 0 }) };
+      if (i < 0) return hasVc ? { interval: 'clamp', x: setState(c, x, { vc: 0 }) } : { interval: 'rev', x };
+      return { interval: toIdle, x: hasVc ? setState(c, x, { vc: 0 }) : x };
     },
     outputs: outputsFrom(c, L, specs),
   };
@@ -416,12 +434,19 @@ function forward(p: SimParams): Model {
       iD: iL,
       guards: [],
     },
+    // The rectifier diode blocks while the switch is on: the output inductor
+    // would need a negative current (an output held above n V_g).
+    onL0: { gate: true, vL: zero, vM: vPri, iOut: zero, iIn: iPri, vSw: mul(iPri, Ron), iSw: iPri, iD: zero, guards: [] },
     offL0: { gate: false, vL: zero, vM: resetV, iOut: zero, iIn: mul(iM, -1 / nr), vSw: vswReset, iSw: zero, iD: zero, guards: [] },
     offM0: { gate: false, vL: freewheel, vM: zero, iOut: iL, iIn: zero, vSw: vin, iSw: zero, iD: iL, guards: [] },
     idle: { gate: false, vL: zero, vM: zero, iOut: zero, iIn: zero, vSw: vin, iSw: zero, iD: zero, guards: [] },
   };
   const zeroI = (x: Vec) => setState(c, x, { i: 0 });
   const zeroM = (x: Vec) => setState(c, x, { iM: 0 });
+  const onVL = specs.on!.vL;
+  const rising = mul(onVL, -1); // > 0 while the on-interval would drive the inductor current negative
+  specs.on!.guards = [{ c: unit(c, 'i'), d: 0, next: 'onL0', reset: zeroI }];
+  specs.onL0!.guards = [{ c: c.names.map((k) => rising[k] ?? 0), d: rising['1'] ?? 0, next: 'on' }];
   specs.off!.guards = [
     { c: unit(c, 'i'), d: 0, next: 'offL0', reset: zeroI },
     { c: unit(c, 'iM'), d: 0, next: 'offM0', reset: zeroM },
@@ -446,8 +471,11 @@ function forward(p: SimParams): Model {
     Ts: c.Ts,
     D: p.D,
     intervals,
-    idle: ['offL0', 'idle'],
-    turnOn: (x) => ({ interval: 'on', x }),
+    idle: ['onL0', 'offL0', 'idle'],
+    turnOn(x) {
+      if (x[0]! <= 0 && evalLin(onVL, c.names, x) < 0) return { interval: 'onL0', x: setState(c, x, { i: 0 }) };
+      return { interval: 'on', x };
+    },
     turnOff(x) {
       const i = x[0]! > 0;
       const m = x[c.idx('iM')]! > 0;

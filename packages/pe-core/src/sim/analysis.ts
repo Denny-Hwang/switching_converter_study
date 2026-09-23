@@ -219,10 +219,21 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
   };
 }
 
+/**
+ * Sub-steps per period: 2000 (docs/BUILD_SPEC.md section 4), more when a node
+ * capacitance rings so fast that a ring period would span fewer than twenty
+ * sub-steps (at most 20000), so that events inside the ringing are found.
+ */
+export function stepsFor(p: SimParams): number {
+  if (!p.Cnode || p.topology === 'forward') return 2000;
+  const ringPeriod = 2 * Math.PI * Math.sqrt(p.L * p.Cnode);
+  return Math.min(20000, Math.max(2000, Math.ceil(20 / (p.fs * ringPeriod))));
+}
+
 /** Build the model, start from the analytic operating point, and find the periodic steady state. */
 export function simulate(p: SimParams, opts: SteadyOptions = {}): SimResult {
   const model = buildModel(p);
-  const ss = steadyState(model, initialState(p, model), opts);
+  const ss = steadyState(model, initialState(p, model), { ...opts, stepsPerPeriod: opts.stepsPerPeriod ?? stepsFor(p) });
   return analyse(p, model, ss);
 }
 

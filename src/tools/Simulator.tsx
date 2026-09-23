@@ -30,6 +30,7 @@ export interface SimLabels {
   notConverged: string;
   cycles: string;
   compare: string;
+  compareNote: string;
   quantity: string;
   simulated: string;
   formula: string;
@@ -184,14 +185,31 @@ interface CompareRow {
   eq?: string;
 }
 
-/** Simulated quantities next to the catalogue's equations for the same operating point. */
-export function compareRows(p: SimParams, r: SimResult): CompareRow[] {
+/**
+ * Simulated quantities next to the catalogue's equations, at the operating
+ * point the result was computed for (its own parameters, so a pending run
+ * never pairs new parameters with an old result).
+ */
+export function compareRows(r: SimResult): CompareRow[] {
+  const p = r.params;
   const rows: CompareRow[] = [];
   const Vin = r.avg.v_in!;
   const V = r.avg.v_out!;
   const n = p.n ?? 1;
   if (p.load.kind === 'resistive') {
-    rows.push({ label: '|M|', unit: '', sim: Math.abs(r.M), formula: Math.abs(sim.analyticM(p, r.K, r.Kcrit)) });
+    const RL = p.RL ?? 0;
+    if (p.topology === 'boost' && r.mode === 'CCM' && RL > 0 && !p.Ron && !p.VF) {
+      // the winding resistance is the only loss: the catalogue has the boost's ratio with it
+      rows.push({
+        label: '|M|',
+        unit: '',
+        sim: Math.abs(r.M),
+        formula: evaluate('boost.ccm.M_RL', { D: p.D, R: p.load.R, R_L: RL }),
+        eq: 'boost.ccm.M_RL',
+      });
+    } else {
+      rows.push({ label: '|M|', unit: '', sim: Math.abs(r.M), formula: Math.abs(sim.analyticM(p, r.K, r.Kcrit)) });
+    }
     if (r.mode !== 'DCM' && (p.topology === 'buck' || p.topology === 'boost' || p.topology === 'buckboost')) {
       const eq = `${p.topology}.IL`;
       rows.push({
@@ -203,7 +221,10 @@ export function compareRows(p: SimParams, r: SimResult): CompareRow[] {
       });
     }
   }
-  rows.push({ label: 'Δi_L,pp', unit: 'A', sim: r.pp.i_L!, formula: sim.analyticRipplePP(p, Vin, V) });
+  // the rise of the inductor current while the switch is on: the peak-to-peak
+  // ripple in CCM and DCM, also when a node capacitance rings in the idle interval
+  const iL = r.waveforms.i_L as number[];
+  rows.push({ label: 'Δi_L,pp (on)', unit: 'A', sim: r.max.i_L! - iL[0]!, formula: sim.analyticRipplePP(p, Vin, V) });
   const vds: Record<Topology, [string, Record<string, number>]> = {
     buck: ['buck.Vds', { V_g: Vin }],
     boost: ['boost.Vds', { V }],
@@ -215,7 +236,12 @@ export function compareRows(p: SimParams, r: SimResult): CompareRow[] {
   if (r.mode !== 'DCM' || p.Cnode === undefined || p.Cnode === 0) {
     rows.push({ label: 'V_DS,max', unit: 'V', sim: r.max.v_sw!, formula: evaluate(eq, inputs), eq });
   }
-  if (p.topology === 'flyback' && p.load.kind === 'fixed' && p.source) {
+  if (p.topology === 'flyback' && r.mode === 'DCM') {
+    // in DCM the flyback's input is a loss-free resistor
+    rows.push({ label: 'R_in', unit: 'Ω', sim: Vin / r.avg.i_in!, formula: evaluate('lfr.R_in', { L_M: p.L, f_s: p.fs, D: p.D }), eq: 'lfr.R_in' });
+  }
+  if (p.topology === 'flyback' && p.load.kind === 'fixed' && p.source && r.mode !== 'DCM') {
+    // CCM holds the bus at the critical input voltage
     rows.push({
       label: 'V_g,crit',
       unit: 'V',
@@ -225,6 +251,14 @@ export function compareRows(p: SimParams, r: SimResult): CompareRow[] {
     });
   }
   return rows;
+}
+
+/** The anchor a slider takes when its field is committed: the typed value if it lies outside the slider's range. */
+export function nextAnchor(anchor: number | undefined, raw: string): number | undefined {
+  const v = parseField(raw);
+  if (!(Number.isFinite(v) && v > 0)) return anchor;
+  if (anchor === undefined || v < anchor / 10 ** DECADES || v > anchor * 10 ** DECADES) return v;
+  return anchor;
 }
 
 function initialState(presets: SimPreset[]): { fs: FieldState; values: Record<string, string> } {
@@ -407,11 +441,14 @@ export default function Simulator({ labels, presets }: Props) {
 
   function setField(key: string, raw: string) {
     setValues((prev) => ({ ...prev, [key]: raw }));
-    const v = parseField(raw);
-    const a = anchors[key];
-    if (Number.isFinite(v) && v > 0 && (a === undefined || v < a / 10 ** DECADES || v > a * 10 ** DECADES)) {
-      setAnchors((prev) => ({ ...prev, [key]: v }));
-    }
+  }
+
+  /** Re-anchor a field's slider when the typed value is committed (not on every keystroke). */
+  function commitField(key: string) {
+    setAnchors((prev) => {
+      const a = nextAnchor(prev[key], values[key] ?? '');
+      return a === prev[key] ? prev : { ...prev, [key]: a! };
+    });
   }
 
   function changeTopology(t: Topology) {
@@ -462,13 +499,23 @@ export default function Simulator({ labels, presets }: Props) {
         <label htmlFor={id}>
           {f.label(fstate)} {f.unit && <small>[{f.unit}]</small>}
         </label>
-        <input id={id} type="number" step="any" value={values[f.key] ?? ''} onChange={(e) => setField(f.key, e.target.value)} />
+        <input
+          id={id}
+          type="number"
+          step="any"
+          value={values[f.key] ?? ''}
+          onChange={(e) => setField(f.key, e.target.value)}
+          onBlur={() => commitField(f.key)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') commitField(f.key);
+          }}
+        />
         {f.group !== 'nonideal' && slider(f)}
       </div>
     );
   };
   const eff = result && result.energy.input > 0 ? result.energy.output / result.energy.input : Number.NaN;
-  const rows = result?.converged && !('error' in params) ? compareRows(params, result) : [];
+  const rows = result?.converged ? compareRows(result) : [];
 
   return (
     <div className="pe-tool pe-explorer pe-sim">
@@ -570,6 +617,9 @@ export default function Simulator({ labels, presets }: Props) {
               ))}
             </tbody>
           </table>
+          <p>
+            <small>{labels.compareNote}</small>
+          </p>
           <table className="pe-sim__table">
             <caption>{labels.losses}</caption>
             <tbody>
