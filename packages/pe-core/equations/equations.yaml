@@ -52,8 +52,11 @@ symbol_table:
   V_c: {latex: "V_c", unit: "V", desc: "voltage held by a constant-voltage sink", range: [0.01, 1000], scale: log}
   V_OUT: {latex: "V_\\mathrm{OUT}", unit: "V", desc: "output voltage of a current-output sense amplifier across R_OUT"}
   # --- currents ------------------------------------------------------------
-  Delta_i_L: {latex: "\\Delta i_L", unit: "A", desc: "inductor current ripple, HALF of peak-to-peak (Erickson convention)"}
+  Delta_i_L: {latex: "\\Delta i_L", unit: "A", desc: "inductor current ripple, HALF of peak-to-peak (Erickson convention)", range: [0.001, 10], scale: log}
   Delta_i_pp: {latex: "\\Delta i_{L,\\mathrm{pp}}", unit: "A", desc: "inductor current ripple, peak-to-peak"}
+  I_L: {latex: "I_L", unit: "A", desc: "dc (average) inductor current", range: [0.001, 100], scale: log}
+  Delta_v: {latex: "\\Delta v", unit: "V", desc: "output voltage ripple, HALF of peak-to-peak (Erickson convention)"}
+  U: {latex: "U", unit: "1", desc: "transistor utilization: load power over the transistor's peak voltage times its rms current"}
   I_pk: {latex: "I_\\mathrm{pk}", unit: "A", desc: "peak current", range: [0.001, 100], scale: log}
   I_rms: {latex: "I_\\mathrm{rms}", unit: "A", desc: "rms current", range: [0.001, 50], scale: log}
   I_avg: {latex: "I_\\mathrm{avg}", unit: "A", desc: "average current", range: [0.001, 50], scale: log}
@@ -146,6 +149,8 @@ assumption_labels:
   sawtooth_pwm: {en: "trailing-edge PWM with a ramp from 0 to V_M", ko: "0에서 V_M까지 증가하는 램프를 쓰는 후단 에지(trailing-edge) PWM"}
   real_loop_gain: {en: "loop gain treated as a real magnitude (valid well below crossover)", ko: "루프 이득을 실수 크기로 취급(크로스오버보다 충분히 낮은 주파수에서 유효)"}
   inductor_resistance: {en: "inductor winding resistance R_L; all other components ideal", ko: "인덕터 권선 저항 R_L 외 나머지 소자는 이상적"}
+  capacitor_takes_ripple: {en: "the whole inductor ripple current flows into the output capacitor; the load draws only dc", ko: "인덕터 리플 전류 전체가 출력 커패시터로 흐르고 부하는 직류만 받음"}
+  small_ripple_currents: {en: "rms currents computed with small ripple (flat-topped current pulses)", ko: "소리플 근사로 계산한 실효 전류(윗면이 평평한 전류 펄스)"}
 
 equations:
   # =========================================================================
@@ -1053,3 +1058,240 @@ equations:
     derived_by: python/pe_core/derive/control.py
     tests:
       - {inputs: {T_loop: 9.0}, expect: 0.1}
+
+  # =========================================================================
+  # 03-topologies: dc currents, ripple, stresses, transistor utilization
+  # =========================================================================
+  - id: buck.IL
+    title: "Buck dc inductor current, CCM"
+    title_ko: "벅 인덕터 직류 전류, CCM"
+    lhs: I_L
+    expr: "V/R"
+    symbols: {V: "output voltage", R: "load resistance"}
+    assumptions: [ideal, ccm, steady_state, small_ripple, resistive_load]
+    notes: "charge balance: the output capacitor carries no dc current, so the inductor supplies the whole load current"
+    notes_ko: "전하 평형: 출력 커패시터에는 직류 전류가 흐르지 않으므로 인덕터가 부하 전류 전체를 공급한다"
+    cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {V: 12.0, R: 10.0}, expect: 1.2}
+
+  - id: ripple.Ipk
+    title: "Peak inductor current: dc value plus half the ripple"
+    title_ko: "인덕터 피크 전류: 직류값 + 리플의 절반"
+    lhs: I_pk
+    expr: "I_L + Delta_i_L"
+    symbols: {I_L: "dc inductor current", Delta_i_L: "inductor current ripple, half of peak-to-peak"}
+    assumptions: [ccm, definition]
+    notes: "the switch and the diode carry this peak current in turn"
+    notes_ko: "스위치와 다이오드가 번갈아 이 피크 전류를 흘린다"
+    cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
+    tests:
+      - {inputs: {I_L: 1.2, Delta_i_L: 0.3}, expect: 1.5}
+
+  - id: buck.ripple.v
+    title: "Buck output voltage ripple (half peak-to-peak), CCM"
+    title_ko: "벅 출력 전압 리플(피크-투-피크의 절반), CCM"
+    lhs: Delta_v
+    expr: "Delta_i_L*T_s/(8*C)"
+    symbols: {Delta_i_L: "inductor current ripple, half of peak-to-peak", T_s: "switching period", C: "output capacitance"}
+    assumptions: [ideal, ccm, steady_state, capacitor_takes_ripple]
+    convention: "$\\Delta v$ is HALF the peak-to-peak ripple, like $\\Delta i_L$ (Erickson)"
+    convention_ko: "$\\Delta v$는 $\\Delta i_L$과 마찬가지로 피크-투-피크 리플의 절반(Erickson 규약)"
+    notes: "ideal capacitor; a capacitor's series resistance adds a ripple term of its own"
+    notes_ko: "이상적 커패시터; 커패시터의 직렬 저항은 별도의 리플 항을 더한다"
+    cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {Delta_i_L: 0.3, T_s: 1.0e-5, C: 1.0e-5}, expect: 0.0375}
+
+  - id: boost.IL
+    title: "Boost dc inductor current, CCM"
+    title_ko: "부스트 인덕터 직류 전류, CCM"
+    lhs: I_L
+    expr: "V/((1 - D)*R)"
+    symbols: {V: "output voltage", D: "duty ratio", R: "load resistance"}
+    assumptions: [ideal, ccm, steady_state, small_ripple, resistive_load]
+    notes: "the inductor carries the input current, larger than the load current by the factor $1/(1 - D)$"
+    notes_ko: "인덕터는 입력 전류를 흘리며, 이는 부하 전류보다 $1/(1 - D)$배 크다"
+    cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {V: 24.0, D: 0.5, R: 20.0}, expect: 2.4}
+
+  - id: boost.ripple.iL
+    title: "Boost inductor current ripple (half peak-to-peak), CCM"
+    title_ko: "부스트 인덕터 전류 리플(피크-투-피크의 절반), CCM"
+    lhs: Delta_i_L
+    expr: "V_g*D*T_s/(2*L)"
+    symbols: {V_g: "input voltage", D: "duty ratio", T_s: "switching period", L: "inductance"}
+    assumptions: [ideal, ccm, steady_state, small_ripple]
+    cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {V_g: 12.0, D: 0.5, T_s: 1.0e-5, L: 1.0e-4}, expect: 0.3}
+
+  - id: boost.ripple.v
+    title: "Boost output voltage ripple (half peak-to-peak), CCM"
+    title_ko: "부스트 출력 전압 리플(피크-투-피크의 절반), CCM"
+    lhs: Delta_v
+    expr: "V*D*T_s/(2*R*C)"
+    symbols: {V: "output voltage", D: "duty ratio", T_s: "switching period", R: "load resistance", C: "output capacitance"}
+    assumptions: [ideal, ccm, steady_state, small_ripple, resistive_load]
+    notes: "while the switch is on, the capacitor alone supplies the load"
+    notes_ko: "스위치가 켜져 있는 동안에는 커패시터 혼자 부하에 전류를 공급한다"
+    cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {V: 24.0, D: 0.5, T_s: 1.0e-5, R: 20.0, C: 1.0e-5}, expect: 0.3}
+
+  - id: buckboost.V
+    title: "Buck-boost output voltage magnitude, CCM"
+    title_ko: "벅-부스트 출력 전압의 크기, CCM"
+    lhs: V
+    expr: "D*V_g/(1 - D)"
+    symbols: {D: "duty ratio", V_g: "input voltage"}
+    assumptions: [ideal, ccm, steady_state, small_ripple]
+    convention: "magnitude of the inverted output; $V$ is positive"
+    convention_ko: "반전된 출력의 크기; $V$는 양수"
+    cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {D: 0.5, V_g: 12.0}, expect: 12.0}
+
+  - id: buckboost.IL
+    title: "Buck-boost dc inductor current, CCM"
+    title_ko: "벅-부스트 인덕터 직류 전류, CCM"
+    lhs: I_L
+    expr: "V/((1 - D)*R)"
+    symbols: {V: "output voltage magnitude", D: "duty ratio", R: "load resistance"}
+    assumptions: [ideal, ccm, steady_state, small_ripple, resistive_load]
+    notes: "the inductor delivers current to the output only during the off-interval"
+    notes_ko: "인덕터는 오프 구간에만 출력으로 전류를 보낸다"
+    cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {V: 12.0, D: 0.5, R: 10.0}, expect: 2.4}
+
+  - id: buckboost.ripple.iL
+    title: "Buck-boost inductor current ripple (half peak-to-peak), CCM"
+    title_ko: "벅-부스트 인덕터 전류 리플(피크-투-피크의 절반), CCM"
+    lhs: Delta_i_L
+    expr: "V_g*D*T_s/(2*L)"
+    symbols: {V_g: "input voltage", D: "duty ratio", T_s: "switching period", L: "inductance"}
+    assumptions: [ideal, ccm, steady_state, small_ripple]
+    cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {V_g: 12.0, D: 0.5, T_s: 1.0e-5, L: 1.0e-4}, expect: 0.3}
+
+  - id: buckboost.ripple.v
+    title: "Buck-boost output voltage ripple (half peak-to-peak), CCM"
+    title_ko: "벅-부스트 출력 전압 리플(피크-투-피크의 절반), CCM"
+    lhs: Delta_v
+    expr: "V*D*T_s/(2*R*C)"
+    symbols: {V: "output voltage magnitude", D: "duty ratio", T_s: "switching period", R: "load resistance", C: "output capacitance"}
+    assumptions: [ideal, ccm, steady_state, small_ripple, resistive_load]
+    notes: "while the switch is on, the capacitor alone supplies the load"
+    notes_ko: "스위치가 켜져 있는 동안에는 커패시터 혼자 부하에 전류를 공급한다"
+    cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {V: 12.0, D: 0.5, T_s: 1.0e-5, R: 10.0, C: 1.0e-5}, expect: 0.3}
+
+  - id: buckboost.Vds
+    title: "Buck-boost switch voltage while off (also the diode's blocking voltage)"
+    title_ko: "벅-부스트 스위치의 오프 전압(다이오드의 차단 전압과 같음)"
+    lhs: V_DS
+    expr: "V_g + V"
+    symbols: {V_g: "input voltage", V: "output voltage magnitude"}
+    assumptions: [ideal, ccm, steady_state, small_ripple]
+    cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {V_g: 12.0, V: 12.0}, expect: 24.0}
+
+  - id: forward.Vds
+    title: "Forward converter switch voltage during transformer reset"
+    title_ko: "포워드 컨버터: 변압기 리셋 중 스위치 전압"
+    lhs: V_DS
+    expr: "V_g*(1 + 1/n_r)"
+    symbols: {V_g: "input voltage", n_r: "reset-winding to primary turns ratio N_r/N_p"}
+    assumptions: [ideal, steady_state]
+    notes: "the reset winding clamps the primary at $-V_g/n_r$; with $n_r = 1$ the switch blocks twice the input voltage"
+    notes_ko: "리셋 권선이 1차 측을 $-V_g/n_r$로 클램프한다; $n_r = 1$이면 스위치는 입력 전압의 두 배를 차단한다"
+    cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {V_g: 48.0, n_r: 1.0}, expect: 96.0}
+
+  - id: forward.ripple.iL
+    title: "Forward converter output inductor ripple (half peak-to-peak), CCM"
+    title_ko: "포워드 컨버터 출력 인덕터 리플(피크-투-피크의 절반), CCM"
+    lhs: Delta_i_L
+    expr: "(n*V_g - V)*D*T_s/(2*L)"
+    symbols: {n: "turns ratio N_s/N_p", V_g: "input voltage", V: "output voltage", D: "duty ratio", T_s: "switching period", L: "output inductance"}
+    constraints: ["V < n*V_g"]
+    assumptions: [ideal, ccm, steady_state, small_ripple]
+    notes: "the output stage is a buck converter fed with $n V_g$ while the switch is on"
+    notes_ko: "출력단은 스위치가 켜져 있는 동안 $n V_g$를 공급받는 벅 컨버터다"
+    cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {n: 0.5, V_g: 20.0, V: 4.0, D: 0.4, T_s: 1.0e-5, L: 1.0e-4}, expect: 0.12}
+
+  - id: util.buck
+    title: "Transistor utilization of the buck converter, CCM"
+    title_ko: "벅 컨버터의 트랜지스터 이용률, CCM"
+    lhs: U
+    expr: "sqrt(D)"
+    symbols: {D: "duty ratio"}
+    assumptions: [ideal, ccm, steady_state, small_ripple_currents]
+    notes: "load power over the transistor's peak voltage $V_g$ times its rms current"
+    notes_ko: "부하 전력을 트랜지스터의 피크 전압 $V_g$와 실효 전류의 곱으로 나눈 값"
+    cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {D: 0.25}, expect: 0.5}
+
+  - id: util.boost
+    title: "Transistor utilization of the boost converter, CCM"
+    title_ko: "부스트 컨버터의 트랜지스터 이용률, CCM"
+    lhs: U
+    expr: "(1 - D)/sqrt(D)"
+    symbols: {D: "duty ratio"}
+    assumptions: [ideal, ccm, steady_state, small_ripple_currents]
+    notes: "the transistor blocks $V$ and carries the inductor current during $D T_s$"
+    notes_ko: "트랜지스터는 $V$를 차단하고 $D T_s$ 동안 인덕터 전류를 흘린다"
+    cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {D: 0.25}, expect: 1.5}
+
+  - id: util.buckboost
+    title: "Transistor utilization of the buck-boost and flyback converters, CCM"
+    title_ko: "벅-부스트·플라이백 컨버터의 트랜지스터 이용률, CCM"
+    lhs: U
+    expr: "(1 - D)*sqrt(D)"
+    symbols: {D: "duty ratio"}
+    assumptions: [ideal, ccm, steady_state, small_ripple_currents]
+    notes: "the transistor blocks $V_g + V$ (flyback: $V_g + V/n$); the turns ratio cancels, and the maximum is at $D = 1/3$"
+    notes_ko: "트랜지스터는 $V_g + V$(플라이백: $V_g + V/n$)를 차단한다; 권선비는 상쇄되며, 최댓값은 $D = 1/3$에서"
+    cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {D: 0.25}, expect: 0.375}
+
+  - id: util.forward
+    title: "Transistor utilization of the forward converter with a reset winding, CCM"
+    title_ko: "리셋 권선이 있는 포워드 컨버터의 트랜지스터 이용률, CCM"
+    lhs: U
+    expr: "sqrt(D)/(1 + 1/n_r)"
+    symbols: {D: "duty ratio", n_r: "reset-winding to primary turns ratio N_r/N_p"}
+    assumptions: [ideal, ccm, steady_state, small_ripple_currents]
+    notes: "magnetizing current neglected; the duty ratio must stay below the reset limit"
+    notes_ko: "자화 전류는 무시; 듀티비는 리셋 한계 아래로 유지되어야 한다"
+    cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {D: 0.25, n_r: 1.0}, expect: 0.25}

@@ -1,0 +1,133 @@
+---
+title: Buck converter
+description: The step-down converter in CCM, covering its dc inductor current, current and voltage ripple, peak current, switch stress, and the load at which it leaves CCM.
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Find the buck converter's dc inductor current, current ripple and peak current at an operating point.
+- Estimate the output voltage ripple, and know what the ideal formula leaves out.
+- State the voltage the switch and the diode must block, and where the buck leaves CCM.
+
+## Theory
+
+### Circuit and conversion ratio
+
+The buck converter connects a switch between the input and the switch node,
+a diode from the switch node to ground, and an L-C low-pass filter from the
+switch node to the load <Cite key="erickson2020" where="Ch. 2" />. The filter
+passes the average of the switch node, so in CCM the conversion ratio equals
+the duty ratio (<EqRef id="buck.ccm.M" label="buck conversion ratio" />).
+
+### DC inductor current
+
+The output capacitor carries no dc current (charge balance), so the inductor
+supplies the whole load current:
+
+<Eq id="buck.IL" />
+
+### Current ripple and peak current
+
+While the switch is on, the inductor sees the difference between input and
+output voltage, and its current rises linearly; while the diode conducts,
+it sees the output voltage with the opposite sign and falls back
+<Cite key="erickson2020" where="Ch. 2" />. The half-ripple, and the same
+ripple peak-to-peak written with the switching frequency, are
+
+<Eq id="buck.ripple.iL" />
+
+<Eq id="buck.ripple.iL_pp" />
+
+The switch and the diode carry the inductor current in turn, so both see its
+peak value:
+
+<Eq id="ripple.Ipk" />
+
+### Output voltage ripple
+
+The load takes the dc part of the inductor current and the capacitor takes
+the triangular ripple. During the half-period in which that ripple is
+positive, the capacitor gains a charge that raises its voltage from its
+minimum to its maximum <Cite key="erickson2020" where="Ch. 2" />:
+
+<Eq id="buck.ripple.v" />
+
+The capacitor is fed by a continuous triangular current rather than by
+pulses, which keeps the buck's output ripple small for a given capacitance.
+The derivation is on the [derivations page](../../02-theory/derivations/#deriv-topologies).
+
+### Switch stress and the mode boundary
+
+When the switch is off, it blocks the input voltage; when it is on, the
+diode blocks the input voltage. Both carry the peak inductor current
+<Cite key="erickson2020" where="Ch. 6" />. At light load the inductor current
+reaches zero and the buck enters DCM once $K$ falls below
+<EqRef id="Kcrit.buck" label="its critical value" />; its output then rises
+above $D V_g$ (<EqRef id="buck.dcm.M" label="DCM ratio" />).
+
+## Worked example
+
+The synthetic buck of the [switching-principle page](../../02-theory/switching-principle/),
+with its currents and ripple:
+
+<Worked example="buck-basic" show={['V_g', 'D', 'f_s', 'L', 'C', 'R', 'V', 'I_L', 'Delta_i_L', 'Delta_i_pp', 'I_pk', 'Delta_v', 'K', 'K_crit']} />
+
+The half-ripple of <Val example="buck-basic" name="Delta_i_L" /> is small
+compared with the dc current of <Val example="buck-basic" name="I_L" />, so
+the small-ripple approximation holds. The switch and the diode must carry
+<Val example="buck-basic" name="I_pk" /> at the peak, and the ideal output
+ripple is <Val example="buck-basic" name="Delta_v" />, a small fraction of the
+output voltage.
+
+## Try it
+
+<TryIt eq="buck.ripple.v" example="buck-basic" sweep="C" />
+
+Sweep $C$ over two decades (logarithmic axis): the ripple falls in inverse
+proportion to the capacitance. Then halve $T_s$: at the same current ripple
+the voltage ripple halves. In a real converter the current ripple halves
+too, so doubling the switching frequency divides the output ripple by four.
+
+## Bench exercise
+
+On a low-voltage buck evaluation board, measure the inductor current with a
+current probe and read its peak-to-peak ripple; compare it with the
+peak-to-peak formula at the measured input voltage, output voltage and
+switching frequency. Then measure the output ripple across the capacitor
+terminals with a short probe ground connection. Expect more ripple than the
+ideal formula predicts: the capacitor's series resistance and inductance
+add their own terms.
+
+## Gotchas
+
+- **The capacitor's series resistance adds ripple.** A capacitor with series
+  resistance adds a voltage equal to that resistance times the peak-to-peak
+  ripple current, in phase with the current. Compare it with the capacitive
+  term computed above: depending on the capacitor, either can dominate.
+- **Size the inductor for the peak current, not the dc current.** Above its
+  saturation flux density a magnetic core loses its permeability and the
+  inductance collapses <Cite key="erickson2020" where="Ch. 10" />; the peak
+  of the inductor current is what must stay below that limit.
+- **The ripple formula assumes that the capacitor takes all the ripple.** That
+  holds when the capacitor's impedance at the switching frequency is much
+  lower than the load's.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch2', 'ti-slva057', 'ti-slva477']} />
+
+## Quiz
+
+<Quiz id="03-topologies/buck" />

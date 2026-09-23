@@ -1,0 +1,22 @@
+synthetic: true
+label: "Synthetic forward converter example (round numbers, not a real design)"
+label_ko: "합성 포워드 컨버터 예제 (단순한 어림수이며 실제 설계가 아님)"
+params:
+  V_g: 48
+  n: 0.5
+  n_r: 1
+  D: 0.4
+  f_s: 1.0e5
+  L: 1.0e-4
+  R: 5
+steps:
+  - def.Ts
+  - forward.reset.Dmax
+  - forward.ccm.M
+  - def.V
+  - forward.Vds
+  - forward.ripple.iL
+  - buck.IL
+  - util.forward
+checks:
+  - {when: "D < D_max", then: {en: "the transformer resets", ko: "변압기가 리셋됨"}, else: {en: "the transformer cannot reset", ko: "변압기가 리셋되지 못함"}}

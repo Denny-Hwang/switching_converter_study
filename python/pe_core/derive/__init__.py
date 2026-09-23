@@ -12,6 +12,7 @@ MODULES = (
     "ccm_ratios",
     "dcm",
     "flyback",
+    "topologies",
     "small_signal",
     "control",
     "energy",

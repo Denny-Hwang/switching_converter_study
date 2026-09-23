@@ -1,0 +1,51 @@
+# Quiz for 03-topologies/buck. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A buck converter delivers $5\,\mathrm{V}$ into a $2.5\,\Omega$ load in CCM. What is its dc inductor current?'
+    options:
+      - '$0.5\,\mathrm{A}$'
+      - '$1\,\mathrm{A}$'
+      - '$2\,\mathrm{A}$'
+      - 'It depends on the duty ratio'
+    answer: 2
+    explain: 'The output capacitor carries no dc current, so the inductor supplies the whole load current, the output voltage divided by the load resistance.'
+  - q: 'The dc inductor current is $2\,\mathrm{A}$ and the half-ripple $\Delta i_L$ is $0.4\,\mathrm{A}$. What peak current must the switch carry?'
+    options:
+      - '$2\,\mathrm{A}$'
+      - '$2.2\,\mathrm{A}$'
+      - '$2.4\,\mathrm{A}$'
+      - '$2.8\,\mathrm{A}$'
+    answer: 2
+    explain: 'The peak is the dc value plus half the peak-to-peak ripple, and $\Delta i_L$ already is that half.'
+  - q: 'The switching frequency of a CCM buck is doubled, with the same $L$, $C$, duty ratio and load. What happens to the ideal output voltage ripple?'
+    options:
+      - 'It halves'
+      - 'It falls to a quarter'
+      - 'It is unchanged'
+      - 'It doubles'
+    answer: 1
+    explain: 'The current ripple is proportional to $T_s$, and the voltage ripple is proportional to the current ripple times $T_s$, so it scales with $T_s^2$.'
+  - q: 'What voltage must the diode of an ideal buck converter block while the switch is on?'
+    options:
+      - 'The output voltage'
+      - 'The input voltage'
+      - 'The difference between input and output voltage'
+      - 'Twice the input voltage'
+    answer: 1
+    explain: 'With the switch on, the switch node sits at $V_g$ while the diode anode is grounded, so the diode blocks $V_g$.'
+  - q: 'Why is the output ripple of a buck converter small compared with that of a boost with the same output capacitance?'
+    options:
+      - 'The buck switches faster'
+      - 'The buck output capacitor receives a continuous triangular current, while the boost capacitor must supply the load alone during the on-interval'
+      - 'The buck has no diode'
+      - 'The buck output voltage is lower'
+    answer: 1
+    explain: 'In the buck the inductor feeds the output continuously and only the small triangular ripple reaches the capacitor. In the boost, the diode current pulses, and the capacitor alone supplies the load during $D T_s$.'
+  - q: 'A buck capacitor has a series resistance. Its measured output ripple is larger than the ideal formula predicts. Why?'
+    options:
+      - 'The series resistance adds a ripple voltage equal to the resistance times the peak-to-peak ripple current'
+      - 'The series resistance lowers the switching frequency'
+      - 'The series resistance increases the inductor ripple'
+      - 'The series resistance makes the converter enter DCM'
+    answer: 0
+    explain: 'The ripple current flows through the capacitor and its series resistance; the resistive drop adds to the capacitive ripple and can be the larger of the two.'

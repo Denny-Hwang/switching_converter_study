@@ -1,0 +1,23 @@
+synthetic: true
+label: "Synthetic ideal boost example (round numbers, not a real design)"
+label_ko: "이상적인 합성 부스트 예제 (단순한 어림수이며 실제 설계가 아님)"
+params:
+  V_g: 12
+  D: 0.5
+  f_s: 1.0e5
+  L: 1.0e-4
+  C: 1.0e-5
+  R: 20
+steps:
+  - def.Ts
+  - boost.ccm.M
+  - def.V
+  - boost.IL
+  - boost.ripple.iL
+  - ripple.Ipk
+  - boost.ripple.v
+  - K.def
+  - Kcrit.boost
+  - util.boost
+checks:
+  - {when: "K > K_crit", then: {en: "CCM", ko: "CCM"}, else: {en: "DCM", ko: "DCM"}}

@@ -47,6 +47,11 @@ export default defineConfig({
               translations: { ko: '02 · 이론' },
               items: [{ autogenerate: { directory: '02-theory' } }],
             },
+            {
+              label: '03 · Topologies',
+              translations: { ko: '03 · 토폴로지' },
+              items: [{ autogenerate: { directory: '03-topologies' } }],
+            },
           ],
         },
         {
