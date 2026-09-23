@@ -1,0 +1,25 @@
+synthetic: true
+label: "Synthetic boost example (round numbers, not a real design)"
+label_ko: "합성 부스트 예제(라운드 넘버이며 실제 설계가 아님)"
+params:
+  V_g: 12
+  D: 0.5
+  f_s: 1.0e5
+  L: 1.0e-4
+  C: 1.0e-5
+  R: 20
+  R_L: 0.2
+steps:
+  - def.Ts
+  - {eq: boost.ccm.M, as: M_ideal}
+  - boost.ccm.M_RL
+  - boost.ccm.eta_RL
+  - def.V
+  - K.def
+  - Kcrit.boost
+  - boost.ss.Gd0
+  - boost.ss.w0
+  - boost.ss.Q
+  - boost.ss.wz
+checks:
+  - {when: "K > K_crit", then: {en: "CCM", ko: "CCM"}, else: {en: "DCM", ko: "DCM"}}

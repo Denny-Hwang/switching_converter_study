@@ -33,7 +33,7 @@ function eq<K extends string>(vars: readonly K[], fn: (p: Record<K, number>) => 
 
 const sq = (x: number): number => x * x;
 
-export const evaluators: Readonly<Record<string, Evaluator>> = {
+const base: Readonly<Record<string, Evaluator>> = {
   // --- CCM conversion ratios (volt-second balance) -------------------------
   'buck.ccm.M': eq(['D'], ({ D }) => D),
   'boost.ccm.M': eq(['D'], ({ D }) => 1 / (1 - D)),
@@ -96,6 +96,56 @@ export const evaluators: Readonly<Record<string, Evaluator>> = {
     (I_SENSE * R_SENSE * R_OUT) / R_IN,
   ),
 };
+
+/** Evaluators added with the 02-theory pages (Phase 2). */
+const theory: Readonly<Record<string, Evaluator>> = {
+  // --- definitions used to chain worked examples -------------------------------
+  'def.Ts': eq(['f_s'], ({ f_s }) => 1 / f_s),
+  'def.V': eq(['M', 'V_g'], ({ M, V_g }) => M * V_g),
+
+  // --- averaging and balance --------------------------------------------------
+  'sw.v_avg': eq(['D', 'V_g'], ({ D, V_g }) => D * V_g),
+  'vsb.v_off': eq(['D', 'v_Lon'], ({ D, v_Lon }) => (-D * v_Lon) / (1 - D)),
+  'csb.i_off': eq(['D', 'i_Con'], ({ D, i_Con }) => (-D * i_Con) / (1 - D)),
+  'buck.dcm.D2': eq(['D', 'M'], ({ D, M }) => (D * (1 - M)) / M),
+  'boost.ccm.M_RL': eq(['D', 'R_L', 'R'], ({ D, R_L, R }) => 1 / ((1 - D) * (1 + R_L / (sq(1 - D) * R)))),
+  'boost.ccm.eta_RL': eq(['D', 'R_L', 'R'], ({ D, R_L, R }) => {
+    // eta = P_out / P_in = D'^2 R / (D'^2 R + R_L)
+    const k = sq(1 - D) * R;
+    return k / (k + R_L);
+  }),
+
+  // --- small-signal CCM transfer functions -----------------------------------
+  'buck.ss.Gd0': eq(['V_g'], ({ V_g }) => V_g),
+  'buck.ss.w0': eq(['L', 'C'], ({ L, C }) => 1 / Math.sqrt(L * C)),
+  'buck.ss.Q': eq(['R', 'C', 'L'], ({ R, C, L }) => R * Math.sqrt(C / L)),
+  'boost.ss.Gd0': eq(['V_g', 'D'], ({ V_g, D }) => V_g / sq(1 - D)),
+  'boost.ss.w0': eq(['D', 'L', 'C'], ({ D, L, C }) => (1 - D) / Math.sqrt(L * C)),
+  'boost.ss.Q': eq(['D', 'R', 'C', 'L'], ({ D, R, C, L }) => (1 - D) * R * Math.sqrt(C / L)),
+  'boost.ss.wz': eq(['D', 'R', 'L'], ({ D, R, L }) => (sq(1 - D) * R) / L),
+  'buckboost.ss.Gd0': eq(['V_g', 'D'], ({ V_g, D }) => V_g / sq(1 - D)),
+  'buckboost.ss.w0': eq(['D', 'L', 'C'], ({ D, L, C }) => (1 - D) / Math.sqrt(L * C)),
+  'buckboost.ss.Q': eq(['D', 'R', 'C', 'L'], ({ D, R, C, L }) => (1 - D) * R * Math.sqrt(C / L)),
+  'buckboost.ss.wz': eq(['D', 'R', 'L'], ({ D, R, L }) => (sq(1 - D) * R) / (D * L)),
+
+  // --- control basics --------------------------------------------------------
+  'pwm.d': eq(['V_ctrl', 'V_M'], ({ V_ctrl, V_M }) => V_ctrl / V_M),
+  'loop.T': eq(['G_c', 'G_vd', 'H', 'V_M'], ({ G_c, G_vd, H, V_M }) => (G_c * G_vd * H) / V_M),
+  'loop.suppression': eq(['T_loop'], ({ T_loop }) => 1 / (1 + T_loop)),
+};
+
+function merge(...groups: Readonly<Record<string, Evaluator>>[]): Readonly<Record<string, Evaluator>> {
+  const out: Record<string, Evaluator> = {};
+  for (const g of groups) {
+    for (const [id, fn] of Object.entries(g)) {
+      if (id in out) throw new Error(`duplicate evaluator id ${id}`);
+      out[id] = fn;
+    }
+  }
+  return out;
+}
+
+export const evaluators: Readonly<Record<string, Evaluator>> = merge(base, theory);
 
 export function evaluate(id: string, inputs: Inputs): number {
   const fn = evaluators[id];

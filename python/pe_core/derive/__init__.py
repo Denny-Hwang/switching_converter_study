@@ -7,4 +7,15 @@ pytest checks ``simplify(derived - yaml_expr) == 0`` for every equation whose
 derivations page. ``MODULES`` fixes the page order.
 """
 
-MODULES = ("ccm_ratios", "dcm", "flyback", "energy", "magnetics", "harvesting", "sensing")
+MODULES = (
+    "averaging",
+    "ccm_ratios",
+    "dcm",
+    "flyback",
+    "small_signal",
+    "control",
+    "energy",
+    "magnetics",
+    "harvesting",
+    "sensing",
+)

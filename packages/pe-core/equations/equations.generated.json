@@ -83,6 +83,22 @@
     "ideal_amplifier": {
       "en": "ideal amplifier (no offset, gain error or output headroom limit)",
       "ko": "이상적 증폭기(오프셋·이득 오차·출력 헤드룸 제한 없음)"
+    },
+    "small_signal": {
+      "en": "small-signal (linearised) model around a CCM operating point",
+      "ko": "CCM 동작점 주변의 소신호(선형화) 모델"
+    },
+    "sawtooth_pwm": {
+      "en": "trailing-edge PWM with a ramp from 0 to V_M",
+      "ko": "0에서 V_M까지 증가하는 램프를 쓰는 후단 에지(trailing-edge) PWM"
+    },
+    "real_loop_gain": {
+      "en": "loop gain treated as a real magnitude (valid well below crossover)",
+      "ko": "루프 이득을 실수 크기로 취급(크로스오버보다 충분히 낮은 주파수에서 유효)"
+    },
+    "inductor_resistance": {
+      "en": "inductor winding resistance R_L; all other components ideal",
+      "ko": "인덕터 권선 저항 R_L 외 나머지 소자는 이상적"
     }
   },
   "symbols": {
@@ -106,6 +122,11 @@
       "unit": "T",
       "desc": "peak flux density"
     },
+    "C": {
+      "latex": "C",
+      "unit": "F",
+      "desc": "output filter capacitance"
+    },
     "C_node": {
       "latex": "C_\\mathrm{node}",
       "unit": "F",
@@ -115,6 +136,11 @@
       "latex": "D",
       "unit": "1",
       "desc": "duty ratio: switch on-time divided by T_s"
+    },
+    "D_2": {
+      "latex": "D_2",
+      "unit": "1",
+      "desc": "diode-conduction interval as a fraction of T_s (DCM)"
     },
     "D_max": {
       "latex": "D_\\mathrm{max}",
@@ -140,6 +166,26 @@
       "latex": "E_\\mathrm{lk}",
       "unit": "J",
       "desc": "energy stored in the leakage inductance at turn-off"
+    },
+    "G_c": {
+      "latex": "G_c",
+      "unit": "1",
+      "desc": "compensator gain magnitude"
+    },
+    "G_d0": {
+      "latex": "G_{d0}",
+      "unit": "V",
+      "desc": "dc gain of the control-to-output transfer function (magnitude)"
+    },
+    "G_vd": {
+      "latex": "G_{vd}",
+      "unit": "V",
+      "desc": "control-to-output gain magnitude"
+    },
+    "H": {
+      "latex": "H",
+      "unit": "1",
+      "desc": "sensor (feedback divider) gain"
     },
     "I_SENSE": {
       "latex": "I_\\mathrm{SENSE}",
@@ -216,6 +262,11 @@
       "unit": "W/m³",
       "desc": "core loss per unit volume"
     },
+    "Q": {
+      "latex": "Q",
+      "unit": "1",
+      "desc": "quality factor of the LC poles"
+    },
     "Q_g": {
       "latex": "Q_g",
       "unit": "C",
@@ -230,6 +281,11 @@
       "latex": "R_\\mathrm{IN}",
       "unit": "Ω",
       "desc": "gain-setting input resistor of a current-output sense amplifier"
+    },
+    "R_L": {
+      "latex": "R_L",
+      "unit": "Ω",
+      "desc": "inductor winding (copper) resistance"
     },
     "R_OUT": {
       "latex": "R_\\mathrm{OUT}",
@@ -255,6 +311,16 @@
       "latex": "R_x",
       "unit": "Ω",
       "desc": "resistance carrying the current (R_DS(on), winding DCR, ESR, ...)"
+    },
+    "S_dist": {
+      "latex": "S",
+      "unit": "1",
+      "desc": "fraction of an output disturbance that remains with the loop closed"
+    },
+    "T_loop": {
+      "latex": "T",
+      "unit": "1",
+      "desc": "loop gain magnitude"
     },
     "T_s": {
       "latex": "T_s",
@@ -286,6 +352,11 @@
       "unit": "V",
       "desc": "gate-drive voltage amplitude"
     },
+    "V_M": {
+      "latex": "V_M",
+      "unit": "V",
+      "desc": "peak-to-peak amplitude of the PWM ramp"
+    },
     "V_OUT": {
       "latex": "V_\\mathrm{OUT}",
       "unit": "V",
@@ -300,6 +371,11 @@
       "latex": "V_c",
       "unit": "V",
       "desc": "voltage held by a constant-voltage sink"
+    },
+    "V_ctrl": {
+      "latex": "V_\\mathrm{ctrl}",
+      "unit": "V",
+      "desc": "PWM control voltage"
     },
     "V_g": {
       "latex": "V_g",
@@ -336,6 +412,11 @@
       "unit": "1",
       "desc": "Steinmetz flux-density exponent"
     },
+    "eta": {
+      "latex": "\\eta",
+      "unit": "1",
+      "desc": "efficiency P_out/P_in"
+    },
     "eta_ext": {
       "latex": "\\eta_\\mathrm{ext}",
       "unit": "1",
@@ -355,6 +436,16 @@
       "latex": "f_s",
       "unit": "Hz",
       "desc": "switching frequency 1/T_s"
+    },
+    "i_Coff": {
+      "latex": "i_{C,\\mathrm{off}}",
+      "unit": "A",
+      "desc": "capacitor current during the off-interval"
+    },
+    "i_Con": {
+      "latex": "i_{C,\\mathrm{on}}",
+      "unit": "A",
+      "desc": "capacitor current during the on-interval"
     },
     "k": {
       "latex": "k",
@@ -391,6 +482,16 @@
       "unit": "1",
       "desc": "reset-winding to primary turns ratio N_r/N_p"
     },
+    "omega_0": {
+      "latex": "\\omega_0",
+      "unit": "rad/s",
+      "desc": "angular resonant (corner) frequency of the LC poles"
+    },
+    "omega_z": {
+      "latex": "\\omega_z",
+      "unit": "rad/s",
+      "desc": "angular frequency of the right-half-plane zero"
+    },
     "r_d": {
       "latex": "r_d",
       "unit": "Ω",
@@ -400,6 +501,21 @@
       "latex": "t_\\mathrm{on}",
       "unit": "s",
       "desc": "switch on-time"
+    },
+    "v_Loff": {
+      "latex": "v_{L,\\mathrm{off}}",
+      "unit": "V",
+      "desc": "inductor voltage during the off-interval"
+    },
+    "v_Lon": {
+      "latex": "v_{L,\\mathrm{on}}",
+      "unit": "V",
+      "desc": "inductor voltage during the on-interval"
+    },
+    "v_s_avg": {
+      "latex": "\\langle v_s \\rangle",
+      "unit": "V",
+      "desc": "average (dc component) of the switch-node voltage"
     }
   },
   "constants": {
@@ -442,7 +558,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 128
+      "yaml_line": 153
     },
     "boost.ccm.M": {
       "id": "boost.ccm.M",
@@ -477,7 +593,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 143
+      "yaml_line": 168
     },
     "buckboost.ccm.M": {
       "id": "buckboost.ccm.M",
@@ -512,7 +628,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 158
+      "yaml_line": 183
     },
     "flyback.ccm.M": {
       "id": "flyback.ccm.M",
@@ -549,7 +665,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 173
+      "yaml_line": 198
     },
     "forward.ccm.M": {
       "id": "forward.ccm.M",
@@ -586,7 +702,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 188
+      "yaml_line": 213
     },
     "forward.reset.Dmax": {
       "id": "forward.reset.Dmax",
@@ -619,7 +735,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 203
+      "yaml_line": 228
     },
     "buck.ripple.iL": {
       "id": "buck.ripple.iL",
@@ -662,7 +778,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 221
+      "yaml_line": 246
     },
     "buck.ripple.iL_pp": {
       "id": "buck.ripple.iL_pp",
@@ -705,7 +821,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 235
+      "yaml_line": 260
     },
     "K.def": {
       "id": "K.def",
@@ -741,7 +857,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 252
+      "yaml_line": 277
     },
     "Kcrit.buck": {
       "id": "Kcrit.buck",
@@ -777,7 +893,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 265
+      "yaml_line": 290
     },
     "Kcrit.boost": {
       "id": "Kcrit.boost",
@@ -813,7 +929,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 278
+      "yaml_line": 303
     },
     "Kcrit.buckboost": {
       "id": "Kcrit.buckboost",
@@ -849,7 +965,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 293
+      "yaml_line": 318
     },
     "Kcrit.flyback": {
       "id": "Kcrit.flyback",
@@ -887,7 +1003,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 306
+      "yaml_line": 331
     },
     "buck.dcm.M": {
       "id": "buck.dcm.M",
@@ -925,7 +1041,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 324
+      "yaml_line": 349
     },
     "boost.dcm.M": {
       "id": "boost.dcm.M",
@@ -963,7 +1079,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 339
+      "yaml_line": 364
     },
     "buckboost.dcm.M": {
       "id": "buckboost.dcm.M",
@@ -1001,7 +1117,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 354
+      "yaml_line": 379
     },
     "flyback.dcm.M": {
       "id": "flyback.dcm.M",
@@ -1039,7 +1155,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 369
+      "yaml_line": 394
     },
     "dcm.P_in": {
       "id": "dcm.P_in",
@@ -1083,7 +1199,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 389
+      "yaml_line": 414
     },
     "lfr.R_in": {
       "id": "lfr.R_in",
@@ -1125,7 +1241,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 405
+      "yaml_line": 430
     },
     "flyback.V_crit": {
       "id": "flyback.V_crit",
@@ -1167,7 +1283,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 421
+      "yaml_line": 446
     },
     "flyback.Vds_off": {
       "id": "flyback.Vds_off",
@@ -1207,7 +1323,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 435
+      "yaml_line": 460
     },
     "flyback.Vds_clamped": {
       "id": "flyback.Vds_clamped",
@@ -1249,7 +1365,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 449
+      "yaml_line": 474
     },
     "flyback.diode.VR": {
       "id": "flyback.diode.VR",
@@ -1286,7 +1402,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 463
+      "yaml_line": 488
     },
     "flyback.Ipk.dcm": {
       "id": "flyback.Ipk.dcm",
@@ -1326,7 +1442,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 475
+      "yaml_line": 500
     },
     "flyback.leak.E": {
       "id": "flyback.leak.E",
@@ -1360,7 +1476,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 492
+      "yaml_line": 517
     },
     "flyback.leak.P": {
       "id": "flyback.leak.P",
@@ -1395,7 +1511,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 506
+      "yaml_line": 531
     },
     "dcm.ring.f": {
       "id": "dcm.ring.f",
@@ -1429,7 +1545,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 520
+      "yaml_line": 545
     },
     "loss.cond": {
       "id": "loss.cond",
@@ -1463,7 +1579,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 534
+      "yaml_line": 559
     },
     "loss.sw.cap": {
       "id": "loss.sw.cap",
@@ -1501,7 +1617,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 546
+      "yaml_line": 571
     },
     "loss.gate": {
       "id": "loss.gate",
@@ -1537,7 +1653,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 558
+      "yaml_line": 583
     },
     "loss.diode": {
       "id": "loss.diode",
@@ -1575,7 +1691,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 572
+      "yaml_line": 597
     },
     "loss.steinmetz": {
       "id": "loss.steinmetz",
@@ -1619,7 +1735,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 584
+      "yaml_line": 609
     },
     "mag.L_from_AL": {
       "id": "mag.L_from_AL",
@@ -1657,7 +1773,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 605
+      "yaml_line": 630
     },
     "mag.AL_gap": {
       "id": "mag.AL_gap",
@@ -1704,7 +1820,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 8,
-      "yaml_line": 619
+      "yaml_line": 644
     },
     "mag.B_pk": {
       "id": "mag.B_pk",
@@ -1747,7 +1863,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 637
+      "yaml_line": 662
     },
     "mag.dB_faraday": {
       "id": "mag.dB_faraday",
@@ -1789,7 +1905,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 651
+      "yaml_line": 676
     },
     "src.Pmax": {
       "id": "src.Pmax",
@@ -1823,7 +1939,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 670
+      "yaml_line": 695
     },
     "src.cv_extraction": {
       "id": "src.cv_extraction",
@@ -1857,7 +1973,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 684
+      "yaml_line": 709
     },
     "sense.current_out_monitor": {
       "id": "sense.current_out_monitor",
@@ -1895,7 +2011,823 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 700
+      "yaml_line": 725
+    },
+    "def.Ts": {
+      "id": "def.Ts",
+      "title": "Switching period",
+      "title_ko": "스위칭 주기",
+      "latex": "T_s = \\frac{1}{f_s}",
+      "lhs": "T_s",
+      "expr": "1/f_s",
+      "relation": "eq",
+      "variables": [
+        "f_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "f_s": "switching frequency"
+      },
+      "assumptions": [
+        "definition"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 2 (Principles of Steady-State Converter Analysis)"
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 7,
+      "yaml_line": 742
+    },
+    "def.V": {
+      "id": "def.V",
+      "title": "Output voltage from the conversion ratio",
+      "title_ko": "변환비로부터 출력 전압",
+      "latex": "V = M V_g",
+      "lhs": "V",
+      "expr": "M*V_g",
+      "relation": "eq",
+      "variables": [
+        "M",
+        "V_g"
+      ],
+      "constants": [],
+      "symbols": {
+        "M": "conversion ratio",
+        "V_g": "input voltage"
+      },
+      "assumptions": [
+        "definition"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 2 (Principles of Steady-State Converter Analysis)"
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 7,
+      "yaml_line": 753
+    },
+    "sw.v_avg": {
+      "id": "sw.v_avg",
+      "title": "DC component of the switch-node voltage (buck)",
+      "title_ko": "스위치 노드 전압의 직류 성분(벅)",
+      "latex": "\\langle v_s \\rangle = D V_g",
+      "lhs": "v_s_avg",
+      "expr": "D*V_g",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "V_g"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "V_g": "input voltage"
+      },
+      "assumptions": [
+        "ideal",
+        "steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the switch node sits at $V_g$ for $D T_s$ and at $0$ for the rest of the period; the LC filter passes this average",
+      "notes_ko": "스위치 노드는 $D T_s$ 동안 $V_g$, 나머지 구간에는 $0$; LC 필터는 이 평균값을 통과시킨다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 2 (Principles of Steady-State Converter Analysis)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/averaging.py",
+      "n_tests": 7,
+      "yaml_line": 768
+    },
+    "vsb.v_off": {
+      "id": "vsb.v_off",
+      "title": "Volt-second balance: inductor voltage during the off-interval",
+      "title_ko": "전압-초 평형: 오프 구간의 인덕터 전압",
+      "latex": "v_{L,\\mathrm{off}} = - \\frac{D v_{L,\\mathrm{on}}}{1 - D}",
+      "lhs": "v_Loff",
+      "expr": "-D*v_Lon/(1 - D)",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "v_Lon"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "v_Lon": "inductor voltage during the on-interval"
+      },
+      "assumptions": [
+        "steady_state",
+        "small_ripple"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "two-interval form of $\\langle v_L \\rangle = 0$",
+      "notes_ko": "$\\langle v_L \\rangle = 0$의 두 구간 형태",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 2 (Principles of Steady-State Converter Analysis)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/averaging.py",
+      "n_tests": 7,
+      "yaml_line": 782
+    },
+    "csb.i_off": {
+      "id": "csb.i_off",
+      "title": "Charge balance: capacitor current during the off-interval",
+      "title_ko": "전하 평형: 오프 구간의 커패시터 전류",
+      "latex": "i_{C,\\mathrm{off}} = - \\frac{D i_{C,\\mathrm{on}}}{1 - D}",
+      "lhs": "i_Coff",
+      "expr": "-D*i_Con/(1 - D)",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "i_Con"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "i_Con": "capacitor current during the on-interval"
+      },
+      "assumptions": [
+        "steady_state",
+        "small_ripple"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "two-interval form of $\\langle i_C \\rangle = 0$",
+      "notes_ko": "$\\langle i_C \\rangle = 0$의 두 구간 형태",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 2 (Principles of Steady-State Converter Analysis)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/averaging.py",
+      "n_tests": 7,
+      "yaml_line": 796
+    },
+    "buck.dcm.D2": {
+      "id": "buck.dcm.D2",
+      "title": "Buck in DCM: diode-conduction interval",
+      "title_ko": "DCM 벅: 다이오드 도통 구간",
+      "latex": "D_2 = \\frac{D \\left(1 - M\\right)}{M}",
+      "lhs": "D_2",
+      "expr": "D*(1 - M)/M",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "M"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "M": "conversion ratio V/V_g"
+      },
+      "assumptions": [
+        "ideal",
+        "dcm",
+        "steady_state",
+        "small_ripple"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the idle interval is $D_3 = 1 - D - D_2$",
+      "notes_ko": "휴지 구간은 $D_3 = 1 - D - D_2$",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 5 (The Discontinuous Conduction Mode)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/dcm.py",
+      "n_tests": 7,
+      "yaml_line": 810
+    },
+    "boost.ccm.M_RL": {
+      "id": "boost.ccm.M_RL",
+      "title": "Boost conversion ratio with inductor winding resistance, CCM",
+      "title_ko": "인덕터 권선 저항을 고려한 부스트 변환비, CCM",
+      "latex": "M = \\frac{1}{\\left(1 - D\\right) \\left(1 + \\frac{R_L}{\\left(1 - D\\right)^{2} R}\\right)}",
+      "lhs": "M",
+      "expr": "(1/(1 - D))*(1/(1 + R_L/((1 - D)**2*R)))",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "R",
+        "R_L"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "R": "load resistance",
+        "R_L": "inductor winding resistance"
+      },
+      "assumptions": [
+        "ccm",
+        "steady_state",
+        "small_ripple",
+        "inductor_resistance",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the second factor collapses the ratio at high $D$: $M$ has a maximum instead of growing without bound",
+      "notes_ko": "두 번째 인자 때문에 높은 $D$에서 변환비가 무너진다: $M$은 무한히 커지지 않고 최댓값을 가진다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 3 (Steady-State Equivalent Circuit Modeling, Losses, and Efficiency)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/averaging.py",
+      "n_tests": 7,
+      "yaml_line": 825
+    },
+    "boost.ccm.eta_RL": {
+      "id": "boost.ccm.eta_RL",
+      "title": "Boost efficiency with inductor winding resistance, CCM",
+      "title_ko": "인덕터 권선 저항을 고려한 부스트 효율, CCM",
+      "latex": "\\eta = \\frac{1}{1 + \\frac{R_L}{\\left(1 - D\\right)^{2} R}}",
+      "lhs": "eta",
+      "expr": "1/(1 + R_L/((1 - D)**2*R))",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "R",
+        "R_L"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "R": "load resistance",
+        "R_L": "inductor winding resistance"
+      },
+      "assumptions": [
+        "ccm",
+        "steady_state",
+        "small_ripple",
+        "inductor_resistance",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 3 (Steady-State Equivalent Circuit Modeling, Losses, and Efficiency)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/averaging.py",
+      "n_tests": 7,
+      "yaml_line": 839
+    },
+    "buck.ss.Gd0": {
+      "id": "buck.ss.Gd0",
+      "title": "Buck control-to-output dc gain, CCM",
+      "title_ko": "벅 제어-출력 직류 이득, CCM",
+      "latex": "G_{d0} = V_g",
+      "lhs": "G_d0",
+      "expr": "V_g",
+      "relation": "eq",
+      "variables": [
+        "V_g"
+      ],
+      "constants": [],
+      "symbols": {
+        "V_g": "input voltage"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "small_signal",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "equals $\\partial V/\\partial D$ of the static characteristic",
+      "notes_ko": "정적 특성 곡선의 $\\partial V/\\partial D$와 같다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 8 (Converter Transfer Functions)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/small_signal.py",
+      "n_tests": 7,
+      "yaml_line": 854
+    },
+    "buck.ss.w0": {
+      "id": "buck.ss.w0",
+      "title": "Buck: angular frequency of the LC poles",
+      "title_ko": "벅: LC 극점의 각주파수",
+      "latex": "\\omega_0 = \\frac{1}{\\sqrt{L C}}",
+      "lhs": "omega_0",
+      "expr": "1/sqrt(L*C)",
+      "relation": "eq",
+      "variables": [
+        "C",
+        "L"
+      ],
+      "constants": [],
+      "symbols": {
+        "C": "filter capacitance",
+        "L": "filter inductance"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "small_signal",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 8 (Converter Transfer Functions)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/small_signal.py",
+      "n_tests": 7,
+      "yaml_line": 868
+    },
+    "buck.ss.Q": {
+      "id": "buck.ss.Q",
+      "title": "Buck: quality factor of the LC poles",
+      "title_ko": "벅: LC 극점의 Q",
+      "latex": "Q = R \\sqrt{\\frac{C}{L}}",
+      "lhs": "Q",
+      "expr": "R*sqrt(C/L)",
+      "relation": "eq",
+      "variables": [
+        "C",
+        "L",
+        "R"
+      ],
+      "constants": [],
+      "symbols": {
+        "C": "filter capacitance",
+        "L": "filter inductance",
+        "R": "load resistance"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "small_signal",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 8 (Converter Transfer Functions)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/small_signal.py",
+      "n_tests": 7,
+      "yaml_line": 880
+    },
+    "boost.ss.Gd0": {
+      "id": "boost.ss.Gd0",
+      "title": "Boost control-to-output dc gain, CCM",
+      "title_ko": "부스트 제어-출력 직류 이득, CCM",
+      "latex": "G_{d0} = \\frac{V_g}{\\left(1 - D\\right)^{2}}",
+      "lhs": "G_d0",
+      "expr": "V_g/(1 - D)**2",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "V_g"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "V_g": "input voltage"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "small_signal",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "equals $\\partial V/\\partial D$; with $V = V_g/(1 - D)$ this is also $V/(1 - D)$",
+      "notes_ko": "$\\partial V/\\partial D$와 같다; $V = V_g/(1 - D)$이므로 $V/(1 - D)$로도 쓴다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 8 (Converter Transfer Functions)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/small_signal.py",
+      "n_tests": 7,
+      "yaml_line": 892
+    },
+    "boost.ss.w0": {
+      "id": "boost.ss.w0",
+      "title": "Boost: angular frequency of the LC poles",
+      "title_ko": "부스트: LC 극점의 각주파수",
+      "latex": "\\omega_0 = \\frac{1 - D}{\\sqrt{L C}}",
+      "lhs": "omega_0",
+      "expr": "(1 - D)/sqrt(L*C)",
+      "relation": "eq",
+      "variables": [
+        "C",
+        "D",
+        "L"
+      ],
+      "constants": [],
+      "symbols": {
+        "C": "output capacitance",
+        "D": "duty ratio",
+        "L": "inductance"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "small_signal",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 8 (Converter Transfer Functions)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/small_signal.py",
+      "n_tests": 7,
+      "yaml_line": 906
+    },
+    "boost.ss.Q": {
+      "id": "boost.ss.Q",
+      "title": "Boost: quality factor of the LC poles",
+      "title_ko": "부스트: LC 극점의 Q",
+      "latex": "Q = \\left(1 - D\\right) R \\sqrt{\\frac{C}{L}}",
+      "lhs": "Q",
+      "expr": "(1 - D)*R*sqrt(C/L)",
+      "relation": "eq",
+      "variables": [
+        "C",
+        "D",
+        "L",
+        "R"
+      ],
+      "constants": [],
+      "symbols": {
+        "C": "output capacitance",
+        "D": "duty ratio",
+        "L": "inductance",
+        "R": "load resistance"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "small_signal",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 8 (Converter Transfer Functions)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/small_signal.py",
+      "n_tests": 7,
+      "yaml_line": 918
+    },
+    "boost.ss.wz": {
+      "id": "boost.ss.wz",
+      "title": "Boost: right-half-plane zero",
+      "title_ko": "부스트: 우반평면(RHP) 영점",
+      "latex": "\\omega_z = \\frac{\\left(1 - D\\right)^{2} R}{L}",
+      "lhs": "omega_z",
+      "expr": "(1 - D)**2*R/L",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "L",
+        "R"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "L": "inductance",
+        "R": "load resistance"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "small_signal",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "moves down as the load gets heavier (smaller $R$) and as $D$ increases",
+      "notes_ko": "부하가 무거울수록(작은 $R$), $D$가 클수록 낮은 주파수로 내려온다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 8 (Converter Transfer Functions)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/small_signal.py",
+      "n_tests": 7,
+      "yaml_line": 930
+    },
+    "buckboost.ss.Gd0": {
+      "id": "buckboost.ss.Gd0",
+      "title": "Buck-boost control-to-output dc gain (magnitude), CCM",
+      "title_ko": "벅-부스트 제어-출력 직류 이득(크기), CCM",
+      "latex": "G_{d0} = \\frac{V_g}{\\left(1 - D\\right)^{2}}",
+      "lhs": "G_d0",
+      "expr": "V_g/(1 - D)**2",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "V_g"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "V_g": "input voltage"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "small_signal",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "magnitude of $\\partial V/\\partial D$; the inverting output makes the gain itself negative",
+      "notes_ko": "$\\partial V/\\partial D$의 크기; 출력이 반전되므로 이득 자체는 음수",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 8 (Converter Transfer Functions)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/small_signal.py",
+      "n_tests": 7,
+      "yaml_line": 944
+    },
+    "buckboost.ss.w0": {
+      "id": "buckboost.ss.w0",
+      "title": "Buck-boost: angular frequency of the LC poles",
+      "title_ko": "벅-부스트: LC 극점의 각주파수",
+      "latex": "\\omega_0 = \\frac{1 - D}{\\sqrt{L C}}",
+      "lhs": "omega_0",
+      "expr": "(1 - D)/sqrt(L*C)",
+      "relation": "eq",
+      "variables": [
+        "C",
+        "D",
+        "L"
+      ],
+      "constants": [],
+      "symbols": {
+        "C": "output capacitance",
+        "D": "duty ratio",
+        "L": "inductance"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "small_signal",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 8 (Converter Transfer Functions)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/small_signal.py",
+      "n_tests": 7,
+      "yaml_line": 958
+    },
+    "buckboost.ss.Q": {
+      "id": "buckboost.ss.Q",
+      "title": "Buck-boost: quality factor of the LC poles",
+      "title_ko": "벅-부스트: LC 극점의 Q",
+      "latex": "Q = \\left(1 - D\\right) R \\sqrt{\\frac{C}{L}}",
+      "lhs": "Q",
+      "expr": "(1 - D)*R*sqrt(C/L)",
+      "relation": "eq",
+      "variables": [
+        "C",
+        "D",
+        "L",
+        "R"
+      ],
+      "constants": [],
+      "symbols": {
+        "C": "output capacitance",
+        "D": "duty ratio",
+        "L": "inductance",
+        "R": "load resistance"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "small_signal",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 8 (Converter Transfer Functions)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/small_signal.py",
+      "n_tests": 7,
+      "yaml_line": 970
+    },
+    "buckboost.ss.wz": {
+      "id": "buckboost.ss.wz",
+      "title": "Buck-boost: right-half-plane zero",
+      "title_ko": "벅-부스트: 우반평면(RHP) 영점",
+      "latex": "\\omega_z = \\frac{\\left(1 - D\\right)^{2} R}{D L}",
+      "lhs": "omega_z",
+      "expr": "(1 - D)**2*R/(D*L)",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "L",
+        "R"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "L": "inductance",
+        "R": "load resistance"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "small_signal",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 8 (Converter Transfer Functions)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/small_signal.py",
+      "n_tests": 7,
+      "yaml_line": 982
+    },
+    "pwm.d": {
+      "id": "pwm.d",
+      "title": "Duty ratio set by a PWM comparator",
+      "title_ko": "PWM 비교기가 정하는 듀티비",
+      "latex": "D = \\frac{V_\\mathrm{ctrl}}{V_M}",
+      "lhs": "D",
+      "expr": "V_ctrl/V_M",
+      "relation": "eq",
+      "variables": [
+        "V_M",
+        "V_ctrl"
+      ],
+      "constants": [],
+      "symbols": {
+        "V_M": "ramp amplitude",
+        "V_ctrl": "control voltage"
+      },
+      "assumptions": [
+        "sawtooth_pwm"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "so the small-signal modulator gain is $1/V_M$",
+      "notes_ko": "따라서 소신호 변조기 이득은 $1/V_M$",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 7 (AC Equivalent Circuit Modeling)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/control.py",
+      "n_tests": 7,
+      "yaml_line": 997
+    },
+    "loop.T": {
+      "id": "loop.T",
+      "title": "Loop gain of a voltage-mode feedback loop",
+      "title_ko": "전압 모드 피드백 루프의 루프 이득",
+      "latex": "T = \\frac{G_c G_{vd} H}{V_M}",
+      "lhs": "T_loop",
+      "expr": "G_c*G_vd*H/V_M",
+      "relation": "eq",
+      "variables": [
+        "G_c",
+        "G_vd",
+        "H",
+        "V_M"
+      ],
+      "constants": [],
+      "symbols": {
+        "G_c": "compensator gain",
+        "G_vd": "control-to-output gain",
+        "H": "sensor gain",
+        "V_M": "ramp amplitude"
+      },
+      "assumptions": [
+        "small_signal"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "magnitudes at one frequency; the phases add in the same way",
+      "notes_ko": "한 주파수에서의 크기; 위상도 같은 방식으로 더해진다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 9 (Controller Design)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/control.py",
+      "n_tests": 7,
+      "yaml_line": 1012
+    },
+    "loop.suppression": {
+      "id": "loop.suppression",
+      "title": "Disturbance suppression by feedback",
+      "title_ko": "피드백에 의한 외란 억제",
+      "latex": "S = \\frac{1}{1 + T}",
+      "lhs": "S_dist",
+      "expr": "1/(1 + T_loop)",
+      "relation": "eq",
+      "variables": [
+        "T_loop"
+      ],
+      "constants": [],
+      "symbols": {
+        "T_loop": "loop gain magnitude"
+      },
+      "assumptions": [
+        "small_signal",
+        "real_loop_gain"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "at frequencies where $T \\gg 1$ a disturbance is divided by roughly $T$",
+      "notes_ko": "$T \\gg 1$인 주파수에서 외란은 대략 $T$로 나누어진다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 9 (Controller Design)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/control.py",
+      "n_tests": 7,
+      "yaml_line": 1026
     }
   }
 }

@@ -1,0 +1,24 @@
+synthetic: true
+label: "Synthetic buck example (round numbers, not a real design)"
+label_ko: "합성 벅 예제(라운드 넘버이며 실제 설계가 아님)"
+params:
+  V_g: 24
+  D: 0.5
+  f_s: 1.0e5
+  L: 1.0e-4
+  C: 1.0e-5
+  R: 10
+steps:
+  - def.Ts
+  - sw.v_avg
+  - buck.ccm.M
+  - def.V
+  - buck.ripple.iL
+  - buck.ripple.iL_pp
+  - K.def
+  - Kcrit.buck
+  - buck.ss.Gd0
+  - buck.ss.w0
+  - buck.ss.Q
+checks:
+  - {when: "K > K_crit", then: {en: "CCM", ko: "CCM"}, else: {en: "DCM", ko: "DCM"}}

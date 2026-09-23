@@ -98,7 +98,13 @@ def derive() -> Derivation:
         vs,
     )
     D2_sol = sp.solve(vs, D2)[0]
-    d.step("Solve for $D_2$.", "$D_2$를 구한다.", sp.Eq(D2, D2_sol))
+    d.result(
+        "buck.dcm.D2",
+        sp.simplify(D2_sol.subs(M, S("M"))),
+        "Solve for $D_2$.",
+        "$D_2$를 구한다.",
+        S("D_2"),
+    )
     pk = (Vg - M * Vg) * D * Ts / L
     d.step("Peak inductor current at the end of the on-interval.", "온 구간 끝의 인덕터 피크 전류.", sp.Eq(ipk, pk))
     cb = sp.Eq(pk * (D + D2_sol) / 2, M * Vg / R)
