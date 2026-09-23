@@ -6,8 +6,9 @@
  * equations of the catalogue. All state lives in the URL hash, so "Try it"
  * links can preset it and any view can be shared.
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { evaluate, sim } from 'pe-core';
+import type { SimReply } from './simulator.worker';
 
 type Topology = sim.Topology;
 type SimParams = sim.SimParams;
@@ -239,6 +240,62 @@ function initialState(presets: SimPreset[]): { fs: FieldState; values: Record<st
   };
 }
 
+type Done = (result: SimResult | null, error: string | null) => void;
+
+/**
+ * Runs the simulator in a Web Worker. A new request, or cancel(), abandons
+ * the run in flight (the worker is replaced), so a long run never delays the
+ * next one and a stale result never arrives.
+ */
+function useSimRunner(): { run: (params: SimParams, done: Done) => void; cancel: () => void } {
+  const worker = useRef<Worker | null>(null);
+  const inFlight = useRef(false);
+  const seq = useRef(0);
+  useEffect(() => () => worker.current?.terminate(), []);
+  const cancel = useCallback(() => {
+    seq.current++;
+    if (worker.current && inFlight.current) {
+      worker.current.terminate();
+      worker.current = null;
+    }
+    inFlight.current = false;
+  }, []);
+  const run = useCallback((params: SimParams, done: Done) => {
+    const id = ++seq.current;
+    if (typeof Worker === 'undefined') {
+      try {
+        done(sim.simulate(params), null);
+      } catch (e) {
+        done(null, e instanceof Error ? e.message : String(e));
+      }
+      return;
+    }
+    if (worker.current && inFlight.current) {
+      worker.current.terminate();
+      worker.current = null;
+    }
+    if (!worker.current) {
+      worker.current = new Worker(new URL('./simulator.worker.ts', import.meta.url), { type: 'module' });
+    }
+    const w = worker.current;
+    inFlight.current = true;
+    w.onmessage = (e: MessageEvent<SimReply>) => {
+      if (e.data.id !== seq.current) return;
+      inFlight.current = false;
+      if ('error' in e.data) done(null, e.data.error);
+      else done(e.data.result, null);
+    };
+    w.onerror = (e) => {
+      inFlight.current = false;
+      w.terminate();
+      if (worker.current === w) worker.current = null;
+      done(null, e.message || 'worker error');
+    };
+    w.postMessage({ id, params });
+  }, []);
+  return useMemo(() => ({ run, cancel }), [run, cancel]);
+}
+
 export default function Simulator({ labels, presets }: Props) {
   const init = useMemo(() => initialState(presets), [presets]);
   const [fstate, setFstate] = useState<FieldState>(init.fs);
@@ -247,7 +304,9 @@ export default function Simulator({ labels, presets }: Props) {
   const [result, setResult] = useState<SimResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [slow, setSlow] = useState(false);
   const plotRef = useRef<HTMLDivElement>(null);
+  const runner = useSimRunner();
 
   const params = useMemo(() => toParams(fstate, values), [fstate, values]);
 
@@ -258,27 +317,38 @@ export default function Simulator({ labels, presets }: Props) {
     window.history.replaceState(null, '', `#${q.toString()}`);
   }, [fstate, values]);
 
-  // simulate (debounced)
+  // simulate (debounced, in a worker; "Simulating…" appears only for a slow run)
   useEffect(() => {
+    runner.cancel();
+    setSlow(false);
     if ('error' in params) {
+      setBusy(false);
       setError(params.error === 'node' ? labels.nodeNeedsRon : labels.invalid);
       setResult(null);
       return;
     }
     setBusy(true);
+    let slowTimer = 0;
     const id = window.setTimeout(() => {
-      try {
-        setResult(sim.simulate(params));
-        setError(null);
-      } catch (e) {
-        setResult(null);
-        setError(`${labels.invalid} (${e instanceof Error ? e.message : String(e)})`);
-      } finally {
+      slowTimer = window.setTimeout(() => setSlow(true), 400);
+      runner.run(params, (r, err) => {
+        window.clearTimeout(slowTimer);
+        setSlow(false);
         setBusy(false);
-      }
+        if (r) {
+          setResult(r);
+          setError(null);
+        } else {
+          setResult(null);
+          setError(`${labels.invalid} (${err})`);
+        }
+      });
     }, 150);
-    return () => window.clearTimeout(id);
-  }, [params, labels]);
+    return () => {
+      window.clearTimeout(id);
+      window.clearTimeout(slowTimer);
+    };
+  }, [params, labels, runner]);
 
   // waveforms
   useEffect(() => {
@@ -398,7 +468,7 @@ export default function Simulator({ labels, presets }: Props) {
     );
   };
   const eff = result && result.energy.input > 0 ? result.energy.output / result.energy.input : Number.NaN;
-  const rows = result && !('error' in params) ? compareRows(params, result) : [];
+  const rows = result?.converged && !('error' in params) ? compareRows(params, result) : [];
 
   return (
     <div className="pe-tool pe-explorer pe-sim">
@@ -455,7 +525,7 @@ export default function Simulator({ labels, presets }: Props) {
       <section className="pe-sim__status" aria-live="polite">
         <h3>{labels.status}</h3>
         {error && <p className="pe-sim__error">{error}</p>}
-        {busy && !result && !error && <p>{labels.running}</p>}
+        {((busy && !result && !error) || slow) && <p>{labels.running}</p>}
         {result && (
           <p>
             {labels.mode}: <strong className={`pe-sim__mode pe-sim__mode--${result.mode}`}>{result.mode}</strong>
@@ -469,7 +539,7 @@ export default function Simulator({ labels, presets }: Props) {
           </p>
         )}
       </section>
-      {result && (
+      {result?.converged && (
         <>
           <table className="pe-sim__table">
             <caption>{labels.compare}</caption>

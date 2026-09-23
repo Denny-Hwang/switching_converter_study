@@ -104,6 +104,52 @@ describe('simulator validation grid', () => {
   });
 });
 
+describe('no periodic steady state', () => {
+  // The convergence measure is relative to how far each state moves within a
+  // cycle, not to its peak: a state that grows by the same amount every cycle
+  // must never pass, however large it has become (a Newton step can make it
+  // very large at once).
+  it('a fixed output fed in CCM from a fixed input: the inductor current grows every cycle', () => {
+    const r = simulate({ topology: 'buck', Vg: 24, D: 0.8, fs, L: 1e-4, load: { kind: 'fixed', V: 12 } });
+    expect(r.converged).toBe(false);
+    expect(r.cycles).toBeGreaterThanOrEqual(2000);
+    expect(r.residual).toBeGreaterThan(0.1);
+  });
+
+  it('a forward converter above its reset limit: the magnetizing current walks up', () => {
+    const Dmax = evaluate('forward.reset.Dmax', { n_r: 1 });
+    const r = simulate({
+      topology: 'forward',
+      Vg: 48,
+      D: Dmax + 0.2,
+      fs,
+      n: 0.25,
+      nr: 1,
+      LM: 1e-3,
+      L: 1e-4,
+      load: { kind: 'resistive', R: 2, C: 5e-4 },
+    });
+    expect(r.converged).toBe(false);
+  });
+
+  it('the same forward converter below the limit converges', () => {
+    const Dmax = evaluate('forward.reset.Dmax', { n_r: 1 });
+    const r = simulate({
+      topology: 'forward',
+      Vg: 48,
+      D: Dmax - 0.1,
+      fs,
+      n: 0.25,
+      nr: 1,
+      LM: 1e-3,
+      L: 1e-4,
+      load: { kind: 'resistive', R: 2, C: 5e-4 },
+    });
+    expect(r.converged).toBe(true);
+    expect(r.residual).toBeLessThan(1e-6);
+  });
+});
+
 describe('losses and energy', () => {
   it('input energy = output energy + losses (no node capacitance)', () => {
     for (const topology of ['buck', 'boost', 'buckboost', 'flyback'] as Topology[]) {

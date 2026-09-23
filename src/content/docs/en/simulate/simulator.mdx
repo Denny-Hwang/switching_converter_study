@@ -67,9 +67,12 @@ DCM, the idle interval <Cite key="erickson2020" where="Ch. 2" />,
   solution. The gate edges fall exactly at the start of the period and at the
   duty ratio.
 - **The periodic steady state** is found by Newton iteration on the map from
-  one period's initial state to the next. It is accepted when the largest
-  change of any state over one period, relative to that state's peak, is
-  below one part in a million, within at most two thousand periods.
+  one period's initial state to the next. It is accepted when, for every
+  state, the change over one period is below one part in a million of how far
+  that state moves within the period, within at most two thousand periods.
+  A change measured against the state's peak would not do: a current that
+  grows by the same amount every period would pass once it had grown large
+  enough.
 - **The mode** is DCM when the inductor current stays at zero for part of
   the period, BCM when it only touches zero, and CCM otherwise.
 
@@ -117,8 +120,10 @@ the result):
 - **Fixed duty ratio.** There is no control loop and no core loss.
 - **A periodic steady state must exist.** A fixed output fed from a fixed
   input in CCM, for example, has none, because the inductor current grows
-  without bound. The status line then reports that no steady state was
-  reached.
+  without bound. Nor has a forward converter above its reset limit
+  (<EqRef id="forward.reset.Dmax" label="maximum duty ratio" />), because its
+  magnetizing current walks up from one period to the next. The status line
+  then reports that no steady state was reached.
 
 ## Screenshot
 

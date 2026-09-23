@@ -12,8 +12,11 @@
  *
  * The periodic steady state is found by Newton shooting on the cycle map and
  * confirmed by the spec's criterion: the largest change of any state between
- * two consecutive cycles, relative to that state's peak magnitude, is below
- * `tol` (default 1e-6), within at most `maxCycles` cycles (default 2000).
+ * two consecutive cycles, relative to how far that state moves within the
+ * cycle (its total variation), is below `tol` (default 1e-6), within at most
+ * `maxCycles` cycles (default 2000). A change relative to the state's peak
+ * would not do: a state that grows without bound (a fixed output fed in CCM
+ * from a fixed input has no steady state) passes it once it is large enough.
  */
 
 import { addScaled, affineStep, identity, matvec, solveVec, zeros, type Mat, type Vec } from './linalg';
@@ -73,6 +76,10 @@ export interface CycleRun {
   samples: Sample[];
   /** Largest |x_j| during the cycle, per state. */
   maxAbs: Vec;
+  /** Total variation of each state during the cycle: the sum of |change| over every sub-step, event and reset. */
+  variation: Vec;
+  /** Last tracked state (for the variation). */
+  last: Vec;
   /** Time spent in each interval (s). */
   durations: Record<string, number>;
   events: { t: number; from: string; to: string }[];
@@ -178,6 +185,7 @@ function integrate(
       track(run, xe);
       if (record) run.samples.push({ t: cur.t + first.tau, interval: cur.iv, x: xe });
       const xr = first.g.reset ? first.g.reset(xe) : xe;
+      track(run, xr);
       run.events.push({ t: cur.t + first.tau, from: cur.iv, to: first.g.next });
       cur.t += first.tau;
       cur.iv = first.g.next;
@@ -194,7 +202,11 @@ function integrate(
 }
 
 function track(run: CycleRun, x: Vec): void {
-  for (let i = 0; i < x.length; i++) run.maxAbs[i] = Math.max(run.maxAbs[i]!, Math.abs(x[i]!));
+  for (let i = 0; i < x.length; i++) {
+    run.maxAbs[i] = Math.max(run.maxAbs[i]!, Math.abs(x[i]!));
+    run.variation[i]! += Math.abs(x[i]! - run.last[i]!);
+  }
+  run.last = x;
 }
 
 /** Simulate one switching period from the state x0 at the gate turn-on edge. */
@@ -207,6 +219,8 @@ export function runCycle(model: Model, x0: Vec, opts: RunOptions = {}): CycleRun
     x: x0,
     samples: [],
     maxAbs: x0.map((v) => Math.abs(v)),
+    variation: x0.map(() => 0),
+    last: x0,
     durations: {},
     events: [],
     edgeLoss: 0,
@@ -232,7 +246,7 @@ export function runCycle(model: Model, x0: Vec, opts: RunOptions = {}): CycleRun
 }
 
 export interface SteadyOptions extends RunOptions {
-  /** Largest change of any state between consecutive cycles, relative to its peak magnitude. */
+  /** Largest change of any state between consecutive cycles, relative to its total variation within the cycle. */
   tol?: number;
   maxCycles?: number;
 }
@@ -249,11 +263,20 @@ export interface SteadyResult {
   run: CycleRun;
 }
 
+/**
+ * Convergence measure: the largest change of a state over one cycle, relative
+ * to that state's total variation within the cycle. The floor, 1e-12 of the
+ * state's peak, lets a state that barely moves (a very large capacitor)
+ * converge to rounding level; it is far below any growth that a Newton step
+ * could reach, so a state that grows without bound never passes.
+ */
 function relativeChange(x: Vec, r: CycleRun): number {
   let worst = 0;
   for (let j = 0; j < x.length; j++) {
-    const scale = Math.max(r.maxAbs[j]!, 1e-12);
-    worst = Math.max(worst, Math.abs(r.x[j]! - x[j]!) / scale);
+    const change = Math.abs(r.x[j]! - x[j]!);
+    if (change === 0) continue;
+    const scale = Math.max(r.variation[j]!, 1e-12 * r.maxAbs[j]!);
+    worst = Math.max(worst, scale > 0 ? change / scale : Infinity);
   }
   return worst;
 }
