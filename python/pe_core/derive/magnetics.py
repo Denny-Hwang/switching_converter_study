@@ -74,6 +74,25 @@ def derive() -> Derivation:
         S("B_pk"),
     )
 
+    Bmax = S("B_max")
+    d.result(
+        "mag.N_Bmax",
+        sp.solve(sp.Eq(L * Ipk / (N * Ae), Bmax), N)[0],
+        "Holding $B_\\mathrm{pk}$ at the limit $B_\\mathrm{max}$ and solving for the turns gives the fewest turns "
+        "that stay within it.",
+        "$B_\\mathrm{pk}$를 한계 $B_\\mathrm{max}$에 두고 턴 수에 대해 풀면, 한계 안에 머무는 최소 턴 수가 나온다.",
+        N,
+    )
+    d.result(
+        "mag.gap_length",
+        sp.solve(sp.Eq(L, N**2 / (rc + rg)), lg)[0],
+        "With $N$ fixed, the inductance $L = N^2/(\\mathcal{R}_c + \\mathcal{R}_g)$ sets the gap reluctance, and with "
+        "it the gap length.",
+        "$N$이 정해지면 인덕턴스 $L = N^2/(\\mathcal{R}_c + \\mathcal{R}_g)$가 공극 자기저항을, 따라서 공극 길이를 "
+        "정한다.",
+        lg,
+    )
+
     faraday = sp.Integral(Vw / (N * Ae), (t, 0, ton))
     d.step(
         "Faraday's law: $v = N A_e\\,dB/dt$, so the change of $B$ over the on-time is the integral of $v/(N A_e)$.",

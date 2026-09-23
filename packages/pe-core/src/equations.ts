@@ -98,6 +98,22 @@ const base: Readonly<Record<string, Evaluator>> = {
   'mag.AL_gap': eq(['A_e', 'l_g', 'l_e', 'mu_i'], ({ A_e, l_g, l_e, mu_i }) => (MU_0 * A_e) / (l_g + l_e / mu_i)),
   'mag.B_pk': eq(['L', 'I_pk', 'N', 'A_e'], ({ L, I_pk, N, A_e }) => (L * I_pk) / (N * A_e)),
   'mag.dB_faraday': eq(['V_w', 't_on', 'N', 'A_e'], ({ V_w, t_on, N, A_e }) => (V_w * t_on) / (N * A_e)),
+  'mag.N_Bmax': eq(['L', 'I_pk', 'B_max', 'A_e'], ({ L, I_pk, B_max, A_e }) => (L * I_pk) / (B_max * A_e)),
+  'mag.gap_length': eq(['A_e', 'N', 'L', 'l_e', 'mu_i'], ({ A_e, N, L, l_e, mu_i }) => (MU_0 * A_e * sq(N)) / L - l_e / mu_i),
+  'wind.fill': eq(['N', 'A_w', 'W_A'], ({ N, A_w, W_A }) => (N * A_w) / W_A),
+  'wind.dcr': eq(['rho_w', 'N', 'MLT', 'A_w'], ({ rho_w, N, MLT, A_w }) => (rho_w * N * MLT) / A_w),
+  'wind.skin_depth': eq(['rho_w', 'f'], ({ rho_w, f }) => Math.sqrt(rho_w / (Math.PI * MU_0 * f))),
+  'wind.dowell': eq(['phi_l', 'M_l'], ({ phi_l, M_l }) => {
+    const skin = (Math.sinh(2 * phi_l) + Math.sin(2 * phi_l)) / (Math.cosh(2 * phi_l) - Math.cos(2 * phi_l));
+    const proximity = (Math.sinh(phi_l) - Math.sin(phi_l)) / (Math.cosh(phi_l) + Math.cos(phi_l));
+    return phi_l * (skin + ((2 * (sq(M_l) - 1)) / 3) * proximity);
+  }),
+  'xfmr.leakage.ps': eq(['N', 'MLT', 'h_p', 'h_g', 'h_s', 'b_w'], ({ N, MLT, h_p, h_g, h_s, b_w }) =>
+    (MU_0 * sq(N) * MLT * (h_p / 3 + h_g + h_s / 3)) / b_w,
+  ),
+  'xfmr.leakage.psp': eq(['N', 'MLT', 'h_p', 'h_g', 'h_s', 'b_w'], ({ N, MLT, h_p, h_g, h_s, b_w }) =>
+    (MU_0 * sq(N) * MLT * (h_p / 3 + 2 * h_g + h_s / 3)) / (4 * b_w),
+  ),
 
   // --- sources, extraction, sensing -----------------------------------------
   'src.Pmax': eq(['V_oc', 'R_s'], ({ V_oc, R_s }) => sq(V_oc) / (4 * R_s)),

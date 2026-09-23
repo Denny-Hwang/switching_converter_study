@@ -1365,6 +1365,8 @@
         "mag.AL_gap",
         "mag.L_from_AL",
         "mag.B_pk",
+        "mag.N_Bmax",
+        "mag.gap_length",
         "mag.dB_faraday"
       ],
       "steps": [
@@ -1423,6 +1425,18 @@
           "result_for": "mag.B_pk"
         },
         {
+          "text": "Holding $B_\\mathrm{pk}$ at the limit $B_\\mathrm{max}$ and solving for the turns gives the fewest turns that stay within it.",
+          "text_ko": "$B_\\mathrm{pk}$를 한계 $B_\\mathrm{max}$에 두고 턴 수에 대해 풀면, 한계 안에 머무는 최소 턴 수가 나온다.",
+          "latex": "N = \\frac{L I_\\mathrm{pk}}{B_\\mathrm{max} A_e}",
+          "result_for": "mag.N_Bmax"
+        },
+        {
+          "text": "With $N$ fixed, the inductance $L = N^2/(\\mathcal{R}_c + \\mathcal{R}_g)$ sets the gap reluctance, and with it the gap length.",
+          "text_ko": "$N$이 정해지면 인덕턴스 $L = N^2/(\\mathcal{R}_c + \\mathcal{R}_g)$가 공극 자기저항을, 따라서 공극 길이를 정한다.",
+          "latex": "l_g = \\frac{\\mu_0 A_e N^{2}}{L} - \\frac{l_e}{\\mu_i}",
+          "result_for": "mag.gap_length"
+        },
+        {
           "text": "Faraday's law: $v = N A_e\\,dB/dt$, so the change of $B$ over the on-time is the integral of $v/(N A_e)$.",
           "text_ko": "패러데이 법칙: $v = N A_e\\,dB/dt$이므로 온 구간 동안의 $B$ 변화는 $v/(N A_e)$의 적분이다.",
           "latex": "\\Delta B = \\int\\limits_{0}^{t_\\mathrm{on}} \\frac{V_w}{A_e N}\\, dt",
@@ -1433,6 +1447,82 @@
           "text_ko": "권선 전압 $V_w$가 일정하면 변화폭은 전압-초 $V_w t_\\mathrm{on}$에 비례한다.",
           "latex": "\\Delta B = \\frac{V_w t_\\mathrm{on}}{N A_e}",
           "result_for": "mag.dB_faraday"
+        }
+      ]
+    },
+    {
+      "module": "windings",
+      "source": "python/pe_core/derive/windings.py",
+      "title": "Windings: resistance, skin depth and leakage",
+      "title_ko": "권선: 저항, 표피 깊이, 누설",
+      "intro": "A winding is a long conductor wound in layers. Its resistance follows from its length and cross-section; at high frequency the current crowds into a skin; and the field between the windings stores the energy that appears as leakage inductance.",
+      "intro_ko": "권선은 층으로 감긴 긴 도체이다. 저항은 길이와 단면적에서 나오고, 주파수가 높으면 전류가 표면층으로 몰리며, 권선 사이의 자계는 누설 인덕턴스로 나타나는 에너지를 저장한다.",
+      "results": [
+        "wind.dcr",
+        "wind.skin_depth",
+        "xfmr.leakage.ps",
+        "xfmr.leakage.psp"
+      ],
+      "steps": [
+        {
+          "text": "The winding is one conductor, $N$ turns of mean length MLT:",
+          "text_ko": "권선은 평균 길이 MLT인 $N$ 턴의 도체 하나이다.",
+          "latex": "l_w = \\mathrm{MLT} N",
+          "result_for": null
+        },
+        {
+          "text": "Its dc resistance is the resistivity times the length over the conductor's area.",
+          "text_ko": "직류 저항은 저항률에 길이를 곱하고 도체 단면적으로 나눈 값이다.",
+          "latex": "R_\\mathrm{dc} = \\frac{\\rho_w N \\mathrm{MLT}}{A_w}",
+          "result_for": "wind.dcr"
+        },
+        {
+          "text": "In a good conductor (conductivity $1/\\rho_w$) a sinusoidal current density obeys $d^2 J/dx^2 = j\\omega\\mu_0 J/\\rho_w$, so it varies as $e^{-k x}$ with",
+          "text_ko": "양도체(전도율 $1/\\rho_w$) 안의 정현파 전류 밀도는 $d^2 J/dx^2 = j\\omega\\mu_0 J/\\rho_w$를 따르므로 $e^{-k x}$로 변하며, $k$는 다음과 같다.",
+          "latex": "k^{2} = \\frac{2 \\pi i f \\mu_0}{\\rho_w}",
+          "result_for": null
+        },
+        {
+          "text": "The root with a positive real part:",
+          "text_ko": "실수부가 양수인 근:",
+          "latex": "k = \\frac{\\sqrt{\\pi} \\sqrt{f} \\sqrt{\\mu_0}}{\\sqrt{\\rho_w}} + \\frac{i \\sqrt{\\pi} \\sqrt{f} \\sqrt{\\mu_0}}{\\sqrt{\\rho_w}}",
+          "result_for": null
+        },
+        {
+          "text": "The magnitude falls by $e$ over one skin depth, the inverse of the real part of $k$.",
+          "text_ko": "크기는 $k$ 실수부의 역수인 표피 깊이 하나마다 $e$배 줄어든다.",
+          "latex": "\\delta = \\sqrt{\\frac{\\rho_w}{\\pi \\mu_0 f}}",
+          "result_for": "wind.skin_depth"
+        },
+        {
+          "text": "The field in the window runs along the breadth $b_w$, so $H = \\mathcal{F}/b_w$ where $\\mathcal{F}$ is the MMF enclosed at that height; the energy it stores over the turn length MLT is",
+          "text_ko": "창 안의 자계는 폭 $b_w$ 방향으로 향하므로 그 높이까지 둘러싸인 기자력을 $\\mathcal{F}$라 하면 $H = \\mathcal{F}/b_w$이고, 턴 길이 MLT에 걸쳐 저장되는 에너지는 다음과 같다.",
+          "latex": "E = \\frac{\\mathrm{MLT} \\mu_0 \\int \\mathcal{F}^{2}\\, dy}{2 b_w}",
+          "result_for": null
+        },
+        {
+          "text": "Primary, then secondary: the MMF rises linearly through the primary to $N I$, stays there across the spacing, and falls back to zero through the secondary.",
+          "text_ko": "1차 다음에 2차: 기자력은 1차 권선을 지나며 $N I$까지 직선으로 오르고, 간격에서 그대로 유지되다가, 2차 권선을 지나며 0으로 돌아온다.",
+          "latex": "\\mathcal{F} = I N",
+          "result_for": null
+        },
+        {
+          "text": "With $L_\\mathrm{lk} = 2E/I^2$, each winding counts with a third of its height, the spacing in full.",
+          "text_ko": "$L_\\mathrm{lk} = 2E/I^2$에서 각 권선은 높이의 1/3이, 간격은 전부가 들어간다.",
+          "latex": "L_\\mathrm{lk} = \\frac{\\mathrm{MLT} \\mu_0 N^{2} \\left(h_p + h_s + 3 h_g\\right)}{3 b_w} = \\frac{\\mu_0 N^{2} \\mathrm{MLT} \\left(\\frac{h_p}{3} + h_g + \\frac{h_s}{3}\\right)}{b_w}",
+          "result_for": "xfmr.leakage.ps"
+        },
+        {
+          "text": "Primary split around the secondary: the MMF rises to $N I/2$ through the first half, crosses the secondary from $N I/2$ to $-N I/2$, and returns to zero through the second half.",
+          "text_ko": "1차 권선을 2차 권선 양쪽으로 나누면: 기자력은 첫 번째 절반에서 $N I/2$까지 오르고, 2차 권선을 지나며 $N I/2$에서 $-N I/2$로 바뀐 뒤, 두 번째 절반에서 0으로 돌아온다.",
+          "latex": "\\mathcal{F} = \\frac{I N}{2}",
+          "result_for": null
+        },
+        {
+          "text": "The peak MMF is halved, so the energy, and the leakage, fall to about a quarter; the two spacings both count.",
+          "text_ko": "최대 기자력이 절반이 되므로 에너지와 누설은 약 1/4로 줄고, 두 간격이 모두 들어간다.",
+          "latex": "L_\\mathrm{lk} = \\frac{\\mathrm{MLT} \\mu_0 N^{2} \\left(h_p + h_s + 6 h_g\\right)}{12 b_w} = \\frac{\\mu_0 N^{2} \\mathrm{MLT} \\left(\\frac{h_p}{3} + 2 h_g + \\frac{h_s}{3}\\right)}{4 b_w}",
+          "result_for": "xfmr.leakage.psp"
         }
       ]
     },
