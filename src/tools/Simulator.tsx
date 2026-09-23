@@ -384,10 +384,31 @@ export default function Simulator({ labels, presets }: Props) {
     };
   }, [params, labels, runner]);
 
+  // The state follows the URL hash: a link to this page with another preset
+  // (or the browser's back button) changes only the hash, which does not
+  // remount the island. Our own replaceState() fires no hashchange.
+  useEffect(() => {
+    const onHash = () => {
+      const next = initialState(presets);
+      setFstate(next.fs);
+      setValues(next.values);
+      setAnchors(sliderAnchors(next.values));
+    };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, [presets]);
+
   // waveforms
   useEffect(() => {
     const el = plotRef.current;
-    if (!el || !result) return;
+    if (!el) return;
+    if (!result) {
+      // no result for the current inputs: remove the previous waveforms too
+      if (el.hasChildNodes()) {
+        import('plotly.js-dist-min').then((mod) => (mod.default ?? mod).purge(el));
+      }
+      return;
+    }
     let cancelled = false;
     const w = result.waveforms;
     const t = (w.t as number[]).map((x) => x * 1e6);

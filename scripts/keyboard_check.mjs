@@ -124,6 +124,29 @@ async function simulatorAction(page, where, errors) {
   await slider.focus();
   await page.keyboard.press('ArrowRight');
   if ((await d.inputValue()) === before) errors.push(`${where}: ArrowRight on the D slider did not change D`);
+  // an invalid field removes the result and the waveforms, not only the tables
+  await page.waitForSelector(`${TOOL} .main-svg`, { timeout: 30000 });
+  const fs = page.locator(`${TOOL} #sim-fs`);
+  const fsValue = await fs.inputValue();
+  await fs.fill('');
+  await page.waitForFunction((sel) => !document.querySelector(sel), `${TOOL} .main-svg`, { timeout: 10000 }).catch(() => {
+    errors.push(`${where}: the waveforms stayed on screen with an invalid field`);
+  });
+  await fs.fill(fsValue);
+  // Enter on the page's own "Try it" link (same page, another preset in the hash) loads that preset
+  const link = page.locator('a[href*="simulate/simulator/#"]').first();
+  const expected = new URLSearchParams((await link.getAttribute('href')).split('#')[1]);
+  await link.focus();
+  await page.keyboard.press('Enter');
+  const got = await page
+    .waitForFunction(
+      ([sel, v]) => document.querySelector(sel)?.value === v,
+      [`${TOOL} #sim-D`, expected.get('D')],
+      { timeout: 10000 },
+    )
+    .then(() => true, () => false);
+  const topo = await page.locator(`${TOOL} .pe-sim__buttons[role="group"] button[aria-pressed="true"]`).innerText();
+  if (!got || topo.trim().length === 0) errors.push(`${where}: the page's own preset link did not load its preset (hash change)`);
 }
 
 async function main() {
