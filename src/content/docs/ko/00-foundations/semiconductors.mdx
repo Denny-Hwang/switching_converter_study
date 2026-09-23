@@ -1,0 +1,117 @@
+---
+title: 반도체 스위치와 그 손실
+description: 컨버터의 스위치로 쓰이는 MOSFET과 다이오드 - 도통 손실, 용량성 스위칭 손실, 게이트 구동 전력, 그리고 다이오드의 순방향 전압 모델.
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 켜져 있는 MOSFET은 저항으로, 도통 중인 다이오드는 순방향 전압(forward voltage)에 작은 저항을 더한 것으로 모델링합니다.
+- 용량성 턴온 손실(capacitive turn-on loss)과 게이트 구동 전력(gate-drive power)을 추정하고, 둘이 스위칭 주파수(switching frequency)에 따라 어떻게 달라지는지 확인합니다.
+- 스위칭 주파수에 따라 커지는 손실과 부하에 따라 커지는 손실을 구별합니다.
+
+## 이론
+
+### 컨버터의 스위치
+
+이상적인 스위치는 켜져 있을 때 양단에 전압이 걸리지 않고, 꺼져 있을 때 전류가
+흐르지 않습니다. 컨버터는 MOSFET 같은 트랜지스터와 다이오드로 스위치를
+구현합니다 <Cite key="erickson2020" where="Ch. 4" />. 트랜지스터는 게이트(gate)로
+켜고 끄며, 다이오드는 스스로 스위칭합니다. 다이오드는 순방향 바이어스(forward
+bias)가 걸리면 도통하고, 역방향 바이어스(reverse bias)가 걸리면 차단합니다
+<Cite key="erickson2020" where="Ch. 4" />.
+
+### 도통 손실
+
+완전히 켜진 MOSFET은 저항, 곧 온 저항(on-resistance)처럼 동작하므로, 그 도통
+손실(conduction loss)은 실효 전류(rms current)로부터
+구해집니다(<EqRef id="loss.cond" label="도통 손실" />). 도통 중인 다이오드는
+일정한 순방향 전압과 이에 직렬로 연결된 작은 저항으로 모델링합니다
+<Cite key="erickson2020" where="Ch. 3" />.
+
+<Eq id="loss.diode" />
+
+순방향 전압은 전류와 관계없이 회로에서 일정한 전압을 가져가므로, 출력 전압이
+낮을 때 효율(efficiency)을 가장 크게 떨어뜨립니다
+<Cite key="erickson2020" where="Ch. 4" />.
+
+### 노드 커패시턴스에 의한 스위칭 손실
+
+트랜지스터는 켜질 때 스위치 노드(switch node)의 커패시턴스를 방전시키며, 이
+커패시턴스에는 트랜지스터 자신의 출력 커패시턴스(output capacitance)가
+포함됩니다. 그 커패시턴스에 저장된 에너지는 주기마다 손실됩니다
+<Cite key="erickson2020" where="Ch. 4" />.
+
+<Eq id="loss.sw.cap" />
+
+또한 각 천이(transition) 중에 전류와 전압이 짧은 시간 동안 겹치며, 다이오드가
+꺼질 때에는 다이오드의 축적 전하(stored charge)를 제거해야 합니다. 둘 다
+스위칭이 일어날 때마다 손실을 더합니다 <Cite key="erickson2020" where="Ch. 4" />.
+
+### 게이트 구동 전력
+
+MOSFET을 스위칭하기 위해 드라이버는 주기마다 한 번, 게이트 전하(gate charge)를
+드라이버 전원에서 게이트로 옮겼다가 다시 접지로 보냅니다. 이에 드는 전력은
+MOSFET의 채널이 아니라 드라이버와 게이트 저항에서 소산됩니다
+<Cite key="balogh2018" />.
+
+<Eq id="loss.gate" />
+
+## 풀이 예제
+
+합성(synthetic) 스위치 노드, 게이트 구동, 다이오드입니다.
+
+<Worked example="switch-losses" />
+
+이 스위칭 주파수에서 용량성 턴온 손실은 <Val example="switch-losses" name="P_sw" />이며,
+게이트 구동 전력은 <Val example="switch-losses" name="P_gate" />입니다. 스위칭
+주파수가 두 배가 되면 둘 다 두 배가 됩니다. 반면 다이오드의 도통 손실은
+<Val example="switch-losses" name="P_diode" />이며, 부하 전류에 따라 달라집니다.
+
+## 직접 해 보기
+
+<TryIt eq="loss.sw.cap" example="switch-losses" sweep="V_sw" />
+
+스위칭되는 전압을 로그 축에서 스윕(sweep)하십시오. 용량성 손실은 그 제곱에
+비례하여 커지며, 이 때문에 이 손실은 높은 전압을 스위칭하는 컨버터에서 가장
+중요합니다. 그런 다음 게이트 구동 전력 수식을 열고 스위칭 주파수를 스윕하십시오.
+
+## 벤치 실습
+
+스위칭 주파수를 설정할 수 있는 벅 평가 보드(evaluation board)에서, 전력
+분석기(power analyzer)나 입력 측과 출력 측에 한 쌍씩 둔 멀티미터로 고정
+부하에서의 입력 전력과 출력 전력을 두 가지 스위칭 주파수에서 측정하십시오.
+손실 증가분을 주파수 증가분으로 나눈 값은 스위칭 주기당 손실되는 에너지의
+추정값입니다. 이 값을, 데이터시트에 나온 커패시턴스와 게이트 전하를 사용하여
+용량성 손실 수식 및 게이트 구동 전력 수식과 비교하십시오.
+
+## 주의할 점
+
+- **주기마다 한 번 발생하는 손실은 주파수에 비례합니다.** 스위칭 주파수를
+  높이면 주어진 리플에 필요한 인덕터는 작아지지만, 용량성 손실, 천이 손실,
+  게이트 구동 손실은 그에 비례하여 증가합니다 <Cite key="erickson2020" where="Ch. 4" />.
+- **게이트 전력은 MOSFET이 아니라 드라이버를 가열합니다.** 이 전력은 드라이버의
+  소산 전력 예산에 반영하십시오 <Cite key="balogh2018" />.
+- **다이오드 전압 강하(diode drop)는 출력 전압이 낮을 때 큰 부담이 됩니다.**
+  같은 순방향 전압이라도 낮은 출력 전압에 대해서는 더 큰 비율을 차지하며, 이
+  때문에 저전압 컨버터에서는 다이오드를 트랜지스터, 곧 동기 정류기(synchronous
+  rectifier)로 대체하는 경우가 많습니다 <Cite key="erickson2020" where="Ch. 4" />.
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch4', 'ti-slua618', 'erickson-ch3']} />
+
+## 퀴즈
+
+<Quiz id="00-foundations/semiconductors" />

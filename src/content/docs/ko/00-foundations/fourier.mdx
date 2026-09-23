@@ -1,0 +1,110 @@
+---
+title: 스위칭 파형의 푸리에 급수
+description: 모든 스위치 노드에서 볼 수 있는 파형인 직사각형 펄스열의 직류 성분, 고조파, 실효값.
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 주기 파형을 직류 성분(dc component)과 고조파(harmonics)로 분해합니다.
+- 컨버터 스위치 노드(switch node)의 파형인 직사각형 펄스열(rectangular pulse train)의 고조파 진폭과 실효값(rms value)을 계산합니다.
+- 저역통과 필터(low-pass filter)가 스위치 노드 전압의 직류 성분을 복원하는 이유를 설명합니다.
+
+## 이론
+
+### 정현파의 합으로 나타낸 주기 신호
+
+주기 신호는 그 평균값(average value), 즉 직류 성분과, 기본 주파수(fundamental
+frequency)의 정수배 주파수를 갖는 정현파, 즉 고조파의 합입니다
+<Cite key="alexander2017" where="Ch. 17" />. 고조파의 진폭을 주파수에 대해
+그리면 그 신호의 진폭 스펙트럼(amplitude spectrum)이 됩니다
+<Cite key="alexander2017" where="Ch. 17" />.
+
+### 직사각형 펄스열
+
+벅 컨버터의 스위치 노드에는 매 주기 중 비율 $D$ 동안은 입력 전압이, 나머지
+동안은 0이 걸리는 펄스열이 나타납니다 <Cite key="erickson2020" where="Ch. 2" />.
+이 펄스열의 직류 성분은 평균값이며(<EqRef id="sw.v_avg" label="스위치 노드 평균 전압" />),
+고조파의 진폭은 다음과 같습니다.
+
+<Eq id="fourier.pulse.harm" />
+
+진폭은 고조파 차수(harmonic order)에 반비례하여 줄어들며, $h D$가 정수일
+때마다 그 고조파는 사라집니다. $D = 0.5$에서는 짝수 고조파가 모두 없습니다.
+
+### 실효값
+
+실효값은 한 주기에 걸쳐 제곱을 평균한 값의 제곱근입니다
+<Cite key="alexander2017" where="Ch. 11" />. 펄스열에서는 펄스만이 그 평균에
+기여합니다.
+
+<Eq id="fourier.pulse.rms" />
+
+저항에서의 손실은 전류의 평균값이 아니라 실효값에 따라 정해지며(<EqRef id="loss.cond" label="도통 손실" />),
+폭이 좁은 펄스에서는 실효값이 평균값보다 훨씬 큽니다.
+
+### 출력 필터가 동작하는 이유
+
+벅 컨버터의 L-C 필터는 스위치 노드 전압의 직류 성분은 통과시키고 고조파는
+감쇠시키는데, 고조파 가운데 가장 낮은 것은 스위칭 주파수(switching
+frequency)에 있습니다. 출력에 남는 것은 평균값 $D V_g$에 작은 리플이 더해진
+것입니다 <Cite key="erickson2020" where="Ch. 2" />.
+
+## 풀이 예제
+
+벅 컨버터의 스위치 노드에서 볼 수 있는 것과 같은 합성(synthetic) 펄스열입니다.
+
+<Worked example="pulse-train" />
+
+펄스열의 직류 성분은 <Val example="pulse-train" name="v_s_avg" />이며,
+기본파(fundamental)의 진폭은 이 듀티비(duty ratio)에서 직류 성분 자체보다 큰
+<Val example="pulse-train" name="a_h" />입니다. 실효값은
+<Val example="pulse-train" name="V_rms" />입니다.
+
+## 직접 해 보기
+
+<TryIt eq="fourier.pulse.harm" example="pulse-train" sweep="D" />
+
+$D$를 스윕(sweep)하십시오. 기본파는 $D = 0.5$에서 가장 큽니다. 그런 다음 $h$를
+2로 설정하고 다시 스윕하십시오. 2차 고조파는 $D = 0.5$에서 사라지고 0.25와
+0.75에서 가장 큽니다.
+
+## 벤치 실습
+
+벅 평가 보드(evaluation board)에서 차동 프로브(differential probe)나 접지
+연결이 짧은 프로브로 스위치 노드 전압을 측정하고, 오실로스코프(oscilloscope)의
+FFT 기능을 사용하십시오. 직류값과 처음 몇 개 고조파의 진폭을 읽고, 측정한
+듀티비와 입력 전압에서 식이 주는 값과 비교하십시오. 오실로스코프가 각 고조파의
+피크 진폭을 표시하는지, 아니면 피크 진폭을 $\sqrt{2}$로 나눈 실효값을
+표시하는지 확인하십시오.
+
+## 주의할 점
+
+- **고조파는 스위칭 주파수에서 끝나지 않습니다.** 이상적인 펄스열의 고조파는
+  $1/h$에 비례하여 줄어들 뿐이므로 스위칭 주파수보다 훨씬 높은 주파수까지
+  이어집니다. 이는 필터, 간섭(interference), 샘플링에서 중요합니다.
+- **평균값과 실효값은 다릅니다.** 평균값이 같은 두 전류도 실효값은 크게 다를
+  수 있으며, 저항성 손실은 실효값을 따릅니다
+  <Cite key="alexander2017" where="Ch. 11" />.
+- **정현파의 실효값은 진폭을 $\sqrt{2}$로 나눈 값이지만, 펄스열의 실효값은
+  그렇지 않습니다.** 실제 파형의 실효값을 사용하십시오
+  <Cite key="alexander2017" where="Ch. 11" />.
+
+## 더 알아보기
+
+<GoDeeper ids={['mit-6003-notes', 'mit-6003']} />
+
+## 퀴즈
+
+<Quiz id="00-foundations/fourier" />

@@ -1,0 +1,99 @@
+---
+title: 패러데이 법칙과 인덕터
+description: 권선을 감은 코어에 적용한 앙페르 법칙과 패러데이 법칙으로, 권선 전류가 정하는 자계와 인가된 전압-초가 정하는 자속 변화폭을 다룹니다.
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 앙페르 법칙(Ampère's law)으로 권선(winding)의 전류와 그 코어 내부의 자계 세기(magnetic field intensity)를 관련짓습니다.
+- 패러데이 법칙(Faraday's law)으로 권선에 인가한 전압과 그 지속 시간으로부터 자속 밀도 변화폭(flux-density swing)을 계산합니다.
+- 컨버터 자기 부품(magnetic component)의 자속 변화폭(flux swing)이 부하 전류가 아니라 전압-초(volt-seconds)로 정해지는 이유를 설명합니다.
+
+## 이론
+
+### 앙페르 법칙
+
+자계 세기를 닫힌 경로를 따라 적분한 값은 그 경로가 둘러싸는 전류와 같습니다.
+공극(에어 갭, air gap)이 없는 코어에 $N$ 턴을 감고 자계가 유효 자로 길이(effective
+path length)를 따라 균일하다면, 이로부터 다음 식을 얻습니다
+<Cite key="erickson2020" where="Ch. 10" />.
+
+<Eq id="mag.H_ampere" />
+
+### 패러데이 법칙
+
+권선을 통과하는 자속이 변하면, 턴 수에 자속의 변화율을 곱한 값과 같은 전압이
+유도됩니다. 자속 밀도가 코어의 유효 단면적(effective area) 전체에서 균일하면, 온
+시간(on-time) 동안 권선에 인가한 일정한 전압은 자속 밀도를 선형적으로 변화시킵니다
+<Cite key="erickson2020" where="Ch. 10" />, <Cite key="dixon2001" />.
+
+<Eq id="mag.dB_faraday" />
+
+이는 [회로 법칙 페이지](../../00-foundations/circuit-laws/)에 있는 인덕터 법칙의
+자기적 대응입니다. 거기서는 일정한 전압이 전류를 선형적으로 변화시키고, 여기서는
+자속 밀도를 선형적으로 변화시킵니다.
+
+### 자속 변화폭을 정하는 전압-초
+
+자속 변화폭은 인가된 전압-초, 턴 수, 코어 단면적에만 의존하며, 부하가 끌어가는
+전류에는 의존하지 않습니다. 직류 자화 전류(dc magnetizing current)가 흐르지 않는
+변압기에서는 전압-초만으로 자속이 정해집니다. 필터 인덕터에서는 직류 전류가 평균
+자속 밀도를 정하고, 전압-초는 그 평균을 중심으로 한 변화폭을 정합니다(<EqRef id="mag.B_pk" label="피크 자속 밀도" />).
+정상상태(steady state)에서는 전압-초 평형(volt-second balance)에 의해 자속이 매
+주기 시작 값으로 돌아옵니다(<EqRef id="vsb.v_off" label="전압-초 평형" />).
+
+## 풀이 예제
+
+공극이 없는 코어에 감은 합성(synthetic) 권선입니다.
+
+<Worked example="inductor-core" />
+
+권선 전류는 코어에 <Val example="inductor-core" name="H_mag" />의 자계 세기를
+만들고, 인가된 전압-초는 자속 밀도를 피크-피크(peak-to-peak)
+<Val example="inductor-core" name="Delta_B" />만큼 변화시킵니다.
+
+## 직접 해 보기
+
+<TryIt eq="mag.dB_faraday" example="inductor-core" sweep="N" />
+
+$N$을 스윕(sweep)하십시오. 자속 변화폭은 턴 수에 반비례하여 줄어듭니다. 그러나
+같은 권선 면적(winding area)에 더 많은 턴을 감으면 권선 저항(winding resistance)이
+커집니다 <Cite key="erickson2020" where="Ch. 11" />.
+
+## 벤치 실습
+
+페라이트(ferrite) 코어에 감은 권선을 작은 직렬 저항을 거쳐 함수 발생기(function
+generator)의 구형파(square wave)로 구동하고, 같은 코어에 몇 턴짜리 두 번째 권선을
+감아 감지 권선(sense winding)으로 사용하십시오. 오실로스코프로 적분한 감지 권선
+전압을 감지 권선의 턴 수와 코어 단면적으로 나눈 값이 자속 밀도입니다. 그 피크-피크
+변화폭이 위의 식을 따르는지 확인한 다음, 구동 주파수를 두 배로 높이고 변화폭이
+절반이 되는지 확인하십시오.
+
+## 주의할 점
+
+- **턴 수는 양날의 검입니다.** 전압이 같으면 턴 수가 많을수록 자속 변화폭이
+  작아지고, 전류가 같으면 턴 수가 많을수록 자계 세기와 자속 밀도가
+  커집니다(<EqRef id="mag.H_ampere" label="앙페르 법칙" />).
+- **순 전압-초(net volt-seconds)는 자속을 조금씩 포화(saturation)로 몰아갑니다.**
+  한 주기 동안의 평균 전압이 0이 아닌 권선에서는 코어가 포화될 때까지 자속이 매
+  주기 커집니다 <Cite key="erickson2020" where="Ch. 6" />.
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch10', 'coursera-magnetics', 'mit-6334-notes']} />
+
+## 퀴즈
+
+<Quiz id="01-physics/faraday-inductors" />

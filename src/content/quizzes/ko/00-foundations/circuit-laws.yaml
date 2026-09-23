@@ -1,0 +1,51 @@
+# 00-foundations/circuit-laws 퀴즈. 수치는 연습용 합성 값입니다.
+numbers: synthetic
+questions:
+  - q: '$100\,\mu\mathrm{H}$ 인덕터 양단에 $4\,\mu\mathrm{s}$ 동안 일정한 $5\,\mathrm{V}$가 걸립니다. 인덕터 전류는 얼마나 변합니까?'
+    options:
+      - '$0.02\,\mathrm{A}$'
+      - '$0.2\,\mathrm{A}$'
+      - '$2\,\mathrm{A}$'
+      - '$20\,\mathrm{A}$'
+    answer: 1
+    explain: '전류는 전압을 인덕턴스로 나눈 변화율, 즉 $5 \times 10^4\,\mathrm{A/s}$로 $4\,\mu\mathrm{s}$ 동안 변합니다.'
+  - q: '$10\,\mu\mathrm{F}$ 커패시터를 일정한 $2\,\mathrm{mA}$로 $1\,\mathrm{ms}$ 동안 충전합니다. 커패시터 전압은 얼마나 상승합니까?'
+    options:
+      - '$0.02\,\mathrm{V}$'
+      - '$0.2\,\mathrm{V}$'
+      - '$2\,\mathrm{V}$'
+      - '$20\,\mathrm{V}$'
+    answer: 1
+    explain: '전달된 전하는 전류와 시간의 곱인 $2\,\mu\mathrm{C}$이며, 이를 커패시턴스로 나누면 전압 변화량이 됩니다.'
+  - q: '$1\,\mathrm{mH}$ 인덕터는 $3\,\mathrm{A}$에서 얼마의 에너지를 저장합니까?'
+    options:
+      - '$1.5\,\mathrm{mJ}$'
+      - '$3\,\mathrm{mJ}$'
+      - '$4.5\,\mathrm{mJ}$'
+      - '$9\,\mathrm{mJ}$'
+    answer: 2
+    explain: '인덕턴스의 절반에 전류의 제곱을 곱한 값, 즉 $0.5 \times 10^{-3} \times 9$입니다.'
+  - q: '이상적인 인덕터에서 순간적으로 변할 수 없는 양은 무엇입니까?'
+    options:
+      - '전압'
+      - '전류'
+      - '전압과 전류 모두'
+      - '둘 다 아님'
+    answer: 1
+    explain: '저장 에너지는 전류에 따라 정해지며, 전류가 급변하려면 무한대의 전압이 필요합니다. 반면 전압은 모든 스위칭 에지에서 그러하듯 급변할 수 있습니다.'
+  - q: '인덕터 양단의 일정한 전압을 두 배로 높입니다. 전류의 변화율은 어떻게 됩니까?'
+    options:
+      - '절반이 됨'
+      - '변하지 않음'
+      - '두 배가 됨'
+      - '네 배가 됨'
+    answer: 2
+    explain: '전류의 변화율은 전압을 인덕턴스로 나눈 값입니다.'
+  - q: '벅 컨버터에서 인덕터 전류가 온 구간 동안 $0.4\,\mathrm{A}$만큼 상승합니다. 컨버터 페이지에서 사용하는 리플의 절반 $\Delta i_L$은 얼마입니까?'
+    options:
+      - '$0.1\,\mathrm{A}$'
+      - '$0.2\,\mathrm{A}$'
+      - '$0.4\,\mathrm{A}$'
+      - '$0.8\,\mathrm{A}$'
+    answer: 1
+    explain: '온 구간 동안의 상승분은 피크-피크 리플이며, $\Delta i_L$은 그 절반입니다(Erickson의 규약).'

@@ -7,16 +7,17 @@
 | `equations.yaml` seed set (BUILD_SPEC §3) | ✅ 39 equations, every test value checked against sympy |
 | 02-theory additions (Phase 2a) | ✅ 23 equations: averaging and balance, DCM interval, critical inductance, boost with winding resistance, CCM small-signal parameters, PWM and loop gain |
 | 03-topologies additions (Phase 2b) | ✅ 17 equations: dc inductor currents, current and voltage ripple, peak current, buck-boost and forward switch stress, transistor utilization |
-| Derivations reproduce the YAML (`pytest`) | ✅ 74 of 79 (`K.def`, `def.Ts`, `def.V` and `ripple.Ipk` are definitions, `loss.steinmetz` is an empirical law) |
+| 00/01 refresher additions (Phase 2c) | ✅ 16 equations: inductor and capacitor under constant excitation and their energy, impedance, R-C filter corner and gain, pulse-train harmonics and rms value, self-resonance, ESR ripple, Ampère's law, B-H relation, ideal transformer |
+| Derivations reproduce the YAML (`pytest`) | ✅ 89 of 95 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk` and `mag.B_H` are definitions, `loss.steinmetz` is an empirical law) |
 | TS/Python parity (`vitest`, 1e-9 rel) | ✅ all shared vectors |
 | Strict KaTeX on every generated formula and derivation step (`vitest`) | ✅ |
-| `references.bib` verified (two web-search rounds + CI Crossref + URL title check) | ✅ 23 of 23 verified (`steinmetz1984` DOI confirmed by the CI Crossref job) |
+| `references.bib` verified (two web-search rounds + CI Crossref + URL title check) | ✅ 25 of 25 verified (`steinmetz1984` DOI confirmed by the CI Crossref job; `ti_slva630` and `ti_snoa930` added in Phase 2c) |
 
 Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); theory uses only `<Eq>` embeds and each Eq has ≥ 1 test vector; "Try it" links a tool preset; "Go deeper" has ≥ 2 verified resources with retrieval dates; a gotchas subsection exists; quiz with ≥ 5 explained questions; build, tests and all lints green.
 
 Legend: ✅ done · 🟡 partial · ⬜ not started · ➖ not applicable. "Phase" is the build phase that delivers the module (docs/BUILD_SPEC.md §7); "later" = not scheduled in phases 0–5. 00-foundations and 01-physics are compact refreshers (Phase 2 scope).
 
-_Last updated: Phase 2b (03-topologies, EN and KO). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
+_Last updated: Phase 2c (00-foundations and 01-physics, EN and KO). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
 
 "Try it" links open the [equation explorer](../src/content/docs/en/design/explorer.mdx) with a synthetic preset until the Phase 3 design tools and simulator exist; Phase 3 adds tool and simulator presets to every 02/03 page.
 
@@ -25,21 +26,21 @@ _Last updated: Phase 2b (03-topologies, EN and KO). `python scripts/modulelint.p
 
 | Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| circuit-laws | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `ind.di`, `cap.dv`, `ind.E`, `cap.E` |
-| phasors-laplace | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `imp.ZL`, `imp.ZC`, `rc.fc`, `rc.gain` |
-| fourier | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `fourier.pulse.harm`, `fourier.pulse.rms` |
-| passives-real | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `loss.cond`, `passive.f_srf`, `cap.esr.ripple` |
-| semiconductors | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `loss.diode`, `loss.sw.cap`, `loss.gate` |
+| circuit-laws | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `ind.di`, `cap.dv`, `ind.E`, `cap.E` |
+| phasors-laplace | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `imp.ZL`, `imp.ZC`, `rc.fc`, `rc.gain` |
+| fourier | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `fourier.pulse.harm`, `fourier.pulse.rms` |
+| passives-real | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `loss.cond`, `passive.f_srf`, `cap.esr.ripple` |
+| semiconductors | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `loss.diode`, `loss.sw.cap`, `loss.gate` |
 
 ## 01-physics
 
 | Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| faraday-inductors | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `mag.H_ampere`, `mag.dB_faraday` |
-| transformers-coupled | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `xfmr.V2`, `xfmr.I2` |
-| ferrites-bh | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `mag.B_H`, `mag.B_pk` |
-| gap-and-AL | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `mag.AL_gap`, `mag.L_from_AL` |
-| core-loss | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `loss.steinmetz` |
+| faraday-inductors | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `mag.H_ampere`, `mag.dB_faraday` |
+| transformers-coupled | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `xfmr.V2`, `xfmr.I2` |
+| ferrites-bh | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `mag.B_H`, `mag.B_pk` |
+| gap-and-AL | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `mag.AL_gap`, `mag.L_from_AL` |
+| core-loss | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `loss.steinmetz` |
 
 ## 02-theory
 

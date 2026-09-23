@@ -168,7 +168,7 @@ assumption_labels:
   definition: {en: "definition", ko: "정의"}
   linear_source: {en: "linear (Thevenin) source V_oc behind R_s", ko: "선형(테브난) 전원: R_s 뒤의 V_oc"}
   lossless_converter: {en: "lossless converter (input power equals output power)", ko: "무손실 컨버터(입력 전력 = 출력 전력)"}
-  no_fringing: {en: "no fringing flux at the gap", ko: "갭의 프린징(fringing) 자속 무시"}
+  no_fringing: {en: "no fringing flux at the gap", ko: "공극의 프린징(fringing) 자속 무시"}
   linear_magnetics: {en: "linear (unsaturated) magnetic material", ko: "선형(비포화) 자성 재료"}
   uniform_flux: {en: "flux density uniform over A_e", ko: "A_e 전체에서 균일한 자속 밀도"}
   sinusoidal_excitation: {en: "sinusoidal excitation (empirical fit)", ko: "정현파 여자(경험적 피팅)"}
@@ -186,7 +186,7 @@ assumption_labels:
   sinusoidal_steady_state: {en: "sinusoidal steady state (phasor analysis)", ko: "정현파 정상상태(페이저 해석)"}
   first_order_rc: {en: "first-order R-C low-pass filter with no load on its output", ko: "출력에 부하가 없는 1차 R-C 저역통과 필터"}
   rectangular_pulse: {en: "ideal rectangular pulse train between 0 and V_pk with duty ratio D", ko: "0과 V_pk 사이를 오가는 듀티비 D의 이상적인 직사각형 펄스열"}
-  uniform_field: {en: "ungapped core with the field intensity uniform along the path l_e", ko: "갭이 없는 코어에서 자로 l_e를 따라 자계 세기가 균일함"}
+  uniform_field: {en: "ungapped core with the field intensity uniform along the path l_e", ko: "공극이 없는 코어에서 자로 l_e를 따라 자계 세기가 균일함"}
   ideal_transformer: {en: "ideal transformer: perfect coupling, no magnetizing current, no losses", ko: "이상적 변압기: 완전 결합, 자화 전류 없음, 손실 없음"}
 
 equations:
@@ -288,13 +288,13 @@ equations:
   # =========================================================================
   - id: buck.ripple.iL
     title: "Buck inductor current ripple (half peak-to-peak), CCM"
-    title_ko: "벅 인덕터 전류 리플(피크-투-피크의 절반), CCM"
+    title_ko: "벅 인덕터 전류 리플(피크-피크의 절반), CCM"
     lhs: Delta_i_L
     expr: "(V_g - V)*D*T_s/(2*L)"
     symbols: {V_g: "input voltage", V: "output voltage", D: "duty ratio", T_s: "switching period", L: "filter inductance"}
     assumptions: [ideal, ccm, steady_state, small_ripple]
     convention: "$\\Delta i_L$ is HALF the peak-to-peak ripple (Erickson)"
-    convention_ko: "$\\Delta i_L$은 피크-투-피크 리플의 절반(Erickson 규약)"
+    convention_ko: "$\\Delta i_L$은 피크-피크 리플의 절반(Erickson 규약)"
     cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
     derived_by: python/pe_core/derive/ccm_ratios.py
     tests:
@@ -302,13 +302,13 @@ equations:
 
   - id: buck.ripple.iL_pp
     title: "Buck inductor current ripple, peak-to-peak, CCM"
-    title_ko: "벅 인덕터 전류 리플(피크-투-피크), CCM"
+    title_ko: "벅 인덕터 전류 리플(피크-피크), CCM"
     lhs: Delta_i_pp
     expr: "(V_g - V)*D/(L*f_s)"
     symbols: {V_g: "input voltage", V: "output voltage", D: "duty ratio", L: "filter inductance", f_s: "switching frequency"}
     assumptions: [ideal, ccm, steady_state, small_ripple]
     convention: "peak-to-peak; twice the Erickson $\\Delta i_L$"
-    convention_ko: "피크-투-피크 값; Erickson의 $\\Delta i_L$의 두 배"
+    convention_ko: "피크-피크 값; Erickson의 $\\Delta i_L$의 두 배"
     cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
     derived_by: python/pe_core/derive/ccm_ratios.py
     tests:
@@ -672,7 +672,7 @@ equations:
     symbols: {k: "coefficient", f: "frequency", alpha: "frequency exponent", B_ac: "peak AC flux density", beta: "flux exponent"}
     assumptions: [sinusoidal_excitation]
     convention: "$B_\\mathrm{ac}$ is the peak AC amplitude, half the peak-to-peak swing $\\Delta B$; $k$, $\\alpha$, $\\beta$ are fitted per material and valid only over the fitted range"
-    convention_ko: "$B_\\mathrm{ac}$는 피크 교류 진폭(피크-투-피크 $\\Delta B$의 절반); $k$, $\\alpha$, $\\beta$는 재료별 피팅값이며 피팅 범위 안에서만 유효"
+    convention_ko: "$B_\\mathrm{ac}$는 피크 교류 진폭(피크-피크 $\\Delta B$의 절반); $k$, $\\alpha$, $\\beta$는 재료별 피팅값이며 피팅 범위 안에서만 유효"
     notes: "Steinmetz's original law gives loss per cycle proportional to $B^{1.6}$; the frequency term is the empirical extension used with ferrite data"
     notes_ko: "스타인메츠의 원래 법칙은 주기당 손실이 $B^{1.6}$에 비례; 주파수 항은 페라이트 데이터에 쓰이는 경험적 확장"
     cite:
@@ -701,14 +701,14 @@ equations:
 
   - id: mag.AL_gap
     title: "Inductance factor of a gapped core"
-    title_ko: "갭이 있는 코어의 인덕턴스 계수"
+    title_ko: "공극이 있는 코어의 인덕턴스 계수"
     lhs: A_L
     relation: approx
     expr: "mu_0*A_e/(l_g + l_e/mu_i)"
     symbols: {mu_0: "permeability of free space", A_e: "effective area", l_g: "gap length", l_e: "effective path length", mu_i: "initial relative permeability"}
     assumptions: [linear_magnetics, no_fringing, uniform_flux]
     notes: "fringing makes the real $A_L$ larger than this estimate; use the manufacturer's $A_L$ for a specified gap"
-    notes_ko: "프린징 때문에 실제 $A_L$은 이 추정보다 큼; 갭이 지정된 코어는 제조사 $A_L$ 사용"
+    notes_ko: "프린징 때문에 실제 $A_L$은 이 추정보다 큼; 공극이 지정된 코어는 제조사 $A_L$ 사용"
     cite:
       - {key: dixon2001}
       - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: magnetic circuits)"}
@@ -739,7 +739,7 @@ equations:
     symbols: {V_w: "winding voltage during t_on", t_on: "on-time", N: "number of turns", A_e: "effective area"}
     assumptions: [uniform_flux]
     convention: "$\\Delta B$ is the peak-to-peak swing; the AC amplitude used in core-loss formulas is $\\Delta B/2$"
-    convention_ko: "$\\Delta B$는 피크-투-피크 변화폭; 코어 손실식의 교류 진폭은 $\\Delta B/2$"
+    convention_ko: "$\\Delta B$는 피크-피크 변화폭; 코어 손실식의 교류 진폭은 $\\Delta B/2$"
     cite:
       - {key: dixon2001}
       - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory)"}
@@ -1128,13 +1128,13 @@ equations:
 
   - id: buck.ripple.v
     title: "Buck output voltage ripple (half peak-to-peak), CCM"
-    title_ko: "벅 출력 전압 리플(피크-투-피크의 절반), CCM"
+    title_ko: "벅 출력 전압 리플(피크-피크의 절반), CCM"
     lhs: Delta_v
     expr: "Delta_i_L*T_s/(8*C)"
     symbols: {Delta_i_L: "inductor current ripple, half of peak-to-peak", T_s: "switching period", C: "output capacitance"}
     assumptions: [ideal, ccm, steady_state, capacitor_takes_ripple]
     convention: "$\\Delta v$ is HALF the peak-to-peak ripple, like $\\Delta i_L$ (Erickson)"
-    convention_ko: "$\\Delta v$는 $\\Delta i_L$과 마찬가지로 피크-투-피크 리플의 절반(Erickson 규약)"
+    convention_ko: "$\\Delta v$는 $\\Delta i_L$과 마찬가지로 피크-피크 리플의 절반(Erickson 규약)"
     notes: "ideal capacitor; a capacitor's series resistance adds a ripple term of its own"
     notes_ko: "이상적 커패시터; 커패시터의 직렬 저항은 별도의 리플 항을 더한다"
     cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}
@@ -1158,7 +1158,7 @@ equations:
 
   - id: boost.ripple.iL
     title: "Boost inductor current ripple (half peak-to-peak), CCM"
-    title_ko: "부스트 인덕터 전류 리플(피크-투-피크의 절반), CCM"
+    title_ko: "부스트 인덕터 전류 리플(피크-피크의 절반), CCM"
     lhs: Delta_i_L
     expr: "V_g*D*T_s/(2*L)"
     symbols: {V_g: "input voltage", D: "duty ratio", T_s: "switching period", L: "inductance"}
@@ -1170,7 +1170,7 @@ equations:
 
   - id: boost.ripple.v
     title: "Boost output voltage ripple (half peak-to-peak), CCM"
-    title_ko: "부스트 출력 전압 리플(피크-투-피크의 절반), CCM"
+    title_ko: "부스트 출력 전압 리플(피크-피크의 절반), CCM"
     lhs: Delta_v
     expr: "V*D*T_s/(2*R*C)"
     symbols: {V: "output voltage", D: "duty ratio", T_s: "switching period", R: "load resistance", C: "output capacitance"}
@@ -1212,7 +1212,7 @@ equations:
 
   - id: buckboost.ripple.iL
     title: "Buck-boost inductor current ripple (half peak-to-peak), CCM"
-    title_ko: "벅-부스트 인덕터 전류 리플(피크-투-피크의 절반), CCM"
+    title_ko: "벅-부스트 인덕터 전류 리플(피크-피크의 절반), CCM"
     lhs: Delta_i_L
     expr: "V_g*D*T_s/(2*L)"
     symbols: {V_g: "input voltage", D: "duty ratio", T_s: "switching period", L: "inductance"}
@@ -1224,7 +1224,7 @@ equations:
 
   - id: buckboost.ripple.v
     title: "Buck-boost output voltage ripple (half peak-to-peak), CCM"
-    title_ko: "벅-부스트 출력 전압 리플(피크-투-피크의 절반), CCM"
+    title_ko: "벅-부스트 출력 전압 리플(피크-피크의 절반), CCM"
     lhs: Delta_v
     expr: "V*D*T_s/(2*R*C)"
     symbols: {V: "output voltage magnitude", D: "duty ratio", T_s: "switching period", R: "load resistance", C: "output capacitance"}
@@ -1264,7 +1264,7 @@ equations:
 
   - id: forward.ripple.iL
     title: "Forward converter output inductor ripple (half peak-to-peak), CCM"
-    title_ko: "포워드 컨버터 출력 인덕터 리플(피크-투-피크의 절반), CCM"
+    title_ko: "포워드 컨버터 출력 인덕터 리플(피크-피크의 절반), CCM"
     lhs: Delta_i_L
     expr: "(n*V_g - V)*D*T_s/(2*L)"
     symbols: {n: "turns ratio N_s/N_p", V_g: "input voltage", V: "output voltage", D: "duty ratio", T_s: "switching period", L: "output inductance"}
@@ -1503,7 +1503,7 @@ equations:
 
   - id: mag.H_ampere
     title: "Field intensity in an ungapped core from Ampère's law"
-    title_ko: "앙페르 법칙으로 구한 갭 없는 코어의 자계 세기"
+    title_ko: "앙페르 법칙으로 구한 공극이 없는 코어의 자계 세기"
     lhs: H_mag
     expr: "N*I_w/l_e"
     symbols: {N: "number of turns", I_w: "winding current", l_e: "effective magnetic path length"}

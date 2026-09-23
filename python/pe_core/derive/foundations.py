@@ -221,7 +221,7 @@ def derive() -> Derivation:
         "Ampère's law around the core: the line integral of $H$ equals the enclosed current, $N$ turns each "
         "carrying $I_w$. In an ungapped core with a uniform field it is $H$ times the path length.",
         "코어를 한 바퀴 도는 앙페르 법칙: $H$의 선적분은 감싸인 전류, 즉 각각 $I_w$가 흐르는 $N$턴과 같다. "
-        "균일한 자계를 갖는 갭 없는 코어에서 선적분은 $H$와 자로 길이의 곱이다.",
+        "균일한 자계를 갖는 공극이 없는 코어에서 선적분은 $H$와 자로 길이의 곱이다.",
         amp,
     )
     d.result("mag.H_ampere", sp.solve(amp, H)[0], "Solve for $H$.", "$H$에 대해 푼다.", H)

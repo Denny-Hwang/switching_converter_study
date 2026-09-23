@@ -1,0 +1,118 @@
+---
+title: 페이저, 임피던스, 라플라스 변환
+description: 페이저로 다루는 정현파 정상상태, 인덕터와 커패시터의 임피던스, 전달함수, 그리고 1차 저역통과 필터와 그 보드 선도.
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 정현파 신호를 페이저(phasor)로, 인덕터와 커패시터를 임피던스(impedance)로 나타냅니다.
+- 주어진 주파수에서 인덕터와 커패시터의 임피던스를 계산합니다.
+- 컨버터 전달함수(transfer function)의 기본 구성 요소인 1차 저역통과 필터(low-pass filter)의 차단 주파수(corner frequency)와, 차단 주파수보다 높은 주파수에서의 감쇠(attenuation)를 구합니다.
+
+## 이론
+
+### 페이저와 임피던스
+
+정현파 정상상태(sinusoidal steady state)에서 선형 회로의 모든 전압과 전류는
+전원 주파수의 정현파입니다. 각 전압과 전류는 진폭과 위상(phase)을 담은 복소수,
+즉 페이저로 나타낼 수 있습니다 <Cite key="alexander2017" where="Ch. 9" />.
+미분은 $j\omega$를 곱하는 연산이 되고, 각 소자는 전압 페이저를 전류 페이저로
+나눈 비인 임피던스로 기술됩니다 <Cite key="alexander2017" where="Ch. 9" />.
+인덕터와 커패시터의 임피던스 크기는 다음과 같습니다.
+
+<Eq id="imp.ZL" />
+
+<Eq id="imp.ZC" />
+
+인덕터의 임피던스는 주파수가 높아질수록 커지고, 커패시터의 임피던스는
+작아집니다. 이 성질 덕분에 컨버터의 L-C 필터는 스위치 노드(switch node) 전압의
+직류 성분(dc component)은 통과시키면서 스위칭 고조파(harmonics)는 제거할 수
+있습니다 <Cite key="erickson2020" where="Ch. 2" />.
+
+### 라플라스 변환과 전달함수
+
+라플라스 변환(Laplace transform)은 같은 개념을 정현파에서 임의의 신호로
+확장합니다. $j\omega$ 대신 복소 주파수(complex frequency) $s$를 쓰면, 선형
+회로는 출력의 변환을 입력의 변환으로 나눈 비인 전달함수로 기술됩니다
+<Cite key="alexander2017" where="Ch. 15" />. 전달함수를 $j\omega$에서 계산하면
+주파수 응답(frequency response), 즉 각 주파수에서의 이득(gain)과 위상을
+얻습니다 <Cite key="alexander2017" where="Ch. 14" />.
+
+### 1차 저역통과 필터
+
+저항과 커패시터를 직렬로 연결하고 커패시터 양단에서 출력을 취하면 가장 단순한
+저역통과 필터가 됩니다. 이 필터의 이득은 낮은 주파수에서 1에 가깝고, 차단
+주파수보다 높은 주파수에서 감소합니다 <Cite key="alexander2017" where="Ch. 14" />.
+
+<Eq id="rc.fc" />
+
+<Eq id="rc.gain" />
+
+차단 주파수보다 충분히 높은 주파수에서는 주파수가 한 디케이드(decade) 높아질
+때마다 이득이 10분의 1로 줄어듭니다. 이는 보드 선도(Bode plot)에서 디케이드당
+-20 dB의 기울기입니다 <Cite key="alexander2017" where="Ch. 14" />. 컨버터의
+L-C 필터는 2차 필터이며, 공진(resonance) 주파수보다 높은 주파수에서는
+디케이드당 -40 dB로 감소합니다 <Cite key="erickson2020" where="Ch. 8" />
+([소신호 페이지](../../02-theory/small-signal/) 참고).
+
+## 풀이 예제
+
+한 주파수에서의 합성(synthetic) 인덕터, 커패시터, R-C 필터입니다.
+
+<Worked example="impedance-basic" />
+
+<Val example="impedance-basic" name="f" />에서 인덕터의 임피던스는
+<Val example="impedance-basic" name="Z_L" />인 반면, 커패시터의 임피던스는
+<Val example="impedance-basic" name="Z_C" />에 불과합니다. R-C 필터의 차단
+주파수는 <Val example="impedance-basic" name="f_c" />이므로, 예제의 주파수에서
+필터는 입력 진폭의 <Val example="impedance-basic" name="G_lp" />만
+통과시킵니다.
+
+## 직접 해 보기
+
+<TryIt eq="rc.gain" example="impedance-basic" sweep="f" />
+
+$f$를 로그 축에서 스윕(sweep)하십시오. 이득은 차단 주파수 아래에서 평탄하고,
+차단 주파수에서 $1/\sqrt{2}$이며, 그 위에서는 디케이드마다 10분의 1로
+줄어듭니다. 그런 다음 커패시터의 임피던스 식을 열고 $f$를 다시 스윕하여 같은
+반비례 관계를 확인하십시오.
+
+## 벤치 실습
+
+차단 주파수가 가청 주파수 대역에 있는 R-C 저역통과 필터를 만들고, 함수
+발생기(function generator)의 정현파로 구동하면서, 차단 주파수 주변의 여러
+주파수에서 오실로스코프(oscilloscope)로 출력의 진폭과 위상을 측정하십시오.
+로그 축의 주파수에 대해 이득을 데시벨(decibel)로 그린 다음 식과 비교하십시오.
+차단 주파수에서 이득은 3 dB 낮아지고 출력은 입력보다 45° 뒤지며, 그보다 한
+디케이드 위에서는 이득이 약 20 dB 낮아집니다.
+
+## 주의할 점
+
+- **크기는 위상을 감춥니다.** 임피던스 크기가 같은 인덕터와 커패시터는 직렬로
+  연결하면 서로 더해지지 않고 상쇄됩니다. 그 주파수에서 둘은 직렬 공진(series
+  resonance) 상태입니다 <Cite key="alexander2017" where="Ch. 14" />.
+- **라디안 또는 헤르츠.** $\omega$는 초당 라디안, $f$는 헤르츠 단위입니다. 둘을
+  섞으면 차단 주파수가 $2\pi$배만큼 이동합니다.
+- **부하가 걸린 필터는 다른 필터입니다.** 차단 주파수 식은 출력에서 전류를
+  끌어가는 것이 없다고 가정합니다. 커패시터와 병렬로 연결된 부하는 이득을 낮추고
+  차단 주파수를 이동시킵니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['mit-6003-notes', 'mit-6003', 'mit-6002-notes']} />
+
+## 퀴즈
+
+<Quiz id="00-foundations/phasors-laplace" />

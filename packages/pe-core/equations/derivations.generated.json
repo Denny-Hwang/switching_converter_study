@@ -184,7 +184,7 @@
         },
         {
           "text": "Ampère's law around the core: the line integral of $H$ equals the enclosed current, $N$ turns each carrying $I_w$. In an ungapped core with a uniform field it is $H$ times the path length.",
-          "text_ko": "코어를 한 바퀴 도는 앙페르 법칙: $H$의 선적분은 감싸인 전류, 즉 각각 $I_w$가 흐르는 $N$턴과 같다. 균일한 자계를 갖는 갭 없는 코어에서 선적분은 $H$와 자로 길이의 곱이다.",
+          "text_ko": "코어를 한 바퀴 도는 앙페르 법칙: $H$의 선적분은 감싸인 전류, 즉 각각 $I_w$가 흐르는 $N$턴과 같다. 균일한 자계를 갖는 공극이 없는 코어에서 선적분은 $H$와 자로 길이의 곱이다.",
           "latex": "H l_e = I_w N",
           "result_for": null
         },
@@ -407,7 +407,7 @@
         },
         {
           "text": "Buck ripple: during the on-interval the inductor current rises with slope $(V_g - V)/L$ for $D T_s$, which is the full peak-to-peak ripple, i.e. $2\\Delta i_L$.",
-          "text_ko": "벅 리플: 온 구간 $D T_s$ 동안 인덕터 전류가 기울기 $(V_g - V)/L$로 증가하며, 이 증가량이 피크-투-피크 리플, 즉 $2\\Delta i_L$이다.",
+          "text_ko": "벅 리플: 온 구간 $D T_s$ 동안 인덕터 전류가 기울기 $(V_g - V)/L$로 증가하며, 이 증가량이 피크-피크 리플, 즉 $2\\Delta i_L$이다.",
           "latex": "2 \\Delta i_L = \\frac{D T_s \\left(V_g - V\\right)}{L}",
           "result_for": null
         },
@@ -419,7 +419,7 @@
         },
         {
           "text": "The peak-to-peak value, with $T_s = 1/f_s$.",
-          "text_ko": "$T_s = 1/f_s$로 쓴 피크-투-피크 값.",
+          "text_ko": "$T_s = 1/f_s$로 쓴 피크-피크 값.",
           "latex": "\\Delta i_{L,\\mathrm{pp}} = \\frac{\\left(V_g - V\\right) D}{L f_s}",
           "result_for": "buck.ripple.iL_pp"
         }
@@ -1239,7 +1239,7 @@
         },
         {
           "text": "Gap reluctance (no fringing: the gap area equals $A_e$).",
-          "text_ko": "갭 자기저항(프린징 무시: 갭 면적 = $A_e$).",
+          "text_ko": "공극 자기저항(프린징 무시: 공극 면적 = $A_e$).",
           "latex": "\\mathcal{R}_g = \\frac{l_g}{A_e \\mu_0}",
           "result_for": null
         },
