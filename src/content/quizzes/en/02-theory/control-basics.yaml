@@ -17,7 +17,7 @@ questions:
       - '60'
     answer: 1
     explain: 'The magnitudes multiply around the loop, and the modulator contributes $1/V_M$: five times 12 times 0.25, divided by 1.5.'
-  - q: 'At dc a loop gain of 19 is measured. By what factor is a slow input-voltage disturbance reduced at the output?'
+  - q: 'At dc a loop gain of 19 is measured. What fraction of its effect without feedback does a slow input-voltage disturbance still have at the output?'
     options:
       - '19'
       - '20'
