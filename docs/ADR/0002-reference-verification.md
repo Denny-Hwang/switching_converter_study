@@ -66,8 +66,12 @@ at build time as well.
 ## Consequences
 
 - Chapter-level pointers into Erickson & Maksimović use 3rd-edition numbers
-  taken from SpringerLink chapter DOIs. Chapters whose DOI page was not seen
-  (Ch. 9 and Ch. 22) are not cited until confirmed.
+  taken from SpringerLink chapter DOIs, and `refcheck.py --online` checks each
+  cited "Ch. N (Title)" against the Crossref record of chapter N. Chapters the
+  search rounds saw only in tables of contents are cited only once that check
+  confirms them: Ch. 1 "Introduction", Ch. 7 "AC Equivalent Circuit Modeling"
+  and Ch. 9 "Controller Design" were confirmed this way in Phase 2a. Ch. 22 is
+  not cited.
 - Where the spec's suggested source for an equation could not be tied to
   verifiable content, a verifiable source was cited instead: TI SLUA618A for
   gate-drive power, Alexander & Sadiku §4.8 for maximum power transfer,
