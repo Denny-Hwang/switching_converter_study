@@ -36,7 +36,8 @@ describe('physical constants match equations.yaml', () => {
 describe('TypeScript/Python parity on shared vectors', () => {
   const tol = vectors.tolerance_rel;
   it.each(vectors.vectors.map((v, i) => [`${v.id} #${i} (${v.source})`, v] as const))('%s', (_name, v) => {
-    const got = evaluators[v.id]!(v.inputs as Record<string, number>);
+    // The JSON module type is a union of per-equation shapes; the inputs are plain numbers.
+    const got = evaluators[v.id]!(v.inputs as unknown as Record<string, number>);
     expect(relErr(got, v.value), `got ${got}, want ${v.value}`).toBeLessThanOrEqual(tol);
   });
 });

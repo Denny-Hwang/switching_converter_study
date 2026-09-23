@@ -37,6 +37,24 @@ function defaultValue(name: string): number {
   return catalog.symbols[name]?.scale === 'log' ? Math.sqrt(r[0] * r[1]) : (r[0] + r[1]) / 2;
 }
 
+/** Display unit of a symbol: empty for dimensionless ("1") quantities. */
+function unitLabel(name: string): string {
+  const u = catalog.symbols[name]?.unit ?? '';
+  return u === '1' ? '' : u;
+}
+
+/** "D" or "V [V]": a symbol name with its unit in brackets, if it has one. */
+function withUnit(name: string): string {
+  const u = unitLabel(name);
+  return u ? `${name} [${u}]` : name;
+}
+
+/** A number field's value; an empty or partial field is NaN, never 0. */
+export function parseField(raw: string | undefined): number {
+  const t = (raw ?? '').trim();
+  return t === '' ? Number.NaN : Number(t);
+}
+
 function fmt(x: number): string {
   if (!Number.isFinite(x)) return String(x);
   const a = Math.abs(x);
@@ -96,7 +114,7 @@ export default function EquationExplorer({ locale, labels }: Props) {
 
   const numeric = useMemo(() => {
     const out: Record<string, number> = {};
-    for (const v of meta.variables) out[v] = Number(values[v]);
+    for (const v of meta.variables) out[v] = parseField(values[v]);
     return out;
   }, [meta, values]);
 
@@ -130,8 +148,8 @@ export default function EquationExplorer({ locale, labels }: Props) {
   // sweep plot
   useEffect(() => {
     const el = plotRef.current;
-    const a = Number(from);
-    const b = Number(to);
+    const a = parseField(from);
+    const b = parseField(to);
     if (!el || !(a < b) || (logx && a <= 0)) return;
     let cancelled = false;
     const n = 201;
@@ -154,8 +172,8 @@ export default function EquationExplorer({ locale, labels }: Props) {
         [{ x: xs, y: ys, mode: 'lines', name: meta.lhs }],
         {
           margin: { t: 16, r: 16, b: 48, l: 64 },
-          xaxis: { title: { text: `${sweep} [${catalog.symbols[sweep]?.unit ?? ''}]` }, type: logx ? 'log' : 'linear' },
-          yaxis: { title: { text: `${meta.lhs} [${catalog.symbols[meta.lhs]?.unit ?? ''}]` } },
+          xaxis: { title: { text: withUnit(sweep) }, type: logx ? 'log' : 'linear' },
+          yaxis: { title: { text: withUnit(meta.lhs) } },
           paper_bgcolor: 'rgba(0,0,0,0)',
           plot_bgcolor: 'rgba(0,0,0,0)',
           showlegend: false,
@@ -169,7 +187,6 @@ export default function EquationExplorer({ locale, labels }: Props) {
   }, [eqId, meta, numeric, sweep, from, to, logx]);
 
   const title = locale === 'ko' ? meta.title_ko : meta.title;
-  const unitOf = (name: string) => catalog.symbols[name]?.unit ?? '';
 
   return (
     <div className="pe-tool pe-explorer">
@@ -190,7 +207,7 @@ export default function EquationExplorer({ locale, labels }: Props) {
         {meta.variables.map((v) => (
           <label key={v} className="pe-explorer__row">
             <span>
-              {v} <small>[{unitOf(v)}]</small>
+              {v} {unitLabel(v) && <small>[{unitLabel(v)}]</small>}
             </span>
             <input
               type="number"
@@ -202,7 +219,7 @@ export default function EquationExplorer({ locale, labels }: Props) {
         ))}
       </fieldset>
       <p className="pe-explorer__result" aria-live="polite">
-        {labels.result}: <strong>{error ?? `${meta.lhs} = ${fmt(result!)} ${unitOf(meta.lhs)}`}</strong>
+        {labels.result}: <strong>{error ?? `${meta.lhs} = ${fmt(result!)} ${unitLabel(meta.lhs)}`.trim()}</strong>
       </p>
       <fieldset>
         <legend>{labels.sweep}</legend>
