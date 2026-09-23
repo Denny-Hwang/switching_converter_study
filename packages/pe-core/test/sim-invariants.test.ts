@@ -142,7 +142,7 @@ describe('start-up from rest: energy is conserved cycle by cycle', () => {
     ['flyback charging a capacitor alone, ideal parts', { topology: 'flyback', Vg: 24, D: 0.3, fs, L: 5e-5, n: 1, load: { kind: 'network', C: 1e-4, V0: 0 } }, 400],
     ['buck charging a capacitor alone, ideal parts', { topology: 'buck', Vg: 24, D: 0.5, fs, L: 1e-4, load: { kind: 'network', C: 22e-6, V0: 0 } }, 300],
     ['boost into a battery and a resistor, with losses', { topology: 'boost', Vg: 12, D: 0.4, fs, L: 1e-4, Ron: 0.05, RL: 0.03, VF: 0.4, load: { kind: 'network', C: 22e-6, R: 40, battery: { V: 16, R: 1 } } }, 200],
-    ['flyback into a fixed output, running away', { topology: 'flyback', Vg: 400, D: 0.3, fs, L: 5e-5, n: 0.25, load: { kind: 'fixed', V: 4 } }, 20],
+    ['flyback into a fixed output, running away', { topology: 'flyback', Vg: 300, D: 0.25, fs, L: 1e-4, n: 0.2, load: { kind: 'fixed', V: 5 } }, 20],
     ['flyback with a node capacitance into a battery', { topology: 'flyback', Vg: 48, D: 0.3, fs, L: 2e-5, n: 0.25, VF: 0.5, Ron: 0.1, Cnode: 1e-10, load: { kind: 'network', C: 1e-4, battery: { V: 12, R: 0.05 } } }, 100],
   ];
   for (const [name, p, cycles] of cases) {

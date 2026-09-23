@@ -85,9 +85,9 @@ CASES: list[dict] = [
     {"id": "flyback-battery", "topology": "flyback", "Vg": 48, "D": 0.3, "fs": 1e5, "L": 2e-5, "n": 0.25, "VF": 0.5, "load": {"kind": "network", "C": 1e-4, "battery": {"V": 12, "R": 0.05}}, "cycles": 1000},
     {"id": "boost-battery-r", "topology": "boost", "Vg": 12, "D": 0.4, "fs": 1e5, "L": 1e-4, "load": {"kind": "network", "C": 22e-6, "R": 40, "battery": {"V": 16, "R": 1}}, "cycles": 1500},
     # a fixed output voltage (an ideal battery): DCM has a steady state
-    {"id": "flyback-fixed-dcm", "topology": "flyback", "Vg": 400, "D": 0.02, "fs": 1e5, "L": 5e-5, "n": 0.25, "load": {"kind": "fixed", "V": 4}, "cycles": 200},
+    {"id": "flyback-fixed-dcm", "topology": "flyback", "Vg": 300, "D": 0.05, "fs": 1e5, "L": 1e-4, "n": 0.2, "load": {"kind": "fixed", "V": 5}, "cycles": 200},
     # no steady state, or not from rest within the run: the start-up itself
-    {"id": "flyback-fixed-runaway", "topology": "flyback", "Vg": 400, "D": 0.3, "fs": 1e5, "L": 5e-5, "n": 0.25, "load": {"kind": "fixed", "V": 4}, "cycles": 20, "startup": True},
+    {"id": "flyback-fixed-runaway", "topology": "flyback", "Vg": 300, "D": 0.25, "fs": 1e5, "L": 1e-4, "n": 0.2, "load": {"kind": "fixed", "V": 5}, "cycles": 20, "startup": True},
     {"id": "flyback-charging", "topology": "flyback", "Vg": 24, "D": 0.3, "fs": 1e5, "L": 5e-5, "n": 1, "load": {"kind": "network", "C": 1e-4, "V0": 0}, "cycles": 400, "startup": True},
     # (the same flyback early on: the output is still low, the magnetizing current cannot reset and is near its peak)
     {"id": "flyback-charging-early", "topology": "flyback", "Vg": 24, "D": 0.3, "fs": 1e5, "L": 5e-5, "n": 1, "load": {"kind": "network", "C": 1e-4, "V0": 0}, "cycles": 15, "startup": True},
