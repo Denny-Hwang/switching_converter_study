@@ -151,9 +151,46 @@
   title        = {{LTC6101/LTC6101HV}: High Voltage, High-Side Current Sense Amplifier in {SOT-23}},
   organization = {Analog Devices},
   type         = {Data sheet, Rev. I},
-  note         = {verified 2026-09-23 (analog.com product page and data-sheet PDF; V_SENSE is forced across R_IN and the resulting current flows through R_OUT)},
+  note         = {verified 2026-09-23 (analog.com product page and data-sheet PDF; V_SENSE is forced across R_IN and the resulting current flows through R_OUT). Re-verified for Phase 3d in two independent web-search rounds (the vendor host could not be opened from the sandbox; the CI URL check opens it and matches urltitle in the PDF): the current revision is Rev I (the revision table dates it 05/18, a product-page listing 03/12, which is Rev H's date: no year given here); cited also for: the output error due to the amplifier's DC offset voltage, E_OUT(V_OS) = V_OS R_OUT/R_IN, "the DC offset voltage of the amplifier adds directly to the value of the sense voltage", the dominant error at low currents; the output's maximum voltage given as absolute values (absolute maximum 9 V on OUT; 8 V in the electrical characteristics for 12 V to 60 V supplies), not relative to the supply; "Kelvin connection of the IN- and IN+ inputs to the sense resistor should be used in all but the lowest power applications"},
   url          = {https://www.analog.com/media/en/technical-documentation/data-sheets/ltc6101.pdf},
   urltitle     = {High Voltage, High-Side Current Sense Amplifier in SOT-23},
+  urlkind      = {pdf}
+}
+
+@manual{ti_ina181,
+  title        = {{INAx181} Bidirectional, Low- and High-Side Voltage Output, Current-Sense Amplifiers},
+  organization = {Texas Instruments},
+  type         = {Data sheet},
+  number       = {SBOS793H},
+  year         = {2023},
+  note         = {verified 2026-09-23 (two independent web-search rounds; ti.com could not be opened from the sandbox; the CI URL check opens it and matches urltitle in the PDF): "INAx181 Bidirectional, Low- and High-Side Voltage Output, Current-Sense Amplifiers" (plural in Rev H; earlier revisions singular), SBOS793H, April 2017, revised November 2023; cited for: four fixed gains, 20, 50, 100 and 200 V/V; the output voltage from the load current, the sense resistor, the gain and the voltage on the REF pin (V_OUT = I_LOAD R_SENSE GAIN + V_REF, its Equation 1; the variables and the REF offset confirmed, the formula read from them); the output swing to within 30 mV of the supply and 5 mV of ground (maximum); "a large sense resistor maximizes the differential input signal ... and reduces the error contribution of the offset voltage"},
+  url          = {https://www.ti.com/lit/ds/symlink/ina181.pdf},
+  urltitle     = {Bidirectional, Low- and High-Side Voltage Output, Current-Sense Amplifiers},
+  urlkind      = {pdf}
+}
+
+@article{osullivan2012,
+  author  = {O'Sullivan, Marcus},
+  title   = {Optimize High-Current Sensing Accuracy by Improving Pad Layout of Low-Value Shunt Resistors},
+  journal = {Analog Dialogue},
+  volume  = {46},
+  number  = {2},
+  year    = {2012},
+  note    = {verified 2026-09-23 (two independent web-search rounds; analog.com could not be opened from the sandbox; the CI URL check opens it and matches urltitle in the PDF): Analog Dialogue Vol. 46, No. 2, June 2012 web edition 46-06 ("Back Burner"); author Marcus O'Sullivan (not Paul Blanchard, as first assumed); cited for: with very low value resistors, a few milliohms or less, "the resistance of the solder becomes a substantial portion of the sense element resistance and adds significantly to the measurement error"; 4-terminal resistors and Kelvin sensing reduce it; a 4-pad (split-pad) layout for a 2-pad resistor removes the solder joint resistance from the measurement},
+  url     = {https://www.analog.com/media/en/analog-dialogue/volume-46/number-2/articles/optimize-high-current-sensing-accuracy.pdf},
+  urltitle = {Optimize High-Current Sensing Accuracy by Improving Pad Layout of Low-Value Shunt Resistors},
+  urlkind = {pdf}
+}
+
+@manual{kester_mt002,
+  author       = {Kester, Walt},
+  title        = {What the Nyquist Criterion Means to Your Sampled Data System Design},
+  organization = {Analog Devices},
+  type         = {Tutorial},
+  number       = {MT-002},
+  note         = {verified 2026-09-23 (two independent web-search rounds; analog.com could not be opened from the sandbox; the CI URL check opens it and matches urltitle in the PDF): Analog Devices tutorial MT-002 by Walt Kester (the revision and year are not given here: the evidence split between Rev.A and Rev.0, and 10/08 and 2009); cited for: "the Nyquist bandwidth is defined to be the frequency spectrum from dc to fs/2"; any component outside the Nyquist bandwidth is aliased back into the first Nyquist zone; "an antialiasing filter is used in almost all sampling ADC applications to remove these unwanted signals"},
+  url          = {https://www.analog.com/media/en/training-seminars/tutorials/MT-002.pdf},
+  urltitle     = {What the Nyquist Criterion Means to Your Sampled Data System Design},
   urlkind      = {pdf}
 }
 

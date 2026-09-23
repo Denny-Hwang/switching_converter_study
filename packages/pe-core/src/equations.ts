@@ -112,6 +112,17 @@ const base: Readonly<Record<string, Evaluator>> = {
   'sense.current_out_monitor': eq(['I_SENSE', 'R_SENSE', 'R_OUT', 'R_IN'], ({ I_SENSE, R_SENSE, R_OUT, R_IN }) =>
     (I_SENSE * R_SENSE * R_OUT) / R_IN,
   ),
+  'sense.burden': eq(['I_SENSE', 'R_SENSE'], ({ I_SENSE, R_SENSE }) => I_SENSE * R_SENSE),
+  'sense.voltage_out_monitor': eq(['G_sense', 'I_SENSE', 'R_SENSE', 'V_REF'], ({ G_sense, I_SENSE, R_SENSE, V_REF }) =>
+    G_sense * I_SENSE * R_SENSE + V_REF,
+  ),
+  'sense.offset_current': eq(['V_OS', 'R_SENSE'], ({ V_OS, R_SENSE }) => V_OS / R_SENSE),
+  'sense.pad_error': eq(['R_pad', 'R_SENSE'], ({ R_pad, R_SENSE }) => R_pad / R_SENSE),
+  'sense.rel_error': eq(['V_OS', 'I_SENSE', 'R_SENSE', 'R_pad'], ({ V_OS, I_SENSE, R_SENSE, R_pad }) =>
+    V_OS / (I_SENSE * R_SENSE) + R_pad / R_SENSE,
+  ),
+  'sense.filter_R': eq(['R_OUT', 'R_f'], ({ R_OUT, R_f }) => R_OUT + R_f),
+  'adc.nyquist': eq(['f_samp'], ({ f_samp }) => f_samp / 2),
 };
 
 /** Evaluators added with the 02-theory pages (Phase 2). */

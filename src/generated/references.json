@@ -178,6 +178,48 @@
       "kind": "Data sheet, Rev. I",
       "url": "https://www.analog.com/media/en/technical-documentation/data-sheets/ltc6101.pdf"
     },
+    "ti_ina181": {
+      "key": "ti_ina181",
+      "type": "manual",
+      "label": "Texas Instruments 2023",
+      "authors": [],
+      "title": "INAx181 Bidirectional, Low- and High-Side Voltage Output, Current-Sense Amplifiers",
+      "verified": true,
+      "organization": "Texas Instruments",
+      "number": "SBOS793H",
+      "year": "2023",
+      "kind": "Data sheet",
+      "url": "https://www.ti.com/lit/ds/symlink/ina181.pdf"
+    },
+    "osullivan2012": {
+      "key": "osullivan2012",
+      "type": "article",
+      "label": "O'Sullivan 2012",
+      "authors": [
+        "Marcus O'Sullivan"
+      ],
+      "title": "Optimize High-Current Sensing Accuracy by Improving Pad Layout of Low-Value Shunt Resistors",
+      "verified": true,
+      "journal": "Analog Dialogue",
+      "number": "2",
+      "volume": "46",
+      "year": "2012",
+      "url": "https://www.analog.com/media/en/analog-dialogue/volume-46/number-2/articles/optimize-high-current-sensing-accuracy.pdf"
+    },
+    "kester_mt002": {
+      "key": "kester_mt002",
+      "type": "manual",
+      "label": "Kester, What the Nyquist Criterion Means to Your Sampled Data System Design",
+      "authors": [
+        "Walt Kester"
+      ],
+      "title": "What the Nyquist Criterion Means to Your Sampled Data System Design",
+      "verified": true,
+      "organization": "Analog Devices",
+      "number": "MT-002",
+      "kind": "Tutorial",
+      "url": "https://www.analog.com/media/en/training-seminars/tutorials/MT-002.pdf"
+    },
     "singer1990": {
       "key": "singer1990",
       "type": "article",

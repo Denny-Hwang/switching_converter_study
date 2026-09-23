@@ -51,7 +51,23 @@ symbol_table:
   V_F: {latex: "V_F", unit: "V", desc: "diode forward-voltage intercept", range: [0.2, 1.5]}
   V_oc: {latex: "V_\\mathrm{oc}", unit: "V", desc: "open-circuit (Thevenin) voltage of a linear source", range: [0.1, 1000], scale: log}
   V_c: {latex: "V_c", unit: "V", desc: "voltage held by a constant-voltage sink", range: [0.01, 1000], scale: log}
-  V_OUT: {latex: "V_\\mathrm{OUT}", unit: "V", desc: "output voltage of a current-output sense amplifier across R_OUT"}
+  V_OUT: {latex: "V_\\mathrm{OUT}", unit: "V", desc: "output voltage of a current-sense amplifier (across R_OUT for a current-output one)"}
+  V_SENSE: {latex: "V_\\mathrm{SENSE}", unit: "V", desc: "voltage across the sense resistor: the signal, and the burden on the measured circuit", range: [1.0e-4, 1], scale: log}
+  G_sense: {latex: "G", unit: "1", desc: "fixed voltage gain of a voltage-output current-sense amplifier (V/V)", range: [1, 1000], scale: log}
+  V_REF: {latex: "V_\\mathrm{REF}", unit: "V", desc: "voltage on the REF pin of a voltage-output current-sense amplifier: its output at zero current", range: [0, 5]}
+  V_OS: {latex: "V_\\mathrm{OS}", unit: "V", desc: "input offset voltage of a sense amplifier", range: [1.0e-6, 1.0e-2], scale: log}
+  I_OSeq: {latex: "I_\\mathrm{OS,eq}", unit: "A", desc: "offset-equivalent current: the sensed current whose sense voltage equals the amplifier's offset voltage"}
+  R_pad: {latex: "R_\\mathrm{pad}", unit: "Ω", desc: "pad and solder resistance in the sense path of a shunt without a Kelvin connection", range: [1.0e-5, 1.0e-2], scale: log}
+  eps_pad: {latex: "\\varepsilon_\\mathrm{pad}", unit: "1", desc: "relative gain error from pad and solder resistance in the sense path"}
+  f_samp: {latex: "f_\\mathrm{samp}", unit: "Hz", desc: "sampling rate of an ADC", range: [1, 1.0e9], scale: log}
+  f_N: {latex: "f_N", unit: "Hz", desc: "Nyquist frequency: half the sampling rate, the upper edge of the Nyquist bandwidth"}
+  I_min: {latex: "I_\\mathrm{min}", unit: "A", desc: "smallest current a sense chain must resolve"}
+  V_OUTmax: {latex: "V_\\mathrm{OUT,max}", unit: "V", desc: "largest output voltage a sense amplifier delivers at its supply (data sheet)"}
+  V_FS: {latex: "V_\\mathrm{FS}", unit: "V", desc: "full-scale input voltage of an ADC"}
+  eps_max: {latex: "\\varepsilon_\\mathrm{max}", unit: "1", desc: "largest acceptable relative error"}
+  V_OUTmin: {latex: "V_\\mathrm{OUT,min}", unit: "V", desc: "lowest output voltage a sense amplifier reaches: its swing to ground (data sheet)"}
+  eps_I: {latex: "\\varepsilon_I", unit: "1", desc: "relative error of a current reading"}
+  R_filt: {latex: "R_\\mathrm{filt}", unit: "Ω", desc: "resistance an R-C filter's capacitor sees: the Thevenin resistance of the source plus the filter's series resistor"}
   # --- currents ------------------------------------------------------------
   Delta_i_L: {latex: "\\Delta i_L", unit: "A", desc: "inductor current ripple, HALF of peak-to-peak (Erickson convention)", range: [0.001, 10], scale: log}
   Delta_i_pp: {latex: "\\Delta i_{L,\\mathrm{pp}}", unit: "A", desc: "inductor current ripple, peak-to-peak"}
@@ -208,6 +224,9 @@ assumption_labels:
   rcd_small_ripple: {en: "RCD clamp: the capacitor's voltage ripple is small and its resistor dissipates the clamp energy", ko: "RCD 클램프: 커패시터의 전압 리플이 작고 저항이 클램프 에너지를 소산함"}
   tvs_linear: {en: "TVS modelled by its breakdown voltage and a constant dynamic resistance", ko: "TVS를 항복 전압과 일정한 동저항으로 모델링"}
   open_load: {en: "fixed duty ratio, no regulation, load removed", ko: "고정 듀티비, 레귤레이션 없음, 부하 제거"}
+  offset_only: {en: "the amplifier's input offset voltage is its only error (no gain error, no bias current)", ko: "증폭기의 입력 오프셋 전압만 오차로 봄(이득 오차, 바이어스 전류 없음)"}
+  no_kelvin: {en: "a two-terminal shunt whose sense connections share the pads and solder joints with the load current (no Kelvin connection)", ko: "센스 연결이 부하 전류와 같은 패드와 납땜을 공유하는 2단자 션트(켈빈 연결 없음)"}
+  uniform_sampling: {en: "uniform sampling at a fixed rate", ko: "일정한 속도의 균일 샘플링"}
   fixed_clamp: {en: "a clamp whose voltage does not depend on the power it absorbs (a TVS or Zener clamp)", ko: "흡수하는 전력에 따라 전압이 변하지 않는 클램프(TVS 또는 제너 클램프)"}
 
 equations:
@@ -1047,6 +1066,112 @@ equations:
     derived_by: python/pe_core/derive/sensing.py
     tests:
       - {inputs: {I_SENSE: 2.0, R_SENSE: 0.01, R_OUT: 1.0e4, R_IN: 100.0}, expect: 2.0}
+
+  - id: sense.burden
+    title: "Voltage across a current-sense resistor"
+    title_ko: "전류 센스 저항 양단 전압"
+    lhs: V_SENSE
+    expr: "I_SENSE*R_SENSE"
+    symbols: {I_SENSE: "sensed current", R_SENSE: "sense resistor"}
+    assumptions: [ideal]
+    notes: "the signal the amplifier sees, and the burden: the voltage the shunt takes from the circuit it measures; the shunt dissipates the current times this voltage"
+    notes_ko: "증폭기가 보는 신호이자, 션트가 측정 대상 회로에서 빼앗는 전압(부담 전압); 션트는 전류와 이 전압의 곱만큼 소산한다"
+    cite: {key: alexander2017, where: "Ch. 2 (Basic Laws: Ohm's law)"}
+    derived_by: python/pe_core/derive/sensing.py
+    tests:
+      - {inputs: {I_SENSE: 2.0, R_SENSE: 0.01}, expect: 0.02}
+
+  - id: sense.voltage_out_monitor
+    title: "Output of a fixed-gain voltage-output current-sense amplifier"
+    title_ko: "고정 이득 전압 출력형 전류 센스 증폭기의 출력"
+    lhs: V_OUT
+    expr: "G_sense*I_SENSE*R_SENSE + V_REF"
+    symbols: {G_sense: "fixed voltage gain", I_SENSE: "sensed current", R_SENSE: "sense resistor", V_REF: "voltage on the REF pin"}
+    assumptions: [ideal_amplifier]
+    notes: "the amplifier multiplies the sense voltage by its gain and adds the REF voltage, so a current of either sign swings the output either side of $V_\\mathrm{REF}$; the output cannot quite reach the supply rails"
+    notes_ko: "증폭기가 센스 전압에 이득을 곱하고 REF 전압을 더하므로, 전류의 부호에 따라 출력이 $V_\\mathrm{REF}$ 위아래로 움직인다; 출력은 전원 레일까지 완전히 올라가지 못한다"
+    cite: {key: ti_ina181, where: "Equation 1 (output voltage from the load current, the sense resistor, the gain and V_REF)"}
+    derived_by: python/pe_core/derive/sensing.py
+    tests:
+      - {inputs: {G_sense: 50.0, I_SENSE: 2.0, R_SENSE: 0.01, V_REF: 0.0}, expect: 1.0}
+      - {inputs: {G_sense: 20.0, I_SENSE: 1.0, R_SENSE: 0.01, V_REF: 1.5}, expect: 1.7}
+
+  - id: sense.offset_current
+    title: "Current equivalent to a sense amplifier's input offset voltage"
+    title_ko: "센스 증폭기의 입력 오프셋 전압에 해당하는 전류"
+    lhs: I_OSeq
+    expr: "V_OS/R_SENSE"
+    symbols: {V_OS: "input offset voltage", R_SENSE: "sense resistor"}
+    assumptions: [offset_only]
+    notes: "the offset adds directly to the sense voltage, so the output reads it as this current: the error floor at small currents; a larger sense resistor lowers it"
+    notes_ko: "오프셋이 센스 전압에 그대로 더해지므로 출력은 이를 이 전류로 읽는다: 작은 전류에서의 오차 하한; 센스 저항이 클수록 작아진다"
+    cite:
+      - {key: adi_ltc6101, where: "Applications Information: output error due to the amplifier's DC offset voltage"}
+      - {key: ti_ina181, where: "selecting the current-sense resistor"}
+    derived_by: python/pe_core/derive/sensing.py
+    tests:
+      - {inputs: {V_OS: 1.0e-4, R_SENSE: 0.01}, expect: 0.01}
+
+  - id: sense.pad_error
+    title: "Gain error from pad and solder resistance in a shunt's sense path"
+    title_ko: "션트 센스 경로의 패드와 납땜 저항에 의한 이득 오차"
+    lhs: eps_pad
+    expr: "R_pad/R_SENSE"
+    symbols: {R_pad: "pad and solder resistance in the sense path", R_SENSE: "sense resistor"}
+    assumptions: [no_kelvin]
+    notes: "the sense connections see the current through $R_\\mathrm{SENSE} + R_\\mathrm{pad}$, so the reading is high by this fraction, which grows as the shunt's value falls; a Kelvin connection takes $R_\\mathrm{pad}$ out of the sense path"
+    notes_ko: "센스 연결이 $R_\\mathrm{SENSE} + R_\\mathrm{pad}$에 흐르는 전류를 보므로 측정값이 이 비율만큼 크게 나오며, 션트 값이 작을수록 커진다; 켈빈 연결은 $R_\\mathrm{pad}$를 센스 경로에서 뺀다"
+    cite:
+      - {key: osullivan2012, where: "solder resistance of milliohm shunts; Kelvin and split-pad sensing; derived here"}
+      - {key: adi_ltc6101, where: "Kelvin connection of the inputs to the sense resistor"}
+    derived_by: python/pe_core/derive/sensing.py
+    tests:
+      - {inputs: {R_pad: 5.0e-4, R_SENSE: 0.005}, expect: 0.1}
+
+  - id: sense.rel_error
+    title: "Relative error of a shunt reading from the offset and the pad resistance"
+    title_ko: "오프셋과 패드 저항에 의한 션트 측정값의 상대 오차"
+    lhs: eps_I
+    expr: "V_OS/(I_SENSE*R_SENSE) + R_pad/R_SENSE"
+    symbols: {V_OS: "input offset voltage", I_SENSE: "sensed current", R_SENSE: "sense resistor", R_pad: "pad and solder resistance in the sense path (0 with a Kelvin connection)"}
+    assumptions: [offset_only, no_kelvin]
+    notes: "the two errors add exactly: the offset's share falls in inverse proportion to the current, so it sets the error at the smallest current, while the pad's share is the same at every current"
+    notes_ko: "두 오차는 정확히 더해진다: 오프셋에 의한 몫은 전류에 반비례하여 줄어 가장 작은 전류에서의 오차를 정하고, 패드에 의한 몫은 모든 전류에서 같다"
+    cite:
+      - {key: adi_ltc6101, where: "Applications Information: output error due to the amplifier's DC offset voltage; derived here"}
+      - {key: osullivan2012, where: "solder resistance of milliohm shunts"}
+    derived_by: python/pe_core/derive/sensing.py
+    tests:
+      - {inputs: {V_OS: 1.0e-4, I_SENSE: 0.2, R_SENSE: 0.01, R_pad: 5.0e-4}, expect: 0.1}
+      - {inputs: {V_OS: 2.0e-5, I_SENSE: 0.5, R_SENSE: 0.005, R_pad: 0.0}, expect: 0.008}
+
+  - id: sense.filter_R
+    title: "Resistance an R-C filter's capacitor sees behind a current-output sense amplifier"
+    title_ko: "전류 출력형 센스 증폭기 뒤 R-C 필터의 커패시터가 보는 저항"
+    lhs: R_filt
+    expr: "R_OUT + R_f"
+    symbols: {R_OUT: "output resistor", R_f: "series resistor of the R-C filter"}
+    assumptions: [ideal_amplifier, first_order_rc]
+    notes: "the amplifier's output is a current source loaded by $R_\\mathrm{OUT}$; its Thevenin equivalent puts $R_\\mathrm{OUT}$ in series with $R_f$, so the capacitor sees both and the corner frequency is lower than $R_f C_f$ alone gives; with no load on the filter the dc output stays $I_\\mathrm{OUT} R_\\mathrm{OUT}$"
+    notes_ko: "증폭기 출력은 $R_\\mathrm{OUT}$이 부하로 걸린 전류원이다; 테브난 등가로 바꾸면 $R_\\mathrm{OUT}$이 $R_f$와 직렬이 되므로 커패시터는 둘을 함께 보며, 차단 주파수는 $R_f C_f$만으로 계산한 값보다 낮다; 필터에 부하가 없으면 직류 출력은 그대로 $I_\\mathrm{OUT} R_\\mathrm{OUT}$이다"
+    cite: {key: alexander2017, where: "Ch. 4 (Circuit Theorems: Thevenin's and Norton's theorems); derived here"}
+    derived_by: python/pe_core/derive/sensing.py
+    tests:
+      - {inputs: {R_OUT: 1.0e4, R_f: 1.0e3}, expect: 1.1e4}
+      - {inputs: {R_OUT: 1.0e4, R_f: 0.0}, expect: 1.0e4}
+
+  - id: adc.nyquist
+    title: "Nyquist frequency of a sampled signal"
+    title_ko: "샘플링된 신호의 나이퀴스트 주파수"
+    lhs: f_N
+    expr: "f_samp/2"
+    symbols: {f_samp: "sampling rate"}
+    assumptions: [uniform_sampling, definition]
+    notes: "the Nyquist bandwidth runs from dc to $f_N$; any component above it aliases back into that band, so an anti-aliasing filter removes it before the ADC"
+    notes_ko: "나이퀴스트 대역폭은 직류부터 $f_N$까지이다; 그보다 높은 성분은 이 대역으로 되접혀 들어오므로(에일리어싱) ADC 앞의 안티에일리어싱 필터가 제거한다"
+    cite: {key: kester_mt002}
+    tests:
+      - {inputs: {f_samp: 1.0e4}, expect: 5000.0}
 
   # =========================================================================
   # Definitions used to chain worked examples (02-theory)
