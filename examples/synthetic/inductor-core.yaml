@@ -1,0 +1,13 @@
+synthetic: true
+label: "Synthetic wound-core example (round numbers, not a real design)"
+label_ko: "합성 권선 코어 예제 (단순한 어림수이며 실제 설계가 아님)"
+params:
+  N: 20
+  I_w: 2
+  l_e: 0.05
+  V_w: 12
+  t_on: 5.0e-6
+  A_e: 1.0e-4
+steps:
+  - mag.H_ampere
+  - mag.dB_faraday

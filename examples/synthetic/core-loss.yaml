@@ -1,0 +1,11 @@
+synthetic: true
+label: "Synthetic Steinmetz parameters (round numbers, not a real material)"
+label_ko: "합성 스타인메츠 파라미터 (단순한 어림수이며 실제 재료가 아님)"
+params:
+  k: 1
+  f: 1.0e5
+  alpha: 1.5
+  B_ac: 0.1
+  beta: 2.5
+steps:
+  - loss.steinmetz

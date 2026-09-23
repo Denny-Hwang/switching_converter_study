@@ -44,6 +44,20 @@ resources:
     title_match: "Steady-State Equivalent Circuit Modeling"
     cite: erickson2020
 
+  - id: erickson-ch4
+    type: chapter
+    title: "Switch Realization (Ch. 4)"
+    author: "R. W. Erickson, D. Maksimović"
+    url: https://link.springer.com/chapter/10.1007/978-3-030-43881-4_4
+    tags: [semiconductors, switching-loss, diodes, mosfets]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "How transistors and diodes realize the ideal switches, and where the switching losses come from."
+    why_ko: "트랜지스터와 다이오드가 이상적인 스위치를 어떻게 구현하는지, 그리고 스위칭 손실이 어디에서 생기는지."
+    title_match: "Switch Realization"
+    cite: erickson2020
+
   - id: erickson-ch5
     type: chapter
     title: "The Discontinuous Conduction Mode (Ch. 5)"
@@ -112,6 +126,20 @@ resources:
     why: "Loop gain, crossover frequency, phase margin and the design of PD/PI compensators."
     why_ko: "루프 이득, 크로스오버 주파수, 위상 여유, PD/PI 보상기 설계."
     title_match: "Controller Design"
+    cite: erickson2020
+
+  - id: erickson-ch10
+    type: chapter
+    title: "Basic Magnetics Theory (Ch. 10)"
+    author: "R. W. Erickson, D. Maksimović"
+    url: https://link.springer.com/chapter/10.1007/978-3-030-43881-4_10
+    tags: [magnetics, faraday, transformers, core-loss]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "Magnetic circuits, the transformer model with magnetizing and leakage inductance, and core and winding loss mechanisms."
+    why_ko: "자기 회로, 자화·누설 인덕턴스를 포함한 변압기 모델, 코어·권선 손실 메커니즘."
+    title_match: "Basic Magnetics Theory"
     cite: erickson2020
 
   - id: erickson-ch15
@@ -207,6 +235,58 @@ resources:
     why_ko: "dc/dc 컨버터, 자성 부품, 절연형 컨버터를 다루는 장 단위 강의 노트."
     title_match: "Lecture Notes"
 
+  - id: mit-6002
+    type: course
+    title: "6.002 Circuits and Electronics (Spring 2007)"
+    author: "A. Agarwal, MIT OpenCourseWare (course content by A. Agarwal and J. H. Lang)"
+    url: https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/
+    tags: [circuit-laws, foundations]
+    level: intro
+    language: en
+    retrieved: 2026-09-23
+    why: "MIT's first circuits course, with video lectures, notes and problem sets."
+    why_ko: "MIT의 첫 회로 과목으로, 동영상 강의, 강의 노트, 연습 문제를 제공."
+    title_match: "Circuits and Electronics"
+
+  - id: mit-6002-notes
+    type: lecture
+    title: "6.002 Lecture Notes"
+    author: "A. Agarwal, MIT OpenCourseWare"
+    url: https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/pages/lecture-notes/
+    tags: [circuit-laws, foundations]
+    level: intro
+    language: en
+    retrieved: 2026-09-23
+    why: "Lecture-by-lecture notes (from the Fall 2000 offering) on circuit laws, energy-storage elements and sinusoidal steady state."
+    why_ko: "회로 법칙, 에너지 저장 소자, 정현파 정상상태를 다루는 강의별 노트(2000년 가을 학기 자료)."
+    title_match: "Lecture Notes"
+
+  - id: mit-6003
+    type: course
+    title: "6.003 Signals and Systems (Fall 2011)"
+    author: "D. Freeman, MIT OpenCourseWare"
+    url: https://ocw.mit.edu/courses/6-003-signals-and-systems-fall-2011/
+    tags: [phasors-laplace, fourier, foundations]
+    level: intro
+    language: en
+    retrieved: 2026-09-23
+    why: "Signals and systems with video lectures: Laplace transform, frequency response, Bode plots and Fourier series."
+    why_ko: "라플라스 변환, 주파수 응답, 보드 선도, 푸리에 급수를 다루는 동영상 강의 과목."
+    title_match: "Signals and Systems"
+
+  - id: mit-6003-notes
+    type: lecture
+    title: "6.003 Lecture Notes"
+    author: "D. Freeman, MIT OpenCourseWare"
+    url: https://ocw.mit.edu/courses/6-003-signals-and-systems-fall-2011/pages/lecture-notes/
+    tags: [phasors-laplace, fourier, foundations]
+    level: intro
+    language: en
+    retrieved: 2026-09-23
+    why: "Lecture slides: the Laplace transform (lecture 6), frequency response and Bode plots (lectures 9 and 11), Fourier series (lecture 15)."
+    why_ko: "강의 슬라이드: 라플라스 변환(6강), 주파수 응답과 보드 선도(9강, 11강), 푸리에 급수(15강)."
+    title_match: "Lecture Notes"
+
   # --- application notes -----------------------------------------------------
   - id: ti-slva057
     type: app-note
@@ -277,6 +357,66 @@ resources:
     why_ko: "같은 점검표의 부스트판."
     title_match: "(pdf)"
     urlkind: pdf
+
+  - id: ti-slva630
+    type: app-note
+    title: "Output Ripple Voltage for Buck Switching Regulator (SLVA630A)"
+    author: "S. P. Singh, Texas Instruments"
+    url: https://www.ti.com/lit/pdf/slva630
+    tags: [passives-real, esr, ripple, buck]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "Buck output ripple with the capacitor's charge, series resistance (ESR) and series inductance (ESL) taken into account."
+    why_ko: "커패시터의 전하, 직렬 저항(ESR), 직렬 인덕턴스(ESL)를 모두 고려한 벅 출력 리플."
+    title_match: "(pdf)"
+    urlkind: pdf
+    cite: ti_slva630
+
+  - id: ti-snoa930
+    type: app-note
+    title: "Sensor Design for Inductive Sensing Applications Using LDC (SNOA930C)"
+    author: "Texas Instruments"
+    url: https://www.ti.com/lit/pdf/snoa930
+    tags: [passives-real, self-resonance, inductors]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "Written for inductive sensing; its explanation of the capacitance between turns, the self-resonant frequency and how to measure it applies to any wound inductor."
+    why_ko: "유도형 센싱을 위한 문서이지만, 턴 사이 커패시턴스, 자기 공진 주파수, 그 측정 방법에 대한 설명은 모든 권선 인덕터에 적용된다."
+    title_match: "(pdf)"
+    urlkind: pdf
+    cite: ti_snoa930
+
+  - id: ti-slua618
+    type: app-note
+    title: "Fundamentals of MOSFET and IGBT Gate Driver Circuits (SLUA618A)"
+    author: "L. Balogh, Texas Instruments"
+    url: https://www.ti.com/lit/pdf/slua618
+    tags: [semiconductors, gate-drive]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "MOSFET switching behaviour, gate charge and gate-drive power, and practical gate-drive circuits."
+    why_ko: "MOSFET 스위칭 동작, 게이트 전하와 게이트 구동 전력, 실용적인 게이트 구동 회로."
+    title_match: "(pdf)"
+    urlkind: pdf
+    cite: balogh2018
+
+  - id: ti-slup132
+    type: book
+    title: "Magnetics Design Handbook (SLUP132)"
+    author: "L. H. Dixon, Texas Instruments (Unitrode)"
+    url: https://www.ti.com/lit/pdf/slup132
+    tags: [magnetics, gap-and-AL, core-loss]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-23
+    why: "Lloyd Dixon's magnetics design handbook, reproduced by TI from the 2001 Unitrode edition. The ti.com copy requires a free myTI login."
+    why_ko: "Lloyd Dixon의 자성 부품 설계 핸드북으로, TI가 2001년 Unitrode 판을 재수록한 것. ti.com 사본은 무료 myTI 로그인이 필요."
+    title_match: "Magnetics Design Handbook"
+    urlkind: login
+    cite: dixon2001
 
   # --- video ---------------------------------------------------------------------
   - id: benyaakov-channel
