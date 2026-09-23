@@ -1,0 +1,128 @@
+---
+title: 스위칭 원리
+description: 이상적인 스위치와 L-C 필터가 손실 없이 직류를 직류로 변환하는 이유, 듀티비가 직류 출력을 정하는 방식, 그리고 소리플 근사가 가정하는 것.
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 이상적인 스위칭 컨버터가 선형 레귤레이터(linear regulator)와 달리 전력을 소모하지 않는 이유를 설명합니다.
+- 듀티비(duty ratio) $D$로부터 스위치 노드(switch node) 파형의 직류 성분(dc component)을 계산합니다.
+- 출력 필터가 무엇을 해야 하는지와 소리플 근사(small-ripple approximation)가 무엇을 가정하는지를 기술합니다.
+
+## 이론
+
+### 왜 스위칭하는가?
+
+선형 레귤레이터는 낮추려는 전압 차를 부하 전류 전체가 흐르는 트랜지스터 양단에
+걸리게 하여 전압을 낮추며, 이 전압 차와 부하 전류의 곱이 열로 손실됩니다. 이상적인
+스위치에는 손실이 전혀 없습니다. 켜져 있을 때는 양단 전압이 0이고, 꺼져 있을 때는
+흐르는 전류가 0이므로, 둘의 곱, 즉 스위치가 소모하는 전력은 두 상태 모두에서 0입니다 <Cite key="erickson2020" where="Ch. 1 (Introduction)" />.
+이상적인 인덕터와 커패시터는 에너지를 저장했다가 되돌려줄 뿐 전혀 소모하지 않습니다.
+따라서 이상적인 스위치와 리액턴스 소자(reactive element)만으로 구성한 컨버터는
+원리적으로 전력을 손실 없이 변환할 수 있습니다.
+
+### 스위치 노드와 그 직류 성분
+
+입력 전원에 단극 쌍투 스위치(single-pole double-throw switch)를 연결합니다.
+위치 1에서는 스위치 노드에 입력 전압 $V_g$가 걸리고, 위치 2에서는 스위치 노드가
+접지됩니다. 스위치는 이 패턴을 스위칭 주기(switching period)마다 한 번씩 반복하며
+
+<Eq id="def.Ts" />
+
+각 주기 가운데 **듀티비**라고 하는 비율 $D$만큼을 위치 1에서 보냅니다 <Cite key="erickson2020" where="Ch. 2" />.
+따라서 스위치 노드 전압 $v_s(t)$는 구형파(rectangular wave)입니다. 한 주기에 걸친
+평균, 즉 직류 성분은 다음과 같습니다.
+
+<Eq id="sw.v_avg" />
+
+### 필터링: 평균은 남기고 고조파는 걸러 내기
+
+푸리에 급수(Fourier series)는 $v_s(t)$를 그 직류 성분과, 스위칭 주파수(switching
+frequency) $f_s$의 배수 주파수에 있는 고조파(harmonics)로 나눕니다. 차단
+주파수(corner frequency)가 $f_s$보다 훨씬 낮은 L-C 저역통과 필터(low-pass filter)는
+직류 성분을 통과시키고 고조파를 크게 감쇠시키므로, 출력 전압은 사실상 스위치 노드의
+직류 성분이 됩니다 <Cite key="erickson2020" where="Ch. 2" />.
+이제 타이밍에 관한 양인 듀티비가 직류 전압을 정합니다.
+
+### 변환비
+
+컨버터는 직류 출력 전압을 직류 입력 전압으로 나눈 값인 변환비(conversion ratio)
+$M(D)$로 요약됩니다.
+
+<Eq id="def.V" />
+
+위와 같이 스위치 노드를 필터링한 회로가 곧 벅 컨버터이므로
+<EqRef id="buck.ccm.M" /> 식이 적용됩니다. 같은 스위치, 인덕터, 커패시터를 다르게
+배치하면 다른 변환비를 얻으며, 그 예로는 <EqRef id="boost.ccm.M" /> 및
+<EqRef id="buckboost.ccm.M" /> 식이 있습니다. 세 변환비는 모두
+[전압-초 평형(volt-second balance) 페이지](../volt-second-charge-balance/)에서 유도됩니다.
+
+### 소리플 근사
+
+실제 필터는 출력에 약간의 스위칭 리플을 남깁니다. 필터를 잘 설계하면 리플은 직류값에
+비해 작으며, 정상상태 해석(steady-state analysis)에서는 출력 전압을 그 직류값 $V$로
+대체할 수 있습니다. 이것이 **소리플 근사**입니다 <Cite key="erickson2020" where="Ch. 2" />.
+이 근사를 적용하면 각 부분 구간(subinterval) 안에서 인덕터 양단 전압이 일정하므로,
+인덕터 전류는 직선을 따라 오르내리며 그 직선의 기울기가 전류 리플을 정합니다. 이
+근사는 거의 일정한 양에 적용하며, 계산하려는 리플 자체에는 절대 적용하지 않습니다.
+
+## 풀이 예제
+
+합성(synthetic) 벅 컨버터입니다. 스위치 노드가 L-C 단에서 필터링되어 저항 부하에
+공급됩니다. 표는 사이트를 빌드할 때 pe-core가 계산하며, 계산된 각 행은 그 값을 산출한
+수식에 링크되어 있습니다.
+
+<Worked example="buck-basic" show={['V_g', 'D', 'f_s', 'T_s', 'v_s_avg', 'M', 'V', 'Delta_i_L']} checks={false} />
+
+스위치 노드는 <Val example="buck-basic" name="D" />의 비율만큼 매
+<Val example="buck-basic" name="T_s" /> 주기 중 <Val example="buck-basic" name="V_g" />에
+머무르므로, 그 직류 성분과 이에 따른 출력은 <Val example="buck-basic" name="V" />입니다.
+인덕터 전류에는 여전히 직류값을 중심으로 <Val example="buck-basic" name="Delta_i_L" />(피크-피크 값의 절반)의
+삼각파 리플이 실려 있으며, 출력 커패시터가 이를 한층 더 평활합니다.
+
+## 직접 해 보기
+
+<TryIt eq="sw.v_avg" example="buck-basic" sweep="D" />
+
+$D$를 0에서 1까지 스윕(sweep)해 보십시오. 스위칭 주파수가 얼마이든 직류 성분은 그에
+비례하여 커집니다.
+
+## 벤치 실습
+
+전력단(power stage)은 필요하지 않습니다. 함수 발생기(function generator)의 로직 레벨
+구형파 출력을, 차단 주파수가 구형파 주파수보다 훨씬 낮은 R-C 저역통과 필터에
+입력합니다. 듀티 사이클을 바꾸면서 직류 레인지로 설정한 멀티미터로 필터 출력을
+측정하고, 각 측정값을 구형파의 하이 레벨에 듀티비를 곱한 값과 비교합니다. 그다음 같은
+노드를 오실로스코프로 관찰합니다. 주파수나 필터의 시정수(time constant)를 키우면 남은
+리플은 줄어들지만, 직류 측정값은 변하지 않습니다.
+
+## 주의할 점
+
+- **평균은 게이트 신호가 아니라 스위치 노드를 따릅니다.** 다이오드 순방향 전압
+  강하(forward drop), 스위치 저항, 데드 타임은 주기의 일부 구간 동안 스위치 노드
+  전압을 바꾸므로, 직류 출력은 지령 듀티비가 정하는 이상적인 값에서 벗어납니다.
+  [평균 모델(averaged model) 페이지](../averaged-models/)에서는 이러한 손실을 모델에 추가합니다 <Cite key="erickson2020" where="Ch. 3" />.
+- **DCM에서는 오프 구간(off-interval) 전체 동안 스위치 노드가 0으로 돌아가 있지
+  않습니다.** 인덕터 전류가 0까지 떨어지고 나면 다이오드가 도통을 멈추고 스위치 노드는
+  출력 전압을 중심으로 링잉하므로, 출력은 결국 $D V_g$보다 높아집니다.
+  [CCM과 DCM](../ccm-dcm/)을 참고하십시오 <Cite key="erickson2020" where="Ch. 5" />.
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch2', 'coursera-intro-pe', 'ti-slva477']} />
+
+## 퀴즈
+
+<Quiz id="02-theory/switching-principle" />

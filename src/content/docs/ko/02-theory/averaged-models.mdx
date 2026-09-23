@@ -1,0 +1,129 @@
+---
+title: 평균 모델
+description: 컨버터를 한 스위칭 주기에 걸쳐 평균하면 직류 등가 회로를 얻으며, 그 회로에서 손실은 일반 저항이 됩니다. DCM에서는 평균화한 스위치가 무손실 저항이 됩니다.
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 컨버터의 평균 직류 모델(averaged dc model)을 세우고, 여기에 인덕터의 권선 저항(winding resistance)을 추가합니다.
+- 그 저항이 부스트 컨버터의 변환비(conversion ratio)와 효율(efficiency)을 어떻게 제한하는지 예측합니다.
+- DCM 스위치 네트워크를 무손실 저항(loss-free resistor, LFR)으로 기술하고, 그 입력 저항을 계산합니다.
+
+## 이론
+
+### 스위칭 회로에서 직류 모델로
+
+소리플 근사(small-ripple approximation)를 적용하여 모든 회로 방정식을 한
+스위칭 주기(switching period)에 걸쳐 평균하면 스위칭 동작이 사라집니다.
+평균화한 인덕터 전압 방정식과 커패시터 전류 방정식은 직류 회로의
+방정식입니다. 그 회로에서 스위치 네트워크는 변환비를 권선비(turns ratio)로
+갖는 이상적인 **직류 변압기**(dc transformer)로 동작합니다. 이 변압기는
+입력에서 출력으로 전력을 손실 없이 전달하며, 모든 손실 메커니즘은 그 주위의
+일반 저항이나 전압 강하로 나타납니다 <Cite key="erickson2020" where="Ch. 3" />.
+그러면 모델 하나로 출력 전압, 전류, 효율을 구할 수 있습니다.
+
+### 인덕터 권선 저항이 있는 부스트
+
+부스트에 인덕터의 권선 저항 $R_L$을 추가합니다. 전압-초 평형(volt-second balance)에는
+두 구간 모두에서 $R_L$에 걸리는 전압 강하가 더해지고, 전하 평형(charge balance)은
+변하지 않습니다. 두 식을 함께 풀면 다음을 얻습니다
+<Cite key="erickson2020" where="Ch. 3" />:
+
+<Eq id="boost.ccm.M_RL" />
+
+이상적인 변환비 <EqRef id="boost.ccm.M" />에는, $D$가 1에 가까워질수록 0을
+향해 줄어드는 인자가 곱해집니다. 인덕터에는 입력 전류가 흐르고, 입력 전류는
+$D$가 커질수록 출력 전류보다 훨씬 빠르게 증가하므로, 결국 $R_L$에서의 손실이
+추가 입력 전력을 모두 차지하게 됩니다. 변환비는 한없이 커지지 않고 최댓값에
+도달한 뒤 감소합니다. 효율도 같은 모델에서 구할 수 있습니다:
+
+<Eq id="boost.ccm.eta_RL" />
+
+$R_L$은 $(1 - D)^2 R$, 즉 직류 변압기를 거쳐 인덕터 쪽으로 환산한 부하
+저항(load resistance)과 비교됩니다. $D$가 크면 이 환산 저항이 작으므로 작은
+권선 저항으로도 효율이 떨어집니다. 유도 과정은
+[유도 과정 페이지](../derivations/#deriv-averaging)에 있습니다.
+
+### DCM: 무손실 저항
+
+DCM에서는 인덕터 전류가 매 주기 0에서 시작합니다. 그러면 온 구간(on-interval)
+동안 저장되는 에너지, 그리고 그에 따라 입력에서 끌어오는 전력은 입력 전압,
+듀티비(duty ratio), 인덕턴스, 스위칭 주파수(switching frequency)에만
+의존합니다. 벅-부스트와 플라이백에서는 자화 인덕턴스(magnetizing inductance)
+$L_M$을 사용하여 다음과 같이 나타냅니다:
+
+<Eq id="dcm.P_in" />
+
+따라서 평균 입력 전류는 입력 전압에 비례하며, 입력 포트는 저항처럼 동작합니다
+<Cite key="singer1990" /> <Cite key="erickson2020" where="Ch. 15" />:
+
+<Eq id="lfr.R_in" />
+
+이 저항은 흡수한 전력을 소모하지 않고 출력으로 전달합니다. 따라서 평균화한
+DCM 스위치 네트워크는 **무손실 저항**으로 모델링되며, 에너지 하베스팅
+인터페이스는 이 성질을 이용해 소스에서 볼 때 저항성 부하가 되도록 합니다.
+
+## 풀이 예제
+
+권선 저항이 있는 합성 부스트 예제입니다:
+
+<Worked example="boost-basic" show={['V_g', 'D', 'R', 'R_L', 'M_ideal', 'M', 'eta', 'V']} checks={false} />
+
+부하 저항의 100분의 1에 불과한 <Val example="boost-basic" name="R_L" />의
+권선 저항이 변환비를 <Val example="boost-basic" name="M_ideal" />에서
+<Val example="boost-basic" name="M" />까지, 효율을
+<Val example="boost-basic" name="eta" />까지 낮춥니다. 이 듀티비에서는 권선
+저항이 부하 저항의 4분의 1과 비교되기 때문입니다.
+
+DCM으로 동작하는 합성 벅-부스트를 입력 쪽에서 보면 다음과 같습니다:
+
+<Worked example="lfr-basic" />
+
+## 직접 해 보기
+
+<TryIt eq="boost.ccm.M_RL" example="boost-basic" sweep="D" />
+
+$D$를 0에서 1까지 스윕(sweep)해 보십시오. 변환비가 최댓값에 이른 뒤 급격히
+떨어집니다. $R_L$을 늘리면서 이 최댓값이 낮아지고 더 낮은 듀티비 쪽으로
+옮겨 가는 것을 확인하십시오.
+
+## 벤치 실습
+
+전류 제한 벤치 전원(current-limited bench supply)으로 구동하는 저전력 부스트
+컨버터에서, 먼저 4선식 측정(four-wire measurement)으로 인덕터의 직류 저항을
+측정하십시오. 그런 다음 저항 부하를 고정한 상태에서, 멀티미터로 입력 전력과
+출력 전력을 측정하면서 개루프(open loop)로 듀티비를 단계적으로 높이십시오.
+변환비와 효율을 $D$에 대해 그래프로 그리고, 측정한 $R_L$을 적용한 위의 두
+식과 비교하십시오. 스위치와 다이오드에서 추가 손실이 생기므로 측정한 효율은
+예측보다 낮게 나올 것입니다.
+
+## 주의할 점
+
+- **최댓값을 지나면 듀티비를 늘릴수록 출력이 줄어듭니다.** 변환비의 최댓값을
+  넘어서면 $D$를 높일 때 $V$가 낮아집니다. 그 반대를 가정하는 피드백 루프는
+  그 지점에서 이득의 부호가 바뀝니다.
+- **$R_L$은 직류 권선 저항일 뿐입니다.** 코어 손실,
+  교류 권선 손실(ac winding loss), 스위칭 손실은 이 모델에 포함되지 않으며,
+  각각 고유한 손실 요소를 더합니다 <Cite key="erickson2020" where="Ch. 3" />.
+- **무손실 저항은 DCM에서만 성립합니다.** 전류가 매 주기 0으로 돌아오지 않게
+  되면 입력 전류는 더 이상 입력 전압에 비례하지 않습니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch3', 'erickson-ch15', 'coursera-intro-pe']} />
+
+## 퀴즈
+
+<Quiz id="02-theory/averaged-models" />

@@ -1,0 +1,128 @@
+---
+title: K 파라미터
+description: 무차원 수 하나, K = 2L/(R T_s)를 토폴로지별 임계값과 비교하면 컨버터가 CCM으로 동작하는지 DCM으로 동작하는지가 결정됩니다.
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 컨버터의 $K$와 그 토폴로지의 $K_\mathrm{crit}(D)$를 계산합니다.
+- 동작 모드를 판정하고, 부하가 주어진 값까지 가벼워져도 컨버터를 CCM으로 유지하는 인덕턴스를 구합니다.
+- 모드 경계(boundary)에 대해 최악 조건이 되는 동작점(입력 전압과 부하)을 찾습니다.
+
+## 이론
+
+### 경계 조건
+
+다이오드를 사용하는 컨버터는 인덕터 전류 리플이 인덕터 직류 전류에
+도달하면 CCM을 벗어납니다. 경계에서는 리플의 절반인 $\Delta i_L$이 직류
+전류와 같습니다 <Cite key="erickson2020" where="Ch. 5" />. 양변을 회로 값으로
+나타내면 인덕턴스, 부하 저항(load resistance), 스위칭 주기(switching period)가
+하나의 무차원 파라미터(dimensionless parameter)로 묶이며,
+
+<Eq id="K.def" />
+
+경계는 듀티비(duty ratio)만의 함수, 곧 임계값(critical value)
+$K_\mathrm{crit}(D)$가 됩니다. 컨버터는 $K > K_\mathrm{crit}$이면 CCM으로,
+$K < K_\mathrm{crit}$이면 DCM으로 동작합니다 <Cite key="erickson2020" where="Ch. 5" />.
+
+$K$는 시정수(time constant) $L/R$을 스위칭 주기와 비교합니다. 더 큰
+인덕턴스, 더 무거운 부하(더 작은 $R$), 더 높은 스위칭 주파수는 모두 $K$를
+키워 컨버터를 CCM 쪽으로 이동시킵니다.
+
+### 기본 컨버터의 임계값
+
+토폴로지마다 인덕터 직류 전류와 그 리플이 $D$에 의존하는 방식이 다르므로,
+각 토폴로지는 고유한 $K_\mathrm{crit}(D)$를 갖습니다.
+
+<Eq id="Kcrit.buck" />
+
+<Eq id="Kcrit.boost" />
+
+<Eq id="Kcrit.buckboost" />
+
+플라이백에서는 1차 측으로 환산한 자화 인덕턴스(magnetizing inductance)와
+실제 부하 저항으로 $K$를 구성하며, 그러면 권선비(turns ratio)가 임계값에
+나타납니다.
+
+<Eq id="Kcrit.flyback" />
+
+모양은 서로 다릅니다. 벅의 값은 $D$가 작을 때 가장 크며 1에 가까워집니다.
+부스트의 값은 듀티비 범위의 양 끝에서 0이며, 도함수를 0으로 놓으면
+$D = 1/3$에서 최대가 됨을 알 수 있고 그때의 값은 $4/27$입니다. 벅-부스트의
+값은 작은 $D$에서의 1부터 큰 $D$에서의 0까지 감소합니다.
+
+### CCM을 위한 설계: 임계 인덕턴스(critical inductance)
+
+$K$를 $K_\mathrm{crit}$과 같게 놓고 $K$의 정의를 $L$에 대해 풀면, 주어진
+부하에서 컨버터를 CCM으로 유지하는 가장 작은 인덕턴스를 얻습니다.
+
+<Eq id="L.crit" />
+
+$K_\mathrm{crit}$은 $D$에, $D$는 입력 전압에 의존하므로, 최악 조건은 입력
+전압 범위에서 $K_\mathrm{crit}$을 가장 크게 만드는 듀티비에서의 가장 가벼운
+부하(가장 큰 $R$)입니다. 출력이 레귤레이션되는 벅에서는 $D$가 가장 작아지는
+최고 입력 전압이 이에 해당합니다.
+
+## 풀이 예제
+
+공칭 부하에서의 합성(synthetic) 벅과, 같은 컨버터에 열 배 가벼운 부하를
+연결한 경우입니다.
+
+<Worked example="buck-basic" show={['L', 'R', 'T_s', 'D', 'K', 'K_crit', 'L_crit']} />
+
+<Worked example="buck-light-load" show={['L', 'R', 'T_s', 'D', 'K', 'K_crit', 'L_crit']} />
+
+공칭 부하에서 $K$ = <Val example="buck-basic" name="K" />이며, 이는
+$K_\mathrm{crit}$ = <Val example="buck-basic" name="K_crit" />보다 훨씬 큽니다.
+여유 있게 CCM으로 동작합니다. 이와 동등하게, 인덕턴스
+<Val example="buck-basic" name="L" />는 임계 인덕턴스
+<Val example="buck-basic" name="L_crit" />보다 큽니다. 경부하(light load)에서는
+$K$가 <Val example="buck-light-load" name="K" />까지 떨어져 같은 임계값보다
+작아지고, 임계 인덕턴스는 <Val example="buck-light-load" name="L_crit" />까지
+커집니다. 즉 컨버터는 DCM으로 동작합니다.
+
+## 직접 해 보기
+
+<TryIt eq="Kcrit.boost" example="boost-basic" sweep="D" />
+
+$D$를 0부터 1까지 스윕하면서 부스트 임계값의 최댓값을 찾으십시오. $K$가 이
+최댓값보다 큰 부스트는 모든 듀티비에서 CCM을 유지합니다.
+
+## 벤치 실습
+
+다이오드 정류기와 조절 가능한 저항 부하를 갖춘 컨버터에서, 전류 프로브로
+인덕터 전류를 관찰하면서 매 주기의 끝에서 전류가 0에 막 닿을 때까지 부하
+저항을 키우십시오. 그 지점에서 듀티비와 부하 저항을 측정하고, 인덕턴스와
+스위칭 주기로 $K$를 계산하여 해당 토폴로지의 $K_\mathrm{crit}(D)$와
+비교하십시오.
+
+## 주의할 점
+
+- **$K$에는 일관된 양을 사용하십시오.** 절연형 컨버터(isolated converter)에서
+  $K$에는 1차 측으로 환산한 자화 인덕턴스와 2차 측의 실제 부하 저항을
+  사용하며, 권선비는 $K_\mathrm{crit}$에 들어갑니다. 환산한 값과 환산하지 않은
+  값을 섞으면 모드를 잘못 판정하게 됩니다 <Cite key="erickson2020" where="Ch. 6" />.
+- **입력 전압 범위 전체를 확인하십시오.** 폐루프(closed loop)에서는 듀티비가
+  입력 전압에 따라 바뀌고, 그에 따라 $K_\mathrm{crit}$도 바뀝니다.
+- **동작 중에 인덕터가 가지게 될 가장 작은 인덕턴스와 비교하십시오.** 임계
+  인덕턴스는 최솟값이므로 공칭값과 비교해서는 안 됩니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch5', 'coursera-converter-circuits', 'ti-slva061']} />
+
+## 퀴즈
+
+<Quiz id="02-theory/k-parameter" />
