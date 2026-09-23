@@ -16,7 +16,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest==9.1.1"]
+# pypdf: the online URL check (scripts/resources_check.py) reads the titles of PDF references.
+dev = ["pytest==9.1.1", "pypdf==6.19.0"]
 
 [tool.setuptools.packages.find]
 where = ["."]

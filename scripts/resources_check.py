@@ -11,18 +11,21 @@ resources.yaml (when present), then:
   --online (CI): opens every URL and checks that the page title (<title> in
       <head>, falling back to og:title / name="title" / itemprop="name")
       contains the expected text (`urltitle` in references.bib,
-      `title_match` in resources.yaml); for PDFs checks the %PDF signature.
+      `title_match` in resources.yaml). A PDF must start with the %PDF
+      signature, and its document title (document info or XMP) or the text
+      of its first two pages must contain the expected text, compared without
+      case, punctuation or spacing (pypdf reads the file).
       Each URL is tried with an honest tool User-Agent and with a browser
       User-Agent, over HTTP/2 and HTTP/1.1 (curl), then urllib: some hosts
       reject one client and accept another.
 
-      A 404/410 or a real page whose title does not match fails. When the
-      live host never answers with content -- timeouts, 403/429/5xx, or a
-      bot wall/consent page without the page title (hosts that block cloud
-      runners) -- the check falls back to the most recent Internet Archive
-      capture of the exact URL (Wayback CDX API) and requires the same title
-      or PDF signature there. Such URLs are reported as "OK (archived
-      YYYY-MM-DD)", never silently as live.
+      A 404/410, or a real page or PDF whose title does not match, fails.
+      When the live host never answers with content -- timeouts,
+      403/429/5xx, or a bot wall/consent page without the page title (hosts
+      that block cloud runners) -- the check falls back to the most recent
+      Internet Archive capture of the exact URL (Wayback CDX API), which
+      must pass the same title check. Such URLs are reported as "OK
+      (archived YYYY-MM-DD)", never silently as live.
 
 This complements lychee (which checks every link on the built site): some
 hosts reject lychee's HTTP/2 client, and a title match proves the URL still
@@ -36,12 +39,14 @@ from __future__ import annotations
 
 import argparse
 import html
+import io
 import json
 import re
 import shutil
 import subprocess
 import sys
 import time
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -56,7 +61,8 @@ RESOURCES = ROOT / "resources.yaml"
 DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 RESOURCE_TYPES = {"book", "course", "video", "channel", "app-note", "tool", "paper", "datasheet", "lecture", "chapter"}
 TOOL_AGENT = "switching-converter-study-linkcheck/1.0 (+https://github.com/Denny-Hwang/switching_converter_study)"
-CAP = 6_000_000  # bytes kept per response; some pages carry megabytes of inline script before <title>
+CAP = 6_000_000  # bytes of a page searched for its title; some pages carry megabytes of inline script before <title>
+PDF_CAP = 60_000_000  # bytes kept per response: a PDF is read whole (its cross-reference table is at the end)
 BROWSER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 # Titles of interstitial pages served instead of content (consent walls, bot
 # checks). Seeing one is inconclusive, not a mismatch.
@@ -66,6 +72,21 @@ INTERSTITIAL = ("before you continue", "just a moment", "attention required", "a
 
 def norm(s: str) -> str:
     return re.sub(r"\s+", " ", html.unescape(s)).strip().lower()
+
+
+def loose(s: str) -> str:
+    """Text for a tolerant title match: Unicode-normalised (ligatures such as
+    "fi"), without soft hyphens, lower case, and every run of characters other
+    than letters and digits (spaces, hyphens, quotes, line breaks) one space."""
+    s = unicodedata.normalize("NFKC", html.unescape(s)).replace("\u00ad", "")
+    return re.sub(r"[\W_]+", " ", s.lower()).strip()
+
+
+def title_in(expect: str, text: str) -> bool:
+    """True if `expect` occurs in `text`, ignoring case, punctuation and
+    spacing (text extracted from a PDF can lose or gain spaces)."""
+    e, t = loose(expect), loose(text)
+    return bool(e) and (e in t or e.replace(" ", "") in t.replace(" ", ""))
 
 
 def load_resources() -> list[dict]:
@@ -89,8 +110,9 @@ def collect() -> tuple[list[dict], list[str]]:
         kind = e.fields.get("urlkind", "html")
         if kind not in ("html", "pdf", "login"):
             errors.append(f"references.bib:{e.line}: {e.key}: urlkind must be html|pdf|login")
-        if kind == "html" and not expect and not e.is_verify:
-            errors.append(f"references.bib:{e.line}: {e.key}: verified URL needs urltitle = {{...}} (expected page title text)")
+        if kind in ("html", "pdf") and not expect and not e.is_verify:
+            what = "page title" if kind == "html" else "the PDF's title or first page"
+            errors.append(f"references.bib:{e.line}: {e.key}: verified URL needs urltitle = {{...}} (text expected in {what})")
         targets.append({"src": f"bib:{e.key}", "url": url, "expect": expect, "kind": kind})
 
     ids: set[str] = set()
@@ -108,6 +130,8 @@ def collect() -> tuple[list[dict], list[str]]:
             errors.append(f"{where}: retrieved must be YYYY-MM-DD")
         if r.get("language") and r["language"] not in ("en", "ko"):
             errors.append(f"{where}: language must be en or ko")
+        if r.get("urlkind") == "pdf" and str(r.get("title_match", "")).strip().lower() in ("(pdf)", "pdf"):
+            errors.append(f"{where}: title_match must be text from the PDF's title or first page, not a placeholder")
         if r.get("url"):
             targets.append(
                 {"src": f"resource:{r.get('id')}", "url": r["url"], "expect": r.get("title_match"), "kind": r.get("urlkind", "html")}
@@ -144,14 +168,14 @@ def _curl(url: str, agent: str, http1: bool, how: str, max_time: int = 30) -> Fe
     body, _, trailer = out.stdout.rpartition(b"\n__STATUS__")
     code, _, rest = trailer.decode("utf-8", "replace").partition(" ")
     final, _, ctype = rest.partition(" ")
-    return Fetch(how, int(code), final, ctype, body[:CAP])
+    return Fetch(how, int(code), final, ctype, body[:PDF_CAP])
 
 
 def _urllib(url: str, agent: str, how: str, timeout: int = 30) -> Fetch:
     req = urllib.request.Request(url, headers={"User-Agent": agent, "Accept": "text/html,application/pdf,*/*"})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return Fetch(how, resp.status, resp.geturl(), resp.headers.get("Content-Type", ""), resp.read(CAP))
+            return Fetch(how, resp.status, resp.geturl(), resp.headers.get("Content-Type", ""), resp.read(PDF_CAP))
     except urllib.error.HTTPError as exc:
         return Fetch(how, exc.code, url)
     except (urllib.error.URLError, OSError) as exc:
@@ -174,6 +198,7 @@ def _text(raw: bytes) -> str:
 
 def page_title(body: bytes) -> str:
     """The document <title> (first non-empty one in <head>, else anywhere)."""
+    body = body[:CAP]
     head_end = body.find(b"</head>")
     for part in ((body[:head_end],) if head_end > 0 else ()) + (body,):
         for m in re.finditer(rb"<title[^>]*>(.*?)</title>", part, re.S | re.I):
@@ -186,6 +211,7 @@ def title_candidates(body: bytes) -> list[str]:
     """Every title-like string a page declares: <title>, og:title, name="title",
     itemprop="name" (some sites render <title> client-side)."""
     out = [page_title(body)]
+    body = body[:CAP]
     for pattern in (
         rb'<meta[^>]+property="og:title"[^>]+content="([^"]*)"',
         rb'<meta[^>]+content="([^"]*)"[^>]+property="og:title"',
@@ -196,6 +222,63 @@ def title_candidates(body: bytes) -> list[str]:
     return [t for t in out if t]
 
 
+def pdf_texts(body: bytes, pages: int = 2) -> list[tuple[str, str]]:
+    """[(where, text)]: a PDF's document-info title, its XMP titles, and the
+    text of its first pages, each where present. Raises when the file cannot
+    be parsed at all."""
+    from pypdf import PdfReader  # noqa: PLC0415 - only the online check needs it
+
+    reader = PdfReader(io.BytesIO(body), strict=False)
+    out: list[tuple[str, str]] = []
+    try:
+        info = reader.metadata
+        if info is not None and info.title:
+            out.append(("title", str(info.title)))
+    except Exception:  # noqa: BLE001 - a damaged info dictionary: use the pages
+        pass
+    try:
+        xmp = reader.xmp_metadata
+        for title in ((xmp.dc_title or {}).values() if xmp is not None else ()):
+            out.append(("XMP title", str(title)))
+    except Exception:  # noqa: BLE001 - damaged XMP metadata: use the pages
+        pass
+    for i in range(min(pages, len(reader.pages))):
+        try:
+            text = reader.pages[i].extract_text() or ""
+        except Exception:  # noqa: BLE001 - one unreadable page
+            text = ""
+        if text.strip():
+            out.append((f"page {i + 1}", text))
+    return out
+
+
+def judge_pdf(t: dict, f: Fetch) -> tuple[str, str]:
+    """A PDF: its title or first pages must contain the expected text."""
+    try:
+        texts = pdf_texts(f.body)
+    except Exception as exc:  # noqa: BLE001 - a damaged or truncated file
+        return "inconclusive", f"{f.how}: PDF unreadable ({type(exc).__name__}: {str(exc)[:80]})"
+    if not t["expect"]:
+        return "ok", "(pdf)"
+
+    def flat(text: str, n: int) -> str:
+        return repr(re.sub(r"\s+", " ", text).strip()[:n])
+
+    for where, text in texts:
+        if title_in(t["expect"], text):
+            if where.endswith("title"):
+                return "ok", f"(pdf) {where}: {flat(text, 110)}"
+            # the page text around the match (normalised), as evidence in the log
+            e, p = loose(t["expect"]), loose(text)
+            at = p.find(e)
+            around = p[max(0, at - 30) : at + len(e) + 30] if at >= 0 else e
+            return "ok", f"(pdf) {where}: '…{around}…'"
+    if not texts:
+        return "inconclusive", f"{f.how}: a PDF with no title and no extractable text"
+    seen = "; ".join(f"{where}: {flat(text, 90)}" for where, text in texts[:3])
+    return "fail", f"{f.how}: the PDF does not contain {t['expect']!r} ({seen})"
+
+
 def judge(t: dict, f: Fetch) -> tuple[str, str]:
     """('ok' | 'fail' | 'inconclusive', detail) for one fetch of target t."""
     if f.status in (404, 410):
@@ -203,8 +286,8 @@ def judge(t: dict, f: Fetch) -> tuple[str, str]:
     if f.status != 200:
         return "inconclusive", f.describe()
     if t["kind"] == "pdf" or "pdf" in f.ctype:
-        if f.body.startswith(b"%PDF") or "pdf" in f.ctype:
-            return "ok", "(pdf)"
+        if b"%PDF" in f.body[:1024]:
+            return judge_pdf(t, f)
         return "inconclusive", f"{f.how}: expected a PDF, got {f.ctype or 'unknown type'} from {f.url}"
     title = page_title(f.body)
     if t["kind"] == "login":
