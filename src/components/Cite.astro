@@ -1,0 +1,21 @@
+---
+/**
+ * <Cite key="erickson2020" where="Ch. 5" /> -- in-text citation linking to
+ * the bibliography. Fails the build for an unknown key or a key still
+ * flagged VERIFY in references.bib (CLAUDE.md rule 3).
+ */
+import { citable } from '../lib/references';
+import { BIBLIOGRAPHY_SLUG, pageHref } from '../lib/paths';
+import { pageLocale } from '../lib/locale';
+
+interface Props {
+  key: string;
+  where?: string;
+}
+const { key, where } = Astro.props;
+const entry = citable(key);
+const locale = pageLocale(Astro);
+const href = pageHref(locale, BIBLIOGRAPHY_SLUG, key);
+---
+
+<span class="pe-cite">[<a href={href}>{entry.label}</a>{where && <>, {where}</>}]</span>

@@ -7,8 +7,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./equations/equations.generated.json": "./equations/equations.generated.json",
-    "./equations/test_vectors.json": "./equations/test_vectors.json"
+    "./equations/*": "./equations/*"
   },
   "scripts": {
     "test": "vitest run"

@@ -1,0 +1,341 @@
+{
+  "_generated_by": "python scripts/gen_equations.py -- DO NOT EDIT; edit references.bib",
+  "entries": {
+    "erickson2020": {
+      "key": "erickson2020",
+      "type": "book",
+      "label": "Erickson & Maksimović 2020",
+      "authors": [
+        "Robert W. Erickson",
+        "Dragan Maksimović"
+      ],
+      "title": "Fundamentals of Power Electronics",
+      "verified": true,
+      "publisher": "Springer",
+      "address": "Cham",
+      "edition": "3",
+      "year": "2020",
+      "isbn": "978-3-030-43879-1",
+      "doi": "10.1007/978-3-030-43881-4"
+    },
+    "mohan2003": {
+      "key": "mohan2003",
+      "type": "book",
+      "label": "Mohan et al. 2003",
+      "authors": [
+        "Ned Mohan",
+        "Tore M. Undeland",
+        "William P. Robbins"
+      ],
+      "title": "Power Electronics: Converters, Applications, and Design",
+      "verified": true,
+      "publisher": "Wiley",
+      "address": "Hoboken, NJ",
+      "edition": "3",
+      "year": "2003",
+      "isbn": "978-0-471-22693-2"
+    },
+    "basso2014": {
+      "key": "basso2014",
+      "type": "book",
+      "label": "Basso 2014",
+      "authors": [
+        "Christophe P. Basso"
+      ],
+      "title": "Switch-Mode Power Supplies: SPICE Simulations and Practical Designs",
+      "verified": true,
+      "publisher": "McGraw-Hill Education",
+      "edition": "2",
+      "year": "2014",
+      "isbn": "978-0-07-182346-3"
+    },
+    "hart2011": {
+      "key": "hart2011",
+      "type": "book",
+      "label": "Hart 2011",
+      "authors": [
+        "Daniel W. Hart"
+      ],
+      "title": "Power Electronics",
+      "verified": true,
+      "publisher": "McGraw-Hill",
+      "year": "2011",
+      "isbn": "978-0-07-338067-4"
+    },
+    "alexander2017": {
+      "key": "alexander2017",
+      "type": "book",
+      "label": "Alexander & Sadiku 2017",
+      "authors": [
+        "Charles K. Alexander",
+        "Matthew N. O. Sadiku"
+      ],
+      "title": "Fundamentals of Electric Circuits",
+      "verified": true,
+      "publisher": "McGraw-Hill Education",
+      "edition": "6",
+      "year": "2017",
+      "isbn": "978-0-07-802822-9"
+    },
+    "dixon2001": {
+      "key": "dixon2001",
+      "type": "techreport",
+      "label": "Dixon 2001",
+      "authors": [
+        "Lloyd H. Dixon"
+      ],
+      "title": "Magnetics Design Handbook",
+      "verified": true,
+      "institution": "Texas Instruments",
+      "number": "SLUP132",
+      "year": "2001",
+      "kind": "Literature number",
+      "url": "https://www.ti.com/lit/pdf/slup132"
+    },
+    "balogh2018": {
+      "key": "balogh2018",
+      "type": "techreport",
+      "label": "Balogh 2018",
+      "authors": [
+        "Laszlo Balogh"
+      ],
+      "title": "Fundamentals of MOSFET and IGBT Gate Driver Circuits",
+      "verified": true,
+      "institution": "Texas Instruments",
+      "number": "SLUA618A",
+      "year": "2018",
+      "kind": "Application Report",
+      "url": "https://www.ti.com/lit/pdf/slua618"
+    },
+    "adi_ltc6101": {
+      "key": "adi_ltc6101",
+      "type": "manual",
+      "label": "Analog Devices, LTC6101/LTC6101HV",
+      "authors": [],
+      "title": "LTC6101/LTC6101HV: High Voltage, High-Side Current Sense Amplifier in SOT-23",
+      "verified": true,
+      "organization": "Analog Devices",
+      "kind": "Data sheet, Rev. I",
+      "url": "https://www.analog.com/media/en/technical-documentation/data-sheets/ltc6101.pdf"
+    },
+    "singer1990": {
+      "key": "singer1990",
+      "type": "article",
+      "label": "Singer 1990",
+      "authors": [
+        "Sigmond Singer"
+      ],
+      "title": "Realization of loss-free resistive elements",
+      "verified": true,
+      "journal": "IEEE Transactions on Circuits and Systems",
+      "number": "1",
+      "volume": "37",
+      "pages": "54–60",
+      "year": "1990",
+      "doi": "10.1109/31.45691"
+    },
+    "steinmetz1984": {
+      "key": "steinmetz1984",
+      "type": "article",
+      "label": "Steinmetz 1984",
+      "authors": [
+        "Charles Proteus Steinmetz"
+      ],
+      "title": "On the law of hysteresis",
+      "verified": true,
+      "journal": "Proceedings of the IEEE",
+      "number": "2",
+      "volume": "72",
+      "pages": "197–221",
+      "year": "1984",
+      "doi": "10.1109/PROC.1984.12842"
+    },
+    "dowell1966": {
+      "key": "dowell1966",
+      "type": "article",
+      "label": "Dowell 1966",
+      "authors": [
+        "P. L. Dowell"
+      ],
+      "title": "Effects of eddy currents in transformer windings",
+      "verified": true,
+      "journal": "Proceedings of the Institution of Electrical Engineers",
+      "number": "8",
+      "volume": "113",
+      "pages": "1387–1394",
+      "year": "1966",
+      "doi": "10.1049/piee.1966.0236"
+    },
+    "ottman2002": {
+      "key": "ottman2002",
+      "type": "article",
+      "label": "Ottman et al. 2002",
+      "authors": [
+        "Geffrey K. Ottman",
+        "Heath F. Hofmann",
+        "Archin C. Bhatt",
+        "George A. Lesieutre"
+      ],
+      "title": "Adaptive piezoelectric energy harvesting circuit for wireless remote power supply",
+      "verified": true,
+      "journal": "IEEE Transactions on Power Electronics",
+      "number": "5",
+      "volume": "17",
+      "pages": "669–676",
+      "year": "2002",
+      "doi": "10.1109/TPEL.2002.802194"
+    },
+    "ottman2003": {
+      "key": "ottman2003",
+      "type": "article",
+      "label": "Ottman et al. 2003",
+      "authors": [
+        "Geffrey K. Ottman",
+        "Heath F. Hofmann",
+        "George A. Lesieutre"
+      ],
+      "title": "Optimized piezoelectric energy harvesting circuit using step-down converter in discontinuous conduction mode",
+      "verified": true,
+      "journal": "IEEE Transactions on Power Electronics",
+      "number": "2",
+      "volume": "18",
+      "pages": "696–703",
+      "year": "2003",
+      "doi": "10.1109/TPEL.2003.809379"
+    },
+    "guyomar2005": {
+      "key": "guyomar2005",
+      "type": "article",
+      "label": "Guyomar et al. 2005",
+      "authors": [
+        "Daniel Guyomar",
+        "Adrien Badel",
+        "Elie Lefeuvre",
+        "Claude Richard"
+      ],
+      "title": "Toward energy harvesting using active materials and conversion improvement by nonlinear processing",
+      "verified": true,
+      "journal": "IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control",
+      "number": "4",
+      "volume": "52",
+      "pages": "584–595",
+      "year": "2005",
+      "doi": "10.1109/TUFFC.2005.1428041"
+    },
+    "lefeuvre2006": {
+      "key": "lefeuvre2006",
+      "type": "article",
+      "label": "Lefeuvre et al. 2006",
+      "authors": [
+        "Elie Lefeuvre",
+        "Adrien Badel",
+        "Claude Richard",
+        "Lionel Petit",
+        "Daniel Guyomar"
+      ],
+      "title": "A comparison between several vibration-powered piezoelectric generators for standalone systems",
+      "verified": true,
+      "journal": "Sensors and Actuators A: Physical",
+      "number": "2",
+      "volume": "126",
+      "pages": "405–416",
+      "year": "2006",
+      "doi": "10.1016/j.sna.2005.10.043"
+    },
+    "zi2015": {
+      "key": "zi2015",
+      "type": "article",
+      "label": "Zi et al. 2015",
+      "authors": [
+        "Yunlong Zi",
+        "Simiao Niu",
+        "Jie Wang",
+        "Zhen Wen",
+        "Wei Tang",
+        "Zhong Lin Wang"
+      ],
+      "title": "Standards and figure-of-merits for quantifying the performance of triboelectric nanogenerators",
+      "verified": true,
+      "journal": "Nature Communications",
+      "volume": "6",
+      "pages": "8376",
+      "year": "2015",
+      "doi": "10.1038/ncomms9376"
+    },
+    "benyaakov_youtube": {
+      "key": "benyaakov_youtube",
+      "type": "misc",
+      "label": "Ben-Yaakov, Sam Ben-Yaakov YouTube channel",
+      "authors": [
+        "Shmuel (Sam) Ben-Yaakov"
+      ],
+      "title": "Sam Ben-Yaakov YouTube channel: educational videos on analog and power electronics",
+      "verified": true,
+      "url": "https://www.youtube.com/user/sambenyaakov"
+    },
+    "cuboulder_pe_coursera": {
+      "key": "cuboulder_pe_coursera",
+      "type": "misc",
+      "label": "University of Colorado Boulder, Power Electronics Specialization (Coursera)",
+      "authors": [
+        "University of Colorado Boulder"
+      ],
+      "title": "Power Electronics Specialization (Coursera)",
+      "verified": true,
+      "url": "https://www.coursera.org/specializations/power-electronics"
+    },
+    "cuboulder_mcpe_coursera": {
+      "key": "cuboulder_mcpe_coursera",
+      "type": "misc",
+      "label": "University of Colorado Boulder, Modeling and Control of Power Electronics Specialization (Coursera)",
+      "authors": [
+        "University of Colorado Boulder"
+      ],
+      "title": "Modeling and Control of Power Electronics Specialization (Coursera)",
+      "verified": true,
+      "url": "https://www.coursera.org/specializations/modeling-and-control-of-power-electronics"
+    },
+    "ti_psds": {
+      "key": "ti_psds",
+      "type": "misc",
+      "label": "Texas Instruments, Power Supply Design Seminar (PSDS) library",
+      "authors": [
+        "Texas Instruments"
+      ],
+      "title": "Power Supply Design Seminar (PSDS) library",
+      "verified": true,
+      "url": "https://www.ti.com/about-ti/events/power-supply-design-seminar/psds-library.html"
+    },
+    "ltspice": {
+      "key": "ltspice",
+      "type": "misc",
+      "label": "Analog Devices, LTspice simulator",
+      "authors": [
+        "Analog Devices"
+      ],
+      "title": "LTspice simulator",
+      "verified": true,
+      "url": "https://www.analog.com/en/resources/design-tools-and-calculators/ltspice-simulator.html"
+    },
+    "ngspice": {
+      "key": "ngspice",
+      "type": "misc",
+      "label": "ngspice – open source SPICE simulator",
+      "authors": [],
+      "title": "ngspice – open source SPICE simulator",
+      "verified": true,
+      "url": "https://ngspice.sourceforge.io/"
+    },
+    "falstad_circuitjs": {
+      "key": "falstad_circuitjs",
+      "type": "misc",
+      "label": "Falstad, CircuitJS1 browser circuit simulator",
+      "authors": [
+        "Paul Falstad"
+      ],
+      "title": "CircuitJS1 browser circuit simulator",
+      "verified": true,
+      "url": "https://www.falstad.com/circuit/"
+    }
+  }
+}

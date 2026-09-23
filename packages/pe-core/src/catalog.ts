@@ -15,13 +15,15 @@ export interface EquationMeta {
   expr: string;
   relation: 'eq' | 'approx';
   variables: string[];
+  /** Physical constants appearing in the expression (not inputs). */
+  constants: string[];
   symbols: Record<string, string>;
   assumptions: string[];
   convention: string;
   convention_ko: string;
   notes: string;
   notes_ko: string;
-  cite: { key: string; where: string };
+  cites: { key: string; where: string }[];
   derived_by: string | null;
   n_tests: number;
   yaml_line: number;
@@ -38,6 +40,7 @@ export interface Catalog {
   schema_version: number;
   assumption_labels: Record<string, { en: string; ko: string }>;
   symbols: Record<string, SymbolMeta>;
+  constants: Record<string, { value_expr: string; value: number }>;
   equations: Record<string, EquationMeta>;
 }
 

@@ -9,6 +9,8 @@ export const ui = {
     'eq.verified': (n: number) => `verified by ${n} test${n === 1 ? '' : 's'}`,
     'eq.yaml': 'equations.yaml entry',
     'eq.id': 'Equation id',
+    'eq.derivation': 'Derivation',
+    'eq.derivationLink': 'step-by-step sympy derivation',
   },
   ko: {
     'eq.details': '가정, 표기 규약, 출처',
@@ -19,6 +21,8 @@ export const ui = {
     'eq.verified': (n: number) => `테스트 ${n}개로 검증됨`,
     'eq.yaml': 'equations.yaml 항목',
     'eq.id': '수식 id',
+    'eq.derivation': '유도',
+    'eq.derivationLink': 'sympy 단계별 유도',
   },
 } as const;
 

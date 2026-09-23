@@ -1,0 +1,43 @@
+---
+title: Derivations
+description: Every derived equation, re-derived step by step with sympy. The steps are exported from the same scripts that pytest runs against equations.yaml.
+sidebar:
+  order: 90
+---
+
+import Derivation from '../../../../components/Derivation.astro';
+
+Each section below is generated from a script in `python/pe_core/derive/`.
+The same script runs under `pytest`, which fails unless the derived result
+simplifies to exactly the expression stored in `equations.yaml`, that is,
+unless the symbolic difference is zero. The prose and headings are
+written by hand; every formula on this page is printed by sympy from those
+scripts.
+
+## CCM conversion ratios and ripple
+
+<Derivation module="ccm_ratios" />
+
+## CCM/DCM boundary and DCM conversion ratios
+
+<Derivation module="dcm" />
+
+## Flyback: DCM ratio, boundaries, stresses, loss-free resistor
+
+<Derivation module="flyback" />
+
+## Stored energy, losses and ringing
+
+<Derivation module="energy" />
+
+## Magnetic circuits
+
+<Derivation module="magnetics" />
+
+## Linear sources: maximum power and constant-voltage extraction
+
+<Derivation module="harvesting" />
+
+## Current-output shunt monitor
+
+<Derivation module="sensing" />

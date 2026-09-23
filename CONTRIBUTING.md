@@ -37,7 +37,7 @@ build specification is `docs/BUILD_SPEC.md`.
      symbols: {D: "duty ratio", K: "2 L_M/(R T_s)"}
      assumptions: [ideal, dcm, steady_state, resistive_load]
      convention: "1:n transformer, $n = N_s/N_p$; K uses $L_M$ (primary-referred) and the actual load R"
-     cite: {key: erickson2020, where: "Ch. 5"}
+     cite: {key: erickson2020, where: "Ch. 5 (The Discontinuous Conduction Mode)"}
      derived_by: python/pe_core/derive/flyback.py
      tests:
        - {inputs: {D: 0.3, K: 0.09}, expect: 1.0}
@@ -47,9 +47,10 @@ build specification is `docs/BUILD_SPEC.md`.
    random-vector range) and listed in the entry's `symbols`. Each `tests`
    value is checked against the sympy evaluation of `expr`.
 2. Run `python scripts/gen_equations.py`. It writes
-   `equations.generated.json` (LaTeX + metadata) and `test_vectors.json`
-   (your tests + seeded random vectors). Commit both; CI regenerates them and
-   fails on any diff.
+   `equations.generated.json` (LaTeX + metadata), `test_vectors.json` (your
+   tests + seeded random vectors), `derivations.generated.json` (the
+   derivation steps) and `src/generated/references.json` (the bibliography).
+   Commit them; CI regenerates them and fails on any diff.
 3. Add the TypeScript evaluator to `packages/pe-core/src/equations.ts` (write
    it independently; do not generate it). `npm test` checks it against every
    vector to 1e-9 relative and renders every formula with strict KaTeX.
@@ -82,13 +83,31 @@ lint scripts pass.
 
 ## Citations
 
+- In a page, cite with `<Cite key="erickson2020" where="Ch. 2" />`; an
+  equation's sources come from its `cite` list in `equations.yaml` (one
+  mapping or a list of mappings).
+- Chapter numbers for `erickson2020` are 3rd-edition numbers (see the header
+  of `references.bib`).
 - Add BibTeX entries to `references.bib`. While the identifier has not been
   confirmed against the publisher or an authoritative index, keep
   `note = {VERIFY …}` on the entry.
 - To resolve a VERIFY flag, confirm the DOI/ISBN/URL and the exact title, then
   replace the note with `verified YYYY-MM-DD (how it was verified)`.
-- `scripts/refcheck.py` fails if a published page cites a missing key or a
-  VERIFY entry.
+- `scripts/refcheck.py` fails if `equations.yaml` or a published page cites a
+  missing key or a VERIFY entry; `--online` (run in CI) checks every DOI
+  against Crossref. See `docs/ADR/0002-reference-verification.md`.
+
+## Lints
+
+- `scripts/mathlint.py`: no hand-typed display math (`$$`, `\[`, `\begin`),
+  no hand-typed inline equations (inline math may hold symbols, values and
+  inequalities), every `<Eq id>` exists and is embedded at most once per
+  locale, and the derivations page renders every derivation module.
+- `scripts/privacy_scan.py`: no e-mail addresses; no number-with-unit in page
+  prose unless the same line carries a `<Cite>` (synthetic values are rendered
+  from `examples/synthetic/*.yaml` by components); the maintainer's local
+  `.private/denylist.txt`, if present.
+- `scripts/refcheck.py`: citation integrity (see above).
 
 ## Checks to run before a pull request
 

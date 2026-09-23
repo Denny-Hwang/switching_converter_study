@@ -1,7 +1,10 @@
 """Derivation scripts.
 
 Each module derives one or more equations from first principles with sympy
-and exposes ``derive() -> dict[str, sympy.Expr]`` mapping equation ids to
-derived expressions. pytest checks ``simplify(derived - yaml_expr) == 0``
-for every equation whose ``derived_by`` names the module.
+and exposes ``derive() -> Derivation`` (see :mod:`pe_core.derive.common`).
+pytest checks ``simplify(derived - yaml_expr) == 0`` for every equation whose
+``derived_by`` names the module, and the steps are exported to the site's
+derivations page. ``MODULES`` fixes the page order.
 """
+
+MODULES = ("ccm_ratios", "dcm", "flyback", "energy", "magnetics", "harvesting", "sensing")

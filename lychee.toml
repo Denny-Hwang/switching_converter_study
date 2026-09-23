@@ -27,4 +27,12 @@ exclude = [
   # added by a pull request only exists there after merge. vitest
   # (packages/pe-core/test/repo-links.test.ts) checks the targets instead.
   '^https://github\.com/Denny-Hwang/switching_converter_study/(blob|tree|edit)/',
+  # DOI links: several publishers answer bots with 403 after the doi.org
+  # redirect. Every DOI is verified more strongly by the refs-online CI job
+  # (scripts/refcheck.py --online: Crossref record + title match).
+  '^https://doi\.org/',
+  # analog.com rejects lychee's HTTP/2 client ("HTTP/2 protocol error").
+  # These URLs are opened over HTTP/1.1 and title/PDF-checked by the
+  # urls-online CI job (scripts/resources_check.py --online).
+  '^https://www\.analog\.com/',
 ]

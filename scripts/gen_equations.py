@@ -5,8 +5,10 @@
     python scripts/gen_equations.py --check  # exit 1 if they are stale
 
 Writes (never edit these by hand):
-  packages/pe-core/equations/equations.generated.json  LaTeX + metadata
-  packages/pe-core/equations/test_vectors.json         shared numeric vectors
+  packages/pe-core/equations/equations.generated.json    LaTeX + metadata
+  packages/pe-core/equations/test_vectors.json           shared numeric vectors
+  packages/pe-core/equations/derivations.generated.json  derivation steps
+  src/generated/references.json                          references.bib as JSON
 
 CI runs the generator and then ``git diff --exit-code``.
 """
@@ -14,27 +16,19 @@ CI runs the generator and then ``git diff --exit-code``.
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "python"))
 
-from pe_core.equations import GENERATED_JSON, VECTORS_JSON, EquationError, load  # noqa: E402
-from pe_core.gen_latex import build_generated  # noqa: E402
-from pe_core.gen_vectors import build_vectors, count_by_id  # noqa: E402
-
-
-def dumps(obj: object) -> str:
-    return json.dumps(obj, indent=2, ensure_ascii=False) + "\n"
+from pe_core.bib import BibError  # noqa: E402
+from pe_core.equations import EquationError  # noqa: E402
+from pe_core.generate import render_all  # noqa: E402
 
 
 def render() -> dict[Path, str]:
-    catalog = load()
-    vectors = build_vectors(catalog)
-    generated = build_generated(catalog, count_by_id(vectors))
-    return {GENERATED_JSON: dumps(generated), VECTORS_JSON: dumps(vectors)}
+    return render_all()
 
 
 def main() -> int:
@@ -43,7 +37,7 @@ def main() -> int:
     args = ap.parse_args()
     try:
         outputs = render()
-    except EquationError as exc:
+    except (EquationError, BibError) as exc:
         print(f"gen_equations: {exc}", file=sys.stderr)
         return 1
     stale = []
@@ -52,6 +46,7 @@ def main() -> int:
         if current != content:
             stale.append(path)
             if not args.check:
+                path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(content, encoding="utf-8")
     rel = [str(p.relative_to(ROOT)) for p in stale]
     if args.check:

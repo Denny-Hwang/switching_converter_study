@@ -39,3 +39,31 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  smoke:
+    name: Smoke-test the deployed site (EN + KO landing pages)
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch both landing pages from the live site
+        env:
+          SITE: https://denny-hwang.github.io/switching_converter_study
+        run: |
+          set -euo pipefail
+          check() {
+            local url="$1" expect="$2"
+            for i in 1 2 3 4 5 6; do
+              if body=$(curl -fsSL --max-time 30 "$url"); then
+                title=$(printf '%s' "$body" | grep -o '<title>[^<]*</title>' | head -1)
+                echo "$url -> $title"
+                printf '%s' "$title" | grep -q "$expect" && return 0
+              fi
+              sleep $((i * 10))
+            done
+            echo "::error::$url did not serve a page titled '$expect'"
+            return 1
+          }
+          check "$SITE/en/" "Switching Converter Study"
+          check "$SITE/ko/" "스위칭 컨버터 스터디"
+          check "$SITE/en/02-theory/derivations/" "Derivations"
+          check "$SITE/ko/10-resources/bibliography/" "참고문헌"
