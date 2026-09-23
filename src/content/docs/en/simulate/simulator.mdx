@@ -1,0 +1,174 @@
+---
+title: Converter simulator
+description: A piecewise-linear time-domain simulator of the buck, boost, buck-boost, flyback and forward converters that runs in the browser and compares its steady state with the equations.
+sidebar:
+  order: 1
+---
+
+import { Image } from 'astro:assets';
+import Simulator from '../../../../components/Simulator.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import shot from '../../../../assets/screenshots/simulator-en.png';
+
+Pick a topology or a synthetic preset and set the parameters in SI units:
+type a value, or drag its slider, which spans one decade either side of the
+value (the duty ratio's slider spans 0 to 1). The simulator then computes one
+period of the periodic steady state and shows:
+
+- the waveforms: inductor current and voltage, diode current, switch voltage
+  and output voltage;
+- the conduction mode it detects, with $K$ and $K_\mathrm{crit}$;
+- the simulated values next to the catalogue's equations at the same
+  operating point;
+- the losses and the efficiency computed from the waveforms.
+
+Everything runs in your browser with the same `pe-core` engine that the test
+suite validates. The URL holds the whole state, and the "Try it" links on the
+learning pages open the simulator with a preset.
+
+<Simulator />
+
+## What is modelled
+
+Each converter is a set of linear circuits, one for each interval of the
+switching period: switch on, switch off with the diode conducting, and, in
+DCM, the idle interval <Cite key="erickson2020" where="Ch. 2" />,
+<Cite key="erickson2020" where="Ch. 5" />.
+
+- **Switches and diodes.** The transistor is an ideal switch with an optional
+  on-resistance and an ideal body diode. The diode is a constant forward drop
+  that blocks ideally, with no reverse recovery. The inductor can have a
+  winding resistance. A current that would reverse through a diode stops
+  instead: the forward converter's rectifier blocks while its output is
+  above $n V_g$ less the diode drop, and a negative inductor current at
+  turn-off flows on through the switch's body diode.
+- **Transformers.** They are ideal (1:n with $n$ the secondary turns over
+  the primary turns) except for the magnetizing inductance. There is no
+  leakage inductance.
+- **Transitions.** Without a capacitance across the switch they are
+  instantaneous. With one, the inductor current charges it after turn-off
+  until the diode takes over. While the diode conducts, the capacitance
+  follows the switch voltage, which moves with the output and input ripple,
+  so it takes its share of their capacitors' current. Once the diode current
+  reaches zero, the inductance rings with the capacitance
+  (<EqRef id="dcm.ring.f" label="ringing frequency" />). The switch's body
+  diode clamps the ringing at zero switch voltage, and the energy in the
+  capacitance is lost at every turn-on
+  (<EqRef id="loss.sw.cap" label="capacitive turn-on loss" />). The input
+  energy therefore equals the output energy plus the losses, also with the
+  capacitance.
+- **Source-driven mode.** The input can be a Thevenin source charging a bus
+  capacitor instead of a fixed voltage. With a fixed output and a fixed duty
+  ratio, this reproduces the constant-voltage sink of the flyback
+  (<EqRef id="flyback.V_crit" label="the pinned input voltage" />).
+
+## How it computes
+
+- **Within an interval** the state (inductor current, capacitor voltages)
+  obeys a linear differential equation. The simulator advances it with the
+  exact solution of that equation (a matrix exponential) over sub-steps of
+  one two-thousandth of the switching period, or shorter, so that one ring
+  of the capacitance across the switch spans at least twenty sub-steps, down
+  to one twenty-thousandth of the period. A capacitance that rings so fast
+  that a ring would still span fewer than three sub-steps is refused: the
+  diode could turn on and off again between two sub-steps unseen.
+- **Events** such as the diode current reaching zero or a clamp starting to
+  conduct are located inside a sub-step on the same exact solution, by a
+  search that keeps the event bracketed like bisection (regula falsi in its
+  Illinois variant, which needs far fewer steps). The gate edges fall
+  exactly at the start of the period and at the duty ratio.
+- **Rounding.** Within a period the simulator follows each state's
+  deviation from its value at the start of the period. Its rounding errors
+  then scale with how far the state moves, not with its size, so the change
+  over a period is exact to rounding even for a very large capacitor.
+- **The periodic steady state** is found by Newton iteration on the map from
+  one period's initial state to the next, with the map's exact derivative:
+  the product of the sub-steps' matrices, corrected at every event whose time
+  depends on the state. The simulator accumulates the derivative minus the
+  identity, so a very slow state, whose sub-step matrix rounds to one, keeps
+  its decay. It is accepted when two tests pass for every state, within at
+  most two thousand periods:
+  - the change over one period is below one part in a million of how far
+    that state moves within the period. A change measured against the
+    state's peak would not do: a current that grows by the same amount every
+    period would pass once it had grown large enough;
+  - the remaining Newton step, the estimated distance to the steady state,
+    is below one part in a million of the state's size. The change alone
+    would not do: a very large capacitor changes little per period even
+    while it is still far from its steady state.
+- **The mode** is DCM when the inductor current stays at zero for part of
+  the period, BCM when it only touches zero, and CCM otherwise, also when
+  it reverses and flows on through the switch's body diode.
+
+## Validation
+
+The test suite (`packages/pe-core/test/sim.test.ts`) checks the simulator
+against the equations:
+
+- **Validation grid.** For the buck, boost, buck-boost and flyback, over a
+  grid of duty ratios and values of $K$ on both sides of $K_\mathrm{crit}$:
+  - the simulated conversion ratio and peak-to-peak inductor ripple are
+    within 2 % of the equations;
+  - the detected mode matches $K$ against $K_\mathrm{crit}$.
+- **Energy balance.** With losses, the input energy per period equals the
+  output energy plus the computed losses, also with a capacitance across
+  the switch and tens of volts of ripple.
+- **Newton's derivative.** The exact derivative of the period map, minus the
+  identity, matches central differences of the change over a period, also
+  for very slow states.
+- **Very large capacitors.** A bus capacitor whose time constant spans
+  billions of periods still settles at the loss-free-resistor divider, and
+  a huge output capacitor gives the same output voltage as a much smaller
+  one.
+- **Ringing.** The DCM ringing frequency matches the L-C equation.
+- **Source-driven flyback.** It pins its input at the critical voltage when
+  the source can supply more than the DCM power there, and it settles below
+  that voltage in DCM when the source cannot.
+
+## Worked example: a flyback that pins its source
+
+A synthetic flyback with a fixed duty ratio charges a fixed output from a
+current-limited source:
+
+<Worked example="flyback-source" show={['V', 'V_D', 'D', 'n', 'f_s', 'L_M', 'V_oc', 'R_s', 'V_gcrit', 'P_max', 'eta_ext', 'P_dcm']} />
+
+The input settles where CCM begins, at <Val example="flyback-source" name="V_gcrit" />.
+At that voltage the source can deliver a fraction
+<Val example="flyback-source" name="eta_ext" /> of its available maximum,
+<Val example="flyback-source" name="P_max" />. That is more than the
+<Val example="flyback-source" name="P_dcm" /> that the converter would draw
+in DCM, so the magnetizing current grows until CCM holds the input at the
+critical voltage. Open the preset and compare the simulated input voltage
+with the equation (the [screenshot](#screenshot) at the end of this page shows
+the result):
+
+<TrySim example="flyback-source" topology="flyback" />
+
+## Limitations
+
+- **No transition shapes.** There is no leakage inductance, reverse
+  recovery or switching transition, so the simulator shows no turn-off
+  spikes and no overlap loss.
+- **Fixed duty ratio.** There is no control loop and no core loss.
+- **A periodic steady state must exist.** Some circuits have none without
+  resistance: a fixed output fed from a fixed input in CCM, a buck whose
+  output is held above its input (its current flows backwards through the
+  body diode), and a forward converter above its reset limit
+  (<EqRef id="forward.reset.Dmax" label="maximum duty ratio" />), whose
+  magnetizing current walks up from one period to the next. Their current
+  grows without bound, and the status line reports that no steady state was
+  reached. With a resistance in the path of the growing current they do
+  settle, at a current that only that resistance limits and that can be very
+  large. For the forward converter's magnetizing current that is only the
+  on-resistance: the winding resistance belongs to the output inductor.
+
+## Screenshot
+
+<figure class="pe-shot">
+  <Image src={shot} alt="The simulator opened with the preset of the worked example: the status line reports CCM, the compare panel sets the simulated bus voltage beside V_g,crit, and the plots show one period of the currents, the inductor voltage, the switch voltage, the output voltage and the bus voltage." />
+  <figcaption>The simulator opened with the preset of the worked example.</figcaption>
+</figure>

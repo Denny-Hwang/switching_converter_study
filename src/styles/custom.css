@@ -213,3 +213,92 @@
 .pe-explorer__result {
   font-size: var(--sl-text-lg);
 }
+
+/* ---- simulator ------------------------------------------------------------ */
+.pe-sim__row {
+  display: grid;
+  grid-template-columns: minmax(6rem, 9rem) minmax(7rem, 11rem) minmax(8rem, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.3rem 0;
+}
+.pe-sim__row input[type='number'] {
+  width: 100%;
+}
+.pe-sim__row input[type='range'] {
+  width: 100%;
+  max-width: 24rem;
+}
+@media (max-width: 36rem) {
+  .pe-sim__row {
+    grid-template-columns: minmax(5rem, 7rem) 1fr;
+  }
+  .pe-sim__row input[type='range'] {
+    grid-column: 1 / -1;
+    max-width: none;
+  }
+}
+.pe-sim__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.pe-sim__buttons button {
+  padding: 0.25rem 0.7rem;
+  border: 1px solid var(--sl-color-gray-4);
+  border-radius: 0.35rem;
+  background: var(--sl-color-gray-7, transparent);
+  color: var(--sl-color-text);
+  cursor: pointer;
+}
+.pe-sim__buttons button[aria-pressed='true'] {
+  background: var(--sl-color-accent);
+  border-color: var(--sl-color-accent);
+  color: var(--sl-color-black);
+}
+.pe-sim__buttons button:focus-visible {
+  outline: 2px solid var(--sl-color-accent-high);
+  outline-offset: 2px;
+}
+.pe-sim__status h3 {
+  margin: 0.5rem 0 0.25rem;
+  font-size: var(--sl-text-lg);
+}
+.pe-sim__mode {
+  padding: 0 0.4rem;
+  border-radius: 0.3rem;
+  background: var(--sl-color-gray-6);
+}
+.pe-sim__mode--DCM {
+  background: var(--sl-color-orange-low);
+}
+.pe-sim__mode--CCM {
+  background: var(--sl-color-green-low);
+}
+.pe-sim__error {
+  color: var(--sl-color-red);
+}
+.pe-sim__table {
+  margin: 0.75rem 0;
+  font-size: var(--sl-text-sm);
+}
+.pe-sim__table caption {
+  text-align: left;
+  font-weight: 600;
+}
+
+/* ---- tool screenshots ------------------------------------------------------ */
+.pe-shot {
+  margin: 1rem 0;
+}
+.pe-shot img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.5rem;
+}
+.pe-shot figcaption {
+  margin-top: 0.4rem;
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-2);
+}

@@ -70,6 +70,11 @@ export default defineConfig({
           items: [{ autogenerate: { directory: 'design' } }],
         },
         {
+          label: 'Simulate',
+          translations: { ko: '시뮬레이션' },
+          items: [{ autogenerate: { directory: 'simulate' } }],
+        },
+        {
           label: 'Resources',
           translations: { ko: '자료' },
           items: [{ autogenerate: { directory: '10-resources' } }],

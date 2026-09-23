@@ -5058,6 +5058,118 @@
       "value": 0.08908223348916496
     },
     {
+      "id": "buck.Vds",
+      "source": "yaml",
+      "inputs": {
+        "V_g": 24.0
+      },
+      "value": 24.0
+    },
+    {
+      "id": "buck.Vds",
+      "source": "random",
+      "inputs": {
+        "V_g": 89.7248
+      },
+      "value": 89.7248
+    },
+    {
+      "id": "buck.Vds",
+      "source": "random",
+      "inputs": {
+        "V_g": 203.608
+      },
+      "value": 203.608
+    },
+    {
+      "id": "buck.Vds",
+      "source": "random",
+      "inputs": {
+        "V_g": 1.49762
+      },
+      "value": 1.49762
+    },
+    {
+      "id": "buck.Vds",
+      "source": "random",
+      "inputs": {
+        "V_g": 377.221
+      },
+      "value": 377.221
+    },
+    {
+      "id": "buck.Vds",
+      "source": "random",
+      "inputs": {
+        "V_g": 48.9179
+      },
+      "value": 48.9179
+    },
+    {
+      "id": "buck.Vds",
+      "source": "random",
+      "inputs": {
+        "V_g": 1.94487
+      },
+      "value": 1.94487
+    },
+    {
+      "id": "boost.Vds",
+      "source": "yaml",
+      "inputs": {
+        "V": 24.0
+      },
+      "value": 24.0
+    },
+    {
+      "id": "boost.Vds",
+      "source": "random",
+      "inputs": {
+        "V": 3.25483
+      },
+      "value": 3.25483
+    },
+    {
+      "id": "boost.Vds",
+      "source": "random",
+      "inputs": {
+        "V": 341.303
+      },
+      "value": 341.303
+    },
+    {
+      "id": "boost.Vds",
+      "source": "random",
+      "inputs": {
+        "V": 4.54144
+      },
+      "value": 4.54144
+    },
+    {
+      "id": "boost.Vds",
+      "source": "random",
+      "inputs": {
+        "V": 9.86787
+      },
+      "value": 9.86787
+    },
+    {
+      "id": "boost.Vds",
+      "source": "random",
+      "inputs": {
+        "V": 1.97548
+      },
+      "value": 1.97548
+    },
+    {
+      "id": "boost.Vds",
+      "source": "random",
+      "inputs": {
+        "V": 79.1571
+      },
+      "value": 79.1571
+    },
+    {
       "id": "buckboost.Vds",
       "source": "yaml",
       "inputs": {

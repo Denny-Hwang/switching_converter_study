@@ -1236,6 +1236,30 @@ equations:
     tests:
       - {inputs: {V: 12.0, D: 0.5, T_s: 1.0e-5, R: 10.0, C: 1.0e-5}, expect: 0.3}
 
+  - id: buck.Vds
+    title: "Buck switch voltage while off (also the diode's blocking voltage while on)"
+    title_ko: "벅 스위치의 오프 전압(온 구간 다이오드의 차단 전압과 같음)"
+    lhs: V_DS
+    expr: "V_g"
+    symbols: {V_g: "input voltage"}
+    assumptions: [ideal, ccm, steady_state]
+    cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {V_g: 24.0}, expect: 24.0}
+
+  - id: boost.Vds
+    title: "Boost switch voltage while off (also the diode's blocking voltage while on)"
+    title_ko: "부스트 스위치의 오프 전압(온 구간 다이오드의 차단 전압과 같음)"
+    lhs: V_DS
+    expr: "V"
+    symbols: {V: "output voltage"}
+    assumptions: [ideal, ccm, steady_state, small_ripple]
+    cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits)"}
+    derived_by: python/pe_core/derive/topologies.py
+    tests:
+      - {inputs: {V: 24.0}, expect: 24.0}
+
   - id: buckboost.Vds
     title: "Buck-boost switch voltage while off (also the diode's blocking voltage)"
     title_ko: "벅-부스트 스위치의 오프 전압(다이오드의 차단 전압과 같음)"

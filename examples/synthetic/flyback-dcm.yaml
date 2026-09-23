@@ -10,6 +10,7 @@ params:
   R: 20
   V_D: 0
   L_lk: 1.0e-6
+  C: 1.0e-4
 steps:
   - def.Ts
   - {eq: K.def, bind: {L: L_M}}

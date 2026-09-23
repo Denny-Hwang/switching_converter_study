@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -74,6 +75,8 @@ $n_r = 1$이면 듀티비는 2분의 1 이하로 제한되고, 스위치는 입�
 ## 직접 해 보기
 
 <TryIt eq="forward.Vds" example="forward-basic" sweep="n_r" />
+
+<TrySim example="forward-basic" topology="forward" />
 
 $n_r$을 스윕(sweep)하십시오. 리셋 권선의 턴 수가 많아질수록 스위치 스트레스는
 입력 전압을 향해 낮아집니다. 그런 다음 리셋 한계 수식을 열고 $n_r$을 다시

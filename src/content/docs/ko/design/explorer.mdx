@@ -5,7 +5,9 @@ sidebar:
   order: 1
 ---
 
+import { Image } from 'astro:assets';
 import Explorer from '../../../../components/Explorer.astro';
+import shot from '../../../../assets/screenshots/explorer-ko.png';
 
 수식을 고르고 입력값을 SI 단위로 넣은 뒤, 입력 하나를 스윕(sweep)하면
 결과가 어떻게 변하는지 볼 수 있습니다. 계산은 브라우저에서 실행되며,
@@ -21,6 +23,14 @@ TypeScript 평가 함수를 사용합니다. 따라서 여기서 보는 값은 �
 
 탐색기는 한 번에 수식 하나만 계산하며, 그 수식의 가정이 성립하는지는
 검사하지 않습니다(예: DCM 동작점에서 CCM 변환비를 계산하는 경우). 각
-수식의 가정은 그 수식이 실린 페이지에서 수식 아래에 나와 있습니다. 여러
-수식을 조합하고 동작 모드를 검사하는 설계 도구는 3단계(Phase 3)에서
-추가됩니다.
+수식의 가정은 그 수식이 실린 페이지에서 수식 아래에 나와 있습니다.
+[시뮬레이터](../../simulate/simulator/)는 회로 자체에서 동작 모드를 찾습니다.
+여러 수식을 조합하고 동작 모드를 검사하는 설계 도구는 3단계(Phase 3)에서
+이어서 추가됩니다.
+
+## 스크린샷
+
+<figure class="pe-shot">
+  <Image src={shot} alt="CCM/DCM 페이지의 직접 해 보기 링크로 연 탐색기: 벅의 DCM 변환비 수식과 두 입력값, 계산 결과, 그리고 로그 축에서 K를 스윕한 그래프." />
+  <figcaption>CCM과 DCM 페이지의 "직접 해 보기" 링크로 연 탐색기.</figcaption>
+</figure>

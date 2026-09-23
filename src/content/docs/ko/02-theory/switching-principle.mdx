@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -96,6 +97,8 @@ $M(D)$로 요약됩니다.
 ## 직접 해 보기
 
 <TryIt eq="sw.v_avg" example="buck-basic" sweep="D" />
+
+<TrySim example="buck-basic" topology="buck" />
 
 $D$를 0에서 1까지 스윕(sweep)해 보십시오. 스위칭 주파수가 얼마이든 직류 성분은 그에
 비례하여 커집니다.

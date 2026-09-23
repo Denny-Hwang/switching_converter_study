@@ -1,0 +1,62 @@
+---
+/**
+ * <Simulator /> -- the simulator island with labels in the page's language
+ * and presets from the synthetic examples. State lives in the URL hash, so
+ * "Try it" links (<TrySim>) can preset it.
+ */
+import SimulatorIsland from '../tools/Simulator.tsx';
+import { ui } from '../i18n/ui';
+import { pageLocale } from '../lib/locale';
+import { PRESETS, presetValues } from '../lib/simpresets';
+
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const labels = {
+  topology: t['sim.topology'],
+  presets: t['sim.presets'],
+  parameters: t['sim.parameters'],
+  load: t['sim.load'],
+  loadResistive: t['sim.loadResistive'],
+  loadFixed: t['sim.loadFixed'],
+  source: t['sim.source'],
+  sourceHint: t['sim.sourceHint'],
+  nonideal: t['sim.nonideal'],
+  status: t['sim.status'],
+  mode: t['sim.mode'],
+  converged: t['sim.converged'],
+  notConverged: t['sim.notConverged'],
+  cycles: t['sim.cycles'],
+  compare: t['sim.compare'],
+  compareNote: t['sim.compareNote'],
+  quantity: t['sim.quantity'],
+  simulated: t['sim.simulated'],
+  formula: t['sim.formula'],
+  error: t['sim.error'],
+  losses: t['sim.losses'],
+  conduction: t['sim.conduction'],
+  diode: t['sim.diode'],
+  capacitive: t['sim.capacitive'],
+  efficiency: t['sim.efficiency'],
+  invalid: t['sim.invalid'],
+  nodeNeedsRon: t['sim.nodeNeedsRon'],
+  share: t['sim.share'],
+  time: t['sim.time'],
+  running: t['sim.running'],
+  slider: t['sim.slider'],
+  topologies: {
+    buck: t['sim.buck'],
+    boost: t['sim.boost'],
+    buckboost: t['sim.buckboost'],
+    flyback: t['sim.flyback'],
+    forward: t['sim.forward'],
+  },
+};
+const presets = PRESETS.map((p) => ({
+  id: p.id,
+  label: locale === 'ko' ? p.ko : p.en,
+  topology: p.topology,
+  values: presetValues(p.example, p.topology),
+}));
+---
+
+<SimulatorIsland client:only="react" locale={locale} labels={labels} presets={presets} />

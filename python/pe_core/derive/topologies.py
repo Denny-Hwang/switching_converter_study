@@ -129,6 +129,23 @@ def derive() -> Derivation:
         dv,
     )
     d.result(
+        "buck.Vds",
+        Vg - 0,
+        "Buck: while the diode conducts, the switch node sits at ground (ideal diode); the switch between the input "
+        "and that node blocks $V_g$.",
+        "벅: 다이오드가 도통하는 동안 스위치 노드는 접지 전위에 있으므로(이상적 다이오드), 입력과 그 노드 사이의 "
+        "스위치는 $V_g$를 차단한다.",
+        S("V_DS"),
+    )
+    d.result(
+        "boost.Vds",
+        V - 0,
+        "Boost: while the diode conducts, the switch node is connected to the output; the switch from that node to "
+        "ground blocks $V$.",
+        "부스트: 다이오드가 도통하는 동안 스위치 노드는 출력에 연결되므로, 그 노드와 접지 사이의 스위치는 $V$를 차단한다.",
+        S("V_DS"),
+    )
+    d.result(
         "buckboost.Vds",
         Vg - (-V),
         "While the diode conducts, the switch's far end sits at the output, $-V$; the switch blocks $V_g - (-V)$.",

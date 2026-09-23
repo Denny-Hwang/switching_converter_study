@@ -8,18 +8,34 @@
 | 02-theory additions (Phase 2a) | ✅ 23 equations: averaging and balance, DCM interval, critical inductance, boost with winding resistance, CCM small-signal parameters, PWM and loop gain |
 | 03-topologies additions (Phase 2b) | ✅ 17 equations: dc inductor currents, current and voltage ripple, peak current, buck-boost and forward switch stress, transistor utilization |
 | 00/01 refresher additions (Phase 2c) | ✅ 16 equations: inductor and capacitor under constant excitation and their energy, impedance, R-C filter corner and gain, pulse-train harmonics and rms value, self-resonance, ESR ripple, Ampère's law, B-H relation, ideal transformer |
-| Derivations reproduce the YAML (`pytest`) | ✅ 89 of 95 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk` and `mag.B_H` are definitions, `loss.steinmetz` is an empirical law) |
+| Simulator compare-panel additions (Phase 3a) | ✅ 2 equations: `buck.Vds`, `boost.Vds` (switch blocking voltages) |
+| Derivations reproduce the YAML (`pytest`) | ✅ 91 of 97 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk` and `mag.B_H` are definitions, `loss.steinmetz` is an empirical law) |
 | TS/Python parity (`vitest`, 1e-9 rel) | ✅ all shared vectors |
 | Strict KaTeX on every generated formula and derivation step (`vitest`) | ✅ |
 | `references.bib` verified (two web-search rounds + CI Crossref + URL title check) | ✅ 25 of 25 verified (`steinmetz1984` DOI confirmed by the CI Crossref job; `ti_slva630` and `ti_snoa930` added in Phase 2c) |
+
+## Simulator and tools (Phase 3)
+
+| Item | State |
+| --- | --- |
+| Simulator engine (BUILD_SPEC §4): piecewise-linear intervals, exact matrix-exponential steps at T_s/2000, events located on the exact solution, steady state to 1e-6 within 2000 cycles | ✅ Phase 3a (`packages/pe-core/src/sim`). Events: a bracketing search like the spec's bisection (Illinois regula falsi, fewer steps). Steady state: Newton shooting with the exact cycle Jacobian, accepted when the change per cycle (relative to each state's variation) and the remaining Newton step (relative to its size) are both below 1e-6. The Jacobian is accumulated as J - I, exact also for very slow states. Cases without a steady state are reported as such (tested); a node capacitance that rings faster than three sub-steps per ring at 20000 sub-steps per period is refused (results at three agree with ten times finer sub-steps) |
+| Validation grid: M and Δi_pp within 2 %, mode matches K/K_crit (buck, boost, buck-boost, flyback × 5 duty ratios × 4 values of K/K_crit) | ✅ 80 cases in `packages/pe-core/test/sim.test.ts`, plus forward CCM, energy balance (also with a node capacitance), ringing frequency, and regression cases from three independent reviews (reverse current, very slow states, fast ringing, the node capacitance while the diode conducts, the exact Jacobian against finite differences, the Newton line search, states that do not move within the cycle) |
+| Source-driven mode: bus pinned at V_g,crit within 2 % (constant V_oc) | ✅ Phase 3a |
+| Source-driven mode: sinusoidal and user-drawn V_oc envelopes | ⬜ with the SourceMatcher tool (Phase 3) |
+| Simulator page (`simulate/simulator`): topology buttons, presets, sliders, waveforms, mode badge, compare-with-formula panel, losses; state in the URL hash; runs in a Web Worker | ✅ EN and KO, Phase 3a |
+| "Try it" simulator links (`<TrySim>`) from 02/03 pages | ✅ 10 pages, EN and KO |
+| Screenshots on tool pages (`scripts/screenshots.mjs`, checked by `modulelint.py`) | ✅ explorer, simulator |
+| Keyboard focus order of tool pages (`scripts/keyboard_check.mjs`, CI) | ✅ explorer, simulator |
+| LTspice `.asc`, ngspice `.cir` and Falstad links on the simulator page | ⬜ Phase 5 (`sim/`) |
+| Design tools (BUILD_SPEC §5): ConverterDesigner, MagneticsDesigner, LossBudget, SenseChain, ClampCheck, SourceMatcher | ⬜ Phase 3 |
 
 Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); theory uses only `<Eq>` embeds and each Eq has ≥ 1 test vector; "Try it" links a tool preset; "Go deeper" has ≥ 2 verified resources with retrieval dates; a gotchas subsection exists; quiz with ≥ 5 explained questions; build, tests and all lints green.
 
 Legend: ✅ done · 🟡 partial · ⬜ not started · ➖ not applicable. "Phase" is the build phase that delivers the module (docs/BUILD_SPEC.md §7); "later" = not scheduled in phases 0–5. 00-foundations and 01-physics are compact refreshers (Phase 2 scope).
 
-_Last updated: Phase 2c (00-foundations and 01-physics, EN and KO). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
+_Last updated: Phase 3a (simulator). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
 
-"Try it" links open the [equation explorer](../src/content/docs/en/design/explorer.mdx) with a synthetic preset until the Phase 3 design tools and simulator exist; Phase 3 adds tool and simulator presets to every 02/03 page.
+"Try it" links open the [equation explorer](../src/content/docs/en/design/explorer.mdx) with a synthetic preset. Pages whose example is a whole converter also open the [simulator](../src/content/docs/en/simulate/simulator.mdx) with it (`<TrySim>`, Phase 3a); design-tool presets come with the design tools.
 
 
 ## 00-foundations
@@ -59,8 +75,8 @@ _Last updated: Phase 2c (00-foundations and 01-physics, EN and KO). `python scri
 
 | Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| buck | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `buck.IL`, `buck.ripple.iL`, `buck.ripple.iL_pp`, `ripple.Ipk`, `buck.ripple.v` |
-| boost | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `boost.IL`, `boost.ripple.iL`, `boost.ripple.v` |
+| buck | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `buck.IL`, `buck.ripple.iL`, `buck.ripple.iL_pp`, `ripple.Ipk`, `buck.ripple.v`, `buck.Vds` |
+| boost | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `boost.IL`, `boost.ripple.iL`, `boost.ripple.v`, `boost.Vds` |
 | buck-boost | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `buckboost.V`, `buckboost.IL`, `buckboost.ripple.iL`, `buckboost.ripple.v`, `buckboost.Vds` |
 | cuk-sepic-zeta | later | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
 | flyback | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes the nine `flyback.*` equations (ratios, stresses, DCM peak, leakage, fixed-output boundary) |
@@ -144,6 +160,7 @@ _Last updated: Phase 2c (00-foundations and 01-physics, EN and KO). `python scri
 | landing (`index`) | ✅ | ✅ | Phase 0 |
 | about | ✅ | ✅ | Phase 0 |
 | about/equation-pipeline | ✅ | ✅ | Phase 0 acceptance page: one `<Eq>` + Plotly island |
-| 02-theory/derivations | ✅ | ✅ | auto-rendered from `python/pe_core/derive/*.py`: 11 modules, 74 derived equations (Phase 2b) |
-| design/explorer | ✅ | ✅ | Phase 2a: evaluate and sweep any catalogue equation; state in the URL hash ("Try it" target) |
+| 02-theory/derivations | ✅ | ✅ | auto-rendered from `python/pe_core/derive/*.py`: 12 modules, 91 derived equations (Phase 3a) |
+| design/explorer | ✅ | ✅ | Phase 2a: evaluate and sweep any catalogue equation; state in the URL hash ("Try it" target); screenshot and keyboard check (Phase 3a) |
+| simulate/simulator | ✅ | ✅ | Phase 3a: the pe-core simulator; state in the URL hash (`<TrySim>` target); screenshot and keyboard check |
 | 10-resources/bibliography | ✅ | ✅ | Phase 1: generated from `references.bib` (verified entries only) |

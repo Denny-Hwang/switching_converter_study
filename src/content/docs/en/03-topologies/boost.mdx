@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -69,9 +70,12 @@ on the [derivations page](../../02-theory/derivations/#deriv-topologies).
 ### Stress and limits
 
 With the switch off, the switch blocks the output voltage; with the switch
-on, the diode blocks it <Cite key="erickson2020" where="Ch. 6" />. Two effects
-limit the boost at high duty ratio. The inductor's winding resistance makes
-the ratio peak and then collapse
+on, the diode blocks it <Cite key="erickson2020" where="Ch. 6" />:
+
+<Eq id="boost.Vds" />
+
+Two effects limit the boost at high duty ratio. The inductor's winding
+resistance makes the ratio peak and then collapse
 (<EqRef id="boost.ccm.M_RL" label="ratio with winding resistance" />), and the
 control-to-output transfer function has a
 [right-half-plane zero](../../02-theory/rhp-zero/) that moves down as $D$
@@ -93,6 +97,8 @@ because the capacitor alone feeds the load for half of every period.
 ## Try it
 
 <TryIt eq="boost.IL" example="boost-ideal" sweep="D" />
+
+<TrySim example="boost-ideal" topology="boost" />
 
 Sweep $D$ from 0 to 1: at a fixed output voltage and load, the inductor
 current grows without bound as $D$ approaches 1.

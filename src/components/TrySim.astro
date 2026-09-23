@@ -1,0 +1,26 @@
+---
+/**
+ * <TrySim example="buck-basic" topology="buck" /> -- deep link into the
+ * simulator with the parameters of a synthetic example (URL hash).
+ */
+import type { sim } from 'pe-core';
+import { ui } from '../i18n/ui';
+import { pageHref } from '../lib/paths';
+import { pageLocale } from '../lib/locale';
+import { simulatorHash } from '../lib/simpresets';
+
+interface Props {
+  example: string;
+  topology: sim.Topology;
+}
+const { example, topology } = Astro.props;
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const href = `${pageHref(locale, 'simulate/simulator')}#${simulatorHash(example, topology)}`;
+const name = t[`sim.${topology}` as const];
+---
+
+<p class="pe-tryit">
+  <a class="pe-tryit__link" href={href}>▶ {t['trysim.open']}: {name}</a>
+  <br /><small>{t['trysim.preset']} <code>{example}</code></small>
+</p>

@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -99,6 +100,8 @@ $D$ = <Val example="balance-basic" name="D" />이면 오프 구간의 길이가 
 ## 직접 해 보기
 
 <TryIt eq="boost.ccm.M" example="boost-basic" sweep="D" />
+
+<TrySim example="boost-basic" topology="boost" />
 
 $D$를 1을 향해 스윕(sweep)하면서 이상적인 부스트 변환비가 한없이 커지는 것을
 지켜보십시오. 실제 부스트 컨버터가 이 곡선을 따라갈 수 없는 이유는

@@ -91,6 +91,10 @@ jobs:
       - run: npm run build
       - name: Every internal #fragment link lands on an element id
         run: python3 scripts/anchorcheck.py dist
+      - name: Keyboard focus order of the tool pages (headless Chromium)
+        run: |
+          npx playwright install --with-deps chromium
+          node scripts/keyboard_check.mjs
       - name: Mirror dist/ under the Pages base path for link checking
         run: |
           rm -rf _linkcheck

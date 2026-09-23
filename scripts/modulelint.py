@@ -20,12 +20,18 @@ A page is a module page when its frontmatter has `module: true`. For each:
     page's locale with >= 5 questions, 2-6 options each, answers in range and
     `numbers: synthetic`;
   * the Korean page mirrors the English one: the same block components
-    (Eq, Worked, TryIt, GoDeeper, Quiz) with the same attributes in the same
+    (Eq, Worked, TryIt, TrySim, GoDeeper, Quiz) with the same attributes in the same
     order, the same inline components (Cite, EqRef, Val) in any order (Korean
     word order differs), and a quiz with the same answer key;
   * docs/STATUS.md agrees: every existing module page is marked done (✅) in
     its language and in every definition-of-done column, and an English page
     without a Korean page is marked KO "pending".
+
+A page is a tool page when it embeds a tool island (<Explorer />,
+<Simulator />, ...). Each tool page has a "Screenshot" section (KO: 스크린샷)
+that shows an image imported from src/assets/screenshots/<tool>-<locale>.png
+(docs/BUILD_SPEC.md section 7, Phase 3: every tool has a screenshot in its doc
+page; `node scripts/screenshots.mjs` takes them).
 
     python scripts/modulelint.py
 """
@@ -52,7 +58,12 @@ SECTIONS = {
     "en": ["Intent", "Theory", "Worked example", "Try it", "Bench exercise", "Gotchas", "Go deeper", "Quiz"],
     "ko": ["목표", "이론", "풀이 예제", "직접 해 보기", "벤치 실습", "주의할 점", "더 알아보기", "퀴즈"],
 }
-BLOCK = ("Eq", "Worked", "TryIt", "GoDeeper", "Quiz")
+BLOCK = ("Eq", "Worked", "TryIt", "TrySim", "GoDeeper", "Quiz")
+SIM_TOPOLOGIES = ("buck", "boost", "buckboost", "flyback", "forward")
+TOOLS = ("Explorer", "Simulator")
+TOOL_TAG = re.compile(r"<(" + "|".join(TOOLS) + r")\b")
+SHOT_SECTION = {"en": "Screenshot", "ko": "스크린샷"}
+SHOT_IMPORT = re.compile(r"^import\s+(\w+)\s+from\s+'((?:\.\./)+assets/screenshots/([\w-]+)\.png)';", re.M)
 INLINE = ("Cite", "EqRef", "Val")
 COMPONENT = re.compile(r"<(" + "|".join(BLOCK + INLINE) + r")\b((?:[^>\"'{}]|\"[^\"]*\"|'[^']*'|\{[^}]*\})*)/?>")
 ATTR = re.compile(r"(\w+)\s*=\s*(?:\"([^\"]*)\"|\{([^}]*)\})")
@@ -146,6 +157,27 @@ def status_rows() -> dict[tuple[str, str], dict[str, str]]:
     return rows
 
 
+def check_tool_page(path: Path, locale: str, body: str) -> list[str]:
+    """A tool page shows a screenshot of its tool in its own language."""
+    where = str(path.relative_to(ROOT))
+    head = SHOT_SECTION.get(locale)
+    shots = dict(sections(body)).get(head or "")
+    if shots is None:
+        return [f"{where}: a tool page needs a '## {head}' section with a screenshot of the tool"]
+    errors = []
+    used = 0
+    for var, rel, stem in SHOT_IMPORT.findall(body):
+        if not (path.parent / rel).resolve().is_file():
+            errors.append(f"{where}: screenshot {rel} does not exist (node scripts/screenshots.mjs)")
+        if not stem.endswith(f"-{locale}"):
+            errors.append(f"{where}: screenshot {stem}.png is not the {locale} one ({stem.rsplit('-', 1)[0]}-{locale}.png)")
+        if re.search(r"src=\{" + var + r"\}", shots):
+            used += 1
+    if not used:
+        errors.append(f"{where}: the '{head}' section shows no image imported from assets/screenshots/")
+    return errors
+
+
 def main() -> int:
     catalog = json.loads(GENERATED.read_text(encoding="utf-8"))["equations"]
     resources = {r["id"]: r for r in (yaml.safe_load(RESOURCES.read_text(encoding="utf-8")) or {}).get("resources", [])}
@@ -153,11 +185,15 @@ def main() -> int:
     status = status_rows()
     errors: list[str] = []
     pages: dict[tuple[str, str], list[tuple[str, dict[str, str]]]] = {}
+    n_tools = 0
 
     for path in sorted(DOCS.rglob("*.mdx")):
         rel = path.relative_to(DOCS)
         locale, slug = rel.parts[0], "/".join(rel.with_suffix("").parts[1:])
         meta, body = frontmatter(strip_code(path.read_text(encoding="utf-8")))
+        if TOOL_TAG.search(body):
+            n_tools += 1
+            errors += check_tool_page(path, locale, body)
         if meta.get("module") is not True:
             continue
         where = str(path.relative_to(ROOT))
@@ -191,6 +227,11 @@ def main() -> int:
                 errors.append(f"{where}: <TryIt eq=\"{a.get('eq')}\"> is not a catalogue equation")
             if a.get("example") not in examples:
                 errors.append(f"{where}: <TryIt example=\"{a.get('example')}\"> has no examples/synthetic file")
+        for a in [a for c, a in components(text[name["Try it"]]) if c == "TrySim"]:
+            if a.get("example") not in examples:
+                errors.append(f"{where}: <TrySim example=\"{a.get('example')}\"> has no examples/synthetic file")
+            if a.get("topology") not in SIM_TOPOLOGIES:
+                errors.append(f"{where}: <TrySim topology=\"{a.get('topology')}\"> is not a simulator topology")
 
         ids = [i for c, a in components(text[name["Go deeper"]]) if c == "GoDeeper" for i in quoted_list(a.get("ids", ""))]
         if len(set(ids)) < 2:
@@ -234,7 +275,7 @@ def main() -> int:
                 errors.append(f"src/content/docs/en/{slug}.mdx: no Korean page, and docs/STATUS.md does not mark KO pending")
             continue
         if signature(comps, BLOCK) != signature(ko, BLOCK):
-            errors.append(f"src/content/docs/ko/{slug}.mdx: block components differ from the English page (Eq, Worked, TryIt, GoDeeper, Quiz)")
+            errors.append(f"src/content/docs/ko/{slug}.mdx: block components differ from the English page (Eq, Worked, TryIt, TrySim, GoDeeper, Quiz)")
         en_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(comps, INLINE))
         ko_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(ko, INLINE))
         if en_inline != ko_inline:
@@ -255,7 +296,7 @@ def main() -> int:
         return 1
     n_en = sum(1 for (loc, _) in pages if loc == "en")
     n_ko = sum(1 for (loc, _) in pages if loc == "ko")
-    print(f"modulelint: OK ({n_en} EN and {n_ko} KO module pages)")
+    print(f"modulelint: OK ({n_en} EN and {n_ko} KO module pages, {n_tools} tool pages with screenshots)")
     return 0
 
 

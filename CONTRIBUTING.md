@@ -76,6 +76,9 @@ Each module page (`src/content/docs/<lang>/<section>/<module>.mdx`) sets
    of its values into a sentence. Results are never typed by hand.
 4. **Try it** (직접 해 보기) — `<TryIt eq="…" example="…" sweep="…" />` links to
    the equation explorer (`design/explorer`) with the inputs preset in the URL.
+   When the example describes a whole converter, add
+   `<TrySim example="…" topology="…" />` after it: it opens the simulator
+   (`simulate/simulator`) with the example's parameters.
 5. **Bench exercise** (벤치 실습) — what to build or measure and what to expect.
 6. **Gotchas** (주의할 점) — may be empty at first, but the heading must exist.
 7. **Go deeper** (더 알아보기) — `<GoDeeper ids={['…', '…']} />` with at least
@@ -94,6 +97,27 @@ A module is *done* when both `en/` and `ko/` exist (or KO is listed as
 pending in `docs/STATUS.md`) and `npm run build`, `npm test`, `pytest` and all
 lint scripts pass; `scripts/modulelint.py` checks the structure above and
 that `docs/STATUS.md` agrees with it.
+
+## Tool pages
+
+The tools are React islands in `src/tools/`, fed by `packages/pe-core` and
+embedded in a doc page through a component in `src/components/`
+(`<Explorer />`, `<Simulator />`). Their whole state lives in the URL hash,
+so a link can preset it and any view can be shared.
+
+- Each tool page has a **Screenshot** section (스크린샷) with an image from
+  `src/assets/screenshots/<tool>-<lang>.png`; `modulelint.py` checks it. To
+  retake the screenshots after changing a tool's layout, run
+  `npm run build && node scripts/screenshots.mjs`, then rebuild. The script
+  opens each tool through a "Try it" link of the site, so the state comes from
+  a synthetic example.
+- Every control must work from the keyboard. `node scripts/keyboard_check.mjs`
+  (after `npm run build`, run in CI) opens each tool page in both languages in
+  headless Chromium (Playwright) and checks that Tab visits every control in
+  document order and leaves the tool after the last one, that Shift+Tab walks
+  back, that each control shows a focus indicator, and that the controls
+  respond to the keyboard. Give no control a positive `tabindex`; give a
+  control without a visible label an `aria-label`.
 
 ## Citations
 
@@ -120,7 +144,8 @@ that `docs/STATUS.md` agrees with it.
   the derivations page renders every derivation module. Quizzes get the same
   inline-math check.
 - `scripts/modulelint.py`: the module template and definition of done above,
-  EN/KO mirroring, quizzes, and agreement with `docs/STATUS.md`.
+  EN/KO mirroring, quizzes, agreement with `docs/STATUS.md`, and the
+  screenshot of every tool page.
 - `scripts/privacy_scan.py`: no e-mail addresses; no number-with-unit in page
   prose unless the same line carries a `<Cite>` (synthetic values are rendered
   from `examples/synthetic/*.yaml` by components); synthetic examples labelled
@@ -131,6 +156,8 @@ that `docs/STATUS.md` agrees with it.
   `#fragment` lands on an element id (equation anchors, derivation sections,
   bibliography entries); lychee then checks every link target, internal and
   external.
+- `scripts/keyboard_check.mjs` (after `npm run build`): keyboard focus order
+  of the tool pages (see "Tool pages").
 
 ## Checks to run before a pull request
 
@@ -138,5 +165,8 @@ that `docs/STATUS.md` agrees with it.
 python scripts/gen_equations.py && git diff --exit-code
 pytest && npm test
 python scripts/mathlint.py && python scripts/modulelint.py && python scripts/privacy_scan.py && python scripts/refcheck.py
-npm run build && python scripts/anchorcheck.py
+npm run build && python scripts/anchorcheck.py && node scripts/keyboard_check.mjs
 ```
+
+`keyboard_check.mjs` needs a Chromium for Playwright; if you have none, run
+`npx playwright install chromium` once.

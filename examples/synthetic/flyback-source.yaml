@@ -1,0 +1,18 @@
+synthetic: true
+label: "Synthetic fixed-duty-ratio flyback charging a fixed output from a current-limited source (round numbers, not a real design)"
+label_ko: "전류 제한 전원으로 고정 출력을 충전하는 고정 듀티비 합성 플라이백 (단순한 어림수이며 실제 설계가 아님)"
+params:
+  V: 5
+  V_D: 0.5
+  D: 0.2
+  n: 0.1
+  f_s: 1.0e4
+  L_M: 2.0e-2
+  V_oc: 1000
+  R_s: 1.0e4
+  C_bus: 1.0e-5
+steps:
+  - flyback.V_crit
+  - src.Pmax
+  - {eq: src.cv_extraction, bind: {V_c: V_gcrit}}
+  - {eq: dcm.P_in, bind: {V_g: V_gcrit}, as: P_dcm}

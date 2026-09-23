@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -105,6 +106,8 @@ both run at the same duty ratio:
 ## Try it
 
 <TryIt eq="boost.ccm.M" example="boost-basic" sweep="D" />
+
+<TrySim example="boost-basic" topology="boost" />
 
 Sweep $D$ towards 1 and watch the ideal boost ratio grow without bound.
 The [averaged-models page](../averaged-models/) shows why a real boost

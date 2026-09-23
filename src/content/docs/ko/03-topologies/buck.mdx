@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -71,10 +72,14 @@ import Quiz from '../../../../components/Quiz.astro';
 ### 스위치 스트레스와 모드 경계
 
 스위치는 꺼져 있을 때 입력 전압을 차단하고, 스위치가 켜져 있을 때는 다이오드가
-입력 전압을 차단합니다. 둘 모두에 인덕터 피크 전류가 흐릅니다
-<Cite key="erickson2020" where="Ch. 6" />. 경부하(light load)에서는 인덕터
-전류가 0에 도달하며, $K$가 <EqRef id="Kcrit.buck" label="임계값" />(critical value)
-아래로 떨어지면 벅은 DCM으로 들어갑니다. 이때 출력은 $D V_g$보다
+입력 전압을 차단합니다 <Cite key="erickson2020" where="Ch. 6" />.
+
+<Eq id="buck.Vds" />
+
+둘 모두에 인덕터 피크 전류가 흐릅니다 <Cite key="erickson2020" where="Ch. 6" />.
+경부하(light load)에서는 인덕터 전류가 0에 도달하며, $K$가
+<EqRef id="Kcrit.buck" label="임계값" />(critical value) 아래로 떨어지면 벅은
+DCM으로 들어갑니다. 이때 출력은 $D V_g$보다
 높아집니다(<EqRef id="buck.dcm.M" label="DCM 변환비" />).
 
 ## 풀이 예제
@@ -93,6 +98,8 @@ import Quiz from '../../../../components/Quiz.astro';
 ## 직접 해 보기
 
 <TryIt eq="buck.ripple.v" example="buck-basic" sweep="C" />
+
+<TrySim example="buck-basic" topology="buck" />
 
 $C$를 두 디케이드에 걸쳐(로그 축) 스윕(sweep)하십시오. 리플은 커패시턴스에
 반비례하여 줄어듭니다. 그런 다음 $T_s$를 절반으로 줄이십시오. 전류 리플이

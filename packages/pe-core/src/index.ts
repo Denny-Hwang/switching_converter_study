@@ -5,3 +5,4 @@ export { catalog, getEquation } from './catalog';
 export type { Catalog, EquationMeta, SymbolMeta } from './catalog';
 export { checkCondition, normaliseStep, runSteps } from './worked';
 export type { Context, StepResult, StepSpec } from './worked';
+export * as sim from './sim';

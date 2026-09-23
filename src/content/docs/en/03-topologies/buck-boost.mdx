@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -91,6 +92,8 @@ switch must block <Val example="buckboost-basic" name="V_DS" /> and carry
 ## Try it
 
 <TryIt eq="buckboost.Vds" example="buckboost-basic" sweep="V" />
+
+<TrySim example="buckboost-basic" topology="buckboost" />
 
 Sweep the output magnitude $V$: every volt of output adds a volt to the
 switch stress, on top of the input voltage.

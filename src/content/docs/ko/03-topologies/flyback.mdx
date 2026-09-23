@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -118,6 +119,8 @@ DCM 예제에서는 <Val example="flyback-dcm" name="L_lk" />의 누설 인덕�
 ## 직접 해 보기
 
 <TryIt eq="flyback.Vds_off" example="flyback-ccm" sweep="n" />
+
+<TrySim example="flyback-dcm" topology="flyback" />
 
 권선비 $n$을 스윕(sweep)하십시오. $n$이 작을수록 반사 전압과 스위치 스트레스가
 높아집니다. 그다음 다이오드 스트레스 식을 열고 $n$을 다시 스윕하여 반대 경향을
