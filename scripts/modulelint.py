@@ -20,7 +20,7 @@ A page is a module page when its frontmatter has `module: true`. For each:
     page's locale with >= 5 questions, 2-6 options each, answers in range and
     `numbers: synthetic`;
   * the Korean page mirrors the English one: the same block components
-    (Eq, Worked, TryIt, GoDeeper, Quiz) with the same attributes in the same
+    (Eq, Worked, TryIt, TrySim, GoDeeper, Quiz) with the same attributes in the same
     order, the same inline components (Cite, EqRef, Val) in any order (Korean
     word order differs), and a quiz with the same answer key;
   * docs/STATUS.md agrees: every existing module page is marked done (✅) in
@@ -52,7 +52,8 @@ SECTIONS = {
     "en": ["Intent", "Theory", "Worked example", "Try it", "Bench exercise", "Gotchas", "Go deeper", "Quiz"],
     "ko": ["목표", "이론", "풀이 예제", "직접 해 보기", "벤치 실습", "주의할 점", "더 알아보기", "퀴즈"],
 }
-BLOCK = ("Eq", "Worked", "TryIt", "GoDeeper", "Quiz")
+BLOCK = ("Eq", "Worked", "TryIt", "TrySim", "GoDeeper", "Quiz")
+SIM_TOPOLOGIES = ("buck", "boost", "buckboost", "flyback", "forward")
 INLINE = ("Cite", "EqRef", "Val")
 COMPONENT = re.compile(r"<(" + "|".join(BLOCK + INLINE) + r")\b((?:[^>\"'{}]|\"[^\"]*\"|'[^']*'|\{[^}]*\})*)/?>")
 ATTR = re.compile(r"(\w+)\s*=\s*(?:\"([^\"]*)\"|\{([^}]*)\})")
@@ -191,6 +192,11 @@ def main() -> int:
                 errors.append(f"{where}: <TryIt eq=\"{a.get('eq')}\"> is not a catalogue equation")
             if a.get("example") not in examples:
                 errors.append(f"{where}: <TryIt example=\"{a.get('example')}\"> has no examples/synthetic file")
+        for a in [a for c, a in components(text[name["Try it"]]) if c == "TrySim"]:
+            if a.get("example") not in examples:
+                errors.append(f"{where}: <TrySim example=\"{a.get('example')}\"> has no examples/synthetic file")
+            if a.get("topology") not in SIM_TOPOLOGIES:
+                errors.append(f"{where}: <TrySim topology=\"{a.get('topology')}\"> is not a simulator topology")
 
         ids = [i for c, a in components(text[name["Go deeper"]]) if c == "GoDeeper" for i in quoted_list(a.get("ids", ""))]
         if len(set(ids)) < 2:
@@ -234,7 +240,7 @@ def main() -> int:
                 errors.append(f"src/content/docs/en/{slug}.mdx: no Korean page, and docs/STATUS.md does not mark KO pending")
             continue
         if signature(comps, BLOCK) != signature(ko, BLOCK):
-            errors.append(f"src/content/docs/ko/{slug}.mdx: block components differ from the English page (Eq, Worked, TryIt, GoDeeper, Quiz)")
+            errors.append(f"src/content/docs/ko/{slug}.mdx: block components differ from the English page (Eq, Worked, TryIt, TrySim, GoDeeper, Quiz)")
         en_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(comps, INLINE))
         ko_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(ko, INLINE))
         if en_inline != ko_inline:

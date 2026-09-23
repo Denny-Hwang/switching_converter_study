@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -76,6 +77,8 @@ resets in every period, and the switch must block
 ## Try it
 
 <TryIt eq="forward.Vds" example="forward-basic" sweep="n_r" />
+
+<TrySim example="forward-basic" topology="forward" />
 
 Sweep $n_r$: the switch stress falls towards the input voltage as the reset
 winding gets more turns. Then open the reset-limit equation and sweep $n_r$

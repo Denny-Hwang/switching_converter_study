@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -89,6 +90,8 @@ $D < 0.5$이면 강압(step down)하고, $D > 0.5$이면 승압(step up)합니�
 ## 직접 해 보기
 
 <TryIt eq="buckboost.Vds" example="buckboost-basic" sweep="V" />
+
+<TrySim example="buckboost-basic" topology="buckboost" />
 
 출력 전압의 크기 $V$를 스윕(sweep)하십시오. 스위치 스트레스는 입력 전압에 더해,
 출력 전압이 늘어나는 만큼 그대로 늘어납니다.

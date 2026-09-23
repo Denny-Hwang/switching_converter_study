@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -98,6 +99,8 @@ A synthetic buck-boost in DCM, seen from its input:
 ## Try it
 
 <TryIt eq="boost.ccm.M_RL" example="boost-basic" sweep="D" />
+
+<TrySim example="boost-basic" topology="boost" />
 
 Sweep $D$ from 0 to 1: the ratio peaks and then collapses. Increase $R_L$
 and watch the peak drop and move to a lower duty ratio.

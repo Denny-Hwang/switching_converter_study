@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -95,6 +96,8 @@ ratio)가 높으면 인덕터, 스위치, 다이오드에는 부하보다 훨씬
 ## 직접 해 보기
 
 <TryIt eq="boost.IL" example="boost-ideal" sweep="D" />
+
+<TrySim example="boost-ideal" topology="boost" />
 
 $D$를 0에서 1까지 스윕(sweep)하십시오. 출력 전압과 부하가 고정되어 있으면,
 $D$가 1에 가까워질수록 인덕터 전류는 한없이 커집니다.

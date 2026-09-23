@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -121,6 +122,8 @@ dissipative clamp loses at least <Val example="flyback-dcm" name="P_lk" />.
 ## Try it
 
 <TryIt eq="flyback.Vds_off" example="flyback-ccm" sweep="n" />
+
+<TrySim example="flyback-dcm" topology="flyback" />
 
 Sweep the turns ratio $n$: a smaller $n$ raises the reflected voltage and the
 switch stress. Then open the diode stress equation and sweep $n$ again to

@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -96,6 +97,8 @@ $K$가 <Val example="buck-light-load" name="K" />까지 떨어져 같은 임계�
 ## 직접 해 보기
 
 <TryIt eq="Kcrit.boost" example="boost-basic" sweep="D" />
+
+<TrySim example="boost-basic" topology="boost" />
 
 $D$를 0부터 1까지 스윕하면서 부스트 임계값의 최댓값을 찾으십시오. $K$가 이
 최댓값보다 큰 부스트는 모든 듀티비에서 CCM을 유지합니다.

@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -107,6 +108,8 @@ that leaves an idle interval.
 ## Try it
 
 <TryIt eq="buck.dcm.M" example="buck-light-load" sweep="K" />
+
+<TrySim example="buck-light-load" topology="buck" />
 
 Sweep $K$ over several decades (logarithmic axis). At small $K$ the ratio
 approaches 1. As $K$ grows the ratio falls, and it equals the CCM value $D$

@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -105,6 +106,8 @@ smooths further.
 ## Try it
 
 <TryIt eq="sw.v_avg" example="buck-basic" sweep="D" />
+
+<TrySim example="buck-basic" topology="buck" />
 
 Sweep $D$ from 0 to 1: the dc component grows in proportion to it, whatever
 the switching frequency.

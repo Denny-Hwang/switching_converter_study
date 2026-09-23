@@ -12,6 +12,7 @@ import Cite from '../../../../components/Cite.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -97,6 +98,8 @@ DCM으로 들어갑니다. 이때 출력은 $D V_g$보다
 ## 직접 해 보기
 
 <TryIt eq="buck.ripple.v" example="buck-basic" sweep="C" />
+
+<TrySim example="buck-basic" topology="buck" />
 
 $C$를 두 디케이드에 걸쳐(로그 축) 스윕(sweep)하십시오. 리플은 커패시턴스에
 반비례하여 줄어듭니다. 그런 다음 $T_s$를 절반으로 줄이십시오. 전류 리플이
