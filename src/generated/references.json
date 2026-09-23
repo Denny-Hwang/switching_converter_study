@@ -92,6 +92,28 @@
       "kind": "Literature number",
       "url": "https://www.ti.com/lit/pdf/slup132"
     },
+    "tdk_e25": {
+      "key": "tdk_e25",
+      "type": "manual",
+      "label": "TDK Electronics, Ferrites and accessories",
+      "authors": [],
+      "title": "Ferrites and accessories: E 25/13/7 (EF 25)",
+      "verified": true,
+      "organization": "TDK Electronics",
+      "kind": "Data sheet",
+      "url": "https://www.tdk-electronics.tdk.com/inf/80/db/fer/e_25_13_7.pdf"
+    },
+    "tdk_etd29": {
+      "key": "tdk_etd29",
+      "type": "manual",
+      "label": "TDK Electronics, Ferrites and accessories",
+      "authors": [],
+      "title": "Ferrites and accessories: ETD 29/16/10",
+      "verified": true,
+      "organization": "TDK Electronics",
+      "kind": "Data sheet",
+      "url": "https://www.tdk-electronics.tdk.com/inf/80/db/fer/etd_29_16_10.pdf"
+    },
     "nbs_hb100": {
       "key": "nbs_hb100",
       "type": "manual",
