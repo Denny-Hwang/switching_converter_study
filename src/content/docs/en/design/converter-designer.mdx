@@ -1,0 +1,128 @@
+---
+title: Converter designer
+description: Size the inductance and the output capacitance of a buck, boost, buck-boost, flyback or forward converter for an input-voltage range and a load range, with every formula taken from the equation catalogue.
+sidebar:
+  order: 2
+---
+
+import { Image } from 'astro:assets';
+import ConverterDesigner from '../../../../components/ConverterDesigner.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import shot from '../../../../assets/screenshots/designer-en.png';
+
+Pick a topology and give the input-voltage range, the output voltage, the
+full-load power, the lightest load that must stay in CCM, the switching
+frequency and two ripple targets. The designer then gives:
+
+- the duty-ratio range;
+- the inductance for the current-ripple target and the one that keeps the
+  lightest load in CCM;
+- the output capacitance for the voltage-ripple target;
+- the ripple, the peak current and the switch and diode voltages at the
+  worst point of the input range;
+- $K$ against $K_\mathrm{crit}$ over the duty-ratio range.
+
+Each result names the catalogue equation it comes from. The links under the
+results open the [simulator](../../simulate/simulator/) with the designed parts
+at either end of the input range, so you can check the design in the time
+domain; the parts there are ideal, apart from the flyback's diode drop. Other
+links open the [loss budget](../loss-budget/) at the same points, with the
+switch and diode data of its synthetic example and no core data, because the
+designer does not size the core.
+
+<ConverterDesigner />
+
+## How it sizes the converter
+
+The designer examines a grid of input voltages across the range, plus the
+points inside the range where a quantity peaks, and keeps the worst case of
+each result. It uses only catalogue equations. Where it needs an equation
+solved for one of its inputs (the duty ratio, an inductance, a capacitance),
+it finds that value by bisection on the catalogue's own evaluator, so the
+tool and the theory pages cannot disagree.
+
+1. **Duty ratio.** The CCM conversion ratio is solved for $D$ at each input
+   voltage: <EqRef id="buck.ccm.M" label="buck" />,
+   <EqRef id="boost.ccm.M" label="boost" />,
+   <EqRef id="buckboost.ccm.M" label="buck-boost" />,
+   <EqRef id="flyback.ccm.M" label="flyback" /> and
+   <EqRef id="forward.ccm.M" label="forward" />. For the flyback the diode drop
+   adds to the output voltage, as in the volt-second balance behind
+   <EqRef id="flyback.V_crit" label="the critical input voltage" />.
+2. **Inductance for the ripple target.** At full load the average inductor
+   current (<EqRef id="buck.IL" label="buck" />,
+   <EqRef id="boost.IL" label="boost" />,
+   <EqRef id="buckboost.IL" label="buck-boost" />, and the flyback's
+   <EqRef id="flyback.IM" label="magnetizing current" />) times the ripple
+   target gives the allowed ripple, and the ripple equation
+   (<EqRef id="buck.ripple.iL" label="buck" />,
+   <EqRef id="boost.ripple.iL" label="boost" />,
+   <EqRef id="buckboost.ripple.iL" label="buck-boost" />,
+   <EqRef id="flyback.ripple.iM" label="flyback" />,
+   <EqRef id="forward.ripple.iL" label="forward" />) is solved for the
+   inductance. The forward converter's output stage is a buck converter fed
+   with $n V_g$, so its output inductor carries the load current
+   <Cite key="erickson2020" where="Ch. 6" />.
+3. **Inductance for CCM at the lightest load.** The
+   <EqRef id="L.crit" label="critical inductance" /> at the lightest load,
+   with the largest $K_\mathrm{crit}$ over the duty-ratio range
+   (<EqRef id="Kcrit.buck" label="buck and forward" />,
+   <EqRef id="Kcrit.boost" label="boost" />,
+   <EqRef id="Kcrit.buckboost" label="buck-boost" />,
+   <EqRef id="Kcrit.flyback" label="flyback" />). For the flyback the diode
+   drop again adds to the output voltage, at the same output current, so the
+   load here is the one that draws that current at the output voltage plus
+   the diode drop; with the load itself, the boundary would come out too low.
+4. **Inductance used.** The larger of the two, unless you enter one. With it,
+   $K$ (<EqRef id="K.def" label="definition" />) at full load and at the
+   lightest load (for the flyback, with the load of step 3) is compared with
+   $K_\mathrm{crit}$ in the chart: the converter is in CCM where $K$ lies
+   above the curve.
+5. **Ripple and stresses.** The ripple with the inductance used, the
+   <EqRef id="ripple.Ipk" label="peak current" />, and the switch voltage
+   (<EqRef id="buck.Vds" label="buck" />, <EqRef id="boost.Vds" label="boost" />,
+   <EqRef id="buckboost.Vds" label="buck-boost" />,
+   <EqRef id="flyback.Vds_off" label="flyback" />,
+   <EqRef id="forward.Vds" label="forward" />). In the buck, boost and
+   buck-boost the diode blocks the same voltage as the switch
+   <Cite key="erickson2020" where="Ch. 6" />; the flyback's diode blocks
+   <EqRef id="flyback.diode.VR" label="its own reverse voltage" />.
+6. **Output capacitance.** The voltage-ripple equation is solved for $C$:
+   <EqRef id="buck.ripple.v" label="buck and forward" />,
+   <EqRef id="boost.ripple.v" label="boost" />,
+   <EqRef id="buckboost.ripple.v" label="buck-boost" />,
+   <EqRef id="flyback.ripple.v" label="flyback" />.
+
+For the forward converter, the tool also checks the duty ratio against the
+<EqRef id="forward.reset.Dmax" label="reset limit" />.
+
+## Ripple targets
+
+Both targets are ratios of the **half** peak-to-peak ripple, the convention
+of the catalogue <Cite key="erickson2020" where="Ch. 2" />: the current target
+is the inductor-current ripple over the average inductor current at full load
+(the magnetizing current for the flyback), and the voltage target is the
+output-voltage ripple over the output voltage.
+
+## Limitations
+
+- **Ideal parts.** Switches, diodes (except the flyback's diode drop),
+  inductors and capacitors are ideal. A capacitor's series resistance adds a
+  ripple of its own (<EqRef id="cap.esr.ripple" label="ESR ripple" />), so the
+  capacitance found here is a lower bound.
+- **CCM designs only.** The duty ratios and ripples assume CCM, and the
+  inductance is sized for CCM; a converter designed to run in DCM (a DCM
+  flyback, for example) is not sized here. Where the full load runs in DCM,
+  the designer says so, and the DCM equations apply there instead.
+- **Not sized here.** Ratings and thermal limits are not checked, and neither
+  are the forward converter's magnetizing inductance and reset winding. Check
+  the design in the simulator, and estimate its losses with the
+  [loss budget](../loss-budget/).
+
+## Screenshot
+
+<figure class="pe-shot">
+  <Image src={shot} alt="The converter designer with the synthetic buck specification: the input fields, the design table naming the catalogue equation of each result, the operating points at the ends of the input range, links to the simulator, and the chart of K against K_crit(D)." />
+  <figcaption>The converter designer with the synthetic buck specification.</figcaption>
+</figure>

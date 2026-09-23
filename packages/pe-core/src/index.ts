@@ -6,3 +6,8 @@ export type { Catalog, EquationMeta, SymbolMeta } from './catalog';
 export { checkCondition, normaliseStep, runSteps } from './worked';
 export type { Context, StepResult, StepSpec } from './worked';
 export * as sim from './sim';
+export { invert, InvertError } from './invert';
+export { design } from './design';
+export type { DesignPoint, DesignResult, DesignSpec, DesignTopology, DesignWarning } from './design';
+export { BUCKETS, FREQ_FACTORS, LOAD_FRACTIONS, idealDuty, lossBudget, lossPoint } from './losses';
+export type { Bucket, CoreSpec, LossBudget, LossPoint, LossSpec } from './losses';

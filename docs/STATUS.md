@@ -9,7 +9,8 @@
 | 03-topologies additions (Phase 2b) | ✅ 17 equations: dc inductor currents, current and voltage ripple, peak current, buck-boost and forward switch stress, transistor utilization |
 | 00/01 refresher additions (Phase 2c) | ✅ 16 equations: inductor and capacitor under constant excitation and their energy, impedance, R-C filter corner and gain, pulse-train harmonics and rms value, self-resonance, ESR ripple, Ampère's law, B-H relation, ideal transformer |
 | Simulator compare-panel additions (Phase 3a) | ✅ 2 equations: `buck.Vds`, `boost.Vds` (switch blocking voltages) |
-| Derivations reproduce the YAML (`pytest`) | ✅ 91 of 97 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk` and `mag.B_H` are definitions, `loss.steinmetz` is an empirical law) |
+| Design-tool additions (Phase 3b) | ✅ 4 equations: `flyback.IM`, `flyback.ripple.iM`, `flyback.ripple.v` (flyback CCM current and ripples), `loss.core` (core loss of a whole core) |
+| Derivations reproduce the YAML (`pytest`) | ✅ 94 of 101 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk`, `mag.B_H` and `loss.core` are definitions, `loss.steinmetz` is an empirical law) |
 | TS/Python parity (`vitest`, 1e-9 rel) | ✅ all shared vectors |
 | Strict KaTeX on every generated formula and derivation step (`vitest`) | ✅ |
 | `references.bib` verified (two web-search rounds + CI Crossref + URL title check) | ✅ 25 of 25 verified (`steinmetz1984` DOI confirmed by the CI Crossref job; `ti_slva630` and `ti_snoa930` added in Phase 2c) |
@@ -24,16 +25,18 @@
 | Source-driven mode: sinusoidal and user-drawn V_oc envelopes | ⬜ with the SourceMatcher tool (Phase 3) |
 | Simulator page (`simulate/simulator`): topology buttons, presets, sliders, waveforms, mode badge, compare-with-formula panel, losses; state in the URL hash; runs in a Web Worker | ✅ EN and KO, Phase 3a |
 | "Try it" simulator links (`<TrySim>`) from 02/03 pages | ✅ 10 pages, EN and KO |
-| Screenshots on tool pages (`scripts/screenshots.mjs`, checked by `modulelint.py`) | ✅ explorer, simulator |
-| Keyboard focus order of tool pages (`scripts/keyboard_check.mjs`, CI) | ✅ explorer, simulator |
+| Screenshots on tool pages (`scripts/screenshots.mjs`, checked by `modulelint.py`) | ✅ explorer, simulator, converter designer, loss budget |
+| Keyboard focus order of tool pages (`scripts/keyboard_check.mjs`, CI) | ✅ explorer, simulator, converter designer, loss budget |
 | LTspice `.asc`, ngspice `.cir` and Falstad links on the simulator page | ⬜ Phase 5 (`sim/`) |
-| Design tools (BUILD_SPEC §5): ConverterDesigner, MagneticsDesigner, LossBudget, SenseChain, ClampCheck, SourceMatcher | ⬜ Phase 3 |
+| ConverterDesigner (`design/converter-designer`): D range, L or L_M for the ripple target and for CCM at the lightest load, K against K_crit, ripples, stresses, C for the ripple target; each result names its equation, solved with `invert` on the catalogue's evaluator; links to the simulator and the loss budget | 🟡 EN and KO, Phase 3b: CCM target (the designed parts reproduce in the simulator within 2 %, and the CCM boundary, the flyback's diode drop included, matches the simulated mode; tested). A DCM target (BUILD_SPEC §5 "L/L_M for target mode") is not offered yet |
+| LossBudget (`design/loss-budget`): conduction, capacitive switching, gate drive, core, diode and flyback leakage losses against the load and f_s, with the efficiency; each point simulated with the duty ratio regulated (bracketed search; the forward converter stops at its reset limit); peak flux density shown for a saturation check | ✅ EN and KO, Phase 3b; the conduction, diode and capacitive buckets equal the simulator's own accounting in every topology (tested) |
+| Design tools MagneticsDesigner, SenseChain, ClampCheck, SourceMatcher (BUILD_SPEC §5) | ⬜ Phase 3c–3e |
 
 Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); theory uses only `<Eq>` embeds and each Eq has ≥ 1 test vector; "Try it" links a tool preset; "Go deeper" has ≥ 2 verified resources with retrieval dates; a gotchas subsection exists; quiz with ≥ 5 explained questions; build, tests and all lints green.
 
 Legend: ✅ done · 🟡 partial · ⬜ not started · ➖ not applicable. "Phase" is the build phase that delivers the module (docs/BUILD_SPEC.md §7); "later" = not scheduled in phases 0–5. 00-foundations and 01-physics are compact refreshers (Phase 2 scope).
 
-_Last updated: Phase 3a (simulator). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
+_Last updated: Phase 3b (converter designer and loss budget). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
 
 "Try it" links open the [equation explorer](../src/content/docs/en/design/explorer.mdx) with a synthetic preset. Pages whose example is a whole converter also open the [simulator](../src/content/docs/en/simulate/simulator.mdx) with it (`<TrySim>`, Phase 3a); design-tool presets come with the design tools.
 
@@ -56,7 +59,7 @@ _Last updated: Phase 3a (simulator). `python scripts/modulelint.py` checks every
 | transformers-coupled | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `xfmr.V2`, `xfmr.I2` |
 | ferrites-bh | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `mag.B_H`, `mag.B_pk` |
 | gap-and-AL | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `mag.AL_gap`, `mag.L_from_AL` |
-| core-loss | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `loss.steinmetz` |
+| core-loss | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `loss.steinmetz`, `loss.core` |
 
 ## 02-theory
 
@@ -79,7 +82,7 @@ _Last updated: Phase 3a (simulator). `python scripts/modulelint.py` checks every
 | boost | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `boost.IL`, `boost.ripple.iL`, `boost.ripple.v`, `boost.Vds` |
 | buck-boost | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `buckboost.V`, `buckboost.IL`, `buckboost.ripple.iL`, `buckboost.ripple.v`, `buckboost.Vds` |
 | cuk-sepic-zeta | later | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| flyback | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes the nine `flyback.*` equations (ratios, stresses, DCM peak, leakage, fixed-output boundary) |
+| flyback | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes the twelve `flyback.*` equations (ratios, CCM currents and ripple, stresses, DCM peak, leakage, fixed-output boundary) |
 | forward | 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `forward.ccm.M`, `forward.reset.Dmax`, `forward.Vds`, `forward.ripple.iL` |
 | bridges | later | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
 | llc | later | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
@@ -160,7 +163,9 @@ _Last updated: Phase 3a (simulator). `python scripts/modulelint.py` checks every
 | landing (`index`) | ✅ | ✅ | Phase 0 |
 | about | ✅ | ✅ | Phase 0 |
 | about/equation-pipeline | ✅ | ✅ | Phase 0 acceptance page: one `<Eq>` + Plotly island |
-| 02-theory/derivations | ✅ | ✅ | auto-rendered from `python/pe_core/derive/*.py`: 12 modules, 91 derived equations (Phase 3a) |
+| 02-theory/derivations | ✅ | ✅ | auto-rendered from `python/pe_core/derive/*.py`: 12 modules, 94 derived equations (Phase 3b) |
 | design/explorer | ✅ | ✅ | Phase 2a: evaluate and sweep any catalogue equation; state in the URL hash ("Try it" target); screenshot and keyboard check (Phase 3a) |
 | simulate/simulator | ✅ | ✅ | Phase 3a: the pe-core simulator; state in the URL hash (`<TrySim>` target); screenshot and keyboard check |
+| design/converter-designer | ✅ | ✅ | Phase 3b; state in the URL hash; screenshot and keyboard check |
+| design/loss-budget | ✅ | ✅ | Phase 3b; state in the URL hash; screenshot and keyboard check |
 | 10-resources/bibliography | ✅ | ✅ | Phase 1: generated from `references.bib` (verified entries only) |

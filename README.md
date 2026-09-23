@@ -69,7 +69,7 @@ node scripts/keyboard_check.mjs       # keyboard focus order of the tool pages (
 | 0 | Scaffold, CI, Pages deployment, equation pipeline skeleton | done |
 | 1 | Equation engine: full seed set, derivations, parity, math/citation lints | done |
 | 2 | Core content: theory + main topologies (EN, then KO) | done: 00-foundations, 01-physics, 02-theory and 03-topologies (EN + KO) |
-| 3 | Time-domain simulator and design tools | in progress: simulator done (3a) |
+| 3 | Time-domain simulator and design tools | in progress: simulator (3a), converter designer and loss budget (3b) done |
 | 4 | Magnetics, bench, harvesting, gotchas, resources | planned |
 | 5 | LTspice/ngspice/CircuitJS library, missions, v0.1.0 | planned |
 
@@ -143,7 +143,7 @@ node scripts/keyboard_check.mjs       # 도구 페이지의 키보드 포커스 
 | 0 | 골격, CI, Pages 배포, 수식 파이프라인 뼈대 | 완료 |
 | 1 | 수식 엔진: 전체 기본 세트, 유도, 패리티, 수식·인용 린트 | 완료 |
 | 2 | 핵심 콘텐츠: 이론 + 주요 토폴로지 (영어 후 한국어) | 완료: 00-기초, 01-물리, 02-이론, 03-토폴로지(영어·한국어) |
-| 3 | 시간 영역 시뮬레이터와 설계 도구 | 진행 중: 시뮬레이터 완료(3a) |
+| 3 | 시간 영역 시뮬레이터와 설계 도구 | 진행 중: 시뮬레이터(3a), 컨버터 설계 도구와 손실 예산(3b) 완료 |
 | 4 | 자성 부품, 벤치, 하베스팅, 흔한 함정, 자료 모음 | 예정 |
 | 5 | LTspice/ngspice/CircuitJS 라이브러리, 미션, v0.1.0 | 예정 |
 

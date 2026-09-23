@@ -1,0 +1,18 @@
+synthetic: true
+label: "Synthetic forward design specification (round numbers, not a real design)"
+label_ko: "합성 포워드 설계 사양 (단순한 어림수이며 실제 설계가 아님)"
+# Converter-designer preset (see design-buck.yaml); n = N_s/N_p, n_r = N_r/N_p.
+# L_M is only passed on to the simulator link (the designer does not size it).
+params:
+  V_gmin: 36
+  V_gmax: 72
+  V: 5
+  n: 0.5
+  n_r: 1
+  L_M: 1.0e-3
+  P: 25
+  P_min: 2.5
+  f_s: 1.0e5
+  r_i: 0.2
+  r_v: 0.01
+steps: []

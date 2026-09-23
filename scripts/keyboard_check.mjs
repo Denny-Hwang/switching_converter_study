@@ -25,6 +25,8 @@ const FOCUSABLE = 'a[href], button, input, select, textarea, summary, [tabindex]
 const PAGES = [
   { path: 'design/explorer/', ready: `${TOOL} select`, action: explorerAction },
   { path: 'simulate/simulator/', ready: `${TOOL} .pe-sim__table`, action: simulatorAction },
+  { path: 'design/converter-designer/', ready: `${TOOL} .pe-sim__table`, action: designerAction },
+  { path: 'design/loss-budget/', ready: `${TOOL} .pe-sim__table`, action: lossAction },
 ];
 const LOCALES = ['en', 'ko'];
 
@@ -147,6 +149,58 @@ async function simulatorAction(page, where, errors) {
     .then(() => true, () => false);
   const topo = await page.locator(`${TOOL} .pe-sim__buttons[role="group"] button[aria-pressed="true"]`).innerText();
   if (!got || topo.trim().length === 0) errors.push(`${where}: the page's own preset link did not load its preset (hash change)`);
+}
+
+/**
+ * An invalid field removes the tool's charts, not only its tables; a new hash
+ * (a link to the same page, the back button) loads its values into the form.
+ */
+async function staleAndHash(page, where, errors, prefix) {
+  await page.waitForSelector(`${TOOL} .main-svg`, { timeout: 60000 });
+  const fs = page.locator(`${TOOL} #${prefix}-fs`);
+  const fsValue = await fs.inputValue();
+  await fs.fill('');
+  await page.waitForFunction((sel) => !document.querySelector(sel), `${TOOL} .main-svg`, { timeout: 10000 }).catch(() => {
+    errors.push(`${where}: a chart stayed on screen with an invalid field`);
+  });
+  await fs.fill(fsValue);
+  const v = page.locator(`${TOOL} #${prefix}-V`);
+  const next = String(Number(await v.inputValue()) + 1);
+  await page.evaluate((value) => {
+    const q = new URLSearchParams(window.location.hash.slice(1));
+    q.set('V', value);
+    window.location.hash = q.toString();
+  }, next);
+  const got = await page
+    .waitForFunction(([sel, value]) => document.querySelector(sel)?.value === value, [`${TOOL} #${prefix}-V`, next], { timeout: 10000 })
+    .then(() => true, () => false);
+  if (!got) errors.push(`${where}: a new URL hash did not load its values`);
+}
+
+/** Designer: Space on the second topology button selects it and loads that topology's specification. */
+async function designerAction(page, where, errors) {
+  const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
+  const second = buttons.nth(1);
+  const before = await page.locator(`${TOOL} #des-V`).inputValue();
+  await second.focus();
+  await page.keyboard.press('Space');
+  await page.waitForTimeout(100);
+  if ((await second.getAttribute('aria-pressed')) !== 'true') errors.push(`${where}: Space did not select a topology button`);
+  if ((await page.locator(`${TOOL} #des-V`).inputValue()) === before) errors.push(`${where}: the topology's specification was not loaded`);
+  await staleAndHash(page, where, errors, 'des');
+}
+
+/** Loss budget: Space on the second topology button selects it and loads that topology's example. */
+async function lossAction(page, where, errors) {
+  const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
+  const second = buttons.nth(1);
+  const before = await page.locator(`${TOOL} #loss-V`).inputValue();
+  await second.focus();
+  await page.keyboard.press('Space');
+  await page.waitForTimeout(100);
+  if ((await second.getAttribute('aria-pressed')) !== 'true') errors.push(`${where}: Space did not select a topology button`);
+  if ((await page.locator(`${TOOL} #loss-V`).inputValue()) === before) errors.push(`${where}: the topology's example was not loaded`);
+  await staleAndHash(page, where, errors, 'loss');
 }
 
 async function main() {

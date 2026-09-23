@@ -1,0 +1,71 @@
+---
+/**
+ * <LossBudget /> -- the loss-budget island with labels in the page's
+ * language and presets from the synthetic loss examples. State lives in the
+ * URL hash.
+ */
+import LossIsland from '../tools/LossBudget.tsx';
+import { ui } from '../i18n/ui';
+import { pageLocale } from '../lib/locale';
+import { pageHref } from '../lib/paths';
+import { LOSS_PRESETS, lossValues } from '../lib/losspresets';
+
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const labels = {
+  topology: t['sim.topology'],
+  presets: t['lb.presets'],
+  operating: t['lb.operating'],
+  switchParts: t['lb.switch'],
+  diodeParts: t['lb.diode'],
+  inductorParts: t['lb.inductor'],
+  leakage: t['lb.leakage'],
+  optionalCore: t['lb.optionalCore'],
+  nominal: t['lb.nominal'],
+  bucket: t['lb.bucket'],
+  power: t['lb.power'],
+  share: t['lb.share'],
+  equation: t['lb.equation'],
+  total: t['lb.total'],
+  efficiency: t['lb.efficiency'],
+  mode: t['sim.mode'],
+  duty: t['lb.duty'],
+  vsLoad: t['lb.vsLoad'],
+  vsFreq: t['lb.vsFreq'],
+  outputPower: t['lb.outputPower'],
+  frequency: t['lb.frequency'],
+  lossAxis: t['lb.lossAxis'],
+  running: t['lb.running'],
+  invalid: t['lb.invalid'],
+  notRegulated: t['lb.notRegulated'],
+  simulate: t['lb.simulate'],
+  shareUrl: t['lb.shareUrl'],
+  flybackRL: t['lb.flybackRL'],
+  bpk: t['lb.bpk'],
+  resetLimited: t['lb.resetLimited'],
+  buckets: {
+    conduction: t['lb.b.conduction'],
+    capacitive: t['lb.b.capacitive'],
+    gate: t['lb.b.gate'],
+    core: t['lb.b.core'],
+    diode: t['lb.b.diode'],
+    clamp: t['lb.b.clamp'],
+  },
+  topologies: {
+    buck: t['sim.buck'],
+    boost: t['sim.boost'],
+    buckboost: t['sim.buckboost'],
+    flyback: t['sim.flyback'],
+    forward: t['sim.forward'],
+  },
+};
+const presets = LOSS_PRESETS.map((p) => ({
+  id: p.example,
+  label: t[`sim.${p.topology}` as const],
+  topology: p.topology,
+  values: lossValues(p.example, p.topology),
+}));
+const simulatorHref = pageHref(locale, 'simulate/simulator');
+---
+
+<LossIsland client:only="react" locale={locale} labels={labels} presets={presets} simulatorHref={simulatorHref} />
