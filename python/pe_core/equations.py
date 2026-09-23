@@ -75,6 +75,8 @@ class SymbolInfo:
     unit: str
     desc: str
     range: tuple[float, float] | None
+    meaning: str = ""  # a few words for legends and input labels
+    meaning_ko: str = ""
     sign: str = "positive"  # "positive" | "real"
     scale: str = "linear"  # random-vector sampling: "linear" | "log"
     value_expr: str | None = None  # physical constant: exact sympy value
@@ -281,15 +283,17 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
             raise EquationError(f"symbol_table: invalid symbol name {name!r}")
         if name in BUILTINS:
             raise EquationError(f"symbol_table: {name!r} shadows a sympy built-in")
-        if not isinstance(spec, dict) or "latex" not in spec or "unit" not in spec or "desc" not in spec:
-            raise EquationError(f"symbol_table.{name}: needs latex, unit, desc")
+        if not isinstance(spec, dict) or any(k not in spec for k in ("latex", "unit", "desc", "meaning", "meaning_ko")):
+            raise EquationError(f"symbol_table.{name}: needs latex, unit, desc, meaning, meaning_ko")
+        if not str(spec["meaning"]).strip() or not str(spec["meaning_ko"]).strip():
+            raise EquationError(f"symbol_table.{name}: meaning and meaning_ko must not be empty")
         sign = spec.get("sign", "positive")
         scale = spec.get("scale", "linear")
         if sign not in ("positive", "real"):
             raise EquationError(f"symbol_table.{name}: sign must be positive|real")
         if scale not in ("linear", "log"):
             raise EquationError(f"symbol_table.{name}: scale must be linear|log")
-        unknown_keys = set(spec) - {"latex", "unit", "desc", "range", "sign", "scale", "value_expr"}
+        unknown_keys = set(spec) - {"latex", "unit", "desc", "meaning", "meaning_ko", "range", "sign", "scale", "value_expr"}
         if unknown_keys:
             raise EquationError(f"symbol_table.{name}: unknown keys {sorted(unknown_keys)}")
         symbols[name] = SymbolInfo(
@@ -297,6 +301,8 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
             latex=str(spec["latex"]),
             unit=str(spec["unit"]),
             desc=str(spec["desc"]),
+            meaning=str(spec["meaning"]),
+            meaning_ko=str(spec["meaning_ko"]),
             range=_range(spec.get("range"), f"symbol_table.{name}"),
             sign=sign,
             scale=scale,
