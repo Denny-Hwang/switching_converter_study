@@ -22,7 +22,11 @@ function trim(x: number, sig: number): string {
 
 export function formatSI(value: number, unit: string, sig = 3): string {
   if (!Number.isFinite(value)) return String(value);
-  if (unit === '1' || unit === '') return trim(value, sig);
+  if (unit === '1' || unit === '') {
+    // Dimensionless: plain digits (2000, not 2.00e+3) between 1e-3 and 1e6.
+    const abs = Math.abs(value);
+    return abs >= 1e-3 && abs < 1e6 ? String(Number(value.toPrecision(sig))) : trim(value, sig);
+  }
   const abs = Math.abs(value);
   if (!PREFIXABLE.has(unit) || abs === 0) {
     const txt = abs !== 0 && (abs < 1e-3 || abs >= 1e4) ? value.toExponential(sig - 1) : trim(value, sig);
