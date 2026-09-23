@@ -97,6 +97,7 @@ const base: Readonly<Record<string, Evaluator>> = {
   'mag.L_from_AL': eq(['A_L', 'N'], ({ A_L, N }) => A_L * sq(N)),
   'mag.AL_gap': eq(['A_e', 'l_g', 'l_e', 'mu_i'], ({ A_e, l_g, l_e, mu_i }) => (MU_0 * A_e) / (l_g + l_e / mu_i)),
   'mag.B_pk': eq(['L', 'I_pk', 'N', 'A_e'], ({ L, I_pk, N, A_e }) => (L * I_pk) / (N * A_e)),
+  'mag.B_ac': eq(['L', 'Delta_i_L', 'N', 'A_e'], ({ L, Delta_i_L, N, A_e }) => (L * Delta_i_L) / (N * A_e)),
   'mag.dB_faraday': eq(['V_w', 't_on', 'N', 'A_e'], ({ V_w, t_on, N, A_e }) => (V_w * t_on) / (N * A_e)),
   'mag.N_Bmax': eq(['L', 'I_pk', 'B_max', 'A_e'], ({ L, I_pk, B_max, A_e }) => (L * I_pk) / (B_max * A_e)),
   'mag.gap_length': eq(['A_e', 'N', 'L', 'l_e', 'mu_i'], ({ A_e, N, L, l_e, mu_i }) => (MU_0 * A_e * sq(N)) / L - l_e / mu_i),

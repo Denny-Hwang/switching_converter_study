@@ -10,6 +10,7 @@
  *   the ungapped set's permeability    mag.AL_gap with no gap, solved for mu_i
  *   gap without fringing               mag.gap_length
  *   peak flux density                  mag.B_pk
+ *   ac flux amplitude from the ripple  mag.B_ac
  *   copper area, window utilization    wind.round_area, wind.fill (summed over the windings)
  *   resistivity at temperature         wind.rho_T
  *   dc resistance                      wind.dcr
@@ -60,6 +61,8 @@ export interface MagSpec {
   /** Peak and rms current of the (primary) winding, A. */
   Ipk: number;
   Irms: number;
+  /** Half the peak-to-peak ripple of that current (Erickson), A: it sets the flux swing. None: no swing is computed. */
+  dI?: number;
   /** Switching frequency, Hz (the frequency of the ac resistance). */
   fs: number;
   /** Largest flux density allowed, T. */
@@ -100,6 +103,8 @@ export interface WindingResult {
   Rdc: number;
   phi: number;
   FR: number;
+  /** Resistance at the switching frequency, F_R R_dc. */
+  Rac: number;
   Pdc: number;
   /** Height (build) of the winding: layers times the insulated diameter. */
   height: number;
@@ -118,6 +123,8 @@ export interface MagResult {
   /** Peak flux density at A_e and at the smallest cross-section. */
   Bpk: number;
   BpkMin: number;
+  /** AC flux-density amplitude at A_e from the ripple (half the peak-to-peak swing), when the ripple is given. */
+  Bac?: number;
   /** Data-sheet gapped sets: turns for the inductance, the inductance and peak flux density they give. */
   options: { g: number; AL: number; N: number; L: number; Bpk: number; ok: boolean }[];
   rho: number;
@@ -158,6 +165,7 @@ function winding(w: MagWinding, N: number, Irms: number, M: number, spec: MagSpe
     Rdc,
     phi,
     FR,
+    Rac: FR * Rdc,
     Pdc: evaluate('loss.cond', { I_rms: Irms, R_x: Rdc }),
     height: layers * (w.dOuter ?? w.d),
   };
@@ -189,6 +197,7 @@ export function magnetics(spec: MagSpec): MagResult {
   const Bpk = evaluate('mag.B_pk', { L: spec.L, I_pk: spec.Ipk, N, A_e: core.Ae });
   const BpkMin = evaluate('mag.B_pk', { L: spec.L, I_pk: spec.Ipk, N, A_e: Acheck });
   if (BpkMin > spec.Bmax * (1 + 1e-9)) warnings.add('saturation');
+  const Bac = spec.dI !== undefined ? evaluate('mag.B_ac', { L: spec.L, Delta_i_L: spec.dI, N, A_e: core.Ae }) : undefined;
 
   const options = (core.gapped ?? []).map(({ g, AL }) => {
     const Nopt = wholeUp(invert('mag.L_from_AL', 'N', spec.L, { A_L: AL }, 1e-6, 1e6));
@@ -229,6 +238,7 @@ export function magnetics(spec: MagSpec): MagResult {
     gap,
     Bpk,
     BpkMin,
+    Bac,
     options,
     rho,
     delta,

@@ -975,6 +975,22 @@ equations:
     tests:
       - {inputs: {L: 1.0e-4, I_pk: 2.0, N: 20.0, A_e: 1.0e-4}, expect: 0.1}
 
+  - id: mag.B_ac
+    title: "AC flux-density amplitude from the current ripple"
+    title_ko: "전류 리플로부터 교류 자속 밀도 진폭"
+    lhs: B_ac
+    expr: "L*Delta_i_L/(N*A_e)"
+    symbols: {L: "inductance", Delta_i_L: "current ripple, half of peak-to-peak", N: "number of turns", A_e: "effective area"}
+    assumptions: [linear_magnetics, uniform_flux]
+    convention: "$\\Delta i_L$ is half the peak-to-peak ripple (Erickson), so $B_\\mathrm{ac}$ is half the peak-to-peak swing $\\Delta B$: the amplitude that core-loss data take"
+    convention_ko: "$\\Delta i_L$은 피크-피크 리플의 절반(Erickson)이므로 $B_\\mathrm{ac}$는 피크-피크 변화폭 $\\Delta B$의 절반, 곧 코어 손실 데이터가 쓰는 진폭이다"
+    notes: "the flux density follows the current, so the ripple alone sets its swing, the quantity core-loss data are given for; the dc current sets where the swing lies, and with it the margin to saturation ($B_\\mathrm{pk}$)"
+    notes_ko: "자속 밀도는 전류를 따르므로 변화폭은 리플만으로 정해지며, 코어 손실 데이터는 이 변화폭에 대해 주어진다; 직류 전류는 변화폭의 위치와 그에 따른 포화까지의 여유($B_\\mathrm{pk}$)를 정한다"
+    cite: {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory); derived here"}
+    derived_by: python/pe_core/derive/magnetics.py
+    tests:
+      - {inputs: {L: 1.0e-4, Delta_i_L: 0.2, N: 20.0, A_e: 5.25e-5}, expect: 0.019047619047619049}
+
   - id: mag.dB_faraday
     title: "Flux-density swing from Faraday's law"
     title_ko: "패러데이 법칙으로 구한 자속 밀도 변화폭"

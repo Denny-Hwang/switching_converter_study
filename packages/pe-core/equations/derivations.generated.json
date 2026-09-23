@@ -1365,6 +1365,7 @@
         "mag.AL_gap",
         "mag.L_from_AL",
         "mag.B_pk",
+        "mag.B_ac",
         "mag.N_Bmax",
         "mag.gap_length",
         "mag.dB_faraday"
@@ -1423,6 +1424,12 @@
           "text_ko": "피크 전류에서 $B_\\mathrm{pk} = \\Phi_\\mathrm{pk}/A_e = L I_\\mathrm{pk}/(N A_e)$.",
           "latex": "B_\\mathrm{pk} = \\frac{L I_\\mathrm{pk}}{N A_e}",
           "result_for": "mag.B_pk"
+        },
+        {
+          "text": "The flux density follows the current, $B = L i/(N A_e)$. A ripple of $\\pm\\Delta i_L$ about the dc current moves it by $\\pm L\\,\\Delta i_L/(N A_e)$ about its dc value: that amplitude is $B_\\mathrm{ac}$.",
+          "text_ko": "자속 밀도는 전류를 따른다: $B = L i/(N A_e)$. 직류 전류를 중심으로 한 $\\pm\\Delta i_L$의 리플은 자속 밀도를 직류 값을 중심으로 $\\pm L\\,\\Delta i_L/(N A_e)$만큼 움직이며, 이 진폭이 $B_\\mathrm{ac}$이다.",
+          "latex": "B_\\mathrm{ac} = \\frac{L \\Delta i_L}{N A_e}",
+          "result_for": "mag.B_ac"
         },
         {
           "text": "Holding $B_\\mathrm{pk}$ at the limit $B_\\mathrm{max}$ and solving for the turns gives the fewest turns that stay within it.",

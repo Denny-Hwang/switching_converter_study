@@ -74,6 +74,16 @@ def derive() -> Derivation:
         S("B_pk"),
     )
 
+    d.result(
+        "mag.B_ac",
+        L * S("Delta_i_L") / (N * Ae),
+        "The flux density follows the current, $B = L i/(N A_e)$. A ripple of $\\pm\\Delta i_L$ about the dc current "
+        "moves it by $\\pm L\\,\\Delta i_L/(N A_e)$ about its dc value: that amplitude is $B_\\mathrm{ac}$.",
+        "자속 밀도는 전류를 따른다: $B = L i/(N A_e)$. 직류 전류를 중심으로 한 $\\pm\\Delta i_L$의 리플은 자속 밀도를 "
+        "직류 값을 중심으로 $\\pm L\\,\\Delta i_L/(N A_e)$만큼 움직이며, 이 진폭이 $B_\\mathrm{ac}$이다.",
+        S("B_ac"),
+    )
+
     Bmax = S("B_max")
     d.result(
         "mag.N_Bmax",

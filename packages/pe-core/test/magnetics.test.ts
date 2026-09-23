@@ -71,6 +71,18 @@ describe('magnetics: an inductor', () => {
     expect(r.options[1]!.Bpk).toBeLessThan(r.options[0]!.Bpk);
   });
 
+  it('gives the ac flux amplitude from the ripple at A_e, only when the ripple is given', () => {
+    expect(r.Bac).toBeUndefined();
+    const withRipple = magnetics({ ...inductor, dI: 0.3 });
+    expect(rel(withRipple.Bac!, (1e-4 * 0.3) / (withRipple.N * 50e-6))).toBeLessThan(1e-12);
+    // the swing is to the peak as the half ripple is to the peak current
+    expect(rel(withRipple.Bac! / withRipple.Bpk, 0.3 / 2)).toBeLessThan(1e-12);
+  });
+
+  it('gives the resistance at the switching frequency as F_R times R_dc', () => {
+    expect(rel(r.primary.Rac, r.primary.FR * r.primary.Rdc)).toBeLessThan(1e-12);
+  });
+
   it('warns when the ungapped core cannot reach the inductance at the given turns, or saturates', () => {
     const few = magnetics({ ...inductor, N: 5 });
     expect(few.gap).toBeLessThan(0);
