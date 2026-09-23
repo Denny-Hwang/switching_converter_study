@@ -1,9 +1,21 @@
 % references.bib -- every citation key used by the site (CLAUDE.md rule 3).
-% Seeded verbatim from the maintainer's references.seed.bib in Phase 0;
-% VERIFY flags are resolved (or kept, with reasons) during Phase 1.
-% Entries with note = {VERIFY} are real works whose DOI/URL/ISBN must be confirmed
-% (Crossref / publisher page) before the flag is removed. refcheck.py forbids
-% citing VERIFY entries from published pages.
+%
+% Seeded from the maintainer's references.seed.bib (Phase 0) and verified in
+% Phase 1 by two independent reviews on 2026-09-23:
+%   round 1 -- maintainer's assistant, round 2 -- an independent reviewer that
+%   did not see round 1. Both used web-search evidence (result URL + title);
+%   direct page fetches were blocked by the build sandbox's egress policy.
+%   CI additionally checks every DOI against Crossref from GitHub runners
+%   (python scripts/refcheck.py --online) and lychee checks every URL
+%   rendered on the site.
+%
+% An entry whose note contains VERIFY must not be cited from a published page
+% (scripts/refcheck.py enforces this). To clear the flag, confirm the
+% identifier and replace the note with "verified YYYY-MM-DD (evidence)".
+%
+% Chapter numbers for erickson2020 are 3rd-edition numbers, taken from the
+% SpringerLink chapter DOIs 10.1007/978-3-030-43881-4_N (they differ from the
+% 2nd edition from chapter 9 on).
 
 @book{erickson2020,
   author    = {Erickson, Robert W. and Maksimovi{\'c}, Dragan},
@@ -14,39 +26,7 @@
   year      = {2020},
   doi       = {10.1007/978-3-030-43881-4},
   isbn      = {978-3-030-43879-1},
-  note      = {verified 2026-09-22 (publisher page)}
-}
-
-@article{zi2015,
-  author  = {Zi, Yunlong and Niu, Simiao and Wang, Jie and Wen, Zhen and Tang, Wei and Wang, Zhong Lin},
-  title   = {Standards and figure-of-merits for quantifying the performance of triboelectric nanogenerators},
-  journal = {Nature Communications},
-  volume  = {6},
-  pages   = {8376},
-  year    = {2015},
-  doi     = {10.1038/ncomms9376},
-  note    = {verified 2026-09-22 (PMC record PMC4598564)}
-}
-
-@misc{benyaakov_youtube,
-  author       = {Ben-Yaakov, Shmuel (Sam)},
-  title        = {Sam Ben-Yaakov YouTube channel: educational videos on analog and power electronics},
-  howpublished = {\url{https://www.youtube.com/user/sambenyaakov/videos}},
-  note         = {verified 2026-09-22 (URL cited on IEEE PELS event page); link specific videos only after opening them}
-}
-
-@misc{cuboulder_pe_coursera,
-  author       = {{University of Colorado Boulder}},
-  title        = {Power Electronics Specialization (Coursera)},
-  howpublished = {\url{https://www.coursera.org/specializations/power-electronics}},
-  note         = {verified 2026-09-22 that the specialization exists (instructors Erickson, Maksimovi{\'c}, Afridi); confirm canonical URL}
-}
-
-@misc{cuboulder_mcpe_coursera,
-  author       = {{University of Colorado Boulder}},
-  title        = {Modeling and Control of Power Electronics Specialization (Coursera)},
-  howpublished = {\url{https://www.coursera.org/specializations/modeling-and-control-of-power-electronics}},
-  note         = {verified 2026-09-22}
+  note      = {verified 2026-09-23 (SpringerLink book page for the DOI; ISBN 978-3-030-43879-1 print and 978-3-030-43881-4 eBook in retailer listings; chapter titles from SpringerLink chapter DOIs); spec author verified 2026-09-22}
 }
 
 @book{mohan2003,
@@ -54,17 +34,20 @@
   title     = {Power Electronics: Converters, Applications, and Design},
   edition   = {3},
   publisher = {Wiley},
+  address   = {Hoboken, NJ},
   year      = {2003},
-  note      = {VERIFY ISBN}
+  isbn      = {978-0-471-22693-2},
+  note      = {verified 2026-09-23 (Wiley product page p-9780471226932 "3rd Edition"; retailer and Google Books listings; released 2002, copyright 2003)}
 }
 
 @book{basso2014,
   author    = {Basso, Christophe P.},
   title     = {Switch-Mode Power Supplies: SPICE Simulations and Practical Designs},
   edition   = {2},
-  publisher = {McGraw-Hill},
+  publisher = {McGraw-Hill Education},
   year      = {2014},
-  note      = {VERIFY edition/year/ISBN}
+  isbn      = {978-0-07-182346-3},
+  note      = {verified 2026-09-23 (AccessEngineering and retailer listings for ISBN 978-0-07-182346-3, 2nd ed., published 2014-08-18)}
 }
 
 @book{hart2011,
@@ -72,15 +55,48 @@
   title     = {Power Electronics},
   publisher = {McGraw-Hill},
   year      = {2011},
-  note      = {VERIFY ISBN}
+  isbn      = {978-0-07-338067-4},
+  note      = {verified 2026-09-23 (McGraw-Hill Education product page; retailer and Open Library listings for ISBN 978-0-07-338067-4, copyright 2011)}
+}
+
+@book{alexander2017,
+  author    = {Alexander, Charles K. and Sadiku, Matthew N. O.},
+  title     = {Fundamentals of Electric Circuits},
+  edition   = {6},
+  publisher = {McGraw-Hill Education},
+  year      = {2017},
+  isbn      = {978-0-07-802822-9},
+  note      = {verified 2026-09-23 (retailer listings for ISBN 978-0-07-802822-9, 6th ed., 2017; Section 4.8 is "Maximum Power Transfer")}
 }
 
 @techreport{dixon2001,
   author      = {Dixon, Lloyd H.},
   title       = {Magnetics Design Handbook},
-  institution = {Texas Instruments (Unitrode) Power Supply Design Seminar},
+  institution = {Texas Instruments},
+  type        = {Literature number},
+  number      = {SLUP132},
   year        = {2001},
-  note        = {VERIFY exact SLUP document number and URL in the TI PSDS archive}
+  url         = {https://www.ti.com/lit/pdf/slup132},
+  note        = {verified 2026-09-23 (TI literature number SLUP132; reproduced from the 2001 Unitrode Magnetics Design Handbook; ti.com copy requires a myTI login)}
+}
+
+@techreport{balogh2018,
+  author      = {Balogh, Laszlo},
+  title       = {Fundamentals of {MOSFET} and {IGBT} Gate Driver Circuits},
+  institution = {Texas Instruments},
+  type        = {Application Report},
+  number      = {SLUA618A},
+  year        = {2018},
+  url         = {https://www.ti.com/lit/pdf/slua618},
+  note        = {verified 2026-09-23 (ti.com/lit/pdf/slua618; SLUA618A, March 2017, revised October 2018; gate-drive power V_DRV Q_G f_DRV)}
+}
+
+@manual{adi_ltc6101,
+  title        = {{LTC6101/LTC6101HV}: High Voltage, High-Side Current Sense Amplifier in {SOT-23}},
+  organization = {Analog Devices},
+  type         = {Data sheet, Rev. I},
+  note         = {verified 2026-09-23 (analog.com product page and data-sheet PDF; V_SENSE is forced across R_IN and the resulting current flows through R_OUT)},
+  url          = {https://www.analog.com/media/en/technical-documentation/data-sheets/ltc6101.pdf}
 }
 
 @article{singer1990,
@@ -91,7 +107,8 @@
   number  = {1},
   pages   = {54--60},
   year    = {1990},
-  note    = {VERIFY DOI}
+  doi     = {10.1109/31.45691},
+  note    = {verified 2026-09-23 (IEEE Xplore document 45691; DOI and pages from institutional repository and Scilit records)}
 }
 
 @article{steinmetz1984,
@@ -100,18 +117,22 @@
   journal = {Proceedings of the IEEE},
   volume  = {72},
   number  = {2},
+  pages   = {197--221},
   year    = {1984},
-  note    = {VERIFY DOI (reprint of the 1892 AIEE paper)}
+  doi     = {10.1109/PROC.1984.12842},
+  note    = {VERIFY DOI against Crossref: both reviewers saw 10.1109/PROC.1984.12842 only in search-index summaries. Reprint (with an introduction by J. E. Brittain) of the 1892 AIEE Transactions paper, IEEE Xplore 5570437; volume and pages confirmed via Semantic Scholar}
 }
 
 @article{dowell1966,
   author  = {Dowell, P. L.},
   title   = {Effects of eddy currents in transformer windings},
-  journal = {Proceedings of the IEE},
+  journal = {Proceedings of the Institution of Electrical Engineers},
   volume  = {113},
   number  = {8},
+  pages   = {1387--1394},
   year    = {1966},
-  note    = {VERIFY DOI and pages}
+  doi     = {10.1049/piee.1966.0236},
+  note    = {verified 2026-09-23 (IET Digital Library page for the DOI; Crossref chooser link)}
 }
 
 @article{ottman2002,
@@ -120,8 +141,22 @@
   journal = {IEEE Transactions on Power Electronics},
   volume  = {17},
   number  = {5},
+  pages   = {669--676},
   year    = {2002},
-  note    = {VERIFY DOI and pages}
+  doi     = {10.1109/TPEL.2002.802194},
+  note    = {verified 2026-09-23 (IEEE Xplore document 1035141). An adaptive, DSP-controlled dc-dc converter; the DCM step-down analysis is ottman2003}
+}
+
+@article{ottman2003,
+  author  = {Ottman, Geffrey K. and Hofmann, Heath F. and Lesieutre, George A.},
+  title   = {Optimized piezoelectric energy harvesting circuit using step-down converter in discontinuous conduction mode},
+  journal = {IEEE Transactions on Power Electronics},
+  volume  = {18},
+  number  = {2},
+  pages   = {696--703},
+  year    = {2003},
+  doi     = {10.1109/TPEL.2003.809379},
+  note    = {verified 2026-09-23 (IEEE Xplore document 1189621; Penn State research portal; conference version PESC 2002, Xplore 1023106)}
 }
 
 @article{guyomar2005,
@@ -130,8 +165,10 @@
   journal = {IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control},
   volume  = {52},
   number  = {4},
+  pages   = {584--595},
   year    = {2005},
-  note    = {VERIFY DOI and pages}
+  doi     = {10.1109/TUFFC.2005.1428041},
+  note    = {verified 2026-09-23 (PubMed 16060507; DOI record)}
 }
 
 @article{lefeuvre2006,
@@ -140,33 +177,67 @@
   journal = {Sensors and Actuators A: Physical},
   volume  = {126},
   number  = {2},
+  pages   = {405--416},
   year    = {2006},
-  note    = {VERIFY DOI and pages}
+  doi     = {10.1016/j.sna.2005.10.043},
+  note    = {verified 2026-09-23 (ScienceDirect PII S0924424705006151 for the DOI; online December 2005)}
+}
+
+@article{zi2015,
+  author  = {Zi, Yunlong and Niu, Simiao and Wang, Jie and Wen, Zhen and Tang, Wei and Wang, Zhong Lin},
+  title   = {Standards and figure-of-merits for quantifying the performance of triboelectric nanogenerators},
+  journal = {Nature Communications},
+  volume  = {6},
+  pages   = {8376},
+  year    = {2015},
+  doi     = {10.1038/ncomms9376},
+  note    = {verified 2026-09-23 (nature.com article page; PMC4598564); spec author verified 2026-09-22}
+}
+
+@misc{benyaakov_youtube,
+  author       = {Ben-Yaakov, Shmuel (Sam)},
+  title        = {Sam Ben-Yaakov {YouTube} channel: educational videos on analog and power electronics},
+  howpublished = {\url{https://www.youtube.com/user/sambenyaakov}},
+  note         = {verified 2026-09-23 (channel page; channel ID UCvblt729tnRzoQqhAinlx8A); link specific videos only after opening them}
+}
+
+@misc{cuboulder_pe_coursera,
+  author       = {{University of Colorado Boulder}},
+  title        = {Power Electronics Specialization (Coursera)},
+  howpublished = {\url{https://www.coursera.org/specializations/power-electronics}},
+  note         = {verified 2026-09-23 (Coursera specialization page; instructors Erickson, Maksimovi{\'c}, Afridi)}
+}
+
+@misc{cuboulder_mcpe_coursera,
+  author       = {{University of Colorado Boulder}},
+  title        = {Modeling and Control of Power Electronics Specialization (Coursera)},
+  howpublished = {\url{https://www.coursera.org/specializations/modeling-and-control-of-power-electronics}},
+  note         = {verified 2026-09-23 (Coursera specialization page; instructor Maksimovi{\'c})}
 }
 
 @misc{ti_psds,
   author       = {{Texas Instruments}},
-  title        = {Power Supply Design Seminar archive},
-  howpublished = {\url{https://www.ti.com/psds}},
-  note         = {VERIFY URL resolves to the archive index}
+  title        = {Power Supply Design Seminar ({PSDS}) library},
+  howpublished = {\url{https://www.ti.com/about-ti/events/power-supply-design-seminar/psds-library.html}},
+  note         = {verified 2026-09-23 (ti.com page "PSDS library"; TI also advertises www.ti.com/psds; content requires a myTI login)}
 }
 
 @misc{ltspice,
   author       = {{Analog Devices}},
-  title        = {LTspice simulator and tutorials},
-  howpublished = {analog.com},
-  note         = {VERIFY canonical URL}
+  title        = {{LTspice} simulator},
+  howpublished = {\url{https://www.analog.com/en/resources/design-tools-and-calculators/ltspice-simulator.html}},
+  note         = {verified 2026-09-23 (analog.com page "LTspice | Analog Devices")}
 }
 
 @misc{ngspice,
-  title        = {ngspice — open source SPICE simulator},
+  title        = {ngspice -- open source {SPICE} simulator},
   howpublished = {\url{https://ngspice.sourceforge.io/}},
-  note         = {VERIFY}
+  note         = {verified 2026-09-23 (project home page "Ngspice, the open source Spice circuit simulator")}
 }
 
 @misc{falstad_circuitjs,
   author       = {Falstad, Paul},
-  title        = {CircuitJS1 browser circuit simulator},
+  title        = {{CircuitJS1} browser circuit simulator},
   howpublished = {\url{https://www.falstad.com/circuit/}},
-  note         = {VERIFY}
+  note         = {verified 2026-09-23 ("Circuit Simulator Applet" page; app at /circuit/circuitjs.html)}
 }

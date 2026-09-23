@@ -25,7 +25,7 @@ def function(eq_id: str) -> tuple[tuple[str, ...], Callable[..., float]]:
     cat = _catalog()
     eq = cat.by_id(eq_id)
     names = tuple(cat.free_names(eq))
-    fn = sp.lambdify([cat.sym(n) for n in names], cat.expr(eq), modules="math")
+    fn = sp.lambdify([cat.sym(n) for n in names], cat.with_constants(cat.expr(eq)), modules="math")
     return names, fn
 
 

@@ -1,0 +1,16 @@
+---
+title: 참고문헌
+description: 이 사이트에서 인용하는 모든 출처. references.bib에서 생성되며, 검증된 항목만 게시합니다.
+sidebar:
+  order: 90
+---
+
+import Bibliography from '../../../../components/Bibliography.astro';
+
+`references.bib`에서 생성됩니다. 각 항목의 존재 여부와 식별자(DOI, ISBN,
+URL)는 웹 검색으로 서로 독립적인 두 번의 검토를 거쳤고, CI에서 모든 DOI를
+Crossref와 대조하고 빌드된 사이트의 모든 링크를 다시 검사합니다. 각 항목
+뒤의 키는 본문 인용에 쓰이는 키입니다. `references.bib`에서 아직 미검증으로
+표시된 항목은 게시하지 않으며 인용할 수도 없습니다.
+
+<Bibliography />

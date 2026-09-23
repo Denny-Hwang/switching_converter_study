@@ -77,6 +77,11 @@ class SymbolInfo:
     range: tuple[float, float] | None
     sign: str = "positive"  # "positive" | "real"
     scale: str = "linear"  # random-vector sampling: "linear" | "log"
+    value_expr: str | None = None  # physical constant: exact sympy value
+
+    @property
+    def is_constant(self) -> bool:
+        return self.value_expr is not None
 
 
 @dataclass
@@ -88,8 +93,7 @@ class Equation:
     expr_src: str
     symbols: dict[str, str]
     assumptions: list[str]
-    cite_key: str
-    cite_where: str
+    cites: list[dict[str, str]]
     tests: list[dict[str, Any]]
     line: int
     convention: str = ""
@@ -149,16 +153,34 @@ class Catalog:
         )
         return tidy(raw)
 
-    def free_names(self, eq: Equation) -> list[str]:
+    def all_names(self, eq: Equation) -> list[str]:
+        """Every symbol in expr, constants included."""
         return sorted(s.name for s in self.expr(eq).free_symbols)
+
+    def free_names(self, eq: Equation) -> list[str]:
+        """The inputs of an equation: its symbols minus physical constants."""
+        return [n for n in self.all_names(eq) if not self.symbols[n].is_constant]
+
+    def constant_names(self, eq: Equation) -> list[str]:
+        return [n for n in self.all_names(eq) if self.symbols[n].is_constant]
+
+    def constant_value(self, name: str) -> sp.Expr:
+        info = self.symbols[name]
+        assert info.value_expr is not None
+        return parse_expr(info.value_expr, local_dict=dict(BUILTINS), transformations=TRANSFORMATIONS)
+
+    def with_constants(self, e: sp.Expr) -> sp.Expr:
+        """Substitute exact values for physical constants."""
+        return e.subs({self.sym(n): self.constant_value(n) for n, i in self.symbols.items() if i.is_constant})
 
     def evaluate(self, eq: Equation, inputs: Mapping[str, float], digits: int = 30) -> float:
         """Evaluate ``expr`` at ``inputs`` with ``digits`` significant digits.
 
         Inputs are taken as the exact binary value of the given floats, which
-        is what the TypeScript evaluators receive from JSON.
+        is what the TypeScript evaluators receive from JSON. Physical
+        constants are substituted with their exact values.
         """
-        e = self.expr(eq)
+        e = self.with_constants(self.expr(eq))
         subs = {}
         for s in e.free_symbols:
             if s.name not in inputs:
@@ -194,18 +216,21 @@ def tidy(e: sp.Basic) -> sp.Basic:
         return e
     args = [tidy(a) for a in e.args]
     if isinstance(e, sp.Mul):
-        flat: list[sp.Basic] = []
-        for a in args:
-            flat.extend(a.args if isinstance(a, sp.Mul) else (a,))
         sign = 1
         rest: list[sp.Basic] = []
-        for a in flat:
+        for a in args:
             if a == sp.Integer(1):
                 continue
             if a == sp.Integer(-1):
                 sign = -sign
                 continue
-            rest.append(a)
+            if isinstance(a, sp.Mul) and a.args and a.args[0] == sp.Integer(-1):
+                # a tidied negated factor Mul(-1, body): hoist its sign
+                sign = -sign
+                body_args = a.args[1:]
+                rest.append(body_args[0] if len(body_args) == 1 else sp.Mul(*body_args, evaluate=False))
+                continue
+            rest.append(a)  # keep nested products grouped: "4 (V_c/V_oc)(...)"
         if not rest:
             return sp.Integer(sign)
         body = rest[0] if len(rest) == 1 else sp.Mul(*rest, evaluate=False)
@@ -264,6 +289,9 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
             raise EquationError(f"symbol_table.{name}: sign must be positive|real")
         if scale not in ("linear", "log"):
             raise EquationError(f"symbol_table.{name}: scale must be linear|log")
+        unknown_keys = set(spec) - {"latex", "unit", "desc", "range", "sign", "scale", "value_expr"}
+        if unknown_keys:
+            raise EquationError(f"symbol_table.{name}: unknown keys {sorted(unknown_keys)}")
         symbols[name] = SymbolInfo(
             name=name,
             latex=str(spec["latex"]),
@@ -272,6 +300,7 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
             range=_range(spec.get("range"), f"symbol_table.{name}"),
             sign=sign,
             scale=scale,
+            value_expr=str(spec["value_expr"]) if "value_expr" in spec else None,
         )
 
     labels = data.get("assumption_labels") or {}
@@ -296,9 +325,13 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
         if eq_id in seen:
             raise EquationError(f"{where}: duplicate id {eq_id!r}")
         seen.add(eq_id)
-        cite = raw["cite"]
-        if not isinstance(cite, dict) or not cite.get("key"):
-            raise EquationError(f"{where}: cite needs a key")
+        raw_cite = raw["cite"]
+        cite_list = raw_cite if isinstance(raw_cite, list) else [raw_cite]
+        cites: list[dict[str, str]] = []
+        for c in cite_list:
+            if not isinstance(c, dict) or not c.get("key") or set(c) - {"key", "where"}:
+                raise EquationError(f"{where}: each cite needs a key (and optional where)")
+            cites.append({"key": str(c["key"]), "where": str(c.get("where", ""))})
         relation = raw.get("relation", "eq")
         if relation not in ("eq", "approx"):
             raise EquationError(f"{where}: relation must be eq|approx")
@@ -312,8 +345,7 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
                 expr_src=str(raw["expr"]),
                 symbols={str(k): str(v) for k, v in raw["symbols"].items()},
                 assumptions=[str(a) for a in raw["assumptions"]],
-                cite_key=str(cite["key"]),
-                cite_where=str(cite.get("where", "")),
+                cites=cites,
                 tests=list(raw["tests"] or []),
                 line=line,
                 convention=str(raw.get("convention", "")),
@@ -359,17 +391,18 @@ def validate(catalog: Catalog) -> None:
             raise EquationError(f"{where}: symbols not in symbol_table: {sorted(undeclared)}")
         if set(eq.symbols) != names:
             raise EquationError(
-                f"{where}: `symbols` keys {sorted(eq.symbols)} must equal the free symbols of expr {sorted(names)}"
+                f"{where}: `symbols` keys {sorted(eq.symbols)} must equal the symbols of expr {sorted(names)}"
             )
-        for name in names:
+        inputs_needed = set(catalog.free_names(eq))
+        for name in inputs_needed:
             if catalog.symbols[name].range is None and name not in eq.ranges:
                 raise EquationError(f"{where}: symbol {name!r} has no range for random vectors")
         if not eq.tests:
             raise EquationError(f"{where}: at least one test is required")
         for i, t in enumerate(eq.tests):
             inputs = t.get("inputs") or {}
-            if set(inputs) != names:
-                raise EquationError(f"{where}: test {i} inputs {sorted(inputs)} != {sorted(names)}")
+            if set(inputs) != inputs_needed:
+                raise EquationError(f"{where}: test {i} inputs {sorted(inputs)} != {sorted(inputs_needed)}")
             got = catalog.evaluate(eq, inputs)
             want = float(t["expect"])
             if not close(got, want, rel=1e-9):

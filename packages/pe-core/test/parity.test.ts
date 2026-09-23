@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import generated from '../equations/equations.generated.json';
 import vectors from '../equations/test_vectors.json';
+import { constants } from '../src/constants';
 import { evaluators } from '../src/equations';
 
 const ids = Object.keys(generated.equations);
@@ -22,6 +23,13 @@ describe('equation catalogue coverage', () => {
 
   it.each(ids)('%s: has at least one test vector', (id) => {
     expect(vectors.vectors.some((v) => v.id === id)).toBe(true);
+  });
+});
+
+describe('physical constants match equations.yaml', () => {
+  it.each(Object.entries(generated.constants))('%s', (name, c) => {
+    expect(constants[name]).toBeDefined();
+    expect(relErr(constants[name]!, c.value)).toBeLessThanOrEqual(1e-15);
   });
 });
 

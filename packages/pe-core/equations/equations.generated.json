@@ -12,6 +12,14 @@
       "en": "continuous conduction mode (CCM)",
       "ko": "연속 전도 모드(CCM)"
     },
+    "dcm": {
+      "en": "discontinuous conduction mode (DCM)",
+      "ko": "불연속 전도 모드(DCM)"
+    },
+    "bcm": {
+      "en": "at the CCM/DCM boundary",
+      "ko": "CCM/DCM 경계"
+    },
     "steady_state": {
       "en": "periodic steady state",
       "ko": "주기적 정상상태"
@@ -19,18 +27,385 @@
     "small_ripple": {
       "en": "small-ripple approximation",
       "ko": "소리플 근사(small-ripple approximation)"
+    },
+    "resistive_load": {
+      "en": "resistive load R",
+      "ko": "저항성 부하 R"
+    },
+    "fixed_output": {
+      "en": "output held at a fixed voltage V (battery or regulated bus)",
+      "ko": "출력이 고정 전압 V로 유지됨(배터리 또는 정전압 버스)"
+    },
+    "diode_drop": {
+      "en": "output diode modelled as a constant forward drop V_D",
+      "ko": "출력 다이오드를 일정한 순방향 전압 V_D로 모델링"
+    },
+    "definition": {
+      "en": "definition",
+      "ko": "정의"
+    },
+    "linear_source": {
+      "en": "linear (Thevenin) source V_oc behind R_s",
+      "ko": "선형(테브난) 전원: R_s 뒤의 V_oc"
+    },
+    "lossless_converter": {
+      "en": "lossless converter (input power equals output power)",
+      "ko": "무손실 컨버터(입력 전력 = 출력 전력)"
+    },
+    "no_fringing": {
+      "en": "no fringing flux at the gap",
+      "ko": "갭의 프린징(fringing) 자속 무시"
+    },
+    "linear_magnetics": {
+      "en": "linear (unsaturated) magnetic material",
+      "ko": "선형(비포화) 자성 재료"
+    },
+    "uniform_flux": {
+      "en": "flux density uniform over A_e",
+      "ko": "A_e 전체에서 균일한 자속 밀도"
+    },
+    "sinusoidal_excitation": {
+      "en": "sinusoidal excitation (empirical fit)",
+      "ko": "정현파 여자(경험적 피팅)"
+    },
+    "full_discharge": {
+      "en": "the capacitance is fully discharged at every turn-on",
+      "ko": "매 턴온마다 커패시턴스가 완전히 방전됨"
+    },
+    "energy_lost": {
+      "en": "all of the stored energy is dissipated every cycle",
+      "ko": "저장 에너지가 매 주기 전부 소산됨"
+    },
+    "lossless_lc": {
+      "en": "undamped L-C resonance",
+      "ko": "감쇠 없는 L-C 공진"
+    },
+    "ideal_amplifier": {
+      "en": "ideal amplifier (no offset, gain error or output headroom limit)",
+      "ko": "이상적 증폭기(오프셋·이득 오차·출력 헤드룸 제한 없음)"
     }
   },
   "symbols": {
+    "A_L": {
+      "latex": "A_L",
+      "unit": "H",
+      "desc": "inductance factor: inductance per turn squared"
+    },
+    "A_e": {
+      "latex": "A_e",
+      "unit": "m²",
+      "desc": "effective core cross-section area"
+    },
+    "B_ac": {
+      "latex": "B_\\mathrm{ac}",
+      "unit": "T",
+      "desc": "peak AC flux-density amplitude (half the peak-to-peak swing)"
+    },
+    "B_pk": {
+      "latex": "B_\\mathrm{pk}",
+      "unit": "T",
+      "desc": "peak flux density"
+    },
+    "C_node": {
+      "latex": "C_\\mathrm{node}",
+      "unit": "F",
+      "desc": "total capacitance at the switch node"
+    },
     "D": {
       "latex": "D",
       "unit": "1",
-      "desc": "duty ratio (switch on-time fraction of T_s)"
+      "desc": "duty ratio: switch on-time divided by T_s"
+    },
+    "D_max": {
+      "latex": "D_\\mathrm{max}",
+      "unit": "1",
+      "desc": "maximum duty ratio"
+    },
+    "Delta_B": {
+      "latex": "\\Delta B",
+      "unit": "T",
+      "desc": "flux-density swing, peak-to-peak"
+    },
+    "Delta_i_L": {
+      "latex": "\\Delta i_L",
+      "unit": "A",
+      "desc": "inductor current ripple, HALF of peak-to-peak (Erickson convention)"
+    },
+    "Delta_i_pp": {
+      "latex": "\\Delta i_{L,\\mathrm{pp}}",
+      "unit": "A",
+      "desc": "inductor current ripple, peak-to-peak"
+    },
+    "E_lk": {
+      "latex": "E_\\mathrm{lk}",
+      "unit": "J",
+      "desc": "energy stored in the leakage inductance at turn-off"
+    },
+    "I_SENSE": {
+      "latex": "I_\\mathrm{SENSE}",
+      "unit": "A",
+      "desc": "current through the sense resistor"
+    },
+    "I_avg": {
+      "latex": "I_\\mathrm{avg}",
+      "unit": "A",
+      "desc": "average current"
+    },
+    "I_pk": {
+      "latex": "I_\\mathrm{pk}",
+      "unit": "A",
+      "desc": "peak current"
+    },
+    "I_rms": {
+      "latex": "I_\\mathrm{rms}",
+      "unit": "A",
+      "desc": "rms current"
+    },
+    "K": {
+      "latex": "K",
+      "unit": "1",
+      "desc": "dimensionless inductor parameter 2L/(R T_s)"
+    },
+    "K_crit": {
+      "latex": "K_\\mathrm{crit}",
+      "unit": "1",
+      "desc": "value of K at the CCM/DCM boundary"
+    },
+    "L": {
+      "latex": "L",
+      "unit": "H",
+      "desc": "inductance"
+    },
+    "L_M": {
+      "latex": "L_M",
+      "unit": "H",
+      "desc": "magnetizing inductance referred to the primary"
+    },
+    "L_lk": {
+      "latex": "L_\\mathrm{lk}",
+      "unit": "H",
+      "desc": "leakage inductance referred to the primary"
     },
     "M": {
       "latex": "M",
       "unit": "1",
       "desc": "conversion ratio V/V_g"
+    },
+    "N": {
+      "latex": "N",
+      "unit": "1",
+      "desc": "number of turns"
+    },
+    "P": {
+      "latex": "P",
+      "unit": "W",
+      "desc": "power"
+    },
+    "P_lk": {
+      "latex": "P_\\mathrm{lk}",
+      "unit": "W",
+      "desc": "leakage energy per cycle times switching frequency"
+    },
+    "P_max": {
+      "latex": "P_\\mathrm{max}",
+      "unit": "W",
+      "desc": "maximum power available from a linear source"
+    },
+    "P_v": {
+      "latex": "P_v",
+      "unit": "W/m³",
+      "desc": "core loss per unit volume"
+    },
+    "Q_g": {
+      "latex": "Q_g",
+      "unit": "C",
+      "desc": "total gate charge at V_GS"
+    },
+    "R": {
+      "latex": "R",
+      "unit": "Ω",
+      "desc": "load resistance"
+    },
+    "R_IN": {
+      "latex": "R_\\mathrm{IN}",
+      "unit": "Ω",
+      "desc": "gain-setting input resistor of a current-output sense amplifier"
+    },
+    "R_OUT": {
+      "latex": "R_\\mathrm{OUT}",
+      "unit": "Ω",
+      "desc": "output resistor of a current-output sense amplifier"
+    },
+    "R_SENSE": {
+      "latex": "R_\\mathrm{SENSE}",
+      "unit": "Ω",
+      "desc": "current-sense (shunt) resistor"
+    },
+    "R_in": {
+      "latex": "R_\\mathrm{in}",
+      "unit": "Ω",
+      "desc": "emulated (loss-free) input resistance"
+    },
+    "R_s": {
+      "latex": "R_s",
+      "unit": "Ω",
+      "desc": "source (Thevenin) resistance"
+    },
+    "R_x": {
+      "latex": "R_x",
+      "unit": "Ω",
+      "desc": "resistance carrying the current (R_DS(on), winding DCR, ESR, ...)"
+    },
+    "T_s": {
+      "latex": "T_s",
+      "unit": "s",
+      "desc": "switching period"
+    },
+    "V": {
+      "latex": "V",
+      "unit": "V",
+      "desc": "output voltage (magnitude, where the topology inverts)"
+    },
+    "V_D": {
+      "latex": "V_D",
+      "unit": "V",
+      "desc": "forward drop of the output diode"
+    },
+    "V_DS": {
+      "latex": "V_\\mathrm{DS}",
+      "unit": "V",
+      "desc": "switch drain-source voltage while the switch is off"
+    },
+    "V_F": {
+      "latex": "V_F",
+      "unit": "V",
+      "desc": "diode forward-voltage intercept"
+    },
+    "V_GS": {
+      "latex": "V_\\mathrm{GS}",
+      "unit": "V",
+      "desc": "gate-drive voltage amplitude"
+    },
+    "V_OUT": {
+      "latex": "V_\\mathrm{OUT}",
+      "unit": "V",
+      "desc": "output voltage of a current-output sense amplifier across R_OUT"
+    },
+    "V_R": {
+      "latex": "V_R",
+      "unit": "V",
+      "desc": "reverse voltage across the output diode while the switch is on"
+    },
+    "V_c": {
+      "latex": "V_c",
+      "unit": "V",
+      "desc": "voltage held by a constant-voltage sink"
+    },
+    "V_g": {
+      "latex": "V_g",
+      "unit": "V",
+      "desc": "input (generator) voltage"
+    },
+    "V_gcrit": {
+      "latex": "V_{g,\\mathrm{crit}}",
+      "unit": "V",
+      "desc": "input voltage at the CCM/DCM boundary for a fixed D and a fixed output voltage"
+    },
+    "V_oc": {
+      "latex": "V_\\mathrm{oc}",
+      "unit": "V",
+      "desc": "open-circuit (Thevenin) voltage of a linear source"
+    },
+    "V_sw": {
+      "latex": "V_\\mathrm{sw}",
+      "unit": "V",
+      "desc": "voltage across C_node when the switch turns on"
+    },
+    "V_w": {
+      "latex": "V_w",
+      "unit": "V",
+      "desc": "voltage applied across a winding during t_on"
+    },
+    "alpha": {
+      "latex": "\\alpha",
+      "unit": "1",
+      "desc": "Steinmetz frequency exponent"
+    },
+    "beta": {
+      "latex": "\\beta",
+      "unit": "1",
+      "desc": "Steinmetz flux-density exponent"
+    },
+    "eta_ext": {
+      "latex": "\\eta_\\mathrm{ext}",
+      "unit": "1",
+      "desc": "extracted power as a fraction of the available maximum"
+    },
+    "f": {
+      "latex": "f",
+      "unit": "Hz",
+      "desc": "excitation frequency"
+    },
+    "f_ring": {
+      "latex": "f_\\mathrm{ring}",
+      "unit": "Hz",
+      "desc": "ringing frequency"
+    },
+    "f_s": {
+      "latex": "f_s",
+      "unit": "Hz",
+      "desc": "switching frequency 1/T_s"
+    },
+    "k": {
+      "latex": "k",
+      "unit": "W/m³",
+      "desc": "Steinmetz coefficient (with f in Hz and B in T)"
+    },
+    "l_e": {
+      "latex": "l_e",
+      "unit": "m",
+      "desc": "effective magnetic path length of the core"
+    },
+    "l_g": {
+      "latex": "l_g",
+      "unit": "m",
+      "desc": "total air-gap length"
+    },
+    "mu_0": {
+      "latex": "\\mu_0",
+      "unit": "H/m",
+      "desc": "permeability of free space, 4π·10⁻⁷ H/m"
+    },
+    "mu_i": {
+      "latex": "\\mu_i",
+      "unit": "1",
+      "desc": "initial relative permeability of the core material"
+    },
+    "n": {
+      "latex": "n",
+      "unit": "1",
+      "desc": "transformer turns ratio N_s/N_p (1:n convention)"
+    },
+    "n_r": {
+      "latex": "n_r",
+      "unit": "1",
+      "desc": "reset-winding to primary turns ratio N_r/N_p"
+    },
+    "r_d": {
+      "latex": "r_d",
+      "unit": "Ω",
+      "desc": "diode dynamic (slope) resistance"
+    },
+    "t_on": {
+      "latex": "t_\\mathrm{on}",
+      "unit": "s",
+      "desc": "switch on-time"
+    }
+  },
+  "constants": {
+    "mu_0": {
+      "value_expr": "4*pi/10**7",
+      "value": 1.2566370614359173e-06
     }
   },
   "equations": {
@@ -45,6 +420,7 @@
       "variables": [
         "D"
       ],
+      "constants": [],
       "symbols": {
         "D": "duty ratio"
       },
@@ -58,13 +434,15 @@
       "convention_ko": "$M = V/V_g$",
       "notes": "",
       "notes_ko": "",
-      "cite": {
-        "key": "erickson2020",
-        "where": "Ch. 2"
-      },
-      "derived_by": null,
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 2 (Principles of Steady-State Converter Analysis)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 50
+      "yaml_line": 128
     },
     "boost.ccm.M": {
       "id": "boost.ccm.M",
@@ -77,6 +455,7 @@
       "variables": [
         "D"
       ],
+      "constants": [],
       "symbols": {
         "D": "duty ratio"
       },
@@ -90,13 +469,1429 @@
       "convention_ko": "$M = V/V_g$",
       "notes": "",
       "notes_ko": "",
-      "cite": {
-        "key": "erickson2020",
-        "where": "Ch. 2"
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 2 (Principles of Steady-State Converter Analysis)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/ccm_ratios.py",
+      "n_tests": 8,
+      "yaml_line": 143
+    },
+    "buckboost.ccm.M": {
+      "id": "buckboost.ccm.M",
+      "title": "Buck-boost conversion ratio, CCM",
+      "title_ko": "벅-부스트(buck-boost) 변환비, CCM",
+      "latex": "M = - \\frac{D}{1 - D}",
+      "lhs": "M",
+      "expr": "-D/(1 - D)",
+      "relation": "eq",
+      "variables": [
+        "D"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio"
       },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "steady_state",
+        "small_ripple"
+      ],
+      "convention": "$M = V/V_g$; the output is inverted, so $M < 0$",
+      "convention_ko": "$M = V/V_g$; 출력 극성이 반전되므로 $M < 0$",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 2 (Principles of Steady-State Converter Analysis)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/ccm_ratios.py",
+      "n_tests": 8,
+      "yaml_line": 158
+    },
+    "flyback.ccm.M": {
+      "id": "flyback.ccm.M",
+      "title": "Flyback conversion ratio, CCM",
+      "title_ko": "플라이백(flyback) 변환비, CCM",
+      "latex": "M = \\frac{n D}{1 - D}",
+      "lhs": "M",
+      "expr": "n*D/(1 - D)",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "n"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "n": "turns ratio N_s/N_p"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "steady_state",
+        "small_ripple"
+      ],
+      "convention": "$M = V/V_g$; 1:n transformer with $n = N_s/N_p$",
+      "convention_ko": "$M = V/V_g$; 1:n 변압기, $n = N_s/N_p$",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 6 (Converter Circuits)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/ccm_ratios.py",
+      "n_tests": 8,
+      "yaml_line": 173
+    },
+    "forward.ccm.M": {
+      "id": "forward.ccm.M",
+      "title": "Forward conversion ratio, CCM",
+      "title_ko": "포워드(forward) 변환비, CCM",
+      "latex": "M = n D",
+      "lhs": "M",
+      "expr": "n*D",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "n"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "n": "turns ratio N_s/N_p"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "steady_state",
+        "small_ripple"
+      ],
+      "convention": "$M = V/V_g$; $n = N_s/N_p$; valid only while $D \\le D_\\mathrm{max}$ (reset limit)",
+      "convention_ko": "$M = V/V_g$; $n = N_s/N_p$; 리셋 한계 $D \\le D_\\mathrm{max}$ 안에서만 성립",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 6 (Converter Circuits)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/ccm_ratios.py",
+      "n_tests": 8,
+      "yaml_line": 188
+    },
+    "forward.reset.Dmax": {
+      "id": "forward.reset.Dmax",
+      "title": "Forward converter: maximum duty ratio set by transformer reset",
+      "title_ko": "포워드 컨버터: 변압기 리셋이 정하는 최대 듀티비",
+      "latex": "D_\\mathrm{max} = \\frac{1}{1 + n_r}",
+      "lhs": "D_max",
+      "expr": "1/(1 + n_r)",
+      "relation": "eq",
+      "variables": [
+        "n_r"
+      ],
+      "constants": [],
+      "symbols": {
+        "n_r": "reset-winding to primary turns ratio N_r/N_p"
+      },
+      "assumptions": [
+        "ideal",
+        "steady_state"
+      ],
+      "convention": "reset winding with $N_r$ turns returns the magnetizing energy to $V_g$; $n_r = 1$ gives $D_\\mathrm{max} = 0.5$",
+      "convention_ko": "$N_r$ 턴의 리셋 권선이 자화 에너지를 $V_g$로 돌려보냄; $n_r = 1$이면 $D_\\mathrm{max} = 0.5$",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 6 (Converter Circuits)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/ccm_ratios.py",
+      "n_tests": 8,
+      "yaml_line": 203
+    },
+    "buck.ripple.iL": {
+      "id": "buck.ripple.iL",
+      "title": "Buck inductor current ripple (half peak-to-peak), CCM",
+      "title_ko": "벅 인덕터 전류 리플(피크-투-피크의 절반), CCM",
+      "latex": "\\Delta i_L = \\frac{\\left(V_g - V\\right) D T_s}{2 L}",
+      "lhs": "Delta_i_L",
+      "expr": "(V_g - V)*D*T_s/(2*L)",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "L",
+        "T_s",
+        "V",
+        "V_g"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "L": "filter inductance",
+        "T_s": "switching period",
+        "V": "output voltage",
+        "V_g": "input voltage"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "steady_state",
+        "small_ripple"
+      ],
+      "convention": "$\\Delta i_L$ is HALF the peak-to-peak ripple (Erickson)",
+      "convention_ko": "$\\Delta i_L$은 피크-투-피크 리플의 절반(Erickson 규약)",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 2 (Principles of Steady-State Converter Analysis)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/ccm_ratios.py",
+      "n_tests": 7,
+      "yaml_line": 221
+    },
+    "buck.ripple.iL_pp": {
+      "id": "buck.ripple.iL_pp",
+      "title": "Buck inductor current ripple, peak-to-peak, CCM",
+      "title_ko": "벅 인덕터 전류 리플(피크-투-피크), CCM",
+      "latex": "\\Delta i_{L,\\mathrm{pp}} = \\frac{\\left(V_g - V\\right) D}{L f_s}",
+      "lhs": "Delta_i_pp",
+      "expr": "(V_g - V)*D/(L*f_s)",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "L",
+        "V",
+        "V_g",
+        "f_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "L": "filter inductance",
+        "V": "output voltage",
+        "V_g": "input voltage",
+        "f_s": "switching frequency"
+      },
+      "assumptions": [
+        "ideal",
+        "ccm",
+        "steady_state",
+        "small_ripple"
+      ],
+      "convention": "peak-to-peak; twice the Erickson $\\Delta i_L$",
+      "convention_ko": "피크-투-피크 값; Erickson의 $\\Delta i_L$의 두 배",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 2 (Principles of Steady-State Converter Analysis)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/ccm_ratios.py",
+      "n_tests": 7,
+      "yaml_line": 235
+    },
+    "K.def": {
+      "id": "K.def",
+      "title": "Dimensionless inductor parameter K",
+      "title_ko": "무차원 인덕터 파라미터 K",
+      "latex": "K = \\frac{2 L}{R T_s}",
+      "lhs": "K",
+      "expr": "2*L/(R*T_s)",
+      "relation": "eq",
+      "variables": [
+        "L",
+        "R",
+        "T_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "L": "inductance (L_M for a flyback)",
+        "R": "load resistance",
+        "T_s": "switching period"
+      },
+      "assumptions": [
+        "definition"
+      ],
+      "convention": "the converter operates in CCM when $K > K_\\mathrm{crit}(D)$",
+      "convention_ko": "$K > K_\\mathrm{crit}(D)$이면 CCM으로 동작",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 5 (The Discontinuous Conduction Mode)"
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 7,
+      "yaml_line": 252
+    },
+    "Kcrit.buck": {
+      "id": "Kcrit.buck",
+      "title": "Critical K of the buck converter",
+      "title_ko": "벅 컨버터의 임계 K",
+      "latex": "K_\\mathrm{crit} = 1 - D",
+      "lhs": "K_crit",
+      "expr": "1 - D",
+      "relation": "eq",
+      "variables": [
+        "D"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio"
+      },
+      "assumptions": [
+        "ideal",
+        "bcm",
+        "steady_state",
+        "small_ripple",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 5 (The Discontinuous Conduction Mode)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/dcm.py",
+      "n_tests": 8,
+      "yaml_line": 265
+    },
+    "Kcrit.boost": {
+      "id": "Kcrit.boost",
+      "title": "Critical K of the boost converter",
+      "title_ko": "부스트 컨버터의 임계 K",
+      "latex": "K_\\mathrm{crit} = D \\left(1 - D\\right)^{2}",
+      "lhs": "K_crit",
+      "expr": "D*(1 - D)**2",
+      "relation": "eq",
+      "variables": [
+        "D"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio"
+      },
+      "assumptions": [
+        "ideal",
+        "bcm",
+        "steady_state",
+        "small_ripple",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "maximum $4/27$ at $D = 1/3$",
+      "notes_ko": "$D = 1/3$에서 최댓값 $4/27$",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 5 (The Discontinuous Conduction Mode)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/dcm.py",
+      "n_tests": 8,
+      "yaml_line": 278
+    },
+    "Kcrit.buckboost": {
+      "id": "Kcrit.buckboost",
+      "title": "Critical K of the buck-boost converter",
+      "title_ko": "벅-부스트 컨버터의 임계 K",
+      "latex": "K_\\mathrm{crit} = \\left(1 - D\\right)^{2}",
+      "lhs": "K_crit",
+      "expr": "(1 - D)**2",
+      "relation": "eq",
+      "variables": [
+        "D"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio"
+      },
+      "assumptions": [
+        "ideal",
+        "bcm",
+        "steady_state",
+        "small_ripple",
+        "resistive_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 5 (The Discontinuous Conduction Mode)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/dcm.py",
+      "n_tests": 8,
+      "yaml_line": 293
+    },
+    "Kcrit.flyback": {
+      "id": "Kcrit.flyback",
+      "title": "Critical K of the flyback converter",
+      "title_ko": "플라이백 컨버터의 임계 K",
+      "latex": "K_\\mathrm{crit} = \\frac{\\left(1 - D\\right)^{2}}{n^{2}}",
+      "lhs": "K_crit",
+      "expr": "(1 - D)**2/n**2",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "n"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "n": "turns ratio N_s/N_p"
+      },
+      "assumptions": [
+        "ideal",
+        "bcm",
+        "steady_state",
+        "small_ripple",
+        "resistive_load"
+      ],
+      "convention": "$K = 2L_M/(R T_s)$ with $L_M$ referred to the primary and the actual (secondary-side) load $R$; 1:n, $n = N_s/N_p$",
+      "convention_ko": "$K = 2L_M/(R T_s)$, $L_M$은 1차측 환산값, $R$은 실제(2차측) 부하; 1:n, $n = N_s/N_p$",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 5–6 (DCM; flyback as an isolated buck-boost)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/flyback.py",
+      "n_tests": 8,
+      "yaml_line": 306
+    },
+    "buck.dcm.M": {
+      "id": "buck.dcm.M",
+      "title": "Buck conversion ratio, DCM",
+      "title_ko": "벅 변환비, DCM",
+      "latex": "M = \\frac{2}{1 + \\sqrt{1 + \\frac{4 K}{D^{2}}}}",
+      "lhs": "M",
+      "expr": "2/(1 + sqrt(1 + 4*K/D**2))",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "K"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "K": "2L/(R T_s)"
+      },
+      "assumptions": [
+        "ideal",
+        "dcm",
+        "steady_state",
+        "small_ripple",
+        "resistive_load"
+      ],
+      "convention": "$M = V/V_g$; valid for $K < K_\\mathrm{crit} = 1 - D$",
+      "convention_ko": "$M = V/V_g$; $K < K_\\mathrm{crit} = 1 - D$에서 성립",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 5 (The Discontinuous Conduction Mode)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/dcm.py",
+      "n_tests": 8,
+      "yaml_line": 324
+    },
+    "boost.dcm.M": {
+      "id": "boost.dcm.M",
+      "title": "Boost conversion ratio, DCM",
+      "title_ko": "부스트 변환비, DCM",
+      "latex": "M = \\frac{1 + \\sqrt{1 + \\frac{4 D^{2}}{K}}}{2}",
+      "lhs": "M",
+      "expr": "(1 + sqrt(1 + 4*D**2/K))/2",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "K"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "K": "2L/(R T_s)"
+      },
+      "assumptions": [
+        "ideal",
+        "dcm",
+        "steady_state",
+        "small_ripple",
+        "resistive_load"
+      ],
+      "convention": "$M = V/V_g$; valid for $K < K_\\mathrm{crit} = D(1 - D)^2$",
+      "convention_ko": "$M = V/V_g$; $K < K_\\mathrm{crit} = D(1 - D)^2$에서 성립",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 5 (The Discontinuous Conduction Mode)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/dcm.py",
+      "n_tests": 8,
+      "yaml_line": 339
+    },
+    "buckboost.dcm.M": {
+      "id": "buckboost.dcm.M",
+      "title": "Buck-boost conversion ratio, DCM",
+      "title_ko": "벅-부스트 변환비, DCM",
+      "latex": "M = - \\frac{D}{\\sqrt{K}}",
+      "lhs": "M",
+      "expr": "-D/sqrt(K)",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "K"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "K": "2L/(R T_s)"
+      },
+      "assumptions": [
+        "ideal",
+        "dcm",
+        "steady_state",
+        "small_ripple",
+        "resistive_load"
+      ],
+      "convention": "$M = V/V_g < 0$ (inverting); valid for $K < K_\\mathrm{crit} = (1 - D)^2$",
+      "convention_ko": "$M = V/V_g < 0$(반전); $K < K_\\mathrm{crit} = (1 - D)^2$에서 성립",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 5 (The Discontinuous Conduction Mode)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/dcm.py",
+      "n_tests": 8,
+      "yaml_line": 354
+    },
+    "flyback.dcm.M": {
+      "id": "flyback.dcm.M",
+      "title": "Flyback conversion ratio, DCM",
+      "title_ko": "플라이백 변환비, DCM",
+      "latex": "M = \\frac{D}{\\sqrt{K}}",
+      "lhs": "M",
+      "expr": "D/sqrt(K)",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "K"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "K": "2 L_M/(R T_s)"
+      },
+      "assumptions": [
+        "ideal",
+        "dcm",
+        "steady_state",
+        "small_ripple",
+        "resistive_load"
+      ],
+      "convention": "1:n transformer, $n = N_s/N_p$; $K$ uses $L_M$ (primary-referred) and the actual load $R$",
+      "convention_ko": "1:n 변압기, $n = N_s/N_p$; $K$는 $L_M$(1차측 환산)과 실제 부하 $R$로 계산",
+      "notes": "independent of $n$: the turns ratio only enters $K_\\mathrm{crit}$ and the stresses",
+      "notes_ko": "$n$과 무관: 권선비는 $K_\\mathrm{crit}$와 스트레스에만 들어감",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 5–6 (DCM; flyback as an isolated buck-boost)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/flyback.py",
+      "n_tests": 8,
+      "yaml_line": 369
+    },
+    "dcm.P_in": {
+      "id": "dcm.P_in",
+      "title": "Power drawn by a DCM buck-boost or flyback",
+      "title_ko": "DCM 벅-부스트/플라이백이 끌어오는 전력",
+      "latex": "P = \\frac{V_g^{2} D^{2}}{2 L_M f_s}",
+      "lhs": "P",
+      "expr": "V_g**2*D**2/(2*L_M*f_s)",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "L_M",
+        "V_g",
+        "f_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "L_M": "(magnetizing) inductance",
+        "V_g": "input voltage",
+        "f_s": "switching frequency"
+      },
+      "assumptions": [
+        "ideal",
+        "dcm",
+        "steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the energy $\\tfrac12 L_M I_\\mathrm{pk}^2$ is stored once per cycle, independent of the load",
+      "notes_ko": "부하와 무관하게 매 주기 $\\tfrac12 L_M I_\\mathrm{pk}^2$의 에너지를 저장",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 15 (AC and DC Equivalent Circuit Modeling of the DCM)"
+        },
+        {
+          "key": "singer1990",
+          "where": ""
+        }
+      ],
+      "derived_by": "python/pe_core/derive/flyback.py",
+      "n_tests": 7,
+      "yaml_line": 389
+    },
+    "lfr.R_in": {
+      "id": "lfr.R_in",
+      "title": "Input resistance of a DCM buck-boost or flyback (loss-free resistor)",
+      "title_ko": "DCM 벅-부스트/플라이백의 입력 저항(무손실 저항, LFR)",
+      "latex": "R_\\mathrm{in} = \\frac{2 L_M f_s}{D^{2}}",
+      "lhs": "R_in",
+      "expr": "2*L_M*f_s/D**2",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "L_M",
+        "f_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "L_M": "(magnetizing) inductance",
+        "f_s": "switching frequency"
+      },
+      "assumptions": [
+        "ideal",
+        "dcm",
+        "steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the average input current is proportional to $V_g$; the power is passed on, not dissipated",
+      "notes_ko": "평균 입력 전류가 $V_g$에 비례; 전력은 소산되지 않고 출력으로 전달됨",
+      "cites": [
+        {
+          "key": "singer1990",
+          "where": ""
+        },
+        {
+          "key": "erickson2020",
+          "where": "Ch. 15 (AC and DC Equivalent Circuit Modeling of the DCM)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/flyback.py",
+      "n_tests": 7,
+      "yaml_line": 405
+    },
+    "flyback.V_crit": {
+      "id": "flyback.V_crit",
+      "title": "Flyback: input voltage at the CCM/DCM boundary (fixed D, fixed output)",
+      "title_ko": "플라이백: CCM/DCM 경계의 입력 전압(고정 D, 고정 출력)",
+      "latex": "V_{g,\\mathrm{crit}} = \\frac{\\left(V + V_D\\right) \\left(1 - D\\right)}{n D}",
+      "lhs": "V_gcrit",
+      "expr": "(V + V_D)*(1 - D)/(n*D)",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "V",
+        "V_D",
+        "n"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "V": "output voltage",
+        "V_D": "output-diode drop",
+        "n": "turns ratio N_s/N_p"
+      },
+      "assumptions": [
+        "ideal",
+        "bcm",
+        "steady_state",
+        "fixed_output",
+        "diode_drop"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "below $V_{g,\\mathrm{crit}}$ the converter is in DCM; a source-driven bus that rises to $V_{g,\\mathrm{crit}}$ is pinned there by CCM volt-second balance",
+      "notes_ko": "$V_{g,\\mathrm{crit}}$ 아래에서는 DCM; 전원 구동 버스가 $V_{g,\\mathrm{crit}}$에 도달하면 CCM 전압-초 평형에 의해 그 값에 고정됨",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 6 (Converter Circuits); derived here by volt-second balance"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/flyback.py",
+      "n_tests": 7,
+      "yaml_line": 421
+    },
+    "flyback.Vds_off": {
+      "id": "flyback.Vds_off",
+      "title": "Flyback switch voltage while off (without the leakage spike)",
+      "title_ko": "플라이백 스위치 오프 전압(누설 스파이크 제외)",
+      "latex": "V_\\mathrm{DS} = V_g + \\frac{V + V_D}{n}",
+      "lhs": "V_DS",
+      "expr": "V_g + (V + V_D)/n",
+      "relation": "eq",
+      "variables": [
+        "V",
+        "V_D",
+        "V_g",
+        "n"
+      ],
+      "constants": [],
+      "symbols": {
+        "V": "output voltage",
+        "V_D": "output-diode drop",
+        "V_g": "input voltage",
+        "n": "turns ratio N_s/N_p"
+      },
+      "assumptions": [
+        "ideal",
+        "steady_state",
+        "diode_drop"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the leakage-inductance spike adds on top; see $E_\\mathrm{lk}$",
+      "notes_ko": "누설 인덕턴스 스파이크가 여기에 더해짐; $E_\\mathrm{lk}$ 참고",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 6 (Converter Circuits)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/flyback.py",
+      "n_tests": 7,
+      "yaml_line": 435
+    },
+    "flyback.Vds_clamped": {
+      "id": "flyback.Vds_clamped",
+      "title": "Flyback switch voltage with the input pinned at the boundary",
+      "title_ko": "입력이 경계 전압에 고정된 플라이백의 스위치 전압",
+      "latex": "V_\\mathrm{DS} = \\frac{V + V_D}{n D}",
+      "lhs": "V_DS",
+      "expr": "(V + V_D)/(n*D)",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "V",
+        "V_D",
+        "n"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "V": "output voltage",
+        "V_D": "output-diode drop",
+        "n": "turns ratio N_s/N_p"
+      },
+      "assumptions": [
+        "ideal",
+        "bcm",
+        "steady_state",
+        "fixed_output",
+        "diode_drop"
+      ],
+      "convention": "evaluated at $V_g = V_{g,\\mathrm{crit}}$",
+      "convention_ko": "$V_g = V_{g,\\mathrm{crit}}$에서 계산",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 6 (Converter Circuits); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/flyback.py",
+      "n_tests": 7,
+      "yaml_line": 449
+    },
+    "flyback.diode.VR": {
+      "id": "flyback.diode.VR",
+      "title": "Flyback output-diode reverse voltage",
+      "title_ko": "플라이백 출력 다이오드 역전압",
+      "latex": "V_R = V + n V_g",
+      "lhs": "V_R",
+      "expr": "V + n*V_g",
+      "relation": "eq",
+      "variables": [
+        "V",
+        "V_g",
+        "n"
+      ],
+      "constants": [],
+      "symbols": {
+        "V": "output voltage",
+        "V_g": "input voltage",
+        "n": "turns ratio N_s/N_p"
+      },
+      "assumptions": [
+        "ideal",
+        "steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 6 (Converter Circuits)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/flyback.py",
+      "n_tests": 7,
+      "yaml_line": 463
+    },
+    "flyback.Ipk.dcm": {
+      "id": "flyback.Ipk.dcm",
+      "title": "Flyback peak magnetizing current, DCM",
+      "title_ko": "플라이백 피크 자화 전류, DCM",
+      "latex": "I_\\mathrm{pk} = \\frac{V_g D}{L_M f_s}",
+      "lhs": "I_pk",
+      "expr": "V_g*D/(L_M*f_s)",
+      "relation": "eq",
+      "variables": [
+        "D",
+        "L_M",
+        "V_g",
+        "f_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "D": "duty ratio",
+        "L_M": "magnetizing inductance",
+        "V_g": "input voltage",
+        "f_s": "switching frequency"
+      },
+      "assumptions": [
+        "ideal",
+        "dcm",
+        "steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "in DCM the magnetizing current starts every cycle from zero",
+      "notes_ko": "DCM에서는 자화 전류가 매 주기 0에서 시작",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 5 (The Discontinuous Conduction Mode)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/flyback.py",
+      "n_tests": 7,
+      "yaml_line": 475
+    },
+    "flyback.leak.E": {
+      "id": "flyback.leak.E",
+      "title": "Energy stored in the leakage inductance at turn-off",
+      "title_ko": "턴오프 시 누설 인덕턴스에 저장된 에너지",
+      "latex": "E_\\mathrm{lk} = \\frac{L_\\mathrm{lk} I_\\mathrm{pk}^{2}}{2}",
+      "lhs": "E_lk",
+      "expr": "L_lk*I_pk**2/2",
+      "relation": "eq",
+      "variables": [
+        "I_pk",
+        "L_lk"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_pk": "primary current at turn-off",
+        "L_lk": "leakage inductance (primary-referred)"
+      },
+      "assumptions": [
+        "linear_magnetics"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "this energy cannot reach the secondary; a clamp or snubber must absorb it",
+      "notes_ko": "이 에너지는 2차측으로 전달되지 못하므로 클램프나 스너버가 흡수해야 함",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 4 (Switch Realization: losses from energy stored in leakage and stray inductances)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/energy.py",
+      "n_tests": 7,
+      "yaml_line": 492
+    },
+    "flyback.leak.P": {
+      "id": "flyback.leak.P",
+      "title": "Leakage-energy power",
+      "title_ko": "누설 에너지에 의한 전력",
+      "latex": "P_\\mathrm{lk} = E_\\mathrm{lk} f_s",
+      "lhs": "P_lk",
+      "expr": "E_lk*f_s",
+      "relation": "eq",
+      "variables": [
+        "E_lk",
+        "f_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "E_lk": "leakage energy per cycle",
+        "f_s": "switching frequency"
+      },
+      "assumptions": [
+        "steady_state",
+        "energy_lost"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "a lower bound for the clamp dissipation; a clamp that also absorbs reflected-voltage energy dissipates more",
+      "notes_ko": "클램프 손실의 하한; 반사 전압 에너지까지 흡수하는 클램프는 더 많이 소산함",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 4 (Switch Realization)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/energy.py",
+      "n_tests": 7,
+      "yaml_line": 506
+    },
+    "dcm.ring.f": {
+      "id": "dcm.ring.f",
+      "title": "Ringing frequency of the switch node in the DCM idle interval",
+      "title_ko": "DCM 휴지 구간의 스위치 노드 링잉 주파수",
+      "latex": "f_\\mathrm{ring} = \\frac{1}{2 \\pi \\sqrt{L_M C_\\mathrm{node}}}",
+      "lhs": "f_ring",
+      "expr": "1/(2*pi*sqrt(L_M*C_node))",
+      "relation": "eq",
+      "variables": [
+        "C_node",
+        "L_M"
+      ],
+      "constants": [],
+      "symbols": {
+        "C_node": "total switch-node capacitance",
+        "L_M": "(magnetizing) inductance"
+      },
+      "assumptions": [
+        "lossless_lc"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "after the diode current reaches zero, $L_M$ rings with the switch-node capacitance",
+      "notes_ko": "다이오드 전류가 0이 된 뒤 $L_M$이 스위치 노드 커패시턴스와 공진함",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 8 (Converter Transfer Functions: resonant frequency of an L-C pair)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/energy.py",
+      "n_tests": 7,
+      "yaml_line": 520
+    },
+    "loss.cond": {
+      "id": "loss.cond",
+      "title": "Conduction loss in a resistance",
+      "title_ko": "저항의 도통 손실",
+      "latex": "P = I_\\mathrm{rms}^{2} R_x",
+      "lhs": "P",
+      "expr": "I_rms**2*R_x",
+      "relation": "eq",
+      "variables": [
+        "I_rms",
+        "R_x"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_rms": "rms current",
+        "R_x": "resistance carrying the current"
+      },
+      "assumptions": [
+        "steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 3 (Steady-State Equivalent Circuit Modeling, Losses, and Efficiency)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/energy.py",
+      "n_tests": 7,
+      "yaml_line": 534
+    },
+    "loss.sw.cap": {
+      "id": "loss.sw.cap",
+      "title": "Capacitive turn-on loss",
+      "title_ko": "용량성 턴온 손실",
+      "latex": "P = \\frac{C_\\mathrm{node} V_\\mathrm{sw}^{2} f_s}{2}",
+      "lhs": "P",
+      "expr": "C_node*V_sw**2*f_s/2",
+      "relation": "eq",
+      "variables": [
+        "C_node",
+        "V_sw",
+        "f_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "C_node": "switch-node capacitance",
+        "V_sw": "voltage at turn-on",
+        "f_s": "switching frequency"
+      },
+      "assumptions": [
+        "steady_state",
+        "full_discharge",
+        "energy_lost"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 4 (Switch Realization)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/energy.py",
+      "n_tests": 7,
+      "yaml_line": 546
+    },
+    "loss.gate": {
+      "id": "loss.gate",
+      "title": "Gate-drive power",
+      "title_ko": "게이트 구동 전력",
+      "latex": "P = Q_g V_\\mathrm{GS} f_s",
+      "lhs": "P",
+      "expr": "Q_g*V_GS*f_s",
+      "relation": "eq",
+      "variables": [
+        "Q_g",
+        "V_GS",
+        "f_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "Q_g": "total gate charge at V_GS",
+        "V_GS": "gate-drive voltage",
+        "f_s": "switching frequency"
+      },
+      "assumptions": [
+        "steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "dissipated in the driver and gate resistances, not in the power switch channel",
+      "notes_ko": "전력 스위치 채널이 아니라 드라이버와 게이트 저항에서 소산됨",
+      "cites": [
+        {
+          "key": "balogh2018",
+          "where": ""
+        }
+      ],
+      "derived_by": "python/pe_core/derive/energy.py",
+      "n_tests": 7,
+      "yaml_line": 558
+    },
+    "loss.diode": {
+      "id": "loss.diode",
+      "title": "Diode conduction loss",
+      "title_ko": "다이오드 도통 손실",
+      "latex": "P = V_F I_\\mathrm{avg} + r_d I_\\mathrm{rms}^{2}",
+      "lhs": "P",
+      "expr": "V_F*I_avg + r_d*I_rms**2",
+      "relation": "eq",
+      "variables": [
+        "I_avg",
+        "I_rms",
+        "V_F",
+        "r_d"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_avg": "average diode current",
+        "I_rms": "rms diode current",
+        "V_F": "forward-voltage intercept",
+        "r_d": "dynamic resistance"
+      },
+      "assumptions": [
+        "steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 3 (Steady-State Equivalent Circuit Modeling, Losses, and Efficiency)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/energy.py",
+      "n_tests": 7,
+      "yaml_line": 572
+    },
+    "loss.steinmetz": {
+      "id": "loss.steinmetz",
+      "title": "Core loss per unit volume (Steinmetz form)",
+      "title_ko": "단위 체적당 코어 손실(스타인메츠 식)",
+      "latex": "P_v = k f^{\\alpha} B_\\mathrm{ac}^{\\beta}",
+      "lhs": "P_v",
+      "expr": "k*f**alpha*B_ac**beta",
+      "relation": "eq",
+      "variables": [
+        "B_ac",
+        "alpha",
+        "beta",
+        "f",
+        "k"
+      ],
+      "constants": [],
+      "symbols": {
+        "B_ac": "peak AC flux density",
+        "alpha": "frequency exponent",
+        "beta": "flux exponent",
+        "f": "frequency",
+        "k": "coefficient"
+      },
+      "assumptions": [
+        "sinusoidal_excitation"
+      ],
+      "convention": "$B_\\mathrm{ac}$ is the peak AC amplitude, half the peak-to-peak swing $\\Delta B$; $k$, $\\alpha$, $\\beta$ are fitted per material and valid only over the fitted range",
+      "convention_ko": "$B_\\mathrm{ac}$는 피크 교류 진폭(피크-투-피크 $\\Delta B$의 절반); $k$, $\\alpha$, $\\beta$는 재료별 피팅값이며 피팅 범위 안에서만 유효",
+      "notes": "Steinmetz's original law gives loss per cycle proportional to $B^{1.6}$; the frequency term is the empirical extension used with ferrite data",
+      "notes_ko": "스타인메츠의 원래 법칙은 주기당 손실이 $B^{1.6}$에 비례; 주파수 항은 페라이트 데이터에 쓰이는 경험적 확장",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory: core loss)"
+        }
+      ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 64
+      "yaml_line": 584
+    },
+    "mag.L_from_AL": {
+      "id": "mag.L_from_AL",
+      "title": "Inductance from the inductance factor",
+      "title_ko": "인덕턴스 계수로부터 인덕턴스",
+      "latex": "L = A_L N^{2}",
+      "lhs": "L",
+      "expr": "A_L*N**2",
+      "relation": "eq",
+      "variables": [
+        "A_L",
+        "N"
+      ],
+      "constants": [],
+      "symbols": {
+        "A_L": "inductance factor",
+        "N": "number of turns"
+      },
+      "assumptions": [
+        "linear_magnetics"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "dixon2001",
+          "where": ""
+        },
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/magnetics.py",
+      "n_tests": 7,
+      "yaml_line": 603
+    },
+    "mag.AL_gap": {
+      "id": "mag.AL_gap",
+      "title": "Inductance factor of a gapped core",
+      "title_ko": "갭이 있는 코어의 인덕턴스 계수",
+      "latex": "A_L \\approx \\frac{\\mu_0 A_e}{l_g + \\frac{l_e}{\\mu_i}}",
+      "lhs": "A_L",
+      "expr": "mu_0*A_e/(l_g + l_e/mu_i)",
+      "relation": "approx",
+      "variables": [
+        "A_e",
+        "l_e",
+        "l_g",
+        "mu_i"
+      ],
+      "constants": [
+        "mu_0"
+      ],
+      "symbols": {
+        "A_e": "effective area",
+        "l_e": "effective path length",
+        "l_g": "gap length",
+        "mu_i": "initial relative permeability",
+        "mu_0": "permeability of free space"
+      },
+      "assumptions": [
+        "linear_magnetics",
+        "no_fringing",
+        "uniform_flux"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "fringing makes the real $A_L$ larger than this estimate; use the manufacturer's $A_L$ for a specified gap",
+      "notes_ko": "프린징 때문에 실제 $A_L$은 이 추정보다 큼; 갭이 지정된 코어는 제조사 $A_L$ 사용",
+      "cites": [
+        {
+          "key": "dixon2001",
+          "where": ""
+        },
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory: magnetic circuits)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/magnetics.py",
+      "n_tests": 8,
+      "yaml_line": 617
+    },
+    "mag.B_pk": {
+      "id": "mag.B_pk",
+      "title": "Peak flux density from inductance and peak current",
+      "title_ko": "인덕턴스와 피크 전류로부터 피크 자속 밀도",
+      "latex": "B_\\mathrm{pk} = \\frac{L I_\\mathrm{pk}}{N A_e}",
+      "lhs": "B_pk",
+      "expr": "L*I_pk/(N*A_e)",
+      "relation": "eq",
+      "variables": [
+        "A_e",
+        "I_pk",
+        "L",
+        "N"
+      ],
+      "constants": [],
+      "symbols": {
+        "A_e": "effective area",
+        "I_pk": "peak current",
+        "L": "inductance",
+        "N": "number of turns"
+      },
+      "assumptions": [
+        "linear_magnetics",
+        "uniform_flux"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "dixon2001",
+          "where": ""
+        },
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/magnetics.py",
+      "n_tests": 7,
+      "yaml_line": 635
+    },
+    "mag.dB_faraday": {
+      "id": "mag.dB_faraday",
+      "title": "Flux-density swing from Faraday's law",
+      "title_ko": "패러데이 법칙으로 구한 자속 밀도 변화폭",
+      "latex": "\\Delta B = \\frac{V_w t_\\mathrm{on}}{N A_e}",
+      "lhs": "Delta_B",
+      "expr": "V_w*t_on/(N*A_e)",
+      "relation": "eq",
+      "variables": [
+        "A_e",
+        "N",
+        "V_w",
+        "t_on"
+      ],
+      "constants": [],
+      "symbols": {
+        "A_e": "effective area",
+        "N": "number of turns",
+        "V_w": "winding voltage during t_on",
+        "t_on": "on-time"
+      },
+      "assumptions": [
+        "uniform_flux"
+      ],
+      "convention": "$\\Delta B$ is the peak-to-peak swing; the AC amplitude used in core-loss formulas is $\\Delta B/2$",
+      "convention_ko": "$\\Delta B$는 피크-투-피크 변화폭; 코어 손실식의 교류 진폭은 $\\Delta B/2$",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "dixon2001",
+          "where": ""
+        },
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/magnetics.py",
+      "n_tests": 7,
+      "yaml_line": 649
+    },
+    "src.Pmax": {
+      "id": "src.Pmax",
+      "title": "Maximum power from a linear source",
+      "title_ko": "선형 전원의 최대 전력",
+      "latex": "P_\\mathrm{max} = \\frac{V_\\mathrm{oc}^{2}}{4 R_s}",
+      "lhs": "P_max",
+      "expr": "V_oc**2/(4*R_s)",
+      "relation": "eq",
+      "variables": [
+        "R_s",
+        "V_oc"
+      ],
+      "constants": [],
+      "symbols": {
+        "R_s": "source resistance",
+        "V_oc": "open-circuit voltage"
+      },
+      "assumptions": [
+        "linear_source"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "delivered into a matched load $R_L = R_s$",
+      "notes_ko": "정합 부하 $R_L = R_s$에 전달될 때",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Sec. 4.8 (Maximum Power Transfer)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/harvesting.py",
+      "n_tests": 7,
+      "yaml_line": 668
+    },
+    "src.cv_extraction": {
+      "id": "src.cv_extraction",
+      "title": "Extraction fraction of a constant-voltage sink",
+      "title_ko": "정전압 싱크의 추출 비율",
+      "latex": "\\eta_\\mathrm{ext} = \\frac{4 V_c \\left(V_\\mathrm{oc} - V_c\\right)}{V_\\mathrm{oc}^{2}}",
+      "lhs": "eta_ext",
+      "expr": "4*V_c*(V_oc - V_c)/V_oc**2",
+      "relation": "eq",
+      "variables": [
+        "V_c",
+        "V_oc"
+      ],
+      "constants": [],
+      "symbols": {
+        "V_c": "sink voltage",
+        "V_oc": "open-circuit voltage"
+      },
+      "assumptions": [
+        "linear_source"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "power into the sink as a fraction of $P_\\mathrm{max}$; equals 1 only at $V_c = V_\\mathrm{oc}/2$",
+      "notes_ko": "싱크로 들어가는 전력의 $P_\\mathrm{max}$ 대비 비율; $V_c = V_\\mathrm{oc}/2$에서만 1",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Sec. 4.8 (Maximum Power Transfer); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/harvesting.py",
+      "n_tests": 8,
+      "yaml_line": 682
+    },
+    "sense.current_out_monitor": {
+      "id": "sense.current_out_monitor",
+      "title": "Output of a current-output high-side current-sense amplifier",
+      "title_ko": "전류 출력형 하이사이드 전류 센스 증폭기의 출력",
+      "latex": "V_\\mathrm{OUT} = \\frac{I_\\mathrm{SENSE} R_\\mathrm{SENSE} R_\\mathrm{OUT}}{R_\\mathrm{IN}}",
+      "lhs": "V_OUT",
+      "expr": "I_SENSE*R_SENSE*R_OUT/R_IN",
+      "relation": "eq",
+      "variables": [
+        "I_SENSE",
+        "R_IN",
+        "R_OUT",
+        "R_SENSE"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_SENSE": "sensed current",
+        "R_IN": "gain-setting input resistor",
+        "R_OUT": "output resistor",
+        "R_SENSE": "sense resistor"
+      },
+      "assumptions": [
+        "ideal_amplifier"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the amplifier forces $I_\\mathrm{SENSE} R_\\mathrm{SENSE}$ across $R_\\mathrm{IN}$ and sends that current through $R_\\mathrm{OUT}$; the output headroom limit is set by the supply, not by the gain",
+      "notes_ko": "증폭기가 $I_\\mathrm{SENSE} R_\\mathrm{SENSE}$를 $R_\\mathrm{IN}$ 양단에 걸고 그 전류를 $R_\\mathrm{OUT}$으로 흘림; 출력 헤드룸 한계는 이득이 아니라 전원 전압이 정함",
+      "cites": [
+        {
+          "key": "adi_ltc6101",
+          "where": ""
+        }
+      ],
+      "derived_by": "python/pe_core/derive/sensing.py",
+      "n_tests": 7,
+      "yaml_line": 698
     }
   }
 }

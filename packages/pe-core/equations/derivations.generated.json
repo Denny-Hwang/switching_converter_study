@@ -1,0 +1,672 @@
+{
+  "_generated_by": "python scripts/gen_equations.py -- DO NOT EDIT; edit python/pe_core/derive/*.py",
+  "derivations": [
+    {
+      "module": "ccm_ratios",
+      "source": "python/pe_core/derive/ccm_ratios.py",
+      "title": "CCM conversion ratios and ripple by volt-second balance",
+      "title_ko": "전압-초 평형으로 구하는 CCM 변환비와 리플",
+      "intro": "In periodic steady state every inductor current ends a switching period where it started, so the average inductor voltage over the period is zero. With the small-ripple approximation each interval applies a constant voltage, and the balance becomes a linear equation in the output voltage $V$.",
+      "intro_ko": "주기적 정상상태에서는 모든 인덕터 전류가 한 스위칭 주기의 끝에서 시작값으로 돌아오므로 한 주기 동안의 평균 인덕터 전압은 0이다. 소리플 근사를 쓰면 각 구간에 걸리는 전압이 일정하므로 이 평형 조건은 출력 전압에 대한 1차 방정식이 된다.",
+      "results": [
+        "buck.ccm.M",
+        "boost.ccm.M",
+        "buckboost.ccm.M",
+        "flyback.ccm.M",
+        "forward.ccm.M",
+        "forward.reset.Dmax",
+        "buck.ripple.iL",
+        "buck.ripple.iL_pp"
+      ],
+      "steps": [
+        {
+          "text": "Volt-second balance: the inductor voltage averaged over one switching period is zero.",
+          "text_ko": "전압-초 평형: 한 스위칭 주기 동안 평균한 인덕터 전압은 0이다.",
+          "latex": "\\langle v_L \\rangle = 0",
+          "result_for": null
+        },
+        {
+          "text": "Buck: the inductor sees $V_g - V$ while the switch is on (fraction $D$) and $-V$ while the diode conducts ($1 - D$).",
+          "text_ko": "벅: 스위치 온 구간(비율 $D$)에는 인덕터에 $V_g - V$, 다이오드 도통 구간($1 - D$)에는 $-V$가 걸린다.",
+          "latex": "D \\left(V_g - V\\right) - V \\left(1 - D\\right) = 0",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $V$ and divide by $V_g$.",
+          "text_ko": "$V$에 대해 풀고 $V_g$로 나눈다.",
+          "latex": "M = D",
+          "result_for": "buck.ccm.M"
+        },
+        {
+          "text": "Boost: $V_g$ while the switch is on, $V_g - V$ while the diode conducts.",
+          "text_ko": "부스트: 스위치 온 구간에는 $V_g$, 다이오드 도통 구간에는 $V_g - V$.",
+          "latex": "D V_g + \\left(1 - D\\right) \\left(V_g - V\\right) = 0",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $V$.",
+          "text_ko": "$V$에 대해 푼다.",
+          "latex": "M = - \\frac{1}{-1 + D} = \\frac{1}{1 - D}",
+          "result_for": "boost.ccm.M"
+        },
+        {
+          "text": "Buck-boost: $V_g$ while the switch is on, the (negative) output voltage $V$ while the diode conducts.",
+          "text_ko": "벅-부스트: 스위치 온 구간에는 $V_g$, 다이오드 도통 구간에는 (음의) 출력 전압 $V$.",
+          "latex": "V \\left(1 - D\\right) + D V_g = 0",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $V$; the output is inverted.",
+          "text_ko": "$V$에 대해 푼다. 출력 극성이 반전된다.",
+          "latex": "M = \\frac{D}{-1 + D} = - \\frac{D}{1 - D}",
+          "result_for": "buckboost.ccm.M"
+        },
+        {
+          "text": "Flyback (1:$n$, magnetizing inductance on the primary): $V_g$ while the switch is on; while the diode conducts the secondary is clamped at $V$, which reflects to $-V/n$ on the primary.",
+          "text_ko": "플라이백(1:$n$, 1차측 자화 인덕턴스): 스위치 온 구간에는 $V_g$; 다이오드 도통 구간에는 2차측이 $V$로 클램프되어 1차측에 $-V/n$으로 반사된다.",
+          "latex": "D V_g - \\frac{V \\left(1 - D\\right)}{n} = 0",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $V$.",
+          "text_ko": "$V$에 대해 푼다.",
+          "latex": "M = - \\frac{D n}{-1 + D} = \\frac{n D}{1 - D}",
+          "result_for": "flyback.ccm.M"
+        },
+        {
+          "text": "Forward: the secondary applies $nV_g$ to the output filter while the switch is on, so the output inductor sees $nV_g - V$, then $-V$ while the freewheeling diode conducts.",
+          "text_ko": "포워드: 스위치 온 구간에 2차측이 출력 필터에 $nV_g$를 인가하므로 출력 인덕터에는 $nV_g - V$, 환류 다이오드 도통 구간에는 $-V$가 걸린다.",
+          "latex": "D \\left(- V + V_g n\\right) - V \\left(1 - D\\right) = 0",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $V$.",
+          "text_ko": "$V$에 대해 푼다.",
+          "latex": "M = n D",
+          "result_for": "forward.ccm.M"
+        },
+        {
+          "text": "Forward reset: the magnetizing inductance sees $V_g$ for $D T_s$, then the reset winding ($N_r$ turns) clamps it to $-V_g/n_r$ for $D_2 T_s$ until the magnetizing current is back to zero.",
+          "text_ko": "포워드 리셋: 자화 인덕턴스에는 $D T_s$ 동안 $V_g$가 걸리고, 이후 자화 전류가 0이 될 때까지 $D_2 T_s$ 동안 리셋 권선($N_r$ 턴)이 $-V_g/n_r$로 클램프한다.",
+          "latex": "D V_g - \\frac{D_2 V_g}{n_r} = 0",
+          "result_for": null
+        },
+        {
+          "text": "Solve for the reset interval.",
+          "text_ko": "리셋 구간을 구한다.",
+          "latex": "D_2 = D n_r",
+          "result_for": null
+        },
+        {
+          "text": "The reset must finish within the period, $D + D_2 \\le 1$; the equality gives the largest duty ratio.",
+          "text_ko": "리셋은 한 주기 안에 끝나야 하므로 $D + D_2 \\le 1$이며, 등호가 최대 듀티비를 준다.",
+          "latex": "D_\\mathrm{max} = \\frac{1}{1 + n_r}",
+          "result_for": "forward.reset.Dmax"
+        },
+        {
+          "text": "Buck ripple: during the on-interval the inductor current rises with slope $(V_g - V)/L$ for $D T_s$, which is the full peak-to-peak ripple, i.e. $2\\Delta i_L$.",
+          "text_ko": "벅 리플: 온 구간 $D T_s$ 동안 인덕터 전류가 기울기 $(V_g - V)/L$로 증가하며, 이 증가량이 피크-투-피크 리플, 즉 $2\\Delta i_L$이다.",
+          "latex": "2 \\Delta i_L = \\frac{D T_s \\left(V_g - V\\right)}{L}",
+          "result_for": null
+        },
+        {
+          "text": "Half of it is Erickson's $\\Delta i_L$.",
+          "text_ko": "그 절반이 Erickson의 $\\Delta i_L$이다.",
+          "latex": "\\Delta i_L = \\frac{\\left(V_g - V\\right) D T_s}{2 L}",
+          "result_for": "buck.ripple.iL"
+        },
+        {
+          "text": "The peak-to-peak value, with $T_s = 1/f_s$.",
+          "text_ko": "$T_s = 1/f_s$로 쓴 피크-투-피크 값.",
+          "latex": "\\Delta i_{L,\\mathrm{pp}} = \\frac{\\left(V_g - V\\right) D}{L f_s}",
+          "result_for": "buck.ripple.iL_pp"
+        }
+      ]
+    },
+    {
+      "module": "dcm",
+      "source": "python/pe_core/derive/dcm.py",
+      "title": "CCM/DCM boundary and DCM conversion ratios (buck, boost, buck-boost)",
+      "title_ko": "CCM/DCM 경계와 DCM 변환비(벅, 부스트, 벅-부스트)",
+      "intro": "The converter leaves CCM when the inductor current ripple is large enough for the current to reach zero: at the boundary the half-ripple $\\Delta i_L$ equals the dc inductor current. In DCM a third interval $D_3 T_s$ appears in which both switch and diode are off; its length is unknown, so volt-second balance is combined with capacitor charge balance (the average diode or inductor current must equal what the load draws).",
+      "intro_ko": "인덕터 전류 리플이 커져 전류가 0에 닿으면 CCM을 벗어난다. 경계에서는 리플의 절반 $\\Delta i_L$이 인덕터 직류 전류와 같다. DCM에서는 스위치와 다이오드가 모두 꺼진 세 번째 구간 $D_3 T_s$가 생기고 그 길이를 모르므로, 전압-초 평형에 커패시터 전하 평형(평균 다이오드 또는 인덕터 전류가 부하 전류와 같음)을 함께 쓴다.",
+      "results": [
+        "Kcrit.buck",
+        "Kcrit.boost",
+        "Kcrit.buckboost",
+        "buck.dcm.M",
+        "boost.dcm.M",
+        "buckboost.dcm.M"
+      ],
+      "steps": [
+        {
+          "text": "Definition used throughout: $K = 2L/(R T_s)$, i.e. $L = K R T_s/2$.",
+          "text_ko": "전 과정에서 쓰는 정의: $K = 2L/(R T_s)$, 즉 $L = K R T_s/2$.",
+          "latex": "K = \\frac{2 L}{R T_s}",
+          "result_for": null
+        },
+        {
+          "text": "Buck: the dc inductor current equals the load current $V/R$, with $V = D V_g$ in CCM.",
+          "text_ko": "벅: 인덕터 직류 전류는 부하 전류 $V/R$이며, CCM에서 $V = D V_g$.",
+          "latex": "I_L = \\frac{D V_g}{R}",
+          "result_for": null
+        },
+        {
+          "text": "The half-ripple over the on-interval, with the CCM operating point substituted.",
+          "text_ko": "CCM 동작점을 대입한 온 구간의 리플 절반.",
+          "latex": "\\Delta i_L = \\frac{D T_s \\left(V_g - D V_g\\right)}{2 L}",
+          "result_for": null
+        },
+        {
+          "text": "Boundary $\\Delta i_L = I_L$, with $L = K R T_s/2$, solved for $K$.",
+          "text_ko": "경계 조건 $\\Delta i_L = I_L$에 $L = K R T_s/2$를 넣고 $K$에 대해 푼다.",
+          "latex": "K_\\mathrm{crit} = 1 - D",
+          "result_for": "Kcrit.buck"
+        },
+        {
+          "text": "Boost: the inductor carries the input current, $V/((1 - D)R)$, with $V = V_g/(1 - D)$.",
+          "text_ko": "부스트: 인덕터는 입력 전류 $V/((1 - D)R)$를 흘리며, $V = V_g/(1 - D)$.",
+          "latex": "I_L = \\frac{V_g}{R \\left(1 - D\\right)^{2}}",
+          "result_for": null
+        },
+        {
+          "text": "The half-ripple over the on-interval, with the CCM operating point substituted.",
+          "text_ko": "CCM 동작점을 대입한 온 구간의 리플 절반.",
+          "latex": "\\Delta i_L = \\frac{D T_s V_g}{2 L}",
+          "result_for": null
+        },
+        {
+          "text": "Boundary $\\Delta i_L = I_L$, with $L = K R T_s/2$, solved for $K$.",
+          "text_ko": "경계 조건 $\\Delta i_L = I_L$에 $L = K R T_s/2$를 넣고 $K$에 대해 푼다.",
+          "latex": "K_\\mathrm{crit} = D \\left(-1 + D\\right)^{2} = D \\left(1 - D\\right)^{2}",
+          "result_for": "Kcrit.boost"
+        },
+        {
+          "text": "Buck-boost: the inductor current is $|V|/((1 - D)R)$, with $|V| = D V_g/(1 - D)$.",
+          "text_ko": "벅-부스트: 인덕터 전류는 $|V|/((1 - D)R)$이며, $|V| = D V_g/(1 - D)$.",
+          "latex": "I_L = \\frac{D V_g}{R \\left(1 - D\\right)^{2}}",
+          "result_for": null
+        },
+        {
+          "text": "The half-ripple over the on-interval, with the CCM operating point substituted.",
+          "text_ko": "CCM 동작점을 대입한 온 구간의 리플 절반.",
+          "latex": "\\Delta i_L = \\frac{D T_s V_g}{2 L}",
+          "result_for": null
+        },
+        {
+          "text": "Boundary $\\Delta i_L = I_L$, with $L = K R T_s/2$, solved for $K$.",
+          "text_ko": "경계 조건 $\\Delta i_L = I_L$에 $L = K R T_s/2$를 넣고 $K$에 대해 푼다.",
+          "latex": "K_\\mathrm{crit} = \\left(-1 + D\\right)^{2} = \\left(1 - D\\right)^{2}",
+          "result_for": "Kcrit.buckboost"
+        },
+        {
+          "text": "Buck DCM, volt-second balance with $V = M V_g$: $V_g - V$ for $D T_s$, $-V$ for $D_2 T_s$, $0$ for $D_3 T_s$.",
+          "text_ko": "벅 DCM, $V = M V_g$로 쓴 전압-초 평형: $D T_s$ 동안 $V_g - V$, $D_2 T_s$ 동안 $-V$, $D_3 T_s$ 동안 $0$.",
+          "latex": "D \\left(V_g - M V_g\\right) - D_2 M V_g = 0",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $D_2$.",
+          "text_ko": "$D_2$를 구한다.",
+          "latex": "D_2 = - D + \\frac{D}{M}",
+          "result_for": null
+        },
+        {
+          "text": "Peak inductor current at the end of the on-interval.",
+          "text_ko": "온 구간 끝의 인덕터 피크 전류.",
+          "latex": "i_\\mathrm{pk} = \\frac{D T_s \\left(V_g - M V_g\\right)}{L}",
+          "result_for": null
+        },
+        {
+          "text": "Charge balance: the average inductor current (a triangle of height $i_\\mathrm{pk}$ and base $(D + D_2)T_s$) equals the load current $V/R$.",
+          "text_ko": "전하 평형: 평균 인덕터 전류(높이 $i_\\mathrm{pk}$, 밑변 $(D + D_2)T_s$인 삼각형)가 부하 전류 $V/R$과 같다.",
+          "latex": "\\frac{T_s D^{2} \\left(V_g - M V_g\\right)}{2 L M} = \\frac{M V_g}{R}",
+          "result_for": null
+        },
+        {
+          "text": "Substitute $L = K R T_s/2$ and take the positive root of the quadratic in $M$.",
+          "text_ko": "$L = K R T_s/2$를 대입하고 $M$에 대한 2차식의 양의 근을 택한다.",
+          "latex": "M = \\frac{D \\left(- D + \\sqrt{4 K + D^{2}}\\right)}{2 K} = \\frac{2}{1 + \\sqrt{1 + \\frac{4 K}{D^{2}}}}",
+          "result_for": "buck.dcm.M"
+        },
+        {
+          "text": "Boost DCM, volt-second balance: $V_g$ for $D T_s$, $V_g - V$ for $D_2 T_s$.",
+          "text_ko": "부스트 DCM 전압-초 평형: $D T_s$ 동안 $V_g$, $D_2 T_s$ 동안 $V_g - V$.",
+          "latex": "D V_g + D_2 \\left(V_g - M V_g\\right) = 0",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $D_2$.",
+          "text_ko": "$D_2$를 구한다.",
+          "latex": "D_2 = \\frac{D}{-1 + M}",
+          "result_for": null
+        },
+        {
+          "text": "Charge balance at the output: the average diode current (a triangle of height $i_\\mathrm{pk}$ over $D_2 T_s$) equals the load current.",
+          "text_ko": "출력의 전하 평형: 평균 다이오드 전류($D_2 T_s$ 동안 높이 $i_\\mathrm{pk}$인 삼각형)가 부하 전류와 같다.",
+          "latex": "\\frac{T_s V_g D^{2}}{2 L \\left(-1 + M\\right)} = \\frac{M V_g}{R}",
+          "result_for": null
+        },
+        {
+          "text": "Substitute $L = K R T_s/2$ and keep the root with $M > 1$.",
+          "text_ko": "$L = K R T_s/2$를 대입하고 $M > 1$인 근을 택한다.",
+          "latex": "M = \\frac{1}{2} + \\frac{\\sqrt{K + 4 D^{2}}}{2 \\sqrt{K}} = \\frac{1 + \\sqrt{1 + \\frac{4 D^{2}}{K}}}{2}",
+          "result_for": "boost.dcm.M"
+        },
+        {
+          "text": "Buck-boost DCM, volt-second balance with the negative output $V = M V_g$: $V_g$ for $D T_s$, $V$ for $D_2 T_s$.",
+          "text_ko": "벅-부스트 DCM, 음의 출력 $V = M V_g$로 쓴 전압-초 평형: $D T_s$ 동안 $V_g$, $D_2 T_s$ 동안 $V$.",
+          "latex": "D V_g + D_2 V_g M = 0",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $D_2$.",
+          "text_ko": "$D_2$를 구한다.",
+          "latex": "D_2 = - \\frac{D}{M}",
+          "result_for": null
+        },
+        {
+          "text": "Charge balance: the average diode current equals the load current $|V|/R$.",
+          "text_ko": "전하 평형: 평균 다이오드 전류가 부하 전류 $|V|/R$과 같다.",
+          "latex": "- \\frac{T_s V_g D^{2}}{2 L M} = - \\frac{V_g M}{R}",
+          "result_for": null
+        },
+        {
+          "text": "Substitute $L = K R T_s/2$ and solve ($M < 0$).",
+          "text_ko": "$L = K R T_s/2$를 대입해 푼다($M < 0$).",
+          "latex": "M = - \\frac{D}{\\sqrt{K}}",
+          "result_for": "buckboost.dcm.M"
+        }
+      ]
+    },
+    {
+      "module": "flyback",
+      "source": "python/pe_core/derive/flyback.py",
+      "title": "Flyback: DCM ratio, boundaries, stresses and the loss-free resistor",
+      "title_ko": "플라이백: DCM 변환비, 경계, 스트레스, 무손실 저항",
+      "intro": "The flyback stores energy in the magnetizing inductance $L_M$ while the switch is on and releases it to the output through the diode while the switch is off. With a 1:$n$ transformer ($n = N_s/N_p$) the secondary voltage reflects to the primary divided by $n$, and the secondary current is the primary-referred magnetizing current divided by $n$.",
+      "intro_ko": "플라이백은 스위치 온 구간에 자화 인덕턴스 $L_M$에 에너지를 저장하고, 오프 구간에 다이오드를 통해 출력으로 내보낸다. 1:$n$ 변압기($n = N_s/N_p$)에서 2차측 전압은 $n$으로 나누어 1차측에 반사되고, 2차측 전류는 1차측 환산 자화 전류를 $n$으로 나눈 값이다.",
+      "results": [
+        "flyback.dcm.M",
+        "Kcrit.flyback",
+        "flyback.V_crit",
+        "flyback.Vds_off",
+        "flyback.Vds_clamped",
+        "flyback.diode.VR",
+        "flyback.Ipk.dcm",
+        "dcm.P_in",
+        "lfr.R_in"
+      ],
+      "steps": [
+        {
+          "text": "On-interval: $V_g$ across $L_M$, so the magnetizing current rises from zero (DCM) to $i_\\mathrm{pk}$.",
+          "text_ko": "온 구간: $L_M$ 양단에 $V_g$가 걸려 자화 전류가 0(DCM)에서 $i_\\mathrm{pk}$까지 증가한다.",
+          "latex": "i_\\mathrm{pk} = \\frac{D T_s V_g}{L_M}",
+          "result_for": null
+        },
+        {
+          "text": "Volt-second balance on $L_M$: $V_g$ for $D T_s$, then the reflected output $-V/n$ for $D_2 T_s$.",
+          "text_ko": "$L_M$의 전압-초 평형: $D T_s$ 동안 $V_g$, 이후 $D_2 T_s$ 동안 반사된 출력 $-V/n$.",
+          "latex": "D V_g - \\frac{D_2 V}{n} = 0",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $D_2$.",
+          "text_ko": "$D_2$를 구한다.",
+          "latex": "D_2 = \\frac{D V_g n}{V}",
+          "result_for": null
+        },
+        {
+          "text": "Charge balance: the secondary current starts at $i_\\mathrm{pk}/n$ and falls to zero over $D_2 T_s$; its average equals the load current $V/R$.",
+          "text_ko": "전하 평형: 2차측 전류는 $i_\\mathrm{pk}/n$에서 시작해 $D_2 T_s$ 동안 0으로 감소하며, 그 평균이 부하 전류 $V/R$과 같다.",
+          "latex": "\\frac{T_s D^{2} V_g^{2}}{2 L_M V} = \\frac{V}{R}",
+          "result_for": null
+        },
+        {
+          "text": "Substitute $L_M = K R T_s/2$ and solve for $V/V_g$; $n$ cancels.",
+          "text_ko": "$L_M = K R T_s/2$를 대입해 $V/V_g$를 구한다. $n$은 소거된다.",
+          "latex": "M = \\frac{D}{\\sqrt{K}}",
+          "result_for": "flyback.dcm.M"
+        },
+        {
+          "text": "The DCM demagnetizing interval, with the DCM output voltage substituted.",
+          "text_ko": "DCM 출력 전압을 대입한 DCM 감자(demagnetizing) 구간.",
+          "latex": "D_2 = n \\sqrt{K}",
+          "result_for": null
+        },
+        {
+          "text": "The boundary is reached when the demagnetizing interval fills the rest of the period, $D + D_2 = 1$.",
+          "text_ko": "감자 구간이 주기의 나머지를 모두 채울 때, 즉 $D + D_2 = 1$일 때 경계에 도달한다.",
+          "latex": "K_\\mathrm{crit} = \\frac{\\left(-1 + D\\right)^{2}}{n^{2}} = \\frac{\\left(1 - D\\right)^{2}}{n^{2}}",
+          "result_for": "Kcrit.flyback"
+        },
+        {
+          "text": "Output held at $V$ (battery or regulated bus) and the diode dropping $V_D$: the reflected voltage is $-(V + V_D)/n$ during demagnetization.",
+          "text_ko": "출력이 $V$로 고정(배터리 또는 정전압 버스)되고 다이오드 강하가 $V_D$이면 감자 구간의 반사 전압은 $-(V + V_D)/n$이다.",
+          "latex": "D V_g + \\frac{D_2 \\left(- V - V_D\\right)}{n} = 0",
+          "result_for": null
+        },
+        {
+          "text": "Setting $D + D_2 = 1$ gives the input voltage at which the converter enters CCM; above it CCM volt-second balance holds $V_g$ at this value.",
+          "text_ko": "$D + D_2 = 1$로 두면 CCM에 진입하는 입력 전압을 얻는다. 그 이상에서는 CCM 전압-초 평형이 $V_g$를 이 값에 묶어 둔다.",
+          "latex": "V_{g,\\mathrm{crit}} = \\frac{V + V_D - D \\left(V + V_D\\right)}{D n} = \\frac{\\left(V + V_D\\right) \\left(1 - D\\right)}{n D}",
+          "result_for": "flyback.V_crit"
+        },
+        {
+          "text": "While the diode conducts, the primary winding carries the reflected $(V + V_D)/n$ on top of $V_g$, so the off-state switch voltage is their sum (the leakage spike comes on top of this).",
+          "text_ko": "다이오드 도통 중 1차 권선에는 반사 전압 $(V + V_D)/n$이 $V_g$ 위에 더해지므로 오프 상태 스위치 전압은 그 합이다(누설 스파이크는 여기에 추가된다).",
+          "latex": "V_\\mathrm{DS} = V_g + \\frac{V + V_D}{n}",
+          "result_for": "flyback.Vds_off"
+        },
+        {
+          "text": "With the input pinned at $V_{g,\\mathrm{crit}}$ the off-state switch voltage simplifies.",
+          "text_ko": "입력이 $V_{g,\\mathrm{crit}}$에 묶이면 오프 상태 스위치 전압이 간단해진다.",
+          "latex": "V_\\mathrm{DS} = \\frac{V + V_D}{n D}",
+          "result_for": "flyback.Vds_clamped"
+        },
+        {
+          "text": "While the switch is on the secondary winding voltage $n V_g$ adds to the output voltage across the reverse-biased diode.",
+          "text_ko": "스위치 온 구간에는 2차 권선 전압 $n V_g$가 출력 전압에 더해져 역바이어스된 다이오드에 걸린다.",
+          "latex": "V_R = V + n V_g",
+          "result_for": "flyback.diode.VR"
+        },
+        {
+          "text": "The DCM peak magnetizing current, with $T_s = 1/f_s$.",
+          "text_ko": "$T_s = 1/f_s$로 쓴 DCM 피크 자화 전류.",
+          "latex": "I_\\mathrm{pk} = \\frac{V_g D}{L_M f_s}",
+          "result_for": "flyback.Ipk.dcm"
+        },
+        {
+          "text": "Energy stored in $L_M$ at the end of each on-interval (all of it is delivered every cycle in DCM).",
+          "text_ko": "매 온 구간 끝에 $L_M$에 저장되는 에너지(DCM에서는 매 주기 전부 전달된다).",
+          "latex": "E = \\frac{D^{2} T_s^{2} V_g^{2}}{2 L_M}",
+          "result_for": null
+        },
+        {
+          "text": "Power = energy per cycle × switching frequency; it depends on $V_g$, $D$, $L_M$, $f_s$ but not on the load.",
+          "text_ko": "전력 = 주기당 에너지 × 스위칭 주파수. $V_g$, $D$, $L_M$, $f_s$에만 의존하고 부하와는 무관하다.",
+          "latex": "P = \\frac{V_g^{2} D^{2}}{2 L_M f_s}",
+          "result_for": "dcm.P_in"
+        },
+        {
+          "text": "Since $P = V_g^2/R_\\mathrm{in}$ the input behaves as a resistance that dissipates nothing (a loss-free resistor).",
+          "text_ko": "$P = V_g^2/R_\\mathrm{in}$이므로 입력은 아무것도 소산하지 않는 저항(무손실 저항)처럼 동작한다.",
+          "latex": "R_\\mathrm{in} = \\frac{2 L_M f_s}{D^{2}}",
+          "result_for": "lfr.R_in"
+        }
+      ]
+    },
+    {
+      "module": "energy",
+      "source": "python/pe_core/derive/energy.py",
+      "title": "Stored energy, losses and ringing",
+      "title_ko": "저장 에너지, 손실, 링잉",
+      "intro": "Energy stored in an inductor or capacitor is the integral of the power $v i$ delivered to it. A loss that repeats every switching period is the energy lost per cycle times $f_s$; a conduction loss is the period average of the instantaneous power.",
+      "intro_ko": "인덕터나 커패시터에 저장된 에너지는 공급된 전력 $v i$의 적분이다. 매 스위칭 주기마다 반복되는 손실은 주기당 손실 에너지 × $f_s$이고, 도통 손실은 순시 전력의 주기 평균이다.",
+      "results": [
+        "flyback.leak.E",
+        "flyback.leak.P",
+        "loss.sw.cap",
+        "loss.cond",
+        "loss.diode",
+        "loss.gate",
+        "dcm.ring.f"
+      ],
+      "steps": [
+        {
+          "text": "Energy delivered to an inductance: $p = v i$ with $v = L\\,di/dt$, so $dE = L i\\,di$. Integrate from zero to the turn-off current.",
+          "text_ko": "인덕턴스에 공급된 에너지: $v = L\\,di/dt$인 $p = v i$이므로 $dE = L i\\,di$. 0에서 턴오프 전류까지 적분한다.",
+          "latex": "E_\\mathrm{lk} = \\int\\limits_{0}^{I_\\mathrm{pk}} i L_\\mathrm{lk}\\, di",
+          "result_for": null
+        },
+        {
+          "text": "Evaluate the integral.",
+          "text_ko": "적분을 계산한다.",
+          "latex": "E_\\mathrm{lk} = \\frac{L_\\mathrm{lk} I_\\mathrm{pk}^{2}}{2}",
+          "result_for": "flyback.leak.E"
+        },
+        {
+          "text": "If this energy is removed (clamped or dissipated) every cycle, the average power is $E_\\mathrm{lk} f_s$.",
+          "text_ko": "이 에너지가 매 주기 제거(클램프 또는 소산)되면 평균 전력은 $E_\\mathrm{lk} f_s$이다.",
+          "latex": "P_\\mathrm{lk} = E_\\mathrm{lk} f_s",
+          "result_for": "flyback.leak.P"
+        },
+        {
+          "text": "Energy stored in the switch-node capacitance charged to $V_\\mathrm{sw}$: $dE = v\\,dq = C v\\,dv$.",
+          "text_ko": "$V_\\mathrm{sw}$로 충전된 스위치 노드 커패시턴스의 저장 에너지: $dE = v\\,dq = C v\\,dv$.",
+          "latex": "E_C = \\int\\limits_{0}^{V_\\mathrm{sw}} v C_\\mathrm{node}\\, dv",
+          "result_for": null
+        },
+        {
+          "text": "A hard turn-on discharges it through the switch channel every cycle: $P = E_C f_s$.",
+          "text_ko": "하드 턴온은 매 주기 이 에너지를 스위치 채널로 방전시킨다: $P = E_C f_s$.",
+          "latex": "P = \\frac{C_\\mathrm{node} V_\\mathrm{sw}^{2} f_s}{2}",
+          "result_for": "loss.sw.cap"
+        },
+        {
+          "text": "Conduction loss is the period average of the instantaneous power $i(t)^2 R_x$.",
+          "text_ko": "도통 손실은 순시 전력 $i(t)^2 R_x$의 주기 평균이다.",
+          "latex": "P = \\frac{\\int\\limits_{0}^{T_s} R_x i^{2}{\\left(t \\right)}\\, dt}{T_s}",
+          "result_for": null
+        },
+        {
+          "text": "By definition the rms current is the square root of the period average of $i(t)^2$.",
+          "text_ko": "정의상 rms 전류는 $i(t)^2$의 주기 평균의 제곱근이다.",
+          "latex": "I_\\mathrm{rms}^{2} = \\frac{\\int\\limits_{0}^{T_s} i^{2}{\\left(t \\right)}\\, dt}{T_s}",
+          "result_for": null
+        },
+        {
+          "text": "$R_x$ is constant, so it moves out of the average.",
+          "text_ko": "$R_x$는 상수이므로 평균 밖으로 나온다.",
+          "latex": "P = I_\\mathrm{rms}^{2} R_x",
+          "result_for": "loss.cond"
+        },
+        {
+          "text": "A conducting diode is modelled as a forward-voltage intercept plus a dynamic resistance, $v_D = V_F + r_d i$, so $p = V_F i + r_d i^2$.",
+          "text_ko": "도통 중인 다이오드는 순방향 전압 절편과 동저항으로 모델링한다: $v_D = V_F + r_d i$, 따라서 $p = V_F i + r_d i^2$.",
+          "latex": "P = \\frac{\\int\\limits_{0}^{T_s} \\left(V_F i{\\left(t \\right)} + r_d i^{2}{\\left(t \\right)}\\right)\\, dt}{T_s}",
+          "result_for": null
+        },
+        {
+          "text": "The average of $i$ is $I_\\mathrm{avg}$ and the average of $i^2$ is $I_\\mathrm{rms}^2$.",
+          "text_ko": "$i$의 평균은 $I_\\mathrm{avg}$, $i^2$의 평균은 $I_\\mathrm{rms}^2$이다.",
+          "latex": "P = V_F I_\\mathrm{avg} + r_d I_\\mathrm{rms}^{2}",
+          "result_for": "loss.diode"
+        },
+        {
+          "text": "Each cycle the driver draws the gate charge $Q_g$ from its $V_\\mathrm{GS}$ supply; the energy taken from the supply is the integral of $V_\\mathrm{GS}\\,dq$.",
+          "text_ko": "매 주기 드라이버는 $V_\\mathrm{GS}$ 전원에서 게이트 전하 $Q_g$를 끌어온다. 전원에서 가져가는 에너지는 $V_\\mathrm{GS}\\,dq$의 적분이다.",
+          "latex": "E_G = \\int\\limits_{0}^{Q_g} V_\\mathrm{GS}\\, dq",
+          "result_for": null
+        },
+        {
+          "text": "All of it ends up as heat in the driver and gate resistances; multiply by $f_s$.",
+          "text_ko": "그 전부가 드라이버와 게이트 저항에서 열이 되므로 $f_s$를 곱한다.",
+          "latex": "P = Q_g V_\\mathrm{GS} f_s",
+          "result_for": "loss.gate"
+        },
+        {
+          "text": "An undamped L-C loop obeys $L C\\,d^2v/dt^2 + v = 0$; its characteristic equation is $L C s^2 + 1 = 0$.",
+          "text_ko": "감쇠 없는 L-C 루프는 $L C\\,d^2v/dt^2 + v = 0$을 따르며, 특성방정식은 $L C s^2 + 1 = 0$이다.",
+          "latex": "1 + C_\\mathrm{node} L_M s^{2} = 0",
+          "result_for": null
+        },
+        {
+          "text": "The roots are $\\pm j\\omega_0$.",
+          "text_ko": "근은 $\\pm j\\omega_0$이다.",
+          "latex": "\\omega_0 = \\frac{1}{\\sqrt{C_\\mathrm{node}} \\sqrt{L_M}}",
+          "result_for": null
+        },
+        {
+          "text": "$f = \\omega_0/(2\\pi)$.",
+          "text_ko": "$f = \\omega_0/(2\\pi)$.",
+          "latex": "f_\\mathrm{ring} = \\frac{1}{2 \\pi \\sqrt{L_M C_\\mathrm{node}}}",
+          "result_for": "dcm.ring.f"
+        }
+      ]
+    },
+    {
+      "module": "magnetics",
+      "source": "python/pe_core/derive/magnetics.py",
+      "title": "Magnetic circuits: A_L, inductance, peak and swing flux density",
+      "title_ko": "자기 회로: A_L, 인덕턴스, 피크 및 변화 자속 밀도",
+      "intro": "A magnetic path behaves like a resistive circuit: the magnetomotive force $N i$ drives flux $\\Phi$ through reluctances $\\mathcal{R} = l/(\\mu A)$. With a uniform flux density over the effective area $A_e$, $B = \\Phi/A_e$.",
+      "intro_ko": "자기 경로는 저항 회로처럼 동작한다. 기자력 $N i$가 자기저항 $\\mathcal{R} = l/(\\mu A)$를 통해 자속 $\\Phi$를 흐르게 한다. 유효 단면적 $A_e$에서 자속 밀도가 균일하면 $B = \\Phi/A_e$이다.",
+      "results": [
+        "mag.AL_gap",
+        "mag.L_from_AL",
+        "mag.B_pk",
+        "mag.dB_faraday"
+      ],
+      "steps": [
+        {
+          "text": "Core reluctance (relative permeability $\\mu_i$).",
+          "text_ko": "코어 자기저항(비투자율 $\\mu_i$).",
+          "latex": "\\mathcal{R}_c = \\frac{l_e}{A_e \\mu_0 \\mu_i}",
+          "result_for": null
+        },
+        {
+          "text": "Gap reluctance (no fringing: the gap area equals $A_e$).",
+          "text_ko": "갭 자기저항(프린징 무시: 갭 면적 = $A_e$).",
+          "latex": "\\mathcal{R}_g = \\frac{l_g}{A_e \\mu_0}",
+          "result_for": null
+        },
+        {
+          "text": "They are in series.",
+          "text_ko": "두 자기저항은 직렬이다.",
+          "latex": "\\mathcal{R} = \\frac{l_g}{A_e \\mu_0} + \\frac{l_e}{A_e \\mu_0 \\mu_i}",
+          "result_for": null
+        },
+        {
+          "text": "Flux linkage $\\lambda = N\\Phi = N (N i/\\mathcal{R})$, so $L = \\lambda/i = N^2/\\mathcal{R}$.",
+          "text_ko": "쇄교 자속 $\\lambda = N\\Phi = N (N i/\\mathcal{R})$이므로 $L = \\lambda/i = N^2/\\mathcal{R}$.",
+          "latex": "L = \\frac{N^{2}}{\\mathcal{R}}",
+          "result_for": null
+        },
+        {
+          "text": "The inductance factor is the inductance per turn squared, $A_L = L/N^2 = 1/\\mathcal{R}$.",
+          "text_ko": "인덕턴스 계수는 턴 제곱당 인덕턴스이다: $A_L = L/N^2 = 1/\\mathcal{R}$.",
+          "latex": "A_L = \\frac{1}{\\mathcal{R}}",
+          "result_for": null
+        },
+        {
+          "text": "Substitute the two reluctances.",
+          "text_ko": "두 자기저항을 대입한다.",
+          "latex": "A_L = \\frac{A_e \\mu_0 \\mu_i}{l_e + l_g \\mu_i} = \\frac{\\mu_0 A_e}{l_g + \\frac{l_e}{\\mu_i}}",
+          "result_for": "mag.AL_gap"
+        },
+        {
+          "text": "Hence $L = A_L N^2$.",
+          "text_ko": "따라서 $L = A_L N^2$.",
+          "latex": "L = A_L N^{2}",
+          "result_for": "mag.L_from_AL"
+        },
+        {
+          "text": "Flux linkage and inductance: $\\lambda = N\\Phi = L i$, so $\\Phi = L i/N$.",
+          "text_ko": "쇄교 자속과 인덕턴스: $\\lambda = N\\Phi = L i$이므로 $\\Phi = L i/N$.",
+          "latex": "\\lambda = N \\Phi",
+          "result_for": null
+        },
+        {
+          "text": "At the peak current, $B_\\mathrm{pk} = \\Phi_\\mathrm{pk}/A_e = L I_\\mathrm{pk}/(N A_e)$.",
+          "text_ko": "피크 전류에서 $B_\\mathrm{pk} = \\Phi_\\mathrm{pk}/A_e = L I_\\mathrm{pk}/(N A_e)$.",
+          "latex": "B_\\mathrm{pk} = \\frac{L I_\\mathrm{pk}}{N A_e}",
+          "result_for": "mag.B_pk"
+        },
+        {
+          "text": "Faraday's law: $v = N A_e\\,dB/dt$, so the change of $B$ over the on-time is the integral of $v/(N A_e)$.",
+          "text_ko": "패러데이 법칙: $v = N A_e\\,dB/dt$이므로 온 구간 동안의 $B$ 변화는 $v/(N A_e)$의 적분이다.",
+          "latex": "\\Delta B = \\int\\limits_{0}^{t_\\mathrm{on}} \\frac{V_w}{A_e N}\\, dt",
+          "result_for": null
+        },
+        {
+          "text": "With a constant winding voltage $V_w$ the swing is proportional to the volt-seconds $V_w t_\\mathrm{on}$.",
+          "text_ko": "권선 전압 $V_w$가 일정하면 변화폭은 전압-초 $V_w t_\\mathrm{on}$에 비례한다.",
+          "latex": "\\Delta B = \\frac{V_w t_\\mathrm{on}}{N A_e}",
+          "result_for": "mag.dB_faraday"
+        }
+      ]
+    },
+    {
+      "module": "harvesting",
+      "source": "python/pe_core/derive/harvesting.py",
+      "title": "Linear source: maximum power and constant-voltage extraction",
+      "title_ko": "선형 전원: 최대 전력과 정전압 추출",
+      "intro": "A linear energy source is modelled by its Thevenin equivalent: open-circuit voltage $V_\\mathrm{oc}$ behind a source resistance $R_s$. How much of its available power reaches the converter depends on what the converter's input looks like.",
+      "intro_ko": "선형 에너지원은 테브난 등가회로, 즉 전원 저항 $R_s$ 뒤의 개방 전압 $V_\\mathrm{oc}$로 모델링한다. 가용 전력 중 얼마가 컨버터에 도달하는지는 컨버터 입력이 어떻게 보이는지에 달려 있다.",
+      "results": [
+        "src.Pmax",
+        "src.cv_extraction"
+      ],
+      "steps": [
+        {
+          "text": "Power into a load resistance $R_L$.",
+          "text_ko": "부하 저항 $R_L$로 들어가는 전력.",
+          "latex": "P_L = \\frac{R_L V_\\mathrm{oc}^{2}}{\\left(R_L + R_s\\right)^{2}}",
+          "result_for": null
+        },
+        {
+          "text": "$dP_L/dR_L = 0$ gives the matched load.",
+          "text_ko": "$dP_L/dR_L = 0$에서 정합 부하를 얻는다.",
+          "latex": "R_L = R_s",
+          "result_for": null
+        },
+        {
+          "text": "Substitute $R_L = R_s$.",
+          "text_ko": "$R_L = R_s$를 대입한다.",
+          "latex": "P_\\mathrm{max} = \\frac{V_\\mathrm{oc}^{2}}{4 R_s}",
+          "result_for": "src.Pmax"
+        },
+        {
+          "text": "A constant-voltage sink at $V_c$ (e.g. a converter pinned at a fixed input voltage) draws $I = (V_\\mathrm{oc} - V_c)/R_s$.",
+          "text_ko": "$V_c$의 정전압 싱크(예: 입력이 고정 전압에 묶인 컨버터)는 $I = (V_\\mathrm{oc} - V_c)/R_s$를 끌어온다.",
+          "latex": "I = \\frac{V_\\mathrm{oc} - V_c}{R_s}",
+          "result_for": null
+        },
+        {
+          "text": "The power it absorbs.",
+          "text_ko": "싱크가 흡수하는 전력.",
+          "latex": "P_L = \\frac{V_c \\left(V_\\mathrm{oc} - V_c\\right)}{R_s}",
+          "result_for": null
+        },
+        {
+          "text": "Normalise by $P_\\mathrm{max}$.",
+          "text_ko": "$P_\\mathrm{max}$로 정규화한다.",
+          "latex": "\\eta_\\mathrm{ext} = \\frac{4 V_c \\left(V_\\mathrm{oc} - V_c\\right)}{V_\\mathrm{oc}^{2}}",
+          "result_for": "src.cv_extraction"
+        }
+      ]
+    },
+    {
+      "module": "sensing",
+      "source": "python/pe_core/derive/sensing.py",
+      "title": "Current-output shunt monitor",
+      "title_ko": "전류 출력형 션트 모니터",
+      "intro": "A current-output high-side monitor converts the small voltage across a shunt into a current, which an output resistor turns back into a ground-referenced voltage.",
+      "intro_ko": "전류 출력형 하이사이드 모니터는 션트 양단의 작은 전압을 전류로 바꾸고, 출력 저항이 이를 다시 접지 기준 전압으로 바꾼다.",
+      "results": [
+        "sense.current_out_monitor"
+      ],
+      "steps": [
+        {
+          "text": "Voltage across the shunt.",
+          "text_ko": "션트 양단 전압.",
+          "latex": "V_\\mathrm{SENSE} = I_\\mathrm{SENSE} R_\\mathrm{SENSE}",
+          "result_for": null
+        },
+        {
+          "text": "The ideal amplifier forces the same voltage across $R_\\mathrm{IN}$, so the current through $R_\\mathrm{IN}$ is $V_\\mathrm{SENSE}/R_\\mathrm{IN}$.",
+          "text_ko": "이상적 증폭기는 같은 전압을 $R_\\mathrm{IN}$ 양단에 걸어, $R_\\mathrm{IN}$을 흐르는 전류가 $V_\\mathrm{SENSE}/R_\\mathrm{IN}$이 된다.",
+          "latex": "I_\\mathrm{OUT} = \\frac{V_\\mathrm{SENSE}}{R_\\mathrm{IN}}",
+          "result_for": null
+        },
+        {
+          "text": "That current flows out through $R_\\mathrm{OUT}$: $V_\\mathrm{OUT} = I_\\mathrm{OUT} R_\\mathrm{OUT}$.",
+          "text_ko": "그 전류가 $R_\\mathrm{OUT}$으로 흘러 나간다: $V_\\mathrm{OUT} = I_\\mathrm{OUT} R_\\mathrm{OUT}$.",
+          "latex": "V_\\mathrm{OUT} = \\frac{I_\\mathrm{SENSE} R_\\mathrm{SENSE} R_\\mathrm{OUT}}{R_\\mathrm{IN}}",
+          "result_for": "sense.current_out_monitor"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+---
+/**
+ * <Bibliography /> -- every VERIFIED entry of references.bib, anchored by key.
+ * Entries still flagged VERIFY are not published (only counted).
+ */
+import { formatReference, references } from '../lib/references';
+import { pageLocale } from '../lib/locale';
+
+const locale = pageLocale(Astro);
+const ko = locale === 'ko';
+const all = Object.values(references);
+const shown = all.filter((e) => e.verified).sort((a, b) => a.label.localeCompare(b.label));
+const pending = all.length - shown.length;
+---
+
+<ol class="pe-bib not-content">
+  {
+    shown.map((e) => {
+      const f = formatReference(e, locale);
+      return (
+        <li id={e.key}>
+          {f.lead && <span>{f.lead}, </span>}
+          {f.italicTitle ? <cite>{f.title}</cite> : <span>“{f.title}”</span>}
+          {f.tail && <span>, {f.tail}</span>}.
+          {e.doi && (
+            <>
+              {' '}
+              <a href={`https://doi.org/${e.doi}`}>doi:{e.doi}</a>
+            </>
+          )}
+          {e.url && (
+            <>
+              {' '}
+              <a href={e.url}>{e.url}</a>
+            </>
+          )}{' '}
+          <code class="pe-bib__key">{e.key}</code>
+        </li>
+      );
+    })
+  }
+</ol>
+{
+  pending > 0 && (
+    <p class="pe-bib__pending">
+      {ko
+        ? `검증 대기 중인 항목 ${pending}개는 게시하지 않습니다.`
+        : `${pending} ${pending === 1 ? 'entry' : 'entries'} awaiting verification ${pending === 1 ? 'is' : 'are'} not published.`}
+    </p>
+  )
+}

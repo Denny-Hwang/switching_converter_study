@@ -39,6 +39,22 @@ export default defineConfig({
       lastUpdated: false,
       sidebar: [
         {
+          label: 'Learn',
+          translations: { ko: '학습' },
+          items: [
+            {
+              label: '02 · Theory',
+              translations: { ko: '02 · 이론' },
+              items: [{ autogenerate: { directory: '02-theory' } }],
+            },
+          ],
+        },
+        {
+          label: 'Resources',
+          translations: { ko: '자료' },
+          items: [{ autogenerate: { directory: '10-resources' } }],
+        },
+        {
           label: 'About',
           translations: { ko: '소개' },
           items: [{ autogenerate: { directory: 'about' } }],

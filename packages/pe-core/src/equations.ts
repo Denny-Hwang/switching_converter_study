@@ -6,11 +6,12 @@
  * the sympy-computed vectors in equations/test_vectors.json (1e-9 relative).
  * All inputs and outputs are SI (see CLAUDE.md "Symbol conventions").
  */
+import { MU_0 } from './constants';
 
 export type Inputs = Readonly<Record<string, number>>;
 
 export interface Evaluator {
-  /** Names of the free symbols, exactly as in equations.yaml. */
+  /** Names of the input symbols, exactly as in equations.yaml (constants excluded). */
   readonly vars: readonly string[];
   (inputs: Inputs): number;
 }
@@ -30,10 +31,70 @@ function eq<K extends string>(vars: readonly K[], fn: (p: Record<K, number>) => 
   return Object.assign(run, { vars });
 }
 
+const sq = (x: number): number => x * x;
+
 export const evaluators: Readonly<Record<string, Evaluator>> = {
   // --- CCM conversion ratios (volt-second balance) -------------------------
   'buck.ccm.M': eq(['D'], ({ D }) => D),
   'boost.ccm.M': eq(['D'], ({ D }) => 1 / (1 - D)),
+  'buckboost.ccm.M': eq(['D'], ({ D }) => -D / (1 - D)),
+  'flyback.ccm.M': eq(['n', 'D'], ({ n, D }) => (n * D) / (1 - D)),
+  'forward.ccm.M': eq(['n', 'D'], ({ n, D }) => n * D),
+  'forward.reset.Dmax': eq(['n_r'], ({ n_r }) => 1 / (1 + n_r)),
+
+  // --- ripple ---------------------------------------------------------------
+  'buck.ripple.iL': eq(['V_g', 'V', 'D', 'T_s', 'L'], ({ V_g, V, D, T_s, L }) => ((V_g - V) * D * T_s) / (2 * L)),
+  'buck.ripple.iL_pp': eq(['V_g', 'V', 'D', 'L', 'f_s'], ({ V_g, V, D, L, f_s }) => ((V_g - V) * D) / (L * f_s)),
+
+  // --- CCM/DCM boundary -----------------------------------------------------
+  'K.def': eq(['L', 'R', 'T_s'], ({ L, R, T_s }) => (2 * L) / (R * T_s)),
+  'Kcrit.buck': eq(['D'], ({ D }) => 1 - D),
+  'Kcrit.boost': eq(['D'], ({ D }) => D * sq(1 - D)),
+  'Kcrit.buckboost': eq(['D'], ({ D }) => sq(1 - D)),
+  'Kcrit.flyback': eq(['D', 'n'], ({ D, n }) => sq((1 - D) / n)),
+
+  // --- DCM conversion ratios --------------------------------------------------
+  'buck.dcm.M': eq(['K', 'D'], ({ K, D }) => 2 / (1 + Math.sqrt(1 + (4 * K) / sq(D)))),
+  'boost.dcm.M': eq(['D', 'K'], ({ D, K }) => (1 + Math.sqrt(1 + (4 * sq(D)) / K)) / 2),
+  'buckboost.dcm.M': eq(['D', 'K'], ({ D, K }) => -D / Math.sqrt(K)),
+  'flyback.dcm.M': eq(['D', 'K'], ({ D, K }) => D / Math.sqrt(K)),
+
+  // --- DCM power, loss-free resistor, flyback boundary and stresses ----------
+  'dcm.P_in': eq(['V_g', 'D', 'L_M', 'f_s'], ({ V_g, D, L_M, f_s }) => sq(V_g * D) / (2 * L_M * f_s)),
+  'lfr.R_in': eq(['L_M', 'f_s', 'D'], ({ L_M, f_s, D }) => (2 * L_M * f_s) / sq(D)),
+  'flyback.V_crit': eq(['V', 'V_D', 'D', 'n'], ({ V, V_D, D, n }) => ((V + V_D) * (1 - D)) / (n * D)),
+  'flyback.Vds_off': eq(['V_g', 'V', 'V_D', 'n'], ({ V_g, V, V_D, n }) => V_g + (V + V_D) / n),
+  'flyback.Vds_clamped': eq(['V', 'V_D', 'n', 'D'], ({ V, V_D, n, D }) => (V + V_D) / (n * D)),
+  'flyback.diode.VR': eq(['V', 'n', 'V_g'], ({ V, n, V_g }) => V + n * V_g),
+  'flyback.Ipk.dcm': eq(['V_g', 'D', 'L_M', 'f_s'], ({ V_g, D, L_M, f_s }) => (V_g * D) / (L_M * f_s)),
+
+  // --- stored energy, ringing and losses ------------------------------------
+  'flyback.leak.E': eq(['L_lk', 'I_pk'], ({ L_lk, I_pk }) => 0.5 * L_lk * sq(I_pk)),
+  'flyback.leak.P': eq(['E_lk', 'f_s'], ({ E_lk, f_s }) => E_lk * f_s),
+  'dcm.ring.f': eq(['L_M', 'C_node'], ({ L_M, C_node }) => 1 / (2 * Math.PI * Math.sqrt(L_M * C_node))),
+  'loss.cond': eq(['I_rms', 'R_x'], ({ I_rms, R_x }) => sq(I_rms) * R_x),
+  'loss.sw.cap': eq(['C_node', 'V_sw', 'f_s'], ({ C_node, V_sw, f_s }) => 0.5 * C_node * sq(V_sw) * f_s),
+  'loss.gate': eq(['Q_g', 'V_GS', 'f_s'], ({ Q_g, V_GS, f_s }) => Q_g * V_GS * f_s),
+  'loss.diode': eq(['V_F', 'I_avg', 'r_d', 'I_rms'], ({ V_F, I_avg, r_d, I_rms }) => V_F * I_avg + r_d * sq(I_rms)),
+  'loss.steinmetz': eq(['k', 'f', 'alpha', 'B_ac', 'beta'], ({ k, f, alpha, B_ac, beta }) =>
+    k * Math.pow(f, alpha) * Math.pow(B_ac, beta),
+  ),
+
+  // --- magnetics ------------------------------------------------------------
+  'mag.L_from_AL': eq(['A_L', 'N'], ({ A_L, N }) => A_L * sq(N)),
+  'mag.AL_gap': eq(['A_e', 'l_g', 'l_e', 'mu_i'], ({ A_e, l_g, l_e, mu_i }) => (MU_0 * A_e) / (l_g + l_e / mu_i)),
+  'mag.B_pk': eq(['L', 'I_pk', 'N', 'A_e'], ({ L, I_pk, N, A_e }) => (L * I_pk) / (N * A_e)),
+  'mag.dB_faraday': eq(['V_w', 't_on', 'N', 'A_e'], ({ V_w, t_on, N, A_e }) => (V_w * t_on) / (N * A_e)),
+
+  // --- sources, extraction, sensing -----------------------------------------
+  'src.Pmax': eq(['V_oc', 'R_s'], ({ V_oc, R_s }) => sq(V_oc) / (4 * R_s)),
+  'src.cv_extraction': eq(['V_c', 'V_oc'], ({ V_c, V_oc }) => {
+    const x = V_c / V_oc;
+    return 4 * x * (1 - x);
+  }),
+  'sense.current_out_monitor': eq(['I_SENSE', 'R_SENSE', 'R_OUT', 'R_IN'], ({ I_SENSE, R_SENSE, R_OUT, R_IN }) =>
+    (I_SENSE * R_SENSE * R_OUT) / R_IN,
+  ),
 };
 
 export function evaluate(id: string, inputs: Inputs): number {

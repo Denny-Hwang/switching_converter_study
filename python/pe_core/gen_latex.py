@@ -35,6 +35,7 @@ def build_generated(catalog: Catalog, n_tests: dict[str, int]) -> dict[str, Any]
     equations: dict[str, Any] = {}
     for eq in catalog.equations:
         variables = catalog.free_names(eq)
+        constants = catalog.constant_names(eq)
         equations[eq.id] = {
             "id": eq.id,
             "title": eq.title,
@@ -44,18 +45,21 @@ def build_generated(catalog: Catalog, n_tests: dict[str, int]) -> dict[str, Any]
             "expr": eq.expr_src,
             "relation": eq.relation,
             "variables": variables,
-            "symbols": {name: eq.symbols[name] for name in variables},
+            "constants": constants,
+            "symbols": {name: eq.symbols[name] for name in variables + constants},
             "assumptions": eq.assumptions,
             "convention": eq.convention,
             "convention_ko": eq.convention_ko,
             "notes": eq.notes,
             "notes_ko": eq.notes_ko,
-            "cite": {"key": eq.cite_key, "where": eq.cite_where},
+            "cites": eq.cites,
             "derived_by": eq.derived_by,
             "n_tests": n_tests.get(eq.id, 0),
             "yaml_line": eq.line,
         }
-    used = sorted({v for e in equations.values() for v in e["variables"]} | {e["lhs"] for e in equations.values()})
+    used = sorted(
+        {v for e in equations.values() for v in e["variables"] + e["constants"]} | {e["lhs"] for e in equations.values()}
+    )
     return {
         "_generated_by": "python scripts/gen_equations.py -- DO NOT EDIT; edit equations.yaml instead",
         "_source": "packages/pe-core/equations/equations.yaml",
@@ -69,6 +73,14 @@ def build_generated(catalog: Catalog, n_tests: dict[str, int]) -> dict[str, Any]
                 "desc": catalog.symbols[name].desc,
             }
             for name in used
+        },
+        "constants": {
+            name: {
+                "value_expr": info.value_expr,
+                "value": float(catalog.constant_value(name).evalf(30)),
+            }
+            for name, info in catalog.symbols.items()
+            if info.is_constant
         },
         "equations": equations,
     }

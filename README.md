@@ -41,7 +41,7 @@ npm install && npm run dev            # site + tools at http://localhost:4321/sw
 npm run build                         # strict KaTeX build (fails on math errors)
 npm test                              # vitest (pe-core) + TS/Python parity
 pip install -e "python[dev]" && pytest # sympy derivations + vectors
-python scripts/gen_equations.py       # regenerate equations.generated.json + test_vectors.json
+python scripts/gen_equations.py       # regenerate LaTeX, test vectors, derivations, bibliography JSON
 python scripts/mathlint.py            # math lint
 python scripts/privacy_scan.py        # privacy scan
 python scripts/refcheck.py            # citation check
@@ -65,8 +65,8 @@ python scripts/refcheck.py            # citation check
 
 | Phase | Scope | State |
 | --- | --- | --- |
-| 0 | Scaffold, CI, Pages deployment, equation pipeline skeleton | in progress |
-| 1 | Equation engine: full seed set, derivations, parity, math/citation lints | planned |
+| 0 | Scaffold, CI, Pages deployment, equation pipeline skeleton | done |
+| 1 | Equation engine: full seed set, derivations, parity, math/citation lints | in progress |
 | 2 | Core content: theory + main topologies (EN, then KO) | planned |
 | 3 | Time-domain simulator and design tools | planned |
 | 4 | Magnetics, bench, harvesting, gotchas, resources | planned |
@@ -114,7 +114,7 @@ npm install && npm run dev            # 사이트 + 도구: http://localhost:432
 npm run build                         # KaTeX 엄격 빌드 (수식 오류 시 실패)
 npm test                              # vitest (pe-core) + TS/Python 패리티
 pip install -e "python[dev]" && pytest # sympy 유도 + 벡터
-python scripts/gen_equations.py       # equations.generated.json + test_vectors.json 재생성
+python scripts/gen_equations.py       # LaTeX·테스트 벡터·유도·참고문헌 JSON 재생성
 python scripts/mathlint.py            # 수식 린트
 python scripts/privacy_scan.py        # 개인정보 스캔
 python scripts/refcheck.py            # 인용 검사
@@ -138,8 +138,8 @@ python scripts/refcheck.py            # 인용 검사
 
 | 단계 | 범위 | 상태 |
 | --- | --- | --- |
-| 0 | 골격, CI, Pages 배포, 수식 파이프라인 뼈대 | 진행 중 |
-| 1 | 수식 엔진: 전체 기본 세트, 유도, 패리티, 수식·인용 린트 | 예정 |
+| 0 | 골격, CI, Pages 배포, 수식 파이프라인 뼈대 | 완료 |
+| 1 | 수식 엔진: 전체 기본 세트, 유도, 패리티, 수식·인용 린트 | 진행 중 |
 | 2 | 핵심 콘텐츠: 이론 + 주요 토폴로지 (영어 후 한국어) | 예정 |
 | 3 | 시간 영역 시뮬레이터와 설계 도구 | 예정 |
 | 4 | 자성 부품, 벤치, 하베스팅, 흔한 함정, 자료 모음 | 예정 |
