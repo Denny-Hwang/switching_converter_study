@@ -396,7 +396,7 @@ equations:
     notes: "the energy $\\tfrac12 L_M I_\\mathrm{pk}^2$ is stored once per cycle, independent of the load"
     notes_ko: "부하와 무관하게 매 주기 $\\tfrac12 L_M I_\\mathrm{pk}^2$의 에너지를 저장"
     cite:
-      - {key: erickson2020, where: "Ch. 15 (AC and DC Equivalent Circuit Modeling of the DCM)"}
+      - {key: erickson2020, where: "Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)"}
       - {key: singer1990}
     derived_by: python/pe_core/derive/flyback.py
     tests:
@@ -413,7 +413,7 @@ equations:
     notes_ko: "평균 입력 전류가 $V_g$에 비례; 전력은 소산되지 않고 출력으로 전달됨"
     cite:
       - {key: singer1990}
-      - {key: erickson2020, where: "Ch. 15 (AC and DC Equivalent Circuit Modeling of the DCM)"}
+      - {key: erickson2020, where: "Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)"}
     derived_by: python/pe_core/derive/flyback.py
     tests:
       - {inputs: {L_M: 1.0e-4, f_s: 1.0e5, D: 0.5}, expect: 80.0}

@@ -11,7 +11,11 @@ Offline checks (always):
 Online checks (--online; run in CI where the network is open):
   * every DOI resolves in Crossref and the Crossref title matches the
     references.bib title; volume/issue/pages/year mismatches are reported;
-  * with --strict-online, those metadata mismatches are errors too.
+  * chapter pointers: for an entry with `chapterdoi = {<prefix>}` (Springer
+    books: chapter N has DOI <prefix>N), every citation "Ch. N (Title...)"
+    is checked against the Crossref title of chapter N, and every chapter
+    number cited (also in ranges such as "Ch. 5-6") must exist;
+  * with --strict-online, metadata mismatches are errors too.
 
     python scripts/refcheck.py
     python scripts/refcheck.py --online
@@ -133,6 +137,40 @@ def online_check(entries: list[bib.Entry], strict: bool) -> tuple[list[str], lis
     return errors, warnings
 
 
+CHAPTER = re.compile(r"^Ch\.\s*(\d+)(?:\s*[\u2013-]\s*(\d+))?(?:\s*\((.*)\))?")
+
+
+def chapter_check(entries: list[bib.Entry], uses: list[tuple[str, str, str]]) -> list[str]:
+    """Verify "Ch. N (Title)" pointers against Crossref chapter DOIs."""
+    errors: list[str] = []
+    prefixes = {e.key: e.fields["chapterdoi"] for e in entries if "chapterdoi" in e.fields}
+    titles: dict[tuple[str, int], str | None] = {}
+    for key, where_text, origin in uses:
+        if key not in prefixes or not where_text:
+            continue
+        m = CHAPTER.match(where_text.strip())
+        if not m:
+            errors.append(f"{origin}: cite of {key} must start with 'Ch. N' (got {where_text!r})")
+            continue
+        first = int(m.group(1))
+        last = int(m.group(2) or first)
+        for n in range(first, last + 1):
+            if (key, n) not in titles:
+                data = fetch_json("https://api.crossref.org/works/" + urllib.parse.quote(prefixes[key] + str(n), safe="/"))
+                t = ((data or {}).get("message", {}).get("title") or [None])[0]
+                titles[(key, n)] = t
+                print(f"  {key} ch. {n:<3d} {prefixes[key]}{n:<4d} {t!r}")
+                time.sleep(0.3)
+            if titles[(key, n)] is None:
+                errors.append(f"{origin}: {key} chapter {n} not found in Crossref")
+        if m.group(3) and first == last and titles.get((key, first)):
+            cited = norm(re.split(r"[:;]", m.group(3))[0])
+            actual = norm(titles[(key, first)] or "")
+            if not actual.startswith(cited) and not cited.startswith(actual):
+                errors.append(f"{origin}: cites {key} Ch. {first} as {m.group(3)!r}, Crossref title is {titles[(key, first)]!r}")
+    return errors
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--online", action="store_true", help="check DOIs against Crossref")
@@ -157,9 +195,19 @@ def main() -> int:
             errors.append(f"references.bib:{e.line}: {e.key}: {exc}")
 
     uses: list[tuple[str, str]] = []
+    where_uses: list[tuple[str, str, str]] = []  # (key, where, origin) for chapter checks
     for eq in load_equations().equations:
         for c in eq.cites:
             uses.append((c["key"], f"equations.yaml:{eq.line} ({eq.id})"))
+            where_uses.append((c["key"], c.get("where", ""), f"equations.yaml:{eq.line} ({eq.id})"))
+    for path in sorted(DOCS.rglob("*")):
+        if path.suffix in (".md", ".mdx") and "scratch" not in path.parts:
+            text = path.read_text(encoding="utf-8")
+            for m in re.finditer(r"<Cite\b[^>]*>", text):
+                k = re.search(r'\bkey\s*=\s*"([^"]+)"', m.group(0))
+                w = re.search(r'\bwhere\s*=\s*"([^"]*)"', m.group(0))
+                if k and w:
+                    where_uses.append((k.group(1), w.group(1), f"{path.relative_to(ROOT)}"))
     uses += page_citations()
     uses += resource_keys()
 
@@ -186,6 +234,12 @@ def main() -> int:
             return 1
         errors += e2
         warnings += w2
+        print("refcheck --online: chapter pointers checked against Crossref chapter DOIs")
+        try:
+            errors += chapter_check(entries, where_uses)
+        except Exception as exc:  # noqa: BLE001
+            print(f"refcheck: chapter check failed: {exc}", file=sys.stderr)
+            return 1
 
     for w in warnings:
         print(f"  warning: {w}")

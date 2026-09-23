@@ -1074,7 +1074,7 @@
       "cites": [
         {
           "key": "erickson2020",
-          "where": "Ch. 15 (AC and DC Equivalent Circuit Modeling of the DCM)"
+          "where": "Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)"
         },
         {
           "key": "singer1990",
@@ -1120,7 +1120,7 @@
         },
         {
           "key": "erickson2020",
-          "where": "Ch. 15 (AC and DC Equivalent Circuit Modeling of the DCM)"
+          "where": "Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)"
         }
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
