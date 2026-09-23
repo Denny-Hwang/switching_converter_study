@@ -338,7 +338,7 @@
       "unit": "A",
       "desc": "inductor current ripple, HALF of peak-to-peak (Erickson convention)",
       "meaning": "inductor ripple, half peak-to-peak",
-      "meaning_ko": "인덕터 전류 리플(ripple), 피크-피크의 절반",
+      "meaning_ko": "인덕터 전류 리플, 피크-피크의 절반",
       "range": [
         0.001,
         10.0
@@ -1133,7 +1133,7 @@
       "unit": "V",
       "desc": "full-scale input voltage of an ADC",
       "meaning": "ADC full-scale input",
-      "meaning_ko": "ADC 풀스케일(full scale) 입력",
+      "meaning_ko": "ADC 풀스케일 입력",
       "range": null,
       "scale": "linear"
     },
@@ -1190,7 +1190,7 @@
       "unit": "V",
       "desc": "input offset voltage of a sense amplifier, with its sign (data sheets give its largest magnitude)",
       "meaning": "amplifier input offset",
-      "meaning_ko": "증폭기 입력 오프셋 전압(offset)",
+      "meaning_ko": "증폭기 입력 오프셋 전압",
       "range": [
         1e-06,
         0.01
