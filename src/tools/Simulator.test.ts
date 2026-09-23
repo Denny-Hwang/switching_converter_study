@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sim } from 'pe-core';
-import { compareRows, parseField, toParams } from './Simulator';
+import { compareRows, fromSlider, parseField, sliderAnchors, toParams } from './Simulator';
 
 const buck = { topo: 'buck' as const, load: 'res' as const, source: false };
 const values = { Vg: '24', D: '0.5', fs: '100000', L: '0.0001', R: '10', C: '0.00001' };
@@ -40,6 +40,19 @@ describe('simulator form', () => {
     if ('error' in p) return;
     expect(p.source).toEqual({ Voc: 1000, Rs: 10000, Cbus: 0.00001 });
     expect(p.load).toEqual({ kind: 'fixed', V: 5 });
+  });
+});
+
+describe('sliders', () => {
+  it('anchor only the positive fields', () => {
+    expect(sliderAnchors({ D: '0.5', L: '', R: '10', Ron: '0', VF: 'x' })).toEqual({ D: 0.5, R: 10 });
+  });
+
+  it('move a decade either side of the anchor, to three significant digits', () => {
+    expect(fromSlider(1e-4, 1)).toBe('0.001');
+    expect(fromSlider(1e-4, -1)).toBe('0.00001');
+    expect(fromSlider(10, 0.5)).toBe('31.6');
+    expect(fromSlider(24, 0)).toBe('24');
   });
 });
 

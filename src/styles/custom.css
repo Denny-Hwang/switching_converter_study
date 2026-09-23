@@ -215,6 +215,29 @@
 }
 
 /* ---- simulator ------------------------------------------------------------ */
+.pe-sim__row {
+  display: grid;
+  grid-template-columns: minmax(6rem, 9rem) minmax(7rem, 11rem) minmax(8rem, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.3rem 0;
+}
+.pe-sim__row input[type='number'] {
+  width: 100%;
+}
+.pe-sim__row input[type='range'] {
+  width: 100%;
+  max-width: 24rem;
+}
+@media (max-width: 36rem) {
+  .pe-sim__row {
+    grid-template-columns: minmax(5rem, 7rem) 1fr;
+  }
+  .pe-sim__row input[type='range'] {
+    grid-column: 1 / -1;
+    max-width: none;
+  }
+}
 .pe-sim__buttons {
   display: flex;
   flex-wrap: wrap;

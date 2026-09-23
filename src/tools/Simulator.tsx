@@ -43,6 +43,7 @@ export interface SimLabels {
   share: string;
   time: string;
   running: string;
+  slider: string;
   topologies: Record<Topology, string>;
 }
 
@@ -97,6 +98,25 @@ const FIELDS: Field[] = [
   { key: 'Cbus', label: () => 'C_bus', unit: 'F', show: (s) => s.source, group: 'source' },
 ];
 const KEYS = FIELDS.map((f) => f.key);
+
+/** Sliders: D is linear on (0, 1); the other positive parameters move over one decade either side of an anchor. */
+const D_RANGE = { min: 0.01, max: 0.99, step: 0.01 };
+const DECADES = 1;
+
+/** Anchor of each positive field's logarithmic slider (the value when a preset was loaded or typed). */
+export function sliderAnchors(values: Record<string, string>): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const k of KEYS) {
+    const v = parseField(values[k]);
+    if (Number.isFinite(v) && v > 0) out[k] = v;
+  }
+  return out;
+}
+
+/** The value a logarithmic slider position (decades from the anchor) stands for, to three significant digits. */
+export function fromSlider(anchor: number, decades: number): string {
+  return String(Number((anchor * 10 ** decades).toPrecision(3)));
+}
 
 function readHash(): URLSearchParams {
   return new URLSearchParams(typeof window === 'undefined' ? '' : window.location.hash.replace(/^#/, ''));
@@ -223,6 +243,7 @@ export default function Simulator({ labels, presets }: Props) {
   const init = useMemo(() => initialState(presets), [presets]);
   const [fstate, setFstate] = useState<FieldState>(init.fs);
   const [values, setValues] = useState<Record<string, string>>(init.values);
+  const [anchors, setAnchors] = useState<Record<string, number>>(() => sliderAnchors(init.values));
   const [result, setResult] = useState<SimResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -270,14 +291,15 @@ export default function Simulator({ labels, presets }: Props) {
     const traces: Record<string, unknown>[] = [
       { x: t, y: w.i_L, name: 'i_L', mode: 'lines', xaxis: 'x', yaxis: 'y' },
       { x: t, y: w.i_D, name: 'i_D', mode: 'lines', line: { dash: 'dot' }, xaxis: 'x', yaxis: 'y' },
-      { x: t, y: w.v_sw, name: 'v_DS', mode: 'lines', xaxis: 'x', yaxis: 'y2' },
-      { x: t, y: w.v_out, name: 'v_out', mode: 'lines', xaxis: 'x', yaxis: 'y3' },
+      { x: t, y: w.v_L, name: 'v_L', mode: 'lines', xaxis: 'x', yaxis: 'y2' },
+      { x: t, y: w.v_sw, name: 'v_DS', mode: 'lines', xaxis: 'x', yaxis: 'y3' },
+      { x: t, y: w.v_out, name: 'v_out', mode: 'lines', xaxis: 'x', yaxis: 'y4' },
     ];
-    if (src) traces.push({ x: t, y: w.v_in, name: 'v_bus', mode: 'lines', xaxis: 'x', yaxis: 'y4' });
+    if (src) traces.push({ x: t, y: w.v_in, name: 'v_bus', mode: 'lines', xaxis: 'x', yaxis: 'y5' });
     if (result.params.topology === 'forward') {
       traces.push({ x: t, y: w.i_M, name: 'i_M', mode: 'lines', line: { dash: 'dash' }, xaxis: 'x', yaxis: 'y' });
     }
-    const rows = src ? 4 : 3;
+    const rows = src ? 5 : 4;
     import('plotly.js-dist-min').then((mod) => {
       if (cancelled) return;
       const Plotly = mod.default ?? mod;
@@ -289,9 +311,10 @@ export default function Simulator({ labels, presets }: Props) {
           margin: { t: 16, r: 16, b: 48, l: 64 },
           xaxis: { title: { text: `${labels.time} [µs]` } },
           yaxis: { title: { text: '[A]' } },
-          yaxis2: { title: { text: 'v_DS [V]' } },
-          yaxis3: { title: { text: 'v_out [V]' } },
-          ...(src ? { yaxis4: { title: { text: 'v_bus [V]' } } } : {}),
+          yaxis2: { title: { text: 'v_L [V]' } },
+          yaxis3: { title: { text: 'v_DS [V]' } },
+          yaxis4: { title: { text: 'v_out [V]' } },
+          ...(src ? { yaxis5: { title: { text: 'v_bus [V]' } } } : {}),
           paper_bgcolor: 'rgba(0,0,0,0)',
           plot_bgcolor: 'rgba(0,0,0,0)',
           legend: { orientation: 'h', y: 1.08 },
@@ -309,6 +332,16 @@ export default function Simulator({ labels, presets }: Props) {
     for (const k of KEYS) next[k] = p.values[k] !== undefined ? String(p.values[k]) : '';
     setFstate({ topo: p.topology, load: p.values.V !== undefined && p.values.R === undefined ? 'fixed' : 'res', source: p.values.Voc !== undefined });
     setValues(next);
+    setAnchors(sliderAnchors(next));
+  }
+
+  function setField(key: string, raw: string) {
+    setValues((prev) => ({ ...prev, [key]: raw }));
+    const v = parseField(raw);
+    const a = anchors[key];
+    if (Number.isFinite(v) && v > 0 && (a === undefined || v < a / 10 ** DECADES || v > a * 10 ** DECADES)) {
+      setAnchors((prev) => ({ ...prev, [key]: v }));
+    }
   }
 
   function changeTopology(t: Topology) {
@@ -318,21 +351,50 @@ export default function Simulator({ labels, presets }: Props) {
   }
 
   const shown = FIELDS.filter((f) => f.show(fstate));
+  const slider = (f: Field) => {
+    const name = `${f.label(fstate)} (${labels.slider})`;
+    const v = parseField(values[f.key]);
+    const text = `${values[f.key] ?? ''} ${f.unit}`.trim();
+    if (f.key === 'D') {
+      return (
+        <input
+          type="range"
+          aria-label={name}
+          aria-valuetext={text}
+          min={D_RANGE.min}
+          max={D_RANGE.max}
+          step={D_RANGE.step}
+          value={Number.isFinite(v) ? Math.min(D_RANGE.max, Math.max(D_RANGE.min, v)) : 0.5}
+          onChange={(e) => setField('D', e.target.value)}
+        />
+      );
+    }
+    const a = anchors[f.key];
+    if (a === undefined) return <span />;
+    const pos = Number.isFinite(v) && v > 0 ? Math.log10(v / a) : 0;
+    return (
+      <input
+        type="range"
+        aria-label={name}
+        aria-valuetext={text}
+        min={-DECADES}
+        max={DECADES}
+        step={0.01}
+        value={Math.min(DECADES, Math.max(-DECADES, pos))}
+        onChange={(e) => setValues((prev) => ({ ...prev, [f.key]: fromSlider(a, Number(e.target.value)) }))}
+      />
+    );
+  };
   const input = (f: Field) => {
     const id = `sim-${f.key}`;
     return (
-      <label key={f.key} className="pe-explorer__row" htmlFor={id}>
-        <span>
+      <div key={f.key} className="pe-sim__row">
+        <label htmlFor={id}>
           {f.label(fstate)} {f.unit && <small>[{f.unit}]</small>}
-        </span>
-        <input
-          id={id}
-          type="number"
-          step="any"
-          value={values[f.key] ?? ''}
-          onChange={(e) => setValues({ ...values, [f.key]: e.target.value })}
-        />
-      </label>
+        </label>
+        <input id={id} type="number" step="any" value={values[f.key] ?? ''} onChange={(e) => setField(f.key, e.target.value)} />
+        {f.group !== 'nonideal' && slider(f)}
+      </div>
     );
   };
   const eff = result && result.energy.input > 0 ? result.energy.output / result.energy.input : Number.NaN;
@@ -464,8 +526,8 @@ export default function Simulator({ labels, presets }: Props) {
       <div
         ref={plotRef}
         role="img"
-        aria-label={`${labels.topologies[fstate.topo]}: i_L, v_DS, v_out`}
-        style={{ width: '100%', height: fstate.source ? 640 : 520 }}
+        aria-label={`${labels.topologies[fstate.topo]}: i_L, i_D, v_L, v_DS, v_out`}
+        style={{ width: '100%', height: fstate.source ? 760 : 640 }}
       />
       <p>
         <small>{labels.share}</small>
