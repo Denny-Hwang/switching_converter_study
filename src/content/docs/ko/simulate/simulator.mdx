@@ -75,7 +75,7 @@ import shot from '../../../../assets/screenshots/simulator-ko.png';
 
 - 저항 $R$
 - 배터리: 내부 저항(internal resistance) $R_b$ 뒤의 개방 전압(open-circuit
-  voltage) $V_b$, 즉 Rint 모델 <Cite key="he2011" where="the Rint model" />
+  voltage) $V_b$, 즉 Rint 모델 <Cite key="he2011" where="Sec. 2.1" />
 - 배터리와 저항
 - 아무것도 없음: 커패시터가 시작 전압 $V_0$부터 충전됩니다.
 
@@ -89,7 +89,7 @@ import shot from '../../../../assets/screenshots/simulator-ko.png';
 저항-커패시터 가지를 더해, 전류가 바뀔 때 단자 전압이 늦게 따라오게 합니다
 <Cite key="he2011" />. 실제 배터리에서는 저항과 개방 전압도 충전 상태(state of
 charge), 건강 상태(state of health), 온도에 따라 달라지지만
-<Cite key="he2011" where="the Rint model" />, 시뮬레이터는 이들을 상수로 둡니다.
+<Cite key="he2011" where="Sec. 2.1" />, 시뮬레이터는 이들을 상수로 둡니다.
 시뮬레이터가 계산하는 수백 스위칭 주기 동안 배터리가 받는 전하는 용량의 아주
 작은 일부이므로, 이는 한 충전 상태에 있는 배터리입니다. 그래프 아래의 부하 표는
 배터리의 전력을 개방 전압이 저장하는 몫 $V_b \langle i_b \rangle$와 내부 저항이

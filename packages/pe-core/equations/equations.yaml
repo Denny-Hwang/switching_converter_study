@@ -2233,7 +2233,7 @@ equations:
     assumptions: [rint_battery]
     notes: "the battery charges when its terminals are above its open-circuit voltage and discharges below it; the open-circuit voltage rises slowly with the state of charge, so over the few hundred switching periods of a simulation it is a constant"
     notes_ko: "단자 전압이 개방 전압보다 높으면 배터리가 충전되고 낮으면 방전된다; 개방 전압은 충전 상태에 따라 천천히 오르므로 수백 스위칭 주기의 시뮬레이션 동안에는 상수로 본다"
-    cite: {key: he2011, where: "the Rint model"}
+    cite: {key: he2011, where: "Sec. 2.1 (The Rint Model)"}
     tests:
       - {inputs: {V: 14.4, V_b: 12.0, R_b: 0.5}, expect: 4.8}
       - {inputs: {V: 11.0, V_b: 12.0, R_b: 0.5}, expect: -2.0}
