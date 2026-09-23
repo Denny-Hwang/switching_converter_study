@@ -222,9 +222,12 @@ export function compareRows(r: SimResult): CompareRow[] {
     }
   }
   // the rise of the inductor current while the switch is on: the peak-to-peak
-  // ripple in CCM and DCM, also when a node capacitance rings in the idle interval
+  // ripple in CCM and DCM, also when a node capacitance rings in the idle
+  // interval; not shown when the ideal converter would not raise the current
+  // (an output held at or above the buck's V_g or the forward converter's n V_g)
   const iL = r.waveforms.i_L as number[];
-  rows.push({ label: 'Δi_L,pp (on)', unit: 'A', sim: r.max.i_L! - iL[0]!, formula: sim.analyticRipplePP(p, Vin, V) });
+  const ripple = sim.analyticRipplePP(p, Vin, V);
+  if (ripple > 0) rows.push({ label: 'Δi_L,pp (on)', unit: 'A', sim: r.max.i_L! - iL[0]!, formula: ripple });
   const vds: Record<Topology, [string, Record<string, number>]> = {
     buck: ['buck.Vds', { V_g: Vin }],
     boost: ['boost.Vds', { V }],

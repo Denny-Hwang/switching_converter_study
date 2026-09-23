@@ -13,14 +13,15 @@
  * diode; the diode is a constant forward drop V_F that blocks ideally; the
  * inductor may have a winding resistance R_L. Without a node capacitance the
  * transitions are instantaneous. With one, the inductor current charges it
- * after turn-off until the diode takes over (the "rise" interval), it rings
- * in the DCM idle interval, and the switch discharges it at turn-on, where
- * its energy is counted as capacitive switching loss. The transformers are
+ * after turn-off until the diode takes over (the "rise" interval), it follows
+ * the switch voltage while the diode conducts, it rings once the diode
+ * current has ended, and the switch discharges it at turn-on, where its
+ * energy is counted as capacitive switching loss. The transformers are
  * ideal except for the magnetizing inductance (turns ratio 1:n with
  * n = N_s/N_p, CLAUDE.md conventions).
  */
 
-import type { Interval } from '../engine';
+import type { Assign, Interval } from '../engine';
 import type { Mat, Vec } from '../linalg';
 
 export type Topology = 'buck' | 'boost' | 'buckboost' | 'flyback' | 'forward';
@@ -180,13 +181,16 @@ export function unit(c: Common, state: string, sign = 1): Vec {
   return v;
 }
 
-export function setState(c: Common, x: Vec, values: Record<string, number>): Vec {
-  const y = x.slice();
+/** Assignments x[k] := expression of the state (a number sets a constant), for the states the model has. */
+export function assign(c: Common, values: Record<string, Lin | number>): Assign[] {
+  const out: Assign[] = [];
   for (const [k, v] of Object.entries(values)) {
     const j = c.idx(k);
-    if (j >= 0) y[j] = v;
+    if (j < 0) continue;
+    const e: Lin = typeof v === 'number' ? { '1': v } : v;
+    out.push({ state: j, c: c.names.map((name) => e[name] ?? 0), d: e['1'] ?? 0 });
   }
-  return y;
+  return out;
 }
 
 export function outputsFrom(c: Common, L: number, specs: Record<string, IntervalSpec>) {

@@ -134,7 +134,12 @@ export function initialState(p: SimParams, model: Model): Vec {
       const Rin = p.load.R / (M * M); // ideal converter as seen from its input
       Vg = (p.source.Voc * Rin) / (Rin + p.source.Rs);
     }
-    V = Math.abs(M) * Vg;
+    // The diode's forward drop lowers the output by about V_F; a forward
+    // converter's output also stays below n V_g - V_F, where its rectifier
+    // would stop conducting.
+    const VF = p.VF ?? 0;
+    V = Math.max(0, Math.abs(M) * Vg - VF);
+    if (p.topology === 'forward') V = Math.min(V, 0.999 * Math.max(0, n * Vg - VF));
     const Iout = V / p.load.R;
     Iavg = {
       buck: Iout,
@@ -175,9 +180,12 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
   }
   const idleTime = model.idle.reduce((s, iv) => s + (ss.run.durations[iv] ?? 0), 0);
   const idleFraction = idleTime / Ts;
+  // DCM: the inductor current rests at zero for part of the period. BCM: it
+  // only touches zero. A current that reverses and flows on through the
+  // switch's body diode is continuous (CCM).
   let mode: Mode = 'CCM';
   if (idleFraction > 1e-3) mode = 'DCM';
-  else if (min.i_L! <= 0.02 * Math.max(pp.i_L!, 1e-15)) mode = 'BCM';
+  else if (Math.abs(min.i_L!) <= 0.02 * Math.max(pp.i_L!, 1e-15)) mode = 'BCM';
 
   let K = NaN;
   let Kc = NaN;

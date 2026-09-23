@@ -151,3 +151,20 @@ export function affineStep(A: Mat, b: Vec, h: number): { Phi: Mat; Gamma: Vec } 
   const E = expm(M);
   return { Phi: E.slice(0, n).map((r) => r.slice(0, n)), Gamma: E.slice(0, n).map((r) => r[n]!) };
 }
+
+/**
+ * The matrices of an exact step over a time h for any input b:
+ * x(h) = Phi x(0) + W b, with W = integral of expm(A s) over [0, h], from the
+ * exponential of the augmented matrix [[A, I], [0, 0]]. W is computed
+ * directly, without the cancellation of (Phi - I) A^-1 for slow states.
+ */
+export function stepMatrices(A: Mat, h: number): { Phi: Mat; W: Mat } {
+  const n = A.length;
+  const M = zeros(2 * n);
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) M[i]![j] = A[i]![j]! * h;
+    M[i]![n + i] = h;
+  }
+  const E = expm(M);
+  return { Phi: E.slice(0, n).map((r) => r.slice(0, n)), W: E.slice(0, n).map((r) => r.slice(n)) };
+}

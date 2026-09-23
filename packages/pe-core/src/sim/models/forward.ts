@@ -2,13 +2,13 @@ import type { Interval, Model } from '../engine';
 import type { Vec } from '../linalg';
 import {
   add,
+  assign,
   common,
   evalLin,
   lin,
   loadAndBus,
   mul,
   outputsFrom,
-  setState,
   system,
   unit,
   type IntervalSpec,
@@ -73,8 +73,8 @@ export function forward(p: SimParams): Model {
     offM0: { gate: false, vL: freewheel, vM: zero, iOut: iL, iIn: zero, vSw: vin, iSw: zero, iD: iL, guards: [] },
     idle: { gate: false, vL: zero, vM: zero, iOut: zero, iIn: zero, vSw: vin, iSw: zero, iD: zero, guards: [] },
   };
-  const zeroI = (x: Vec) => setState(c, x, { i: 0 });
-  const zeroM = (x: Vec) => setState(c, x, { iM: 0 });
+  const zeroI = assign(c, { i: 0 });
+  const zeroM = assign(c, { iM: 0 });
   const onVL = specs.on!.vL;
   const rising = mul(onVL, -1); // > 0 while the on-interval would drive the inductor current negative
   specs.on!.guards = [{ c: unit(c, 'i'), d: 0, next: 'onL0', reset: zeroI }];
@@ -105,14 +105,14 @@ export function forward(p: SimParams): Model {
     intervals,
     idle: ['onL0', 'offL0', 'idle'],
     turnOn(x) {
-      if (x[0]! <= 0 && evalLin(onVL, c.names, x) < 0) return { interval: 'onL0', x: setState(c, x, { i: 0 }) };
-      return { interval: 'on', x };
+      if (x[0]! <= 0 && evalLin(onVL, c.names, x) < 0) return { interval: 'onL0', set: zeroI };
+      return { interval: 'on' };
     },
     turnOff(x) {
       const i = x[0]! > 0;
       const m = x[c.idx('iM')]! > 0;
       const iv = i && m ? 'off' : i ? 'offM0' : m ? 'offL0' : 'idle';
-      return { interval: iv, x: setState(c, x, { ...(i ? {} : { i: 0 }), ...(m ? {} : { iM: 0 }) }) };
+      return { interval: iv, set: [...(i ? [] : zeroI), ...(m ? [] : zeroM)] };
     },
     outputs: (x, iv) => ({ ...outputs(x, iv), i_M: x[c.idx('iM')]! }),
   };

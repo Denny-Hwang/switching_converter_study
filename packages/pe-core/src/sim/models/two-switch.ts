@@ -1,15 +1,15 @@
-import type { Edge, Interval, Model } from '../engine';
+import type { Edge, Guard, Interval, Model } from '../engine';
 import type { Vec } from '../linalg';
 import {
   add,
+  assign,
   common,
   evalLin,
   lin,
+  loadAndBus,
   makeInterval,
   mul,
   outputsFrom,
-  setState,
-  unit,
   type IntervalSpec,
   type Lin,
   type SimParams,
@@ -18,13 +18,19 @@ import {
 // ---------------------------------------------------------------------------
 // Buck, boost, buck-boost and flyback share one structure: an on-interval,
 // an off-interval with the diode conducting, and an idle interval once the
-// inductor current reaches zero. With a node capacitance, the inductor
-// current first charges it after turn-off ("rise") until the diode takes
-// over, and the idle interval rings (the inductance with C_node), clamped by
-// the switch's body diode at zero switch voltage and ended early if the
-// ringing turns the diode on. A current that is negative at turn-off (a buck
-// whose output is held above its input) flows on through the body diode
-// ("rev") instead of vanishing.
+// inductor current reaches zero. A current that is negative at turn-off (a
+// buck whose output is held above its input) flows on through the switch's
+// body diode ("rev") instead of vanishing.
+//
+// With a node capacitance C_node across the switch, the inductor current
+// first charges it after turn-off ("rise") until the diode takes over. While
+// the diode conducts, the switch voltage follows the input and output
+// voltages, so C_node is in parallel with their capacitors: it takes its
+// share of their current, and the diode carries the rest of the inductor
+// current. Once the diode current reaches zero, the inductance rings with
+// C_node ("ring"), clamped by the body diode at zero switch voltage
+// ("clamp") and ended early if the ringing turns the diode on again. At
+// turn-on the switch discharges C_node, and its energy is lost.
 // ---------------------------------------------------------------------------
 
 export function twoSwitch(p: SimParams): Model {
@@ -36,24 +42,34 @@ export function twoSwitch(p: SimParams): Model {
   const iL = lin([1, 'i']);
   const hasVc = c.idx('vc') >= 0;
   const vc = lin([1, 'vc']);
+  /** A guard that ends the interval when the expression e, positive before, reaches zero. */
+  const until = (e: Lin, next: string, more: Partial<Guard> = {}): Guard => ({
+    c: c.names.map((k) => e[k] ?? 0),
+    d: e['1'] ?? 0,
+    next,
+    ...more,
+  });
 
   // Topology-specific pieces: voltage across L while the diode conducts, the
-  // current delivered to the output node, the input current, the switch
-  // voltage while the diode conducts, and the ringing term.
+  // current delivered to the output node, the input current, the ringing
+  // term, and the switch voltage while the diode conducts,
+  // a_in vin + a_out vout + kD V_F.
   let offVL: Lin;
   let offOut: Lin;
   let offIn: Lin;
-  let offVsw: Lin;
   let onOut: Lin = zero;
   let idleVsw: Lin;
   let ringW: Lin = zero; // the ringing inductor sees vin - vc - ringW
   let alwaysIn = false; // boost: the input current is the inductor current in every interval
+  let aIn: number;
+  let aOut: number;
+  let kD: number;
   switch (p.topology) {
     case 'buck':
       offVL = add(lin([-VF, '1'], [-RL, 'i']), mul(vout, -1));
       offOut = iL;
       offIn = zero;
-      offVsw = add(vin, lin([VF, '1']));
+      [aIn, aOut, kD] = [1, 0, 1];
       onOut = iL;
       idleVsw = add(vin, mul(vout, -1));
       ringW = vout;
@@ -62,7 +78,7 @@ export function twoSwitch(p: SimParams): Model {
       offVL = add(vin, lin([-VF, '1'], [-RL, 'i']), mul(vout, -1));
       offOut = iL;
       offIn = iL;
-      offVsw = add(vout, lin([VF, '1']));
+      [aIn, aOut, kD] = [0, 1, 1];
       idleVsw = vin;
       alwaysIn = true;
       break;
@@ -70,19 +86,45 @@ export function twoSwitch(p: SimParams): Model {
       offVL = add(lin([-VF, '1'], [-RL, 'i']), mul(vout, -1));
       offOut = iL;
       offIn = zero;
-      offVsw = add(vin, vout, lin([VF, '1']));
+      [aIn, aOut, kD] = [1, 1, 1];
       idleVsw = vin;
       break;
     case 'flyback':
       offVL = add(mul(add(vout, lin([VF, '1'])), -1 / n), lin([-RL, 'i']));
       offOut = mul(iL, 1 / n);
       offIn = zero;
-      offVsw = add(vin, mul(add(vout, lin([VF, '1'])), 1 / n));
+      [aIn, aOut, kD] = [1, 1 / n, 1 / n];
       idleVsw = vin;
       break;
     default:
       throw new Error(`twoSwitch: unsupported topology ${p.topology}`);
   }
+  const offVsw = add(mul(vin, aIn), mul(vout, aOut), lin([kD * VF, '1']));
+
+  // While the diode conducts, the switch voltage follows the input and the
+  // output, and a current i_Cn into C_node is drawn a_in times from the
+  // input, a_out times from the output and kD times from the diode (the
+  // coefficients of the switch voltage; the energy balance checks this).
+  // With y = (v, vbus) the states among them, a = (a_out, a_in) and
+  // D = diag(C, C_bus): (D + C_node a a^T) dy/dt = D (dy/dt without C_node), so
+  // i_Cn = C_node a·dy/dt = C_node a^T (dy/dt without C_node) / (1 + C_node a^T D^-1 a).
+  // A fixed input and a fixed output give a constant switch voltage and no current.
+  let iCn = zero;
+  if (hasVc) {
+    const free = loadAndBus(c, offOut, offIn);
+    const a = { v: aOut, vbus: aIn };
+    const cap = { v: c.C, vbus: c.src?.Cbus ?? NaN };
+    let num = zero;
+    let q = 0;
+    for (const k of ['v', 'vbus'] as const) {
+      const row = free[k];
+      if (!row || a[k] === 0) continue;
+      num = add(num, mul(row, a[k]));
+      q += (a[k] * a[k]) / cap[k];
+    }
+    iCn = mul(num, c.Cn / (1 + c.Cn * q));
+  }
+  const offD = add(offOut, mul(iCn, -kD));
 
   const onVL = add(vin, lin([-(Ron + RL), 'i']), mul(ringW, -1));
   const toIdle = hasVc ? 'ring' : 'idle';
@@ -91,19 +133,15 @@ export function twoSwitch(p: SimParams): Model {
     off: {
       gate: false,
       vL: offVL,
-      iOut: offOut,
-      iIn: offIn,
+      iOut: add(offOut, mul(iCn, -aOut)),
+      iIn: add(offIn, mul(iCn, aIn)),
       vSw: offVsw,
       iSw: zero,
-      iD: offOut,
-      guards: [
-        {
-          c: unit(c, 'i'),
-          d: 0,
-          next: toIdle,
-          reset: (x) => setState(c, x, hasVc ? { i: 0, vc: evalLin(offVsw, c.names, x) } : { i: 0 }),
-        },
-      ],
+      iD: offD,
+      qc: iCn,
+      // The diode turns off when its current reaches zero. Without C_node
+      // that is the inductor current, set to exactly zero for the idle interval.
+      guards: [hasVc ? until(offD, 'ring') : until(iL, 'idle', { reset: assign(c, { i: 0 }) })],
     },
   };
   // The switch's body diode conducts a negative inductor current: the switch
@@ -117,7 +155,7 @@ export function twoSwitch(p: SimParams): Model {
     iSw: zero,
     iD: zero,
     qc: zero,
-    guards: [{ c: unit(c, 'i', -1), d: 0, next, reset: (x) => setState(c, x, { i: 0 }) }],
+    guards: [until(mul(iL, -1), next, { reset: assign(c, { i: 0 }) })],
   });
   if (!hasVc) {
     const guards: Interval['guards'] = [];
@@ -127,7 +165,7 @@ export function twoSwitch(p: SimParams): Model {
       // the output): the diode conducts again.
       const g = add(vout, lin([VF, '1']), mul(vin, -1));
       const forward = (x: Vec) => evalLin(g, c.names, x) <= 0;
-      guards.push({ c: c.names.map((k) => g[k] ?? 0), d: g['1'] ?? 0, next: 'off' });
+      guards.push(until(g, 'off'));
       // A reverse current that ends while the diode is forward-biased hands over to it directly.
       const toIdle = specs.rev.guards[0]!;
       specs.rev.guards = [
@@ -140,8 +178,9 @@ export function twoSwitch(p: SimParams): Model {
     // Switch and diode off, the inductor current flows through C_node:
     // L di/dt = vin - vc - w, C_node dvc/dt = i.
     const ringVL = add(vin, mul(vc, -1), mul(ringW, -1), lin([-RL, 'i']));
-    const high = add(offVsw, mul(vc, -1)); // > 0 while the diode stays off
-    const diodeOn = { c: c.names.map((k) => high[k] ?? 0), d: high['1'] ?? 0, next: 'off', when: (x: Vec) => x[0]! > 0 };
+    // The diode turns on when the switch voltage reaches its conducting
+    // value, if it would then carry a forward current.
+    const diodeOn = until(add(offVsw, mul(vc, -1)), 'off', { when: (x: Vec) => evalLin(offD, c.names, x) > 0 });
     const nodeSpec = (guards: Interval['guards']): IntervalSpec => ({
       gate: false,
       vL: ringVL,
@@ -153,11 +192,14 @@ export function twoSwitch(p: SimParams): Model {
       qc: iL,
       guards,
     });
-    // After turn-off the current charges C_node up to the diode's turn-on voltage.
-    specs.rise = nodeSpec([diodeOn, { c: unit(c, 'i'), d: 0, next: 'ring' }]);
+    // After turn-off the current charges C_node up to the diode's turn-on
+    // voltage (from zero: the on-interval holds vc at zero).
+    specs.rise = nodeSpec([diodeOn, until(iL, 'ring')]);
     // DCM idle: the inductance rings with C_node.
-    specs.ring = nodeSpec([{ c: unit(c, 'vc'), d: 0, next: 'clamp', reset: (x) => setState(c, x, { vc: 0 }) }, diodeOn]);
+    specs.ring = nodeSpec([until(vc, 'clamp', { reset: assign(c, { vc: 0 }) }), diodeOn]);
     specs.clamp = bodyDiode('ring');
+    // A negative current at turn-off: the body diode conducts until it ends.
+    specs.rev = bodyDiode('ring');
   }
 
   const intervals: Record<string, Interval> = {};
@@ -173,17 +215,14 @@ export function twoSwitch(p: SimParams): Model {
     turnOn(x: Vec): Edge {
       // The switch discharges the node capacitance, and its energy is lost.
       // vc holds the switch voltage in every interval but the on-interval.
-      if (!hasVc) return { interval: 'on', x };
-      return { interval: 'on', x: setState(c, x, { vc: 0 }), loss: 0.5 * c.Cn * x[jc]! ** 2 };
+      if (!hasVc) return { interval: 'on' };
+      return { interval: 'on', set: assign(c, { vc: 0 }), loss: 0.5 * c.Cn * x[jc]! ** 2 };
     },
     turnOff(x: Vec): Edge {
       const i = x[0]!;
-      if (i > 0) {
-        // The node voltage starts from the on-state voltage R_on i.
-        return hasVc ? { interval: 'rise', x: setState(c, x, { vc: Ron * i }) } : { interval: 'off', x };
-      }
-      if (i < 0) return hasVc ? { interval: 'clamp', x: setState(c, x, { vc: 0 }) } : { interval: 'rev', x };
-      return { interval: toIdle, x: hasVc ? setState(c, x, { vc: 0 }) : x };
+      if (i > 0) return { interval: hasVc ? 'rise' : 'off' };
+      if (i < 0) return { interval: 'rev' };
+      return { interval: toIdle };
     },
     outputs: outputsFrom(c, L, specs),
   };

@@ -51,7 +51,10 @@ DCM, the idle interval <Cite key="erickson2020" where="Ch. 2" />,
   leakage inductance.
 - **Transitions.** Without a capacitance across the switch they are
   instantaneous. With one, the inductor current charges it after turn-off
-  until the diode takes over, and the idle interval of DCM rings
+  until the diode takes over. While the diode conducts, the capacitance
+  follows the switch voltage, which moves with the output and input ripple,
+  so it takes its share of their capacitors' current. Once the diode current
+  reaches zero, the inductance rings with the capacitance
   (<EqRef id="dcm.ring.f" label="ringing frequency" />). The switch's body
   diode clamps the ringing at zero switch voltage, and the energy in the
   capacitance is lost at every turn-on
@@ -71,19 +74,30 @@ DCM, the idle interval <Cite key="erickson2020" where="Ch. 2" />,
   one two-thousandth of the switching period, or shorter, so that one ring
   of the capacitance across the switch spans at least twenty sub-steps.
 - **Events** such as the diode current reaching zero or a clamp starting to
-  conduct are located inside a sub-step by bisection on the same exact
-  solution. The gate edges fall exactly at the start of the period and at the
-  duty ratio.
+  conduct are located inside a sub-step on the same exact solution, by a
+  search that keeps the event bracketed like bisection (regula falsi in its
+  Illinois variant, which needs far fewer steps). The gate edges fall
+  exactly at the start of the period and at the duty ratio.
+- **Rounding.** Within a period the simulator follows each state's
+  deviation from its value at the start of the period. Its rounding errors
+  then scale with how far the state moves, not with its size, so the change
+  over a period is exact to rounding even for a very large capacitor.
 - **The periodic steady state** is found by Newton iteration on the map from
-  one period's initial state to the next. It is accepted when, for every
-  state, the change over one period is below one part in a million of how far
-  that state moves within the period, within at most two thousand periods;
-  changes at the level of the arithmetic's rounding errors are ignored.
-  A change measured against the state's peak would not do: a current that
-  grows by the same amount every period would pass once it had grown large
-  enough.
+  one period's initial state to the next, with the map's exact derivative:
+  the product of the sub-steps' matrices, corrected at every event whose time
+  depends on the state. It is accepted when two tests pass for every state,
+  within at most two thousand periods:
+  - the change over one period is below one part in a million of how far
+    that state moves within the period. A change measured against the
+    state's peak would not do: a current that grows by the same amount every
+    period would pass once it had grown large enough;
+  - the remaining Newton step, the estimated distance to the steady state,
+    is below one part in a million of the state's size. The change alone
+    would not do: a very large capacitor changes little per period even
+    while it is still far from its steady state.
 - **The mode** is DCM when the inductor current stays at zero for part of
-  the period, BCM when it only touches zero, and CCM otherwise.
+  the period, BCM when it only touches zero, and CCM otherwise, also when
+  it reverses and flows on through the switch's body diode.
 
 ## Validation
 
@@ -96,7 +110,14 @@ against the equations:
     within 2 % of the equations;
   - the detected mode matches $K$ against $K_\mathrm{crit}$.
 - **Energy balance.** With losses, the input energy per period equals the
-  output energy plus the computed losses.
+  output energy plus the computed losses, also with a capacitance across
+  the switch and tens of volts of ripple.
+- **Newton's derivative.** The exact derivative of the period map matches
+  central finite differences.
+- **Very large capacitors.** A bus capacitor whose time constant spans
+  billions of periods still settles at the loss-free-resistor divider, and
+  a huge output capacitor gives the same output voltage as a much smaller
+  one.
 - **Ringing.** The DCM ringing frequency matches the L-C equation.
 - **Source-driven flyback.** It pins its input at the critical voltage when
   the source can supply more than the DCM power there, and it settles below
@@ -127,13 +148,15 @@ the result):
   recovery or switching transition, so the simulator shows no turn-off
   spikes and no overlap loss.
 - **Fixed duty ratio.** There is no control loop and no core loss.
-- **A periodic steady state must exist.** A fixed output fed from a fixed
-  input in CCM, for example, has none, because the inductor current grows
-  without bound; neither has a buck whose output is held above its input,
-  whose current flows backwards through the body diode. Nor has a forward converter above its reset limit
-  (<EqRef id="forward.reset.Dmax" label="maximum duty ratio" />), because its
-  magnetizing current walks up from one period to the next. The status line
-  then reports that no steady state was reached.
+- **A periodic steady state must exist.** Some circuits have none without
+  resistance: a fixed output fed from a fixed input in CCM, a buck whose
+  output is held above its input (its current flows backwards through the
+  body diode), and a forward converter above its reset limit
+  (<EqRef id="forward.reset.Dmax" label="maximum duty ratio" />), whose
+  magnetizing current walks up from one period to the next. Their current
+  grows without bound, and the status line reports that no steady state was
+  reached. With an on-resistance or a winding resistance they do settle, at
+  a current that only the resistance limits and that can be very large.
 
 ## Screenshot
 

@@ -115,6 +115,12 @@ describe('compare panel', () => {
     expect(Math.abs(row.sim - row.formula) / row.formula).toBeLessThan(0.02);
   });
 
+  it('no ripple row when the ideal converter would not raise the current (the output held above the forward converter’s n V_g)', () => {
+    const r = sim.simulate({ topology: 'forward', Vg: 48, D: 0.4, fs: 1e5, n: 0.5, nr: 1, LM: 1e-3, L: 1e-4, VF: 0.5, load: { kind: 'fixed', V: 30 } });
+    expect(r.max.i_L!).toBe(0);
+    expect(compareRows(r).find((x) => x.label === 'Δi_L,pp (on)')).toBeUndefined();
+  });
+
   it('a boost whose only loss is the winding resistance is compared with boost.ccm.M_RL', () => {
     const r = sim.simulate({ topology: 'boost', Vg: 12, D: 0.5, fs: 1e5, L: 1e-4, RL: 0.2, load: { kind: 'resistive', R: 10, C: 1e-4 } });
     const m = compareRows(r).find((x) => x.label === '|M|')!;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { evaluate } from '../src/equations';
-import { affineStep, analyticM, analyticRipplePP, buildModel, expm, runTransient, simulate, stepsFor, type SimParams, type Topology } from '../src/sim';
+import { affineStep, analyticM, analyticRipplePP, buildModel, expm, initialState, runCycle, runTransient, simulate, steadyState, stepsFor, type SimParams, type Topology } from '../src/sim';
 
 const rel = (a: number, b: number) => Math.abs(a - b) / Math.abs(b);
 
@@ -259,7 +259,7 @@ describe('reviewed cases (energy accounting, reverse current, slow and fast stat
     expect(r.converged).toBe(true);
     expect(r.mode).toBe('DCM');
     const Rin = evaluate('lfr.R_in', { L_M: 0.02, f_s: 1e4, D: 0.2 });
-    expect(rel(r.avg.v_in!, (200 * Rin) / (Rin + 1e4))).toBeLessThan(1e-4);
+    expect(rel(r.avg.v_in!, (200 * Rin) / (Rin + 1e4))).toBeLessThan(1e-6);
   });
 
   it('a node capacitance that rings fast gets finer sub-steps, and the result matches a much finer run', () => {
@@ -279,6 +279,123 @@ describe('reviewed cases (energy accounting, reverse current, slow and fast stat
     const vin = w.v_in as number[];
     const iv = w.interval as string[];
     for (let k = 0; k < vin.length; k++) if (iv[k] === 'idle') expect(vin[k]! - 12.5).toBeLessThan(1e-6);
+  });
+});
+
+describe('second review (node capacitance while the diode conducts, exact Jacobian, slow states)', () => {
+  const balance = (r: ReturnType<typeof simulate>, fs: number) => {
+    const Pin = r.energy.input * fs;
+    const Pout = r.energy.output * fs;
+    return Math.abs(Pin - Pout - r.losses.total) / r.losses.total;
+  };
+
+  it('a lightly loaded forward converter with a diode drop converges quickly (its output stays below n V_g - V_F)', () => {
+    const r = simulate({ topology: 'forward', Vg: 48, D: 0.4, fs: 1e5, n: 0.5, nr: 1, LM: 1e-3, L: 1e-4, VF: 0.5, load: { kind: 'resistive', R: 1e6, C: 1e-4 } });
+    expect(r.converged).toBe(true);
+    expect(r.cycles).toBeLessThan(20);
+    expect(r.avg.v_out!).toBeLessThan(0.5 * 48 - 0.5);
+    expect(rel(r.avg.v_out!, 23.49706)).toBeLessThan(1e-6);
+  });
+
+  // While the diode conducts, C_node follows the switch voltage, which moves
+  // with the output (and bus) ripple: its current must come from the circuit,
+  // or energy appears when the diode turns off.
+  for (const [name, p] of [
+    ['flyback DCM, 27 V output ripple', { topology: 'flyback', Vg: 24, D: 0.2, fs: 5e4, n: 0.5, L: 2e-5, Ron: 0.05, Cnode: 1e-9, load: { kind: 'resistive', R: 50, C: 3e-7 } }],
+    ['buck-boost DCM, 29 V output ripple', { topology: 'buckboost', Vg: 24, D: 0.3, fs: 1e5, L: 5e-6, Ron: 0.05, Cnode: 1e-9, load: { kind: 'resistive', R: 50, C: 3e-7 } }],
+    ['boost CCM, 52 V output ripple', { topology: 'boost', Vg: 24, D: 0.45, fs: 1e5, L: 2e-4, Ron: 0.05, Cnode: 2e-9, load: { kind: 'resistive', R: 8, C: 2e-7 } }],
+    ['source-driven flyback, 54 V bus ripple', { topology: 'flyback', Vg: 0, D: 0.3, fs: 1e5, n: 0.5, L: 5e-6, Ron: 0.05, Cnode: 1e-9, load: { kind: 'resistive', R: 50, C: 1e-4 }, source: { Voc: 48, Rs: 5, Cbus: 2e-7 } }],
+  ] as [string, SimParams][]) {
+    it(`${name}: energy balance, and no jump of the switch voltage when the diode turns off`, () => {
+      const r = simulate(p);
+      expect(r.converged).toBe(true);
+      expect(balance(r, p.fs)).toBeLessThan(1e-2);
+      const iv = r.waveforms.interval as string[];
+      const v = r.waveforms.v_sw as number[];
+      for (let k = 1; k < iv.length; k++) {
+        if (iv[k - 1] === 'off' && iv[k] === 'ring') expect(Math.abs(v[k]! - v[k - 1]!)).toBeLessThan(1e-9 * Math.max(...v));
+      }
+    });
+  }
+
+  it('an on-state voltage R_on i above the diode turn-on voltage does not collapse the output', () => {
+    const p: SimParams = { topology: 'boost', Vg: 12, D: 0.95, fs: 1e5, L: 1e-4, Ron: 1, load: { kind: 'resistive', R: 10, C: 1e-4 } };
+    const plain = simulate(p);
+    const withNode = simulate({ ...p, Cnode: 1e-9 });
+    expect(plain.converged && withNode.converged).toBe(true);
+    expect(plain.avg.v_out!).toBeGreaterThan(6);
+    expect(rel(withNode.avg.v_out!, plain.avg.v_out!)).toBeLessThan(1e-2);
+  });
+
+  it('the cycle Jacobian is exact: it matches central finite differences at the steady state', () => {
+    for (const p of [
+      { topology: 'flyback', Vg: 24, D: 0.45, fs: 1e5, n: 0.5, L: 2e-4, Ron: 0.05, Cnode: 2e-9, load: { kind: 'resistive', R: 8, C: 1e-3 } },
+      { topology: 'buck', Vg: 24, D: 0.45, fs: 1e5, L: 5e-6, Ron: 0.05, Cnode: 1e-9, load: { kind: 'resistive', R: 50, C: 1e-3 } },
+      { topology: 'boost', Vg: 12, D: 0.3, fs: 1e5, L: 5e-6, Ron: 0.05, RL: 0.02, VF: 0.4, load: { kind: 'resistive', R: 50, C: 1e-4 } },
+      { topology: 'forward', Vg: 48, D: 0.4, fs: 1e5, n: 0.5, nr: 1, LM: 1e-3, L: 1e-4, VF: 0.5, load: { kind: 'resistive', R: 1e3, C: 1e-4 } },
+      { topology: 'flyback', Vg: 0, D: 0.3, fs: 1e5, n: 0.5, L: 5e-6, Ron: 0.05, Cnode: 1e-9, load: { kind: 'resistive', R: 50, C: 1e-4 }, source: { Voc: 48, Rs: 5, Cbus: 1e-5 } },
+    ] as SimParams[]) {
+      const m = buildModel(p);
+      const N = stepsFor(p);
+      const ss = steadyState(m, initialState(p, m), { stepsPerPeriod: N });
+      const x = ss.x0;
+      const J = runCycle(m, x, { stepsPerPeriod: N, jacobian: true }).jac!;
+      const size = x.map((v, j) => Math.max(Math.abs(v), ss.run.variation[j]!, 1e-9));
+      for (let j = 0; j < x.length; j++) {
+        const h = 1e-7 * size[j]!;
+        const up = x.slice();
+        up[j]! += h;
+        const down = x.slice();
+        down[j]! -= h;
+        const dp = runCycle(m, up, { stepsPerPeriod: N }).dx;
+        const dm = runCycle(m, down, { stepsPerPeriod: N }).dx;
+        for (let i = 0; i < x.length; i++) {
+          const fd = (i === j ? 1 : 0) + (dp[i]! - dm[i]!) / (2 * h);
+          expect(Math.abs(J[i]![j]! - fd) * (size[j]! / size[i]!)).toBeLessThan(1e-6);
+        }
+      }
+    }
+  });
+
+  it('a 1000 F bus (a time constant of 5e10 periods) settles exactly at the loss-free-resistor divider', () => {
+    const r = simulate({
+      topology: 'flyback', Vg: 0, D: 0.2, fs: 1e4, n: 0.1, L: 0.02, VF: 0.5,
+      load: { kind: 'fixed', V: 5 }, source: { Voc: 150, Rs: 1e4, Cbus: 1000 },
+    });
+    expect(r.converged).toBe(true);
+    const Rin = evaluate('lfr.R_in', { L_M: 0.02, f_s: 1e4, D: 0.2 });
+    expect(rel(r.avg.v_in!, (150 * Rin) / (Rin + 1e4))).toBeLessThan(1e-6);
+  });
+
+  it('a 1e5 F output capacitor gives the same output as a 100 F one', () => {
+    const p = (C: number): SimParams => ({ topology: 'buck', Vg: 24, D: 0.5, fs: 1e5, L: 1e-4, Ron: 0.05, RL: 0.1, VF: 0.5, load: { kind: 'resistive', R: 10, C } });
+    const big = simulate(p(1e5));
+    expect(big.converged).toBe(true);
+    expect(rel(big.avg.v_out!, simulate(p(100)).avg.v_out!)).toBeLessThan(1e-8);
+  });
+
+  it('a steady state at a large current, set only by R_on, is found and matches the hand value', () => {
+    // flyback holding 5 V from 400 V at D = 0.2: D (V_g - R_on I) = (1 - D)(V + V_F)/n
+    const r = simulate({ topology: 'flyback', Vg: 400, D: 0.2, fs: 1e5, n: 0.1, L: 1e-5, Ron: 0.05, VF: 0.5, load: { kind: 'fixed', V: 5 } });
+    expect(r.converged).toBe(true);
+    expect(rel(r.avg.i_L!, (400 - (0.8 * 5.5) / (0.1 * 0.2)) / 0.05)).toBeLessThan(1e-4);
+  });
+
+  it('a current that reverses through the body diode is CCM, with or without a node capacitance', () => {
+    const p: SimParams = { topology: 'buck', Vg: 24, D: 0.4, fs: 1e5, L: 1e-4, Ron: 0.05, RL: 1, VF: 0.5, load: { kind: 'fixed', V: 30 } };
+    const plain = simulate(p);
+    const withNode = simulate({ ...p, Cnode: 1e-9 });
+    expect(plain.converged && withNode.converged).toBe(true);
+    expect(plain.max.i_L!).toBeLessThan(0);
+    expect(plain.mode).toBe('CCM');
+    expect(withNode.mode).toBe('CCM');
+    expect(rel(withNode.avg.i_L!, plain.avg.i_L!)).toBeLessThan(1e-3);
+  });
+
+  it('a node capacitance that rings fast converges in a few cycles', () => {
+    const r = simulate({ topology: 'flyback', Vg: 24, D: 0.2, fs: 1e5, n: 2, L: 1e-5, Ron: 0.05, Cnode: 2.5e-13, load: { kind: 'resistive', R: 100, C: 1e-7 } });
+    expect(r.converged).toBe(true);
+    expect(r.cycles).toBeLessThanOrEqual(8);
   });
 });
 
