@@ -8,11 +8,21 @@ resources.yaml (when present), then:
       level, language, retrieved (YYYY-MM-DD) and why; bib entries with a
       URL that are verified carry a `urltitle` hint or are PDFs/login pages
       explicitly marked;
-  --online (CI): opens every URL (curl with HTTP/2, then curl over HTTP/1.1,
-      then urllib), requires HTTP 200, and checks that the page title
-      (<title>, falling back to og:title) contains the expected text
-      (`urltitle` in references.bib, `title_match` in resources.yaml); for
-      PDFs checks the %PDF signature instead.
+  --online (CI): opens every URL and checks that the page title (<title> in
+      <head>, falling back to og:title / name="title" / itemprop="name")
+      contains the expected text (`urltitle` in references.bib,
+      `title_match` in resources.yaml); for PDFs checks the %PDF signature.
+      Each URL is tried with an honest tool User-Agent and with a browser
+      User-Agent, over HTTP/2 and HTTP/1.1 (curl), then urllib: some hosts
+      reject one client and accept another.
+
+      A 404/410 or a real page whose title does not match fails. When the
+      live host never answers with content -- timeouts, 403/429/5xx, or a
+      bot wall/consent page without the page title (hosts that block cloud
+      runners) -- the check falls back to the most recent Internet Archive
+      capture of the exact URL (Wayback CDX API) and requires the same title
+      or PDF signature there. Such URLs are reported as "OK (archived
+      YYYY-MM-DD)", never silently as live.
 
 This complements lychee (which checks every link on the built site): some
 hosts reject lychee's HTTP/2 client, and a title match proves the URL still
@@ -26,12 +36,14 @@ from __future__ import annotations
 
 import argparse
 import html
+import json
 import re
 import shutil
 import subprocess
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -43,7 +55,12 @@ from pe_core import bib  # noqa: E402
 RESOURCES = ROOT / "resources.yaml"
 DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 RESOURCE_TYPES = {"book", "course", "video", "channel", "app-note", "tool", "paper", "datasheet", "lecture", "chapter"}
-USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+TOOL_AGENT = "switching-converter-study-linkcheck/1.0 (+https://github.com/Denny-Hwang/switching_converter_study)"
+BROWSER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+# Titles of interstitial pages served instead of content (consent walls, bot
+# checks). Seeing one is inconclusive, not a mismatch.
+INTERSTITIAL = ("before you continue", "just a moment", "attention required", "access denied", "are you a robot",
+                "captcha", "unusual traffic", "request blocked", "robot or human", "security check")
 
 
 def norm(s: str) -> str:
@@ -97,58 +114,144 @@ def collect() -> tuple[list[dict], list[str]]:
     return targets, errors
 
 
-def _curl(url: str, http1: bool) -> tuple[int, str, bytes]:
+class Fetch:
+    """One HTTP attempt: status 0 means no response (network error)."""
+
+    def __init__(self, how: str, status: int = 0, url: str = "", ctype: str = "", body: bytes = b"", error: str = ""):
+        self.how, self.status, self.url, self.ctype, self.body, self.error = how, status, url, ctype, body, error
+
+    def describe(self) -> str:
+        return f"{self.how}: {self.error or f'HTTP {self.status}'}"
+
+
+def _curl(url: str, agent: str, http1: bool, how: str) -> Fetch:
     cmd = [
-        "curl", "-sS", "-L", "--compressed", "--max-time", "45", "--connect-timeout", "20",
-        "-A", USER_AGENT,
+        "curl", "-sS", "-L", "--compressed", "--max-time", "30", "--connect-timeout", "15",
+        "-A", agent,
         "-H", "Accept: text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.8",
         "-H", "Accept-Language: en-US,en;q=0.9",
-        "-o", "-", "-w", "\n__STATUS__%{http_code} %{content_type}",
+        "-o", "-", "-w", "\n__STATUS__%{http_code} %{url_effective} %{content_type}",
     ]
     if http1:
         cmd.append("--http1.1")
-    out = subprocess.run(cmd + [url], capture_output=True, timeout=60)
-    if out.returncode != 0:
-        raise RuntimeError(out.stderr.decode("utf-8", "replace").strip() or f"curl exit {out.returncode}")
-    body, _, trailer = out.stdout.rpartition(b"\n__STATUS__")
-    code, _, ctype = trailer.decode().partition(" ")
-    return int(code), ctype, body[:400_000]
-
-
-def _urllib(url: str) -> tuple[int, str, bytes]:
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "text/html,application/pdf,*/*"})
     try:
-        with urllib.request.urlopen(req, timeout=40) as resp:
-            return resp.status, resp.headers.get("Content-Type", ""), resp.read(400_000)
+        out = subprocess.run(cmd + [url], capture_output=True, timeout=45)
+    except subprocess.TimeoutExpired:
+        return Fetch(how, error="timeout")
+    if out.returncode != 0:
+        return Fetch(how, error=(out.stderr.decode("utf-8", "replace").strip() or f"curl exit {out.returncode}")[:120])
+    body, _, trailer = out.stdout.rpartition(b"\n__STATUS__")
+    code, _, rest = trailer.decode("utf-8", "replace").partition(" ")
+    final, _, ctype = rest.partition(" ")
+    return Fetch(how, int(code), final, ctype, body[:600_000])
+
+
+def _urllib(url: str, agent: str, how: str) -> Fetch:
+    req = urllib.request.Request(url, headers={"User-Agent": agent, "Accept": "text/html,application/pdf,*/*"})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return Fetch(how, resp.status, resp.geturl(), resp.headers.get("Content-Type", ""), resp.read(600_000))
     except urllib.error.HTTPError as exc:
-        return exc.code, "", b""
+        return Fetch(how, exc.code, url)
+    except (urllib.error.URLError, OSError) as exc:
+        return Fetch(how, error=str(exc)[:120])
 
 
-def fetch(url: str) -> tuple[int, str, bytes]:
-    """curl (HTTP/2 allowed), then curl over HTTP/1.1, then urllib."""
-    errors = []
-    attempts = [lambda: _curl(url, False), lambda: _curl(url, True)] if shutil.which("curl") else []
-    attempts.append(lambda: _urllib(url))
-    for attempt in attempts:
-        try:
-            status, ctype, body = attempt()
-            if status == 200:
-                return status, ctype, body
-            errors.append(f"HTTP {status}")
-        except (RuntimeError, OSError, subprocess.TimeoutExpired, urllib.error.URLError) as exc:
-            errors.append(str(exc)[:120])
-        time.sleep(2)
-    raise RuntimeError(f"{url}: " + " | ".join(errors))
+def attempts(url: str):
+    """Yield fetches of `url`, one client configuration at a time."""
+    if shutil.which("curl"):
+        yield _curl(url, TOOL_AGENT, False, "curl tool-UA")
+        yield _curl(url, TOOL_AGENT, True, "curl tool-UA http1.1")
+        yield _curl(url, BROWSER_AGENT, False, "curl browser-UA")
+        yield _curl(url, BROWSER_AGENT, True, "curl browser-UA http1.1")
+    yield _urllib(url, TOOL_AGENT, "urllib tool-UA")
 
 
 def page_title(body: bytes) -> str:
-    """<title>, falling back to og:title (some sites render <title> client-side)."""
-    for pattern in (rb"<title[^>]*>(.*?)</title>", rb'<meta[^>]+property="og:title"[^>]+content="([^"]*)"',
-                    rb'<meta[^>]+name="title"[^>]+content="([^"]*)"'):
+    """<title> in <head>, falling back to og:title / name="title" / itemprop="name"
+    (some sites render <title> client-side)."""
+    head_end = body.find(b"</head>")
+    head = body[: head_end if head_end > 0 else len(body)]
+    m = re.search(rb"<title[^>]*>(.*?)</title>", head, re.S | re.I)
+    if m and m.group(1).strip():
+        return html.unescape(m.group(1).decode("utf-8", "replace")).strip()
+    for pattern in (
+        rb'<meta[^>]+property="og:title"[^>]+content="([^"]*)"',
+        rb'<meta[^>]+content="([^"]*)"[^>]+property="og:title"',
+        rb'<meta[^>]+name="title"[^>]+content="([^"]*)"',
+        rb'<(?:meta|link)[^>]+itemprop="name"[^>]+content="([^"]*)"',
+    ):
         m = re.search(pattern, body, re.S | re.I)
         if m and m.group(1).strip():
             return html.unescape(m.group(1).decode("utf-8", "replace")).strip()
     return ""
+
+
+def judge(t: dict, f: Fetch) -> tuple[str, str]:
+    """('ok' | 'fail' | 'inconclusive', detail) for one fetch of target t."""
+    if f.status in (404, 410):
+        return "fail", f"HTTP {f.status} (gone)"
+    if f.status != 200:
+        return "inconclusive", f.describe()
+    if t["kind"] == "pdf" or "pdf" in f.ctype:
+        if f.body.startswith(b"%PDF") or "pdf" in f.ctype:
+            return "ok", "(pdf)"
+        return "inconclusive", f"{f.how}: expected a PDF, got {f.ctype or 'unknown type'} from {f.url}"
+    title = page_title(f.body)
+    if t["kind"] == "login":
+        return "ok", title
+    if t["expect"] and norm(t["expect"]) in norm(title):
+        return "ok", title
+    if not title or any(w in norm(title) for w in INTERSTITIAL):
+        snippet = re.sub(rb"\s+", b" ", f.body[:160]).decode("utf-8", "replace")
+        return "inconclusive", f"{f.how}: no page title (title {title!r}, final URL {f.url}, body starts {snippet!r})"
+    return "fail", f"{f.how}: page title {title!r} does not contain {t['expect']!r} (final URL {f.url})"
+
+
+def archived(t: dict) -> tuple[str, str]:
+    """Check the latest Internet Archive capture (HTTP 200) of the exact URL."""
+    q = urllib.parse.urlencode({"url": t["url"], "output": "json", "fl": "timestamp,original",
+                                "filter": "statuscode:200", "limit": "-1"})
+    cdx = _urllib("https://web.archive.org/cdx/search/cdx?" + q, TOOL_AGENT, "wayback cdx")
+    if cdx.status != 200:
+        return "fail", f"no archive fallback ({cdx.describe()})"
+    try:
+        rows = json.loads(cdx.body.decode("utf-8") or "[]")
+    except ValueError:
+        return "fail", "no archive fallback (unreadable CDX answer)"
+    if len(rows) < 2:
+        return "fail", "no archive capture of this URL"
+    stamp, original = rows[-1][0], rows[-1][1]
+    snap = _urllib(f"https://web.archive.org/web/{stamp}id_/{original}", TOOL_AGENT, "wayback capture")
+    verdict, detail = judge(t, snap)
+    when = f"{stamp[0:4]}-{stamp[4:6]}-{stamp[6:8]}"
+    if verdict == "ok":
+        return "ok", f"archived {when}: {detail}"
+    return "fail", f"archive capture {when}: {detail}"
+
+
+def check_online(t: dict) -> tuple[str, str]:
+    """('OK' | 'OK (archived)' | 'FAIL', detail).
+
+    OK as soon as one client configuration gets the expected page. A
+    conclusive failure (404/410, or a real page with another title) from any
+    configuration fails the URL; only when every configuration was
+    inconclusive does the archive decide."""
+    notes: list[str] = []
+    failed = False
+    for f in attempts(t["url"]):
+        verdict, detail = judge(t, f)
+        if verdict == "ok":
+            return "OK", detail
+        notes.append(detail)
+        failed = failed or verdict == "fail"
+        time.sleep(1)
+    if failed:
+        return "FAIL", " | ".join(notes)
+    verdict, detail = archived(t)
+    if verdict == "ok":
+        return "OK (archived)", f"{detail}; live: " + " | ".join(notes)
+    return "FAIL", f"{detail}; live: " + " | ".join(notes)
 
 
 def main() -> int:
@@ -157,30 +260,19 @@ def main() -> int:
     args = ap.parse_args()
 
     targets, errors = collect()
+    archived_ok = []
     if args.online:
-        seen: dict[str, str] = {}
         for t in targets:
-            url = t["url"]
-            try:
-                status, ctype, body = fetch(url)
-            except RuntimeError as exc:
-                errors.append(f"{t['src']}: {exc}")
-                continue
-            if t["kind"] == "pdf" or "pdf" in ctype:
-                ok = body.startswith(b"%PDF") or "pdf" in ctype
-                title = "(pdf)"
-            else:
-                title = page_title(body)
-                if t["kind"] == "login":
-                    ok = True
-                else:
-                    ok = bool(t["expect"]) and norm(t["expect"]) in norm(title)
-            status_txt = "OK" if ok else "TITLE MISMATCH"
-            print(f"  {status_txt:14s} {t['src']:32s} {url}  <title>{title[:80]}</title>")
-            if not ok:
-                errors.append(f"{t['src']}: page title {title!r} does not contain {t['expect']!r} ({url})")
-            seen[url] = title
+            status, detail = check_online(t)
+            print(f"  {status:14s} {t['src']:32s} {t['url']}  {detail[:160]}")
+            if status == "FAIL":
+                errors.append(f"{t['src']}: {detail} ({t['url']})")
+            elif status != "OK":
+                archived_ok.append(t["src"])
             time.sleep(0.5)
+        if archived_ok:
+            print(f"resources_check: {len(archived_ok)} URL(s) unreachable from this runner, confirmed from their "
+                  f"latest Internet Archive capture: {', '.join(archived_ok)}")
 
     if errors:
         print(f"resources_check: {len(errors)} error(s)", file=sys.stderr)

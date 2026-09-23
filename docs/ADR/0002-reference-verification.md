@@ -34,13 +34,23 @@ Verification has three layers.
 3. **Mechanical checks in CI.** `python scripts/refcheck.py --online` resolves
    every DOI in Crossref and compares the Crossref title (and volume, issue,
    pages, year) with `references.bib`; `python scripts/resources_check.py
-   --online` opens every URL in `references.bib` and `resources.yaml` over
-   HTTP/1.1 and requires the page title to contain the expected text
-   (`urltitle` in the bib entry, `title_match` in resources.yaml) or a PDF
-   signature; lychee opens every URL rendered on the built site. lychee
-   skips `doi.org` links (publishers answer bots with 403; the Crossref check
-   is stronger) and `www.analog.com` (rejects lychee's HTTP/2 client; covered
-   by resources_check).
+   --online` opens every URL in `references.bib` and `resources.yaml` and
+   requires the page title to contain the expected text (`urltitle` in the
+   bib entry, `title_match` in resources.yaml) or a PDF signature; lychee
+   opens every URL rendered on the built site. lychee skips `doi.org` links
+   (publishers answer bots with 403; the Crossref check is stronger) and
+   `www.analog.com` (rejects lychee's HTTP/2 client; covered by
+   resources_check).
+
+   Some hosts refuse cloud CI runners outright (timeouts, 403, bot walls,
+   consent pages). resources_check therefore tries each URL with an honest
+   tool User-Agent and a browser User-Agent over HTTP/2 and HTTP/1.1. A 404
+   or a real page with another title fails at once. Only when every attempt
+   is inconclusive does it fall back to the most recent Internet Archive
+   capture of the *exact* URL (Wayback CDX API), which must show the same
+   title or PDF signature. Such URLs are reported as `OK (archived
+   YYYY-MM-DD)` in the CI log, so a live check and an archive check are
+   never confused.
 
 An identifier seen only in search-result summaries, but never in a result
 URL or title, keeps its `VERIFY` flag until layer 3 confirms it. In Phase 1
