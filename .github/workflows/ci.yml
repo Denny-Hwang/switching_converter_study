@@ -65,6 +65,7 @@ jobs:
   urls-online:
     name: Resources — every URL opened and title-matched
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6

@@ -8,8 +8,9 @@ resources.yaml (when present), then:
       level, language, retrieved (YYYY-MM-DD) and why; bib entries with a
       URL that are verified carry a `urltitle` hint or are PDFs/login pages
       explicitly marked;
-  --online (CI): opens every URL over HTTP/1.1 (urllib), requires HTTP 200,
-      and checks that the page <title> contains the expected text
+  --online (CI): opens every URL (curl with HTTP/2, then curl over HTTP/1.1,
+      then urllib), requires HTTP 200, and checks that the page title
+      (<title>, falling back to og:title) contains the expected text
       (`urltitle` in references.bib, `title_match` in resources.yaml); for
       PDFs checks the %PDF signature instead.
 
@@ -26,6 +27,8 @@ from __future__ import annotations
 import argparse
 import html
 import re
+import shutil
+import subprocess
 import sys
 import time
 import urllib.error
@@ -40,10 +43,7 @@ from pe_core import bib  # noqa: E402
 RESOURCES = ROOT / "resources.yaml"
 DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 RESOURCE_TYPES = {"book", "course", "video", "channel", "app-note", "tool", "paper", "datasheet", "lecture", "chapter"}
-USER_AGENT = (
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36 "
-    "switching-converter-study-resources-check/1.0"
-)
+USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 
 
 def norm(s: str) -> str:
@@ -97,21 +97,58 @@ def collect() -> tuple[list[dict], list[str]]:
     return targets, errors
 
 
-def fetch(url: str, tries: int = 3) -> tuple[int, str, bytes]:
-    last: Exception | None = None
-    for attempt in range(tries):
-        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "text/html,application/pdf,*/*"})
+def _curl(url: str, http1: bool) -> tuple[int, str, bytes]:
+    cmd = [
+        "curl", "-sS", "-L", "--compressed", "--max-time", "45", "--connect-timeout", "20",
+        "-A", USER_AGENT,
+        "-H", "Accept: text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.8",
+        "-H", "Accept-Language: en-US,en;q=0.9",
+        "-o", "-", "-w", "\n__STATUS__%{http_code} %{content_type}",
+    ]
+    if http1:
+        cmd.append("--http1.1")
+    out = subprocess.run(cmd + [url], capture_output=True, timeout=60)
+    if out.returncode != 0:
+        raise RuntimeError(out.stderr.decode("utf-8", "replace").strip() or f"curl exit {out.returncode}")
+    body, _, trailer = out.stdout.rpartition(b"\n__STATUS__")
+    code, _, ctype = trailer.decode().partition(" ")
+    return int(code), ctype, body[:400_000]
+
+
+def _urllib(url: str) -> tuple[int, str, bytes]:
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "text/html,application/pdf,*/*"})
+    try:
+        with urllib.request.urlopen(req, timeout=40) as resp:
+            return resp.status, resp.headers.get("Content-Type", ""), resp.read(400_000)
+    except urllib.error.HTTPError as exc:
+        return exc.code, "", b""
+
+
+def fetch(url: str) -> tuple[int, str, bytes]:
+    """curl (HTTP/2 allowed), then curl over HTTP/1.1, then urllib."""
+    errors = []
+    attempts = [lambda: _curl(url, False), lambda: _curl(url, True)] if shutil.which("curl") else []
+    attempts.append(lambda: _urllib(url))
+    for attempt in attempts:
         try:
-            with urllib.request.urlopen(req, timeout=40) as resp:
-                return resp.status, resp.headers.get("Content-Type", ""), resp.read(400_000)
-        except urllib.error.HTTPError as exc:
-            if exc.code in (404, 410):
-                return exc.code, "", b""
-            last = exc
-        except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
-            last = exc
-        time.sleep(3 * (attempt + 1))
-    raise RuntimeError(f"{url}: {last}")
+            status, ctype, body = attempt()
+            if status == 200:
+                return status, ctype, body
+            errors.append(f"HTTP {status}")
+        except (RuntimeError, OSError, subprocess.TimeoutExpired, urllib.error.URLError) as exc:
+            errors.append(str(exc)[:120])
+        time.sleep(2)
+    raise RuntimeError(f"{url}: " + " | ".join(errors))
+
+
+def page_title(body: bytes) -> str:
+    """<title>, falling back to og:title (some sites render <title> client-side)."""
+    for pattern in (rb"<title[^>]*>(.*?)</title>", rb'<meta[^>]+property="og:title"[^>]+content="([^"]*)"',
+                    rb'<meta[^>]+name="title"[^>]+content="([^"]*)"'):
+        m = re.search(pattern, body, re.S | re.I)
+        if m and m.group(1).strip():
+            return html.unescape(m.group(1).decode("utf-8", "replace")).strip()
+    return ""
 
 
 def main() -> int:
@@ -129,15 +166,11 @@ def main() -> int:
             except RuntimeError as exc:
                 errors.append(f"{t['src']}: {exc}")
                 continue
-            if status != 200:
-                errors.append(f"{t['src']}: HTTP {status} for {url}")
-                continue
             if t["kind"] == "pdf" or "pdf" in ctype:
                 ok = body.startswith(b"%PDF") or "pdf" in ctype
                 title = "(pdf)"
             else:
-                m = re.search(rb"<title[^>]*>(.*?)</title>", body, re.S | re.I)
-                title = html.unescape(m.group(1).decode("utf-8", "replace")).strip() if m else ""
+                title = page_title(body)
                 if t["kind"] == "login":
                     ok = True
                 else:
