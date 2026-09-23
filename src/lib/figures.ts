@@ -61,7 +61,7 @@ export const FIGURES: Record<string, FigureInfo> = {
       en: 'Schematic of an inverting buck-boost converter: source V_g, series switch Q1, inductor L from the switch node to ground carrying i_L, diode D1 pointing from the output toward the switch node, capacitor C and load R; the output terminal on top is negative.',
       ko: '반전 벅-부스트 컨버터 회로도: 전원 V_g, 직렬 스위치 Q1, 스위치 노드에서 접지로 연결되어 전류 i_L이 흐르는 인덕터 L, 출력에서 스위치 노드 쪽으로 향하는 다이오드 D1, 커패시터 C와 부하 R. 위쪽 출력 단자가 음극입니다.',
     },
-    cite: { key: 'erickson2020', where: 'Ch. 6' },
+    cite: { key: 'erickson2020', where: 'Ch. 2' },
   },
   flyback: {
     caption: {

@@ -9,6 +9,7 @@ module: true
 import Eq from '../../../../components/Eq.astro';
 import EqRef from '../../../../components/EqRef.astro';
 import Cite from '../../../../components/Cite.astro';
+import Figure from '../../../../components/Figure.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
@@ -37,6 +38,8 @@ subintervals: the switch conducts for $D T_s$, the diode for $D_2 T_s$, and
 neither for the remaining $D_3 T_s$. This is the **discontinuous conduction
 mode (DCM)**. The normal case, in which the inductor current never reaches
 zero, is the **continuous conduction mode (CCM)**.
+
+<Figure name="ccm-dcm" />
 
 Which mode a converter runs in is decided by the dimensionless parameter
 <EqRef id="K.def" label="K" /> and its critical value; see the

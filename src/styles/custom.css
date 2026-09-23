@@ -380,12 +380,15 @@ html:lang(ko) body {
   margin: 1.5rem 0;
 }
 .pe-figure__art {
-  display: flex;
-  justify-content: center;
+  overflow-x: auto;
   color: var(--sl-color-white);
 }
 .pe-figure__art svg {
-  max-width: 100%;
+  display: block;
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--fig-width);
+  min-width: var(--fig-min);
   height: auto;
 }
 .pe-figure figcaption {

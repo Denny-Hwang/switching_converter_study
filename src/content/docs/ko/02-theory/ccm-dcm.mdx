@@ -9,6 +9,7 @@ module: true
 import Eq from '../../../../components/Eq.astro';
 import EqRef from '../../../../components/EqRef.astro';
 import Cite from '../../../../components/Cite.astro';
+import Figure from '../../../../components/Figure.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
@@ -36,6 +37,8 @@ import Quiz from '../../../../components/Quiz.astro';
 $D T_s$ 동안, 다이오드가 $D_2 T_s$ 동안 도통하고, 나머지 $D_3 T_s$ 동안은
 어느 쪽도 도통하지 않습니다. 이것이 **불연속 전도 모드**(DCM)입니다.
 인덕터 전류가 한 번도 0에 도달하지 않는 보통의 경우는 **연속 전도 모드**(continuous conduction mode, CCM)입니다.
+
+<Figure name="ccm-dcm" />
 
 컨버터가 어느 모드로 동작하는지는 무차원 파라미터(dimensionless parameter)
 <EqRef id="K.def" label="K" />와 그 임계값(critical value)으로 결정됩니다.
