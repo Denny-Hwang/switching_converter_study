@@ -1,9 +1,10 @@
 ---
 /**
  * <ClampCheck /> -- the clamp-check island with labels in the page's language
- * and presets from the synthetic clamp examples. State lives in the URL hash.
+ * and presets from the clamp examples (examples/synthetic). State lives in the URL hash.
  */
 import ClampIsland from '../tools/ClampCheck.tsx';
+import { toolSymbols } from '../i18n/symbols';
 import { ui } from '../i18n/ui';
 import { pageLocale } from '../lib/locale';
 import { CLAMP_PRESETS, clampValues } from '../lib/clamppresets';
@@ -40,6 +41,8 @@ const labels = {
   design: t['cc.design'],
   invalid: t['cc.invalid'],
   share: t['cc.share'],
+  plotHint: t['tool.plotHint'],
+  siHint: t['tool.siHint'],
   warnings: {
     belowReflected: t['cc.warn.belowReflected'],
     overRating: t['cc.warn.overRating'],
@@ -56,4 +59,6 @@ const presets = CLAMP_PRESETS.map((p) => ({
 }));
 ---
 
-<ClampIsland client:only="react" locale={locale} labels={labels} presets={presets} />
+<div class="pe-wide">
+  <ClampIsland client:only="react" locale={locale} labels={labels} presets={presets} symbols={toolSymbols(locale)} />
+</div>

@@ -10,9 +10,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { clampCheck, evaluate, type ClampKind, type ClampResult, type ClampSpec, type ClampWarning } from 'pe-core';
 import { isToolHash } from '../lib/hash';
+import { PLOT_CONFIG, axis, baseLayout, logTicks, sub, usePlotTheme } from '../lib/plot';
+import { fmtValue } from '../lib/format';
 import { useStateHash } from '../lib/useStateHash';
+import { Choices, FieldLabel, Rich } from './ToolUi';
 
 export interface ClampLabels {
+  /** Values are entered in base SI units. */
+  siHint: string;
   kind: string;
   kinds: Record<ClampKind, string>;
   presets: string;
@@ -42,6 +47,7 @@ export interface ClampLabels {
   design: string;
   invalid: string;
   share: string;
+  plotHint: string;
   warnings: Record<ClampWarning, string>;
 }
 
@@ -56,6 +62,8 @@ interface Props {
   locale: 'en' | 'ko';
   labels: ClampLabels;
   presets: ClampPreset[];
+  /** What each symbol means (i18n/symbols.ts). */
+  symbols: Record<string, string>;
 }
 
 const KINDS: ClampKind[] = ['tvs', 'rcd'];
@@ -119,17 +127,18 @@ export function toClampSpec(kind: ClampKind, values: Record<string, string>): Cl
   return { ...base, clamp: { kind: 'rcd', R: num(values.R) } };
 }
 
-function fmt(x: number | undefined, unit = ''): string {
-  if (x === undefined || Number.isNaN(x)) return '—';
-  if (!Number.isFinite(x)) return '∞';
-  const a = Math.abs(x);
-  const s = a !== 0 && (a < 1e-3 || a >= 1e5) ? x.toExponential(3) : Number(x.toPrecision(4)).toString();
-  return unit ? `${s} ${unit}` : s;
-}
+/** Results with SI prefixes (lib/format.ts). */
+const fmt = (x: number | undefined, unit = '') => fmtValue(x, unit);
 
-/** A value, or a range when its two ends differ. */
-function range(r: { low: number; high: number }, unit: string): string {
-  return Math.abs(r.high - r.low) <= 1e-12 * Math.abs(r.low) ? fmt(r.low, unit) : `${fmt(r.low)} – ${fmt(r.high, unit)}`;
+/** A value, or a range when its two ends differ; the unit is written once when both ends share it ("60 – 66 V"). */
+export function range(r: { low: number; high: number }, unit: string): string {
+  if (Math.abs(r.high - r.low) <= 1e-12 * Math.abs(r.low)) return fmt(r.low, unit);
+  const lo = fmt(r.low, unit);
+  const hi = fmt(r.high, unit);
+  if (lo === hi) return lo;
+  const i = lo.lastIndexOf(' ');
+  const j = hi.lastIndexOf(' ');
+  return i > 0 && j > 0 && lo.slice(i) === hi.slice(j) ? `${lo.slice(0, i)} – ${hi}` : `${lo} – ${hi}`;
 }
 
 function readHash(): URLSearchParams {
@@ -141,7 +150,7 @@ function readHash(): URLSearchParams {
  * hash takes the clamp type's preset, a field present but empty stays empty.
  */
 export function stateFromHash(h: URLSearchParams, presets: ClampPreset[]): { kind: ClampKind; values: Record<string, string> } {
-  const kind = (KINDS as string[]).includes(h.get('clamp') ?? '') ? (h.get('clamp') as ClampKind) : presets[0]?.kind ?? 'tvs';
+  const kind = (KINDS as string[]).includes(h.get('clamp') ?? '') ? (h.get('clamp') as ClampKind) : (presets[0]?.kind ?? 'tvs');
   const base = presets.find((p) => p.kind === kind) ?? presets[0];
   const values: Record<string, string> = {};
   for (const k of KEYS) values[k] = h.has(k) ? h.get(k)! : base?.values[k] !== undefined ? String(base.values[k]) : '';
@@ -181,11 +190,12 @@ export function tradeoff(r: ClampResult): { V: number[]; P: number[]; Vds: numbe
   };
 }
 
-export default function ClampCheck({ labels, presets }: Props) {
+export default function ClampCheck({ labels, presets, symbols }: Props) {
   const init = useMemo(() => stateFromHash(readHash(), presets), [presets]);
   const [kind, setKind] = useState<ClampKind>(init.kind);
   const [values, setValues] = useState<Record<string, string>>(init.values);
   const plotRef = useRef<HTMLDivElement>(null);
+  const theme = usePlotTheme();
 
   const result = useMemo(() => checkOf(kind, values), [kind, values]);
 
@@ -219,11 +229,21 @@ export default function ClampCheck({ labels, presets }: Props) {
     }
     let cancelled = false;
     const t = tradeoff(result);
+    const [c0, c1, c2] = theme.colors;
     const traces: Record<string, unknown>[] = [
-      { x: t.V, y: t.P, name: labels.powerAxis, mode: 'lines', yaxis: 'y' },
-      { x: t.V, y: t.Vds, name: labels.vdsAxis, mode: 'lines', yaxis: 'y2' },
-      { x: [t.V[0], t.V[t.V.length - 1]], y: [result.spec.Vrating, result.spec.Vrating], name: labels.rating, mode: 'lines', line: { dash: 'dot' }, yaxis: 'y2' },
+      { x: t.V, y: t.P, name: labels.powerAxis, mode: 'lines', yaxis: 'y', line: { color: c0, width: 2 }, hovertemplate: '%{y:.3~g} W' },
+      { x: t.V, y: t.Vds, name: labels.vdsAxis, mode: 'lines', yaxis: 'y2', line: { color: c1, width: 2 }, hovertemplate: '%{y:.4~g} V' },
+      {
+        x: [t.V[0], t.V[t.V.length - 1]],
+        y: [result.spec.Vrating, result.spec.Vrating],
+        name: labels.rating,
+        mode: 'lines',
+        line: { color: c2, width: 2, dash: 'dot' },
+        yaxis: 'y2',
+        hovertemplate: '%{y:.4~g} V',
+      },
     ];
+    const P = t.P.filter((y) => Number.isFinite(y) && y > 0);
     import('plotly.js-dist-min').then((mod) => {
       if (cancelled) return;
       const Plotly = mod.default ?? mod;
@@ -231,11 +251,12 @@ export default function ClampCheck({ labels, presets }: Props) {
         el,
         traces,
         {
-          margin: { t: 16, r: 64, b: 48, l: 64 },
-          xaxis: { title: { text: `${labels.clampAxis} [V]` } },
-          yaxis: { title: { text: `${labels.powerAxis} [W]` }, type: 'log' },
+          ...baseLayout(theme),
+          hovermode: 'x unified',
+          xaxis: axis(theme, `${sub(labels.clampAxis)} [V]`),
+          yaxis: axis(theme, `${labels.powerAxis} [W]`, { type: 'log', ...logTicks(Math.min(...P), Math.max(...P)) }),
           // an overlaying axis syncs its ticks to the first axis by default: give it its own
-          yaxis2: { title: { text: `${labels.vdsAxis} [V]` }, overlaying: 'y', side: 'right', tickmode: 'auto', showgrid: false },
+          yaxis2: axis(theme, `${labels.vdsAxis} [V]`, { overlaying: 'y', side: 'right', tickmode: 'auto', showgrid: false }),
           shapes: [
             {
               type: 'rect',
@@ -245,22 +266,32 @@ export default function ClampCheck({ labels, presets }: Props) {
               x1: Math.max(result.Vclamp.high, result.Vclamp.low * 1.002),
               y0: 0,
               y1: 1,
-              fillcolor: 'rgba(128,128,128,0.25)',
+              fillcolor: theme.band,
               line: { width: 0 },
             },
           ],
-          annotations: [{ x: result.Vclamp.high, y: 1, xref: 'x', yref: 'paper', text: labels.design, showarrow: false, yanchor: 'bottom' }],
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(0,0,0,0)',
-          legend: { orientation: 'h', y: -0.25 },
+          annotations: [
+            {
+              x: result.Vclamp.high,
+              y: 0.98,
+              xref: 'x',
+              yref: 'paper',
+              text: labels.design,
+              showarrow: false,
+              xanchor: 'left',
+              yanchor: 'top',
+              xshift: 4,
+              font: { size: 11, color: theme.muted },
+            },
+          ],
         },
-        { responsive: true, displaylogo: false },
+        PLOT_CONFIG,
       );
     });
     return () => {
       cancelled = true;
     };
-  }, [result, labels]);
+  }, [result, labels, theme]);
 
   function applyPreset(p: ClampPreset) {
     const next: Record<string, string> = {};
@@ -283,162 +314,187 @@ export default function ClampCheck({ labels, presets }: Props) {
   const input = (f: Field) => {
     const id = `clamp-${f.key}`;
     return (
-      <div key={f.key} className="pe-sim__row">
-        <label htmlFor={id}>
-          {f.label} {f.unit && <small>[{f.unit}]</small>}
-        </label>
+      <div key={f.key} className="pe-row pe-row--full">
+        <FieldLabel htmlFor={id} sym={f.label} meaning={symbols[f.label]} unit={f.unit} />
         <input id={id} type="number" step="any" value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
-        <span />
       </div>
     );
   };
 
   const r = result;
   return (
-    <div className="pe-tool pe-explorer pe-sim pe-design">
-      <fieldset>
-        <legend>{labels.kind}</legend>
-        <div className="pe-sim__buttons" role="group" aria-label={labels.kind}>
-          {KINDS.map((k) => (
-            <button key={k} type="button" aria-pressed={kind === k} onClick={() => changeKind(k)}>
-              {labels.kinds[k]}
-            </button>
-          ))}
-        </div>
-      </fieldset>
+    <div className="pe-tool pe-clamp not-content">
+      <Choices legend={labels.kind} items={KINDS.map((k) => ({ id: k, label: labels.kinds[k] }))} selected={kind} onPick={changeKind} />
       {presets.length > 0 && (
-        <fieldset>
-          <legend>{labels.presets}</legend>
-          <div className="pe-sim__buttons">
-            {presets.map((p) => (
-              <button key={p.id} type="button" onClick={() => applyPreset(p)}>
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </fieldset>
+        <Choices
+          legend={labels.presets}
+          items={presets.map((p) => ({ id: p.id, label: p.label }))}
+          onPick={(id) => applyPreset(presets.find((p) => p.id === id)!)}
+          wide
+        />
       )}
-      <fieldset>
-        <legend>{labels.operating}</legend>
-        {FIELDS.filter((f) => f.group === 'operating').map(input)}
-      </fieldset>
-      <fieldset>
-        <legend>{kind === 'tvs' ? labels.tvsParts : labels.rcdParts}</legend>
-        {FIELDS.filter((f) => f.group === kind).map(input)}
-      </fieldset>
-      <section aria-live="polite">
-        {!r && <p className="pe-sim__error">{labels.invalid}</p>}
-        {r && r.warnings.length > 0 && (
-          <ul className="pe-design__warnings">
-            {r.warnings.map((w) => (
-              <li key={w}>{labels.warnings[w]}</li>
-            ))}
-          </ul>
-        )}
-      </section>
-      {r && (
-        <table className="pe-sim__table">
-          <caption>{labels.results}</caption>
-          <thead>
-            <tr>
-              <th scope="col">{labels.quantity}</th>
-              <th scope="col">{labels.value}</th>
-              <th scope="col">{labels.equation}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">{labels.vor}</th>
-              <td>{fmt(r.VOR, 'V')}</td>
-              <td>
-                <code>flyback.V_OR</code>
-              </td>
-            </tr>
-            <tr>
-              <th scope="row">{labels.elk}</th>
-              <td>{fmt(r.Elk, 'J')}</td>
-              <td>
-                <code>flyback.leak.E</code>
-              </td>
-            </tr>
-            <tr>
-              <th scope="row">{labels.plk}</th>
-              <td>{fmt(r.Plk, 'W')}</td>
-              <td>
-                <code>flyback.leak.P</code>
-              </td>
-            </tr>
-            <tr>
-              <th scope="row">{labels.treset}</th>
-              <td>{fmt(r.tReset, 's')}</td>
-              <td>
-                <code>clamp.t_reset</code>
-              </td>
-            </tr>
-            {r.RD !== undefined && (
-              <tr>
-                <th scope="row">{labels.rd}</th>
-                <td>{fmt(r.RD, 'Ω')}</td>
-                <td>
-                  <code>tvs.R_D</code>
-                </td>
-              </tr>
+      <div className="pe-split pe-split--results">
+        <div className="pe-split__controls">
+          <p className="pe-tool__hint">{labels.siHint}</p>
+          <fieldset>
+            <legend>
+              <Rich text={labels.operating} />
+            </legend>
+            {FIELDS.filter((f) => f.group === 'operating').map(input)}
+          </fieldset>
+          <fieldset>
+            <legend>
+              <Rich text={kind === 'tvs' ? labels.tvsParts : labels.rcdParts} />
+            </legend>
+            {FIELDS.filter((f) => f.group === kind).map(input)}
+          </fieldset>
+        </div>
+        <div className="pe-split__view">
+          <section aria-live="polite">
+            {!r && <p className="pe-sim__error">{labels.invalid}</p>}
+            {r && r.warnings.length > 0 && (
+              <ul className="pe-design__warnings">
+                {r.warnings.map((w) => (
+                  <li key={w}>
+                    <Rich text={labels.warnings[w]} />
+                  </li>
+                ))}
+              </ul>
             )}
-            <tr>
-              <th scope="row">{labels.vclamp}</th>
-              <td>
-                <strong>{range(r.Vclamp, 'V')}</strong>
-              </td>
-              <td>
-                <code>{r.spec.clamp.kind === 'tvs' ? 'tvs.V_clamp' : 'clamp.rcd.V'}</code>
-              </td>
-            </tr>
-            <tr>
-              <th scope="row">{labels.vds}</th>
-              <td>
-                <strong>{fmt(r.Vds, 'V')}</strong>
-              </td>
-              <td>
-                <code>clamp.Vds</code>
-              </td>
-            </tr>
-            <tr>
-              <th scope="row">{labels.margin}</th>
-              <td>
-                {fmt(r.margin, 'V')} ({fmt((100 * r.margin) / r.spec.Vrating, '%')})
-              </td>
-              <td />
-            </tr>
-            <tr>
-              <th scope="row">{labels.pclamp}</th>
-              <td>
-                <strong>{range(r.P, 'W')}</strong>
-              </td>
-              <td>
-                <code>clamp.P</code>
-              </td>
-            </tr>
-            <tr>
-              <th scope="row">{labels.ratio}</th>
-              <td>{range({ low: r.P.low / r.Plk, high: r.P.high / r.Plk }, '×')}</td>
-              <td />
-            </tr>
-            {r.ceiling && (
-              <tr>
-                <th scope="row">{labels.ceiling}</th>
-                <td>{range(r.ceiling, 'V')}</td>
-                <td>
-                  <code>flyback.V_ceiling</code>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      )}
-      <div ref={plotRef} role="img" aria-label={labels.chart} style={{ width: '100%', height: 380 }} />
-      <p>
-        <small>{labels.share}</small>
-      </p>
+          </section>
+          {r && (
+            <div className="pe-scroll">
+              <table className="pe-sim__table">
+                <caption>
+                  <Rich text={labels.results} />
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{labels.quantity}</th>
+                    <th scope="col">{labels.value}</th>
+                    <th scope="col">{labels.equation}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.vor} />
+                    </th>
+                    <td>{fmt(r.VOR, 'V')}</td>
+                    <td>
+                      <code>flyback.V_OR</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.elk} />
+                    </th>
+                    <td>{fmt(r.Elk, 'J')}</td>
+                    <td>
+                      <code>flyback.leak.E</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.plk} />
+                    </th>
+                    <td>{fmt(r.Plk, 'W')}</td>
+                    <td>
+                      <code>flyback.leak.P</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.treset} />
+                    </th>
+                    <td>{fmt(r.tReset, 's')}</td>
+                    <td>
+                      <code>clamp.t_reset</code>
+                    </td>
+                  </tr>
+                  {r.RD !== undefined && (
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.rd} />
+                      </th>
+                      <td>{fmt(r.RD, 'Ω')}</td>
+                      <td>
+                        <code>tvs.R_D</code>
+                      </td>
+                    </tr>
+                  )}
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.vclamp} />
+                    </th>
+                    <td>
+                      <strong>{range(r.Vclamp, 'V')}</strong>
+                    </td>
+                    <td>
+                      <code>{r.spec.clamp.kind === 'tvs' ? 'tvs.V_clamp' : 'clamp.rcd.V'}</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.vds} />
+                    </th>
+                    <td>
+                      <strong>{fmt(r.Vds, 'V')}</strong>
+                    </td>
+                    <td>
+                      <code>clamp.Vds</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.margin} />
+                    </th>
+                    <td>
+                      {fmt(r.margin, 'V')} ({fmt((100 * r.margin) / r.spec.Vrating, '%')})
+                    </td>
+                    <td />
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.pclamp} />
+                    </th>
+                    <td>
+                      <strong>{range(r.P, 'W')}</strong>
+                    </td>
+                    <td>
+                      <code>clamp.P</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.ratio} />
+                    </th>
+                    <td>{range({ low: r.P.low / r.Plk, high: r.P.high / r.Plk }, '×')}</td>
+                    <td />
+                  </tr>
+                  {r.ceiling && (
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.ceiling} />
+                      </th>
+                      <td>{range(r.ceiling, 'V')}</td>
+                      <td>
+                        <code>flyback.V_ceiling</code>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+          <p className="pe-chart__title">
+            <Rich text={labels.chart} />
+          </p>
+          <div ref={plotRef} className="pe-chart" role="img" aria-label={labels.chart} style={{ height: 380 }} />
+          {r && <p className="pe-tool__hint">{labels.plotHint}</p>}
+        </div>
+      </div>
+      <p className="pe-tool__hint">{labels.share}</p>
     </div>
   );
 }

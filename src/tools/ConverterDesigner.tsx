@@ -9,9 +9,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { design, InvertError, type DesignResult, type DesignSpec, type DesignTopology, type DesignWarning } from 'pe-core';
 import { isToolHash } from '../lib/hash';
+import { PLOT_CONFIG, axis, baseLayout, logTicks, sub, usePlotTheme } from '../lib/plot';
+import { fmtValue } from '../lib/format';
 import { useStateHash } from '../lib/useStateHash';
+import { Choices, FieldLabel, Rich, Sym } from './ToolUi';
 
 export interface DesignerLabels {
+  /** Values are entered in base SI units. */
+  siHint: string;
   topology: string;
   presets: string;
   spec: string;
@@ -44,6 +49,7 @@ export interface DesignerLabels {
   lossesAt: string;
   invalid: string;
   share: string;
+  plotHint: string;
   warnings: Record<DesignWarning, string>;
   topologies: Record<DesignTopology, string>;
 }
@@ -61,6 +67,8 @@ interface Props {
   presets: DesignerPreset[];
   simulatorHref: string;
   lossBudgetHref: string;
+  /** What each symbol means (i18n/symbols.ts). */
+  symbols: Record<string, string>;
 }
 
 const TOPOLOGIES: DesignTopology[] = ['buck', 'boost', 'buckboost', 'flyback', 'forward'];
@@ -78,17 +86,44 @@ const always = () => true;
 export const FIELDS: Field[] = [
   { key: 'VgMin', label: () => 'V_g,min', unit: 'V', show: always },
   { key: 'VgMax', label: () => 'V_g,max', unit: 'V', show: always },
-  { key: 'V', label: (t) => (t === 'buckboost' ? '|V|' : 'V'), unit: 'V', show: always },
+  {
+    key: 'V',
+    label: (t) => (t === 'buckboost' ? '|V|' : 'V'),
+    unit: 'V',
+    show: always,
+  },
   { key: 'P', label: () => 'P', unit: 'W', show: always },
   { key: 'Pmin', label: () => 'P_min (CCM)', unit: 'W', show: always },
   { key: 'fs', label: () => 'f_s', unit: 'Hz', show: always },
-  { key: 'rI', label: (t) => (t === 'flyback' ? 'Δi_M / I_M' : 'Δi_L / I_L'), unit: '', show: always },
+  {
+    key: 'rI',
+    label: (t) => (t === 'flyback' ? 'Δi_M / I_M' : 'Δi_L / I_L'),
+    unit: '',
+    show: always,
+  },
   { key: 'rV', label: () => 'Δv / V', unit: '', show: always },
   { key: 'n', label: () => 'n = N_s/N_p', unit: '', show: isolated },
-  { key: 'nr', label: () => 'n_r = N_r/N_p', unit: '', show: (t) => t === 'forward' },
+  {
+    key: 'nr',
+    label: () => 'n_r = N_r/N_p',
+    unit: '',
+    show: (t) => t === 'forward',
+  },
   { key: 'VD', label: () => 'V_D', unit: 'V', show: (t) => t === 'flyback' },
-  { key: 'L', label: (t) => (t === 'flyback' ? 'L_M' : 'L'), unit: 'H', show: always, optional: true },
-  { key: 'LM', label: () => 'L_M', unit: 'H', show: (t) => t === 'forward', optional: true },
+  {
+    key: 'L',
+    label: (t) => (t === 'flyback' ? 'L_M' : 'L'),
+    unit: 'H',
+    show: always,
+    optional: true,
+  },
+  {
+    key: 'LM',
+    label: () => 'L_M',
+    unit: 'H',
+    show: (t) => t === 'forward',
+    optional: true,
+  },
 ];
 const KEYS = FIELDS.map((f) => f.key);
 
@@ -186,12 +221,8 @@ export function simulatorHash(r: DesignResult, Vg: number, LM?: number): string 
   return q.toString();
 }
 
-function fmt(x: number | undefined, unit = ''): string {
-  if (x === undefined || !Number.isFinite(x)) return '—';
-  const a = Math.abs(x);
-  const s = a !== 0 && (a < 1e-3 || a >= 1e5) ? x.toExponential(3) : Number(x.toPrecision(4)).toString();
-  return unit ? `${s} ${unit}` : s;
-}
+/** Results with SI prefixes (lib/format.ts). */
+const fmt = (x: number | undefined, unit = '') => fmtValue(x, unit);
 
 function readHash(): URLSearchParams {
   return new URLSearchParams(typeof window === 'undefined' ? '' : window.location.hash.replace(/^#/, ''));
@@ -203,7 +234,7 @@ function readHash(): URLSearchParams {
  * empty (an optional field the user cleared).
  */
 export function stateFromHash(h: URLSearchParams, presets: DesignerPreset[]): { topo: DesignTopology; values: Record<string, string> } {
-  const topo = (TOPOLOGIES as string[]).includes(h.get('topo') ?? '') ? (h.get('topo') as DesignTopology) : presets[0]?.topology ?? 'buck';
+  const topo = (TOPOLOGIES as string[]).includes(h.get('topo') ?? '') ? (h.get('topo') as DesignTopology) : (presets[0]?.topology ?? 'buck');
   const base = presets.find((p) => p.topology === topo) ?? presets[0];
   const values: Record<string, string> = {};
   for (const k of KEYS) values[k] = h.has(k) ? h.get(k)! : base?.values[k] !== undefined ? String(base.values[k]) : '';
@@ -252,11 +283,12 @@ const VR: Partial<Record<DesignTopology, string>> = {
   flyback: 'flyback.diode.VR',
 };
 
-export default function ConverterDesigner({ labels, presets, simulatorHref, lossBudgetHref }: Props) {
+export default function ConverterDesigner({ labels, presets, simulatorHref, lossBudgetHref, symbols }: Props) {
   const init = useMemo(() => stateFromHash(readHash(), presets), [presets]);
   const [topo, setTopo] = useState<DesignTopology>(init.topo);
   const [values, setValues] = useState<Record<string, string>>(init.values);
   const plotRef = useRef<HTMLDivElement>(null);
+  const theme = usePlotTheme();
 
   const spec = useMemo(() => toSpec(topo, values), [topo, values]);
   const outcome = useMemo((): { result: DesignResult } | { error: 'invalid' | 'unreachable' } => {
@@ -302,11 +334,33 @@ export default function ConverterDesigner({ labels, presets, simulatorHref, loss
     let cancelled = false;
     const kFull = result.points[0]!.Kfull;
     const kLight = result.points[0]!.Klight;
+    const [c0, c1, c2] = theme.colors;
     const traces: Record<string, unknown>[] = [
-      { x: result.curve.D, y: result.curve.Kcrit, name: labels.kcritCurve, mode: 'lines' },
-      { x: [0, 1], y: [kFull, kFull], name: labels.kFull, mode: 'lines', line: { dash: 'dash' } },
+      {
+        x: result.curve.D,
+        y: result.curve.Kcrit,
+        name: sub(labels.kcritCurve),
+        mode: 'lines',
+        line: { color: c0, width: 2 },
+      },
+      {
+        x: [0, 1],
+        y: [kFull, kFull],
+        name: sub(labels.kFull),
+        mode: 'lines',
+        line: { color: c1, width: 2, dash: 'dash' },
+      },
     ];
-    if (Number.isFinite(kLight)) traces.push({ x: [0, 1], y: [kLight, kLight], name: labels.kLight, mode: 'lines', line: { dash: 'dot' } });
+    if (Number.isFinite(kLight)) {
+      traces.push({
+        x: [0, 1],
+        y: [kLight, kLight],
+        name: sub(labels.kLight),
+        mode: 'lines',
+        line: { color: c2, width: 2, dash: 'dot' },
+      });
+    }
+    const ys = [...result.curve.Kcrit, kFull, kLight].filter((y): y is number => Number.isFinite(y) && y > 0);
     import('plotly.js-dist-min').then((mod) => {
       if (cancelled) return;
       const Plotly = mod.default ?? mod;
@@ -314,9 +368,12 @@ export default function ConverterDesigner({ labels, presets, simulatorHref, loss
         el,
         traces,
         {
-          margin: { t: 16, r: 16, b: 48, l: 64 },
-          xaxis: { title: { text: 'D' }, range: [0, 1] },
-          yaxis: { title: { text: 'K' }, type: 'log' },
+          ...baseLayout(theme),
+          xaxis: axis(theme, `${sub('D')} — ${sub(symbols.D ?? '')}`, { range: [0, 1] }),
+          yaxis: axis(theme, `${sub('K')} — ${sub(symbols.K ?? '')}`, {
+            type: 'log',
+            ...logTicks(Math.min(...ys), Math.max(...ys)),
+          }),
           shapes: [
             {
               type: 'rect',
@@ -326,22 +383,30 @@ export default function ConverterDesigner({ labels, presets, simulatorHref, loss
               x1: result.D.max,
               y0: 0,
               y1: 1,
-              fillcolor: 'rgba(128,128,128,0.18)',
+              fillcolor: theme.band,
               line: { width: 0 },
             },
           ],
-          annotations: [{ x: (result.D.min + result.D.max) / 2, y: 1, xref: 'x', yref: 'paper', text: labels.dBand, showarrow: false, yanchor: 'bottom' }],
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(0,0,0,0)',
-          legend: { orientation: 'h', y: -0.25 },
+          annotations: [
+            {
+              x: (result.D.min + result.D.max) / 2,
+              y: 0.02,
+              xref: 'x',
+              yref: 'paper',
+              text: labels.dBand,
+              showarrow: false,
+              yanchor: 'bottom',
+              font: { size: 11, color: theme.muted },
+            },
+          ],
         },
-        { responsive: true, displaylogo: false },
+        PLOT_CONFIG,
       );
     });
     return () => {
       cancelled = true;
     };
-  }, [result, labels]);
+  }, [result, labels, theme, symbols]);
 
   function applyPreset(p: DesignerPreset) {
     const next: Record<string, string> = {};
@@ -359,13 +424,11 @@ export default function ConverterDesigner({ labels, presets, simulatorHref, loss
   const shown = FIELDS.filter((f) => f.show(topo));
   const input = (f: Field) => {
     const id = `des-${f.key}`;
+    const sym = f.label(topo);
     return (
-      <div key={f.key} className="pe-sim__row">
-        <label htmlFor={id}>
-          {f.label(topo)} {f.unit && <small>[{f.unit}]</small>} {f.optional && <small>({labels.optional})</small>}
-        </label>
+      <div key={f.key} className="pe-row pe-row--full">
+        <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} note={f.optional ? labels.optional : undefined} />
         <input id={id} type="number" step="any" value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
-        <span />
       </div>
     );
   };
@@ -376,222 +439,272 @@ export default function ConverterDesigner({ labels, presets, simulatorHref, loss
   const LM = num(values.LM);
   const links = r
     ? ends
-        .map((p) => ({ Vg: p.Vg, hash: simulatorHash(r, p.Vg, Number.isFinite(LM) ? LM : undefined) }))
+        .map((p) => ({
+          Vg: p.Vg,
+          hash: simulatorHash(r, p.Vg, Number.isFinite(LM) ? LM : undefined),
+        }))
         .filter((l): l is { Vg: number; hash: string } => l.hash !== null)
     : [];
 
   return (
-    <div className="pe-tool pe-explorer pe-sim pe-design">
-      <fieldset>
-        <legend>{labels.topology}</legend>
-        <div className="pe-sim__buttons" role="group" aria-label={labels.topology}>
-          {TOPOLOGIES.map((t) => (
-            <button key={t} type="button" aria-pressed={topo === t} onClick={() => changeTopology(t)}>
-              {labels.topologies[t]}
-            </button>
-          ))}
-        </div>
-      </fieldset>
+    <div className="pe-tool pe-design not-content">
+      <Choices
+        legend={labels.topology}
+        items={TOPOLOGIES.map((t) => ({ id: t, label: labels.topologies[t] }))}
+        selected={topo}
+        onPick={changeTopology}
+      />
       {presets.length > 0 && (
-        <fieldset>
-          <legend>{labels.presets}</legend>
-          <div className="pe-sim__buttons">
-            {presets.map((p) => (
-              <button key={p.id} type="button" onClick={() => applyPreset(p)}>
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </fieldset>
+        <Choices
+          legend={labels.presets}
+          items={presets.map((p) => ({ id: p.id, label: p.label }))}
+          onPick={(id) => applyPreset(presets.find((p) => p.id === id)!)}
+        />
       )}
-      <fieldset>
-        <legend>{labels.spec}</legend>
-        {shown.map(input)}
-      </fieldset>
-      <section aria-live="polite">
-        {'error' in outcome && (
-          <p className="pe-sim__error">{outcome.error === 'unreachable' ? labels.warnings.unreachable : labels.invalid}</p>
-        )}
-        {r && r.warnings.length > 0 && (
-          <ul className="pe-design__warnings">
-            {r.warnings.map((w) => (
-              <li key={w}>{labels.warnings[w]}</li>
-            ))}
-          </ul>
-        )}
-      </section>
-      {r && (
-        <>
-          <table className="pe-sim__table">
-            <caption>{labels.results}</caption>
-            <thead>
-              <tr>
-                <th scope="col">{labels.quantity}</th>
-                <th scope="col">{labels.value}</th>
-                <th scope="col">{labels.equation}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">{labels.dRange}</th>
-                <td>
-                  {fmt(r.D.min)} – {fmt(r.D.max)}
-                </td>
-                <td>
-                  <code>{RATIO[topo]}</code>
-                </td>
-              </tr>
-              {r.Dmax !== undefined && (
-                <tr>
-                  <th scope="row">{labels.dReset}</th>
-                  <td>{fmt(r.Dmax)}</td>
-                  <td>
-                    <code>forward.reset.Dmax</code>
-                  </td>
-                </tr>
+      <div className="pe-split pe-split--results">
+        <div className="pe-split__controls">
+          <p className="pe-tool__hint">{labels.siHint}</p>
+          <fieldset>
+            <legend>
+              <Rich text={labels.spec} />
+            </legend>
+            {shown.map(input)}
+          </fieldset>
+        </div>
+        <div className="pe-split__view">
+          <section aria-live="polite">
+            {'error' in outcome && <p className="pe-sim__error">{outcome.error === 'unreachable' ? labels.warnings.unreachable : labels.invalid}</p>}
+            {r && r.warnings.length > 0 && (
+              <ul className="pe-design__warnings">
+                {r.warnings.map((w) => (
+                  <li key={w}>
+                    <Rich text={labels.warnings[w]} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+          {r && (
+            <>
+              <div className="pe-scroll">
+                <table className="pe-sim__table">
+                  <caption>
+                    <Rich text={labels.results} />
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">{labels.quantity}</th>
+                      <th scope="col">{labels.value}</th>
+                      <th scope="col">{labels.equation}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.dRange} />
+                      </th>
+                      <td>
+                        {fmt(r.D.min)} – {fmt(r.D.max)}
+                      </td>
+                      <td>
+                        <code>{RATIO[topo]}</code>
+                      </td>
+                    </tr>
+                    {r.Dmax !== undefined && (
+                      <tr>
+                        <th scope="row">
+                          <Rich text={labels.dReset} />
+                        </th>
+                        <td>{fmt(r.Dmax)}</td>
+                        <td>
+                          <code>forward.reset.Dmax</code>
+                        </td>
+                      </tr>
+                    )}
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.lRipple} /> (<Sym text={Lname} />)
+                      </th>
+                      <td>{fmt(r.L.ripple, 'H')}</td>
+                      <td>
+                        <code>{RIPPLE[topo]}</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.lCcm} /> (<Sym text={Lname} />)
+                      </th>
+                      <td>{fmt(r.L.ccm, 'H')}</td>
+                      <td>
+                        <code>L.crit</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.lUsed} /> (<Sym text={Lname} />)
+                      </th>
+                      <td>
+                        <strong>{fmt(r.L.chosen, 'H')}</strong>{' '}
+                        <small>
+                          (<Rich text={labels.binding[r.L.binding]} />)
+                        </small>
+                      </td>
+                      <td />
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.cOut} />
+                      </th>
+                      <td>
+                        <strong>{fmt(r.C, 'F')}</strong>
+                      </td>
+                      <td>
+                        <code>{VRIPPLE[topo]}</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.ripple} />
+                      </th>
+                      <td>{fmt(r.worst.dI, 'A')}</td>
+                      <td>
+                        <code>{RIPPLE[topo]}</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.ipk} />
+                      </th>
+                      <td>{fmt(r.worst.Ipk, 'A')}</td>
+                      <td>
+                        <code>ripple.Ipk</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.vds} />
+                      </th>
+                      <td>{fmt(r.worst.Vds, 'V')}</td>
+                      <td>
+                        <code>{VDS[topo]}</code>
+                      </td>
+                    </tr>
+                    {r.worst.Vr !== undefined && (
+                      <tr>
+                        <th scope="row">
+                          <Rich text={labels.vr} />
+                        </th>
+                        <td>{fmt(r.worst.Vr, 'V')}</td>
+                        <td>
+                          <code>{VR[topo]}</code>
+                        </td>
+                      </tr>
+                    )}
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.kFull} />
+                      </th>
+                      <td>{fmt(r.points[0]!.Kfull)}</td>
+                      <td>
+                        <code>K.def</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.kLight} />
+                      </th>
+                      <td>{Number.isFinite(r.points[0]!.Klight) ? fmt(r.points[0]!.Klight) : '—'}</td>
+                      <td>
+                        <code>K.def</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.kcritMax} />
+                      </th>
+                      <td>{fmt(r.worst.KcritMax)}</td>
+                      <td>
+                        <code>Kcrit.{topo === 'forward' ? 'buck' : topo}</code>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="pe-scroll">
+                <table className="pe-sim__table">
+                  <caption>
+                    <Rich text={labels.points} />
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">
+                        <Sym text="V_g" /> [V]
+                      </th>
+                      <th scope="col">
+                        <Sym text="D" />
+                      </th>
+                      <th scope="col">
+                        <Sym text={topo === 'flyback' ? 'I_M' : 'I_L'} /> [A]
+                      </th>
+                      <th scope="col">
+                        <Sym text={topo === 'flyback' ? 'Δi_M' : 'Δi_L'} /> [A]
+                      </th>
+                      <th scope="col">
+                        <Sym text="I_pk" /> [A]
+                      </th>
+                      <th scope="col">
+                        <Sym text="K / K_crit" />
+                      </th>
+                      <th scope="col">{labels.mode}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ends.map((p) => (
+                      <tr key={p.Vg}>
+                        <th scope="row">{fmt(p.Vg)}</th>
+                        <td>{fmt(p.D)}</td>
+                        <td>{fmt(p.IL)}</td>
+                        <td>{fmt(p.dI)}</td>
+                        <td>{fmt(p.Ipk)}</td>
+                        <td>{fmt(p.Kfull / p.Kcrit)}</td>
+                        <td>{p.mode}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {links.length > 0 && (
+                <p>
+                  {links.map((l, i) => (
+                    <span key={l.Vg}>
+                      {i > 0 && ' · '}
+                      <a href={`${simulatorHref}#${l.hash}`}>
+                        ▶ <Rich text={labels.simulateAt.replace('{Vg}', fmt(l.Vg))} />
+                      </a>
+                    </span>
+                  ))}
+                </p>
               )}
-              <tr>
-                <th scope="row">
-                  {labels.lRipple} ({Lname})
-                </th>
-                <td>{fmt(r.L.ripple, 'H')}</td>
-                <td>
-                  <code>{RIPPLE[topo]}</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">
-                  {labels.lCcm} ({Lname})
-                </th>
-                <td>{fmt(r.L.ccm, 'H')}</td>
-                <td>
-                  <code>L.crit</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">
-                  {labels.lUsed} ({Lname})
-                </th>
-                <td>
-                  <strong>{fmt(r.L.chosen, 'H')}</strong> <small>({labels.binding[r.L.binding]})</small>
-                </td>
-                <td />
-              </tr>
-              <tr>
-                <th scope="row">{labels.cOut}</th>
-                <td>
-                  <strong>{fmt(r.C, 'F')}</strong>
-                </td>
-                <td>
-                  <code>{VRIPPLE[topo]}</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.ripple}</th>
-                <td>{fmt(r.worst.dI, 'A')}</td>
-                <td>
-                  <code>{RIPPLE[topo]}</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.ipk}</th>
-                <td>{fmt(r.worst.Ipk, 'A')}</td>
-                <td>
-                  <code>ripple.Ipk</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.vds}</th>
-                <td>{fmt(r.worst.Vds, 'V')}</td>
-                <td>
-                  <code>{VDS[topo]}</code>
-                </td>
-              </tr>
-              {r.worst.Vr !== undefined && (
-                <tr>
-                  <th scope="row">{labels.vr}</th>
-                  <td>{fmt(r.worst.Vr, 'V')}</td>
-                  <td>
-                    <code>{VR[topo]}</code>
-                  </td>
-                </tr>
-              )}
-              <tr>
-                <th scope="row">{labels.kFull}</th>
-                <td>{fmt(r.points[0]!.Kfull)}</td>
-                <td>
-                  <code>K.def</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.kLight}</th>
-                <td>{fmt(r.points[0]!.Klight)}</td>
-                <td>
-                  <code>K.def</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.kcritMax}</th>
-                <td>{fmt(r.worst.KcritMax)}</td>
-                <td>
-                  <code>Kcrit.{topo === 'forward' ? 'buck' : topo}</code>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <table className="pe-sim__table">
-            <caption>{labels.points}</caption>
-            <thead>
-              <tr>
-                <th scope="col">V_g [V]</th>
-                <th scope="col">D</th>
-                <th scope="col">{topo === 'flyback' ? 'I_M' : 'I_L'} [A]</th>
-                <th scope="col">{topo === 'flyback' ? 'Δi_M' : 'Δi_L'} [A]</th>
-                <th scope="col">I_pk [A]</th>
-                <th scope="col">K / K_crit</th>
-                <th scope="col">{labels.mode}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ends.map((p) => (
-                <tr key={p.Vg}>
-                  <th scope="row">{fmt(p.Vg)}</th>
-                  <td>{fmt(p.D)}</td>
-                  <td>{fmt(p.IL)}</td>
-                  <td>{fmt(p.dI)}</td>
-                  <td>{fmt(p.Ipk)}</td>
-                  <td>{fmt(p.Kfull / p.Kcrit)}</td>
-                  <td>{p.mode}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {links.length > 0 && (
-            <p>
-              {links.map((l, i) => (
-                <span key={l.Vg}>
-                  {i > 0 && ' · '}
-                  <a href={`${simulatorHref}#${l.hash}`}>▶ {labels.simulateAt.replace('{Vg}', fmt(l.Vg))}</a>
-                </span>
-              ))}
-            </p>
+              <p>
+                {ends.map((p, i) => (
+                  <span key={p.Vg}>
+                    {i > 0 && ' · '}
+                    <a href={`${lossBudgetHref}#${lossBudgetHash(r, p.Vg, Number.isFinite(LM) ? LM : undefined)}`}>
+                      ▶ <Rich text={labels.lossesAt.replace('{Vg}', fmt(p.Vg))} />
+                    </a>
+                  </span>
+                ))}
+              </p>
+            </>
           )}
-          <p>
-            {ends.map((p, i) => (
-              <span key={p.Vg}>
-                {i > 0 && ' · '}
-                <a href={`${lossBudgetHref}#${lossBudgetHash(r, p.Vg, Number.isFinite(LM) ? LM : undefined)}`}>
-                  ▶ {labels.lossesAt.replace('{Vg}', fmt(p.Vg))}
-                </a>
-              </span>
-            ))}
+          <p className="pe-chart__title">
+            <Rich text={labels.chart} />
           </p>
-        </>
-      )}
-      <div ref={plotRef} role="img" aria-label={labels.chart} style={{ width: '100%', height: 380 }} />
-      <p>
-        <small>{labels.share}</small>
-      </p>
+          <div ref={plotRef} className="pe-chart" role="img" aria-label={labels.chart} style={{ height: 380 }} />
+          {r && <p className="pe-tool__hint">{labels.plotHint}</p>}
+        </div>
+      </div>
+      <p className="pe-tool__hint">{labels.share}</p>
     </div>
   );
 }

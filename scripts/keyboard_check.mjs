@@ -138,7 +138,7 @@ async function explorerAction(page, where, errors) {
 
 /** Simulator: Space on the second topology button selects it and runs that topology. */
 async function simulatorAction(page, where, errors) {
-  const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
+  const buttons = page.locator(`${TOOL} .pe-choices[data-choice="select"] button`);
   const second = buttons.nth(1);
   await second.focus();
   await page.keyboard.press('Space');
@@ -173,7 +173,7 @@ async function simulatorAction(page, where, errors) {
       { timeout: 10000 },
     )
     .then(() => true, () => false);
-  const topo = await page.locator(`${TOOL} .pe-sim__buttons[role="group"] button[aria-pressed="true"]`).innerText();
+  const topo = await page.locator(`${TOOL} .pe-choices[data-choice="select"] button[aria-pressed="true"]`).innerText();
   if (!got || topo.trim().length === 0) errors.push(`${where}: the page's own preset link did not load its preset (hash change)`);
 }
 
@@ -277,7 +277,7 @@ async function directAnchorKept(browser, url, ready, where, errors) {
 
 /** Designer: Space on the second topology button selects it and loads that topology's specification. */
 async function designerAction(page, where, errors) {
-  const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
+  const buttons = page.locator(`${TOOL} .pe-choices[data-choice="select"] button`);
   const second = buttons.nth(1);
   const before = await page.locator(`${TOOL} #des-V`).inputValue();
   await second.focus();
@@ -290,7 +290,7 @@ async function designerAction(page, where, errors) {
 
 /** Loss budget: Space on the second topology button selects it and loads that topology's example. */
 async function lossAction(page, where, errors) {
-  const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
+  const buttons = page.locator(`${TOOL} .pe-choices[data-choice="select"] button`);
   const second = buttons.nth(1);
   const before = await page.locator(`${TOOL} #loss-V`).inputValue();
   await second.focus();
@@ -305,7 +305,7 @@ async function lossAction(page, where, errors) {
 
 /** Clamp check: Space on the second clamp-type button selects the RCD clamp and shows its resistor. */
 async function clampAction(page, where, errors) {
-  const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
+  const buttons = page.locator(`${TOOL} .pe-choices[data-choice="select"] button`);
   const second = buttons.nth(1);
   await second.focus();
   await page.keyboard.press('Space');
@@ -317,7 +317,7 @@ async function clampAction(page, where, errors) {
 
 /** Source matcher: Space on the second envelope button selects the rectified sine and shows its frequency. */
 async function sourceAction(page, where, errors) {
-  const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
+  const buttons = page.locator(`${TOOL} .pe-choices[data-choice="select"] button`);
   const second = buttons.nth(1);
   await second.focus();
   await page.keyboard.press('Space');
@@ -333,7 +333,7 @@ async function sourceAction(page, where, errors) {
 
 /** Sense chain: Space on the second amplifier-type button selects the voltage output and shows its gain. */
 async function senseAction(page, where, errors) {
-  const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
+  const buttons = page.locator(`${TOOL} .pe-choices[data-choice="select"] button`);
   const second = buttons.nth(1);
   await second.focus();
   await page.keyboard.press('Space');

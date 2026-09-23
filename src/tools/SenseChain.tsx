@@ -12,9 +12,14 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { errorCurve, senseChain, transferCurve, type MonitorKind, type SenseResult, type SenseSpec, type SenseWarning } from 'pe-core';
 import { isToolHash } from '../lib/hash';
+import { fmtValue } from '../lib/format';
 import { useStateHash } from '../lib/useStateHash';
+import { PLOT_CONFIG, axis, baseLayout, logTicks, sub, usePlotTheme, type PlotTheme } from '../lib/plot';
+import { Choices, FieldLabel, Rich } from './ToolUi';
 
 export interface SenseLabels {
+  /** Values are entered in base SI units. */
+  siHint: string;
   kind: string;
   kinds: Record<MonitorKind, string>;
   presets: string;
@@ -65,8 +70,11 @@ export interface SenseLabels {
   totalCurve: string;
   target: string;
   noError: string;
+  /** Legend entry of the band below the output floor. */
+  floorBand: string;
   invalid: string;
   share: string;
+  plotHint: string;
   warnings: Record<SenseWarning, string>;
 }
 
@@ -81,6 +89,8 @@ interface Props {
   locale: 'en' | 'ko';
   labels: SenseLabels;
   presets: SensePreset[];
+  /** What each symbol means (i18n/symbols.ts). */
+  symbols: Record<string, string>;
 }
 
 const KINDS: MonitorKind[] = ['current', 'voltage'];
@@ -162,13 +172,8 @@ export function toSenseSpec(kind: MonitorKind, values: Record<string, string>): 
   return spec;
 }
 
-function fmt(x: number | undefined, unit = ''): string {
-  if (x === undefined || Number.isNaN(x)) return '—';
-  if (!Number.isFinite(x)) return '∞';
-  const a = Math.abs(x);
-  const s = a !== 0 && (a < 1e-3 || a >= 1e5) ? x.toExponential(3) : Number(x.toPrecision(4)).toString();
-  return unit ? `${s} ${unit}` : s;
-}
+/** Results with SI prefixes (lib/format.ts). */
+const fmt = (x: number | undefined, unit = '') => fmtValue(x, unit);
 
 /** A relative quantity as a percentage. */
 const pct = (x: number) => fmt(100 * x, '%');
@@ -182,7 +187,7 @@ function readHash(): URLSearchParams {
  * the hash takes the kind's preset, a field present but empty stays empty.
  */
 export function stateFromHash(h: URLSearchParams, presets: SensePreset[]): { kind: MonitorKind; values: Record<string, string> } {
-  const kind = (KINDS as string[]).includes(h.get('mon') ?? '') ? (h.get('mon') as MonitorKind) : presets[0]?.kind ?? 'current';
+  const kind = (KINDS as string[]).includes(h.get('mon') ?? '') ? (h.get('mon') as MonitorKind) : (presets[0]?.kind ?? 'current');
   const base = presets.find((p) => p.kind === kind) ?? presets[0];
   const values: Record<string, string> = {};
   for (const k of KEYS) values[k] = h.has(k) ? h.get(k)! : base?.values[k] !== undefined ? String(base.values[k]) : '';
@@ -218,14 +223,8 @@ export function checkOf(kind: MonitorKind, values: Record<string, string>): Sens
   }
 }
 
-const LAYOUT = {
-  paper_bgcolor: 'rgba(0,0,0,0)',
-  plot_bgcolor: 'rgba(0,0,0,0)',
-  legend: { orientation: 'h', y: -0.25 },
-};
-
-/** Draw (or, with no traces, clear) one Plotly chart; returns a canceller. */
-function draw(el: HTMLDivElement | null, traces: Record<string, unknown>[] | null, layout: Record<string, unknown>): () => void {
+/** Draw (or, with no traces, clear) one Plotly chart in the page's theme; returns a canceller. */
+function draw(el: HTMLDivElement | null, traces: Record<string, unknown>[] | null, layout: Record<string, unknown>, theme?: PlotTheme): () => void {
   let cancelled = false;
   if (!el) return () => {};
   if (!traces) {
@@ -236,19 +235,20 @@ function draw(el: HTMLDivElement | null, traces: Record<string, unknown>[] | nul
   import('plotly.js-dist-min').then((mod) => {
     if (cancelled) return;
     const Plotly = mod.default ?? mod;
-    Plotly.react(el, traces, { ...LAYOUT, ...layout }, { responsive: true, displaylogo: false });
+    Plotly.react(el, traces, { ...(theme ? baseLayout(theme) : {}), ...layout }, PLOT_CONFIG);
   });
   return () => {
     cancelled = true;
   };
 }
 
-export default function SenseChain({ labels, presets }: Props) {
+export default function SenseChain({ labels, presets, symbols }: Props) {
   const init = useMemo(() => stateFromHash(readHash(), presets), [presets]);
   const [kind, setKind] = useState<MonitorKind>(init.kind);
   const [values, setValues] = useState<Record<string, string>>(init.values);
   const transferRef = useRef<HTMLDivElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
+  const theme = usePlotTheme();
 
   const result = useMemo(() => checkOf(kind, values), [kind, values]);
 
@@ -280,33 +280,59 @@ export default function SenseChain({ labels, presets }: Props) {
       return draw(transferRef.current, null, {}); // checkOf rules this out; never unmount the island over a chart
     }
     const x = [0, t.I[t.I.length - 1]!];
+    const [c0, c1, c2, c3] = theme.colors;
     const clamp = (v: number[]) => v.map((y) => Math.min(Math.max(y, s.VoutMin), s.VoutMax));
-    const level = (y: number, name: string, dash: string) => ({ x, y: [y, y], name, mode: 'lines', line: { dash } });
+    const volts = '%{y:.4~g} V';
+    const level = (y: number, name: string, dash: string, color: string) => ({
+      x,
+      y: [y, y],
+      name: sub(name),
+      mode: 'lines',
+      line: { dash, color, width: 2 },
+      hovertemplate: volts,
+    });
     const traces: Record<string, unknown>[] = [
-      { x: t.I, y: clamp(t.nominal), name: labels.outputCurve, mode: 'lines' },
-      level(s.VoutMax, labels.voutMax, 'dot'),
-      level(s.Vfs, labels.vfs, 'dash'),
+      { x: t.I, y: clamp(t.nominal), name: labels.outputCurve, mode: 'lines', line: { color: c0, width: 2 }, hovertemplate: volts },
+      level(s.VoutMax, labels.voutMax, 'dot', c1!),
+      level(s.Vfs, labels.vfs, 'dash', c2!),
     ];
     // the band the pad resistance and the offset open around the nominal output
     if (s.Vos > 0 || s.Rpad > 0) {
-      traces.splice(1, 0, { x: t.I, y: clamp(t.high), name: labels.highCurve, mode: 'lines', line: { dash: 'dash', width: 1 } });
-      traces.splice(2, 0, { x: t.I, y: clamp(t.low), name: labels.lowCurve, mode: 'lines', line: { dash: 'dash', width: 1 } });
+      const edge = { dash: 'dash', width: 1, color: c3 };
+      traces.splice(1, 0, { x: t.I, y: clamp(t.high), name: labels.highCurve, mode: 'lines', line: edge, hovertemplate: volts });
+      traces.splice(2, 0, { x: t.I, y: clamp(t.low), name: labels.lowCurve, mode: 'lines', line: edge, hovertemplate: volts });
     }
-    if (s.VoutMin > 0) traces.push(level(s.VoutMin, labels.voutMin, 'dot'));
+    if (s.VoutMin > 0) traces.push(level(s.VoutMin, labels.voutMin, 'dot', c1!));
     const vline = (xv: number, text: string) => ({
-      shape: { type: 'line', xref: 'x', yref: 'paper', x0: xv, x1: xv, y0: 0, y1: 1, line: { width: 1, dash: 'dashdot', color: 'gray' } },
-      annotation: { x: xv, y: 1, xref: 'x', yref: 'paper', text, showarrow: false, yanchor: 'bottom' },
+      shape: { type: 'line', xref: 'x', yref: 'paper', x0: xv, x1: xv, y0: 0, y1: 1, line: { width: 1, dash: 'dashdot', color: theme.muted } },
+      annotation: {
+        x: xv,
+        y: 0.98,
+        xref: 'x',
+        yref: 'paper',
+        text: sub(text),
+        showarrow: false,
+        xanchor: 'left',
+        yanchor: 'top',
+        xshift: 3,
+        font: { size: 11, color: theme.muted },
+      },
     });
     const marks = [vline(s.Imax, labels.imax), vline(s.Imin, labels.imin)];
-    return draw(transferRef.current, traces, {
-      margin: { t: 24, r: 24, b: 48, l: 64 },
-      xaxis: { title: { text: `${labels.current} [A]` }, rangemode: 'tozero' },
-      // headroom above the highest line, so that the I_min and I_max labels stay clear of it
-      yaxis: { title: { text: `${labels.output} [V]` }, range: [0, 1.15 * Math.max(s.VoutMax, s.Vfs)] },
-      shapes: marks.map((m) => m.shape),
-      annotations: marks.map((m) => m.annotation),
-    });
-  }, [result, labels]);
+    return draw(
+      transferRef.current,
+      traces,
+      {
+        hovermode: 'x unified',
+        xaxis: axis(theme, `${labels.current} [A]`, { rangemode: 'tozero' }),
+        // headroom above the highest line, so that the I_min and I_max labels stay clear of it
+        yaxis: axis(theme, `${labels.output} [V]`, { range: [0, 1.15 * Math.max(s.VoutMax, s.Vfs)] }),
+        shapes: marks.map((m) => m.shape),
+        annotations: marks.map((m) => m.annotation),
+      },
+      theme,
+    );
+  }, [result, labels, theme]);
 
   // the relative error of the reading against the current (logarithmic axes)
   useEffect(() => {
@@ -318,16 +344,47 @@ export default function SenseChain({ labels, presets }: Props) {
     } catch {
       return draw(errorRef.current, null, {}); // checkOf rules this out; never unmount the island over a chart
     }
+    const [c0, c1, c2] = theme.colors;
+    const percent = (v: number) => `${Number((100 * v).toPrecision(3))}%`;
     const traces: Record<string, unknown>[] = [
-      { x: c.I, y: c.total, name: labels.totalCurve, mode: 'lines' },
-      { x: [c.I[0], c.I[c.I.length - 1]], y: [s.errMax, s.errMax], name: labels.target, mode: 'lines', line: { dash: 'dot' } },
+      { x: c.I, y: c.total, name: labels.totalCurve, mode: 'lines', line: { color: c0, width: 2 }, hovertemplate: '%{y:.2%}' },
+      {
+        x: [c.I[0], c.I[c.I.length - 1]],
+        y: [s.errMax, s.errMax],
+        name: labels.target,
+        mode: 'lines',
+        line: { color: c2, width: 2, dash: 'dot' },
+        hovertemplate: '%{y:.2%}',
+      },
     ];
     // the offset's part on its own, when the pad adds to it
-    if (result.padError > 0 && result.Ios > 0) traces.splice(1, 0, { x: c.I, y: c.offset, name: labels.offsetCurve, mode: 'lines', line: { dash: 'dash' } });
+    if (result.padError > 0 && result.Ios > 0) {
+      traces.splice(1, 0, {
+        x: c.I,
+        y: c.offset,
+        name: labels.offsetCurve,
+        mode: 'lines',
+        line: { color: c1, width: 2, dash: 'dash' },
+        hovertemplate: '%{y:.2%}',
+      });
+    }
     const shapes: Record<string, unknown>[] = [
-      { type: 'line', xref: 'x', yref: 'paper', x0: s.Imin, x1: s.Imin, y0: 0, y1: 1, line: { width: 1, dash: 'dashdot', color: 'gray' } },
+      { type: 'line', xref: 'x', yref: 'paper', x0: s.Imin, x1: s.Imin, y0: 0, y1: 1, line: { width: 1, dash: 'dashdot', color: theme.muted } },
     ];
-    const annotations: Record<string, unknown>[] = [{ x: Math.log10(s.Imin), y: 1, xref: 'x', yref: 'paper', text: labels.imin, showarrow: false, yanchor: 'bottom' }];
+    const annotations: Record<string, unknown>[] = [
+      {
+        x: Math.log10(s.Imin),
+        y: 0.98,
+        xref: 'x',
+        yref: 'paper',
+        text: sub(labels.imin),
+        showarrow: false,
+        xanchor: 'left',
+        yanchor: 'top',
+        xshift: 3,
+        font: { size: 11, color: theme.muted },
+      },
+    ];
     if (result.Ifloor > c.I[0]!) {
       // below the floor current the output cannot follow the current (a floor left of the plotted range would stretch it)
       shapes.push({
@@ -338,18 +395,26 @@ export default function SenseChain({ labels, presets }: Props) {
         x1: Math.min(result.Ifloor, c.I[c.I.length - 1]!),
         y0: 0,
         y1: 1,
-        fillcolor: 'rgba(128,128,128,0.25)',
+        fillcolor: theme.band,
         line: { width: 0 },
+        name: labels.floorBand,
+        showlegend: true,
       });
     }
-    return draw(errorRef.current, traces, {
-      margin: { t: 24, r: 24, b: 48, l: 64 },
-      xaxis: { title: { text: `${labels.current} [A]` }, type: 'log' },
-      yaxis: { title: { text: labels.relError }, type: 'log', tickformat: '~%' },
-      shapes,
-      annotations,
-    });
-  }, [result, labels]);
+    const ys = [...c.total, ...c.offset, s.errMax].filter((y) => Number.isFinite(y) && y > 0);
+    return draw(
+      errorRef.current,
+      traces,
+      {
+        hovermode: 'x unified',
+        xaxis: axis(theme, `${labels.current} [A]`, { type: 'log', ...logTicks(c.I[0]!, c.I[c.I.length - 1]!) }),
+        yaxis: axis(theme, labels.relError, { type: 'log', ...logTicks(Math.min(...ys), Math.max(...ys), percent) }),
+        shapes,
+        annotations,
+      },
+      theme,
+    );
+  }, [result, labels, theme]);
 
   function applyPreset(p: SensePreset) {
     const next: Record<string, string> = {};
@@ -372,13 +437,9 @@ export default function SenseChain({ labels, presets }: Props) {
   const input = (f: Field) => {
     const id = `sense-${f.key}`;
     return (
-      <div key={f.key} className="pe-sim__row">
-        <label htmlFor={id}>
-          {f.label} {f.unit && <small>[{f.unit}]</small>}
-          {f.optional && <small> ({labels.optional})</small>}
-        </label>
+      <div key={f.key} className="pe-row pe-row--full">
+        <FieldLabel htmlFor={id} sym={f.label} meaning={symbols[f.label]} unit={f.unit} note={f.optional ? labels.optional : undefined} />
         <input id={id} type="number" step="any" value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
-        <span />
       </div>
     );
   };
@@ -387,7 +448,9 @@ export default function SenseChain({ labels, presets }: Props) {
   const outputEq = r?.spec.monitor.kind === 'voltage' ? 'sense.voltage_out_monitor' : 'sense.current_out_monitor';
   const row = (label: string, value: ReactNode, ...eqs: string[]) => (
     <tr key={label}>
-      <th scope="row">{label}</th>
+      <th scope="row">
+        <Rich text={label} />
+      </th>
       <td>{value}</td>
       <td>
         {eqs.map((eq, k) => (
@@ -400,104 +463,117 @@ export default function SenseChain({ labels, presets }: Props) {
     </tr>
   );
   return (
-    <div className="pe-tool pe-explorer pe-sim pe-design">
-      <fieldset>
-        <legend>{labels.kind}</legend>
-        <div className="pe-sim__buttons" role="group" aria-label={labels.kind}>
-          {KINDS.map((k) => (
-            <button key={k} type="button" aria-pressed={kind === k} onClick={() => changeKind(k)}>
-              {labels.kinds[k]}
-            </button>
-          ))}
-        </div>
-      </fieldset>
+    <div className="pe-tool pe-sense not-content">
+      <Choices legend={labels.kind} items={KINDS.map((k) => ({ id: k, label: labels.kinds[k] }))} selected={kind} onPick={changeKind} />
       {presets.length > 0 && (
-        <fieldset>
-          <legend>{labels.presets}</legend>
-          <div className="pe-sim__buttons">
-            {presets.map((p) => (
-              <button key={p.id} type="button" onClick={() => applyPreset(p)}>
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </fieldset>
+        <Choices
+          legend={labels.presets}
+          items={presets.map((p) => ({ id: p.id, label: p.label }))}
+          onPick={(id) => applyPreset(presets.find((p) => p.id === id)!)}
+          wide
+        />
       )}
-      <fieldset>
-        <legend>{labels.range}</legend>
-        {FIELDS.filter((f) => f.group === 'range').map(input)}
-      </fieldset>
-      <fieldset>
-        <legend>{labels.shunt}</legend>
-        {FIELDS.filter((f) => f.group === 'shunt').map(input)}
-      </fieldset>
-      <fieldset>
-        <legend>{labels.amplifier[kind]}</legend>
-        {FIELDS.filter((f) => f.group === kind || f.group === 'amp').map(input)}
-      </fieldset>
-      <fieldset>
-        <legend>{labels.adc}</legend>
-        {FIELDS.filter((f) => f.group === 'adc').map(input)}
-      </fieldset>
-      <section aria-live="polite">
-        {!r && <p className="pe-sim__error">{labels.invalid}</p>}
-        {r && r.warnings.length > 0 && (
-          <ul className="pe-design__warnings">
-            {r.warnings.map((w) => (
-              <li key={w}>{labels.warnings[w]}</li>
-            ))}
-          </ul>
-        )}
-      </section>
-      {r && (
-        <table className="pe-sim__table">
-          <caption>{labels.results}</caption>
-          <thead>
-            <tr>
-              <th scope="col">{labels.quantity}</th>
-              <th scope="col">{labels.value}</th>
-              <th scope="col">{labels.equation}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {row(labels.gain, fmt(r.gain, 'V/A'), outputEq)}
-            {row(labels.vout0, fmt(r.Vout0, 'V'), outputEq)}
-            {row(labels.voutImax, fmt(r.VoutImax, 'V'), outputEq)}
-            {row(labels.voutHi, <strong>{fmt(r.VoutHi, 'V')}</strong>, 'sense.reading', outputEq)}
-            {row(labels.adcUse, pct(r.adcUse), 'sense.reading', outputEq)}
-            {row(
-              labels.ifs,
-              <>
-                <strong>{fmt(r.Ifs, 'A')}</strong> ({r.limit === 'amp' ? labels.limitAmp : labels.limitAdc})
-              </>,
-              'sense.reading',
-              outputEq,
+      <div className="pe-split pe-split--results">
+        <div className="pe-split__controls">
+          <p className="pe-tool__hint">{labels.siHint}</p>
+          <fieldset>
+            <legend>
+              <Rich text={labels.range} />
+            </legend>
+            {FIELDS.filter((f) => f.group === 'range').map(input)}
+          </fieldset>
+          <fieldset>
+            <legend>
+              <Rich text={labels.shunt} />
+            </legend>
+            {FIELDS.filter((f) => f.group === 'shunt').map(input)}
+          </fieldset>
+          <fieldset>
+            <legend>
+              <Rich text={labels.amplifier[kind]} />
+            </legend>
+            {FIELDS.filter((f) => f.group === kind || f.group === 'amp').map(input)}
+          </fieldset>
+          <fieldset>
+            <legend>
+              <Rich text={labels.adc} />
+            </legend>
+            {FIELDS.filter((f) => f.group === 'adc').map(input)}
+          </fieldset>
+        </div>
+        <div className="pe-split__view">
+          <section aria-live="polite">
+            {!r && <p className="pe-sim__error">{labels.invalid}</p>}
+            {r && r.warnings.length > 0 && (
+              <ul className="pe-design__warnings">
+                {r.warnings.map((w) => (
+                  <li key={w}>
+                    <Rich text={labels.warnings[w]} />
+                  </li>
+                ))}
+              </ul>
             )}
-            {r.Ifloor > 0 && row(labels.ifloor, fmt(r.Ifloor, 'A'), 'sense.reading', outputEq)}
-            {row(labels.vsense, fmt(r.Vsense, 'V'), 'sense.burden')}
-            {row(labels.pshunt, fmt(r.Pshunt, 'W'), 'loss.cond')}
-            {row(labels.ios, fmt(r.Ios, 'A'), 'sense.offset_current')}
-            {row(labels.offsetShare, pct(r.offsetShare), 'sense.rel_error')}
-            {row(labels.padError, pct(r.padError), 'sense.pad_error')}
-            {row(labels.errorAtImin, <strong>{pct(r.errorAtImin)}</strong>, 'sense.rel_error')}
-            {r.spec.monitor.kind === 'current' && row(labels.rfilt, fmt(r.Rfilt, 'Ω'), 'sense.filter_R')}
-            {row(labels.fc, Number.isFinite(r.fc) ? fmt(r.fc, 'Hz') : labels.noFilter, 'rc.fc')}
-            {row(labels.fN, fmt(r.fN, 'Hz'), 'adc.nyquist')}
-            {row(labels.gainAtNyquist, fmt(r.gainAtNyquist), 'rc.gain')}
-            {r.gainAtFsw !== undefined && row(labels.gainAtFsw, fmt(r.gainAtFsw), 'rc.gain')}
-          </tbody>
-        </table>
-      )}
-      <div ref={transferRef} role="img" aria-label={labels.transferChart} style={{ width: '100%', height: 360 }} />
-      {r && r.Ios === 0 && r.padError === 0 && (
-        <p>
-          <small>{labels.noError}</small>
-        </p>
-      )}
-      <div ref={errorRef} role="img" aria-label={labels.errorChart} style={{ width: '100%', height: 360 }} />
-      <p>
-        <small>{labels.share}</small>
-      </p>
+          </section>
+          {r && (
+            <div className="pe-scroll">
+              <table className="pe-sim__table">
+                <caption>
+                  <Rich text={labels.results} />
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{labels.quantity}</th>
+                    <th scope="col">{labels.value}</th>
+                    <th scope="col">{labels.equation}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {row(labels.gain, fmt(r.gain, 'V/A'), outputEq)}
+                  {row(labels.vout0, fmt(r.Vout0, 'V'), outputEq)}
+                  {row(labels.voutImax, fmt(r.VoutImax, 'V'), outputEq)}
+                  {row(labels.voutHi, <strong>{fmt(r.VoutHi, 'V')}</strong>, 'sense.reading', outputEq)}
+                  {row(labels.adcUse, pct(r.adcUse), 'sense.reading', outputEq)}
+                  {row(
+                    labels.ifs,
+                    <>
+                      <strong>{fmt(r.Ifs, 'A')}</strong> ({r.limit === 'amp' ? labels.limitAmp : labels.limitAdc})
+                    </>,
+                    'sense.reading',
+                    outputEq,
+                  )}
+                  {r.Ifloor > 0 && row(labels.ifloor, fmt(r.Ifloor, 'A'), 'sense.reading', outputEq)}
+                  {row(labels.vsense, fmt(r.Vsense, 'V'), 'sense.burden')}
+                  {row(labels.pshunt, fmt(r.Pshunt, 'W'), 'loss.cond')}
+                  {row(labels.ios, fmt(r.Ios, 'A'), 'sense.offset_current')}
+                  {row(labels.offsetShare, pct(r.offsetShare), 'sense.rel_error')}
+                  {row(labels.padError, pct(r.padError), 'sense.pad_error')}
+                  {row(labels.errorAtImin, <strong>{pct(r.errorAtImin)}</strong>, 'sense.rel_error')}
+                  {r.spec.monitor.kind === 'current' && row(labels.rfilt, fmt(r.Rfilt, 'Ω'), 'sense.filter_R')}
+                  {row(labels.fc, Number.isFinite(r.fc) ? fmt(r.fc, 'Hz') : labels.noFilter, 'rc.fc')}
+                  {row(labels.fN, fmt(r.fN, 'Hz'), 'adc.nyquist')}
+                  {row(labels.gainAtNyquist, fmt(r.gainAtNyquist), 'rc.gain')}
+                  {r.gainAtFsw !== undefined && row(labels.gainAtFsw, fmt(r.gainAtFsw), 'rc.gain')}
+                </tbody>
+              </table>
+            </div>
+          )}
+          <p className="pe-chart__title">
+            <Rich text={labels.transferChart} />
+          </p>
+          <div ref={transferRef} className="pe-chart" role="img" aria-label={labels.transferChart} style={{ height: 360 }} />
+          <p className="pe-chart__title">
+            <Rich text={labels.errorChart} />
+          </p>
+          {r && r.Ios === 0 && r.padError === 0 && (
+            <p className="pe-tool__hint">
+              <Rich text={labels.noError} />
+            </p>
+          )}
+          <div ref={errorRef} className="pe-chart" role="img" aria-label={labels.errorChart} style={{ height: 360 }} />
+          {r && <p className="pe-tool__hint">{labels.plotHint}</p>}
+        </div>
+      </div>
+      <p className="pe-tool__hint">{labels.share}</p>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 /**
  * <Explorer /> -- the equation explorer island with labels in the page's
  * language. State lives in the URL hash, so "Try it" links can preset it.
+ * The wrapper lets the tool use the page's full width (custom.css, .pe-wide).
  */
 import EquationExplorer from '../tools/EquationExplorer.tsx';
 import { ui } from '../i18n/ui';
@@ -19,7 +20,12 @@ const labels = {
   logx: t['explorer.logx'],
   invalid: t['explorer.invalid'],
   share: t['explorer.share'],
+  plotHint: t['tool.plotHint'],
+  siHint: t['tool.siHint'],
+  current: t['explorer.current'],
 };
 ---
 
-<EquationExplorer client:only="react" locale={locale} labels={labels} />
+<div class="pe-wide">
+  <EquationExplorer client:only="react" locale={locale} labels={labels} />
+</div>

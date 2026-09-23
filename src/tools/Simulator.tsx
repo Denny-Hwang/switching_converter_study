@@ -9,14 +9,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { evaluate, sim } from 'pe-core';
 import { isToolHash } from '../lib/hash';
+import { PLOT_CONFIG, axis, baseLayout, coloredTitle, sub, usePlotTheme } from '../lib/plot';
 import { useStateHash } from '../lib/useStateHash';
 import type { SimReply } from './simulator.worker';
+import { Choices, FieldLabel, Rich, Sym } from './ToolUi';
 
 type Topology = sim.Topology;
 type SimParams = sim.SimParams;
 type SimResult = sim.SimResult;
 
 export interface SimLabels {
+  /** Values are entered in base SI units. */
+  siHint: string;
   topology: string;
   presets: string;
   parameters: string;
@@ -48,6 +52,7 @@ export interface SimLabels {
   time: string;
   running: string;
   slider: string;
+  plotHint: string;
   topologies: Record<Topology, string>;
 }
 
@@ -62,6 +67,8 @@ interface Props {
   locale: 'en' | 'ko';
   labels: SimLabels;
   presets: SimPreset[];
+  /** What each symbol means (i18n/symbols.ts). */
+  symbols: Record<string, string>;
 }
 
 const TOPOLOGIES: Topology[] = ['buck', 'boost', 'buckboost', 'flyback', 'forward'];
@@ -82,24 +89,96 @@ interface Field {
 
 const always = () => true;
 const isolated = (s: FieldState) => s.topo === 'flyback' || s.topo === 'forward';
-const FIELDS: Field[] = [
-  { key: 'Vg', label: () => 'V_g', unit: 'V', show: (s) => !s.source, group: 'main' },
+export const FIELDS: Field[] = [
+  {
+    key: 'Vg',
+    label: () => 'V_g',
+    unit: 'V',
+    show: (s) => !s.source,
+    group: 'main',
+  },
   { key: 'D', label: () => 'D', unit: '', show: always, group: 'main' },
   { key: 'fs', label: () => 'f_s', unit: 'Hz', show: always, group: 'main' },
-  { key: 'L', label: (s) => (s.topo === 'flyback' ? 'L_M' : 'L'), unit: 'H', show: always, group: 'main' },
+  {
+    key: 'L',
+    label: (s) => (s.topo === 'flyback' ? 'L_M' : 'L'),
+    unit: 'H',
+    show: always,
+    group: 'main',
+  },
   { key: 'n', label: () => 'n', unit: '', show: isolated, group: 'main' },
-  { key: 'nr', label: () => 'n_r', unit: '', show: (s) => s.topo === 'forward', group: 'main' },
-  { key: 'LM', label: () => 'L_M', unit: 'H', show: (s) => s.topo === 'forward', group: 'main' },
-  { key: 'R', label: () => 'R', unit: 'Ω', show: (s) => s.load === 'res', group: 'main' },
-  { key: 'C', label: () => 'C', unit: 'F', show: (s) => s.load === 'res', group: 'main' },
-  { key: 'V', label: () => 'V', unit: 'V', show: (s) => s.load === 'fixed', group: 'main' },
-  { key: 'Ron', label: () => 'R_on', unit: 'Ω', show: always, group: 'nonideal' },
+  {
+    key: 'nr',
+    label: () => 'n_r',
+    unit: '',
+    show: (s) => s.topo === 'forward',
+    group: 'main',
+  },
+  {
+    key: 'LM',
+    label: () => 'L_M',
+    unit: 'H',
+    show: (s) => s.topo === 'forward',
+    group: 'main',
+  },
+  {
+    key: 'R',
+    label: () => 'R',
+    unit: 'Ω',
+    show: (s) => s.load === 'res',
+    group: 'main',
+  },
+  {
+    key: 'C',
+    label: () => 'C',
+    unit: 'F',
+    show: (s) => s.load === 'res',
+    group: 'main',
+  },
+  {
+    key: 'V',
+    label: () => 'V',
+    unit: 'V',
+    show: (s) => s.load === 'fixed',
+    group: 'main',
+  },
+  {
+    key: 'Ron',
+    label: () => 'R_on',
+    unit: 'Ω',
+    show: always,
+    group: 'nonideal',
+  },
   { key: 'RL', label: () => 'R_L', unit: 'Ω', show: always, group: 'nonideal' },
   { key: 'VF', label: () => 'V_F', unit: 'V', show: always, group: 'nonideal' },
-  { key: 'Cnode', label: () => 'C_node', unit: 'F', show: (s) => s.topo !== 'forward', group: 'nonideal' },
-  { key: 'Voc', label: () => 'V_oc', unit: 'V', show: (s) => s.source, group: 'source' },
-  { key: 'Rs', label: () => 'R_s', unit: 'Ω', show: (s) => s.source, group: 'source' },
-  { key: 'Cbus', label: () => 'C_bus', unit: 'F', show: (s) => s.source, group: 'source' },
+  {
+    key: 'Cnode',
+    label: () => 'C_node',
+    unit: 'F',
+    show: (s) => s.topo !== 'forward',
+    group: 'nonideal',
+  },
+  {
+    key: 'Voc',
+    label: () => 'V_oc',
+    unit: 'V',
+    show: (s) => s.source,
+    group: 'source',
+  },
+  {
+    key: 'Rs',
+    label: () => 'R_s',
+    unit: 'Ω',
+    show: (s) => s.source,
+    group: 'source',
+  },
+  {
+    key: 'Cbus',
+    label: () => 'C_bus',
+    unit: 'F',
+    show: (s) => s.source,
+    group: 'source',
+  },
 ];
 const KEYS = FIELDS.map((f) => f.key);
 
@@ -179,6 +258,12 @@ function fmt(x: number | undefined): string {
   return a !== 0 && (a < 1e-3 || a >= 1e5) ? x.toExponential(3) : Number(x.toPrecision(4)).toString();
 }
 
+/** A relative difference in percent; differences at the level of rounding read as "< 0.001 %". */
+export function pct(x: number): string {
+  if (!Number.isFinite(x)) return '—';
+  return Math.abs(x) < 1e-3 ? '< 0.001 %' : `${Number(x.toPrecision(3))} %`;
+}
+
 interface CompareRow {
   label: string;
   unit: string;
@@ -210,7 +295,12 @@ export function compareRows(r: SimResult): CompareRow[] {
         eq: 'boost.ccm.M_RL',
       });
     } else {
-      rows.push({ label: '|M|', unit: '', sim: Math.abs(r.M), formula: Math.abs(sim.analyticM(p, r.K, r.Kcrit)) });
+      rows.push({
+        label: '|M|',
+        unit: '',
+        sim: Math.abs(r.M),
+        formula: Math.abs(sim.analyticM(p, r.K, r.Kcrit)),
+      });
     }
     if (r.mode !== 'DCM' && (p.topology === 'buck' || p.topology === 'boost' || p.topology === 'buckboost')) {
       const eq = `${p.topology}.IL`;
@@ -236,7 +326,13 @@ export function compareRows(r: SimResult): CompareRow[] {
   let kOff = 0;
   for (let k = 0; k < t.length && t[k]! <= tOff; k++) if (ivs[k] === 'on' || ivs[k] === 'onL0') kOff = k;
   const ripple = sim.analyticRipplePP(p, Vin, V);
-  if (ripple > 0) rows.push({ label: 'Δi_L,pp (on)', unit: 'A', sim: iL[kOff]! - iL[0]!, formula: ripple });
+  if (ripple > 0)
+    rows.push({
+      label: 'Δi_L,pp (on)',
+      unit: 'A',
+      sim: iL[kOff]! - iL[0]!,
+      formula: ripple,
+    });
   const vds: Record<Topology, [string, Record<string, number>]> = {
     buck: ['buck.Vds', { V_g: Vin }],
     boost: ['boost.Vds', { V }],
@@ -246,11 +342,23 @@ export function compareRows(r: SimResult): CompareRow[] {
   };
   const [eq, inputs] = vds[p.topology];
   if (r.mode !== 'DCM' || p.Cnode === undefined || p.Cnode === 0) {
-    rows.push({ label: 'V_DS,max', unit: 'V', sim: r.max.v_sw!, formula: evaluate(eq, inputs), eq });
+    rows.push({
+      label: 'V_DS,max',
+      unit: 'V',
+      sim: r.max.v_sw!,
+      formula: evaluate(eq, inputs),
+      eq,
+    });
   }
   if (p.topology === 'flyback' && r.mode === 'DCM') {
     // in DCM the flyback's input is a loss-free resistor
-    rows.push({ label: 'R_in', unit: 'Ω', sim: Vin / r.avg.i_in!, formula: evaluate('lfr.R_in', { L_M: p.L, f_s: p.fs, D: p.D }), eq: 'lfr.R_in' });
+    rows.push({
+      label: 'R_in',
+      unit: 'Ω',
+      sim: Vin / r.avg.i_in!,
+      formula: evaluate('lfr.R_in', { L_M: p.L, f_s: p.fs, D: p.D }),
+      eq: 'lfr.R_in',
+    });
   }
   if (p.topology === 'flyback' && p.load.kind === 'fixed' && p.source && r.mode !== 'DCM') {
     // CCM holds the bus at the critical input voltage
@@ -258,7 +366,12 @@ export function compareRows(r: SimResult): CompareRow[] {
       label: 'V_g,crit',
       unit: 'V',
       sim: Vin,
-      formula: evaluate('flyback.V_crit', { V: p.load.V, V_D: p.VF ?? 0, D: p.D, n }),
+      formula: evaluate('flyback.V_crit', {
+        V: p.load.V,
+        V_D: p.VF ?? 0,
+        D: p.D,
+        n,
+      }),
       eq: 'flyback.V_crit',
     });
   }
@@ -284,19 +397,30 @@ export function stateFromHash(h: URLSearchParams, presets: SimPreset[]): { fs: F
   const values: Record<string, string> = {};
   for (const k of KEYS) values[k] = h.get(k) ?? (base?.values[k] !== undefined ? String(base.values[k]) : '');
   return {
-    fs: { topo, load: h.get('load') === 'fixed' ? 'fixed' : 'res', source: h.get('src') === '1' },
+    fs: {
+      topo,
+      load: h.get('load') === 'fixed' ? 'fixed' : 'res',
+      source: h.get('src') === '1',
+    },
     values,
   };
 }
 
 /** The URL hash of the form: every shown field, an empty one as `key=`. */
 export function hashOf(fs: FieldState, values: Record<string, string>): string {
-  const q = new URLSearchParams({ topo: fs.topo, load: fs.load, src: fs.source ? '1' : '0' });
+  const q = new URLSearchParams({
+    topo: fs.topo,
+    load: fs.load,
+    src: fs.source ? '1' : '0',
+  });
   for (const f of FIELDS) if (f.show(fs)) q.set(f.key, values[f.key] ?? '');
   return q.toString();
 }
 
-function initialState(presets: SimPreset[]): { fs: FieldState; values: Record<string, string> } {
+function initialState(presets: SimPreset[]): {
+  fs: FieldState;
+  values: Record<string, string>;
+} {
   return stateFromHash(readHash(), presets);
 }
 
@@ -307,7 +431,10 @@ type Done = (result: SimResult | null, error: string | null) => void;
  * the run in flight (the worker is replaced), so a long run never delays the
  * next one and a stale result never arrives.
  */
-function useSimRunner(): { run: (params: SimParams, done: Done) => void; cancel: () => void } {
+function useSimRunner(): {
+  run: (params: SimParams, done: Done) => void;
+  cancel: () => void;
+} {
   const worker = useRef<Worker | null>(null);
   const inFlight = useRef(false);
   const seq = useRef(0);
@@ -356,7 +483,7 @@ function useSimRunner(): { run: (params: SimParams, done: Done) => void; cancel:
   return useMemo(() => ({ run, cancel }), [run, cancel]);
 }
 
-export default function Simulator({ labels, presets }: Props) {
+export default function Simulator({ labels, presets, symbols }: Props) {
   const init = useMemo(() => initialState(presets), [presets]);
   const [fstate, setFstate] = useState<FieldState>(init.fs);
   const [values, setValues] = useState<Record<string, string>>(init.values);
@@ -367,6 +494,7 @@ export default function Simulator({ labels, presets }: Props) {
   const [slow, setSlow] = useState(false);
   const plotRef = useRef<HTMLDivElement>(null);
   const runner = useSimRunner();
+  const theme = usePlotTheme();
 
   const params = useMemo(() => toParams(fstate, values), [fstate, values]);
 
@@ -437,18 +565,33 @@ export default function Simulator({ labels, presets }: Props) {
     const w = result.waveforms;
     const t = (w.t as number[]).map((x) => x * 1e6);
     const src = !!result.params.source;
-    const traces: Record<string, unknown>[] = [
-      { x: t, y: w.i_L, name: 'i_L', mode: 'lines', xaxis: 'x', yaxis: 'y' },
-      { x: t, y: w.i_D, name: 'i_D', mode: 'lines', line: { dash: 'dot' }, xaxis: 'x', yaxis: 'y' },
-      { x: t, y: w.v_L, name: 'v_L', mode: 'lines', xaxis: 'x', yaxis: 'y2' },
-      { x: t, y: w.v_sw, name: 'v_DS', mode: 'lines', xaxis: 'x', yaxis: 'y3' },
-      { x: t, y: w.v_out, name: 'v_out', mode: 'lines', xaxis: 'x', yaxis: 'y4' },
+    const [cL, cD, cV, cS, cO, cB, cM] = theme.colors;
+    const trace = (y: unknown, name: string, color: string, yaxis: string, unit: string, dash?: string) => ({
+      x: t,
+      y,
+      name: sub(name),
+      mode: 'lines',
+      line: { color, width: 2, ...(dash ? { dash } : {}) },
+      xaxis: 'x',
+      yaxis,
+      hovertemplate: `%{y:.4~g} ${unit}`,
+    });
+    const currents = [
+      { name: 'i_L', color: cL! },
+      { name: 'i_D', color: cD! },
+      ...(result.params.topology === 'forward' ? [{ name: 'i_M', color: cM! }] : []),
     ];
-    if (src) traces.push({ x: t, y: w.v_in, name: 'v_bus', mode: 'lines', xaxis: 'x', yaxis: 'y5' });
-    if (result.params.topology === 'forward') {
-      traces.push({ x: t, y: w.i_M, name: 'i_M', mode: 'lines', line: { dash: 'dash' }, xaxis: 'x', yaxis: 'y' });
-    }
+    const traces: Record<string, unknown>[] = [
+      trace(w.i_L, 'i_L', cL!, 'y', 'A'),
+      trace(w.i_D, 'i_D', cD!, 'y', 'A', 'dot'),
+      trace(w.v_L, 'v_L', cV!, 'y2', 'V'),
+      trace(w.v_sw, 'v_DS', cS!, 'y3', 'V'),
+      trace(w.v_out, 'v_out', cO!, 'y4', 'V'),
+    ];
+    if (src) traces.push(trace(w.v_in, 'v_bus', cB!, 'y5', 'V'));
+    if (result.params.topology === 'forward') traces.push(trace(w.i_M, 'i_M', cM!, 'y', 'A', 'dash'));
     const rows = src ? 5 : 4;
+    const yTitle = (name: string, color: string) => coloredTitle([{ name, color }], 'V');
     import('plotly.js-dist-min').then((mod) => {
       if (cancelled) return;
       const Plotly = mod.default ?? mod;
@@ -456,30 +599,47 @@ export default function Simulator({ labels, presets }: Props) {
         el,
         traces,
         {
-          grid: { rows, columns: 1, pattern: 'coupled', roworder: 'top to bottom' },
-          margin: { t: 16, r: 16, b: 48, l: 64 },
-          xaxis: { title: { text: `${labels.time} [µs]` } },
-          yaxis: { title: { text: '[A]' } },
-          yaxis2: { title: { text: 'v_L [V]' } },
-          yaxis3: { title: { text: 'v_DS [V]' } },
-          yaxis4: { title: { text: 'v_out [V]' } },
-          ...(src ? { yaxis5: { title: { text: 'v_bus [V]' } } } : {}),
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(0,0,0,0)',
-          legend: { orientation: 'h', y: 1.08 },
+          ...baseLayout(theme),
+          showlegend: false,
+          hovermode: 'x unified',
+          // one hover box for every row at the same instant
+          hoversubplots: 'axis',
+          grid: {
+            rows,
+            columns: 1,
+            pattern: 'coupled',
+            roworder: 'top to bottom',
+            ygap: 0.12,
+          },
+          xaxis: axis(theme, `${labels.time} [µs]`, {
+            showspikes: true,
+            spikemode: 'across',
+            spikethickness: 1,
+            spikecolor: theme.muted,
+            spikedash: 'solid',
+          }),
+          yaxis: axis(theme, coloredTitle(currents, 'A')),
+          yaxis2: axis(theme, yTitle('v_L', cV!)),
+          yaxis3: axis(theme, yTitle('v_DS', cS!)),
+          yaxis4: axis(theme, yTitle('v_out', cO!)),
+          ...(src ? { yaxis5: axis(theme, yTitle('v_bus', cB!)) } : {}),
         },
-        { responsive: true, displaylogo: false },
+        PLOT_CONFIG,
       );
     });
     return () => {
       cancelled = true;
     };
-  }, [result, labels]);
+  }, [result, labels, theme]);
 
   function applyPreset(p: SimPreset) {
     const next: Record<string, string> = {};
     for (const k of KEYS) next[k] = p.values[k] !== undefined ? String(p.values[k]) : '';
-    setFstate({ topo: p.topology, load: p.values.V !== undefined && p.values.R === undefined ? 'fixed' : 'res', source: p.values.Voc !== undefined });
+    setFstate({
+      topo: p.topology,
+      load: p.values.V !== undefined && p.values.R === undefined ? 'fixed' : 'res',
+      source: p.values.Voc !== undefined,
+    });
     setValues(next);
     setAnchors(sliderAnchors(next));
   }
@@ -533,17 +693,21 @@ export default function Simulator({ labels, presets }: Props) {
         max={DECADES}
         step={0.01}
         value={Math.min(DECADES, Math.max(-DECADES, pos))}
-        onChange={(e) => setValues((prev) => ({ ...prev, [f.key]: fromSlider(a, Number(e.target.value)) }))}
+        onChange={(e) =>
+          setValues((prev) => ({
+            ...prev,
+            [f.key]: fromSlider(a, Number(e.target.value)),
+          }))
+        }
       />
     );
   };
   const input = (f: Field) => {
     const id = `sim-${f.key}`;
+    const sym = f.label(fstate);
     return (
-      <div key={f.key} className="pe-sim__row">
-        <label htmlFor={id}>
-          {f.label(fstate)} {f.unit && <small>[{f.unit}]</small>}
-        </label>
+      <div key={f.key} className="pe-row">
+        <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} />
         <input
           id={id}
           type="number"
@@ -563,140 +727,150 @@ export default function Simulator({ labels, presets }: Props) {
   const rows = result?.converged ? compareRows(result) : [];
 
   return (
-    <div className="pe-tool pe-explorer pe-sim">
-      <fieldset>
-        <legend>{labels.topology}</legend>
-        <div className="pe-sim__buttons" role="group" aria-label={labels.topology}>
-          {TOPOLOGIES.map((t) => (
-            <button key={t} type="button" aria-pressed={fstate.topo === t} onClick={() => changeTopology(t)}>
-              {labels.topologies[t]}
-            </button>
-          ))}
-        </div>
-      </fieldset>
+    <div className="pe-tool pe-sim not-content">
+      <Choices
+        legend={labels.topology}
+        items={TOPOLOGIES.map((t) => ({ id: t, label: labels.topologies[t] }))}
+        selected={fstate.topo}
+        onPick={changeTopology}
+      />
       {presets.length > 0 && (
-        <fieldset>
-          <legend>{labels.presets}</legend>
-          <div className="pe-sim__buttons">
-            {presets.map((p) => (
-              <button key={p.id} type="button" onClick={() => applyPreset(p)}>
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </fieldset>
+        <Choices
+          legend={labels.presets}
+          items={presets.map((p) => ({ id: p.id, label: p.label }))}
+          onPick={(id) => applyPreset(presets.find((p) => p.id === id)!)}
+          wide
+        />
       )}
-      <fieldset>
-        <legend>{labels.parameters}</legend>
-        <label className="pe-explorer__row" htmlFor="sim-load">
-          <span>{labels.load}</span>
-          <select
-            id="sim-load"
-            value={fstate.load}
-            onChange={(e) => setFstate({ ...fstate, load: e.target.value === 'fixed' ? 'fixed' : 'res' })}
-          >
-            <option value="res">{labels.loadResistive}</option>
-            <option value="fixed">{labels.loadFixed}</option>
-          </select>
-        </label>
-        <label className="pe-explorer__row" htmlFor="sim-src">
-          <span>{labels.source}</span>
-          <input id="sim-src" type="checkbox" checked={fstate.source} onChange={(e) => setFstate({ ...fstate, source: e.target.checked })} />
-        </label>
-        {fstate.source && (
-          <p>
-            <small>{labels.sourceHint}</small>
-          </p>
-        )}
-        {shown.filter((f) => f.group !== 'nonideal').map(input)}
-      </fieldset>
-      <fieldset>
-        <legend>{labels.nonideal}</legend>
-        {shown.filter((f) => f.group === 'nonideal').map(input)}
-      </fieldset>
-      <section className="pe-sim__status" aria-live="polite">
-        <h3>{labels.status}</h3>
-        {error && <p className="pe-sim__error">{error}</p>}
-        {((busy && !result && !error) || slow) && <p>{labels.running}</p>}
-        {result && (
-          <p>
-            {labels.mode}: <strong className={`pe-sim__mode pe-sim__mode--${result.mode}`}>{result.mode}</strong>
-            {Number.isFinite(result.K) && (
-              <>
-                {' '}
-                · K = {fmt(result.K)}, K_crit = {fmt(result.Kcrit)}
-              </>
-            )}{' '}
-            · {result.converged ? labels.converged : labels.notConverged} ({labels.cycles}: {result.cycles})
-          </p>
-        )}
-      </section>
+      <div className="pe-split pe-split--sticky">
+        <div className="pe-split__controls">
+          <p className="pe-tool__hint">{labels.siHint}</p>
+          <fieldset>
+            <legend>{labels.parameters}</legend>
+            <div className="pe-row pe-row--full">
+              <label htmlFor="sim-load">{labels.load}</label>
+              <select
+                id="sim-load"
+                value={fstate.load}
+                onChange={(e) =>
+                  setFstate({
+                    ...fstate,
+                    load: e.target.value === 'fixed' ? 'fixed' : 'res',
+                  })
+                }
+              >
+                <option value="res">{labels.loadResistive}</option>
+                <option value="fixed">{labels.loadFixed}</option>
+              </select>
+            </div>
+            <label className="pe-check" htmlFor="sim-src">
+              <input id="sim-src" type="checkbox" checked={fstate.source} onChange={(e) => setFstate({ ...fstate, source: e.target.checked })} />
+              <span>
+                <Rich text={labels.source} />
+              </span>
+            </label>
+            {fstate.source && (
+              <p className="pe-tool__hint">
+                <Rich text={labels.sourceHint} />
+              </p>
+            )}
+            {shown.filter((f) => f.group !== 'nonideal').map(input)}
+          </fieldset>
+          <fieldset>
+            <legend>{labels.nonideal}</legend>
+            {shown.filter((f) => f.group === 'nonideal').map(input)}
+          </fieldset>
+        </div>
+        <div className="pe-split__view">
+          <section className="pe-sim__status" aria-live="polite">
+            {error && <p className="pe-sim__error">{error}</p>}
+            {((busy && !result && !error) || slow) && <p>{labels.running}</p>}
+            {result && (
+              <p>
+                {labels.mode}: <strong className={`pe-sim__mode pe-sim__mode--${result.mode}`}>{result.mode}</strong>
+                {Number.isFinite(result.K) && (
+                  <>
+                    {' '}
+                    · <Sym text="K" /> = {fmt(result.K)}, <Sym text="K_crit" /> = {fmt(result.Kcrit)}
+                  </>
+                )}{' '}
+                · {result.converged ? labels.converged : labels.notConverged} ({labels.cycles}: {result.cycles})
+              </p>
+            )}
+          </section>
+          <div
+            ref={plotRef}
+            className="pe-chart"
+            role="img"
+            aria-label={`${labels.topologies[fstate.topo]}: i_L, i_D, v_L, v_DS, v_out`}
+            style={{ height: fstate.source ? 680 : 560, display: error ? 'none' : undefined }}
+          />
+          {result && <p className="pe-tool__hint">{labels.plotHint}</p>}
+        </div>
+      </div>
       {result?.converged && (
         <>
-          <table className="pe-sim__table">
-            <caption>{labels.compare}</caption>
-            <thead>
-              <tr>
-                <th scope="col">{labels.quantity}</th>
-                <th scope="col">{labels.simulated}</th>
-                <th scope="col">{labels.formula}</th>
-                <th scope="col">{labels.error}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.label}>
-                  <th scope="row">
-                    {r.label} {r.unit && <small>[{r.unit}]</small>}
-                    {r.eq && (
-                      <>
-                        {' '}
-                        <code>{r.eq}</code>
-                      </>
-                    )}
-                  </th>
-                  <td>{fmt(r.sim)}</td>
-                  <td>{fmt(r.formula)}</td>
-                  <td>{fmt(((r.sim - r.formula) / Math.abs(r.formula)) * 100)} %</td>
+          <h3>{labels.status}</h3>
+          <div className="pe-scroll">
+            <table className="pe-sim__table">
+              <caption>{labels.compare}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{labels.quantity}</th>
+                  <th scope="col">{labels.simulated}</th>
+                  <th scope="col">{labels.formula}</th>
+                  <th scope="col">{labels.error}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <p>
-            <small>{labels.compareNote}</small>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.label}>
+                    <th scope="row">
+                      <Sym text={r.label} /> {symbols[r.label] && <span className="pe-field__meaning">{symbols[r.label]}</span>}{' '}
+                      {r.unit && <span className="pe-field__unit">[{r.unit}]</span>}
+                      {r.eq && <code className="pe-eqid">{r.eq}</code>}
+                    </th>
+                    <td>{fmt(r.sim)}</td>
+                    <td>{fmt(r.formula)}</td>
+                    <td>{pct(((r.sim - r.formula) / Math.abs(r.formula)) * 100)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="pe-tool__hint">
+            <Rich text={labels.compareNote} />
           </p>
-          <table className="pe-sim__table">
-            <caption>{labels.losses}</caption>
-            <tbody>
-              <tr>
-                <th scope="row">{labels.conduction}</th>
-                <td>{fmt(result.losses.conduction)} W</td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.diode}</th>
-                <td>{fmt(result.losses.diode)} W</td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.capacitive}</th>
-                <td>{fmt(result.losses.capacitive)} W</td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.efficiency}</th>
-                <td>{fmt(eff * 100)} %</td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="pe-scroll">
+            <table className="pe-sim__table">
+              <caption>{labels.losses}</caption>
+              <tbody>
+                <tr>
+                  <th scope="row">
+                    <Rich text={labels.conduction} />
+                  </th>
+                  <td>{fmt(result.losses.conduction)} W</td>
+                </tr>
+                <tr>
+                  <th scope="row">{labels.diode}</th>
+                  <td>{fmt(result.losses.diode)} W</td>
+                </tr>
+                <tr>
+                  <th scope="row">
+                    <Rich text={labels.capacitive} />
+                  </th>
+                  <td>{fmt(result.losses.capacitive)} W</td>
+                </tr>
+                <tr>
+                  <th scope="row">{labels.efficiency}</th>
+                  <td>{fmt(eff * 100)} %</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </>
       )}
-      <div
-        ref={plotRef}
-        role="img"
-        aria-label={`${labels.topologies[fstate.topo]}: i_L, i_D, v_L, v_DS, v_out`}
-        style={{ width: '100%', height: fstate.source ? 760 : 640 }}
-      />
-      <p>
-        <small>{labels.share}</small>
-      </p>
+      <p className="pe-tool__hint">{labels.share}</p>
     </div>
   );
 }

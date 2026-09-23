@@ -46,8 +46,8 @@ export const PRESETS: PresetSpec[] = [
     id: 'flyback-source',
     example: 'flyback-source',
     topology: 'flyback',
-    en: 'Flyback from a current-limited source into a fixed output',
-    ko: '전류 제한 전원에서 고정 출력으로 동작하는 플라이백',
+    en: 'Flyback, current-limited source',
+    ko: '플라이백, 전류 제한 전원',
   },
   { id: 'forward', example: 'forward-basic', topology: 'forward', en: 'Forward', ko: '포워드' },
 ];

@@ -1,9 +1,10 @@
 ---
 /**
  * <SenseChain /> -- the sense-chain island with labels in the page's language
- * and presets from the synthetic sense examples. State lives in the URL hash.
+ * and presets from the sense examples (examples/synthetic). State lives in the URL hash.
  */
 import SenseIsland from '../tools/SenseChain.tsx';
+import { toolSymbols } from '../i18n/symbols';
 import { ui } from '../i18n/ui';
 import { pageLocale } from '../lib/locale';
 import { SENSE_PRESETS, senseValues } from '../lib/sensepresets';
@@ -61,8 +62,11 @@ const labels = {
   totalCurve: t['sc.totalCurve'],
   target: t['sc.target'],
   noError: t['sc.noError'],
+  floorBand: t['sc.floorBand'],
   invalid: t['sc.invalid'],
   share: t['sc.share'],
+  plotHint: t['tool.plotHint'],
+  siHint: t['tool.siHint'],
   warnings: {
     noRange: t['sc.warn.noRange'],
     ampClips: t['sc.warn.ampClips'],
@@ -85,4 +89,6 @@ const presets = SENSE_PRESETS.map((p) => ({
 }));
 ---
 
-<SenseIsland client:only="react" locale={locale} labels={labels} presets={presets} />
+<div class="pe-wide">
+  <SenseIsland client:only="react" locale={locale} labels={labels} presets={presets} symbols={toolSymbols(locale)} />
+</div>

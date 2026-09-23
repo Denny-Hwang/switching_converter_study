@@ -1,10 +1,11 @@
 ---
 /**
  * <SourceMatcher /> -- the source-matcher island with labels in the page's
- * language and presets from the synthetic source examples. State lives in
+ * language and presets from the source examples (examples/synthetic). State lives in
  * the URL hash.
  */
 import SourceIsland from '../tools/SourceMatcher.tsx';
+import { toolSymbols } from '../i18n/symbols';
 import { ui } from '../i18n/ui';
 import { pageLocale } from '../lib/locale';
 import { pageHref } from '../lib/paths';
@@ -43,6 +44,8 @@ const labels = {
   extractionChart: t['sm.extractionChart'],
   amplitude: t['sm.amplitude'],
   share: t['sm.share'],
+  plotHint: t['tool.plotHint'],
+  siHint: t['tool.siHint'],
   lfrCurve: t['sm.lfrCurve'],
   cvCurve: t['sm.cvCurve'],
   actual: t['sm.actual'],
@@ -74,4 +77,6 @@ const presets = SOURCE_PRESETS.map((id) => ({ id, label: PRESET_LABEL[id] ?? id,
 const simulatorHref = pageHref(locale, 'simulate/simulator');
 ---
 
-<SourceIsland client:only="react" locale={locale} labels={labels} presets={presets} simulatorHref={simulatorHref} />
+<div class="pe-wide">
+  <SourceIsland client:only="react" locale={locale} labels={labels} presets={presets} simulatorHref={simulatorHref} symbols={toolSymbols(locale)} />
+</div>

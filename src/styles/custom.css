@@ -1,5 +1,11 @@
 /* Site styles on top of Starlight. Keep small; prefer Starlight tokens. */
 
+/* Korean text breaks between words, not inside one (a long token still wraps) */
+html:lang(ko) body {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
 /* ---- <Eq> ------------------------------------------------------------ */
 .pe-eq {
   margin: 1.25rem 0;
@@ -69,11 +75,236 @@
 }
 
 /* ---- tool islands ------------------------------------------------------ */
+/* A tool is not prose: its root carries `not-content`, so Starlight's markdown
+   rules (a margin above every sibling, block-level SVGs) stay out of it; they
+   made button groups uneven and misplaced the charts' hover labels. The rules
+   below style the tools' own text, tables and links instead. */
 .pe-tool {
+  container: pe-tool / inline-size;
   margin: 1.25rem 0;
   padding: 0.75rem;
   border: 1px solid var(--sl-color-gray-5);
   border-radius: 0.5rem;
+  line-height: var(--sl-line-height);
+}
+.pe-tool p,
+.pe-tool ul {
+  margin: 0.5rem 0;
+}
+.pe-tool ul {
+  padding-left: 1.25rem;
+}
+.pe-tool h3 {
+  margin: 0.75rem 0 0.25rem;
+  font-size: var(--sl-text-lg);
+  color: var(--sl-color-white);
+}
+.pe-tool a {
+  color: var(--sl-color-text-accent);
+}
+.pe-tool code {
+  padding: 0.05em 0.3em;
+  border-radius: 0.25rem;
+  background: var(--sl-color-gray-6);
+  font-family: var(--sl-font-system-mono, ui-monospace, monospace);
+  font-size: 0.85em;
+}
+.pe-tool fieldset {
+  container-type: inline-size;
+  margin: 0.75rem 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.4rem;
+}
+.pe-tool legend {
+  padding: 0 0.3rem;
+  color: var(--sl-color-white);
+  font-weight: 600;
+}
+.pe-tool input[type='number'],
+.pe-tool input[type='text'],
+.pe-tool select {
+  width: 100%;
+  min-width: 0;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--sl-color-gray-4);
+  border-radius: 0.3rem;
+  background: var(--sl-color-black);
+  color: var(--sl-color-white);
+  font: inherit;
+}
+.pe-tool input[type='range'] {
+  width: 100%;
+  min-width: 0;
+  accent-color: var(--sl-color-accent);
+}
+.pe-tool input:focus-visible,
+.pe-tool select:focus-visible {
+  outline: 2px solid var(--sl-color-accent-high);
+  outline-offset: 1px;
+}
+.pe-tool__hint {
+  font-size: var(--sl-text-xs);
+  color: var(--sl-color-gray-3);
+}
+
+/* One input: its label (symbol, meaning, unit) above the input and the slider
+   in a narrow column, all on one line in a wide one. */
+.pe-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: 'label label' 'input slider';
+  gap: 0.2rem 0.6rem;
+  align-items: center;
+  margin: 0.55rem 0;
+}
+.pe-row > label,
+.pe-row > .pe-field {
+  grid-area: label;
+}
+.pe-row > input[type='number'],
+.pe-row > input[type='text'],
+.pe-row > select,
+.pe-row > input[type='checkbox'] {
+  grid-area: input;
+}
+.pe-row > input[type='checkbox'] {
+  justify-self: start;
+  width: auto;
+}
+.pe-row > input[type='range'] {
+  grid-area: slider;
+}
+.pe-row--full {
+  grid-template-areas: 'label label' 'input input';
+}
+@container (min-width: 34rem) {
+  .pe-row {
+    grid-template-columns: minmax(11rem, 1.5fr) minmax(6rem, 1fr) minmax(6rem, 1fr);
+    grid-template-areas: 'label input slider';
+  }
+  .pe-row--full {
+    grid-template-areas: 'label input input';
+  }
+}
+.pe-check {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  margin: 0.55rem 0;
+  cursor: pointer;
+}
+.pe-check input {
+  flex: none;
+}
+.pe-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.45rem;
+  line-height: 1.35;
+}
+.pe-sym {
+  color: var(--sl-color-white);
+  font-family: KaTeX_Main, 'Times New Roman', serif;
+  font-size: 1.1em;
+  white-space: nowrap;
+}
+.pe-sym i {
+  font-family: KaTeX_Math, KaTeX_Main, 'Times New Roman', serif;
+}
+.pe-sym sub {
+  font-size: 0.72em;
+}
+.pe-field__meaning {
+  color: var(--sl-color-gray-2);
+}
+.pe-field__unit,
+.pe-field__note {
+  color: var(--sl-color-gray-3);
+  font-size: var(--sl-text-xs);
+}
+
+/* A group of equal-size buttons (topology, presets, ...). */
+.pe-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+  gap: 0.5rem;
+}
+.pe-choices--wide {
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+}
+.pe-choices button {
+  min-height: 2.5rem;
+  margin: 0;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--sl-color-gray-4);
+  border-radius: 0.4rem;
+  background: var(--sl-color-gray-7, transparent);
+  color: var(--sl-color-text);
+  font: inherit;
+  line-height: 1.3;
+  text-align: center;
+  /* Korean labels break between words, not inside one */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.pe-choices button:hover {
+  border-color: var(--sl-color-accent);
+}
+.pe-choices button[aria-pressed='true'] {
+  background: var(--sl-color-accent);
+  border-color: var(--sl-color-accent);
+  color: var(--sl-color-black);
+  font-weight: 600;
+}
+.pe-choices button:focus-visible {
+  outline: 2px solid var(--sl-color-accent-high);
+  outline-offset: 2px;
+}
+
+/* Settings next to what they change: two columns in a wide tool, the chart
+   (or the results) kept in view while the settings scroll; one column, chart
+   first, in a narrow one. */
+.pe-split {
+  display: grid;
+  gap: 0 1rem;
+}
+.pe-split__view {
+  order: -1;
+  min-width: 0;
+}
+.pe-split__controls {
+  min-width: 0;
+}
+@container pe-tool (min-width: 52rem) {
+  .pe-split {
+    grid-template-columns: minmax(20rem, 25rem) minmax(0, 1fr);
+    align-items: start;
+  }
+  .pe-split__view {
+    order: 0;
+    margin-top: 0.75rem;
+  }
+  .pe-split--sticky .pe-split__view {
+    position: sticky;
+    top: calc(var(--sl-nav-height, 4rem) + 0.75rem);
+  }
+}
+.pe-split--results .pe-split__view {
+  order: 0;
+}
+
+/* Tool pages give the tool the width the table of contents would take: the
+   tool spans up to 70rem, prose keeps its reading width. */
+@media (min-width: 72rem) {
+  .main-pane:has(.pe-wide) {
+    --sl-content-width: 70rem;
+  }
+  .main-pane:has(.pe-wide) .sl-markdown-content > :not(.pe-wide) {
+    max-width: 45rem;
+  }
 }
 
 /* ---- <Derivation> ------------------------------------------------------ */
@@ -103,6 +334,12 @@
 /* ---- <Cite>, <Bibliography> ------------------------------------------- */
 .pe-cite {
   white-space: nowrap;
+}
+/* on a phone a long citation wraps instead of widening the page */
+@media (max-width: 50rem) {
+  .pe-cite {
+    white-space: normal;
+  }
 }
 .pe-bib li {
   margin: 0.4rem 0;
@@ -185,24 +422,6 @@
 }
 
 /* ---- equation explorer ---------------------------------------------------- */
-.pe-explorer fieldset {
-  border: 1px solid var(--sl-color-gray-5);
-  border-radius: 0.4rem;
-  margin: 0.75rem 0;
-  padding: 0.5rem 0.75rem;
-}
-.pe-explorer__row {
-  display: grid;
-  grid-template-columns: minmax(7rem, 12rem) 1fr;
-  gap: 0.5rem;
-  align-items: center;
-  margin: 0.3rem 0;
-}
-.pe-explorer__row input[type='number'],
-.pe-explorer__row select {
-  width: 100%;
-  max-width: 28rem;
-}
 .pe-explorer__title {
   font-weight: 600;
   margin: 0.5rem 0 0;
@@ -214,51 +433,9 @@
   font-size: var(--sl-text-lg);
 }
 
-/* ---- simulator ------------------------------------------------------------ */
-.pe-sim__row {
-  display: grid;
-  grid-template-columns: minmax(6rem, 9rem) minmax(7rem, 11rem) minmax(8rem, 1fr);
-  gap: 0.5rem;
-  align-items: center;
-  margin: 0.3rem 0;
-}
-.pe-sim__row input[type='number'] {
-  width: 100%;
-}
-.pe-sim__row input[type='range'] {
-  width: 100%;
-  max-width: 24rem;
-}
-@media (max-width: 36rem) {
-  .pe-sim__row {
-    grid-template-columns: minmax(5rem, 7rem) 1fr;
-  }
-  .pe-sim__row input[type='range'] {
-    grid-column: 1 / -1;
-    max-width: none;
-  }
-}
-.pe-sim__buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-.pe-sim__buttons button {
-  padding: 0.25rem 0.7rem;
-  border: 1px solid var(--sl-color-gray-4);
-  border-radius: 0.35rem;
-  background: var(--sl-color-gray-7, transparent);
-  color: var(--sl-color-text);
-  cursor: pointer;
-}
-.pe-sim__buttons button[aria-pressed='true'] {
-  background: var(--sl-color-accent);
-  border-color: var(--sl-color-accent);
-  color: var(--sl-color-black);
-}
-.pe-sim__buttons button:focus-visible {
-  outline: 2px solid var(--sl-color-accent-high);
-  outline-offset: 2px;
+/* ---- results shared by the tools ------------------------------------------- */
+.pe-sim__status {
+  margin-top: 0.25rem;
 }
 .pe-sim__status h3 {
   margin: 0.5rem 0 0.25rem;
@@ -278,12 +455,54 @@
 .pe-sim__error {
   color: var(--sl-color-red);
 }
-.pe-sim__table {
+.pe-scroll {
   margin: 0.75rem 0;
+  overflow-x: auto;
+}
+.pe-sim__table {
+  margin: 0;
+  border-collapse: collapse;
+  width: 100%;
   font-size: var(--sl-text-sm);
 }
 .pe-sim__table caption {
+  padding: 0.25rem 0;
+  color: var(--sl-color-white);
+  font-weight: 600;
   text-align: left;
+}
+.pe-sim__table th,
+.pe-sim__table td {
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--sl-color-gray-5);
+  text-align: left;
+  vertical-align: top;
+}
+.pe-sim__table thead th {
+  border-bottom-width: 2px;
+  color: var(--sl-color-white);
+}
+.pe-sim__table tbody th {
+  font-weight: 600;
+  color: var(--sl-color-white);
+}
+.pe-sim__table td {
+  font-variant-numeric: tabular-nums;
+}
+.pe-sim .pe-sim__table td {
+  white-space: nowrap;
+}
+.pe-eqid {
+  display: inline-block;
+  margin-left: 0.3rem;
+  font-weight: 400;
+}
+.pe-chart {
+  width: 100%;
+}
+.pe-chart__title {
+  margin: 1rem 0 0.25rem;
+  color: var(--sl-color-white);
   font-weight: 600;
 }
 
@@ -296,13 +515,8 @@
 }
 
 /* ---- loss budget ---------------------------------------------------------- */
-.pe-loss .pe-sim__table td:nth-child(2),
 .pe-loss .pe-sim__table td:nth-child(3) {
   white-space: nowrap;
-}
-.pe-loss__caption {
-  margin: 1rem 0 0;
-  font-weight: 600;
 }
 
 /* ---- tool screenshots ------------------------------------------------------ */

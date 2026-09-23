@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { clampCheck } from 'pe-core';
 import { clampValues } from '../lib/clamppresets';
 import { getExample } from '../lib/examples';
-import { checkOf, hashOf, stateFromHash, toClampSpec, tradeoff, type ClampPreset } from './ClampCheck';
+import { checkOf, hashOf, range, stateFromHash, toClampSpec, tradeoff, type ClampPreset } from './ClampCheck';
 
 const strings = (v: Record<string, number>) => Object.fromEntries(Object.entries(v).map(([k, x]) => [k, String(x)]));
 const rel = (a: number, b: number) => Math.abs(a - b) / Math.abs(b);
@@ -92,5 +92,15 @@ describe('clamp-check robustness', () => {
     const back = stateFromHash(new URLSearchParams(hashOf('rcd', values)), presets);
     expect(back.values.VBR).toBe('55');
     expect(back.values.R).toBe('3300');
+  });
+});
+
+describe('clamp-check ranges', () => {
+  it('writes a shared unit once, keeps different prefixes, and shows one value when both ends read the same', () => {
+    expect(range({ low: 60, high: 66 }, 'V')).toBe('60 – 66 V');
+    expect(range({ low: 0.4, high: 1.2 }, 'W')).toBe('400 mW – 1.2 W');
+    expect(range({ low: 0.0012, high: Infinity }, 'W')).toBe('1.2 mW – ∞');
+    expect(range({ low: Infinity, high: Infinity }, 'W')).toBe('∞');
+    expect(range({ low: 5, high: 5 }, 'V')).toBe('5 V');
   });
 });

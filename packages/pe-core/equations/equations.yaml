@@ -29,163 +29,163 @@ schema_version: 1
 # `value_expr` marks a physical constant (substituted exactly, never an input).
 symbol_table:
   # --- dimensionless ratios -------------------------------------------------
-  D: {latex: "D", unit: "1", desc: "duty ratio: switch on-time divided by T_s", range: [0.05, 0.95]}
-  M: {latex: "M", unit: "1", desc: "conversion ratio V/V_g"}
-  K: {latex: "K", unit: "1", desc: "dimensionless inductor parameter 2L/(R T_s)", range: [0.001, 10], scale: log}
-  K_crit: {latex: "K_\\mathrm{crit}", unit: "1", desc: "value of K at the CCM/DCM boundary", range: [0.001, 1], scale: log}
-  n: {latex: "n", unit: "1", desc: "transformer turns ratio N_s/N_p (1:n convention)", range: [0.1, 10], scale: log}
-  n_r: {latex: "n_r", unit: "1", desc: "reset-winding to primary turns ratio N_r/N_p", range: [0.25, 4], scale: log}
-  D_max: {latex: "D_\\mathrm{max}", unit: "1", desc: "maximum duty ratio"}
-  eta_ext: {latex: "\\eta_\\mathrm{ext}", unit: "1", desc: "extracted power as a fraction of the available maximum"}
+  D: {latex: "D", unit: "1", desc: "duty ratio: switch on-time divided by T_s", meaning: "duty ratio", meaning_ko: "듀티비(duty ratio)", range: [0.05, 0.95]}
+  M: {latex: "M", unit: "1", desc: "conversion ratio V/V_g", meaning: "conversion ratio", meaning_ko: "변환비(conversion ratio)"}
+  K: {latex: "K", unit: "1", desc: "dimensionless inductor parameter 2L/(R T_s)", meaning: "inductor parameter (CCM vs DCM)", meaning_ko: "인덕터 파라미터(CCM/DCM 판별)", range: [0.001, 10], scale: log}
+  K_crit: {latex: "K_\\mathrm{crit}", unit: "1", desc: "value of K at the CCM/DCM boundary", meaning: "K at the CCM/DCM boundary", meaning_ko: "CCM/DCM 경계의 K", range: [0.001, 1], scale: log}
+  n: {latex: "n", unit: "1", desc: "transformer turns ratio N_s/N_p (1:n convention)", meaning: "turns ratio, secondary/primary", meaning_ko: "권선비(turns ratio), 2차/1차", range: [0.1, 10], scale: log}
+  n_r: {latex: "n_r", unit: "1", desc: "reset-winding to primary turns ratio N_r/N_p", meaning: "reset-winding turns ratio", meaning_ko: "리셋 권선비(reset-winding ratio)", range: [0.25, 4], scale: log}
+  D_max: {latex: "D_\\mathrm{max}", unit: "1", desc: "maximum duty ratio", meaning: "largest duty ratio", meaning_ko: "최대 듀티비"}
+  eta_ext: {latex: "\\eta_\\mathrm{ext}", unit: "1", desc: "extracted power as a fraction of the available maximum", meaning: "share of the available power extracted", meaning_ko: "가용 전력 중 추출 비율"}
   # --- voltages ------------------------------------------------------------
-  V_g: {latex: "V_g", unit: "V", desc: "input (generator) voltage", range: [1, 400], scale: log}
-  V: {latex: "V", unit: "V", desc: "output voltage (magnitude, where the topology inverts)", range: [1, 400], scale: log}
-  V_D: {latex: "V_D", unit: "V", desc: "forward drop of the output diode", range: [0.1, 1.5]}
-  V_gcrit: {latex: "V_{g,\\mathrm{crit}}", unit: "V", desc: "input voltage at the CCM/DCM boundary for a fixed D and a fixed output voltage"}
-  V_DS: {latex: "V_\\mathrm{DS}", unit: "V", desc: "switch drain-source voltage while the switch is off"}
-  V_rating: {latex: "V_\\mathrm{DS,rated}", unit: "V", desc: "drain-source voltage rating of the switch (datasheet)"}
-  V_R: {latex: "V_R", unit: "V", desc: "reverse voltage across the output diode while the switch is on"}
-  V_w: {latex: "V_w", unit: "V", desc: "voltage applied across a winding during t_on", range: [1, 400], scale: log}
-  V_sw: {latex: "V_\\mathrm{sw}", unit: "V", desc: "voltage across C_node when the switch turns on", range: [1, 800], scale: log}
-  V_GS: {latex: "V_\\mathrm{GS}", unit: "V", desc: "gate-drive voltage amplitude", range: [3, 20]}
-  V_F: {latex: "V_F", unit: "V", desc: "diode forward-voltage intercept", range: [0.2, 1.5]}
-  V_oc: {latex: "V_\\mathrm{oc}", unit: "V", desc: "open-circuit (Thevenin) voltage of a linear source", range: [0.1, 1000], scale: log}
-  V_c: {latex: "V_c", unit: "V", desc: "voltage held by a constant-voltage sink", range: [0.01, 1000], scale: log}
-  V_OUT: {latex: "V_\\mathrm{OUT}", unit: "V", desc: "output voltage of a current-sense amplifier (across R_OUT for a current-output one)"}
-  V_SENSE: {latex: "V_\\mathrm{SENSE}", unit: "V", desc: "voltage across the sense resistor: the signal, and the burden on the measured circuit", range: [1.0e-4, 1], scale: log}
-  G_sense: {latex: "G", unit: "1", desc: "fixed voltage gain of a voltage-output current-sense amplifier (V/V)", range: [1, 1000], scale: log}
-  V_REF: {latex: "V_\\mathrm{REF}", unit: "V", desc: "voltage on the REF pin of a voltage-output current-sense amplifier: its output at zero current", range: [0, 5]}
-  V_OS: {latex: "V_\\mathrm{OS}", unit: "V", sign: real, desc: "input offset voltage of a sense amplifier, with its sign (data sheets give its largest magnitude)", range: [1.0e-6, 1.0e-2], scale: log}
-  I_OSeq: {latex: "I_\\mathrm{OS,eq}", unit: "A", desc: "offset-equivalent current: the sensed current whose sense voltage equals the amplifier's offset voltage"}
-  R_pad: {latex: "R_\\mathrm{pad}", unit: "Ω", desc: "pad and solder resistance in the sense path of a shunt without a Kelvin connection", range: [1.0e-5, 1.0e-2], scale: log}
-  eps_pad: {latex: "\\varepsilon_\\mathrm{pad}", unit: "1", desc: "relative gain error from pad and solder resistance in the sense path"}
-  f_samp: {latex: "f_\\mathrm{samp}", unit: "Hz", desc: "sampling rate of an ADC", range: [1, 1.0e9], scale: log}
-  f_N: {latex: "f_N", unit: "Hz", desc: "Nyquist frequency: half the sampling rate, the upper edge of the Nyquist bandwidth"}
-  I_min: {latex: "I_\\mathrm{min}", unit: "A", desc: "smallest current a sense chain must resolve"}
-  V_OUTmax: {latex: "V_\\mathrm{OUT,max}", unit: "V", desc: "largest output voltage a sense amplifier delivers at its supply (data sheet)"}
-  V_FS: {latex: "V_\\mathrm{FS}", unit: "V", desc: "full-scale input voltage of an ADC"}
-  eps_max: {latex: "\\varepsilon_\\mathrm{max}", unit: "1", desc: "largest acceptable relative error"}
-  V_OUTmin: {latex: "V_\\mathrm{OUT,min}", unit: "V", desc: "lowest output voltage a sense amplifier reaches: its swing to ground (data sheet)"}
-  eps_I: {latex: "\\varepsilon_I", unit: "1", desc: "relative error of a current reading"}
-  I_meas: {latex: "I_\\mathrm{meas}", unit: "A", sign: real, desc: "current a shunt reading indicates: the true current seen through the pad resistance and the amplifier's offset"}
-  V_OUThi: {latex: "V_\\mathrm{OUT,hi}", unit: "V", desc: "highest output of a sense amplifier at a current: with the pad resistance, and the offset at the sign that raises the output"}
-  R_filt: {latex: "R_\\mathrm{filt}", unit: "Ω", desc: "resistance an R-C filter's capacitor sees: the Thevenin resistance of the source plus the filter's series resistor"}
+  V_g: {latex: "V_g", unit: "V", desc: "input (generator) voltage", meaning: "input voltage", meaning_ko: "입력 전압", range: [1, 400], scale: log}
+  V: {latex: "V", unit: "V", desc: "output voltage (magnitude, where the topology inverts)", meaning: "output voltage", meaning_ko: "출력 전압", range: [1, 400], scale: log}
+  V_D: {latex: "V_D", unit: "V", desc: "forward drop of the output diode", meaning: "output-diode forward drop", meaning_ko: "출력 다이오드 순방향 전압(forward drop)", range: [0.1, 1.5]}
+  V_gcrit: {latex: "V_{g,\\mathrm{crit}}", unit: "V", desc: "input voltage at the CCM/DCM boundary for a fixed D and a fixed output voltage", meaning: "input voltage at the CCM/DCM boundary", meaning_ko: "CCM/DCM 경계의 입력 전압"}
+  V_DS: {latex: "V_\\mathrm{DS}", unit: "V", desc: "switch drain-source voltage while the switch is off", meaning: "switch voltage while off", meaning_ko: "꺼진 스위치의 전압"}
+  V_rating: {latex: "V_\\mathrm{DS,rated}", unit: "V", desc: "drain-source voltage rating of the switch (datasheet)", meaning: "switch voltage rating", meaning_ko: "스위치 정격 전압(rating)"}
+  V_R: {latex: "V_R", unit: "V", desc: "reverse voltage across the output diode while the switch is on", meaning: "diode reverse voltage", meaning_ko: "다이오드 역전압(reverse voltage)"}
+  V_w: {latex: "V_w", unit: "V", desc: "voltage applied across a winding during t_on", meaning: "winding voltage during t_on", meaning_ko: "온 시간 동안의 권선 전압", range: [1, 400], scale: log}
+  V_sw: {latex: "V_\\mathrm{sw}", unit: "V", desc: "voltage across C_node when the switch turns on", meaning: "switch-node voltage at turn-on", meaning_ko: "턴온 순간의 스위치 노드 전압", range: [1, 800], scale: log}
+  V_GS: {latex: "V_\\mathrm{GS}", unit: "V", desc: "gate-drive voltage amplitude", meaning: "gate-drive voltage", meaning_ko: "게이트 구동 전압", range: [3, 20]}
+  V_F: {latex: "V_F", unit: "V", desc: "diode forward-voltage intercept", meaning: "diode forward voltage", meaning_ko: "다이오드 순방향 전압(forward voltage)", range: [0.2, 1.5]}
+  V_oc: {latex: "V_\\mathrm{oc}", unit: "V", desc: "open-circuit (Thevenin) voltage of a linear source", meaning: "source open-circuit voltage", meaning_ko: "전원 개방 전압(open-circuit voltage)", range: [0.1, 1000], scale: log}
+  V_c: {latex: "V_c", unit: "V", desc: "voltage held by a constant-voltage sink", meaning: "sink voltage", meaning_ko: "정전압 싱크 전압", range: [0.01, 1000], scale: log}
+  V_OUT: {latex: "V_\\mathrm{OUT}", unit: "V", desc: "output voltage of a current-sense amplifier (across R_OUT for a current-output one)", meaning: "sense-amplifier output", meaning_ko: "센스 증폭기 출력 전압"}
+  V_SENSE: {latex: "V_\\mathrm{SENSE}", unit: "V", desc: "voltage across the sense resistor: the signal, and the burden on the measured circuit", meaning: "voltage across the shunt", meaning_ko: "션트 양단 전압", range: [1.0e-4, 1], scale: log}
+  G_sense: {latex: "G", unit: "1", desc: "fixed voltage gain of a voltage-output current-sense amplifier (V/V)", meaning: "amplifier gain", meaning_ko: "증폭기 이득(gain)", range: [1, 1000], scale: log}
+  V_REF: {latex: "V_\\mathrm{REF}", unit: "V", desc: "voltage on the REF pin of a voltage-output current-sense amplifier: its output at zero current", meaning: "REF-pin voltage", meaning_ko: "REF 핀 전압", range: [0, 5]}
+  V_OS: {latex: "V_\\mathrm{OS}", unit: "V", sign: real, desc: "input offset voltage of a sense amplifier, with its sign (data sheets give its largest magnitude)", meaning: "amplifier input offset", meaning_ko: "증폭기 입력 오프셋 전압(offset)", range: [1.0e-6, 1.0e-2], scale: log}
+  I_OSeq: {latex: "I_\\mathrm{OS,eq}", unit: "A", desc: "offset-equivalent current: the sensed current whose sense voltage equals the amplifier's offset voltage", meaning: "offset-equivalent current", meaning_ko: "오프셋 등가 전류"}
+  R_pad: {latex: "R_\\mathrm{pad}", unit: "Ω", desc: "pad and solder resistance in the sense path of a shunt without a Kelvin connection", meaning: "pad and solder resistance", meaning_ko: "패드·납땜 저항", range: [1.0e-5, 1.0e-2], scale: log}
+  eps_pad: {latex: "\\varepsilon_\\mathrm{pad}", unit: "1", desc: "relative gain error from pad and solder resistance in the sense path", meaning: "error from pad resistance", meaning_ko: "패드 저항에 의한 오차"}
+  f_samp: {latex: "f_\\mathrm{samp}", unit: "Hz", desc: "sampling rate of an ADC", meaning: "ADC sampling rate", meaning_ko: "ADC 샘플링 속도(sampling rate)", range: [1, 1.0e9], scale: log}
+  f_N: {latex: "f_N", unit: "Hz", desc: "Nyquist frequency: half the sampling rate, the upper edge of the Nyquist bandwidth", meaning: "Nyquist frequency", meaning_ko: "나이퀴스트 주파수(Nyquist frequency)"}
+  I_min: {latex: "I_\\mathrm{min}", unit: "A", desc: "smallest current a sense chain must resolve", meaning: "smallest current to measure", meaning_ko: "측정할 최소 전류"}
+  V_OUTmax: {latex: "V_\\mathrm{OUT,max}", unit: "V", desc: "largest output voltage a sense amplifier delivers at its supply (data sheet)", meaning: "amplifier's largest output", meaning_ko: "증폭기 최대 출력"}
+  V_FS: {latex: "V_\\mathrm{FS}", unit: "V", desc: "full-scale input voltage of an ADC", meaning: "ADC full-scale input", meaning_ko: "ADC 풀스케일(full scale) 입력"}
+  eps_max: {latex: "\\varepsilon_\\mathrm{max}", unit: "1", desc: "largest acceptable relative error", meaning: "relative error target (0.01 = 1 %)", meaning_ko: "상대 오차 목표(0.01 = 1 %)"}
+  V_OUTmin: {latex: "V_\\mathrm{OUT,min}", unit: "V", desc: "lowest output voltage a sense amplifier reaches: its swing to ground (data sheet)", meaning: "amplifier's lowest output", meaning_ko: "증폭기 최저 출력"}
+  eps_I: {latex: "\\varepsilon_I", unit: "1", desc: "relative error of a current reading", meaning: "relative error of the reading", meaning_ko: "측정값의 상대 오차"}
+  I_meas: {latex: "I_\\mathrm{meas}", unit: "A", sign: real, desc: "current a shunt reading indicates: the true current seen through the pad resistance and the amplifier's offset", meaning: "current the reading indicates", meaning_ko: "측정값이 가리키는 전류"}
+  V_OUThi: {latex: "V_\\mathrm{OUT,hi}", unit: "V", desc: "highest output of a sense amplifier at a current: with the pad resistance, and the offset at the sign that raises the output", meaning: "highest output (worst case)", meaning_ko: "최대 출력(최악 조건)"}
+  R_filt: {latex: "R_\\mathrm{filt}", unit: "Ω", desc: "resistance an R-C filter's capacitor sees: the Thevenin resistance of the source plus the filter's series resistor", meaning: "resistance the filter capacitor sees", meaning_ko: "필터 커패시터가 보는 저항"}
   # --- currents ------------------------------------------------------------
-  Delta_i_L: {latex: "\\Delta i_L", unit: "A", desc: "inductor current ripple, HALF of peak-to-peak (Erickson convention)", range: [0.001, 10], scale: log}
-  Delta_i_pp: {latex: "\\Delta i_{L,\\mathrm{pp}}", unit: "A", desc: "inductor current ripple, peak-to-peak"}
-  I_L: {latex: "I_L", unit: "A", desc: "dc (average) inductor current", range: [0.001, 100], scale: log}
-  I_M: {latex: "I_M", unit: "A", desc: "dc (average) magnetizing current referred to the primary", range: [0.001, 100], scale: log}
-  Delta_i_M: {latex: "\\Delta i_M", unit: "A", desc: "magnetizing current ripple, HALF of peak-to-peak (Erickson convention)", range: [0.001, 10], scale: log}
-  Delta_v: {latex: "\\Delta v", unit: "V", desc: "output voltage ripple, HALF of peak-to-peak (Erickson convention)"}
-  U: {latex: "U", unit: "1", desc: "transistor utilization: load power over the transistor's peak voltage times its rms current"}
-  I_pk: {latex: "I_\\mathrm{pk}", unit: "A", desc: "peak current", range: [0.001, 100], scale: log}
-  I_rms: {latex: "I_\\mathrm{rms}", unit: "A", desc: "rms current", range: [0.001, 50], scale: log}
-  I_avg: {latex: "I_\\mathrm{avg}", unit: "A", desc: "average current", range: [0.001, 50], scale: log}
-  I_SENSE: {latex: "I_\\mathrm{SENSE}", unit: "A", desc: "current through the sense resistor", range: [0.001, 100], scale: log}
+  Delta_i_L: {latex: "\\Delta i_L", unit: "A", desc: "inductor current ripple, HALF of peak-to-peak (Erickson convention)", meaning: "inductor ripple, half peak-to-peak", meaning_ko: "인덕터 전류 리플(ripple), 피크-피크의 절반", range: [0.001, 10], scale: log}
+  Delta_i_pp: {latex: "\\Delta i_{L,\\mathrm{pp}}", unit: "A", desc: "inductor current ripple, peak-to-peak", meaning: "inductor ripple, peak-to-peak", meaning_ko: "인덕터 전류 리플, 피크-피크"}
+  I_L: {latex: "I_L", unit: "A", desc: "dc (average) inductor current", meaning: "dc inductor current", meaning_ko: "인덕터 직류 전류", range: [0.001, 100], scale: log}
+  I_M: {latex: "I_M", unit: "A", desc: "dc (average) magnetizing current referred to the primary", meaning: "dc magnetizing current", meaning_ko: "자화 직류 전류(magnetizing current)", range: [0.001, 100], scale: log}
+  Delta_i_M: {latex: "\\Delta i_M", unit: "A", desc: "magnetizing current ripple, HALF of peak-to-peak (Erickson convention)", meaning: "magnetizing ripple, half peak-to-peak", meaning_ko: "자화 전류 리플, 피크-피크의 절반", range: [0.001, 10], scale: log}
+  Delta_v: {latex: "\\Delta v", unit: "V", desc: "output voltage ripple, HALF of peak-to-peak (Erickson convention)", meaning: "output ripple, half peak-to-peak", meaning_ko: "출력 전압 리플, 피크-피크의 절반"}
+  U: {latex: "U", unit: "1", desc: "transistor utilization: load power over the transistor's peak voltage times its rms current", meaning: "transistor utilization", meaning_ko: "트랜지스터 이용률(utilization)"}
+  I_pk: {latex: "I_\\mathrm{pk}", unit: "A", desc: "peak current", meaning: "peak current", meaning_ko: "피크 전류", range: [0.001, 100], scale: log}
+  I_rms: {latex: "I_\\mathrm{rms}", unit: "A", desc: "rms current", meaning: "rms current", meaning_ko: "실효 전류(rms)", range: [0.001, 50], scale: log}
+  I_avg: {latex: "I_\\mathrm{avg}", unit: "A", desc: "average current", meaning: "average current", meaning_ko: "평균 전류", range: [0.001, 50], scale: log}
+  I_SENSE: {latex: "I_\\mathrm{SENSE}", unit: "A", desc: "current through the sense resistor", meaning: "current through the shunt", meaning_ko: "션트에 흐르는 전류", range: [0.001, 100], scale: log}
   # --- passive components and parasitics ----------------------------------
-  L: {latex: "L", unit: "H", desc: "inductance", range: [1.0e-6, 1.0e-2], scale: log}
-  L_crit: {latex: "L_\\mathrm{crit}", unit: "H", desc: "critical inductance at the CCM/DCM boundary"}
-  L_M: {latex: "L_M", unit: "H", desc: "magnetizing inductance referred to the primary", range: [1.0e-6, 1.0e-1], scale: log}
-  L_lk: {latex: "L_\\mathrm{lk}", unit: "H", desc: "leakage inductance referred to the primary", range: [1.0e-8, 1.0e-4], scale: log}
-  C_node: {latex: "C_\\mathrm{node}", unit: "F", desc: "total capacitance at the switch node", range: [1.0e-12, 1.0e-8], scale: log}
-  R: {latex: "R", unit: "Ω", desc: "load resistance", range: [0.1, 1.0e4], scale: log}
-  R_in: {latex: "R_\\mathrm{in}", unit: "Ω", desc: "emulated (loss-free) input resistance", range: [1, 1.0e7], scale: log}
-  R_x: {latex: "R_x", unit: "Ω", desc: "resistance carrying the current (R_DS(on), winding DCR, ESR, ...)", range: [0.001, 10], scale: log}
-  r_d: {latex: "r_d", unit: "Ω", desc: "diode dynamic (slope) resistance", range: [0.001, 1], scale: log}
-  R_s: {latex: "R_s", unit: "Ω", desc: "source (Thevenin) resistance", range: [1, 1.0e7], scale: log}
-  C_bus: {latex: "C_\\mathrm{bus}", unit: "F", desc: "input bus capacitor that the source charges and the converter draws from"}
-  R_SENSE: {latex: "R_\\mathrm{SENSE}", unit: "Ω", desc: "current-sense (shunt) resistor", range: [1.0e-4, 1], scale: log}
-  R_IN: {latex: "R_\\mathrm{IN}", unit: "Ω", desc: "gain-setting input resistor of a current-output sense amplifier", range: [10, 1.0e4], scale: log}
-  R_OUT: {latex: "R_\\mathrm{OUT}", unit: "Ω", desc: "output resistor of a current-output sense amplifier", range: [1.0e3, 1.0e6], scale: log}
-  Q_g: {latex: "Q_g", unit: "C", desc: "total gate charge at V_GS", range: [1.0e-9, 5.0e-7], scale: log}
+  L: {latex: "L", unit: "H", desc: "inductance", meaning: "inductance", meaning_ko: "인덕턴스", range: [1.0e-6, 1.0e-2], scale: log}
+  L_crit: {latex: "L_\\mathrm{crit}", unit: "H", desc: "critical inductance at the CCM/DCM boundary", meaning: "critical inductance (CCM/DCM boundary)", meaning_ko: "임계 인덕턴스(CCM/DCM 경계)"}
+  L_M: {latex: "L_M", unit: "H", desc: "magnetizing inductance referred to the primary", meaning: "magnetizing inductance (primary)", meaning_ko: "자화 인덕턴스(magnetizing inductance), 1차 기준", range: [1.0e-6, 1.0e-1], scale: log}
+  L_lk: {latex: "L_\\mathrm{lk}", unit: "H", desc: "leakage inductance referred to the primary", meaning: "leakage inductance (primary)", meaning_ko: "누설 인덕턴스(leakage inductance), 1차 기준", range: [1.0e-8, 1.0e-4], scale: log}
+  C_node: {latex: "C_\\mathrm{node}", unit: "F", desc: "total capacitance at the switch node", meaning: "switch-node capacitance", meaning_ko: "스위치 노드 커패시턴스", range: [1.0e-12, 1.0e-8], scale: log}
+  R: {latex: "R", unit: "Ω", desc: "load resistance", meaning: "load resistance", meaning_ko: "부하 저항", range: [0.1, 1.0e4], scale: log}
+  R_in: {latex: "R_\\mathrm{in}", unit: "Ω", desc: "emulated (loss-free) input resistance", meaning: "emulated input resistance", meaning_ko: "등가 입력 저항(emulated resistance)", range: [1, 1.0e7], scale: log}
+  R_x: {latex: "R_x", unit: "Ω", desc: "resistance carrying the current (R_DS(on), winding DCR, ESR, ...)", meaning: "resistance carrying the current", meaning_ko: "전류가 흐르는 저항", range: [0.001, 10], scale: log}
+  r_d: {latex: "r_d", unit: "Ω", desc: "diode dynamic (slope) resistance", meaning: "diode dynamic resistance", meaning_ko: "다이오드 동저항(dynamic resistance)", range: [0.001, 1], scale: log}
+  R_s: {latex: "R_s", unit: "Ω", desc: "source (Thevenin) resistance", meaning: "source resistance", meaning_ko: "전원 내부 저항(source resistance)", range: [1, 1.0e7], scale: log}
+  C_bus: {latex: "C_\\mathrm{bus}", unit: "F", desc: "input bus capacitor that the source charges and the converter draws from", meaning: "input bus capacitor", meaning_ko: "입력 버스 커패시터"}
+  R_SENSE: {latex: "R_\\mathrm{SENSE}", unit: "Ω", desc: "current-sense (shunt) resistor", meaning: "sense (shunt) resistor", meaning_ko: "센스 저항(shunt)", range: [1.0e-4, 1], scale: log}
+  R_IN: {latex: "R_\\mathrm{IN}", unit: "Ω", desc: "gain-setting input resistor of a current-output sense amplifier", meaning: "gain-setting input resistor", meaning_ko: "이득 설정 입력 저항", range: [10, 1.0e4], scale: log}
+  R_OUT: {latex: "R_\\mathrm{OUT}", unit: "Ω", desc: "output resistor of a current-output sense amplifier", meaning: "output resistor", meaning_ko: "출력 저항", range: [1.0e3, 1.0e6], scale: log}
+  Q_g: {latex: "Q_g", unit: "C", desc: "total gate charge at V_GS", meaning: "total gate charge", meaning_ko: "총 게이트 전하(gate charge)", range: [1.0e-9, 5.0e-7], scale: log}
   # --- time, frequency, energy, power ---------------------------------------
-  T_s: {latex: "T_s", unit: "s", desc: "switching period", range: [1.0e-6, 1.0e-3], scale: log}
-  f_s: {latex: "f_s", unit: "Hz", desc: "switching frequency 1/T_s", range: [1.0e3, 1.0e6], scale: log}
-  t_on: {latex: "t_\\mathrm{on}", unit: "s", desc: "switch on-time", range: [1.0e-7, 1.0e-3], scale: log}
-  t_r: {latex: "t_r", unit: "s", desc: "time the leakage current takes to fall to zero after turn-off (clamp conducting)"}
-  f_ring: {latex: "f_\\mathrm{ring}", unit: "Hz", desc: "ringing frequency"}
-  P: {latex: "P", unit: "W", desc: "power", range: [1.0e-4, 1000], scale: log}
-  P_max: {latex: "P_\\mathrm{max}", unit: "W", desc: "maximum power available from a linear source"}
-  E_lk: {latex: "E_\\mathrm{lk}", unit: "J", desc: "energy stored in the leakage inductance at turn-off", range: [1.0e-9, 1.0e-2], scale: log}
-  P_lk: {latex: "P_\\mathrm{lk}", unit: "W", desc: "leakage energy per cycle times switching frequency"}
-  V_OR: {latex: "V_\\mathrm{OR}", unit: "V", desc: "output voltage reflected to the primary while the output diode conducts", range: [1, 400], scale: log}
-  V_clamp: {latex: "V_\\mathrm{clamp}", unit: "V", desc: "voltage across the primary clamp while it conducts (the switch then sees V_g + V_clamp)", range: [1, 600], scale: log}
-  P_clamp: {latex: "P_\\mathrm{clamp}", unit: "W", desc: "power dissipated in the primary clamp"}
-  R_clamp: {latex: "R_\\mathrm{clamp}", unit: "Ω", desc: "resistor of an RCD clamp", range: [100, 1.0e6], scale: log}
-  V_BR: {latex: "V_\\mathrm{BR}", unit: "V", desc: "breakdown voltage of a TVS", range: [1, 600], scale: log}
-  V_CL: {latex: "V_\\mathrm{CL}", unit: "V", desc: "clamping voltage of a TVS at its peak pulse current I_PP (datasheet)", range: [1, 900], scale: log}
-  I_PP: {latex: "I_\\mathrm{PP}", unit: "A", desc: "peak pulse current at which a TVS's clamping voltage is specified", range: [0.1, 1000], scale: log}
-  R_D: {latex: "R_D", unit: "Ω", desc: "dynamic resistance of a TVS", range: [0.001, 100], scale: log}
-  V_omax: {latex: "V_\\mathrm{o,max}", unit: "V", desc: "output voltage at which the reflected voltage reaches the clamp voltage"}
+  T_s: {latex: "T_s", unit: "s", desc: "switching period", meaning: "switching period", meaning_ko: "스위칭 주기", range: [1.0e-6, 1.0e-3], scale: log}
+  f_s: {latex: "f_s", unit: "Hz", desc: "switching frequency 1/T_s", meaning: "switching frequency", meaning_ko: "스위칭 주파수", range: [1.0e3, 1.0e6], scale: log}
+  t_on: {latex: "t_\\mathrm{on}", unit: "s", desc: "switch on-time", meaning: "switch on-time", meaning_ko: "스위치 온 시간(on-time)", range: [1.0e-7, 1.0e-3], scale: log}
+  t_r: {latex: "t_r", unit: "s", desc: "time the leakage current takes to fall to zero after turn-off (clamp conducting)", meaning: "time for the leakage current to reach zero", meaning_ko: "누설 전류가 0이 되는 시간"}
+  f_ring: {latex: "f_\\mathrm{ring}", unit: "Hz", desc: "ringing frequency", meaning: "ringing frequency", meaning_ko: "링잉 주파수(ringing)"}
+  P: {latex: "P", unit: "W", desc: "power", meaning: "power", meaning_ko: "전력", range: [1.0e-4, 1000], scale: log}
+  P_max: {latex: "P_\\mathrm{max}", unit: "W", desc: "maximum power available from a linear source", meaning: "largest power available", meaning_ko: "최대 가용 전력"}
+  E_lk: {latex: "E_\\mathrm{lk}", unit: "J", desc: "energy stored in the leakage inductance at turn-off", meaning: "leakage energy per turn-off", meaning_ko: "턴오프마다의 누설 에너지", range: [1.0e-9, 1.0e-2], scale: log}
+  P_lk: {latex: "P_\\mathrm{lk}", unit: "W", desc: "leakage energy per cycle times switching frequency", meaning: "leakage energy times f_s", meaning_ko: "누설 에너지 × 스위칭 주파수"}
+  V_OR: {latex: "V_\\mathrm{OR}", unit: "V", desc: "output voltage reflected to the primary while the output diode conducts", meaning: "output voltage reflected to the primary", meaning_ko: "1차로 반사된 출력 전압(reflected voltage)", range: [1, 400], scale: log}
+  V_clamp: {latex: "V_\\mathrm{clamp}", unit: "V", desc: "voltage across the primary clamp while it conducts (the switch then sees V_g + V_clamp)", meaning: "clamp voltage", meaning_ko: "클램프 전압", range: [1, 600], scale: log}
+  P_clamp: {latex: "P_\\mathrm{clamp}", unit: "W", desc: "power dissipated in the primary clamp", meaning: "clamp loss", meaning_ko: "클램프 손실"}
+  R_clamp: {latex: "R_\\mathrm{clamp}", unit: "Ω", desc: "resistor of an RCD clamp", meaning: "clamp resistor", meaning_ko: "클램프 저항", range: [100, 1.0e6], scale: log}
+  V_BR: {latex: "V_\\mathrm{BR}", unit: "V", desc: "breakdown voltage of a TVS", meaning: "TVS breakdown voltage", meaning_ko: "TVS 항복 전압(breakdown voltage)", range: [1, 600], scale: log}
+  V_CL: {latex: "V_\\mathrm{CL}", unit: "V", desc: "clamping voltage of a TVS at its peak pulse current I_PP (datasheet)", meaning: "TVS clamping voltage at I_PP", meaning_ko: "I_PP에서의 TVS 클램핑 전압", range: [1, 900], scale: log}
+  I_PP: {latex: "I_\\mathrm{PP}", unit: "A", desc: "peak pulse current at which a TVS's clamping voltage is specified", meaning: "TVS peak pulse current", meaning_ko: "TVS 피크 펄스 전류", range: [0.1, 1000], scale: log}
+  R_D: {latex: "R_D", unit: "Ω", desc: "dynamic resistance of a TVS", meaning: "TVS dynamic resistance", meaning_ko: "TVS 동저항(dynamic resistance)", range: [0.001, 100], scale: log}
+  V_omax: {latex: "V_\\mathrm{o,max}", unit: "V", desc: "output voltage at which the reflected voltage reaches the clamp voltage", meaning: "output ceiling set by the clamp", meaning_ko: "클램프가 정하는 출력 전압 상한"}
   # --- averaging, balance, small-signal, control -------------------------------
-  v_s_avg: {latex: "\\langle v_s \\rangle", unit: "V", desc: "average (dc component) of the switch-node voltage"}
-  v_Lon: {latex: "v_{L,\\mathrm{on}}", unit: "V", desc: "inductor voltage during the on-interval", range: [0.1, 400], scale: log}
-  v_Loff: {latex: "v_{L,\\mathrm{off}}", unit: "V", desc: "inductor voltage during the off-interval"}
-  i_Con: {latex: "i_{C,\\mathrm{on}}", unit: "A", desc: "capacitor current during the on-interval", range: [0.001, 100], scale: log}
-  i_Coff: {latex: "i_{C,\\mathrm{off}}", unit: "A", desc: "capacitor current during the off-interval"}
-  D_2: {latex: "D_2", unit: "1", desc: "diode-conduction interval as a fraction of T_s (DCM)"}
-  R_L: {latex: "R_L", unit: "Ω", desc: "inductor winding (copper) resistance", range: [0.001, 10], scale: log}
-  eta: {latex: "\\eta", unit: "1", desc: "efficiency P_out/P_in"}
-  C: {latex: "C", unit: "F", desc: "capacitance (the output filter capacitor in converter equations)", range: [1.0e-7, 1.0e-2], scale: log}
-  G_d0: {latex: "G_{d0}", unit: "V", desc: "dc gain of the control-to-output transfer function (magnitude)"}
-  omega_0: {latex: "\\omega_0", unit: "rad/s", desc: "angular resonant (corner) frequency of the LC poles"}
-  Q: {latex: "Q", unit: "1", desc: "quality factor of the LC poles"}
-  omega_z: {latex: "\\omega_z", unit: "rad/s", desc: "angular frequency of the right-half-plane zero"}
-  V_ctrl: {latex: "V_\\mathrm{ctrl}", unit: "V", desc: "PWM control voltage", range: [0.01, 5], scale: log}
-  V_M: {latex: "V_M", unit: "V", desc: "peak-to-peak amplitude of the PWM ramp", range: [0.5, 5]}
-  T_loop: {latex: "T", unit: "1", desc: "loop gain magnitude", range: [0.01, 1.0e4], scale: log}
-  G_c: {latex: "G_c", unit: "1", desc: "compensator gain magnitude", range: [0.01, 1000], scale: log}
-  G_vd: {latex: "G_{vd}", unit: "V", desc: "control-to-output gain magnitude", range: [0.1, 1000], scale: log}
-  H: {latex: "H", unit: "1", desc: "sensor (feedback divider) gain", range: [0.01, 1]}
-  S_dist: {latex: "S", unit: "1", desc: "fraction of an output disturbance that remains with the loop closed"}
+  v_s_avg: {latex: "\\langle v_s \\rangle", unit: "V", desc: "average (dc component) of the switch-node voltage", meaning: "average switch-node voltage", meaning_ko: "스위치 노드 평균 전압"}
+  v_Lon: {latex: "v_{L,\\mathrm{on}}", unit: "V", desc: "inductor voltage during the on-interval", meaning: "inductor voltage, switch on", meaning_ko: "인덕터 전압(스위치 온)", range: [0.1, 400], scale: log}
+  v_Loff: {latex: "v_{L,\\mathrm{off}}", unit: "V", desc: "inductor voltage during the off-interval", meaning: "inductor voltage, switch off", meaning_ko: "인덕터 전압(스위치 오프)"}
+  i_Con: {latex: "i_{C,\\mathrm{on}}", unit: "A", desc: "capacitor current during the on-interval", meaning: "capacitor current, switch on", meaning_ko: "커패시터 전류(스위치 온)", range: [0.001, 100], scale: log}
+  i_Coff: {latex: "i_{C,\\mathrm{off}}", unit: "A", desc: "capacitor current during the off-interval", meaning: "capacitor current, switch off", meaning_ko: "커패시터 전류(스위치 오프)"}
+  D_2: {latex: "D_2", unit: "1", desc: "diode-conduction interval as a fraction of T_s (DCM)", meaning: "diode-conduction fraction (DCM)", meaning_ko: "다이오드 도통 구간 비율(DCM)"}
+  R_L: {latex: "R_L", unit: "Ω", desc: "inductor winding (copper) resistance", meaning: "inductor winding resistance", meaning_ko: "인덕터 권선 저항", range: [0.001, 10], scale: log}
+  eta: {latex: "\\eta", unit: "1", desc: "efficiency P_out/P_in", meaning: "efficiency", meaning_ko: "효율(efficiency)"}
+  C: {latex: "C", unit: "F", desc: "capacitance (the output filter capacitor in converter equations)", meaning: "capacitance (output capacitor)", meaning_ko: "커패시턴스(출력 커패시터)", range: [1.0e-7, 1.0e-2], scale: log}
+  G_d0: {latex: "G_{d0}", unit: "V", desc: "dc gain of the control-to-output transfer function (magnitude)", meaning: "dc control-to-output gain", meaning_ko: "제어-출력 직류 이득"}
+  omega_0: {latex: "\\omega_0", unit: "rad/s", desc: "angular resonant (corner) frequency of the LC poles", meaning: "LC corner frequency (rad/s)", meaning_ko: "LC 공진 각주파수(rad/s)"}
+  Q: {latex: "Q", unit: "1", desc: "quality factor of the LC poles", meaning: "quality factor", meaning_ko: "Q 계수(quality factor)"}
+  omega_z: {latex: "\\omega_z", unit: "rad/s", desc: "angular frequency of the right-half-plane zero", meaning: "RHP-zero frequency (rad/s)", meaning_ko: "우반면 영점(RHP zero) 각주파수"}
+  V_ctrl: {latex: "V_\\mathrm{ctrl}", unit: "V", desc: "PWM control voltage", meaning: "PWM control voltage", meaning_ko: "PWM 제어 전압", range: [0.01, 5], scale: log}
+  V_M: {latex: "V_M", unit: "V", desc: "peak-to-peak amplitude of the PWM ramp", meaning: "PWM ramp amplitude", meaning_ko: "PWM 램프 진폭", range: [0.5, 5]}
+  T_loop: {latex: "T", unit: "1", desc: "loop gain magnitude", meaning: "loop gain", meaning_ko: "루프 이득(loop gain)", range: [0.01, 1.0e4], scale: log}
+  G_c: {latex: "G_c", unit: "1", desc: "compensator gain magnitude", meaning: "compensator gain", meaning_ko: "보상기 이득(compensator gain)", range: [0.01, 1000], scale: log}
+  G_vd: {latex: "G_{vd}", unit: "V", desc: "control-to-output gain magnitude", meaning: "control-to-output gain", meaning_ko: "제어-출력 이득", range: [0.1, 1000], scale: log}
+  H: {latex: "H", unit: "1", desc: "sensor (feedback divider) gain", meaning: "sensor (divider) gain", meaning_ko: "센서(분압기) 이득", range: [0.01, 1]}
+  S_dist: {latex: "S", unit: "1", desc: "fraction of an output disturbance that remains with the loop closed", meaning: "share of a disturbance that remains", meaning_ko: "남는 외란(disturbance) 비율"}
   # --- magnetics -----------------------------------------------------------
-  N: {latex: "N", unit: "1", desc: "number of turns", range: [1, 500], scale: log}
-  A_L: {latex: "A_L", unit: "H", desc: "inductance factor: inductance per turn squared", range: [1.0e-8, 1.0e-5], scale: log}
-  A_e: {latex: "A_e", unit: "m²", desc: "effective core cross-section area", range: [1.0e-6, 1.0e-3], scale: log}
-  l_e: {latex: "l_e", unit: "m", desc: "effective magnetic path length of the core", range: [0.005, 0.3], scale: log}
-  V_e: {latex: "V_e", unit: "m³", desc: "effective core volume ($A_e l_e$)", range: [1.0e-7, 1.0e-4], scale: log}
-  l_g: {latex: "l_g", unit: "m", desc: "total air-gap length", range: [1.0e-5, 5.0e-3], scale: log}
-  mu_i: {latex: "\\mu_i", unit: "1", desc: "initial relative permeability of the core material", range: [100, 20000], scale: log}
-  mu_0: {latex: "\\mu_0", unit: "H/m", desc: "permeability of free space, 4π·10⁻⁷ H/m", value_expr: "4*pi/10**7"}
-  B_pk: {latex: "B_\\mathrm{pk}", unit: "T", desc: "peak flux density"}
-  Delta_B: {latex: "\\Delta B", unit: "T", desc: "flux-density swing, peak-to-peak"}
-  B_ac: {latex: "B_\\mathrm{ac}", unit: "T", desc: "peak AC flux-density amplitude (half the peak-to-peak swing)", range: [0.01, 0.3], scale: log}
-  P_v: {latex: "P_v", unit: "W/m³", desc: "core loss per unit volume", range: [1.0e3, 1.0e6], scale: log}
-  k: {latex: "k", unit: "W/m³", desc: "Steinmetz coefficient (with f in Hz and B in T)", range: [0.1, 100], scale: log}
-  f: {latex: "f", unit: "Hz", desc: "excitation frequency", range: [1.0e3, 1.0e6], scale: log}
-  alpha: {latex: "\\alpha", unit: "1", desc: "Steinmetz frequency exponent", range: [1, 2]}
-  beta: {latex: "\\beta", unit: "1", desc: "Steinmetz flux-density exponent", range: [2, 3]}
+  N: {latex: "N", unit: "1", desc: "number of turns", meaning: "number of turns", meaning_ko: "턴 수", range: [1, 500], scale: log}
+  A_L: {latex: "A_L", unit: "H", desc: "inductance factor: inductance per turn squared", meaning: "inductance factor (per turn squared)", meaning_ko: "인덕턴스 계수(A_L), 턴 수 제곱당", range: [1.0e-8, 1.0e-5], scale: log}
+  A_e: {latex: "A_e", unit: "m²", desc: "effective core cross-section area", meaning: "effective core area", meaning_ko: "코어 유효 단면적(effective area)", range: [1.0e-6, 1.0e-3], scale: log}
+  l_e: {latex: "l_e", unit: "m", desc: "effective magnetic path length of the core", meaning: "effective magnetic path length", meaning_ko: "유효 자로 길이(path length)", range: [0.005, 0.3], scale: log}
+  V_e: {latex: "V_e", unit: "m³", desc: "effective core volume ($A_e l_e$)", meaning: "effective core volume", meaning_ko: "코어 유효 체적(effective volume)", range: [1.0e-7, 1.0e-4], scale: log}
+  l_g: {latex: "l_g", unit: "m", desc: "total air-gap length", meaning: "air-gap length", meaning_ko: "공극(air gap) 길이", range: [1.0e-5, 5.0e-3], scale: log}
+  mu_i: {latex: "\\mu_i", unit: "1", desc: "initial relative permeability of the core material", meaning: "initial relative permeability", meaning_ko: "초기 비투자율(initial permeability)", range: [100, 20000], scale: log}
+  mu_0: {latex: "\\mu_0", unit: "H/m", desc: "permeability of free space, 4π·10⁻⁷ H/m", meaning: "permeability of free space", meaning_ko: "진공 투자율(permeability of free space)", value_expr: "4*pi/10**7"}
+  B_pk: {latex: "B_\\mathrm{pk}", unit: "T", desc: "peak flux density", meaning: "peak flux density", meaning_ko: "피크 자속 밀도(flux density)"}
+  Delta_B: {latex: "\\Delta B", unit: "T", desc: "flux-density swing, peak-to-peak", meaning: "flux-density swing, peak-to-peak", meaning_ko: "자속 밀도 변화폭, 피크-피크"}
+  B_ac: {latex: "B_\\mathrm{ac}", unit: "T", desc: "peak AC flux-density amplitude (half the peak-to-peak swing)", meaning: "ac flux-density amplitude", meaning_ko: "교류 자속 밀도 진폭", range: [0.01, 0.3], scale: log}
+  P_v: {latex: "P_v", unit: "W/m³", desc: "core loss per unit volume", meaning: "core loss per volume", meaning_ko: "단위 체적당 코어 손실(core loss)", range: [1.0e3, 1.0e6], scale: log}
+  k: {latex: "k", unit: "W/m³", desc: "Steinmetz coefficient (with f in Hz and B in T)", meaning: "Steinmetz coefficient", meaning_ko: "스타인메츠 계수(Steinmetz coefficient)", range: [0.1, 100], scale: log}
+  f: {latex: "f", unit: "Hz", desc: "excitation frequency", meaning: "frequency", meaning_ko: "주파수", range: [1.0e3, 1.0e6], scale: log}
+  alpha: {latex: "\\alpha", unit: "1", desc: "Steinmetz frequency exponent", meaning: "Steinmetz frequency exponent", meaning_ko: "스타인메츠 주파수 지수", range: [1, 2]}
+  beta: {latex: "\\beta", unit: "1", desc: "Steinmetz flux-density exponent", meaning: "Steinmetz flux-density exponent", meaning_ko: "스타인메츠 자속 밀도 지수", range: [2, 3]}
   # --- refreshers (00-foundations, 01-physics) ----------------------------------
-  t: {latex: "t", unit: "s", desc: "duration of a constant excitation", range: [1.0e-7, 1.0e-3], scale: log}
-  V_L: {latex: "V_L", unit: "V", desc: "constant voltage across an inductor", range: [0.1, 400], scale: log}
-  I_C: {latex: "I_C", unit: "A", desc: "constant current into a capacitor", range: [0.001, 100], scale: log}
-  V_C: {latex: "V_C", unit: "V", desc: "capacitor voltage", range: [0.1, 400], scale: log}
-  Delta_i: {latex: "\\Delta i", unit: "A", desc: "change of inductor current during t (the full change, not a half-ripple)"}
-  Delta_v_C: {latex: "\\Delta v_C", unit: "V", desc: "change of capacitor voltage during t"}
-  E_L: {latex: "E_L", unit: "J", desc: "energy stored in an inductor"}
-  E_C: {latex: "E_C", unit: "J", desc: "energy stored in a capacitor"}
-  Z_L: {latex: "|Z_L|", unit: "Ω", desc: "impedance magnitude of an inductor"}
-  Z_C: {latex: "|Z_C|", unit: "Ω", desc: "impedance magnitude of a capacitor"}
-  R_f: {latex: "R_f", unit: "Ω", desc: "resistance of an R-C filter", range: [1, 1.0e6], scale: log}
-  C_f: {latex: "C_f", unit: "F", desc: "capacitance of an R-C filter", range: [1.0e-12, 1.0e-3], scale: log}
-  f_c: {latex: "f_c", unit: "Hz", desc: "corner (-3 dB) frequency", range: [1, 1.0e7], scale: log}
-  G_lp: {latex: "|G|", unit: "1", desc: "magnitude of a first-order low-pass transfer function"}
-  h: {latex: "h", unit: "1", desc: "harmonic order (1, 2, 3, ...)", range: [1, 20]}
-  V_pk: {latex: "V_\\mathrm{pk}", unit: "V", desc: "amplitude of a rectangular pulse train", range: [0.1, 400], scale: log}
-  a_h: {latex: "a_h", unit: "V", desc: "amplitude of the h-th harmonic"}
-  V_rms: {latex: "V_\\mathrm{rms}", unit: "V", desc: "rms value of a voltage waveform"}
-  C_p: {latex: "C_p", unit: "F", desc: "parasitic (winding) capacitance in parallel with an inductance", range: [1.0e-12, 1.0e-8], scale: log}
-  f_srf: {latex: "f_\\mathrm{srf}", unit: "Hz", desc: "self-resonant frequency"}
-  R_esr: {latex: "R_\\mathrm{ESR}", unit: "Ω", desc: "equivalent series resistance of a capacitor", range: [1.0e-4, 1], scale: log}
-  Delta_v_esr: {latex: "\\Delta v_\\mathrm{ESR}", unit: "V", desc: "ripple voltage across the ESR, peak-to-peak"}
-  I_w: {latex: "I_w", unit: "A", desc: "current in a winding", range: [0.001, 100], scale: log}
-  H_mag: {latex: "H", unit: "A/m", desc: "magnetic field intensity", range: [1, 1.0e5], scale: log}
-  mu_r: {latex: "\\mu_r", unit: "1", desc: "relative permeability", range: [1, 20000], scale: log}
-  B: {latex: "B", unit: "T", desc: "magnetic flux density"}
-  V_1: {latex: "V_1", unit: "V", desc: "primary winding voltage", range: [1, 400], scale: log}
-  V_2: {latex: "V_2", unit: "V", desc: "secondary winding voltage"}
-  I_1: {latex: "I_1", unit: "A", desc: "primary winding current", range: [0.001, 100], scale: log}
-  I_2: {latex: "I_2", unit: "A", desc: "secondary winding current"}
+  t: {latex: "t", unit: "s", desc: "duration of a constant excitation", meaning: "duration", meaning_ko: "지속 시간", range: [1.0e-7, 1.0e-3], scale: log}
+  V_L: {latex: "V_L", unit: "V", desc: "constant voltage across an inductor", meaning: "inductor voltage", meaning_ko: "인덕터 전압", range: [0.1, 400], scale: log}
+  I_C: {latex: "I_C", unit: "A", desc: "constant current into a capacitor", meaning: "capacitor current", meaning_ko: "커패시터 전류", range: [0.001, 100], scale: log}
+  V_C: {latex: "V_C", unit: "V", desc: "capacitor voltage", meaning: "capacitor voltage", meaning_ko: "커패시터 전압", range: [0.1, 400], scale: log}
+  Delta_i: {latex: "\\Delta i", unit: "A", desc: "change of inductor current during t (the full change, not a half-ripple)", meaning: "change of inductor current", meaning_ko: "인덕터 전류 변화량"}
+  Delta_v_C: {latex: "\\Delta v_C", unit: "V", desc: "change of capacitor voltage during t", meaning: "change of capacitor voltage", meaning_ko: "커패시터 전압 변화량"}
+  E_L: {latex: "E_L", unit: "J", desc: "energy stored in an inductor", meaning: "energy in the inductor", meaning_ko: "인덕터에 저장된 에너지"}
+  E_C: {latex: "E_C", unit: "J", desc: "energy stored in a capacitor", meaning: "energy in the capacitor", meaning_ko: "커패시터에 저장된 에너지"}
+  Z_L: {latex: "|Z_L|", unit: "Ω", desc: "impedance magnitude of an inductor", meaning: "inductor impedance", meaning_ko: "인덕터 임피던스"}
+  Z_C: {latex: "|Z_C|", unit: "Ω", desc: "impedance magnitude of a capacitor", meaning: "capacitor impedance", meaning_ko: "커패시터 임피던스"}
+  R_f: {latex: "R_f", unit: "Ω", desc: "resistance of an R-C filter", meaning: "filter resistor", meaning_ko: "필터 저항", range: [1, 1.0e6], scale: log}
+  C_f: {latex: "C_f", unit: "F", desc: "capacitance of an R-C filter", meaning: "filter capacitor", meaning_ko: "필터 커패시터", range: [1.0e-12, 1.0e-3], scale: log}
+  f_c: {latex: "f_c", unit: "Hz", desc: "corner (-3 dB) frequency", meaning: "corner (-3 dB) frequency", meaning_ko: "차단 주파수(corner frequency, -3 dB)", range: [1, 1.0e7], scale: log}
+  G_lp: {latex: "|G|", unit: "1", desc: "magnitude of a first-order low-pass transfer function", meaning: "low-pass gain", meaning_ko: "저역 통과(low-pass) 이득"}
+  h: {latex: "h", unit: "1", desc: "harmonic order (1, 2, 3, ...)", meaning: "harmonic order", meaning_ko: "고조파 차수(harmonic order)", range: [1, 20]}
+  V_pk: {latex: "V_\\mathrm{pk}", unit: "V", desc: "amplitude of a rectangular pulse train", meaning: "pulse amplitude", meaning_ko: "펄스 진폭", range: [0.1, 400], scale: log}
+  a_h: {latex: "a_h", unit: "V", desc: "amplitude of the h-th harmonic", meaning: "amplitude of harmonic h", meaning_ko: "h차 고조파 진폭"}
+  V_rms: {latex: "V_\\mathrm{rms}", unit: "V", desc: "rms value of a voltage waveform", meaning: "rms voltage", meaning_ko: "실효 전압(rms)"}
+  C_p: {latex: "C_p", unit: "F", desc: "parasitic (winding) capacitance in parallel with an inductance", meaning: "parasitic winding capacitance", meaning_ko: "권선 기생 커패시턴스(parasitic capacitance)", range: [1.0e-12, 1.0e-8], scale: log}
+  f_srf: {latex: "f_\\mathrm{srf}", unit: "Hz", desc: "self-resonant frequency", meaning: "self-resonant frequency", meaning_ko: "자기 공진 주파수(self-resonant frequency)"}
+  R_esr: {latex: "R_\\mathrm{ESR}", unit: "Ω", desc: "equivalent series resistance of a capacitor", meaning: "equivalent series resistance", meaning_ko: "등가 직렬 저항(ESR)", range: [1.0e-4, 1], scale: log}
+  Delta_v_esr: {latex: "\\Delta v_\\mathrm{ESR}", unit: "V", desc: "ripple voltage across the ESR, peak-to-peak", meaning: "ESR ripple, peak-to-peak", meaning_ko: "ESR 리플, 피크-피크"}
+  I_w: {latex: "I_w", unit: "A", desc: "current in a winding", meaning: "winding current", meaning_ko: "권선 전류", range: [0.001, 100], scale: log}
+  H_mag: {latex: "H", unit: "A/m", desc: "magnetic field intensity", meaning: "magnetic field intensity", meaning_ko: "자계 세기(field intensity)", range: [1, 1.0e5], scale: log}
+  mu_r: {latex: "\\mu_r", unit: "1", desc: "relative permeability", meaning: "relative permeability", meaning_ko: "비투자율(relative permeability)", range: [1, 20000], scale: log}
+  B: {latex: "B", unit: "T", desc: "magnetic flux density", meaning: "magnetic flux density", meaning_ko: "자속 밀도(flux density)"}
+  V_1: {latex: "V_1", unit: "V", desc: "primary winding voltage", meaning: "primary voltage", meaning_ko: "1차 전압", range: [1, 400], scale: log}
+  V_2: {latex: "V_2", unit: "V", desc: "secondary winding voltage", meaning: "secondary voltage", meaning_ko: "2차 전압"}
+  I_1: {latex: "I_1", unit: "A", desc: "primary winding current", meaning: "primary current", meaning_ko: "1차 전류", range: [0.001, 100], scale: log}
+  I_2: {latex: "I_2", unit: "A", desc: "secondary winding current", meaning: "secondary current", meaning_ko: "2차 전류"}
 
 # Human-readable labels for the `assumptions` tags (shown in the <Eq> expander).
 assumption_labels:

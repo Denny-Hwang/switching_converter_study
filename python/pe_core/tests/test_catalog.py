@@ -93,6 +93,17 @@ def test_wrong_expectation_is_rejected(tmp_path: Path) -> None:
         load(p)
 
 
+@pytest.mark.parametrize("value", ['""', '"  "', "null", ""])
+def test_symbol_without_a_meaning_is_rejected(tmp_path: Path, value: str) -> None:
+    text = (GENERATED_JSON.parent / "equations.yaml").read_text(encoding="utf-8")
+    first = 'meaning: "duty ratio",'
+    assert first in text
+    p = tmp_path / "equations.yaml"
+    p.write_text(text.replace(first, f"meaning: {value},", 1), encoding="utf-8")
+    with pytest.raises(EquationError, match="meaning and meaning_ko must be non-empty text"):
+        load(p)
+
+
 def test_empty_citation_list_is_rejected(tmp_path: Path) -> None:
     text = (GENERATED_JSON.parent / "equations.yaml").read_text(encoding="utf-8")
     first = 'cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis)"}'
