@@ -26,3 +26,5 @@ export {
   matchSource,
 } from './harvesting';
 export type { Envelope, EnvelopeRun, MatchPoint, MatchResult, MatchSpec, SinkMode } from './harvesting';
+export { currentAt, errorCurve, monitorOutput, senseChain, transferCurve } from './sense';
+export type { MonitorKind, SenseResult, SenseSpec, SenseWarning } from './sense';

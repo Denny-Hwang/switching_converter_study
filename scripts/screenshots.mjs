@@ -30,6 +30,7 @@ const SHOTS = [
   { name: 'lossbudget', page: 'design/loss-budget/', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
   { name: 'clampcheck', page: 'design/clamp-check/', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
   { name: 'sourcematcher', page: 'design/source-matcher/', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
+  { name: 'sensechain', page: 'design/sense-chain/', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
 ];
 const LOCALES = ['en', 'ko'];
 

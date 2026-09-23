@@ -1,0 +1,34 @@
+synthetic: true
+label: "Synthetic sense chain with a current-output amplifier and a two-terminal shunt (round numbers, not a real design)"
+label_ko: "전류 출력형 증폭기와 2단자 션트를 쓰는 합성 센스 체인 (단순한 어림수이며 실제 설계가 아님)"
+# SenseChain preset: I_SENSE is the largest current; R_pad is the pad and solder resistance
+# in the sense path of a two-terminal shunt without a Kelvin connection. The filter is a
+# series resistor R_f and a capacitor C_f after the output resistor R_OUT.
+params:
+  I_SENSE: 2
+  I_min: 0.2
+  R_SENSE: 0.01
+  R_pad: 5.0e-4
+  R_IN: 100
+  R_OUT: 1.0e4
+  V_OS: 1.0e-4
+  V_OUTmin: 0
+  V_OUTmax: 4
+  V_FS: 2.5
+  f_samp: 1.0e4
+  R_f: 1.0e3
+  C_f: 1.0e-8
+  eps_max: 0.01
+steps:
+  - sense.burden
+  - sense.current_out_monitor
+  - sense.offset_current
+  - sense.pad_error
+  - {eq: sense.rel_error, bind: {I_SENSE: I_min}}
+  - sense.filter_R
+  - {eq: rc.fc, bind: {R_f: R_filt}}
+  - adc.nyquist
+  - {eq: rc.gain, bind: {f: f_N}}
+checks:
+  - {when: "eps_I <= eps_max", then: {en: "At I_min the reading meets the error target", ko: "I_min에서 측정값이 오차 목표를 만족함"}, else: {en: "At I_min the reading misses the error target", ko: "I_min에서 측정값이 오차 목표를 넘음"}}
+  - {when: "f_c < f_N", then: {en: "The filter's corner lies below the Nyquist frequency", ko: "필터의 차단 주파수가 나이퀴스트 주파수보다 낮음"}, else: {en: "The filter's corner is not below the Nyquist frequency", ko: "필터의 차단 주파수가 나이퀴스트 주파수보다 낮지 않음"}}

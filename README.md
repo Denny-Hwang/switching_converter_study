@@ -69,7 +69,7 @@ node scripts/keyboard_check.mjs       # keyboard focus order of the tool pages (
 | 0 | Scaffold, CI, Pages deployment, equation pipeline skeleton | done |
 | 1 | Equation engine: full seed set, derivations, parity, math/citation lints | done |
 | 2 | Core content: theory + main topologies (EN, then KO) | done: 00-foundations, 01-physics, 02-theory and 03-topologies (EN + KO) |
-| 3 | Time-domain simulator and design tools | in progress: simulator (3a), converter designer and loss budget (3b), clamp check and source matcher (3c) done |
+| 3 | Time-domain simulator and design tools | in progress: simulator (3a), converter designer and loss budget (3b), clamp check and source matcher (3c), sense chain (3d) done |
 | 4 | Magnetics, bench, harvesting, gotchas, resources | planned |
 | 5 | LTspice/ngspice/CircuitJS library, missions, v0.1.0 | planned |
 
