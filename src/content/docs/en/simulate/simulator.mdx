@@ -5,18 +5,22 @@ sidebar:
   order: 1
 ---
 
+import { Image } from 'astro:assets';
 import Simulator from '../../../../components/Simulator.astro';
 import Cite from '../../../../components/Cite.astro';
 import EqRef from '../../../../components/EqRef.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TrySim from '../../../../components/TrySim.astro';
+import shot from '../../../../assets/screenshots/simulator-en.png';
 
-Pick a topology or a synthetic preset and set the parameters in SI units.
-The simulator then computes one period of the periodic steady state and
-shows:
+Pick a topology or a synthetic preset and set the parameters in SI units:
+type a value, or drag its slider, which spans one decade either side of the
+value (the duty ratio's slider spans 0 to 1). The simulator then computes one
+period of the periodic steady state and shows:
 
-- the inductor, diode, switch and output waveforms;
+- the waveforms: inductor current and voltage, diode current, switch voltage
+  and output voltage;
 - the conduction mode it detects, with $K$ and $K_\mathrm{crit}$;
 - the simulated values next to the catalogue's equations at the same
   operating point;
@@ -100,7 +104,8 @@ At that voltage the source can deliver a fraction
 <Val example="flyback-source" name="P_dcm" /> that the converter would draw
 in DCM, so the magnetizing current grows until CCM holds the input at the
 critical voltage. Open the preset and compare the simulated input voltage
-with the equation:
+with the equation (the [screenshot](#screenshot) at the end of this page shows
+the result):
 
 <TrySim example="flyback-source" topology="flyback" />
 
@@ -114,3 +119,10 @@ with the equation:
   input in CCM, for example, has none, because the inductor current grows
   without bound. The status line then reports that no steady state was
   reached.
+
+## Screenshot
+
+<figure class="pe-shot">
+  <Image src={shot} alt="The simulator opened with the preset of the worked example: the status line reports CCM, the compare panel sets the simulated bus voltage beside V_g,crit, and the plots show one period of the currents, the inductor voltage, the switch voltage, the output voltage and the bus voltage." />
+  <figcaption>The simulator opened with the preset of the worked example.</figcaption>
+</figure>

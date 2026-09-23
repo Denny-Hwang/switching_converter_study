@@ -5,18 +5,22 @@ sidebar:
   order: 1
 ---
 
+import { Image } from 'astro:assets';
 import Simulator from '../../../../components/Simulator.astro';
 import Cite from '../../../../components/Cite.astro';
 import EqRef from '../../../../components/EqRef.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TrySim from '../../../../components/TrySim.astro';
+import shot from '../../../../assets/screenshots/simulator-ko.png';
 
 토폴로지(topology)나 합성(synthetic) 프리셋을 고르고 파라미터를 SI 단위로
-입력하십시오. 그러면 시뮬레이터가 주기적 정상상태(periodic steady state)의 한
-주기를 계산하여 다음을 보여 줍니다.
+입력하십시오. 값을 직접 입력하거나 슬라이더를 움직이면 되며, 슬라이더는 현재
+값의 위아래로 한 디케이드씩을 움직입니다(듀티비의 슬라이더는 0에서 1까지).
+그러면 시뮬레이터가 주기적 정상상태(periodic steady state)의 한 주기를
+계산하여 다음을 보여 줍니다.
 
-- 인덕터, 다이오드, 스위치, 출력의 파형
+- 파형: 인덕터 전류와 전압, 다이오드 전류, 스위치 전압, 출력 전압
 - 검출한 전도 모드(conduction mode)와 $K$, $K_\mathrm{crit}$
 - 같은 동작점(operating point)에서 시뮬레이션한 값과 카탈로그 수식의 값
 - 파형으로 계산한 손실과 효율(efficiency)
@@ -92,7 +96,8 @@ import TrySim from '../../../../components/TrySim.astro';
 <Val example="flyback-source" name="eta_ext" />만큼을 공급할 수 있으며, 이는
 컨버터가 DCM에서 끌어갈 <Val example="flyback-source" name="P_dcm" />보다
 많습니다. 따라서 자화 전류가 커지다가 CCM이 입력을 임계 전압에 묶어 둡니다.
-프리셋을 열고 시뮬레이션한 입력 전압을 수식과 비교하십시오.
+프리셋을 열고 시뮬레이션한 입력 전압을 수식과 비교하십시오(결과는 이 페이지
+끝의 [스크린샷](#스크린샷)에 있습니다).
 
 <TrySim example="flyback-source" topology="flyback" />
 
@@ -104,3 +109,10 @@ import TrySim from '../../../../components/TrySim.astro';
 - **주기적 정상상태가 존재해야 합니다.** 예를 들어 고정 입력에서 CCM으로
   고정 출력을 구동하면 인덕터 전류가 한없이 커지므로 정상상태가 없습니다. 이때
   상태 표시줄은 정상상태에 도달하지 못했다고 알립니다.
+
+## 스크린샷
+
+<figure class="pe-shot">
+  <Image src={shot} alt="풀이 예제의 프리셋으로 연 시뮬레이터: 상태 표시줄은 CCM을 보여 주고, 비교 패널은 시뮬레이션한 버스 전압을 V_g,crit 옆에 놓으며, 그래프는 한 주기 동안의 전류, 인덕터 전압, 스위치 전압, 출력 전압, 버스 전압을 보여 줍니다." />
+  <figcaption>풀이 예제의 프리셋으로 연 시뮬레이터.</figcaption>
+</figure>

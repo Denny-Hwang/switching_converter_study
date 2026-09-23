@@ -286,3 +286,19 @@
   text-align: left;
   font-weight: 600;
 }
+
+/* ---- tool screenshots ------------------------------------------------------ */
+.pe-shot {
+  margin: 1rem 0;
+}
+.pe-shot img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.5rem;
+}
+.pe-shot figcaption {
+  margin-top: 0.4rem;
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-2);
+}

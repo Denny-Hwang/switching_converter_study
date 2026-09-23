@@ -5,7 +5,9 @@ sidebar:
   order: 1
 ---
 
+import { Image } from 'astro:assets';
 import Explorer from '../../../../components/Explorer.astro';
+import shot from '../../../../assets/screenshots/explorer-en.png';
 
 Pick an equation, set its inputs in SI units, and sweep one input to see
 how the result moves. The calculation runs in your browser with the same
@@ -21,5 +23,13 @@ hash, so a bookmark or a shared link reproduces it exactly.
 The explorer evaluates one formula at a time and does not check whether the
 formula's assumptions hold (for example, a CCM ratio at a DCM operating
 point). Each equation's assumptions are listed under it on its home page.
-Design tools that combine formulas and check the operating mode arrive in
-Phase 3.
+The [simulator](../../simulate/simulator/) finds the mode from the circuit
+itself. Design tools that combine formulas and check the operating mode
+arrive later in Phase 3.
+
+## Screenshot
+
+<figure class="pe-shot">
+  <Image src={shot} alt="The explorer opened from the Try it link of the CCM and DCM page: the buck's DCM conversion ratio with its two inputs and its value, and a sweep of K on a logarithmic axis." />
+  <figcaption>The explorer opened from the "Try it" link of the CCM and DCM page.</figcaption>
+</figure>
