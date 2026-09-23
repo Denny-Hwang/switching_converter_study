@@ -112,8 +112,14 @@ describe('no periodic steady state', () => {
   it('a fixed output fed in CCM from a fixed input: the inductor current grows every cycle', () => {
     const r = simulate({ topology: 'buck', Vg: 24, D: 0.8, fs, L: 1e-4, load: { kind: 'fixed', V: 12 } });
     expect(r.converged).toBe(false);
-    expect(r.cycles).toBeGreaterThanOrEqual(2000);
-    expect(r.residual).toBeGreaterThan(0.1);
+    expect(r.status).toBe('runaway');
+    // (V_g - V) D T_s up, V (1 - D) T_s down: 9.6 V T_s net, 0.96 A per cycle
+    const Ts = 1 / fs;
+    const perCycle = ((24 - 12) * 0.8 - 12 * 0.2) * Ts / 1e-4;
+    expect(r.drift!.state).toBe('i');
+    expect(r.drift!.perCycle).toBeCloseTo(perCycle, 9);
+    expect(r.drift!.vLavg).toBeCloseTo((24 - 12) * 0.8 - 12 * 0.2, 9);
+    expect(r.drift!.Dbalance).toBeCloseTo(0.5, 9);
   });
 
   it('a forward converter above its reset limit: the magnetizing current walks up', () => {
@@ -130,6 +136,9 @@ describe('no periodic steady state', () => {
       load: { kind: 'resistive', R: 2, C: 5e-4 },
     });
     expect(r.converged).toBe(false);
+    expect(r.status).toBe('runaway');
+    expect(r.drift!.state).toBe('iM');
+    expect(r.drift!.perCycle).toBeGreaterThan(0);
   });
 
   it('the same forward converter below the limit converges', () => {

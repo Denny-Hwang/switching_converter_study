@@ -3,14 +3,49 @@
  * detected conduction mode, K against K_crit, stresses, losses and the energy
  * per cycle; plus `simulate()`, which builds the model, starts from the
  * analytic operating point and finds the periodic steady state.
+ *
+ * Not every circuit has one. A fixed output fed in CCM gains or loses the
+ * same inductor current every cycle unless the duty ratio balances the
+ * inductor's volt-seconds exactly; an output capacitor with nothing across
+ * it charges for ever. `simulate()` then says which state keeps changing and
+ * by how much per cycle, and records the start-up from rest instead.
  */
 
 import { evaluate } from '../equations';
-import { steadyState, type CycleRun, type Model, type SteadyOptions } from './engine';
+import { invert } from '../invert';
+import { runCycle, steadyState, type CycleRun, type Model, type SteadyOptions } from './engine';
 import type { Vec } from './linalg';
 import { buildModel, type SimParams } from './models';
 
 export type Mode = 'CCM' | 'DCM' | 'BCM';
+
+/**
+ * steady: a periodic steady state was found. runaway: the inductor current
+ * changes by the same amount every cycle (the volt-seconds cannot balance),
+ * so there is none. charging: the output capacitor, with nothing across it,
+ * keeps charging. unsettled: no steady state within the cycle limit for
+ * another reason (e.g. an undamped L-C ringing).
+ */
+export type Status = 'steady' | 'runaway' | 'charging' | 'unsettled';
+
+/** A state that keeps changing: its change per cycle at the end of the run. */
+export interface Drift {
+  state: string;
+  perCycle: number;
+  /** Inductor current: its average voltage over a cycle, L Δi / T_s (zero in a steady state). */
+  vLavg?: number;
+  /** Fixed output: the duty ratio that balances the volt-seconds in CCM with ideal parts, from the catalogue's M(D). */
+  Dbalance?: number;
+}
+
+/** The first cycles from rest (zero currents, the output at its start voltage), recorded. */
+export interface StartUp {
+  waveforms: Waveforms;
+  cycles: number;
+  /** State at the start of the last recorded cycle, and at its end. */
+  lastStart: Vec;
+  end: Vec;
+}
 
 export interface Waveforms {
   t: number[];
@@ -21,6 +56,11 @@ export interface Waveforms {
 export interface SimResult {
   params: SimParams;
   stateNames: string[];
+  status: Status;
+  /** Why there is no steady state (runaway, charging). */
+  drift?: Drift;
+  /** The start-up from rest, when there is no steady state to show. */
+  startUp?: StartUp;
   converged: boolean;
   cycles: number;
   residual: number;
@@ -45,7 +85,7 @@ export interface SimResult {
   energy: { input: number; output: number };
 }
 
-const SERIES = ['i_L', 'v_L', 'v_sw', 'i_sw', 'i_D', 'i_out', 'i_in', 'v_in', 'v_out'] as const;
+const SERIES = ['i_L', 'v_L', 'v_sw', 'i_sw', 'i_D', 'i_out', 'i_in', 'v_in', 'v_out', 'i_R', 'i_bat', 'i_C'] as const;
 
 /** Waveforms of a recorded cycle. */
 export function waveforms(model: Model, run: CycleRun): Waveforms {
@@ -87,6 +127,14 @@ function kCrit(p: SimParams): number {
   }
 }
 
+/** The load resistor when it is the whole load (a resistive load, or a network with a resistor and no battery); NaN otherwise. */
+export function loadResistance(p: SimParams): number {
+  const l = p.load;
+  if (l.kind === 'resistive') return l.R;
+  if (l.kind === 'network' && l.R !== undefined && !l.battery) return l.R;
+  return NaN;
+}
+
 /** Conversion ratio of the ideal converter for the mode that K selects (resistive load). */
 export function analyticM(p: SimParams, K: number, Kc: number): number {
   const D = p.D;
@@ -125,13 +173,23 @@ export function initialState(p: SimParams, model: Model): Vec {
   let V: number;
   let Iavg = 0;
   let ccm = true;
-  if (p.load.kind === 'resistive') {
-    const K = (2 * p.L) / (p.load.R * Ts);
+  const load = p.load;
+  if (load.kind === 'network' && (load.battery || load.R === undefined)) {
+    // A battery holds the output near its open-circuit voltage; a capacitor
+    // alone starts from its start voltage. Start at rest and let the search
+    // (or the start-up run) find the rest.
+    x[at('v')] = load.battery ? load.battery.V : (load.V0 ?? 0);
+    if (at('vbus') >= 0 && p.source) x[at('vbus')] = p.source.Voc;
+    return x;
+  }
+  const R = load.kind === 'fixed' ? NaN : load.kind === 'resistive' ? load.R : load.R!;
+  if (load.kind !== 'fixed') {
+    const K = (2 * p.L) / (R * Ts);
     const Kc = kCrit(p);
     ccm = K >= Kc;
     const M = analyticM(p, K, Kc);
     if (p.source) {
-      const Rin = p.load.R / (M * M); // ideal converter as seen from its input
+      const Rin = R / (M * M); // ideal converter as seen from its input
       Vg = (p.source.Voc * Rin) / (Rin + p.source.Rs);
     }
     // The diode's forward drop lowers the output by about V_F; a forward
@@ -140,7 +198,7 @@ export function initialState(p: SimParams, model: Model): Vec {
     const VF = p.VF ?? 0;
     V = Math.max(0, Math.abs(M) * Vg - VF);
     if (p.topology === 'forward') V = Math.min(V, 0.999 * Math.max(0, n * Vg - VF));
-    const Iout = V / p.load.R;
+    const Iout = V / R;
     Iavg = {
       buck: Iout,
       forward: Iout,
@@ -150,7 +208,7 @@ export function initialState(p: SimParams, model: Model): Vec {
     }[p.topology];
     x[at('v')] = V;
   } else {
-    V = p.load.V;
+    V = load.V;
     ccm = false;
     if (p.source) {
       const Vcrit = p.topology === 'flyback' ? evaluate('flyback.V_crit', { V, V_D: p.VF ?? 0, D, n }) : p.source.Voc;
@@ -196,8 +254,9 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
 
   let K = NaN;
   let Kc = NaN;
-  if (p.load.kind === 'resistive') {
-    K = (2 * p.L) / (p.load.R * Ts);
+  const Rload = loadResistance(p);
+  if (Number.isFinite(Rload)) {
+    K = (2 * p.L) / (Rload * Ts);
     Kc = kCrit(p);
   }
   const iL = wf.i_L as number[];
@@ -215,6 +274,7 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
   return {
     params: p,
     stateNames: model.stateNames,
+    status: ss.converged ? 'steady' : 'unsettled',
     converged: ss.converged,
     cycles: ss.cycles,
     residual: ss.residual,
@@ -260,11 +320,143 @@ export function stepsFor(p: SimParams): number {
   return Math.min(MAX_STEPS, Math.max(2000, Math.ceil(20 / (p.fs * ringPeriod))));
 }
 
-/** Build the model, start from the analytic operating point, and find the periodic steady state. */
+/** The state at rest: no current, the output capacitor at its start voltage (a battery's open-circuit voltage), the input bus at V_oc. */
+export function restState(p: SimParams, model: Model): Vec {
+  const x = new Array<number>(model.stateNames.length).fill(0);
+  const iv = model.stateNames.indexOf('v');
+  const l = p.load;
+  if (iv >= 0 && l.kind === 'network') x[iv] = l.battery ? l.battery.V : (l.V0 ?? 0);
+  const ib = model.stateNames.indexOf('vbus');
+  if (ib >= 0 && p.source) x[ib] = p.source.Voc;
+  return x;
+}
+
+/** Most samples a start-up record keeps (per series): it travels from the worker to the page. */
+export const STARTUP_SAMPLES = 40000;
+
+/**
+ * The first cycles from rest, every cycle recorded at `steps` sub-steps (the
+ * solution is exact at every sub-step and event, so a coarse grid only thins
+ * the drawing), or at the node capacitance's own minimum. Fewer cycles when
+ * the record would exceed STARTUP_SAMPLES.
+ */
+export function startUp(p: SimParams, model: Model, cycles: number, steps: number): StartUp {
+  const perCycle = p.Cnode && p.topology !== 'forward' ? Math.max(steps, stepsFor(p)) : steps;
+  const n = Math.max(1, Math.min(cycles, Math.floor(STARTUP_SAMPLES / perCycle)));
+  const out: Waveforms = { t: [], interval: [] };
+  let x = restState(p, model);
+  let lastStart = x;
+  for (let k = 0; k < n; k++) {
+    lastStart = x;
+    const run = runCycle(model, x, { stepsPerPeriod: perCycle, record: true });
+    const w = waveforms(model, run);
+    const t0 = k * model.Ts;
+    for (const key of Object.keys(w)) {
+      if (!out[key]) out[key] = [];
+      const src = w[key] as (number | string)[];
+      const dst = out[key] as (number | string)[];
+      for (let m = 0; m < src.length; m++) dst.push(key === 't' ? (src[m] as number) + t0 : src[m]!);
+    }
+    x = run.x;
+  }
+  return { waveforms: out, cycles: n, lastStart, end: x };
+}
+
+/** The duty ratio that holds a fixed output in CCM with ideal parts: the catalogue's M(D) solved for D at M = V/V_g. */
+export function balanceDuty(p: SimParams): number | undefined {
+  if (p.load.kind !== 'fixed' || !(p.Vg > 0)) return undefined;
+  const M = p.load.V / p.Vg;
+  const eq = { buck: 'buck.ccm.M', boost: 'boost.ccm.M', buckboost: 'buckboost.ccm.M', flyback: 'flyback.ccm.M', forward: 'forward.ccm.M' }[p.topology];
+  const inputs: Record<string, number> = p.topology === 'flyback' || p.topology === 'forward' ? { n: p.n ?? 1 } : {};
+  try {
+    const D = invert(eq, 'D', M, inputs, 1e-9, 1 - 1e-9);
+    return D > 0 && D < 1 ? D : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Why the search found no steady state: a few more cycles from where it
+ * stopped show which state keeps changing. The inductor current changing by
+ * the same amount every cycle means its volt-seconds cannot balance; an
+ * output capacitor with nothing across it charges.
+ */
+export function diagnose(p: SimParams, model: Model, x: Vec, steps: number): { status: Status; drift?: Drift } {
+  const runs: CycleRun[] = [];
+  let y = x;
+  for (let k = 0; k < 3; k++) {
+    const r = runCycle(model, y, { stepsPerPeriod: steps });
+    runs.push(r);
+    y = r.x;
+  }
+  const last = runs[2]!;
+  const prev = runs[1]!;
+  const names = model.stateNames;
+  const l = p.load;
+  const iv = names.indexOf('v');
+  if (l.kind === 'network' && l.R === undefined && !l.battery && iv >= 0) {
+    return { status: 'charging', drift: { state: 'v', perCycle: last.dx[iv]! } };
+  }
+  // an inductor current (the forward converter's magnetizing current too)
+  // that changes by the same amount every cycle
+  for (const [state, L] of [
+    ['i', p.L],
+    ['iM', p.LM ?? NaN],
+  ] as const) {
+    const j = names.indexOf(state);
+    if (j < 0) continue;
+    const d = last.dx[j]!;
+    const same = Math.abs(d - prev.dx[j]!) <= 1e-3 * Math.abs(d);
+    if (d !== 0 && same && Math.abs(d) >= 1e-6 * Math.max(Math.abs(y[j]!), 1e-12)) {
+      const drift: Drift = { state, perCycle: d, vLavg: (L * d) / model.Ts };
+      if (state === 'i') drift.Dbalance = balanceDuty(p);
+      return { status: 'runaway', drift };
+    }
+  }
+  return { status: 'unsettled' };
+}
+
+/** Cycles recorded from rest when there is no steady state (enough to see the current grow, or the capacitor charge), and sub-steps per cycle. */
+export const STARTUP = { runaway: [20, 200], charging: [400, 50], unsettled: [60, 100] } as const;
+
+/** An output capacitor with nothing across it (a network load with neither a resistor nor a battery). */
+export function chargingLoad(p: SimParams): boolean {
+  return p.load.kind === 'network' && p.load.R === undefined && !p.load.battery;
+}
+
+/**
+ * Build the model, start from the analytic operating point, and find the
+ * periodic steady state. Without one, say why and record the start-up from
+ * rest instead; the result's averages then describe the start-up's last
+ * cycle. A capacitor alone behind a boost, buck-boost or flyback charges
+ * without bound (every cycle adds energy and nothing takes it), so no search
+ * is made; behind a buck or a forward converter it stops once the output
+ * reaches what the converter can give.
+ */
 export function simulate(p: SimParams, opts: SteadyOptions = {}): SimResult {
   const model = buildModel(p);
-  const ss = steadyState(model, initialState(p, model), { ...opts, stepsPerPeriod: opts.stepsPerPeriod ?? stepsFor(p) });
-  return analyse(p, model, ss);
+  const steps = opts.stepsPerPeriod ?? stepsFor(p);
+  const unbounded = chargingLoad(p) && p.topology !== 'buck' && p.topology !== 'forward';
+  if (!unbounded) {
+    const ss = steadyState(model, initialState(p, model), { stopOnDrift: true, ...opts, stepsPerPeriod: steps });
+    if (ss.converged) return analyse(p, model, ss);
+    const { status, drift } = diagnose(p, model, ss.x0, steps);
+    return withStartUp(p, model, status, drift);
+  }
+  return withStartUp(p, model, 'charging');
+}
+
+/** The result without a steady state: the start-up from rest, and the analysis of its last cycle. */
+function withStartUp(p: SimParams, model: Model, status: Status, drift?: Drift): SimResult {
+  const [cycles, perCycle] = STARTUP[status as keyof typeof STARTUP] ?? STARTUP.unsettled;
+  const su = startUp(p, model, cycles, perCycle);
+  // the start-up's last cycle again, for its averages
+  const last = runCycle(model, su.lastStart, { stepsPerPeriod: perCycle, record: true });
+  const r = analyse(p, model, { x0: su.lastStart, cycles: su.cycles, converged: false, residual: NaN, run: last });
+  let d = drift;
+  if (status === 'charging') d = { state: 'v', perCycle: last.dx[model.stateNames.indexOf('v')]! };
+  return { ...r, status, drift: d, startUp: su };
 }
 
 export { SERIES };

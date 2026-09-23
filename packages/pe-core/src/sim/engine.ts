@@ -452,6 +452,12 @@ export interface SteadyOptions extends RunOptions {
    */
   tol?: number;
   maxCycles?: number;
+  /**
+   * Stop early when a state changes by the same amount cycle after cycle (a
+   * pure drift: there is no steady state to find, e.g. a fixed output fed
+   * in CCM whose volt-seconds do not balance).
+   */
+  stopOnDrift?: boolean;
 }
 
 export interface SteadyResult {
@@ -489,6 +495,20 @@ function relativeChange(r: CycleRun): number {
     worst = Math.max(worst, v > 0 ? change / v : Infinity);
   }
   return worst;
+}
+
+/**
+ * A state that changes by the same amount in two consecutive cycles (to
+ * 1e-9), by at least a thousandth of its movement within the cycle: the map
+ * only shifts it, and no steady state exists.
+ */
+function drifting(r: CycleRun, prevDx: Vec): boolean {
+  for (let j = 0; j < r.dx.length; j++) {
+    const d = r.dx[j]!;
+    if (d === 0 || Math.abs(d) < 1e-3 * r.variation[j]!) continue;
+    if (Math.abs(d - prevDx[j]!) <= 1e-9 * Math.abs(d)) return true;
+  }
+  return false;
 }
 
 /** The Newton step to the fixed point of the cycle map, from a run with its Jacobian: (J - I) delta = -(F(x) - x). */
@@ -601,12 +621,15 @@ export function steadyState(model: Model, x0: Vec, opts: SteadyOptions = {}): St
   // distance to the fixed point, and Newton resumes from there if a slow
   // state is still off; Newton is also retried every fifty plain cycles.
   let plain = 0;
+  let prevDx: Vec | null = null;
   while (!done() && cycles < maxCycles) {
     const xn = r.x;
     r = map(xn);
     x = xn;
     res = relativeChange(r);
     dist = NaN; // not evaluated
+    if (opts.stopOnDrift && prevDx && drifting(r, prevDx)) break;
+    prevDx = r.dx;
     if ((res < tol || ++plain % 50 === 0) && cycles < maxCycles) {
       r = map(x, true);
       step = newtonStep(r);
