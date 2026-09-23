@@ -19,6 +19,17 @@ dependencies = [
 # pypdf: the online URL check (scripts/resources_check.py) reads PDF references; its crypto
 # and fonts extras decrypt AES-encrypted files and decode CFF fonts (pinned with them).
 dev = ["pytest==9.1.1", "pypdf[crypto,fonts]==6.19.0", "cryptography==50.0.1", "fonttools==4.65.0"]
+# schemdraw and matplotlib draw the site's figures (scripts/gen_figures.py). Pinned, with the
+# packages that shape their output, because CI redraws every figure and compares the files.
+figures = [
+    "schemdraw==0.23",
+    "ziamath==0.13",
+    "ziafont==0.11",
+    "latex2mathml==3.81.1",
+    "matplotlib==3.11.2",
+    "numpy==2.4.6",
+    "pyparsing==3.3.3",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]

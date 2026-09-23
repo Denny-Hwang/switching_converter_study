@@ -9,6 +9,7 @@ module: true
 import Eq from '../../../../components/Eq.astro';
 import EqRef from '../../../../components/EqRef.astro';
 import Cite from '../../../../components/Cite.astro';
+import Figure from '../../../../components/Figure.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
@@ -31,6 +32,8 @@ import Quiz from '../../../../components/Quiz.astro';
 주기 동안 적분한 값은 $L$에 이 전류 순변화를 곱한 값과 같고, 이 순변화는 0입니다.
 따라서 한 주기에 걸친 인덕터 전압의 평균은 0, 즉 $\langle v_L \rangle = 0$입니다 <Cite key="erickson2020" where="Ch. 2" />.
 이것이 **인덕터 전압-초 평형**입니다.
+
+<Figure name="balance" />
 
 [소리플 근사(small-ripple approximation)](../switching-principle/)를 적용하면, 인덕터
 전압은 온 구간(on-interval) $D T_s$ 동안 하나의 일정한 값을, 오프 구간(off-interval)

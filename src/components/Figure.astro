@@ -1,0 +1,36 @@
+---
+/**
+ * <Figure name="buck" /> -- a figure drawn by scripts/gen_figures.py
+ * (src/assets/figures/<name>.svg), inlined so that its lines and text take
+ * the page's text colour in the light and the dark theme. The caption, the
+ * text alternative and the source come from src/lib/figures.ts in the page's
+ * language; an unknown name, a missing file or an uncitable source fails the
+ * build.
+ */
+import Cite from './Cite.astro';
+import { FIGURES, figureSvg } from '../lib/figures';
+import { pageLocale } from '../lib/locale';
+import { renderInlineMath } from '../math/inline';
+
+interface Props {
+  name: string;
+}
+const { name } = Astro.props;
+const info = FIGURES[name];
+if (!info) throw new Error(`<Figure name="${name}">: not in src/lib/figures.ts`);
+const svg = figureSvg(name);
+const locale = pageLocale(Astro);
+// drawn at its own size where the column allows; on a phone it shrinks to 70 % of that at most, then scrolls
+const pt = Number(/<svg[^>]*\swidth="([\d.]+)pt"/.exec(svg)?.[1]);
+if (!(pt > 0)) throw new Error(`<Figure name="${name}">: the SVG has no width in pt`);
+const px = (pt * 4) / 3;
+const size = `--fig-width: ${Math.round(px)}px; --fig-min: ${Math.round(0.7 * px)}px`;
+---
+
+<figure class="pe-figure" id={`fig-${name}`}>
+  <div class="pe-figure__art" role="img" aria-label={info.alt[locale]} style={size} set:html={svg} />
+  <figcaption>
+    <Fragment set:html={renderInlineMath(info.caption[locale])} />{' '}
+    <Cite key={info.cite.key} where={info.cite.where} />
+  </figcaption>
+</figure>

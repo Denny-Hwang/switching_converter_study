@@ -51,6 +51,9 @@ files) in one place.
 - Site: Astro + Starlight (i18n en/ko, Pagefind search), MDX,
   `remark-math` + `rehype-katex` (strict), React islands for tools,
   Plotly.js for plots. Deployed to GitHub Pages by GitHub Actions.
+- Figures: `scripts/gen_figures.py` (schemdraw schematics, matplotlib
+  waveforms; pinned in the `figures` extra) writes `src/assets/figures/*.svg`,
+  embedded with `<Figure name="…" />`. CI redraws them and fails on diff.
 - Core engine: TypeScript package `packages/pe-core` (equations, mode
   detection, stresses, magnetics, loss model, piecewise-linear time-domain
   simulator). Tested with Vitest.
@@ -81,6 +84,7 @@ npm run build                         # strict KaTeX build (fails on math errors
 npm test                              # vitest (pe-core) + parity check
 pip install -e python && pytest        # sympy derivations + vectors
 python scripts/gen_equations.py       # regenerate equations.generated.json
+pip install -e "python[figures]" && python scripts/gen_figures.py   # redraw the figures
 python scripts/mathlint.py            # no hand-typed $$ blocks, all <Eq> ids exist
 python scripts/privacy_scan.py        # category rules + optional .private/denylist.txt
 python scripts/refcheck.py            # cite keys + VERIFY flags

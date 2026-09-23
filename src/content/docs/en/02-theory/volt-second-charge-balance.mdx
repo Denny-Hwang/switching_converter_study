@@ -9,6 +9,7 @@ module: true
 import Eq from '../../../../components/Eq.astro';
 import EqRef from '../../../../components/EqRef.astro';
 import Cite from '../../../../components/Cite.astro';
+import Figure from '../../../../components/Figure.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
@@ -32,6 +33,8 @@ inductor voltage integrated over one period equals $L$ times that net change
 in current, which is zero: the average inductor voltage over a period is
 zero, $\langle v_L \rangle = 0$ <Cite key="erickson2020" where="Ch. 2" />.
 This is **inductor volt-second balance**.
+
+<Figure name="balance" />
 
 With the [small-ripple approximation](../switching-principle/), the inductor
 voltage takes one constant value during the on-interval $D T_s$ and another

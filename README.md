@@ -1,149 +1,275 @@
+<div align="center">
+
 # Switching Converter Study · 스위칭 컨버터 스터디
+
+**Learn, design and simulate switching power converters, with every equation derived, tested and cited.**<br>
+**스위칭 전력 컨버터를 배우고, 설계하고, 시뮬레이션합니다. 모든 수식은 유도·검증·인용됩니다.**
+
+[![CI](https://github.com/Denny-Hwang/switching_converter_study/actions/workflows/ci.yml/badge.svg)](https://github.com/Denny-Hwang/switching_converter_study/actions/workflows/ci.yml)
+[![Deploy](https://github.com/Denny-Hwang/switching_converter_study/actions/workflows/pages.yml/badge.svg)](https://github.com/Denny-Hwang/switching_converter_study/actions/workflows/pages.yml)
+
+**[Open the site (English)](https://denny-hwang.github.io/switching_converter_study/en/)** · **[사이트 열기 (한국어)](https://denny-hwang.github.io/switching_converter_study/ko/)**
+
+<img src="docs/images/topologies.svg" width="100%" alt="Schematics of the five converters on the site: buck, boost, inverting buck-boost, flyback and forward">
 
 [English](#english) · [한국어](#한국어)
 
-Site: <https://denny-hwang.github.io/switching_converter_study/>
+</div>
 
 ---
 
 ## English
 
-### What
+An open, bilingual learning repository on power electronics for electrical
+engineers, and a web app that puts **learning**, **design** and
+**simulation** in one place. It covers switching-converter theory
+(CCM/DCM), the basic topologies, magnetics and losses. Energy-harvesting
+interfaces, bench practice and the SPICE library follow (see the roadmap).
 
-An open, bilingual (English canonical, Korean mirror) learning repository on
-power electronics for electrical engineers — switching-converter theory
-(CCM/DCM), topologies, magnetics, loss modeling and energy-harvesting
-interfaces — plus a GitHub Pages web app that combines **learning** (docs,
-quizzes, missions), **design** (calculators) and **simulation** (an in-browser
-time-domain converter simulator, CircuitJS links, LTspice/ngspice files).
+<table>
+<tr>
+<td width="50%" valign="top">
 
-### Why
+**Learn.** Each page states what it teaches, derives the result, and
+explains every symbol beside the equation. It then works an example,
+links to a tool preset, lists the gotchas and ends with a quiz.
 
-To go from quoting a textbook conversion ratio to designing, simulating and
-measuring a converter — and explaining why the measurement disagrees with the
-formula. The repository is built to be **verifiable end-to-end**:
+<img src="docs/images/learn-en.png" alt="The volt-second balance page: a figure of the inductor voltage and current in CCM, then the balance equation with the meaning of each symbol">
 
-- every equation lives once, in `packages/pe-core/equations/equations.yaml`;
-  its LaTeX is generated, its derivation is reproduced in sympy, and the
-  TypeScript engine must match the Python reference on shared vectors to
-  1e-9 relative;
-- every equation and device/method claim carries a key from `references.bib`,
-  and unverified entries cannot be cited on published pages;
-- math renders with KaTeX in strict mode, the built site is link-checked, and
-  a privacy scan runs in CI (see `PRIVACY_RULES.md`).
+</td>
+<td width="50%" valign="top">
 
-### How to run
+**Design.** Calculators for the converter, its losses, the flyback clamp,
+the harvesting source and the current-sense chain. Each result names the
+equation it comes from.
+
+<img src="docs/images/design-en.png" alt="The converter designer: the specification fields beside the design table, where each result names its equation">
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top">
+
+**Simulate.** A time-domain simulator in the browser: pick a topology, move a
+slider and watch the waveforms, the operating mode and the losses change.
+Every result sits next to the formula's value, and the simulator is
+validated against the formulas to within 2 %.
+
+<img src="docs/images/simulate-en.png" alt="The simulator: topology and preset buttons, the detected mode, and the parameter fields beside the stacked waveforms">
+
+</td>
+</tr>
+</table>
+
+### How the numbers stay right
+
+```mermaid
+flowchart LR
+  Y["equations.yaml<br/>the one source of every equation"] --> P["Python + sympy<br/>derivations, LaTeX, test vectors"]
+  P --> T["pe-core (TypeScript)<br/>evaluators, simulator"]
+  P --> S["Site<br/>equations, worked examples, tools"]
+  T --> S
+  B["references.bib<br/>verified sources"] --> S
+```
+
+- Every equation is written once, in `packages/pe-core/equations/equations.yaml`.
+  sympy reproduces its derivation and generates its LaTeX. The TypeScript
+  engine must match the Python reference on shared test vectors to 1e-9
+  relative.
+- Every equation and every claim about a device or method cites a
+  verified entry of `references.bib`. CI checks each DOI against Crossref,
+  opens each link, and fails on a dead one.
+- Math renders with KaTeX in strict mode. Figures are drawn from code
+  (`scripts/gen_figures.py`). A privacy scan keeps real-project data out
+  (`PRIVACY_RULES.md`): example numbers are round teaching values.
+
+### Contents
+
+| Section | Pages |
+| --- | --- |
+| 00 Foundations | circuit laws, phasors and Laplace, Fourier series, real passives, semiconductor switches |
+| 01 Physics | Faraday's law and inductors, transformers, ferrites and B-H, air gap and A_L, core loss |
+| 02 Theory | switching principle, volt-second and charge balance, CCM and DCM, the K parameter, averaged models, small-signal models, the RHP zero, control basics, derivations |
+| 03 Topologies | buck, boost, buck-boost, flyback, forward, comparison |
+| Tools | equation explorer, simulator, converter designer, loss budget, clamp check, source matcher, sense chain |
+
+### Run it locally
 
 Requirements: Node.js ≥ 22.12, Python ≥ 3.11.
 
 ```sh
-npm install && npm run dev            # site + tools at http://localhost:4321/switching_converter_study/
-npm run build                         # strict KaTeX build (fails on math errors)
-npm test                              # vitest (pe-core) + TS/Python parity
-pip install -e "python[dev]" && pytest # sympy derivations + vectors
-python scripts/gen_equations.py       # regenerate LaTeX, test vectors, derivations, bibliography JSON
-python scripts/mathlint.py            # math lint
-python scripts/privacy_scan.py        # privacy scan
-python scripts/refcheck.py            # citation check
-node scripts/keyboard_check.mjs       # keyboard focus order of the tool pages (after the build)
+npm install && npm run dev   # site and tools at http://localhost:4321/switching_converter_study/
+npm test                     # vitest: pe-core, simulator validation, TS/Python parity
 ```
+
+<details>
+<summary>All checks, as CI runs them</summary>
+
+```sh
+npm run build                          # strict KaTeX build (fails on a math error)
+pip install -e "python[dev]" && pytest # sympy derivations and test vectors
+python scripts/gen_equations.py        # regenerate LaTeX, test vectors, derivations, bibliography JSON
+pip install -e "python[figures]" && python scripts/gen_figures.py   # redraw the figures
+python scripts/mathlint.py             # no hand-typed equations; every <Eq> id exists
+python scripts/modulelint.py           # module template, EN/KO mirroring, STATUS.md
+python scripts/privacy_scan.py         # privacy rules
+python scripts/refcheck.py             # citation keys and VERIFY flags
+python scripts/anchorcheck.py dist     # every #fragment link lands (after the build)
+node scripts/keyboard_check.mjs        # keyboard focus order of the tool pages (after the build)
+```
+
+</details>
 
 ### Repository map
 
 | Path | Contents |
 | --- | --- |
-| `CLAUDE.md` | binding repository conventions |
-| `PRIVACY_RULES.md` | what may never be committed |
-| `docs/BUILD_SPEC.md` | the full build specification and phases |
-| `docs/STATUS.md` | module × language × done-criteria matrix |
-| `docs/ADR/` | architecture decision records |
-| `packages/pe-core/` | TypeScript engine; `equations/` holds the single source of truth |
-| `python/pe_core/` | verification side: sympy, LaTeX and vector generation, derivations |
-| `scripts/` | generators and lints |
-| `src/` | Astro + Starlight site (`content/docs/en`, `content/docs/ko`, components, tools) |
+| `CLAUDE.md`, `PRIVACY_RULES.md` | binding conventions; what may never be committed |
+| `docs/BUILD_SPEC.md`, `docs/STATUS.md`, `docs/ADR/` | build specification and phases; module status; decision records |
+| `packages/pe-core/` | TypeScript engine; `equations/` holds the one source of truth |
+| `python/pe_core/` | verification: sympy derivations, LaTeX and vector generation |
+| `examples/synthetic/` | the parameter sets behind every worked example and preset |
+| `scripts/` | generators, lints, screenshots |
+| `src/` | Astro + Starlight site: pages (`content/docs/en`, `content/docs/ko`), components, tools |
 
 ### Roadmap
 
 | Phase | Scope | State |
 | --- | --- | --- |
-| 0 | Scaffold, CI, Pages deployment, equation pipeline skeleton | done |
-| 1 | Equation engine: full seed set, derivations, parity, math/citation lints | done |
-| 2 | Core content: theory + main topologies (EN, then KO) | done: 00-foundations, 01-physics, 02-theory and 03-topologies (EN + KO) |
-| 3 | Time-domain simulator and design tools | in progress: simulator (3a), converter designer and loss budget (3b), clamp check and source matcher (3c), sense chain (3d) done |
+| 0 | Scaffold, CI, Pages deployment, equation pipeline | done |
+| 1 | Equation engine: derivations, parity, math and citation lints | done |
+| 2 | Core content: foundations, physics, theory, topologies (EN + KO) | done |
+| 3 | Time-domain simulator and design tools | in progress: simulator, converter designer, loss budget, clamp check, source matcher and sense chain done; magnetics designer next |
 | 4 | Magnetics, bench, harvesting, gotchas, resources | planned |
 | 5 | LTspice/ngspice/CircuitJS library, missions, v0.1.0 | planned |
 
 ### Contributing and licences
 
-See `CONTRIBUTING.md` for the module template, the equation workflow and the
-citation rules. Documentation: CC BY-SA 4.0 (`LICENSE-DOCS`). Code: MIT
+See `CONTRIBUTING.md` for the module template, the equation workflow and
+the citation rules. Documentation: CC BY-SA 4.0 (`LICENSE-DOCS`). Code: MIT
 (`LICENSE-CODE`).
 
 ---
 
 ## 한국어
 
-### 무엇인가
+전기공학 엔지니어를 위한 전력전자 공개 학습 저장소(영어 원본, 한국어 미러)이자
+**학습**, **설계**, **시뮬레이션**을 한곳에 모은 웹 앱입니다. 스위칭 컨버터
+이론(CCM/DCM), 기본 토폴로지, 자성 부품, 손실을 다룹니다. 에너지 하베스팅
+인터페이스, 벤치 실습, SPICE 라이브러리는 이어서 추가됩니다(로드맵 참고).
 
-전기공학 엔지니어를 위한 전력전자 공개 학습 저장소입니다(영어 원본,
-한국어 미러). 스위칭 컨버터 이론(CCM/DCM), 토폴로지, 자성 부품, 손실
-모델링, 에너지 하베스팅 인터페이스를 다루며, **학습**(문서, 퀴즈, 미션),
-**설계**(계산기), **시뮬레이션**(브라우저 기반 시간 영역 컨버터 시뮬레이터,
-CircuitJS 링크, LTspice/ngspice 파일)을 하나로 묶은 GitHub Pages 웹 앱을
-함께 제공합니다.
+<table>
+<tr>
+<td width="50%" valign="top">
 
-### 왜 만드는가
+**학습.** 각 페이지는 목표를 밝히고 결과를 유도하며, 수식 바로 옆에서 모든
+기호를 설명합니다. 이어서 예제를 풀고, 도구 프리셋으로 연결하고, 주의할 점을
+짚은 뒤 퀴즈로 마무리합니다.
 
-교과서의 변환비를 외우는 단계에서 벗어나, 컨버터를 설계·시뮬레이션·측정하고
-측정값이 공식과 다른 이유까지 설명할 수 있도록 하기 위해서입니다. 이
-저장소는 **처음부터 끝까지 검증 가능**하도록 만들어집니다.
+<img src="docs/images/learn-ko.png" alt="전압-초 평형 페이지: CCM에서 인덕터 전압과 전류를 그린 그림, 그리고 각 기호의 의미가 붙은 평형 수식">
 
-- 모든 수식은 `packages/pe-core/equations/equations.yaml` 한 곳에만 존재하며,
-  LaTeX는 자동 생성되고, 유도 과정은 sympy로 재현되고, TypeScript 엔진은
-  공유 벡터에서 Python 기준 구현과 상대오차 1e-9 이내로 일치해야 합니다.
-- 모든 수식과 소자·방법에 대한 주장은 `references.bib`의 키를 가지며,
-  검증되지 않은 항목은 공개 페이지에서 인용할 수 없습니다.
-- 수식은 KaTeX 엄격 모드로 렌더링되고, 빌드된 사이트의 링크를 검사하며,
-  CI에서 개인정보 스캔을 수행합니다(`PRIVACY_RULES.md` 참고).
+</td>
+<td width="50%" valign="top">
 
-### 실행 방법
+**설계.** 컨버터, 손실, 플라이백 클램프, 하베스팅 전원, 전류 센싱 체인을 위한
+계산 도구입니다. 모든 결과에 그 값을 낸 수식이 표시됩니다.
+
+<img src="docs/images/design-ko.png" alt="컨버터 설계 도구: 사양 입력란과, 각 결과에 그 수식이 표시된 설계 표">
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top">
+
+**시뮬레이션.** 브라우저에서 동작하는 시간 영역(time-domain) 시뮬레이터입니다.
+토폴로지를 고르고 슬라이더를 움직이면 파형, 동작 모드, 손실이 바로 바뀝니다.
+모든 결과가 수식의 값과 나란히 표시되며, 시뮬레이터는 수식과 2 % 이내로
+일치하도록 검증됩니다.
+
+<img src="docs/images/simulate-ko.png" alt="시뮬레이터: 토폴로지와 프리셋 버튼, 검출된 동작 모드, 그리고 파형 옆의 파라미터 입력란">
+
+</td>
+</tr>
+</table>
+
+### 수치가 정확하게 유지되는 방법
+
+```mermaid
+flowchart LR
+  Y["equations.yaml<br/>모든 수식의 단일 원본"] --> P["Python + sympy<br/>유도, LaTeX, 테스트 벡터"]
+  P --> T["pe-core (TypeScript)<br/>평가 함수, 시뮬레이터"]
+  P --> S["사이트<br/>수식, 예제, 도구"]
+  T --> S
+  B["references.bib<br/>검증된 출처"] --> S
+```
+
+- 모든 수식은 `packages/pe-core/equations/equations.yaml`에 한 번만 적습니다.
+  sympy가 유도 과정(derivation)을 재현하고 LaTeX를 생성하며, TypeScript 엔진은
+  공유 테스트 벡터에서 Python 기준 구현과 상대 오차 1e-9 이내로 일치해야 합니다.
+- 모든 수식과, 소자·방법에 대한 모든 주장은 `references.bib`의 검증된 항목을
+  인용합니다. CI는 모든 DOI를 Crossref와 대조하고 모든 링크를 열어 보며,
+  끊어진 링크가 있으면 실패합니다.
+- 수식은 KaTeX 엄격 모드(strict mode)로 렌더링하고, 그림은 코드로 그립니다
+  (`scripts/gen_figures.py`). 개인정보 스캔이 실제 프로젝트의 데이터를 막으며
+  (`PRIVACY_RULES.md`), 예제 수치는 교육용 어림수입니다.
+
+### 내용
+
+| 구분 | 페이지 |
+| --- | --- |
+| 00 기초 | 회로 법칙, 페이저와 라플라스 변환, 푸리에 급수, 실제 수동 소자, 반도체 스위치 |
+| 01 물리 | 패러데이 법칙과 인덕터, 변압기, 페라이트와 B-H 곡선, 공극과 A_L, 코어 손실 |
+| 02 이론 | 스위칭 원리, 전압-초 평형과 전하 평형, CCM과 DCM, K 파라미터, 평균 모델, 소신호 모델, 우반평면(RHP) 영점, 제어 기초, 유도 과정 |
+| 03 토폴로지 | 벅, 부스트, 벅-부스트, 플라이백, 포워드, 비교 |
+| 도구 | 수식 탐색기, 시뮬레이터, 컨버터 설계 도구, 손실 예산, 클램프 점검, 전원 정합, 센스 체인 |
+
+### 로컬에서 실행하기
 
 필요 사항: Node.js ≥ 22.12, Python ≥ 3.11.
 
 ```sh
-npm install && npm run dev            # 사이트 + 도구: http://localhost:4321/switching_converter_study/
-npm run build                         # KaTeX 엄격 빌드 (수식 오류 시 실패)
-npm test                              # vitest (pe-core) + TS/Python 패리티
-pip install -e "python[dev]" && pytest # sympy 유도 + 벡터
-python scripts/gen_equations.py       # LaTeX·테스트 벡터·유도·참고문헌 JSON 재생성
-python scripts/mathlint.py            # 수식 린트
-python scripts/privacy_scan.py        # 개인정보 스캔
-python scripts/refcheck.py            # 인용 검사
-node scripts/keyboard_check.mjs       # 도구 페이지의 키보드 포커스 순서 (빌드 후)
+npm install && npm run dev   # 사이트와 도구: http://localhost:4321/switching_converter_study/
+npm test                     # vitest: pe-core, 시뮬레이터 검증, TS/Python 패리티
 ```
+
+<details>
+<summary>CI가 실행하는 모든 검사</summary>
+
+```sh
+npm run build                          # KaTeX 엄격 빌드 (수식 오류 시 실패)
+pip install -e "python[dev]" && pytest # sympy 유도와 테스트 벡터
+python scripts/gen_equations.py        # LaTeX·테스트 벡터·유도·참고문헌 JSON 재생성
+pip install -e "python[figures]" && python scripts/gen_figures.py   # 그림 다시 그리기
+python scripts/mathlint.py             # 손으로 쓴 수식 금지, 모든 <Eq> id 존재
+python scripts/modulelint.py           # 모듈 템플릿, 영어·한국어 미러, STATUS.md
+python scripts/privacy_scan.py         # 개인정보 규칙
+python scripts/refcheck.py             # 인용 키와 VERIFY 표시
+python scripts/anchorcheck.py dist     # 모든 #fragment 링크의 대상 존재 (빌드 후)
+node scripts/keyboard_check.mjs        # 도구 페이지의 키보드 포커스 순서 (빌드 후)
+```
+
+</details>
 
 ### 저장소 구조
 
 | 경로 | 내용 |
 | --- | --- |
-| `CLAUDE.md` | 구속력 있는 저장소 규약 |
-| `PRIVACY_RULES.md` | 절대 커밋하면 안 되는 것 |
-| `docs/BUILD_SPEC.md` | 전체 빌드 명세와 단계 |
-| `docs/STATUS.md` | 모듈 × 언어 × 완료 기준 매트릭스 |
-| `docs/ADR/` | 아키텍처 결정 기록 |
+| `CLAUDE.md`, `PRIVACY_RULES.md` | 구속력 있는 규약, 절대 커밋하면 안 되는 것 |
+| `docs/BUILD_SPEC.md`, `docs/STATUS.md`, `docs/ADR/` | 빌드 명세와 단계, 모듈 진행 상황, 결정 기록 |
 | `packages/pe-core/` | TypeScript 엔진; `equations/`가 단일 원본(single source of truth) |
-| `python/pe_core/` | 검증 측: sympy, LaTeX·벡터 생성, 유도 |
-| `scripts/` | 생성기와 린트 |
-| `src/` | Astro + Starlight 사이트 (`content/docs/en`, `content/docs/ko`, 컴포넌트, 도구) |
+| `python/pe_core/` | 검증: sympy 유도, LaTeX·벡터 생성 |
+| `examples/synthetic/` | 모든 예제와 프리셋의 파라미터 |
+| `scripts/` | 생성기, 린트, 스크린샷 |
+| `src/` | Astro + Starlight 사이트: 페이지(`content/docs/en`, `content/docs/ko`), 컴포넌트, 도구 |
 
 ### 로드맵
 
 | 단계 | 범위 | 상태 |
 | --- | --- | --- |
-| 0 | 골격, CI, Pages 배포, 수식 파이프라인 뼈대 | 완료 |
-| 1 | 수식 엔진: 전체 기본 세트, 유도, 패리티, 수식·인용 린트 | 완료 |
-| 2 | 핵심 콘텐츠: 이론 + 주요 토폴로지 (영어 후 한국어) | 완료: 00-기초, 01-물리, 02-이론, 03-토폴로지(영어·한국어) |
-| 3 | 시간 영역 시뮬레이터와 설계 도구 | 진행 중: 시뮬레이터(3a), 컨버터 설계 도구와 손실 예산(3b), 클램프 점검과 전원 정합 도구(3c) 완료 |
+| 0 | 골격, CI, Pages 배포, 수식 파이프라인 | 완료 |
+| 1 | 수식 엔진: 유도, 패리티, 수식·인용 린트 | 완료 |
+| 2 | 핵심 콘텐츠: 기초, 물리, 이론, 토폴로지(영어·한국어) | 완료 |
+| 3 | 시간 영역 시뮬레이터와 설계 도구 | 진행 중: 시뮬레이터, 컨버터 설계 도구, 손실 예산, 클램프 점검, 전원 정합, 센스 체인 완료; 다음은 자성 부품 설계 도구 |
 | 4 | 자성 부품, 벤치, 하베스팅, 흔한 함정, 자료 모음 | 예정 |
 | 5 | LTspice/ngspice/CircuitJS 라이브러리, 미션, v0.1.0 | 예정 |
 

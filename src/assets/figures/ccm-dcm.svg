@@ -1,0 +1,824 @@
+<svg aria-hidden="true" focusable="false" stroke-linejoin="round" stroke-linecap="butt" xmlns:xlink="http://www.w3.org/1999/xlink" width="416.094pt" height="153.743pt" viewBox="0 0 416.094 153.743" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <g id="fig-ccm-dcm-figure_1">
+  <g id="fig-ccm-dcm-patch_1">
+   <path d="M 0 153.743 
+L 416.094 153.743 
+L 416.094 0 
+L 0 0 
+L 0 153.743 
+z
+" style="fill: none"/>
+  </g>
+  <g id="fig-ccm-dcm-axes_1">
+   <g id="fig-ccm-dcm-patch_2">
+    <path d="M 7.92 135.024 
+L 122.709 135.024 
+L 122.709 18.6 
+L 7.92 18.6 
+L 7.92 135.024 
+z
+" style="fill: none"/>
+   </g>
+   <g id="fig-ccm-dcm-matplotlib.axis_1">
+    <g id="fig-ccm-dcm-xtick_1">
+     <g id="fig-ccm-dcm-line2d_1">
+      <defs>
+       <path id="fig-ccm-dcm-m8900079513" d="M 0 0 
+L 0 3.5 
+" style="stroke: currentColor; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#fig-ccm-dcm-m8900079513" x="62.5812" y="131.143" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-ccm-dcm-text_1">
+      <g style="fill: currentColor" transform="translate(57.3012 147.143) scale(0.12 -0.12)">
+       <defs>
+        <path id="fig-ccm-dcm-STIXGeneral-Italic-37" d="M 4051 4179 
+L 3770 3130 
+L 3661 3142 
+Q 3680 3302 3680 3437 
+Q 3680 3955 3034 3955 
+L 2662 3955 
+L 1786 819 
+Q 1696 506 1696 397 
+Q 1696 250 1766 195 
+Q 1837 141 2035 122 
+L 2259 102 
+L 2259 0 
+L 416 0 
+L 416 102 
+Q 749 134 889 230 
+Q 1030 326 1101 582 
+L 2016 3955 
+Q 1254 3955 988 3817 
+Q 723 3680 493 3162 
+L 378 3187 
+L 646 4179 
+L 4051 4179 
+z
+" transform="scale(0.015625)"/>
+        <path id="fig-ccm-dcm-STIXGeneral-Italic-56" d="M 2342 2829 
+L 2214 1933 
+L 2112 1933 
+Q 2022 2675 1542 2675 
+Q 1370 2675 1267 2579 
+Q 1165 2483 1165 2310 
+Q 1165 2067 1510 1658 
+Q 1946 1152 1946 787 
+Q 1946 397 1686 163 
+Q 1427 -70 1024 -70 
+Q 838 -70 672 -6 
+Q 538 51 390 51 
+Q 262 51 205 -83 
+L 102 -83 
+L 230 934 
+L 333 934 
+Q 461 64 973 64 
+Q 1203 64 1331 192 
+Q 1459 320 1459 557 
+Q 1459 845 1101 1293 
+Q 698 1798 698 2131 
+Q 698 2451 909 2636 
+Q 1120 2822 1472 2822 
+Q 1600 2822 1830 2758 
+Q 1971 2714 2061 2714 
+Q 2189 2714 2253 2829 
+L 2342 2829 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-37" transform="translate(0 0.703125)"/>
+       <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-56" transform="translate(55.5999 -14.2969) scale(0.7)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-ccm-dcm-xtick_2">
+     <g id="fig-ccm-dcm-line2d_2">
+      <g>
+       <use xlink:href="#fig-ccm-dcm-m8900079513" x="117.242" y="131.143" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-ccm-dcm-text_2">
+      <g style="fill: currentColor" transform="translate(108.962 147.143) scale(0.12 -0.12)">
+       <defs>
+        <path id="fig-ccm-dcm-STIXGeneral-Regular-15" d="M 3034 877 
+L 2688 0 
+L 186 0 
+L 186 77 
+L 1325 1286 
+Q 1773 1754 1965 2144 
+Q 2157 2534 2157 2950 
+Q 2157 3379 1920 3616 
+Q 1683 3853 1267 3853 
+Q 922 3853 720 3673 
+Q 518 3494 326 3021 
+L 192 3053 
+Q 301 3648 630 3987 
+Q 960 4326 1523 4326 
+Q 2054 4326 2380 4006 
+Q 2707 3686 2707 3200 
+Q 2707 2477 1888 1613 
+L 832 486 
+L 2330 486 
+Q 2541 486 2665 569 
+Q 2790 653 2944 915 
+L 3034 877 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-15" transform="translate(0 0.40625)"/>
+       <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-37" transform="translate(50 0.40625)"/>
+       <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-56" transform="translate(105.6 -14.5938) scale(0.7)"/>
+      </g>
+     </g>
+    </g>
+   </g>
+   <g id="fig-ccm-dcm-matplotlib.axis_2"/>
+   <g id="fig-ccm-dcm-line2d_3">
+    <path d="M 7.92 103.978 
+L 29.7845 26.3616 
+L 62.5812 103.978 
+L 84.4457 26.3616 
+L 117.242 103.978 
+" clip-path="url(#fig-ccm-dcm-p5dec1c53c7)" style="fill: none; stroke: #22a06b; stroke-width: 2; stroke-linecap: square"/>
+   </g>
+   <g id="fig-ccm-dcm-patch_3">
+    <path d="M 7.92 135.024 
+L 7.92 18.6 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-ccm-dcm-patch_4">
+    <path d="M 7.92 131.143 
+L 122.709 131.143 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-ccm-dcm-text_3">
+    <g style="fill: currentColor" transform="translate(3.6 13.2715) scale(0.12 -0.12)">
+     <defs>
+      <path id="fig-ccm-dcm-STIXGeneral-Italic-4c" d="M 1690 3834 
+Q 1690 3699 1597 3603 
+Q 1504 3507 1376 3507 
+Q 1235 3507 1152 3600 
+Q 1069 3693 1069 3846 
+Q 1069 3994 1155 4090 
+Q 1242 4186 1370 4186 
+Q 1498 4186 1594 4080 
+Q 1690 3974 1690 3834 
+z
+M 1421 730 
+L 1504 659 
+Q 1235 243 1049 86 
+Q 864 -70 627 -70 
+Q 314 -70 314 282 
+Q 314 467 454 992 
+L 762 2125 
+Q 819 2330 819 2406 
+Q 819 2502 745 2528 
+Q 672 2554 410 2560 
+L 410 2662 
+Q 704 2688 1434 2822 
+L 1459 2803 
+L 858 608 
+Q 794 390 794 326 
+Q 794 230 883 230 
+Q 1043 230 1421 730 
+z
+" transform="scale(0.015625)"/>
+      <path id="fig-ccm-dcm-STIXGeneral-Italic-2f" d="M 3578 1152 
+L 3206 0 
+L -51 0 
+L -51 102 
+Q 218 128 301 211 
+Q 384 294 474 602 
+L 1254 3405 
+Q 1325 3642 1325 3802 
+Q 1325 3942 1225 4000 
+Q 1126 4058 832 4077 
+L 832 4179 
+L 2579 4179 
+L 2579 4077 
+Q 2285 4058 2147 3955 
+Q 2010 3853 1933 3584 
+L 1165 838 
+Q 1101 595 1101 493 
+Q 1101 346 1241 288 
+Q 1382 230 1773 230 
+Q 2266 230 2480 275 
+Q 2694 320 2925 474 
+Q 3187 646 3450 1190 
+L 3578 1152 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-4c" transform="translate(0 0.59375)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-2f" transform="translate(27.8 -14.4062) scale(0.7)"/>
+    </g>
+   </g>
+   <g id="fig-ccm-dcm-text_4">
+    <g style="fill: currentColor" transform="translate(28.4143 12.6) scale(0.12 -0.12)">
+     <defs>
+      <path id="fig-ccm-dcm-STIXGeneral-Regular-26" d="M 3930 838 
+L 4051 723 
+Q 3482 -90 2304 -90 
+Q 1376 -90 794 480 
+Q 179 1082 179 2080 
+Q 179 3014 755 3661 
+Q 1357 4326 2310 4326 
+Q 2720 4326 3072 4230 
+Q 3475 4115 3514 4115 
+Q 3725 4115 3782 4326 
+L 3910 4326 
+L 3968 2874 
+L 3821 2874 
+Q 3718 3334 3488 3584 
+Q 3034 4070 2458 4070 
+Q 1747 4070 1334 3548 
+Q 922 3027 922 2182 
+Q 922 1152 1382 653 
+Q 1811 192 2522 192 
+Q 2944 192 3251 339 
+Q 3558 486 3930 838 
+z
+" transform="scale(0.015625)"/>
+      <path id="fig-ccm-dcm-STIXGeneral-Regular-30" d="M 5530 0 
+L 3738 0 
+L 3738 122 
+Q 4115 147 4214 265 
+Q 4314 384 4314 787 
+L 4314 3661 
+L 2682 0 
+L 2592 0 
+L 979 3514 
+L 979 966 
+Q 979 448 1088 294 
+Q 1197 141 1574 122 
+L 1574 0 
+L 77 0 
+L 77 122 
+Q 358 141 480 205 
+Q 602 269 650 432 
+Q 698 595 698 966 
+L 698 3514 
+Q 698 3878 589 3984 
+Q 480 4090 90 4115 
+L 90 4237 
+L 1357 4237 
+L 2835 1024 
+L 4250 4237 
+L 5523 4237 
+L 5523 4115 
+Q 5178 4109 5072 3993 
+Q 4966 3878 4966 3520 
+L 4966 717 
+Q 4966 378 5072 262 
+Q 5178 147 5530 122 
+L 5530 0 
+z
+" transform="scale(0.015625)"/>
+      <path id="fig-ccm-dcm-STIXGeneral-Regular-1d" d="M 1123 2832 
+Q 1229 2726 1229 2579 
+Q 1229 2432 1126 2329 
+Q 1024 2227 877 2227 
+Q 730 2227 624 2332 
+Q 518 2438 518 2579 
+Q 518 2733 620 2835 
+Q 723 2938 877 2938 
+Q 1018 2938 1123 2832 
+z
+M 1229 282 
+Q 1229 141 1126 35 
+Q 1024 -70 877 -70 
+Q 730 -70 624 35 
+Q 518 141 518 282 
+Q 518 435 620 537 
+Q 723 640 877 640 
+Q 1018 640 1123 534 
+Q 1229 429 1229 282 
+z
+" transform="scale(0.015625)"/>
+      <path id="fig-ccm-dcm-STIXGeneral-Regular-3" transform="scale(0.015625)"/>
+      <path id="fig-ccm-dcm-STIXGeneral-Italic-2e" d="M 4621 4179 
+L 4621 4077 
+Q 4442 4077 4128 3840 
+L 2221 2400 
+L 3296 525 
+Q 3443 269 3552 201 
+Q 3661 134 3962 102 
+L 3962 0 
+L 2202 0 
+L 2202 102 
+L 2387 122 
+Q 2682 147 2682 326 
+Q 2682 365 2672 409 
+Q 2662 454 2630 515 
+Q 2598 576 2579 611 
+Q 2560 646 2509 736 
+Q 2458 826 2445 851 
+L 1658 2227 
+L 1242 710 
+Q 1171 467 1171 384 
+Q 1171 237 1264 182 
+Q 1357 128 1626 102 
+L 1626 0 
+L 45 0 
+L 45 102 
+Q 320 134 403 211 
+Q 486 288 563 557 
+L 1357 3405 
+Q 1446 3725 1446 3802 
+Q 1446 3936 1337 4000 
+Q 1229 4064 941 4077 
+L 941 4179 
+L 2669 4179 
+L 2669 4077 
+Q 2400 4058 2253 3958 
+Q 2106 3859 2035 3603 
+L 1696 2362 
+L 2675 3059 
+Q 3590 3706 3590 3936 
+Q 3590 4032 3360 4058 
+L 3206 4077 
+L 3206 4179 
+L 4621 4179 
+z
+" transform="scale(0.015625)"/>
+      <path id="fig-ccm-dcm-STIXGeneral-Regular-21" d="M 3974 1594 
+L 358 -154 
+L 358 250 
+L 3123 1626 
+L 358 3002 
+L 358 3418 
+L 3974 1658 
+L 3974 1594 
+z
+" transform="scale(0.015625)"/>
+      <path id="fig-ccm-dcm-STIXGeneral-Regular-46" d="M 2547 998 
+L 2637 941 
+Q 2362 403 2112 205 
+Q 1786 -64 1376 -64 
+Q 845 -64 502 336 
+Q 160 736 160 1357 
+Q 160 2170 698 2618 
+Q 1094 2944 1562 2944 
+Q 1965 2944 2256 2749 
+Q 2547 2554 2547 2285 
+Q 2547 2176 2457 2096 
+Q 2368 2016 2246 2016 
+Q 2022 2016 1939 2310 
+L 1901 2451 
+Q 1850 2630 1773 2694 
+Q 1696 2758 1523 2758 
+Q 1133 2758 893 2451 
+Q 653 2144 653 1645 
+Q 653 1094 928 745 
+Q 1203 397 1645 397 
+Q 1920 397 2118 528 
+Q 2317 659 2547 998 
+z
+" transform="scale(0.015625)"/>
+      <path id="fig-ccm-dcm-STIXGeneral-Regular-55" d="M 1024 2931 
+L 1024 2342 
+Q 1267 2688 1430 2816 
+Q 1594 2944 1792 2944 
+Q 1958 2944 2051 2854 
+Q 2144 2765 2144 2605 
+Q 2144 2470 2077 2393 
+Q 2010 2317 1894 2317 
+Q 1773 2317 1638 2445 
+Q 1536 2541 1472 2541 
+Q 1338 2541 1181 2355 
+Q 1024 2170 1024 2016 
+L 1024 576 
+Q 1024 301 1133 205 
+Q 1242 109 1568 96 
+L 1568 0 
+L 32 0 
+L 32 96 
+Q 339 154 412 224 
+Q 486 294 486 538 
+L 486 2138 
+Q 486 2349 438 2435 
+Q 390 2522 269 2522 
+Q 166 2522 45 2496 
+L 45 2598 
+Q 448 2726 992 2944 
+L 1024 2931 
+z
+" transform="scale(0.015625)"/>
+      <path id="fig-ccm-dcm-STIXGeneral-Regular-4c" d="M 1152 4045 
+Q 1152 3904 1056 3811 
+Q 960 3718 819 3718 
+Q 685 3718 592 3811 
+Q 499 3904 499 4045 
+Q 499 4179 595 4275 
+Q 691 4371 826 4371 
+Q 966 4371 1059 4275 
+Q 1152 4179 1152 4045 
+z
+M 1619 0 
+L 102 0 
+L 102 96 
+Q 435 115 521 211 
+Q 608 307 608 666 
+L 608 2118 
+Q 608 2342 563 2432 
+Q 518 2522 397 2522 
+Q 243 2522 128 2490 
+L 128 2592 
+L 1120 2944 
+L 1146 2918 
+L 1146 672 
+Q 1146 314 1226 218 
+Q 1306 122 1619 96 
+L 1619 0 
+z
+" transform="scale(0.015625)"/>
+      <path id="fig-ccm-dcm-STIXGeneral-Regular-57" d="M 1702 493 
+L 1786 422 
+Q 1478 -64 1011 -64 
+Q 448 -64 448 749 
+L 448 2675 
+L 109 2675 
+Q 83 2694 83 2720 
+Q 83 2771 192 2842 
+Q 435 2982 813 3526 
+Q 826 3546 874 3606 
+Q 922 3667 941 3706 
+Q 986 3706 986 3622 
+L 986 2880 
+L 1632 2880 
+L 1632 2675 
+L 986 2675 
+L 986 845 
+Q 986 538 1062 403 
+Q 1139 269 1318 269 
+Q 1510 269 1702 493 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-26" transform="translate(0 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-26" transform="translate(66.6999 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-30" transform="translate(133.4 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-1d" transform="translate(222.3 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-3" transform="translate(250.1 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-2e" transform="translate(275.1 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-21" transform="translate(361.8 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-2e" transform="translate(450.3 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-46" transform="translate(517 -14.5938) scale(0.7)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-55" transform="translate(548.08 -14.5938) scale(0.7)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-4c" transform="translate(571.389 -14.5938) scale(0.7)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-57" transform="translate(590.849 -14.5938) scale(0.7)"/>
+    </g>
+   </g>
+  </g>
+  <g id="fig-ccm-dcm-axes_2">
+   <g id="fig-ccm-dcm-patch_5">
+    <path d="M 151.406 135.024 
+L 266.194 135.024 
+L 266.194 18.6 
+L 151.406 18.6 
+L 151.406 135.024 
+z
+" style="fill: none"/>
+   </g>
+   <g id="fig-ccm-dcm-matplotlib.axis_3">
+    <g id="fig-ccm-dcm-xtick_3">
+     <g id="fig-ccm-dcm-line2d_4">
+      <g>
+       <use xlink:href="#fig-ccm-dcm-m8900079513" x="206.067" y="131.143" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-ccm-dcm-text_5">
+      <g style="fill: currentColor" transform="translate(200.787 147.143) scale(0.12 -0.12)">
+       <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-37" transform="translate(0 0.703125)"/>
+       <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-56" transform="translate(55.5999 -14.2969) scale(0.7)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-ccm-dcm-xtick_4">
+     <g id="fig-ccm-dcm-line2d_5">
+      <g>
+       <use xlink:href="#fig-ccm-dcm-m8900079513" x="260.728" y="131.143" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-ccm-dcm-text_6">
+      <g style="fill: currentColor" transform="translate(252.448 147.143) scale(0.12 -0.12)">
+       <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-15" transform="translate(0 0.40625)"/>
+       <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-37" transform="translate(50 0.40625)"/>
+       <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-56" transform="translate(105.6 -14.5938) scale(0.7)"/>
+      </g>
+     </g>
+    </g>
+   </g>
+   <g id="fig-ccm-dcm-matplotlib.axis_4"/>
+   <g id="fig-ccm-dcm-line2d_6">
+    <path d="M 151.406 131.143 
+L 173.27 53.5272 
+L 206.067 131.143 
+L 227.931 53.5272 
+L 260.728 131.143 
+" clip-path="url(#fig-ccm-dcm-pbe64275261)" style="fill: none; stroke: #22a06b; stroke-width: 2; stroke-linecap: square"/>
+   </g>
+   <g id="fig-ccm-dcm-patch_6">
+    <path d="M 151.406 135.024 
+L 151.406 18.6 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-ccm-dcm-patch_7">
+    <path d="M 151.406 131.143 
+L 266.194 131.143 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-ccm-dcm-text_7">
+    <g style="fill: currentColor" transform="translate(188.4 12.6) scale(0.12 -0.12)">
+     <defs>
+      <path id="fig-ccm-dcm-STIXGeneral-Regular-20" d="M 4077 2048 
+L 307 2048 
+L 307 2470 
+L 4077 2470 
+L 4077 2048 
+z
+M 4077 768 
+L 307 768 
+L 307 1190 
+L 4077 1190 
+L 4077 768 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-2e" transform="translate(0 0.703125)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-20" transform="translate(86.6999 0.703125)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-2e" transform="translate(175.2 0.703125)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-46" transform="translate(241.9 -14.2969) scale(0.7)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-55" transform="translate(272.98 -14.2969) scale(0.7)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-4c" transform="translate(296.29 -14.2969) scale(0.7)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-57" transform="translate(315.75 -14.2969) scale(0.7)"/>
+    </g>
+   </g>
+  </g>
+  <g id="fig-ccm-dcm-axes_3">
+   <g id="fig-ccm-dcm-patch_8">
+    <path d="M 294.891 135.024 
+L 409.68 135.024 
+L 409.68 18.6 
+L 294.891 18.6 
+L 294.891 135.024 
+z
+" style="fill: none"/>
+   </g>
+   <g id="fig-ccm-dcm-matplotlib.axis_5">
+    <g id="fig-ccm-dcm-xtick_5">
+     <g id="fig-ccm-dcm-line2d_7">
+      <g>
+       <use xlink:href="#fig-ccm-dcm-m8900079513" x="349.553" y="131.143" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-ccm-dcm-text_8">
+      <g style="fill: currentColor" transform="translate(344.273 147.143) scale(0.12 -0.12)">
+       <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-37" transform="translate(0 0.703125)"/>
+       <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-56" transform="translate(55.5999 -14.2969) scale(0.7)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-ccm-dcm-xtick_6">
+     <g id="fig-ccm-dcm-line2d_8">
+      <g>
+       <use xlink:href="#fig-ccm-dcm-m8900079513" x="404.214" y="131.143" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-ccm-dcm-text_9">
+      <g style="fill: currentColor" transform="translate(395.934 147.143) scale(0.12 -0.12)">
+       <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-15" transform="translate(0 0.40625)"/>
+       <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-37" transform="translate(50 0.40625)"/>
+       <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-56" transform="translate(105.6 -14.5938) scale(0.7)"/>
+      </g>
+     </g>
+    </g>
+   </g>
+   <g id="fig-ccm-dcm-matplotlib.axis_6"/>
+   <g id="fig-ccm-dcm-line2d_9">
+    <path d="M 294.891 131.143 
+L 316.756 72.9312 
+L 333.154 131.143 
+L 349.553 131.143 
+L 349.553 131.143 
+L 371.417 72.9312 
+L 387.816 131.143 
+L 404.214 131.143 
+" clip-path="url(#fig-ccm-dcm-p5970569ebe)" style="fill: none; stroke: #22a06b; stroke-width: 2; stroke-linecap: square"/>
+   </g>
+   <g id="fig-ccm-dcm-LineCollection_1">
+    <path d="M 316.756 131.143 
+L 316.756 53.5272 
+" clip-path="url(#fig-ccm-dcm-p5970569ebe)" style="fill: none; stroke-dasharray: 1.2,1.2; stroke-dashoffset: 0; stroke: currentColor; stroke-width: 0.6"/>
+   </g>
+   <g id="fig-ccm-dcm-LineCollection_2">
+    <path d="M 333.154 131.143 
+L 333.154 53.5272 
+" clip-path="url(#fig-ccm-dcm-p5970569ebe)" style="fill: none; stroke-dasharray: 1.2,1.2; stroke-dashoffset: 0; stroke: currentColor; stroke-width: 0.6"/>
+   </g>
+   <g id="fig-ccm-dcm-LineCollection_3">
+    <path d="M 349.553 131.143 
+L 349.553 53.5272 
+" clip-path="url(#fig-ccm-dcm-p5970569ebe)" style="fill: none; stroke-dasharray: 1.2,1.2; stroke-dashoffset: 0; stroke: currentColor; stroke-width: 0.6"/>
+   </g>
+   <g id="fig-ccm-dcm-patch_9">
+    <path d="M 294.891 135.024 
+L 294.891 18.6 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-ccm-dcm-patch_10">
+    <path d="M 294.891 131.143 
+L 409.68 131.143 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-ccm-dcm-patch_11">
+    <path d="M 315.861 53.5272 
+Q 305.824 53.5272 295.786 53.5272 
+" style="fill: none; stroke: currentColor; stroke-width: 0.8; stroke-linecap: round"/>
+    <path d="M 311.061 51.1272 
+L 315.861 53.5272 
+L 311.061 55.9272 
+" style="fill: none; stroke: currentColor; stroke-width: 0.8; stroke-linecap: round"/>
+    <path d="M 300.586 55.9272 
+L 295.786 53.5272 
+L 300.586 51.1272 
+" style="fill: none; stroke: currentColor; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="fig-ccm-dcm-text_10">
+    <g style="fill: currentColor" transform="translate(301.809 46.1202) scale(0.11 -0.11)">
+     <defs>
+      <path id="fig-ccm-dcm-STIXGeneral-Italic-27" d="M 838 4179 
+L 2611 4179 
+Q 3469 4179 3974 3731 
+Q 4480 3283 4480 2458 
+Q 4480 1325 3456 531 
+Q 2778 0 1594 0 
+L -51 0 
+L -51 102 
+Q 224 154 310 230 
+Q 397 307 474 589 
+L 1254 3437 
+Q 1325 3686 1325 3814 
+Q 1325 3949 1222 4009 
+Q 1120 4070 838 4077 
+L 838 4179 
+z
+M 1984 3738 
+L 1229 1037 
+Q 1088 525 1088 429 
+Q 1088 192 1523 192 
+Q 2470 192 3066 768 
+Q 3398 1088 3584 1597 
+Q 3770 2106 3770 2611 
+Q 3770 3386 3270 3763 
+Q 2970 3987 2432 3987 
+Q 2227 3987 2128 3939 
+Q 2029 3891 1984 3738 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-27" transform="translate(0 0.703125)"/>
+    </g>
+   </g>
+   <g id="fig-ccm-dcm-patch_12">
+    <path d="M 332.26 53.5272 
+Q 324.955 53.5272 317.65 53.5272 
+" style="fill: none; stroke: currentColor; stroke-width: 0.8; stroke-linecap: round"/>
+    <path d="M 327.46 51.1272 
+L 332.26 53.5272 
+L 327.46 55.9272 
+" style="fill: none; stroke: currentColor; stroke-width: 0.8; stroke-linecap: round"/>
+    <path d="M 322.45 55.9272 
+L 317.65 53.5272 
+L 322.45 51.1272 
+" style="fill: none; stroke: currentColor; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="fig-ccm-dcm-text_11">
+    <g style="fill: currentColor" transform="translate(318.795 46.1202) scale(0.11 -0.11)">
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-27" transform="translate(0 0.703125)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-15" transform="translate(72.1999 -14.2969) scale(0.7)"/>
+    </g>
+   </g>
+   <g id="fig-ccm-dcm-patch_13">
+    <path d="M 348.658 53.5272 
+Q 341.353 53.5272 334.049 53.5272 
+" style="fill: none; stroke: currentColor; stroke-width: 0.8; stroke-linecap: round"/>
+    <path d="M 343.858 51.1272 
+L 348.658 53.5272 
+L 343.858 55.9272 
+" style="fill: none; stroke: currentColor; stroke-width: 0.8; stroke-linecap: round"/>
+    <path d="M 338.849 55.9272 
+L 334.049 53.5272 
+L 338.849 51.1272 
+" style="fill: none; stroke: currentColor; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="fig-ccm-dcm-text_12">
+    <g style="fill: currentColor" transform="translate(335.193 46.1202) scale(0.11 -0.11)">
+     <defs>
+      <path id="fig-ccm-dcm-STIXGeneral-Regular-16" d="M 390 3264 
+L 288 3290 
+Q 435 3770 748 4048 
+Q 1062 4326 1542 4326 
+Q 1990 4326 2265 4083 
+Q 2541 3840 2541 3450 
+Q 2541 2925 1946 2566 
+Q 2298 2413 2477 2227 
+Q 2758 1914 2758 1402 
+Q 2758 890 2464 506 
+Q 2246 211 1840 60 
+Q 1434 -90 979 -90 
+Q 262 -90 262 275 
+Q 262 378 339 442 
+Q 416 506 525 506 
+Q 685 506 915 339 
+Q 1197 141 1466 141 
+Q 1818 141 2058 425 
+Q 2298 710 2298 1120 
+Q 2298 1856 1632 2048 
+Q 1434 2112 979 2112 
+L 979 2202 
+Q 1338 2323 1517 2432 
+Q 2035 2726 2035 3290 
+Q 2035 3610 1852 3776 
+Q 1670 3942 1344 3942 
+Q 768 3942 390 3264 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-27" transform="translate(0 0.703125)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-16" transform="translate(72.1999 -14.2969) scale(0.7)"/>
+    </g>
+   </g>
+   <g id="fig-ccm-dcm-text_13">
+    <g style="fill: currentColor" transform="translate(315.026 12.6) scale(0.12 -0.12)">
+     <defs>
+      <path id="fig-ccm-dcm-STIXGeneral-Regular-27" d="M 102 4237 
+L 1830 4237 
+Q 3078 4237 3750 3654 
+Q 4384 3110 4384 2138 
+Q 4384 966 3514 410 
+Q 2880 0 1901 0 
+L 102 0 
+L 102 122 
+Q 474 147 570 252 
+Q 666 358 666 736 
+L 666 3520 
+Q 666 3891 570 3990 
+Q 474 4090 102 4115 
+L 102 4237 
+z
+M 1318 3731 
+L 1318 538 
+Q 1318 365 1379 301 
+Q 1440 237 1626 237 
+Q 2125 237 2432 307 
+Q 2739 378 3021 570 
+Q 3686 1018 3686 2099 
+Q 3686 3027 3078 3558 
+Q 2803 3802 2476 3901 
+Q 2150 4000 1658 4000 
+Q 1472 4000 1395 3942 
+Q 1318 3885 1318 3731 
+z
+" transform="scale(0.015625)"/>
+      <path id="fig-ccm-dcm-STIXGeneral-Regular-1f" d="M 3974 -154 
+L 358 1594 
+L 358 1658 
+L 3974 3418 
+L 3974 3002 
+L 1210 1626 
+L 3974 250 
+L 3974 -154 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-27" transform="translate(0 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-26" transform="translate(72.1999 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-30" transform="translate(138.9 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-1d" transform="translate(227.8 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-3" transform="translate(255.6 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-2e" transform="translate(280.6 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-1f" transform="translate(367.3 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Italic-2e" transform="translate(455.8 0.40625)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-46" transform="translate(522.5 -14.5938) scale(0.7)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-55" transform="translate(553.58 -14.5938) scale(0.7)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-4c" transform="translate(576.889 -14.5938) scale(0.7)"/>
+     <use xlink:href="#fig-ccm-dcm-STIXGeneral-Regular-57" transform="translate(596.349 -14.5938) scale(0.7)"/>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="fig-ccm-dcm-p5dec1c53c7">
+   <rect x="7.92" y="18.6" width="114.789" height="116.424"/>
+  </clipPath>
+  <clipPath id="fig-ccm-dcm-pbe64275261">
+   <rect x="151.406" y="18.6" width="114.789" height="116.424"/>
+  </clipPath>
+  <clipPath id="fig-ccm-dcm-p5970569ebe">
+   <rect x="294.891" y="18.6" width="114.789" height="116.424"/>
+  </clipPath>
+ </defs>
+</svg>

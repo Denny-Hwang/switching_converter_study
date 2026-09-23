@@ -374,6 +374,29 @@ html:lang(ko) body {
   color: var(--sl-color-gray-3);
 }
 
+/* ---- <Figure> ------------------------------------------------------------ */
+/* The SVG draws in currentColor, so the figure follows the theme's text colour. */
+.pe-figure {
+  margin: 1.5rem 0;
+}
+.pe-figure__art {
+  overflow-x: auto;
+  color: var(--sl-color-white);
+}
+.pe-figure__art svg {
+  display: block;
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--fig-width);
+  min-width: var(--fig-min);
+  height: auto;
+}
+.pe-figure figcaption {
+  margin-top: 0.5rem;
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-2);
+}
+
 /* ---- <Worked>, <Val>, <TryIt>, <GoDeeper>, <Quiz> -------------------------- */
 .pe-worked {
   margin: 1rem 0;
