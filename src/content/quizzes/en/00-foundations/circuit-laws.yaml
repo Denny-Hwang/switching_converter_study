@@ -1,0 +1,51 @@
+# Quiz for 00-foundations/circuit-laws. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A $100\,\mu\mathrm{H}$ inductor has a constant $5\,\mathrm{V}$ across it for $4\,\mu\mathrm{s}$. By how much does its current change?'
+    options:
+      - '$0.02\,\mathrm{A}$'
+      - '$0.2\,\mathrm{A}$'
+      - '$2\,\mathrm{A}$'
+      - '$20\,\mathrm{A}$'
+    answer: 1
+    explain: 'The current changes at the rate of the voltage divided by the inductance, $5 \times 10^4\,\mathrm{A/s}$, for $4\,\mu\mathrm{s}$.'
+  - q: 'A $10\,\mu\mathrm{F}$ capacitor is charged by a constant $2\,\mathrm{mA}$ for $1\,\mathrm{ms}$. How much does its voltage rise?'
+    options:
+      - '$0.02\,\mathrm{V}$'
+      - '$0.2\,\mathrm{V}$'
+      - '$2\,\mathrm{V}$'
+      - '$20\,\mathrm{V}$'
+    answer: 1
+    explain: 'The charge delivered is the current times the time, $2\,\mu\mathrm{C}$; divided by the capacitance it gives the voltage change.'
+  - q: 'How much energy does a $1\,\mathrm{mH}$ inductor store at $3\,\mathrm{A}$?'
+    options:
+      - '$1.5\,\mathrm{mJ}$'
+      - '$3\,\mathrm{mJ}$'
+      - '$4.5\,\mathrm{mJ}$'
+      - '$9\,\mathrm{mJ}$'
+    answer: 2
+    explain: 'Half the inductance times the square of the current: $0.5 \times 10^{-3} \times 9$.'
+  - q: 'Which quantity of an ideal inductor cannot change instantly?'
+    options:
+      - 'Its voltage'
+      - 'Its current'
+      - 'Both its voltage and its current'
+      - 'Neither'
+    answer: 1
+    explain: 'The stored energy depends on the current, and a jump in current would need an infinite voltage. The voltage, by contrast, can jump, as it does at every switching edge.'
+  - q: 'The constant voltage across an inductor is doubled. What happens to the rate of change of its current?'
+    options:
+      - 'It halves'
+      - 'It is unchanged'
+      - 'It doubles'
+      - 'It quadruples'
+    answer: 2
+    explain: 'The rate of change of the current is the voltage divided by the inductance.'
+  - q: 'In a buck converter the inductor current rises by $0.4\,\mathrm{A}$ during the on-interval. What is the half-ripple $\Delta i_L$ used on the converter pages?'
+    options:
+      - '$0.1\,\mathrm{A}$'
+      - '$0.2\,\mathrm{A}$'
+      - '$0.4\,\mathrm{A}$'
+      - '$0.8\,\mathrm{A}$'
+    answer: 1
+    explain: 'The rise during the on-interval is the peak-to-peak ripple, and $\Delta i_L$ is half of it (Erickson''s convention).'

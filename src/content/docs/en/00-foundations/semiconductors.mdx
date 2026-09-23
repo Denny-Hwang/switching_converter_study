@@ -1,0 +1,121 @@
+---
+title: Semiconductor switches and their losses
+description: MOSFETs and diodes as the switches of a converter - conduction loss, capacitive switching loss, gate-drive power, and the diode's forward-voltage model.
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Model a MOSFET that is on as a resistance, and a conducting diode as a forward voltage plus a small resistance.
+- Estimate the capacitive turn-on loss and the gate-drive power, and see how both scale with the switching frequency.
+- Tell the losses that grow with the switching frequency from those that grow with the load.
+
+## Theory
+
+### The switches of a converter
+
+An ideal switch has no voltage across it when on and no current through it
+when off. A converter realizes its switches with transistors, such as
+MOSFETs, and diodes <Cite key="erickson2020" where="Ch. 4" />. A transistor is
+turned on and off by its gate; a diode switches by itself, conducting when
+it is forward-biased and blocking when it is reverse-biased
+<Cite key="erickson2020" where="Ch. 4" />.
+
+### Conduction loss
+
+A MOSFET that is fully on behaves as a resistance, its on-resistance, so its
+conduction loss follows from its rms current
+(<EqRef id="loss.cond" label="conduction loss" />). A conducting diode is
+modelled by a constant forward voltage in series with a small resistance
+<Cite key="erickson2020" where="Ch. 3" />:
+
+<Eq id="loss.diode" />
+
+The forward voltage takes a fixed voltage from the circuit whatever the
+current, so it costs the most efficiency when the output voltage is low
+<Cite key="erickson2020" where="Ch. 4" />.
+
+### Switching loss from the node capacitance
+
+When the transistor turns on, it discharges the capacitance at the switch
+node, which includes its own output capacitance. The energy stored in that
+capacitance is lost in every period <Cite key="erickson2020" where="Ch. 4" />:
+
+<Eq id="loss.sw.cap" />
+
+In addition, the current and the voltage overlap for a short time during
+each transition, and the diode's stored charge must be removed when it turns
+off; both add loss at every switching event
+<Cite key="erickson2020" where="Ch. 4" />.
+
+### Gate-drive power
+
+To switch a MOSFET, the driver moves the gate charge from its supply into the
+gate and then back to ground, once per period. The power this takes is
+dissipated in the driver and the gate resistances, not in the MOSFET's
+channel <Cite key="balogh2018" />:
+
+<Eq id="loss.gate" />
+
+## Worked example
+
+A synthetic switch node, gate drive and diode:
+
+<Worked example="switch-losses" />
+
+At this switching frequency the capacitive turn-on loss is
+<Val example="switch-losses" name="P_sw" /> and the gate-drive power
+<Val example="switch-losses" name="P_gate" />; both double if the switching
+frequency doubles. The diode's conduction loss,
+<Val example="switch-losses" name="P_diode" />, depends on the load current
+instead.
+
+## Try it
+
+<TryIt eq="loss.sw.cap" example="switch-losses" sweep="V_sw" />
+
+Sweep the switched voltage on its logarithmic axis: the capacitive loss grows
+with its square, which is why this loss matters most in converters that
+switch high voltages. Then open the gate-drive equation and sweep the
+switching frequency.
+
+## Bench exercise
+
+On a buck evaluation board whose switching frequency can be set, measure the
+input and output power at a fixed load with a power analyzer or with a
+multimeter pair on each side, at two switching frequencies. The increase in
+loss divided by the increase in frequency estimates the energy lost per
+switching period; compare it with the capacitive-loss and gate-drive
+equations, using the capacitance and gate charge from the data sheets.
+
+## Gotchas
+
+- **Losses that happen once per period scale with frequency.** A higher
+  switching frequency shrinks the inductor needed for a given ripple, but the
+  capacitive, transition and gate-drive losses rise in proportion
+  <Cite key="erickson2020" where="Ch. 4" />.
+- **Gate power heats the driver, not the MOSFET.** Budget it in the driver's
+  dissipation <Cite key="balogh2018" />.
+- **A diode drop is costly at low output voltage.** The same forward voltage
+  is a larger fraction of a low output voltage, which is why low-voltage
+  converters often replace the diode by a transistor, a synchronous
+  rectifier <Cite key="erickson2020" where="Ch. 4" />.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch4', 'ti-slua618', 'erickson-ch3']} />
+
+## Quiz
+
+<Quiz id="00-foundations/semiconductors" />

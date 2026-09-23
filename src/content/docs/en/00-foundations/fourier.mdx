@@ -1,0 +1,114 @@
+---
+title: Fourier series of switched waveforms
+description: The dc component, the harmonics and the rms value of a rectangular pulse train, the waveform found at every switch node.
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Split a periodic waveform into its dc component and its harmonics.
+- Compute the harmonic amplitudes and the rms value of a rectangular pulse train, the waveform at a converter's switch node.
+- Explain why a low-pass filter recovers the dc component of the switch-node voltage.
+
+## Theory
+
+### Periodic signals as sums of sinusoids
+
+A periodic signal is the sum of its average value, the dc component, and
+sinusoids at integer multiples of its fundamental frequency, the harmonics
+<Cite key="alexander2017" where="Ch. 17" />. The amplitudes of the
+harmonics, plotted against frequency, form the signal's amplitude spectrum
+<Cite key="alexander2017" where="Ch. 17" />.
+
+### The rectangular pulse train
+
+The switch node of a buck converter carries a pulse train: the input voltage
+for the fraction $D$ of every period and zero for the rest
+<Cite key="erickson2020" where="Ch. 2" />. Its dc component is its average
+(<EqRef id="sw.v_avg" label="average switch-node voltage" />), and its
+harmonics have the amplitudes
+
+<Eq id="fourier.pulse.harm" />
+
+The amplitudes fall in inverse proportion to the harmonic order, and a
+harmonic vanishes whenever $h D$ is an integer: at $D = 0.5$ all the even
+harmonics are missing.
+
+### The rms value
+
+The rms value is the square root of the mean of the square over one period
+<Cite key="alexander2017" where="Ch. 11" />. For the pulse train only the
+pulse contributes to that mean:
+
+<Eq id="fourier.pulse.rms" />
+
+The loss in a resistance depends on the rms value of its current, not on the
+average (<EqRef id="loss.cond" label="conduction loss" />), and for a narrow
+pulse the rms value is much larger than the average.
+
+### Why the output filter works
+
+A buck converter's L-C filter passes the dc component of the switch-node
+voltage and attenuates its harmonics, the lowest of which lies at the
+switching frequency. What remains at the output is the average, $D V_g$,
+plus a small ripple <Cite key="erickson2020" where="Ch. 2" />.
+
+## Worked example
+
+A synthetic pulse train, as found at the switch node of a buck converter:
+
+<Worked example="pulse-train" />
+
+The pulse train's dc component is <Val example="pulse-train" name="v_s_avg" />,
+and its fundamental has an amplitude of <Val example="pulse-train" name="a_h" />,
+larger than the dc component itself at this duty ratio. Its rms value is
+<Val example="pulse-train" name="V_rms" />.
+
+## Try it
+
+<TryIt eq="fourier.pulse.harm" example="pulse-train" sweep="D" />
+
+Sweep $D$: the fundamental is largest at $D = 0.5$. Then set $h$ to 2 and
+sweep again: the second harmonic vanishes at $D = 0.5$ and is largest at
+0.25 and 0.75.
+
+## Bench exercise
+
+On a buck evaluation board, measure the switch-node voltage with a
+differential probe, or a probe with a short ground connection, and use the
+oscilloscope's FFT function. Read the dc value and the amplitudes of the
+first few harmonics, and compare them with the equations at the measured
+duty ratio and input voltage. Check whether the oscilloscope displays each
+harmonic's peak amplitude or its rms value, which is smaller by a factor of
+$\sqrt{2}$.
+
+## Gotchas
+
+- **The harmonics do not stop at the switching frequency.** Those of an ideal
+  pulse train fall only as $1/h$, so they extend far above the switching
+  frequency; this matters for filters, interference and sampling.
+- **Average and rms are different.** Two currents with the same average can
+  have very different rms values, and resistive losses follow the rms value
+  <Cite key="alexander2017" where="Ch. 11" />.
+- **The rms value of a sinusoid is its amplitude divided by $\sqrt{2}$; that of
+  a pulse train is not.** Use the rms value of the actual waveform
+  <Cite key="alexander2017" where="Ch. 11" />.
+
+## Go deeper
+
+<GoDeeper ids={['mit-6003-notes', 'mit-6003']} />
+
+## Quiz
+
+<Quiz id="00-foundations/fourier" />

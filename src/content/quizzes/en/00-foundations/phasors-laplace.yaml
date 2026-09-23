@@ -1,0 +1,51 @@
+# Quiz for 00-foundations/phasors-laplace. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'What is the impedance magnitude of a $10\,\mu\mathrm{H}$ inductor at $1\,\mathrm{MHz}$?'
+    options:
+      - '$6.28\,\Omega$'
+      - '$62.8\,\Omega$'
+      - '$628\,\Omega$'
+      - '$0.0159\,\Omega$'
+    answer: 1
+    explain: 'The magnitude is $2\pi f L$: $2\pi \times 10^6 \times 10^{-5}$.'
+  - q: 'The frequency is doubled. What happens to the impedance magnitude of a capacitor?'
+    options:
+      - 'It doubles'
+      - 'It halves'
+      - 'It is unchanged'
+      - 'It falls to a quarter'
+    answer: 1
+    explain: 'A capacitor''s impedance magnitude is inversely proportional to the frequency.'
+  - q: 'An R-C low-pass filter has $10\,\mathrm{k}\Omega$ and $1\,\mathrm{nF}$. What is its corner frequency?'
+    options:
+      - '$1.59\,\mathrm{kHz}$'
+      - '$15.9\,\mathrm{kHz}$'
+      - '$159\,\mathrm{kHz}$'
+      - '$100\,\mathrm{kHz}$'
+    answer: 1
+    explain: 'The corner is $1/(2\pi R C)$, with $R C$ equal to $10\,\mu\mathrm{s}$.'
+  - q: 'What is the gain of a first-order low-pass filter at its corner frequency?'
+    options:
+      - '1'
+      - '$1/\sqrt{2}$, about -3 dB'
+      - '1/2, about -6 dB'
+      - '0'
+    answer: 1
+    explain: 'At the corner the real and imaginary parts of the denominator are equal, so the magnitude is $1/\sqrt{2}$.'
+  - q: 'By roughly how much does a first-order low-pass filter attenuate a sinusoid one decade above its corner?'
+    options:
+      - 'By a factor of 2'
+      - 'By a factor of about 10 (-20 dB)'
+      - 'By a factor of 100 (-40 dB)'
+      - 'Not at all'
+    answer: 1
+    explain: 'The gain is $1/\sqrt{1 + 100}$, about $0.0995$: the slope is -20 dB per decade.'
+  - q: 'Why does a buck converter''s L-C filter pass the dc component of the switch-node voltage but not the switching ripple?'
+    options:
+      - 'The inductor''s impedance is zero at dc and large at the switching frequency, while the capacitor''s is the opposite'
+      - 'The capacitor blocks dc'
+      - 'The inductor is a short circuit at every frequency'
+      - 'The switch-node voltage has no harmonics'
+    answer: 0
+    explain: 'At dc the inductor is a short and the capacitor an open circuit; at the switching frequency the inductor''s impedance is large and the capacitor''s small, so the ripple is divided down.'

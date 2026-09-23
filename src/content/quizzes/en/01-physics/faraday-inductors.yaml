@@ -1,0 +1,51 @@
+# Quiz for 01-physics/faraday-inductors. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A 20-turn winding on a core without a gap, with a $0.05\,\mathrm{m}$ effective path length, carries $1\,\mathrm{A}$. What is the field intensity in the core?'
+    options:
+      - '$20\,\mathrm{A/m}$'
+      - '$400\,\mathrm{A/m}$'
+      - '$1000\,\mathrm{A/m}$'
+      - '$4000\,\mathrm{A/m}$'
+    answer: 1
+    explain: 'The enclosed current is $20\,\mathrm{A}$ turns, spread over $0.05\,\mathrm{m}$ of path.'
+  - q: 'A constant $12\,\mathrm{V}$ is applied for $10\,\mu\mathrm{s}$ to a 24-turn winding on a core of $1\,\mathrm{cm^2}$ effective area. What is the flux-density swing?'
+    options:
+      - '$0.005\,\mathrm{T}$'
+      - '$0.05\,\mathrm{T}$'
+      - '$0.5\,\mathrm{T}$'
+      - '$5\,\mathrm{T}$'
+    answer: 1
+    explain: 'The volt-seconds, $120\,\mu\mathrm{Vs}$, divided by the turns times the area, $24 \times 10^{-4}\,\mathrm{m^2}$.'
+  - q: 'The switching frequency of a converter is doubled at the same duty ratio and voltages. What happens to the flux swing in its transformer?'
+    options:
+      - 'It doubles'
+      - 'It halves'
+      - 'It is unchanged'
+      - 'It falls to a quarter'
+    answer: 1
+    explain: 'The on-time halves, so the volt-seconds per period, and with them the flux swing, halve.'
+  - q: 'What sets the flux swing in a transformer that carries no dc magnetizing current?'
+    options:
+      - 'The load current'
+      - 'The volt-seconds applied to a winding, its turns and the core area'
+      - 'The core''s permeability alone'
+      - 'The secondary current'
+    answer: 1
+    explain: 'Faraday''s law ties the rate of change of the flux to the winding voltage, whatever the load.'
+  - q: 'The turns on a given core are doubled while the winding current stays the same. What happens to the field intensity?'
+    options:
+      - 'It halves'
+      - 'It is unchanged'
+      - 'It doubles'
+      - 'It quadruples'
+    answer: 2
+    explain: 'The enclosed current, the turns times the winding current, doubles, and the path length is the same.'
+  - q: 'Why must the average voltage across a transformer winding be zero in steady state?'
+    options:
+      - 'To keep the output voltage constant'
+      - 'Any net volt-seconds would make the flux grow every period until the core saturates'
+      - 'To avoid winding loss'
+      - 'Because the secondary is isolated'
+    answer: 1
+    explain: 'The flux change per period is proportional to the net volt-seconds; only zero net volt-seconds brings it back to its starting value.'

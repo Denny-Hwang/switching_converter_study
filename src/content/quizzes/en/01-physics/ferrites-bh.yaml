@@ -1,0 +1,51 @@
+# Quiz for 01-physics/ferrites-bh. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'In a linear material with a relative permeability of 1000, the field intensity is $200\,\mathrm{A/m}$. What is the flux density?'
+    options:
+      - '$0.025\,\mathrm{T}$'
+      - '$0.25\,\mathrm{T}$'
+      - '$2.5\,\mathrm{T}$'
+      - '$0.0025\,\mathrm{T}$'
+    answer: 1
+    explain: 'The flux density is $\mu_0 \mu_r H$: $4\pi \times 10^{-7} \times 1000 \times 200$, about $0.25\,\mathrm{T}$.'
+  - q: 'A $50\,\mu\mathrm{H}$ inductor with 10 turns on a core of $0.5\,\mathrm{cm^2}$ effective area carries a peak current of $4\,\mathrm{A}$. What is its peak flux density?'
+    options:
+      - '$0.04\,\mathrm{T}$'
+      - '$0.2\,\mathrm{T}$'
+      - '$0.4\,\mathrm{T}$'
+      - '$4\,\mathrm{T}$'
+    answer: 2
+    explain: 'The flux linkage is $200\,\mu\mathrm{Wb}$ turns; divided by 10 turns and $5 \times 10^{-5}\,\mathrm{m^2}$ it gives $0.4\,\mathrm{T}$.'
+  - q: 'What happens to an inductor''s inductance when its core saturates?'
+    options:
+      - 'It rises sharply'
+      - 'It falls sharply'
+      - 'It is unchanged'
+      - 'It becomes negative'
+    answer: 1
+    explain: 'Past saturation the permeability collapses toward that of free space, and the inductance with it.'
+  - q: 'Why must an inductor''s flux density be checked at its peak current rather than its average current?'
+    options:
+      - 'Because saturation depends on the instantaneous flux density, which is largest at the peak current'
+      - 'Because the average current is always zero'
+      - 'Because core loss depends only on the peak'
+      - 'It need not be: the average is enough'
+    answer: 0
+    explain: 'The core saturates as soon as the flux density exceeds the limit, even for a moment in every period.'
+  - q: 'Why are ferrite cores used at high switching frequencies despite their lower saturation flux density?'
+    options:
+      - 'Their high resistivity keeps eddy-current loss low'
+      - 'They never saturate'
+      - 'They have no hysteresis'
+      - 'They are always the cheapest option'
+    answer: 0
+    explain: 'Eddy currents are induced by the changing flux; a high resistivity limits them, which matters more as the frequency rises.'
+  - q: 'An inductor is rebuilt on a core with a larger winding window: same inductance, same peak current, twice the turns. What happens to the peak flux density if the core area is unchanged?'
+    options:
+      - 'It doubles'
+      - 'It halves'
+      - 'It is unchanged'
+      - 'It quadruples'
+    answer: 1
+    explain: 'At fixed inductance and current, the peak flux density is inversely proportional to the turns.'

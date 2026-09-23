@@ -1,0 +1,107 @@
+---
+title: Magnetic materials and the B-H curve
+description: Permeability and the linear part of the B-H curve, saturation and hysteresis, ferrites versus iron alloys, and the peak flux density of an inductor.
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Relate flux density to field intensity through the permeability.
+- Explain saturation, and why an inductor must be checked at its peak current.
+- Compute an inductor's peak flux density from its inductance, peak current, turns and core area.
+
+## Theory
+
+### Permeability
+
+In a linear magnetic material the flux density is proportional to the field
+intensity. The factor is the permeability, written as the permeability of
+free space times the relative permeability of the material
+<Cite key="erickson2020" where="Ch. 10" />:
+
+<Eq id="mag.B_H" />
+
+### Saturation and hysteresis
+
+The linear relation holds only up to the saturation flux density. Beyond it
+the material's permeability collapses toward that of free space, and an
+inductor's inductance falls sharply <Cite key="erickson2020" where="Ch. 10" />.
+The B-H curve of a real core also shows hysteresis: going up and coming
+down, the flux density follows different paths, and the area between them is
+energy lost in every cycle (see the [core-loss page](../core-loss/))
+<Cite key="erickson2020" where="Ch. 10" />.
+
+### Ferrites and iron alloys
+
+Ferrites saturate at a lower flux density than iron alloys, but their high
+resistivity keeps eddy-current loss low, which suits them to high switching
+frequencies <Cite key="erickson2020" where="Ch. 10" />.
+
+### Peak flux density of an inductor
+
+An inductor's flux linkage is its inductance times its current; divided by
+the turns and the core area, it gives the flux density. At the peak current
+<Cite key="dixon2001" />, <Cite key="erickson2020" where="Ch. 10" />:
+
+<Eq id="mag.B_pk" />
+
+This must stay below the saturation flux density at the largest peak current
+the inductor will ever carry, including start-up and load transients.
+
+## Worked example
+
+A synthetic core material and inductor:
+
+<Worked example="ferrite-bh" />
+
+In a material with the given relative permeability, a field of
+<Val example="ferrite-bh" name="H_mag" /> produces a flux density of
+<Val example="ferrite-bh" name="B" />. The inductor reaches
+<Val example="ferrite-bh" name="B_pk" /> at its peak current; compare this
+with the saturation flux density in the data sheet of the core material.
+
+## Try it
+
+<TryIt eq="mag.B_pk" example="ferrite-bh" sweep="N" />
+
+Sweep $N$ at fixed inductance: more turns lower the peak flux density. On a
+given core, though, the inductance itself grows with the square of the turns
+(<EqRef id="mag.L_from_AL" label="inductance from the inductance factor" />);
+the [gap page](../gap-and-al/) shows how a gap resolves this.
+
+## Bench exercise
+
+Discharge a charged capacitor into the inductor through a transistor for a
+fixed time, and watch the inductor current with a current probe. While the
+core is linear the current ramps in a straight line; when the core
+saturates, the slope rises sharply. Read the current at the knee, compare it
+with the peak-flux equation and the data-sheet saturation flux density, and
+limit the pulse length so that the current stays within the parts' ratings.
+
+## Gotchas
+
+- **Saturation is abrupt.** Past saturation the inductance collapses and the
+  current rises steeply <Cite key="erickson2020" where="Ch. 10" />; design for
+  the worst-case peak current, not the average.
+- **A core's permeability is not a precise number.** With a gap, the
+  inductance depends mostly on the gap length instead of the material
+  <Cite key="erickson2020" where="Ch. 10" /> (see the [gap page](../gap-and-al/)).
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch10', 'ti-slup132', 'coursera-magnetics']} />
+
+## Quiz
+
+<Quiz id="01-physics/ferrites-bh" />

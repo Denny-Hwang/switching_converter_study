@@ -1,0 +1,51 @@
+# Quiz for 01-physics/transformers-coupled. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'An ideal transformer with turns ratio 1:n, $n = 0.2$, has $50\,\mathrm{V}$ across its primary. What is the secondary voltage?'
+    options:
+      - '$2.5\,\mathrm{V}$'
+      - '$10\,\mathrm{V}$'
+      - '$50\,\mathrm{V}$'
+      - '$250\,\mathrm{V}$'
+    answer: 1
+    explain: 'The secondary voltage is $n$ times the primary voltage.'
+  - q: 'The secondary of the same transformer delivers $5\,\mathrm{A}$. What is the primary current?'
+    options:
+      - '$0.2\,\mathrm{A}$'
+      - '$1\,\mathrm{A}$'
+      - '$5\,\mathrm{A}$'
+      - '$25\,\mathrm{A}$'
+    answer: 1
+    explain: 'The secondary current is the primary current divided by $n$, so the primary current is $n$ times $5\,\mathrm{A}$. The power is the same on both sides.'
+  - q: 'A $10\,\Omega$ resistor is connected to the secondary of an ideal transformer with $n = 0.5$. What resistance does the primary see?'
+    options:
+      - '$2.5\,\Omega$'
+      - '$5\,\Omega$'
+      - '$20\,\Omega$'
+      - '$40\,\Omega$'
+    answer: 3
+    explain: 'An impedance on the secondary appears at the primary divided by $n^2$, here $0.25$.'
+  - q: 'What element models the current that a real transformer draws with its secondary open?'
+    options:
+      - 'The leakage inductance'
+      - 'The magnetizing inductance'
+      - 'The winding capacitance'
+      - 'The load resistance'
+    answer: 1
+    explain: 'Setting up the flux in a core of finite permeability takes a current, modelled by the magnetizing inductance in parallel with the primary.'
+  - q: 'How does a flyback''s coupled inductor differ from a forward converter''s transformer?'
+    options:
+      - 'It has no secondary winding'
+      - 'It stores energy in its magnetizing inductance and releases it later, instead of passing energy through while both windings conduct'
+      - 'It needs no core'
+      - 'It has no leakage inductance'
+    answer: 1
+    explain: 'In the flyback the primary and the secondary conduct in turn; the energy waits in the magnetizing inductance in between.'
+  - q: 'In the 1:n convention used on this site, what is $n$?'
+    options:
+      - 'The primary turns divided by the secondary turns'
+      - 'The secondary turns divided by the primary turns'
+      - 'The total number of turns'
+      - 'The ratio of the winding resistances'
+    answer: 1
+    explain: 'The site follows Erickson''s convention: 1:n with $n$ the secondary turns over the primary turns.'

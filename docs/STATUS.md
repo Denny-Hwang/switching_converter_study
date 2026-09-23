@@ -25,21 +25,21 @@ _Last updated: Phase 2b (03-topologies, EN and KO). `python scripts/modulelint.p
 
 | Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| circuit-laws | 2 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| phasors-laplace | 2 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| fourier | 2 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| passives-real | 2 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| semiconductors | 2 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| circuit-laws | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `ind.di`, `cap.dv`, `ind.E`, `cap.E` |
+| phasors-laplace | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `imp.ZL`, `imp.ZC`, `rc.fc`, `rc.gain` |
+| fourier | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `fourier.pulse.harm`, `fourier.pulse.rms` |
+| passives-real | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `loss.cond`, `passive.f_srf`, `cap.esr.ripple` |
+| semiconductors | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `loss.diode`, `loss.sw.cap`, `loss.gate` |
 
 ## 01-physics
 
 | Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| faraday-inductors | 2 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| transformers-coupled | 2 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| ferrites-bh | 2 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| gap-and-AL | 2 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| core-loss | 2 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| faraday-inductors | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `mag.H_ampere`, `mag.dB_faraday` |
+| transformers-coupled | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `xfmr.V2`, `xfmr.I2` |
+| ferrites-bh | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `mag.B_H`, `mag.B_pk` |
+| gap-and-AL | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `mag.AL_gap`, `mag.L_from_AL` |
+| core-loss | 2 | ✅ | 🟡 pending | ✅ | ✅ | ✅ | ✅ | ✅ | homes `loss.steinmetz` |
 
 ## 02-theory
 

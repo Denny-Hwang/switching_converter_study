@@ -13,7 +13,9 @@ interface Props {
 }
 const { id } = Astro.props;
 const locale = pageLocale(Astro);
-const entry = await getEntry('quizzes', `${locale}/${id}`);
+// The glob loader slugifies entry ids (lower case), like the page URLs:
+// 01-physics/gap-and-AL.yaml is the entry 01-physics/gap-and-al.
+const entry = await getEntry('quizzes', `${locale}/${id}`.toLowerCase());
 if (!entry) throw new Error(`<Quiz id="${id}">: missing src/content/quizzes/${locale}/${id}.yaml`);
 const t = ui[locale];
 const letters = 'ABCDEF';

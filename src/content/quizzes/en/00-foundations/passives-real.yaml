@@ -1,0 +1,51 @@
+# Quiz for 00-foundations/passives-real. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A winding with $50\,\mathrm{m}\Omega$ of resistance carries $3\,\mathrm{A}$ rms. What is its conduction loss?'
+    options:
+      - '$0.15\,\mathrm{W}$'
+      - '$0.3\,\mathrm{W}$'
+      - '$0.45\,\mathrm{W}$'
+      - '$1.5\,\mathrm{W}$'
+    answer: 2
+    explain: 'The loss is the square of the rms current times the resistance: $9 \times 0.05$.'
+  - q: 'A $1\,\mathrm{mH}$ inductor has $10\,\mathrm{pF}$ of parasitic capacitance. What is its self-resonant frequency?'
+    options:
+      - '$159\,\mathrm{kHz}$'
+      - '$1.59\,\mathrm{MHz}$'
+      - '$15.9\,\mathrm{MHz}$'
+      - '$50\,\mathrm{kHz}$'
+    answer: 1
+    explain: 'The product of the inductance and the capacitance is $10^{-14}\,\mathrm{s^2}$; its square root is $0.1\,\mu\mathrm{s}$, and $1/(2\pi \times 0.1\,\mu\mathrm{s})$ is about $1.59\,\mathrm{MHz}$.'
+  - q: 'How does an inductor behave above its self-resonant frequency?'
+    options:
+      - 'As a larger inductor'
+      - 'As a capacitor'
+      - 'As a short circuit at every frequency'
+      - 'As a pure resistor'
+    answer: 1
+    explain: 'Above the resonance the admittance of the parallel capacitance exceeds that of the inductance, so the impedance is capacitive.'
+  - q: 'A buck output capacitor has $20\,\mathrm{m}\Omega$ of series resistance and carries a $1\,\mathrm{A}$ peak-to-peak ripple current. What ripple does the series resistance add?'
+    options:
+      - '$2\,\mathrm{mV}$ peak-to-peak'
+      - '$10\,\mathrm{mV}$ peak-to-peak'
+      - '$20\,\mathrm{mV}$ peak-to-peak'
+      - '$40\,\mathrm{mV}$ peak-to-peak'
+    answer: 2
+    explain: 'The voltage across a resistance follows its current, so its peak-to-peak value is the resistance times the peak-to-peak current.'
+  - q: 'Two currents have the same average: one is constant, the other a pulse train with $D = 0.25$. How does the loss in the same resistance compare?'
+    options:
+      - 'The same'
+      - 'The pulse train loses twice as much'
+      - 'The pulse train loses four times as much'
+      - 'The constant current loses more'
+    answer: 2
+    explain: 'For the same average, the pulse is four times as high, so its rms value is twice the average and the loss, proportional to its square, is four times as large.'
+  - q: 'How can an inductor''s self-resonant frequency be found with an impedance analyzer?'
+    options:
+      - 'Where the impedance magnitude is smallest'
+      - 'Where the phase of the impedance crosses zero'
+      - 'Where the inductance reading is largest'
+      - 'At the analyzer''s default test frequency'
+    answer: 1
+    explain: 'At the parallel resonance the impedance is real, so its phase passes through zero as it changes from inductive to capacitive.'

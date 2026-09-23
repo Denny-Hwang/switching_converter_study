@@ -1,0 +1,103 @@
+---
+title: Faraday's law and inductors
+description: Ampère's and Faraday's laws applied to a wound core - the field set by the winding current, and the flux swing set by the applied volt-seconds.
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Relate a winding's current to the magnetic field intensity in its core (Ampère's law).
+- Compute the flux-density swing from the voltage applied to a winding and its duration (Faraday's law).
+- Explain why the flux swing in a converter's magnetic components is set by volt-seconds, not by the load current.
+
+## Theory
+
+### Ampère's law
+
+The magnetic field intensity integrated around a closed path equals the
+current that the path encloses. For $N$ turns on a core without a gap, with
+the field uniform along the effective path length, this gives
+<Cite key="erickson2020" where="Ch. 10" />:
+
+<Eq id="mag.H_ampere" />
+
+### Faraday's law
+
+A changing flux through a winding induces a voltage equal to the number of
+turns times the rate of change of the flux. With the flux density uniform
+over the core's effective area, a constant voltage applied to the winding
+for the on-time changes the flux density linearly
+<Cite key="erickson2020" where="Ch. 10" />, <Cite key="dixon2001" />:
+
+<Eq id="mag.dB_faraday" />
+
+This is the magnetic counterpart of the inductor law on the
+[circuit-laws page](../../00-foundations/circuit-laws/): a constant voltage
+makes the current ramp there, and the flux density here.
+
+### Volt-seconds set the flux swing
+
+The flux swing depends only on the volt-seconds applied, the turns and the
+core area, not on the current drawn by the load. In a transformer, which
+carries no dc magnetizing current, the volt-seconds alone set the flux. In a
+filter inductor, the dc current sets the average flux density and the
+volt-seconds set the swing around it
+(<EqRef id="mag.B_pk" label="peak flux density" />). In steady state,
+volt-second balance brings the flux back to its starting value in every
+period (<EqRef id="vsb.v_off" label="volt-second balance" />).
+
+## Worked example
+
+A synthetic winding on a core without a gap:
+
+<Worked example="inductor-core" />
+
+The winding current produces a field intensity of
+<Val example="inductor-core" name="H_mag" /> in the core, and the applied
+volt-seconds swing the flux density by
+<Val example="inductor-core" name="Delta_B" /> peak-to-peak.
+
+## Try it
+
+<TryIt eq="mag.dB_faraday" example="inductor-core" sweep="N" />
+
+Sweep $N$: the flux swing falls in inverse proportion to the turns. More
+turns in the same winding area, however, raise the winding resistance
+<Cite key="erickson2020" where="Ch. 11" />.
+
+## Bench exercise
+
+Drive a winding on a ferrite core with a square wave from a function
+generator through a small series resistor, and wind a second winding of a
+few turns on the same core as a sense winding. The oscilloscope's integral of
+the sense-winding voltage, divided by its turns and the core area, is the
+flux density. Check that its peak-to-peak swing follows the equation above,
+then double the drive frequency and check that the swing halves.
+
+## Gotchas
+
+- **Turns cut both ways.** At a given voltage, more turns lower the flux
+  swing; at a given current, more turns raise the field intensity and the
+  flux density (<EqRef id="mag.H_ampere" label="Ampère's law" />).
+- **Net volt-seconds walk the flux into saturation.** A winding with a
+  nonzero average voltage over a period has a flux that grows every period
+  until the core saturates <Cite key="erickson2020" where="Ch. 6" />.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch10', 'coursera-magnetics', 'mit-6334-notes']} />
+
+## Quiz
+
+<Quiz id="01-physics/faraday-inductors" />

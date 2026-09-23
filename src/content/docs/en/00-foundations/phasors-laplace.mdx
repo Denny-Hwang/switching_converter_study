@@ -1,0 +1,122 @@
+---
+title: Phasors, impedance and the Laplace transform
+description: Sinusoidal steady state with phasors, the impedance of inductors and capacitors, transfer functions, and the first-order low-pass filter with its Bode plot.
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Represent sinusoidal signals by phasors, and inductors and capacitors by impedances.
+- Compute the impedance of an inductor and a capacitor at a given frequency.
+- Find a first-order low-pass filter's corner frequency and its attenuation above the corner, the building block of converter transfer functions.
+
+## Theory
+
+### Phasors and impedance
+
+In sinusoidal steady state every voltage and current in a linear circuit is
+a sinusoid at the source frequency. Each can be represented by a complex
+number, its phasor, which carries the amplitude and the phase
+<Cite key="alexander2017" where="Ch. 9" />. Differentiation becomes
+multiplication by $j\omega$, and each element is described by its impedance,
+the ratio of its voltage phasor to its current phasor
+<Cite key="alexander2017" where="Ch. 9" />. For an inductor and a capacitor
+the magnitudes are
+
+<Eq id="imp.ZL" />
+
+<Eq id="imp.ZC" />
+
+An inductor's impedance rises with frequency and a capacitor's falls. That
+is what lets a converter's L-C filter pass the dc component of the switch-node
+voltage while it removes the switching harmonics
+<Cite key="erickson2020" where="Ch. 2" />.
+
+### The Laplace transform and transfer functions
+
+The Laplace transform extends the same idea from sinusoids to any signal:
+with the complex frequency $s$ in place of $j\omega$, a linear circuit is
+described by transfer functions, ratios of an output transform to an input
+transform <Cite key="alexander2017" where="Ch. 15" />. Evaluated at
+$j\omega$, a transfer function gives the frequency response, the gain and the
+phase at each frequency <Cite key="alexander2017" where="Ch. 14" />.
+
+### The first-order low-pass filter
+
+A resistor in series with a capacitor, with the output taken across the
+capacitor, is the simplest low-pass filter. Its gain is close to one at low
+frequency and falls above the corner frequency
+<Cite key="alexander2017" where="Ch. 14" />:
+
+<Eq id="rc.fc" />
+
+<Eq id="rc.gain" />
+
+Well above the corner, every decade of frequency lowers the gain by a factor
+of ten: a slope of -20 dB per decade on a Bode plot
+<Cite key="alexander2017" where="Ch. 14" />. A converter's L-C filter is of
+second order, and above its resonance it falls at -40 dB per decade
+<Cite key="erickson2020" where="Ch. 8" /> (see the
+[small-signal page](../../02-theory/small-signal/)).
+
+## Worked example
+
+A synthetic inductor, capacitor and R-C filter at one frequency:
+
+<Worked example="impedance-basic" />
+
+At <Val example="impedance-basic" name="f" /> the inductor's impedance is
+<Val example="impedance-basic" name="Z_L" />, while the capacitor's is only
+<Val example="impedance-basic" name="Z_C" />. The R-C filter's corner lies at
+<Val example="impedance-basic" name="f_c" />, so at that frequency the filter
+passes only <Val example="impedance-basic" name="G_lp" /> of the input
+amplitude.
+
+## Try it
+
+<TryIt eq="rc.gain" example="impedance-basic" sweep="f" />
+
+Sweep $f$ on its logarithmic axis: the gain is flat below the corner, equals
+$1/\sqrt{2}$ at the corner and falls tenfold per decade above it. Then open
+the capacitor's impedance and sweep $f$ again to see the same inverse
+proportion.
+
+## Bench exercise
+
+Build an R-C low-pass filter with a corner in the audio range, drive it from
+a function generator with a sine wave, and measure the output amplitude and
+phase with an oscilloscope at several frequencies around the corner. Plot
+the gain in decibels against frequency on a logarithmic axis and compare it
+with the equation: at the corner the gain is down by 3 dB and the output
+lags the input by 45°, and a decade above it the gain is down by about
+20 dB.
+
+## Gotchas
+
+- **Magnitudes hide the phase.** An inductor and a capacitor with equal
+  impedance magnitudes cancel in series instead of adding: at that frequency
+  they are in series resonance <Cite key="alexander2017" where="Ch. 14" />.
+- **Radians or hertz.** $\omega$ is in radians per second and $f$ in hertz;
+  mixing them moves a corner by a factor of $2\pi$.
+- **A loaded filter is a different filter.** The corner-frequency equation
+  assumes that nothing draws current from the output. A load in parallel
+  with the capacitor lowers the gain and moves the corner.
+
+## Go deeper
+
+<GoDeeper ids={['mit-6003-notes', 'mit-6003', 'mit-6002-notes']} />
+
+## Quiz
+
+<Quiz id="00-foundations/phasors-laplace" />

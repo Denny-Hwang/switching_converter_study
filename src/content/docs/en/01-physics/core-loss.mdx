@@ -1,0 +1,104 @@
+---
+title: Core loss
+description: Hysteresis and eddy-current loss in magnetic cores, the empirical Steinmetz equation, and why core loss rather than saturation limits the flux swing at high frequency.
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Name the two mechanisms of core loss: hysteresis and eddy currents.
+- Estimate the core loss per unit volume with the Steinmetz equation from the flux amplitude and the frequency.
+- Explain why, at high switching frequencies, core loss rather than saturation limits the flux swing.
+
+## Theory
+
+### Hysteresis and eddy currents
+
+In every period the flux density traces the core's B-H loop, and the energy
+enclosed by the loop is lost as heat: the hysteresis loss
+<Cite key="erickson2020" where="Ch. 10" />. The changing flux also induces
+currents in the core material itself, which dissipate power in its
+resistance: the eddy-current loss <Cite key="erickson2020" where="Ch. 10" />.
+Steinmetz found that the hysteresis loss per cycle grows with a power of the
+peak flux density <Cite key="steinmetz1984" />.
+
+### The Steinmetz equation
+
+For a given material, the measured loss per unit volume is fitted over a
+range of frequencies and flux densities by
+<Cite key="erickson2020" where="Ch. 10" />:
+
+<Eq id="loss.steinmetz" />
+
+$B_\mathrm{ac}$ is the peak ac flux density, half of the peak-to-peak swing
+given by Faraday's law (<EqRef id="mag.dB_faraday" label="flux swing" />).
+The coefficients hold only for the material, the temperature and the range
+over which they were fitted, and for sinusoidal excitation; for the
+rectangular voltages of a converter the equation gives an estimate.
+
+### Why the swing is limited at high frequency
+
+At a fixed voltage and duty ratio, the flux swing is inversely proportional
+to the switching frequency. At high switching frequencies the swing that
+keeps the core loss acceptable is usually well below the saturation flux
+density, so core loss, not saturation, sets the flux swing in a transformer
+design <Cite key="erickson2020" where="Ch. 12" />.
+
+## Worked example
+
+Synthetic Steinmetz coefficients at one operating point:
+
+<Worked example="core-loss" />
+
+With these made-up coefficients, a peak ac flux density of
+<Val example="core-loss" name="B_ac" /> at <Val example="core-loss" name="f" />
+dissipates <Val example="core-loss" name="P_v" /> per unit volume. Multiply by
+the core's volume for the total loss.
+
+## Try it
+
+<TryIt eq="loss.steinmetz" example="core-loss" sweep="B_ac" />
+
+Sweep $B_\mathrm{ac}$ on its logarithmic axis: on a log-log plot the loss is
+a straight line whose slope is the exponent $\beta$. Halving the flux
+amplitude divides the loss by two to the power $\beta$.
+
+## Bench exercise
+
+Drive a transformer's primary with a square wave, secondary open, and record
+the primary voltage and current with an oscilloscope. The average of their
+product over a period is the core loss plus a small winding loss. Deskew the
+voltage and current probes first: the magnetizing current is mostly
+reactive, so a small timing error changes the result a lot. Repeat at half
+the voltage and compare the ratio of the losses with two to the power $\beta$.
+
+## Gotchas
+
+- **The coefficients are empirical.** They hold only for the material, the
+  temperature, and the range of frequency and flux density over which they
+  were fitted <Cite key="erickson2020" where="Ch. 10" />.
+- **Use half the peak-to-peak swing.** $B_\mathrm{ac}$ is the amplitude, half of
+  $\Delta B$; using the whole swing overstates the loss by two to the power
+  $\beta$.
+- **A filter inductor with small ripple has a small swing.** Its core loss is
+  then modest, and the dc flux, which causes no core loss, sets its
+  saturation limit <Cite key="erickson2020" where="Ch. 10" />.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch10', 'coursera-magnetics', 'ti-slup132']} />
+
+## Quiz
+
+<Quiz id="01-physics/core-loss" />

@@ -1,0 +1,121 @@
+---
+title: Real passive components
+description: What real inductors and capacitors add to the ideal elements - series resistance and conduction loss, self-resonance, and the ripple across a capacitor's series resistance.
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Estimate the conduction loss in a winding or in a capacitor's series resistance from the rms current.
+- Explain where an inductor's self-resonance comes from, and why an inductance measured near it is wrong.
+- Estimate the output ripple added by a capacitor's series resistance.
+
+## Theory
+
+### Series resistance and conduction loss
+
+A real inductor has the resistance of its winding
+<Cite key="erickson2020" where="Ch. 3" />, and a real capacitor an
+equivalent series resistance (ESR) <Cite key="ti_slva630" />. A current
+through a resistance dissipates power in proportion to the square of its rms
+value <Cite key="erickson2020" where="Ch. 3" />:
+
+<Eq id="loss.cond" />
+
+The same equation gives the conduction loss of a transistor's on-resistance
+(see the [semiconductors page](../semiconductors/)). It is the rms value that
+counts, not the average: a pulsed current loses more than a steady one with
+the same average (<EqRef id="fourier.pulse.rms" label="rms of a pulse train" />).
+
+### Self-resonance
+
+Neighbouring turns of a winding are separated by insulation, so a small
+capacitance appears across each turn <Cite key="ti_snoa930" />. Together
+these act as a capacitance in parallel with the inductance, and the two
+resonate:
+
+<Eq id="passive.f_srf" />
+
+Below this frequency the component is inductive; above it the parallel
+capacitance dominates and the component behaves as a capacitor
+<Cite key="alexander2017" where="Ch. 14" />. Wire-wound inductors with many
+turns can have a high inductance but often a low self-resonant frequency
+<Cite key="ti_snoa930" />. The self-resonant frequency can be measured with an
+impedance analyzer: it is the frequency at which the phase of the impedance
+crosses zero <Cite key="ti_snoa930" />.
+
+### Capacitor series resistance and output ripple
+
+A converter's output capacitor carries the ripple current through its
+series resistance as well as through its capacitance, and the series
+resistance adds a ripple voltage in phase with that current
+<Cite key="ti_slva630" />:
+
+<Eq id="cap.esr.ripple" />
+
+This term adds to the capacitive ripple
+(<EqRef id="buck.ripple.v" label="buck output ripple" />), and the
+capacitor's series inductance (ESL) adds steps at the switching edges
+<Cite key="ti_slva630" />. The two terms peak at different instants, so the
+sum of their peak-to-peak values is an upper bound on the total.
+
+## Worked example
+
+A synthetic winding, inductor and output capacitor:
+
+<Worked example="passives-real" />
+
+The winding loses <Val example="passives-real" name="P" /> at the given rms
+current. The inductance and its parasitic capacitance resonate at
+<Val example="passives-real" name="f_srf" />. The capacitor's series
+resistance adds <Val example="passives-real" name="Delta_v_esr" /> peak-to-peak
+to the output ripple; compare it with the capacitive ripple on the
+[buck page](../../03-topologies/buck/).
+
+## Try it
+
+<TryIt eq="passive.f_srf" example="passives-real" sweep="C_p" />
+
+Sweep $C_p$ on its logarithmic axis: the self-resonant frequency falls with
+the square root of the parasitic capacitance. Then open the conduction-loss
+equation and sweep the rms current to see the square law.
+
+## Bench exercise
+
+With an impedance analyzer, or an LCR meter whose test frequency can be
+stepped, measure the impedance magnitude and phase of a wound inductor with
+many turns over frequency. Find the self-resonant frequency where the phase
+crosses zero <Cite key="ti_snoa930" />, and estimate the parasitic capacitance
+from the equation above. Then note how the inductance reading at a single
+test frequency drifts as that frequency approaches the resonance.
+
+## Gotchas
+
+- **Measure an inductance well below its self-resonance.** Near the
+  resonance the reading is neither the inductance nor the capacitance, and
+  for windings with many turns the resonance can be low
+  <Cite key="ti_snoa930" />.
+- **The rms current sets the loss.** A winding or a series resistance that
+  carries a pulsed current loses more than its average current suggests.
+- **Edges add their own ripple.** The capacitor's series inductance produces
+  steps in the output voltage at every switching edge, which neither the
+  capacitive nor the resistive term predicts <Cite key="ti_slva630" />.
+
+## Go deeper
+
+<GoDeeper ids={['ti-slva630', 'ti-snoa930', 'erickson-ch3']} />
+
+## Quiz
+
+<Quiz id="00-foundations/passives-real" />
