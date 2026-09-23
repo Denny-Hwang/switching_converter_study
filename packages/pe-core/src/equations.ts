@@ -71,6 +71,18 @@ const base: Readonly<Record<string, Evaluator>> = {
   // --- stored energy, ringing and losses ------------------------------------
   'flyback.leak.E': eq(['L_lk', 'I_pk'], ({ L_lk, I_pk }) => 0.5 * L_lk * sq(I_pk)),
   'flyback.leak.P': eq(['E_lk', 'f_s'], ({ E_lk, f_s }) => E_lk * f_s),
+  'flyback.V_OR': eq(['V', 'V_D', 'n'], ({ V, V_D, n }) => (V + V_D) / n),
+  'clamp.Vds': eq(['V_g', 'V_clamp'], ({ V_g, V_clamp }) => V_g + V_clamp),
+  'clamp.t_reset': eq(['L_lk', 'I_pk', 'V_clamp', 'V_OR'], ({ L_lk, I_pk, V_clamp, V_OR }) => (L_lk * I_pk) / (V_clamp - V_OR)),
+  'clamp.P': eq(['L_lk', 'I_pk', 'f_s', 'V_clamp', 'V_OR'], ({ L_lk, I_pk, f_s, V_clamp, V_OR }) =>
+    (L_lk * sq(I_pk) * f_s * V_clamp) / (2 * (V_clamp - V_OR)),
+  ),
+  'clamp.rcd.V': eq(['V_OR', 'R_clamp', 'L_lk', 'I_pk', 'f_s'], ({ V_OR, R_clamp, L_lk, I_pk, f_s }) =>
+    (V_OR + Math.sqrt(sq(V_OR) + 2 * R_clamp * L_lk * sq(I_pk) * f_s)) / 2,
+  ),
+  'tvs.R_D': eq(['V_CL', 'V_BR', 'I_PP'], ({ V_CL, V_BR, I_PP }) => (V_CL - V_BR) / I_PP),
+  'tvs.V_clamp': eq(['V_BR', 'R_D', 'I_pk'], ({ V_BR, R_D, I_pk }) => V_BR + R_D * I_pk),
+  'flyback.V_ceiling': eq(['n', 'V_clamp', 'V_D'], ({ n, V_clamp, V_D }) => n * V_clamp - V_D),
   'dcm.ring.f': eq(['L_M', 'C_node'], ({ L_M, C_node }) => 1 / (2 * Math.PI * Math.sqrt(L_M * C_node))),
   'loss.cond': eq(['I_rms', 'R_x'], ({ I_rms, R_x }) => sq(I_rms) * R_x),
   'loss.sw.cap': eq(['C_node', 'V_sw', 'f_s'], ({ C_node, V_sw, f_s }) => 0.5 * C_node * sq(V_sw) * f_s),
@@ -89,10 +101,14 @@ const base: Readonly<Record<string, Evaluator>> = {
 
   // --- sources, extraction, sensing -----------------------------------------
   'src.Pmax': eq(['V_oc', 'R_s'], ({ V_oc, R_s }) => sq(V_oc) / (4 * R_s)),
+  'src.cv_power': eq(['V_c', 'V_oc', 'R_s'], ({ V_c, V_oc, R_s }) => (V_c * (V_oc - V_c)) / R_s),
   'src.cv_extraction': eq(['V_c', 'V_oc'], ({ V_c, V_oc }) => {
     const x = V_c / V_oc;
     return 4 * x * (1 - x);
   }),
+  'lfr.Vg': eq(['V_oc', 'R_s', 'R_in'], ({ V_oc, R_s, R_in }) => (V_oc * R_in) / (R_s + R_in)),
+  'lfr.eta': eq(['R_s', 'R_in'], ({ R_s, R_in }) => (4 * R_s * R_in) / sq(R_s + R_in)),
+  'lfr.Vg_power': eq(['P', 'R_in'], ({ P, R_in }) => Math.sqrt(P * R_in)),
   'sense.current_out_monitor': eq(['I_SENSE', 'R_SENSE', 'R_OUT', 'R_IN'], ({ I_SENSE, R_SENSE, R_OUT, R_IN }) =>
     (I_SENSE * R_SENSE * R_OUT) / R_IN,
   ),

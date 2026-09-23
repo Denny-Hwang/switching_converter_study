@@ -1,0 +1,59 @@
+---
+/**
+ * <ClampCheck /> -- the clamp-check island with labels in the page's language
+ * and presets from the synthetic clamp examples. State lives in the URL hash.
+ */
+import ClampIsland from '../tools/ClampCheck.tsx';
+import { ui } from '../i18n/ui';
+import { pageLocale } from '../lib/locale';
+import { CLAMP_PRESETS, clampValues } from '../lib/clamppresets';
+
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const labels = {
+  kind: t['cc.kind'],
+  kinds: { tvs: t['cc.tvs'], rcd: t['cc.rcd'] },
+  presets: t['cc.presets'],
+  operating: t['cc.operating'],
+  tvsParts: t['cc.tvsParts'],
+  rcdParts: t['cc.rcdParts'],
+  results: t['cc.results'],
+  quantity: t['sim.quantity'],
+  value: t['des.value'],
+  equation: t['sim.formula'],
+  vor: t['cc.vor'],
+  elk: t['cc.elk'],
+  plk: t['cc.plk'],
+  treset: t['cc.treset'],
+  rd: t['cc.rd'],
+  vclamp: t['cc.vclamp'],
+  vds: t['cc.vds'],
+  margin: t['cc.margin'],
+  pclamp: t['cc.pclamp'],
+  ratio: t['cc.ratio'],
+  ceiling: t['cc.ceiling'],
+  chart: t['cc.chart'],
+  clampAxis: t['cc.clampAxis'],
+  powerAxis: t['cc.powerAxis'],
+  vdsAxis: t['cc.vdsAxis'],
+  rating: t['cc.rating'],
+  design: t['cc.design'],
+  invalid: t['cc.invalid'],
+  share: t['cc.share'],
+  warnings: {
+    belowReflected: t['cc.warn.belowReflected'],
+    overRating: t['cc.warn.overRating'],
+    rcdOpenLoad: t['cc.warn.rcdOpenLoad'],
+    slowReset: t['cc.warn.slowReset'],
+  },
+};
+const PRESET_LABEL = { tvs: t['cc.presetTvs'], rcd: t['cc.presetRcd'] };
+const presets = CLAMP_PRESETS.map((p) => ({
+  id: p.example,
+  label: PRESET_LABEL[p.kind],
+  kind: p.kind,
+  values: clampValues(p.example),
+}));
+---
+
+<ClampIsland client:only="react" locale={locale} labels={labels} presets={presets} />

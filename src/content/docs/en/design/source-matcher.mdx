@@ -1,0 +1,170 @@
+---
+title: Source matcher
+description: Match a fixed-duty-ratio flyback to a linear source, an open-circuit voltage behind a source resistance. See the share of the available power it takes, where CCM takes over and holds the bus, the switch voltage a larger power needs, and a cycle-by-cycle simulation over a varying source amplitude.
+sidebar:
+  order: 5
+---
+
+import { Image } from 'astro:assets';
+import SourceMatcher from '../../../../components/SourceMatcher.astro';
+import Cite from '../../../../components/Cite.astro';
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Worked from '../../../../components/Worked.astro';
+import shot from '../../../../assets/screenshots/sourcematcher-en.png';
+
+A linear source is an open-circuit voltage $V_\mathrm{oc}$ behind a source
+resistance $R_s$, and it delivers the most power into a matched load
+<Cite key="alexander2017" where="Sec. 4.8" />. A flyback in DCM with a fixed
+duty ratio draws power from its input like a resistor, so it can be matched
+to such a source <Cite key="erickson2020" where="Ch. 15" />. The source matcher takes the
+source, the flyback and its fixed output, all in SI units. It shows:
+
+- the operating point: the bus voltage, the power drawn, and its share of
+  the available power;
+- that share against the source amplitude, where CCM takes over;
+- the switch voltage that a larger power needs;
+- optionally, the flyback simulated cycle by cycle over a varying source
+  amplitude.
+
+Each result names its equation. The link under the table opens the
+operating point in the [simulator](../../simulate/simulator/).
+
+<SourceMatcher />
+
+## What it computes
+
+### The available power
+
+A linear source delivers its most power into a load equal to its own
+resistance:
+
+<Eq id="src.Pmax" />
+
+### The flyback as a resistor
+
+In DCM with a fixed duty ratio, the flyback's average input current is
+proportional to its input voltage: its input is a resistance, the
+<EqRef id="lfr.R_in" label="loss-free resistor" />, which passes the power
+on instead of dissipating it <Cite key="singer1990" />
+<Cite key="erickson2020" where="Ch. 15" />. With
+a linear source, this resistance and the source resistance divide the source
+voltage:
+
+<Eq id="lfr.Vg" />
+
+The flyback takes the same share of the available power at any source
+amplitude, the whole of it when its resistance matches the source's
+<Cite key="alexander2017" where="Sec. 4.8" />:
+
+<Eq id="lfr.eta" />
+
+### Where CCM takes over
+
+The flyback stays in DCM while its input is below the
+<EqRef id="flyback.V_crit" label="critical input voltage" />. A source strong
+enough to raise the divider voltage above it drives the flyback into CCM,
+and CCM holds the bus at the critical voltage. The flyback then acts as a
+constant-voltage sink, whose share of the available power depends on the
+source amplitude <Cite key="alexander2017" where="Sec. 4.8" />:
+
+<Eq id="src.cv_extraction" />
+
+The tool finds the source amplitude at which this starts by solving the
+divider equation for $V_\mathrm{oc}$. The extraction chart shows both regimes.
+While the flyback is a resistor, the share is flat. Once CCM holds the bus,
+the share is the constant-voltage sink's, which is 1 where the source
+amplitude is twice the critical voltage and falls beyond. If $R_\mathrm{in}$
+is larger than $R_s$, the bus reaches the critical voltage below that
+amplitude, and the share first rises to 1.
+
+### More power needs a higher switch voltage, up to the critical voltage
+
+Through the same input resistance, a larger power needs a higher bus
+voltage:
+
+<Eq id="lfr.Vg_power" />
+
+The switch blocks the bus voltage plus the reflected output voltage
+(<EqRef id="flyback.Vds_off" label="switch voltage" />). That holds up to the
+critical voltage: there CCM holds the bus, and the switch voltage stays at
+<EqRef id="flyback.Vds_clamped" label="its CCM value" /> whatever power the
+source then pushes in. The largest power the flyback draws as a resistor is
+therefore <EqRef id="dcm.P_in" label="the power a DCM converter draws" /> at
+the critical voltage. If the switch's rating lies below the CCM value, the
+rating caps it earlier, where the switch voltage reaches the rating; the
+tool says which limit applies. The switch chart plots the switch voltage
+against the power: the resistor's rising branch, then the CCM plateau.
+
+### A varying source amplitude
+
+With an envelope, the source amplitude follows a rectified sine or points
+you enter, as a fraction of $V_\mathrm{oc}$. The tool then simulates the flyback
+cycle by cycle with the [simulator](../../simulate/simulator/)'s
+source-driven model, each switching cycle at the source amplitude of its
+start, so an envelope period must span at least twenty switching cycles.
+
+The run starts from an empty bus, seven slowest time constants of the bus
+before an envelope period. While the flyback is a resistor, that time
+constant is at most $R_s C_\mathrm{bus}$; once CCM holds the bus, the averaged
+bus and magnetizing inductance form a second-order system
+<Cite key="erickson2020" where="Ch. 7" />, whose slower mode can take much
+longer, with a stiff source above all. The tool then repeats the
+envelope period until it repeats itself, and shows the last one. Its bus
+voltage and power are averaged over each switching cycle.
+
+The power drawn is the power the source delivers into the bus at the bus
+voltage <Cite key="alexander2017" where="Sec. 4.8" />:
+
+<Eq id="src.cv_power" />
+
+It is negative while the bus feeds the source back, when the source
+amplitude falls below the bus voltage. Its sum over the period, divided by
+the available energy, gives the share over the envelope. The number of
+switching cycles in a run is limited, to keep it within a few seconds; the
+tool says so when an envelope would need more.
+
+## Worked example
+
+<Worked example="source-lfr" />
+
+Here the flyback's resistance equals the source resistance, so it takes all
+of the available power, <Val example="source-lfr" name="P_max" />, at a bus
+voltage of <Val example="source-lfr" name="V_g" />. That is well below the
+critical input voltage, <Val example="source-lfr" name="V_gcrit" />, so the
+flyback stays in DCM, and its switch blocks
+<Val example="source-lfr" name="V_DS" />. Raise $V_\mathrm{oc}$ in the tool until
+the bus reaches the critical voltage: the flyback becomes a constant-voltage
+sink, and its share of the available power falls. The
+[simulator's worked example](../../simulate/simulator/#worked-example-a-flyback-that-pins-its-source) is this
+flyback at a higher source amplitude, in that regime.
+
+The "Rectified-sine envelope" preset runs the same flyback over an envelope
+whose peaks reach the constant-voltage regime. The bus follows the source
+while the flyback is a resistor, and stays at the critical voltage near the
+peaks.
+
+## Limitations
+
+- **Linear source.** The source is a constant voltage behind a constant
+  resistance. A source whose resistance changes with its operating point is
+  outside this model.
+- **Ideal flyback.** Apart from the output diode's drop, the flyback is
+  loss-free: the envelope simulation has no on-resistance, winding resistance
+  or node capacitance. The output is a fixed voltage (a battery, for example).
+  The switch voltage leaves out the spike from the leakage inductance at
+  turn-off; the [clamp check](../clamp-check/) sizes the clamp for it.
+- **Averaged bus.** The operating point and the charts use averages: they
+  assume the bus capacitor holds the bus nearly constant over a switching
+  period. With a small capacitor the bus ripples, and the tool says so; the
+  simulator link shows the difference.
+- **Slow envelope.** Each switching cycle sees a constant source amplitude,
+  so the envelope must change little within one switching period.
+
+## Screenshot
+
+<figure class="pe-shot">
+  <Image src={shot} alt="The source matcher with the synthetic constant-amplitude example: the source and flyback fields, the envelope buttons, the operating-point table naming the equation of each result, and the charts of the extracted share against the source amplitude and of the switch voltage against the power." />
+  <figcaption>The source matcher with the synthetic constant-amplitude example.</figcaption>
+</figure>

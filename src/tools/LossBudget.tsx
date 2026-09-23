@@ -8,6 +8,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Bucket, LossBudget as Budget, LossPoint, LossSpec, sim } from 'pe-core';
+import { isToolHash } from '../lib/hash';
 import type { LossReply } from './lossbudget.worker';
 
 type Topology = sim.Topology;
@@ -280,7 +281,9 @@ export default function LossBudget({ labels, presets, simulatorHref }: Props) {
   // remount the island. Our own replaceState() fires no hashchange.
   useEffect(() => {
     const onHash = () => {
-      const next = stateFromHash(readHash(), presets);
+      const h = readHash();
+      if (!isToolHash(h, [...KEYS, 'topo'])) return; // an in-page anchor, not a new state
+      const next = stateFromHash(h, presets);
       setTopo(next.topo);
       setValues(next.values);
     };
@@ -342,7 +345,16 @@ export default function LossBudget({ labels, presets, simulatorHref }: Props) {
             margin: { t: 16, r: 64, b: 56, l: 64 },
             xaxis: { title: { text: xTitle }, type: typeof x[0] === 'string' ? 'category' : 'linear' },
             yaxis: { title: { text: labels.lossAxis } },
-            yaxis2: { title: { text: `${labels.efficiency} [%]` }, overlaying: 'y', side: 'right', range: etaRange, tickformat: '.1f' },
+            // an overlaying axis syncs its ticks to the first axis by default: give it its own
+            yaxis2: {
+              title: { text: `${labels.efficiency} [%]` },
+              overlaying: 'y',
+              side: 'right',
+              range: etaRange,
+              tickformat: '.1f',
+              tickmode: 'auto',
+              showgrid: false,
+            },
             legend: { orientation: 'h', y: -0.3 },
             paper_bgcolor: 'rgba(0,0,0,0)',
             plot_bgcolor: 'rgba(0,0,0,0)',

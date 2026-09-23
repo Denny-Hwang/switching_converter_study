@@ -1,0 +1,22 @@
+synthetic: true
+label: "Synthetic flyback with an RCD primary clamp (round numbers, not a real design)"
+label_ko: "RCD 1차 측 클램프를 쓰는 합성 플라이백 (단순한 어림수이며 실제 설계가 아님)"
+# Clamp-check preset: the operating point of clamp-tvs.yaml with an RCD clamp.
+params:
+  V_g: 72
+  V: 12
+  V_D: 0.5
+  n: 0.25
+  L_lk: 2.0e-6
+  I_pk: 2
+  f_s: 1.0e5
+  V_rating: 150
+  R_clamp: 4700
+steps:
+  - flyback.V_OR
+  - flyback.leak.E
+  - flyback.leak.P
+  - clamp.rcd.V
+  - clamp.t_reset
+  - clamp.Vds
+  - clamp.P

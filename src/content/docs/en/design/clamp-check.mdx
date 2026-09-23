@@ -1,0 +1,197 @@
+---
+title: Clamp check
+description: Check a flyback's primary clamp, a TVS or an RCD clamp, at the worst-case operating point. It gives the reflected voltage, the leakage energy, the clamp voltage at the actual clamp current, the switch voltage against its rating, the clamp dissipation, and the output voltage an unloaded flyback runs up to.
+sidebar:
+  order: 4
+---
+
+import { Image } from 'astro:assets';
+import ClampCheck from '../../../../components/ClampCheck.astro';
+import Cite from '../../../../components/Cite.astro';
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Worked from '../../../../components/Worked.astro';
+import shot from '../../../../assets/screenshots/clampcheck-en.png';
+
+When a flyback's switch turns off, the magnetizing current passes to the
+secondary. The current in the leakage inductance cannot: it drives the drain
+above the input voltage plus the reflected output voltage until a clamp
+across the primary conducts <Cite key="ti_ssztcv6" />. The clamp check takes
+the worst-case operating point and the clamp's data, all in SI units. It
+shows:
+
+- the reflected voltage, the leakage energy and the time the leakage
+  current takes to fall to zero;
+- the clamp voltage at the actual peak current, and the switch voltage
+  against its rating;
+- the clamp dissipation;
+- with a TVS, the output voltage the flyback runs up to without a load.
+
+Each result names its equation. The chart shows how the dissipation and the
+switch voltage trade against the clamp voltage.
+
+<ClampCheck />
+
+## What it computes
+
+Enter the largest input voltage and the largest peak primary current at
+turn-off. If they occur at different operating points, checking them
+together is conservative. The turns ratio is 1:$n$, where $n$ is the
+secondary turns divided by the primary turns, and $L_\mathrm{lk}$ is the
+leakage inductance referred to the primary.
+
+### Reflected voltage
+
+While the output diode conducts, the primary winding carries the output
+voltage plus the diode drop, divided by $n$
+<Cite key="erickson2020" where="Ch. 6" />:
+
+<Eq id="flyback.V_OR" />
+
+A clamp must hold a higher voltage than this. Otherwise it conducts whenever
+the output diode does, and takes the energy meant for the output.
+
+### Leakage energy
+
+At turn-off the leakage inductance carries the peak primary current
+(<EqRef id="flyback.leak.E" label="leakage energy" />). The clamp takes that
+energy in every period (<EqRef id="flyback.leak.P" label="leakage power" />).
+
+### Clamp voltage
+
+A **TVS** starts to conduct at its breakdown voltage $V_\mathrm{BR}$, and its
+voltage rises with its current. Its datasheet gives the clamping voltage
+$V_\mathrm{CL}$ at a peak pulse current $I_\mathrm{PP}$. A dynamic
+resistance in series with the breakdown voltage models the rise between them
+<Cite key="st_an316" />:
+
+<Eq id="tvs.R_D" />
+
+The tool takes the TVS's voltage at the peak primary current as the highest
+clamp voltage:
+
+<Eq id="tvs.V_clamp" />
+
+While the leakage current falls to zero, the TVS voltage falls back towards
+$V_\mathrm{BR}$, so the tool shows the clamp voltage as a range.
+
+An **RCD clamp** is a diode into a capacitor with a resistor across it. The
+capacitor holds the clamp voltage, and the resistor dissipates the clamp's
+power. The clamp voltage settles where the two balance (the root above
+$V_\mathrm{OR}$; see the derivation linked under the equation):
+
+<Eq id="clamp.rcd.V" />
+
+By this equation a larger resistor gives a higher clamp voltage, and by the
+dissipation equation below a lower dissipation: the clamp trades its voltage
+against its losses <Cite key="ti_ssztcv6" />.
+
+### Switch voltage
+
+While the clamp conducts, the switch blocks the input voltage plus the clamp
+voltage:
+
+<Eq id="clamp.Vds" />
+
+The margin is the switch's rating minus this voltage, at the highest clamp
+voltage.
+
+### Reset time and clamp dissipation
+
+While the clamp conducts, the magnetizing inductance holds the primary at
+$V_\mathrm{OR}$. The leakage inductance therefore sees
+$V_\mathrm{clamp} - V_\mathrm{OR}$, and its current falls linearly to zero
+<Cite key="erickson2020" where="Ch. 2" />:
+
+<Eq id="clamp.t_reset" />
+
+The reset must fit in the off-time. The closer the clamp voltage is to
+$V_\mathrm{OR}$, the longer it takes; the tool warns when it would take a
+whole switching period or more. The clamp would then conduct energy meant
+for the output, and the equations here no longer hold.
+
+Meanwhile the reflected voltage keeps driving current into the clamp. So the
+clamp absorbs more than the leakage energy, and the closer the clamp voltage
+is to $V_\mathrm{OR}$, the more it absorbs <Cite key="ti_ssztcv6" />:
+
+<Eq id="clamp.P" />
+
+The dissipation falls as the clamp voltage rises. For a TVS, this equation at
+the highest clamp voltage is a lower bound, and at $V_\mathrm{BR}$ an upper
+bound. The table shows both, and their ratio to the leakage power.
+
+### Output voltage without a load
+
+With the load removed and no regulation, the output keeps charging. It
+stops only when its reflected voltage reaches the clamp voltage, and from
+then on the clamp takes all of the input power. A TVS holds its voltage
+while it does, so the output stops at:
+
+<Eq id="flyback.V_ceiling" />
+
+The output capacitor and everything on the output must withstand this
+voltage, and the TVS must be rated for the whole input power, far more than
+its dissipation in normal operation.
+
+An RCD clamp gives no such bound. Its voltage is where its resistor
+dissipates the clamp's power (the power balance behind the RCD equation
+above), so at no load, with the whole input power to dissipate, the clamp
+voltage rises far above its loaded value. The output and the switch voltage
+rise with it. The tool shows no ceiling for an RCD clamp and warns instead:
+limit the input power at no load, or add a fixed-voltage clamp.
+
+## Choosing the clamp voltage
+
+The chart plots the dissipation (logarithmic axis) and the switch voltage
+against the clamp voltage, from just above $V_\mathrm{OR}$. A low clamp
+voltage costs dissipation, and a high one costs switch voltage. The switch's
+rating sets the highest clamp voltage the switch allows. The shaded band is
+the range of the clamp entered.
+
+## Worked examples
+
+A TVS clamp:
+
+<Worked example="clamp-tvs" />
+
+With the peak current of <Val example="clamp-tvs" name="I_pk" />, the TVS
+reaches <Val example="clamp-tvs" name="V_clamp" />, well below its
+datasheet clamping voltage at <Val example="clamp-tvs" name="I_PP" />. The
+dissipation lies between <Val example="clamp-tvs" name="P_clamp" /> and
+<Val example="clamp-tvs" name="P_clamp_max" />, several times the leakage
+power of <Val example="clamp-tvs" name="P_lk" />.
+
+The same flyback with an RCD clamp:
+
+<Worked example="clamp-rcd" />
+
+This resistor sets a clamp voltage whose switch voltage,
+<Val example="clamp-rcd" name="V_DS" />, leaves little margin to the
+<Val example="clamp-rcd" name="V_rating" /> rating. A smaller resistor lowers
+the clamp voltage, but the dissipation rises. Without a load, this clamp
+would not hold the switch within its rating at all (see above).
+
+## Limitations
+
+- **Ideal clamp.** The clamp holds a constant voltage while it conducts (for
+  the RCD clamp, the capacitor's ripple is small), and the leakage current
+  falls linearly. The off-time is not an input: the tool compares the reset
+  time with the whole switching period only. The clamp diode's reverse recovery, and the ringing of the
+  leakage inductance with the switch-node capacitance after the clamp stops,
+  are not modelled.
+- **TVS data.** The dynamic resistance derived from the datasheet's
+  $V_\mathrm{CL}$ at $I_\mathrm{PP}$ applies to that datasheet pulse: it
+  depends on the pulse duration, and the breakdown voltage rises with
+  temperature <Cite key="st_an316" />. Take the datasheet
+  values over the design's conditions, not the typical ones, and check the
+  TVS's power rating for its repetitive dissipation.
+- **Dissipative clamps only.** The energy is turned into heat. Clamps that
+  return it to the input or the output are not covered.
+
+## Screenshot
+
+<figure class="pe-shot">
+  <Image src={shot} alt="The clamp check with the synthetic TVS example: the clamp-type buttons, the operating-point and TVS fields, the results table naming the equation of each result, and the chart of clamp dissipation and switch voltage against the clamp voltage with the switch's rating and the TVS's range shaded." />
+  <figcaption>The clamp check with the synthetic TVS example.</figcaption>
+</figure>

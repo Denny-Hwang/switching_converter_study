@@ -1,0 +1,31 @@
+synthetic: true
+label: "Synthetic flyback with a TVS primary clamp (round numbers, not a real design)"
+label_ko: "TVS 1차 측 클램프를 쓰는 합성 플라이백 (단순한 어림수이며 실제 설계가 아님)"
+# Clamp-check preset: 1:n transformer, n = N_s/N_p; generic TVS data as a datasheet gives them
+# (breakdown voltage, clamping voltage at the peak pulse current).
+params:
+  V_g: 72
+  V: 12
+  V_D: 0.5
+  n: 0.25
+  L_lk: 2.0e-6
+  I_pk: 2
+  f_s: 1.0e5
+  V_rating: 150
+  V_BR: 60
+  V_CL: 90
+  I_PP: 10
+steps:
+  - flyback.V_OR
+  - flyback.leak.E
+  - flyback.leak.P
+  - tvs.R_D
+  # the leakage current resets slowest at the lowest clamp voltage, V_BR
+  - {eq: clamp.t_reset, bind: {V_clamp: V_BR}}
+  # the TVS's voltage at the peak current: the switch's worst case
+  - {eq: tvs.V_clamp, as: V_clamp}
+  - clamp.Vds
+  # the dissipation at the highest clamp voltage (a lower bound) and at V_BR (an upper bound)
+  - clamp.P
+  - {eq: clamp.P, bind: {V_clamp: V_BR}, as: P_clamp_max}
+  - flyback.V_ceiling

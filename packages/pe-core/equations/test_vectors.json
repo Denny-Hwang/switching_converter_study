@@ -2163,6 +2163,594 @@
       "value": 3.00198095346e-05
     },
     {
+      "id": "flyback.V_OR",
+      "source": "yaml",
+      "inputs": {
+        "V": 12.0,
+        "V_D": 0.5,
+        "n": 0.25
+      },
+      "value": 50.0
+    },
+    {
+      "id": "flyback.V_OR",
+      "source": "random",
+      "inputs": {
+        "V": 10.8031,
+        "V_D": 0.901062,
+        "n": 1.63011
+      },
+      "value": 7.179982945936165
+    },
+    {
+      "id": "flyback.V_OR",
+      "source": "random",
+      "inputs": {
+        "V": 5.08595,
+        "V_D": 1.0523,
+        "n": 1.99948
+      },
+      "value": 3.0699231800268074
+    },
+    {
+      "id": "flyback.V_OR",
+      "source": "random",
+      "inputs": {
+        "V": 8.89835,
+        "V_D": 0.959323,
+        "n": 0.12757
+      },
+      "value": 77.27265814846751
+    },
+    {
+      "id": "flyback.V_OR",
+      "source": "random",
+      "inputs": {
+        "V": 1.04843,
+        "V_D": 0.603198,
+        "n": 0.169487
+      },
+      "value": 9.744865387905858
+    },
+    {
+      "id": "flyback.V_OR",
+      "source": "random",
+      "inputs": {
+        "V": 2.28895,
+        "V_D": 0.374871,
+        "n": 2.25035
+      },
+      "value": 1.183736307685471
+    },
+    {
+      "id": "flyback.V_OR",
+      "source": "random",
+      "inputs": {
+        "V": 55.3236,
+        "V_D": 0.951734,
+        "n": 0.854509
+      },
+      "value": 65.85692368365928
+    },
+    {
+      "id": "clamp.Vds",
+      "source": "yaml",
+      "inputs": {
+        "V_clamp": 75.0,
+        "V_g": 48.0
+      },
+      "value": 123.0
+    },
+    {
+      "id": "clamp.Vds",
+      "source": "random",
+      "inputs": {
+        "V_clamp": 3.16601,
+        "V_g": 68.3983
+      },
+      "value": 71.56431
+    },
+    {
+      "id": "clamp.Vds",
+      "source": "random",
+      "inputs": {
+        "V_clamp": 59.2416,
+        "V_g": 8.80422
+      },
+      "value": 68.04581999999999
+    },
+    {
+      "id": "clamp.Vds",
+      "source": "random",
+      "inputs": {
+        "V_clamp": 69.5953,
+        "V_g": 351.35
+      },
+      "value": 420.94530000000003
+    },
+    {
+      "id": "clamp.Vds",
+      "source": "random",
+      "inputs": {
+        "V_clamp": 21.7772,
+        "V_g": 1.06772
+      },
+      "value": 22.844920000000002
+    },
+    {
+      "id": "clamp.Vds",
+      "source": "random",
+      "inputs": {
+        "V_clamp": 22.1096,
+        "V_g": 11.5808
+      },
+      "value": 33.6904
+    },
+    {
+      "id": "clamp.Vds",
+      "source": "random",
+      "inputs": {
+        "V_clamp": 102.933,
+        "V_g": 7.87286
+      },
+      "value": 110.80586000000001
+    },
+    {
+      "id": "clamp.t_reset",
+      "source": "yaml",
+      "inputs": {
+        "I_pk": 2.0,
+        "L_lk": 2e-06,
+        "V_OR": 50.0,
+        "V_clamp": 75.0
+      },
+      "value": 1.6e-07
+    },
+    {
+      "id": "clamp.t_reset",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.328213,
+        "L_lk": 9.96138e-06,
+        "V_OR": 8.49209,
+        "V_clamp": 71.2436
+      },
+      "value": 5.21016054265467e-08
+    },
+    {
+      "id": "clamp.t_reset",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.5979,
+        "L_lk": 9.59583e-08,
+        "V_OR": 17.7162,
+        "V_clamp": 25.6588
+      },
+      "value": 7.22351214589681e-09
+    },
+    {
+      "id": "clamp.t_reset",
+      "source": "random",
+      "inputs": {
+        "I_pk": 39.9837,
+        "L_lk": 1.75563e-07,
+        "V_OR": 4.02123,
+        "V_clamp": 53.227
+      },
+      "value": 1.4265925161012621e-07
+    },
+    {
+      "id": "clamp.t_reset",
+      "source": "random",
+      "inputs": {
+        "I_pk": 4.14621,
+        "L_lk": 2.01195e-07,
+        "V_OR": 14.0899,
+        "V_clamp": 241.257
+      },
+      "value": 3.672172250955354e-09
+    },
+    {
+      "id": "clamp.t_reset",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.00597514,
+        "L_lk": 2.43898e-06,
+        "V_OR": 20.9195,
+        "V_clamp": 229.679
+      },
+      "value": 6.980878454489496e-11
+    },
+    {
+      "id": "clamp.t_reset",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.0109475,
+        "L_lk": 6.32426e-06,
+        "V_OR": 7.30979,
+        "V_clamp": 56.4442
+      },
+      "value": 1.409090622030467e-09
+    },
+    {
+      "id": "clamp.P",
+      "source": "yaml",
+      "inputs": {
+        "I_pk": 2.0,
+        "L_lk": 2e-06,
+        "V_OR": 50.0,
+        "V_clamp": 75.0,
+        "f_s": 100000.0
+      },
+      "value": 1.2
+    },
+    {
+      "id": "clamp.P",
+      "source": "random",
+      "inputs": {
+        "I_pk": 2.99025,
+        "L_lk": 3.97865e-05,
+        "V_OR": 8.58832,
+        "V_clamp": 96.3245,
+        "f_s": 1169.42
+      },
+      "value": 0.22837538766263116
+    },
+    {
+      "id": "clamp.P",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.0459051,
+        "L_lk": 1.97229e-07,
+        "V_OR": 1.75042,
+        "V_clamp": 2.21958,
+        "f_s": 94091.7
+      },
+      "value": 9.250469874341794e-05
+    },
+    {
+      "id": "clamp.P",
+      "source": "random",
+      "inputs": {
+        "I_pk": 9.13303,
+        "L_lk": 8.8367e-06,
+        "V_OR": 3.16728,
+        "V_clamp": 84.1618,
+        "f_s": 14823.9
+      },
+      "value": 5.676906481964901
+    },
+    {
+      "id": "clamp.P",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.0311459,
+        "L_lk": 6.15268e-05,
+        "V_OR": 16.2904,
+        "V_clamp": 170.279,
+        "f_s": 36459.9
+      },
+      "value": 0.0012031619690792352
+    },
+    {
+      "id": "clamp.P",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.00349207,
+        "L_lk": 3.28154e-06,
+        "V_OR": 33.6315,
+        "V_clamp": 371.878,
+        "f_s": 4127.06
+      },
+      "value": 9.078655699939829e-08
+    },
+    {
+      "id": "clamp.P",
+      "source": "random",
+      "inputs": {
+        "I_pk": 11.4625,
+        "L_lk": 3.75411e-08,
+        "V_OR": 67.883,
+        "V_clamp": 162.119,
+        "f_s": 35867.7
+      },
+      "value": 0.15217955046474385
+    },
+    {
+      "id": "clamp.rcd.V",
+      "source": "yaml",
+      "inputs": {
+        "I_pk": 2.0,
+        "L_lk": 2e-06,
+        "R_clamp": 4687.5,
+        "V_OR": 50.0,
+        "f_s": 100000.0
+      },
+      "value": 75.0
+    },
+    {
+      "id": "clamp.rcd.V",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.00174872,
+        "L_lk": 1.83824e-08,
+        "R_clamp": 170262.0,
+        "V_OR": 19.2406,
+        "f_s": 430843.0
+      },
+      "value": 19.24070715896558
+    },
+    {
+      "id": "clamp.rcd.V",
+      "source": "random",
+      "inputs": {
+        "I_pk": 1.24109,
+        "L_lk": 1.69228e-06,
+        "R_clamp": 439.367,
+        "V_OR": 341.038,
+        "f_s": 278384.0
+      },
+      "value": 341.5047922982951
+    },
+    {
+      "id": "clamp.rcd.V",
+      "source": "random",
+      "inputs": {
+        "I_pk": 48.9412,
+        "L_lk": 1.0708e-08,
+        "R_clamp": 3295.71,
+        "V_OR": 63.6942,
+        "f_s": 153753.0
+      },
+      "value": 118.52203376315876
+    },
+    {
+      "id": "clamp.rcd.V",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.0535129,
+        "L_lk": 7.49592e-05,
+        "R_clamp": 6294.44,
+        "V_OR": 3.84757,
+        "f_s": 10436.1
+      },
+      "value": 5.20269382984597
+    },
+    {
+      "id": "clamp.rcd.V",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.0462403,
+        "L_lk": 4.96119e-07,
+        "R_clamp": 435550.0,
+        "V_OR": 10.9596,
+        "f_s": 5807.85
+      },
+      "value": 11.080683236120617
+    },
+    {
+      "id": "clamp.rcd.V",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.00114683,
+        "L_lk": 2.01298e-06,
+        "R_clamp": 2624.31,
+        "V_OR": 54.4568,
+        "f_s": 2120.11
+      },
+      "value": 54.45680013524741
+    },
+    {
+      "id": "tvs.R_D",
+      "source": "yaml",
+      "inputs": {
+        "I_PP": 10.0,
+        "V_BR": 60.0,
+        "V_CL": 90.0
+      },
+      "value": 3.0
+    },
+    {
+      "id": "tvs.R_D",
+      "source": "random",
+      "inputs": {
+        "I_PP": 65.3851,
+        "V_BR": 24.3117,
+        "V_CL": 116.799
+      },
+      "value": 1.4145011631090265
+    },
+    {
+      "id": "tvs.R_D",
+      "source": "random",
+      "inputs": {
+        "I_PP": 30.1324,
+        "V_BR": 5.87112,
+        "V_CL": 14.6694
+      },
+      "value": 0.29198736244042955
+    },
+    {
+      "id": "tvs.R_D",
+      "source": "random",
+      "inputs": {
+        "I_PP": 0.666074,
+        "V_BR": 4.27452,
+        "V_CL": 268.112
+      },
+      "value": 396.10836033233545
+    },
+    {
+      "id": "tvs.R_D",
+      "source": "random",
+      "inputs": {
+        "I_PP": 96.6183,
+        "V_BR": 3.85993,
+        "V_CL": 12.4398
+      },
+      "value": 0.08880170733701587
+    },
+    {
+      "id": "tvs.R_D",
+      "source": "random",
+      "inputs": {
+        "I_PP": 8.94244,
+        "V_BR": 45.5831,
+        "V_CL": 603.547
+      },
+      "value": 62.39503983252894
+    },
+    {
+      "id": "tvs.R_D",
+      "source": "random",
+      "inputs": {
+        "I_PP": 131.412,
+        "V_BR": 65.3909,
+        "V_CL": 445.024
+      },
+      "value": 2.888876967095851
+    },
+    {
+      "id": "tvs.V_clamp",
+      "source": "yaml",
+      "inputs": {
+        "I_pk": 3.0,
+        "R_D": 2.0,
+        "V_BR": 60.0
+      },
+      "value": 66.0
+    },
+    {
+      "id": "tvs.V_clamp",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.0912646,
+        "R_D": 0.0054539,
+        "V_BR": 2.93617
+      },
+      "value": 2.9366677480019403
+    },
+    {
+      "id": "tvs.V_clamp",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.998405,
+        "R_D": 0.00868471,
+        "V_BR": 20.6629
+      },
+      "value": 20.671570857887552
+    },
+    {
+      "id": "tvs.V_clamp",
+      "source": "random",
+      "inputs": {
+        "I_pk": 32.5808,
+        "R_D": 0.0786561,
+        "V_BR": 286.774
+      },
+      "value": 289.33667866288
+    },
+    {
+      "id": "tvs.V_clamp",
+      "source": "random",
+      "inputs": {
+        "I_pk": 1.46157,
+        "R_D": 0.0965246,
+        "V_BR": 1.2968
+      },
+      "value": 1.4378774596219999
+    },
+    {
+      "id": "tvs.V_clamp",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.12423,
+        "R_D": 98.4164,
+        "V_BR": 5.07368
+      },
+      "value": 17.299949372
+    },
+    {
+      "id": "tvs.V_clamp",
+      "source": "random",
+      "inputs": {
+        "I_pk": 0.799261,
+        "R_D": 0.00169692,
+        "V_BR": 4.48348
+      },
+      "value": 4.48483628197612
+    },
+    {
+      "id": "flyback.V_ceiling",
+      "source": "yaml",
+      "inputs": {
+        "V_D": 0.5,
+        "V_clamp": 100.0,
+        "n": 0.25
+      },
+      "value": 24.5
+    },
+    {
+      "id": "flyback.V_ceiling",
+      "source": "random",
+      "inputs": {
+        "V_D": 0.674668,
+        "V_clamp": 399.148,
+        "n": 1.7548
+      },
+      "value": 699.7502424
+    },
+    {
+      "id": "flyback.V_ceiling",
+      "source": "random",
+      "inputs": {
+        "V_D": 0.890591,
+        "V_clamp": 574.572,
+        "n": 2.67333
+      },
+      "value": 1535.12997376
+    },
+    {
+      "id": "flyback.V_ceiling",
+      "source": "random",
+      "inputs": {
+        "V_D": 1.20262,
+        "V_clamp": 184.765,
+        "n": 1.99354
+      },
+      "value": 367.1337981
+    },
+    {
+      "id": "flyback.V_ceiling",
+      "source": "random",
+      "inputs": {
+        "V_D": 0.168767,
+        "V_clamp": 2.26661,
+        "n": 0.460737
+      },
+      "value": 0.87554409157
+    },
+    {
+      "id": "flyback.V_ceiling",
+      "source": "random",
+      "inputs": {
+        "V_D": 1.03747,
+        "V_clamp": 3.13169,
+        "n": 7.95963
+      },
+      "value": 23.889623674699997
+    },
+    {
+      "id": "flyback.V_ceiling",
+      "source": "random",
+      "inputs": {
+        "V_D": 1.31876,
+        "V_clamp": 16.5121,
+        "n": 2.10277
+      },
+      "value": 33.402388517
+    },
+    {
       "id": "dcm.ring.f",
       "source": "yaml",
       "inputs": {
@@ -3033,6 +3621,86 @@
       "value": 1.3218156099563195e-08
     },
     {
+      "id": "src.cv_power",
+      "source": "yaml",
+      "inputs": {
+        "R_s": 25.0,
+        "V_c": 5.0,
+        "V_oc": 10.0
+      },
+      "value": 1.0
+    },
+    {
+      "id": "src.cv_power",
+      "source": "yaml",
+      "inputs": {
+        "R_s": 25.0,
+        "V_c": 5.0,
+        "V_oc": 2.5
+      },
+      "value": -0.5
+    },
+    {
+      "id": "src.cv_power",
+      "source": "random",
+      "inputs": {
+        "R_s": 65271.3,
+        "V_c": 0.112268,
+        "V_oc": 22.306
+      },
+      "value": 3.8173682831137114e-05
+    },
+    {
+      "id": "src.cv_power",
+      "source": "random",
+      "inputs": {
+        "R_s": 78430.5,
+        "V_c": 0.136306,
+        "V_oc": 0.533561
+      },
+      "value": 6.903977410573692e-07
+    },
+    {
+      "id": "src.cv_power",
+      "source": "random",
+      "inputs": {
+        "R_s": 1.0861,
+        "V_c": 1.27464,
+        "V_oc": 6.37676
+      },
+      "value": 5.987815336341036
+    },
+    {
+      "id": "src.cv_power",
+      "source": "random",
+      "inputs": {
+        "R_s": 1.60672,
+        "V_c": 0.074453,
+        "V_oc": 0.130984
+      },
+      "value": 0.0026195619292720567
+    },
+    {
+      "id": "src.cv_power",
+      "source": "random",
+      "inputs": {
+        "R_s": 4381.15,
+        "V_c": 2.92167,
+        "V_oc": 10.7222
+      },
+      "value": 0.005201961696152838
+    },
+    {
+      "id": "src.cv_power",
+      "source": "random",
+      "inputs": {
+        "R_s": 6321.28,
+        "V_c": 3.14118,
+        "V_oc": 50.5638
+      },
+      "value": 0.02356531991805457
+    },
+    {
       "id": "src.cv_extraction",
       "source": "yaml",
       "inputs": {
@@ -3103,6 +3771,221 @@
         "V_oc": 2.41524
       },
       "value": 0.9790673289795865
+    },
+    {
+      "id": "lfr.Vg",
+      "source": "yaml",
+      "inputs": {
+        "R_in": 100.0,
+        "R_s": 100.0,
+        "V_oc": 10.0
+      },
+      "value": 5.0
+    },
+    {
+      "id": "lfr.Vg",
+      "source": "yaml",
+      "inputs": {
+        "R_in": 300.0,
+        "R_s": 100.0,
+        "V_oc": 12.0
+      },
+      "value": 9.0
+    },
+    {
+      "id": "lfr.Vg",
+      "source": "random",
+      "inputs": {
+        "R_in": 234227.0,
+        "R_s": 9887410.0,
+        "V_oc": 0.239834
+      },
+      "value": 0.005550050680339554
+    },
+    {
+      "id": "lfr.Vg",
+      "source": "random",
+      "inputs": {
+        "R_in": 8604.86,
+        "R_s": 2.46305,
+        "V_oc": 0.486059
+      },
+      "value": 0.48591991057428713
+    },
+    {
+      "id": "lfr.Vg",
+      "source": "random",
+      "inputs": {
+        "R_in": 4.71823,
+        "R_s": 594320.0,
+        "V_oc": 155.816
+      },
+      "value": 0.0012369933525051395
+    },
+    {
+      "id": "lfr.Vg",
+      "source": "random",
+      "inputs": {
+        "R_in": 21.7111,
+        "R_s": 692496.0,
+        "V_oc": 304.253
+      },
+      "value": 0.009538625803241206
+    },
+    {
+      "id": "lfr.Vg",
+      "source": "random",
+      "inputs": {
+        "R_in": 162.02,
+        "R_s": 19321.4,
+        "V_oc": 947.419
+      },
+      "value": 7.878536026015966
+    },
+    {
+      "id": "lfr.Vg",
+      "source": "random",
+      "inputs": {
+        "R_in": 856468.0,
+        "R_s": 457.288,
+        "V_oc": 0.11257
+      },
+      "value": 0.1125099283567881
+    },
+    {
+      "id": "lfr.eta",
+      "source": "yaml",
+      "inputs": {
+        "R_in": 100.0,
+        "R_s": 100.0
+      },
+      "value": 1.0
+    },
+    {
+      "id": "lfr.eta",
+      "source": "yaml",
+      "inputs": {
+        "R_in": 300.0,
+        "R_s": 100.0
+      },
+      "value": 0.75
+    },
+    {
+      "id": "lfr.eta",
+      "source": "random",
+      "inputs": {
+        "R_in": 8008510.0,
+        "R_s": 277.258
+      },
+      "value": 0.0001384721020108256
+    },
+    {
+      "id": "lfr.eta",
+      "source": "random",
+      "inputs": {
+        "R_in": 6754910.0,
+        "R_s": 2.62102
+      },
+      "value": 1.5520668467828481e-06
+    },
+    {
+      "id": "lfr.eta",
+      "source": "random",
+      "inputs": {
+        "R_in": 312097.0,
+        "R_s": 1570.74
+      },
+      "value": 0.019930315755349537
+    },
+    {
+      "id": "lfr.eta",
+      "source": "random",
+      "inputs": {
+        "R_in": 330005.0,
+        "R_s": 157.872
+      },
+      "value": 0.001911741442481344
+    },
+    {
+      "id": "lfr.eta",
+      "source": "random",
+      "inputs": {
+        "R_in": 12959.2,
+        "R_s": 630.169
+      },
+      "value": 0.17688729305483622
+    },
+    {
+      "id": "lfr.eta",
+      "source": "random",
+      "inputs": {
+        "R_in": 35.4261,
+        "R_s": 453.951
+      },
+      "value": 0.2685993928246803
+    },
+    {
+      "id": "lfr.Vg_power",
+      "source": "yaml",
+      "inputs": {
+        "P": 0.5,
+        "R_in": 200.0
+      },
+      "value": 10.0
+    },
+    {
+      "id": "lfr.Vg_power",
+      "source": "random",
+      "inputs": {
+        "P": 280.575,
+        "R_in": 314.3
+      },
+      "value": 296.95912597527627
+    },
+    {
+      "id": "lfr.Vg_power",
+      "source": "random",
+      "inputs": {
+        "P": 14.6018,
+        "R_in": 60.1475
+      },
+      "value": 29.635481529747413
+    },
+    {
+      "id": "lfr.Vg_power",
+      "source": "random",
+      "inputs": {
+        "P": 178.712,
+        "R_in": 1587.73
+      },
+      "value": 532.678518207746
+    },
+    {
+      "id": "lfr.Vg_power",
+      "source": "random",
+      "inputs": {
+        "P": 0.301092,
+        "R_in": 3411750.0
+      },
+      "value": 1013.5337345150383
+    },
+    {
+      "id": "lfr.Vg_power",
+      "source": "random",
+      "inputs": {
+        "P": 0.000874591,
+        "R_in": 348608.0
+      },
+      "value": 17.46108299413298
+    },
+    {
+      "id": "lfr.Vg_power",
+      "source": "random",
+      "inputs": {
+        "P": 0.343007,
+        "R_in": 91.6758
+      },
+      "value": 5.607623483312695
     },
     {
       "id": "sense.current_out_monitor",

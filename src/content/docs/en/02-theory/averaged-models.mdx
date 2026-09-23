@@ -77,7 +77,9 @@ and the input port behaves like a resistor
 This resistor does not dissipate the power it absorbs: it passes that power
 to the output. The averaged DCM switch network is therefore modelled as a
 **loss-free resistor**, a property that energy-harvesting interfaces use to
-present a resistive load to a source.
+present a resistive load to a source. The
+[source matcher](../../design/source-matcher/) matches a flyback's loss-free
+resistor to a linear source.
 
 ## Worked example
 

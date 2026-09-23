@@ -108,6 +108,9 @@ processes this power without dissipating it:
 
 <Eq id="flyback.leak.P" />
 
+The [clamp check](../../design/clamp-check/) sizes a TVS or RCD clamp for this
+energy: the clamp voltage, the switch voltage and the clamp's dissipation.
+
 ### Fixed duty ratio into a fixed output
 
 If the output is held by a battery or a regulated bus, and the duty ratio

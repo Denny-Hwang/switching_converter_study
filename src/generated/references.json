@@ -122,6 +122,36 @@
       "kind": "Application Report",
       "url": "https://www.ti.com/lit/pdf/slva630"
     },
+    "ti_ssztcv6": {
+      "key": "ti_ssztcv6",
+      "type": "techreport",
+      "label": "Kollman 2024",
+      "authors": [
+        "Robert Kollman"
+      ],
+      "title": "Snubbing the flyback converter",
+      "verified": true,
+      "institution": "Texas Instruments",
+      "number": "SSZTCV6",
+      "year": "2024",
+      "kind": "Technical Article",
+      "url": "https://www.ti.com/lit/pdf/ssztcv6"
+    },
+    "st_an316": {
+      "key": "st_an316",
+      "type": "techreport",
+      "label": "STMicroelectronics 2022",
+      "authors": [
+        "STMicroelectronics"
+      ],
+      "title": "TVS clamping protection mode",
+      "verified": true,
+      "institution": "STMicroelectronics",
+      "number": "AN316, Rev. 6",
+      "year": "2022",
+      "kind": "Application Note",
+      "url": "https://www.st.com/resource/en/application_note/an316-tvs-clamping-protection-mode-stmicroelectronics.pdf"
+    },
     "ti_snoa930": {
       "key": "ti_snoa930",
       "type": "techreport",

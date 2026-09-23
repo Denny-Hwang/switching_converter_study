@@ -27,6 +27,8 @@ const PAGES = [
   { path: 'simulate/simulator/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: simulatorAction },
   { path: 'design/converter-designer/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: designerAction },
   { path: 'design/loss-budget/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: lossAction },
+  { path: 'design/clamp-check/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: clampAction },
+  { path: 'design/source-matcher/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: sourceAction },
 ];
 const LOCALES = ['en', 'ko'];
 
@@ -220,6 +222,27 @@ async function noStaleResult(page, where, errors, prefix, waitMs) {
   await v.fill(vValue);
 }
 
+/**
+ * Following an in-page anchor (a heading, an equation link) changes the URL
+ * hash too; it must not reset the tool's inputs to a preset.
+ */
+async function anchorKeepsState(page, where, errors) {
+  const input = page.locator(`${TOOL} input[type="number"]`).first();
+  if ((await input.count()) === 0) return;
+  const before = await input.inputValue();
+  const next = before === '' ? '7' : String(Number(before) * 1.5);
+  await input.fill(next);
+  await page.waitForTimeout(300);
+  const id = await page.evaluate(() => [...document.querySelectorAll('h2[id]')].pop()?.id ?? '');
+  if (!id) return;
+  await page.evaluate((h) => {
+    window.location.hash = h;
+  }, id);
+  await page.waitForTimeout(300);
+  if ((await input.inputValue()) !== next) errors.push(`${where}: following the in-page anchor #${id} reset the tool's inputs`);
+  await input.fill(before);
+}
+
 /** Designer: Space on the second topology button selects it and loads that topology's specification. */
 async function designerAction(page, where, errors) {
   const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
@@ -248,6 +271,34 @@ async function lossAction(page, where, errors) {
   await noStaleResult(page, where, errors, 'loss', 10000);
 }
 
+/** Clamp check: Space on the second clamp-type button selects the RCD clamp and shows its resistor. */
+async function clampAction(page, where, errors) {
+  const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
+  const second = buttons.nth(1);
+  await second.focus();
+  await page.keyboard.press('Space');
+  await page.waitForTimeout(100);
+  if ((await second.getAttribute('aria-pressed')) !== 'true') errors.push(`${where}: Space did not select a clamp type`);
+  if ((await page.locator(`${TOOL} #clamp-R`).count()) !== 1) errors.push(`${where}: the RCD clamp's resistor field did not appear`);
+  await staleAndHash(page, where, errors, 'clamp');
+}
+
+/** Source matcher: Space on the second envelope button selects the rectified sine and shows its frequency. */
+async function sourceAction(page, where, errors) {
+  const buttons = page.locator(`${TOOL} .pe-sim__buttons[role="group"] button`);
+  const second = buttons.nth(1);
+  await second.focus();
+  await page.keyboard.press('Space');
+  await page.waitForTimeout(100);
+  if ((await second.getAttribute('aria-pressed')) !== 'true') errors.push(`${where}: Space did not select an envelope`);
+  if ((await page.locator(`${TOOL} #src-fenv`).count()) !== 1) errors.push(`${where}: the envelope frequency field did not appear`);
+  // an envelope run of a few seconds: the bus settles for 7 R_s C_bus
+  await page.locator(`${TOOL} #src-fenv`).fill('1');
+  await page.locator(`${TOOL} #src-Cbus`).fill('5e-5');
+  await staleAndHash(page, where, errors, 'src');
+  await noStaleResult(page, where, errors, 'src', 10000);
+}
+
 async function main() {
   const { base, stop } = await startPreview();
   const browser = await chromium.launch();
@@ -265,6 +316,7 @@ async function main() {
         await settle(page, p.ready);
         const n = await checkOrder(page, where, errors);
         await p.action(page, where, errors);
+        await anchorKeepsState(page, where, errors);
         for (const e of pageErrors) errors.push(`${where}: page error: ${e}`);
         console.log(`${where}: ${n} controls in order`);
         checked++;
