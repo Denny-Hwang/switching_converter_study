@@ -13,12 +13,13 @@ Checks every tracked (or new, not ignored) text file:
      example or a data-sheet fact). Numbers from synthetic examples are
      rendered by components that read examples/synthetic/*.yaml and never
      appear literally in MDX.
-  4. examples/synthetic/*.yaml must declare `synthetic: true`, a `label`
-     that contains the word "synthetic" and a `label_ko` that contains
-     "합성".
+  4. examples/synthetic/*.yaml must declare `synthetic: true`, and a `label`
+     and `label_ko` that name it as an example ("example", "예제"); every
+     page's footer states once that example numbers are synthetic, so the
+     footer component and that statement (EN and KO) must be in place.
   5. Quizzes (src/content/quizzes/**/*.yaml) may state exercise numbers with
-     units, so each must declare `numbers: synthetic`; the <Quiz> component
-     prints that note above the questions.
+     units, so each must declare `numbers: synthetic` (the footer's
+     statement covers them).
 
     python scripts/privacy_scan.py
 """
@@ -127,10 +128,20 @@ def main() -> int:
 
         for path in sorted(synth.glob("*.yaml")):
             data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-            if data.get("synthetic") is not True or "synthetic" not in str(data.get("label", "")).lower():
-                errors.append(f"{path.relative_to(ROOT)}: must declare `synthetic: true` and a label containing 'synthetic'")
-            if "합성" not in str(data.get("label_ko", "")):
-                errors.append(f"{path.relative_to(ROOT)}: label_ko must contain '합성' (synthetic), shown on Korean pages")
+            if data.get("synthetic") is not True or "example" not in str(data.get("label", "")).lower():
+                errors.append(f"{path.relative_to(ROOT)}: must declare `synthetic: true` and a label naming it an example")
+            if "예제" not in str(data.get("label_ko", "")):
+                errors.append(f"{path.relative_to(ROOT)}: label_ko must name it an example ('예제'), shown on Korean pages")
+
+    # the one statement every page carries: the footer override, and its text in both languages
+    config = read_text(ROOT / "astro.config.mjs") or ""
+    footer = read_text(ROOT / "src" / "components" / "Footer.astro") or ""
+    ui_text = read_text(ROOT / "src" / "i18n" / "ui.ts") or ""
+    statements = re.findall(r"'site\.synthetic': ['\"](.*)['\"],", ui_text)
+    if "Footer: './src/components/Footer.astro'" not in config or "t['site.synthetic']" not in footer:
+        errors.append("the page footer (src/components/Footer.astro, overriding Starlight's) must print t['site.synthetic']")
+    if len(statements) != 2 or "synthetic" not in statements[0] or "합성" not in statements[1]:
+        errors.append("src/i18n/ui.ts: 'site.synthetic' must say, in EN and KO, that example numbers are synthetic (합성)")
 
     quizzes = ROOT / "src" / "content" / "quizzes"
     if quizzes.exists():

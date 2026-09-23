@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic gapped core (round numbers, not a real core)"
-label_ko: "합성 공극 코어 (단순한 어림수이며 실제 코어가 아님)"
+label: "Gapped core example"
+label_ko: "공극 코어 예제"
 params:
   A_e: 1.0e-4
   l_e: 0.05

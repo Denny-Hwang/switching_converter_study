@@ -17,7 +17,7 @@ import Quiz from '../../../../components/Quiz.astro';
 
 ## 목표
 
-- 켜져 있는 MOSFET은 저항으로, 도통 중인 다이오드는 순방향 전압(forward voltage)에 작은 저항을 더한 것으로 모델링합니다.
+- 켜져 있는 MOSFET은 저항으로, 도통(conduction) 중인 다이오드는 순방향 전압(forward voltage)에 작은 저항을 더한 것으로 모델링합니다.
 - 용량성 턴온 손실(capacitive turn-on loss)과 게이트 구동 전력(gate-drive power)을 추정하고, 둘이 스위칭 주파수(switching frequency)에 따라 어떻게 달라지는지 확인합니다.
 - 스위칭 주파수에 따라 커지는 손실과 부하에 따라 커지는 손실을 구별합니다.
 
@@ -29,7 +29,7 @@ import Quiz from '../../../../components/Quiz.astro';
 흐르지 않습니다. 컨버터는 MOSFET 같은 트랜지스터와 다이오드로 스위치를
 구현합니다 <Cite key="erickson2020" where="Ch. 4" />. 트랜지스터는 게이트(gate)로
 켜고 끄며, 다이오드는 스스로 스위칭합니다. 다이오드는 순방향 바이어스(forward
-bias)가 걸리면 도통하고, 역방향 바이어스(reverse bias)가 걸리면 차단합니다
+bias)가 걸리면 도통하고, 역방향 바이어스(reverse bias)가 걸리면 차단(blocking)합니다
 <Cite key="erickson2020" where="Ch. 4" />.
 
 ### 도통 손실
@@ -62,15 +62,15 @@ bias)가 걸리면 도통하고, 역방향 바이어스(reverse bias)가 걸리�
 ### 게이트 구동 전력
 
 MOSFET을 스위칭하기 위해 드라이버는 주기마다 한 번, 게이트 전하(gate charge)를
-드라이버 전원에서 게이트로 옮겼다가 다시 접지로 보냅니다. 이에 드는 전력은
-MOSFET의 채널이 아니라 드라이버와 게이트 저항에서 소산됩니다
+드라이버 전원에서 게이트로 옮겼다가 다시 접지로 보냅니다. 이에 드는
+전력은 MOSFET의 채널이 아니라 드라이버와 게이트 저항에서 소산(dissipation)됩니다
 <Cite key="balogh2018" />.
 
 <Eq id="loss.gate" />
 
 ## 풀이 예제
 
-합성(synthetic) 스위치 노드, 게이트 구동, 다이오드입니다.
+스위치 노드, 게이트 구동, 다이오드 예제입니다.
 
 <Worked example="switch-losses" />
 

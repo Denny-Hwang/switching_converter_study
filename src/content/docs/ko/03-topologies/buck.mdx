@@ -42,11 +42,11 @@ import Quiz from '../../../../components/Quiz.astro';
 ### 전류 리플과 피크 전류
 
 스위치가 켜져 있는 동안 인덕터에는 입력 전압과 출력 전압의 차가 걸리고,
-인덕터 전류는 선형적으로 증가합니다. 다이오드가 도통하는 동안에는 인덕터에
+인덕터 전류는 선형적으로 증가합니다. 다이오드가 도통(conduction)하는 동안에는 인덕터에
 출력 전압이 반대 부호로 걸리고, 전류는 다시 감소합니다
-<Cite key="erickson2020" where="Ch. 2" />. 리플의 절반(half-ripple), 그리고
-같은 리플의 피크-피크(peak-to-peak) 값을 스위칭 주파수(switching frequency)로
-나타낸 식은 다음과 같습니다.
+<Cite key="erickson2020" where="Ch. 2" />. 리플의 절반(half-ripple)과,
+피크-피크(peak-to-peak) 리플을 스위칭 주파수(switching frequency)로 나타낸 식은
+다음과 같습니다.
 
 <Eq id="buck.ripple.iL" />
 
@@ -66,13 +66,13 @@ import Quiz from '../../../../components/Quiz.astro';
 <Eq id="buck.ripple.v" />
 
 커패시터에는 펄스가 아니라 연속적인 삼각파 전류가 공급되며, 그 덕분에 주어진
-커패시턴스에서 벅의 출력 리플이 작게 유지됩니다. 유도 과정은
+커패시턴스에서 벅의 출력 리플이 작게 유지됩니다. 유도 과정(derivation)은
 [유도 과정 페이지](../../02-theory/derivations/#deriv-topologies)에 있습니다.
 
 ### 스위치 스트레스와 모드 경계
 
 스위치는 꺼져 있을 때 입력 전압을 차단하고, 스위치가 켜져 있을 때는 다이오드가
-입력 전압을 차단합니다 <Cite key="erickson2020" where="Ch. 6" />.
+이 전압을 차단합니다 <Cite key="erickson2020" where="Ch. 6" />.
 
 <Eq id="buck.Vds" />
 
@@ -84,7 +84,7 @@ DCM으로 들어갑니다. 이때 출력은 $D V_g$보다
 
 ## 풀이 예제
 
-[스위칭 원리 페이지](../../02-theory/switching-principle/)의 합성(synthetic) 벅과
+[스위칭 원리 페이지](../../02-theory/switching-principle/)의 벅 예제와
 그 전류, 리플입니다.
 
 <Worked example="buck-basic" show={['V_g', 'D', 'f_s', 'L', 'C', 'R', 'V', 'I_L', 'Delta_i_L', 'Delta_i_pp', 'I_pk', 'Delta_v', 'K', 'K_crit']} />
@@ -117,14 +117,14 @@ $C$를 두 디케이드에 걸쳐(로그 축) 스윕(sweep)하십시오. 리플�
 
 ## 주의할 점
 
-- **커패시터의 직렬 저항은 리플을 더합니다.** 직렬 저항이 있는 커패시터는 그
-  저항에 피크-피크 리플 전류를 곱한 값과 같은 전압을 전류와 같은 위상으로
-  더합니다. 이를 위에서 계산한 용량성 항과 비교하십시오. 커패시터에 따라 어느
-  쪽이든 지배적일 수 있습니다.
+- **커패시터의 직렬 저항은 리플을 더합니다.** 그 저항에 피크-피크 리플 전류를
+  곱한 값과 같은 전압을 전류와 같은 위상으로 더합니다. 이를 위의 용량성
+  항(capacitive term)과 비교하십시오. 커패시터에 따라 어느 쪽이든 지배적일 수
+  있습니다.
 - **인덕터는 직류 전류가 아니라 피크 전류를 기준으로 선정하십시오.** 자성 코어는
   포화 자속 밀도(saturation flux density)를 넘으면 투자율(permeability)을 잃고
-  인덕턴스가 급격히 떨어집니다 <Cite key="erickson2020" where="Ch. 10" />. 그
-  한계 아래에 머물러야 하는 것은 인덕터 전류의 피크값입니다.
+  인덕턴스가 급격히 떨어집니다 <Cite key="erickson2020" where="Ch. 10" />.
+  인덕터 전류의 피크값이 그 한계 아래에 머물러야 합니다.
 - **리플 식은 리플 전체가 커패시터로 흐른다고 가정합니다.** 이 가정은 스위칭
   주파수에서 커패시터의 임피던스가 부하의 임피던스보다 훨씬 낮을 때 성립합니다.
 

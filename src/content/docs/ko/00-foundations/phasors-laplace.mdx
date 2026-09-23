@@ -17,18 +17,19 @@ import Quiz from '../../../../components/Quiz.astro';
 
 ## 목표
 
-- 정현파 신호를 페이저(phasor)로, 인덕터와 커패시터를 임피던스(impedance)로 나타냅니다.
+- 정현파 신호(sinusoidal signal)를 페이저(phasor)로, 인덕터와 커패시터를 임피던스(impedance)로 나타냅니다.
 - 주어진 주파수에서 인덕터와 커패시터의 임피던스를 계산합니다.
-- 컨버터 전달함수(transfer function)의 기본 구성 요소인 1차 저역통과 필터(low-pass filter)의 차단 주파수(corner frequency)와, 차단 주파수보다 높은 주파수에서의 감쇠(attenuation)를 구합니다.
+- 컨버터 전달함수(transfer function)의 기본 구성 요소인 1차(first-order) 저역통과 필터(low-pass filter)의 차단 주파수(corner frequency)와, 차단 주파수보다 높은 주파수에서의 감쇠(attenuation)를 구합니다.
 
 ## 이론
 
 ### 페이저와 임피던스
 
-정현파 정상상태(sinusoidal steady state)에서 선형 회로의 모든 전압과 전류는
-전원 주파수의 정현파입니다. 각 전압과 전류는 진폭과 위상(phase)을 담은 복소수,
-즉 페이저로 나타낼 수 있습니다 <Cite key="alexander2017" where="Ch. 9" />.
-미분은 $j\omega$를 곱하는 연산이 되고, 각 소자는 전압 페이저를 전류 페이저로
+정현파 정상상태(sinusoidal steady state)에서 선형 회로의 모든
+전압과 전류는 전원 주파수의 정현파입니다. 각 전압과 전류는 진폭과 위상(phase)을
+담은 복소수, 즉 페이저로 나타낼 수 있습니다
+<Cite key="alexander2017" where="Ch. 9" />. 미분은 $j\omega$를
+곱하는 연산이 되고, 각 소자는 전압 페이저를 전류 페이저로
 나눈 비인 임피던스로 기술됩니다 <Cite key="alexander2017" where="Ch. 9" />.
 인덕터와 커패시터의 임피던스 크기는 다음과 같습니다.
 
@@ -63,13 +64,13 @@ import Quiz from '../../../../components/Quiz.astro';
 차단 주파수보다 충분히 높은 주파수에서는 주파수가 한 디케이드(decade) 높아질
 때마다 이득이 10분의 1로 줄어듭니다. 이는 보드 선도(Bode plot)에서 디케이드당
 -20 dB의 기울기입니다 <Cite key="alexander2017" where="Ch. 14" />. 컨버터의
-L-C 필터는 2차 필터이며, 공진(resonance) 주파수보다 높은 주파수에서는
+L-C 필터는 2차(second-order) 필터이며, 공진(resonance) 주파수보다 높은 주파수에서는
 디케이드당 -40 dB로 감소합니다 <Cite key="erickson2020" where="Ch. 8" />
-([소신호 페이지](../../02-theory/small-signal/) 참고).
+([소신호(small-signal) 페이지](../../02-theory/small-signal/) 참고).
 
 ## 풀이 예제
 
-한 주파수에서의 합성(synthetic) 인덕터, 커패시터, R-C 필터입니다.
+한 주파수에서의 인덕터, 커패시터, R-C 필터 예제입니다.
 
 <Worked example="impedance-basic" />
 

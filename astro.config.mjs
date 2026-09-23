@@ -35,6 +35,7 @@ export default defineConfig({
       },
       social: [{ icon: 'github', label: 'GitHub', href: REPO_URL }],
       customCss: ['katex/dist/katex.min.css', './src/styles/custom.css'],
+      components: { Footer: './src/components/Footer.astro' },
       favicon: '/favicon.svg',
       lastUpdated: false,
       sidebar: [

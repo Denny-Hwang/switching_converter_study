@@ -18,7 +18,7 @@ import Quiz from '../../../../components/Quiz.astro';
 ## 목표
 
 - 앙페르 법칙(Ampère's law)으로 권선(winding)의 전류와 그 코어 내부의 자계 세기(magnetic field intensity)를 관련짓습니다.
-- 패러데이 법칙(Faraday's law)으로 권선에 인가한 전압과 그 지속 시간으로부터 자속 밀도 변화폭(flux-density swing)을 계산합니다.
+- 패러데이 법칙(Faraday's law)으로 권선에 인가(applied)한 전압과 그 지속 시간으로부터 자속 밀도 변화폭(flux-density swing)을 계산합니다.
 - 컨버터 자기 부품(magnetic component)의 자속 변화폭(flux swing)이 부하 전류가 아니라 전압-초(volt-seconds)로 정해지는 이유를 설명합니다.
 
 ## 이론
@@ -34,9 +34,10 @@ path length)를 따라 균일하다면, 이로부터 다음 식을 얻습니다
 
 ### 패러데이 법칙
 
-권선을 통과하는 자속이 변하면, 턴 수에 자속의 변화율을 곱한 값과 같은 전압이
-유도됩니다. 자속 밀도가 코어의 유효 단면적(effective area) 전체에서 균일하면, 온
-시간(on-time) 동안 권선에 인가한 일정한 전압은 자속 밀도를 선형적으로 변화시킵니다
+권선을 통과하는 자속이 변하면, 턴 수에 자속의 변화율을 곱한 값과
+같은 전압이 유도(induction)됩니다. 자속 밀도가 코어의 유효 단면적(effective area)
+전체에서 균일하면, 온 시간(on-time) 동안 권선에 인가한 일정한 전압은 자속 밀도를
+선형적으로 변화시킵니다
 <Cite key="erickson2020" where="Ch. 10" />, <Cite key="dixon2001" />.
 
 <Eq id="mag.dB_faraday" />
@@ -56,7 +57,7 @@ path length)를 따라 균일하다면, 이로부터 다음 식을 얻습니다
 
 ## 풀이 예제
 
-공극이 없는 코어에 감은 합성(synthetic) 권선입니다.
+공극이 없는 코어에 감은 권선 예제입니다.
 
 <Worked example="inductor-core" />
 

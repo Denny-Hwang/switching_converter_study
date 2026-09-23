@@ -118,9 +118,9 @@ is to $V_\mathrm{OR}$, the more it absorbs <Cite key="ti_ssztcv6" />:
 
 <Eq id="clamp.P" />
 
-The dissipation falls as the clamp voltage rises. For a TVS, this equation at
-the highest clamp voltage is a lower bound, and at $V_\mathrm{BR}$ an upper
-bound. The table shows both, and their ratio to the leakage power.
+For a TVS, this equation at the highest clamp voltage is a lower bound, and
+at $V_\mathrm{BR}$ an upper bound. The table shows both, and their ratio to
+the leakage power.
 
 ### Output voltage without a load
 
@@ -178,21 +178,21 @@ would not hold the switch within its rating at all (see above).
 - **Ideal clamp.** The clamp holds a constant voltage while it conducts (for
   the RCD clamp, the capacitor's ripple is small), and the leakage current
   falls linearly. The off-time is not an input: the tool compares the reset
-  time with the whole switching period only. The clamp diode's reverse recovery, and the ringing of the
-  leakage inductance with the switch-node capacitance after the clamp stops,
-  are not modelled.
+  time with the whole switching period only. The clamp diode's reverse
+  recovery, and the ringing of the leakage inductance with the switch-node
+  capacitance after the clamp stops, are not modelled.
 - **TVS data.** The dynamic resistance derived from the datasheet's
   $V_\mathrm{CL}$ at $I_\mathrm{PP}$ applies to that datasheet pulse: it
   depends on the pulse duration, and the breakdown voltage rises with
-  temperature <Cite key="st_an316" />. Take the datasheet
-  values over the design's conditions, not the typical ones, and check the
-  TVS's power rating for its repetitive dissipation.
+  temperature <Cite key="st_an316" />. Take the datasheet values over the
+  design's conditions, not the typical ones, and check the TVS's power rating
+  for its repetitive dissipation.
 - **Dissipative clamps only.** The energy is turned into heat. Clamps that
   return it to the input or the output are not covered.
 
 ## Screenshot
 
 <figure class="pe-shot">
-  <Image src={shot} alt="The clamp check with the synthetic TVS example: the clamp-type buttons, the operating-point and TVS fields, the results table naming the equation of each result, and the chart of clamp dissipation and switch voltage against the clamp voltage with the switch's rating and the TVS's range shaded." />
-  <figcaption>The clamp check with the synthetic TVS example.</figcaption>
+  <Image src={shot} alt="The clamp check with the TVS example: the clamp-type buttons, the operating-point and TVS fields, the results table naming the equation of each result, and the chart of clamp dissipation and switch voltage against the clamp voltage with the switch's rating and the TVS's range shaded." />
+  <figcaption>The clamp check with the TVS example.</figcaption>
 </figure>

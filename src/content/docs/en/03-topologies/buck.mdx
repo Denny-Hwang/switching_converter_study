@@ -44,8 +44,8 @@ supplies the whole load current:
 While the switch is on, the inductor sees the difference between input and
 output voltage, and its current rises linearly; while the diode conducts,
 it sees the output voltage with the opposite sign and falls back
-<Cite key="erickson2020" where="Ch. 2" />. The half-ripple, and the same
-ripple peak-to-peak written with the switching frequency, are
+<Cite key="erickson2020" where="Ch. 2" />. The half-ripple, and the
+peak-to-peak ripple in terms of the switching frequency, are
 
 <Eq id="buck.ripple.iL" />
 
@@ -71,8 +71,8 @@ The derivation is on the [derivations page](../../02-theory/derivations/#deriv-t
 
 ### Switch stress and the mode boundary
 
-When the switch is off, it blocks the input voltage; when it is on, the
-diode blocks the input voltage <Cite key="erickson2020" where="Ch. 6" />:
+The switch blocks the input voltage while it is off, and the diode blocks it
+while the switch is on <Cite key="erickson2020" where="Ch. 6" />:
 
 <Eq id="buck.Vds" />
 
@@ -83,7 +83,7 @@ output then rises above $D V_g$ (<EqRef id="buck.dcm.M" label="DCM ratio" />).
 
 ## Worked example
 
-The synthetic buck of the [switching-principle page](../../02-theory/switching-principle/),
+The buck example of the [switching-principle page](../../02-theory/switching-principle/),
 with its currents and ripple:
 
 <Worked example="buck-basic" show={['V_g', 'D', 'f_s', 'L', 'C', 'R', 'V', 'I_L', 'Delta_i_L', 'Delta_i_pp', 'I_pk', 'Delta_v', 'K', 'K_crit']} />
@@ -118,14 +118,14 @@ add their own terms.
 
 ## Gotchas
 
-- **The capacitor's series resistance adds ripple.** A capacitor with series
-  resistance adds a voltage equal to that resistance times the peak-to-peak
-  ripple current, in phase with the current. Compare it with the capacitive
-  term computed above: depending on the capacitor, either can dominate.
+- **The capacitor's series resistance adds ripple.** It adds a voltage equal
+  to that resistance times the peak-to-peak ripple current, in phase with the
+  current. Compare it with the capacitive term above: depending on the
+  capacitor, either can dominate.
 - **Size the inductor for the peak current, not the dc current.** Above its
   saturation flux density a magnetic core loses its permeability and the
   inductance collapses <Cite key="erickson2020" where="Ch. 10" />; the peak
-  of the inductor current is what must stay below that limit.
+  inductor current must stay below that limit.
 - **The ripple formula assumes that the capacitor takes all the ripple.** That
   holds when the capacitor's impedance at the switching frequency is much
   lower than the load's.

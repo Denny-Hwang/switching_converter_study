@@ -19,7 +19,7 @@ import Quiz from '../../../../components/Quiz.astro';
 
 - 투자율(permeability)을 통해 자속 밀도(flux density)와 자계 세기(field intensity)를 관련짓습니다.
 - 포화(saturation)와, 인덕터를 피크 전류(peak current)에서 점검해야 하는 이유를 설명합니다.
-- 인덕턴스, 피크 전류, 턴 수, 코어 단면적으로부터 인덕터의 피크 자속 밀도(peak flux density)를 계산합니다.
+- 인덕턴스, 피크 전류, 턴 수, 코어 단면적(core area)으로부터 인덕터의 피크 자속 밀도(peak flux density)를 계산합니다.
 
 ## 이론
 
@@ -59,7 +59,7 @@ import Quiz from '../../../../components/Quiz.astro';
 
 ## 풀이 예제
 
-합성(synthetic) 코어 재료와 인덕터입니다.
+코어 재료와 인덕터 예제입니다.
 
 <Worked example="ferrite-bh" />
 
@@ -84,13 +84,13 @@ import Quiz from '../../../../components/Quiz.astro';
 프로브(current probe)로 인덕터 전류를 관찰하십시오. 코어가 선형인 동안에는 전류가
 직선으로 증가하고, 코어가 포화되면 기울기가 급격히 커집니다. 꺾이는 지점(knee)의
 전류를 읽어 피크 자속 식 및 데이터시트의 포화 자속 밀도와 비교하고, 전류가 부품
-정격 안에 머물도록 펄스 길이를 제한하십시오.
+정격(rating) 안에 머물도록 펄스 길이를 제한하십시오.
 
 ## 주의할 점
 
 - **포화는 급격하게 일어납니다.** 포화를 넘어서면 인덕턴스가 급락하고 전류가
   가파르게 상승합니다 <Cite key="erickson2020" where="Ch. 10" />. 평균 전류가 아니라
-  최악 조건의 피크 전류를 기준으로 설계하십시오.
+  최악 조건(worst case)의 피크 전류를 기준으로 설계하십시오.
 - **코어의 투자율은 정밀한 값이 아닙니다.** 공극이 있으면 인덕턴스는 재료 대신
   주로 공극 길이에 의해 정해집니다 <Cite key="erickson2020" where="Ch. 10" /> ([공극 페이지](../gap-and-al/) 참고).
 

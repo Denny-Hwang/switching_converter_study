@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic rectangular pulse train (round numbers, not a real design)"
-label_ko: "합성 직사각형 펄스열 (단순한 어림수이며 실제 설계가 아님)"
+label: "Rectangular pulse-train example"
+label_ko: "직사각형 펄스열 예제"
 params:
   V_pk: 12
   D: 0.25

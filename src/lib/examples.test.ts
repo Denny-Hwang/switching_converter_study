@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { exampleNames, getExample } from './examples';
 
 describe('synthetic examples (examples/synthetic/*.yaml)', () => {
-  it('every example evaluates to finite numbers and is labelled synthetic in both languages', () => {
+  it('every example evaluates to finite numbers and is labelled as an example in both languages', () => {
     const names = exampleNames();
     expect(names.length).toBeGreaterThan(0);
     for (const name of names) {
       const ex = getExample(name);
-      expect(ex.label.toLowerCase(), name).toContain('synthetic');
-      expect(ex.label_ko, name).toContain('합성');
+      expect(ex.label.toLowerCase(), name).toContain('example');
+      expect(ex.label_ko, name).toContain('예제');
       for (const r of ex.results) expect(Number.isFinite(r.value), `${name}: ${r.name}`).toBe(true);
     }
   });

@@ -58,14 +58,13 @@ scaled by $1/n_r$, with reversed polarity, and the switch blocks
 
 <Eq id="forward.Vds" />
 
-The trade-off is direct: more reset turns (larger $n_r$) lower the switch
-stress but also lower the maximum duty ratio, and fewer turns do the
-opposite. With $n_r = 1$ the duty ratio is limited to one half and the
-switch blocks twice the input voltage.
+More reset turns (larger $n_r$) lower the switch stress but also lower the
+maximum duty ratio, and fewer turns do the opposite. With $n_r = 1$ the duty
+ratio is limited to one half and the switch blocks twice the input voltage.
 
 ## Worked example
 
-A synthetic forward converter with equal primary and reset turns:
+A forward converter example with equal primary and reset turns:
 
 <Worked example="forward-basic" show={['V_g', 'n', 'n_r', 'D', 'f_s', 'L', 'R', 'D_max', 'M', 'V', 'V_DS', 'Delta_i_L', 'I_L']} />
 
@@ -101,8 +100,7 @@ on-time.
   <Cite key="erickson2020" where="Ch. 6" />; a duty-ratio clamp in the
   controller prevents this.
 - **The reset winding sets the switch rating.** Choosing $n_r$ fixes both the
-  maximum duty ratio and the switch stress; they cannot be chosen
-  independently.
+  maximum duty ratio and the switch stress.
 - **Output stage equals buck.** Output ripple, peak current and the CCM/DCM
   boundary of the output inductor follow the [buck page](../buck/), with
   $n V_g$ in place of $V_g$.

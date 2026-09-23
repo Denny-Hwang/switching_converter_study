@@ -31,8 +31,8 @@ chain takes the whole chain, in SI units, from zero to the largest current:
   reading at the smallest current;
 - the R-C filter's corner against the Nyquist frequency.
 
-It flags each violation, and each result names the equations it comes from. Two charts show
-the output and the relative error against the current.
+It flags each violation, and each result names the equations it comes from.
+Two charts show the output and the relative error against the current.
 
 <SenseChain />
 
@@ -94,8 +94,8 @@ With a shunt of a few milliohms or less, the resistance of the solder
 becomes a substantial part of the sense element's resistance, and adds to
 the measurement error <Cite key="osullivan2012" />. If the sense
 connections sit beyond the pads, the amplifier sees the load current through
-the shunt and the pads together, $R_\mathrm{SENSE} + R_\mathrm{pad}$. So the reading is high by
-the same fraction at every current:
+the shunt and the pads together, $R_\mathrm{SENSE} + R_\mathrm{pad}$. So the
+reading is high by the same fraction at every current:
 
 <Eq id="sense.pad_error" />
 
@@ -208,8 +208,8 @@ resistance and the offset, the amplifier reads
 <Val example="sense-current" name="I_meas" />, and its output can reach
 <Val example="sense-current" name="V_OUThi" />: still below the ADC's full
 scale of <Val example="sense-current" name="V_FS" />. The low end is the
-problem. The
-offset-equivalent current, <Val example="sense-current" name="I_OSeq" />, and
+problem. The offset-equivalent current,
+<Val example="sense-current" name="I_OSeq" />, and
 the pad error, <Val example="sense-current" name="eps_pad" />, put the
 reading at <Val example="sense-current" name="I_min" /> off by a fraction of
 <Val example="sense-current" name="eps_I" />, against a target of
@@ -255,6 +255,6 @@ At that frequency the filter still passes a fraction
 ## Screenshot
 
 <figure class="pe-shot">
-  <Image src={shot} alt="The sense chain with the synthetic current-output example: the amplifier-type buttons, the fields for the currents, the shunt, the amplifier and the ADC, the warnings for the offset and the pad error, the results table naming the equation of each result, and the charts of output voltage and relative error against the current." />
-  <figcaption>The sense chain with the synthetic current-output example.</figcaption>
+  <Image src={shot} alt="The sense chain with the current-output example: the amplifier-type buttons, the fields for the currents, the shunt, the amplifier and the ADC, the warnings for the offset and the pad error, the results table naming the equation of each result, and the charts of output voltage and relative error against the current." />
+  <figcaption>The sense chain with the current-output example.</figcaption>
 </figure>

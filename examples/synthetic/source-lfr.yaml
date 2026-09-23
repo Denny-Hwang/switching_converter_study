@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic linear source feeding a fixed-duty-ratio DCM flyback (round numbers, not a real design)"
-label_ko: "고정 듀티비 DCM 플라이백에 연결된 합성 선형 전원 (단순한 어림수이며 실제 설계가 아님)"
+label: "Example linear source feeding a fixed-duty-ratio DCM flyback"
+label_ko: "고정 듀티비 DCM 플라이백에 연결된 선형 전원 예제"
 # Source-matcher preset: the flyback of flyback-source.yaml at a lower source amplitude,
 # where it is a loss-free resistor matched to the source (R_in = R_s).
 params:

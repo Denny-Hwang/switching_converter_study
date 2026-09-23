@@ -29,21 +29,20 @@ The currents entering a node sum to zero (Kirchhoff's current law), and the
 voltages around a closed loop sum to zero (Kirchhoff's voltage law)
 <Cite key="alexander2017" where="Ch. 2" />. A switching converter is a
 different linear circuit in each interval of the switching period. Within
-one interval both laws apply as usual, and the element laws below join the
-intervals together <Cite key="erickson2020" where="Ch. 2" />.
+one interval both laws apply, and the element laws below join the intervals
+together <Cite key="erickson2020" where="Ch. 2" />.
 
 ### The inductor under a constant voltage
 
 The voltage across an inductor is its inductance times the rate of change of
 its current <Cite key="alexander2017" where="Ch. 6" />. With a constant
-voltage across it, the current changes at a constant rate, that is,
-linearly in time:
+voltage across it, the current changes linearly in time:
 
 <Eq id="ind.di" />
 
-This is the whole change during the interval. The converter pages use the
-half-ripple $\Delta i_L$, which is half of the peak-to-peak change of the
-inductor current (Erickson's convention).
+This is the whole change during the interval; the converter pages use the
+half-ripple $\Delta i_L$, half the peak-to-peak change (Erickson's
+convention).
 
 ### The capacitor under a constant current
 
@@ -62,9 +61,9 @@ field <Cite key="alexander2017" where="Ch. 6" />:
 
 <Eq id="cap.E" />
 
-The current through an inductor cannot change instantly, and neither can the
-voltage across a capacitor: a jump would change the stored energy in zero
-time <Cite key="alexander2017" where="Ch. 6" />. When a transistor turns off,
+Inductor current and capacitor voltage cannot change instantly: a jump would
+change the stored energy in zero time
+<Cite key="alexander2017" where="Ch. 6" />. When a transistor turns off,
 the inductor current therefore has to continue somewhere, and a converter
 gives it a path through a diode or a second switch
 <Cite key="erickson2020" where="Ch. 4" />. In steady state the current also
@@ -73,7 +72,7 @@ ends every period where it started, which is
 
 ## Worked example
 
-A synthetic inductor and capacitor, each under a constant excitation:
+An example inductor and capacitor, each under a constant excitation:
 
 <Worked example="lc-elements" />
 

@@ -26,7 +26,7 @@ import Quiz from '../../../../components/Quiz.astro';
 ### 정현파의 합으로 나타낸 주기 신호
 
 주기 신호는 그 평균값(average value), 즉 직류 성분과, 기본 주파수(fundamental
-frequency)의 정수배 주파수를 갖는 정현파, 즉 고조파의 합입니다
+frequency)의 정수배 주파수를 갖는 정현파(sinusoid), 즉 고조파의 합입니다
 <Cite key="alexander2017" where="Ch. 17" />. 고조파의 진폭을 주파수에 대해
 그리면 그 신호의 진폭 스펙트럼(amplitude spectrum)이 됩니다
 <Cite key="alexander2017" where="Ch. 17" />.
@@ -57,13 +57,13 @@ frequency)의 정수배 주파수를 갖는 정현파, 즉 고조파의 합입�
 ### 출력 필터가 동작하는 이유
 
 벅 컨버터의 L-C 필터는 스위치 노드 전압의 직류 성분은 통과시키고 고조파는
-감쇠시키는데, 고조파 가운데 가장 낮은 것은 스위칭 주파수(switching
+감쇠(attenuation)시키는데, 고조파 가운데 가장 낮은 것은 스위칭 주파수(switching
 frequency)에 있습니다. 출력에 남는 것은 평균값 $D V_g$에 작은 리플이 더해진
 것입니다 <Cite key="erickson2020" where="Ch. 2" />.
 
 ## 풀이 예제
 
-벅 컨버터의 스위치 노드에서 볼 수 있는 것과 같은 합성(synthetic) 펄스열입니다.
+벅 컨버터의 스위치 노드에서 볼 수 있는 것과 같은 펄스열 예제입니다.
 
 <Worked example="pulse-train" />
 

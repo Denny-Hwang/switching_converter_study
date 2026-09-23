@@ -35,8 +35,11 @@ const raw = import.meta.glob('/examples/synthetic/*.yaml', { query: '?raw', impo
 function parse(path: string, text: string): Example {
   const name = path.replace(/^.*\//, '').replace(/\.yaml$/, '');
   const data = yaml.load(text) as Record<string, unknown>;
-  if (data.synthetic !== true || !String(data.label ?? '').toLowerCase().includes('synthetic')) {
-    throw new Error(`examples/synthetic/${name}.yaml must declare synthetic: true and a label containing "synthetic"`);
+  // PRIVACY_RULES.md: an example says so where it appears; the page footer says that its numbers are synthetic
+  const label = String(data.label ?? '');
+  const labelKo = String(data.label_ko ?? '');
+  if (data.synthetic !== true || !label.toLowerCase().includes('example') || !labelKo.includes('예제')) {
+    throw new Error(`examples/synthetic/${name}.yaml must declare synthetic: true and labels naming it an example ("example", "예제")`);
   }
   const params = (data.params ?? {}) as Context;
   for (const [k, v] of Object.entries(params)) {

@@ -1,6 +1,6 @@
 synthetic: true
-label: "Synthetic buck example at light load (round numbers, not a real design)"
-label_ko: "경부하 합성 벅 예제 (단순한 어림수이며 실제 설계가 아님)"
+label: "Buck example at light load"
+label_ko: "경부하 벅 예제"
 params:
   V_g: 24
   D: 0.5

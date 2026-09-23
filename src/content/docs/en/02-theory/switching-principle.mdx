@@ -34,7 +34,7 @@ zero, so the product of the two, the power it dissipates, is zero in both
 states <Cite key="erickson2020" where="Ch. 1 (Introduction)" />. Ideal
 inductors and capacitors store and return energy without dissipating any.
 A converter built only from ideal switches and reactive elements can
-therefore, in principle, convert power without loss.
+therefore convert power without loss.
 
 ### The switch node and its dc component
 
@@ -67,7 +67,7 @@ voltage divided by the dc input voltage:
 
 <Eq id="def.V" />
 
-Filtering the switch node, as above, is the buck converter: its output is
+Filtering the switch node is the buck converter: its output is
 the switch-node average, which gives the
 <EqRef id="buck.ccm.M" label="buck conversion ratio" />. Other arrangements
 of the same switch, inductor and capacitor give other ratios, such as those
@@ -77,8 +77,8 @@ the [volt-second balance page](../volt-second-charge-balance/).
 
 ### The small-ripple approximation
 
-A real filter leaves some switching ripple on the output. If the filter is
-designed well, the ripple is small compared with the dc value, and in the
+A real filter leaves some switching ripple on the output. With a
+well-designed filter the ripple is small compared with the dc value, and in
 steady-state analysis the output voltage may be replaced by its dc value $V$:
 the **small-ripple approximation** <Cite key="erickson2020" where="Ch. 2" />.
 With it, the voltage across the inductor is constant within each
@@ -89,9 +89,9 @@ compute.
 
 ## Worked example
 
-A synthetic buck converter: its switch node is filtered by an L-C stage into
-a resistive load. The table is computed by pe-core when the site is built;
-each computed row links to the equation that produced it.
+A buck converter example: its switch node is filtered by an L-C stage into
+a resistive load. The table is computed by pe-core at build time; each
+computed row links to its equation.
 
 <Worked example="buck-basic" show={['V_g', 'D', 'f_s', 'T_s', 'v_s_avg', 'M', 'V', 'Delta_i_L']} checks={false} />
 
@@ -114,9 +114,9 @@ the switching frequency.
 
 ## Bench exercise
 
-No power stage is needed. Feed the square-wave output of a function
-generator, at logic level, into an R-C low-pass filter whose corner
-frequency is far below the square wave's frequency. Measure the filter
+No power stage is needed. Feed a logic-level square wave from a function
+generator into an R-C low-pass filter whose corner frequency is far below
+the square wave's frequency. Measure the filter
 output with a multimeter on its dc range while you change the duty cycle,
 and compare each reading with the high level of the square wave times the
 duty ratio. Then look at the same node with an oscilloscope: the remaining
