@@ -33,7 +33,7 @@ export function symHtml(label: string): string {
     .join('');
 }
 
-const GREEK: Record<string, string> = {
+const COMMANDS: Record<string, string> = {
   alpha: 'α',
   beta: 'β',
   gamma: 'γ',
@@ -53,17 +53,24 @@ const GREEK: Record<string, string> = {
   Omega: 'Ω',
   pi: 'π',
   ell: 'ℓ',
+  langle: '⟨',
+  rangle: '⟩',
 };
 
+const TEXT = /\\(?:mathrm|text|operatorname|mathit)\{([^{}]*)\}/g;
+
 /**
- * A catalogue symbol's LaTeX (`V_\mathrm{OUT}`, `\Delta i_L`) as chart text:
- * Greek letters, sub- and superscripts; other commands are dropped.
+ * A catalogue symbol's LaTeX (`V_\mathrm{OUT}`, `V_{g,\mathrm{crit}}`,
+ * `\Delta i_L`) as chart text: Greek letters and brackets, sub- and
+ * superscripts. A text command right after `_` or `^` is that script's whole
+ * group; inside a group it is just its letters. Other commands keep their
+ * name (`\max` reads "max").
  */
 export function latexHtml(tex: string): string {
-  let s = tex.replace(/\\(?:mathrm|text|operatorname|mathit)\{([^{}]*)\}/g, '{$1}');
-  s = s.replace(/\\([A-Za-z]+)/g, (_, name: string) => GREEK[name] ?? '');
+  let s = tex.replace(/([_^])\\(?:mathrm|text|operatorname|mathit)\{([^{}]*)\}/g, '$1{$2}').replace(TEXT, '$1');
   s = s.replace(/\\[,;: ]/g, ' ');
+  s = s.replace(/\\([A-Za-z]+)/g, (_, name: string) => COMMANDS[name] ?? name);
   s = s.replace(/_\{([^{}]*)\}/g, '<sub>$1</sub>').replace(/_([^\s{}\\<])/g, '<sub>$1</sub>');
   s = s.replace(/\^\{([^{}]*)\}/g, '<sup>$1</sup>').replace(/\^([^\s{}\\<])/g, '<sup>$1</sup>');
-  return s.replace(/[{}]/g, '').replace(/\s+/g, ' ').trim();
+  return s.replace(/[{}]/g, '').replace(/\s+/g, ' ').replace(/⟨ /g, '⟨').replace(/ ⟩/g, '⟩').trim();
 }
