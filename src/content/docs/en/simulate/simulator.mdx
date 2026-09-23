@@ -44,8 +44,8 @@ DCM, the idle interval <Cite key="erickson2020" where="Ch. 2" />,
   that blocks ideally, with no reverse recovery. The inductor can have a
   winding resistance. A current that would reverse through a diode stops
   instead: the forward converter's rectifier blocks while its output is
-  above $n V_g$, and a negative inductor current at turn-off flows on through
-  the switch's body diode.
+  above $n V_g$ less the diode drop, and a negative inductor current at
+  turn-off flows on through the switch's body diode.
 - **Transformers.** They are ideal (1:n with $n$ the secondary turns over
   the primary turns) except for the magnetizing inductance. There is no
   leakage inductance.
@@ -72,7 +72,10 @@ DCM, the idle interval <Cite key="erickson2020" where="Ch. 2" />,
   obeys a linear differential equation. The simulator advances it with the
   exact solution of that equation (a matrix exponential) over sub-steps of
   one two-thousandth of the switching period, or shorter, so that one ring
-  of the capacitance across the switch spans at least twenty sub-steps.
+  of the capacitance across the switch spans at least twenty sub-steps, down
+  to one twenty-thousandth of the period. A capacitance that rings so fast
+  that a ring would still span fewer than three sub-steps is refused: the
+  diode could turn on and off again between two sub-steps unseen.
 - **Events** such as the diode current reaching zero or a clamp starting to
   conduct are located inside a sub-step on the same exact solution, by a
   search that keeps the event bracketed like bisection (regula falsi in its
@@ -85,8 +88,10 @@ DCM, the idle interval <Cite key="erickson2020" where="Ch. 2" />,
 - **The periodic steady state** is found by Newton iteration on the map from
   one period's initial state to the next, with the map's exact derivative:
   the product of the sub-steps' matrices, corrected at every event whose time
-  depends on the state. It is accepted when two tests pass for every state,
-  within at most two thousand periods:
+  depends on the state. The simulator accumulates the derivative minus the
+  identity, so a very slow state, whose sub-step matrix rounds to one, keeps
+  its decay. It is accepted when two tests pass for every state, within at
+  most two thousand periods:
   - the change over one period is below one part in a million of how far
     that state moves within the period. A change measured against the
     state's peak would not do: a current that grows by the same amount every
@@ -112,8 +117,9 @@ against the equations:
 - **Energy balance.** With losses, the input energy per period equals the
   output energy plus the computed losses, also with a capacitance across
   the switch and tens of volts of ripple.
-- **Newton's derivative.** The exact derivative of the period map matches
-  central finite differences.
+- **Newton's derivative.** The exact derivative of the period map, minus the
+  identity, matches central differences of the change over a period, also
+  for very slow states.
 - **Very large capacitors.** A bus capacitor whose time constant spans
   billions of periods still settles at the loss-free-resistor divider, and
   a huge output capacitor gives the same output voltage as a much smaller
@@ -155,8 +161,10 @@ the result):
   (<EqRef id="forward.reset.Dmax" label="maximum duty ratio" />), whose
   magnetizing current walks up from one period to the next. Their current
   grows without bound, and the status line reports that no steady state was
-  reached. With an on-resistance or a winding resistance they do settle, at
-  a current that only the resistance limits and that can be very large.
+  reached. With a resistance in the path of the growing current they do
+  settle, at a current that only that resistance limits and that can be very
+  large. For the forward converter's magnetizing current that is only the
+  on-resistance: the winding resistance belongs to the output inductor.
 
 ## Screenshot
 

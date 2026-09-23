@@ -174,9 +174,16 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
     if (k === 't' || k === 'interval') continue;
     const y = wf[k] as number[];
     avg[k] = average(t, y, Ts);
-    min[k] = Math.min(...y);
-    max[k] = Math.max(...y);
-    pp[k] = max[k]! - min[k]!;
+    // loops, not Math.min(...y): the spread fails on very long waveforms
+    let lo = Infinity;
+    let hi = -Infinity;
+    for (const v of y) {
+      if (v < lo) lo = v;
+      if (v > hi) hi = v;
+    }
+    min[k] = lo;
+    max[k] = hi;
+    pp[k] = hi - lo;
   }
   const idleTime = model.idle.reduce((s, iv) => s + (ss.run.durations[iv] ?? 0), 0);
   const idleFraction = idleTime / Ts;
@@ -227,15 +234,30 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
   };
 }
 
+/** Most sub-steps per period, and the fewest sub-steps per ring of the node capacitance that still find its events. */
+export const MAX_STEPS = 20000;
+export const MIN_STEPS_PER_RING = 3;
+
 /**
  * Sub-steps per period: 2000 (docs/BUILD_SPEC.md section 4), more when a node
  * capacitance rings so fast that a ring period would span fewer than twenty
- * sub-steps (at most 20000), so that events inside the ringing are found.
+ * sub-steps (at most MAX_STEPS), so that events inside the ringing are found.
+ * A node capacitance whose ring would span fewer than MIN_STEPS_PER_RING
+ * sub-steps even then is refused: the diode's turn-on during the ringing
+ * could fall between two sub-steps and be missed.
  */
 export function stepsFor(p: SimParams): number {
   if (!p.Cnode || p.topology === 'forward') return 2000;
   const ringPeriod = 2 * Math.PI * Math.sqrt(p.L * p.Cnode);
-  return Math.min(20000, Math.max(2000, Math.ceil(20 / (p.fs * ringPeriod))));
+  const perRing = (MAX_STEPS * ringPeriod) * p.fs;
+  if (perRing < MIN_STEPS_PER_RING) {
+    throw new Error(
+      `the node capacitance rings too fast to simulate: its ring period (${ringPeriod.toExponential(2)} s) would span ` +
+        `${perRing.toFixed(1)} of the ${MAX_STEPS} sub-steps per switching period, fewer than ${MIN_STEPS_PER_RING}; ` +
+        'use a larger node capacitance or a lower switching frequency',
+    );
+  }
+  return Math.min(MAX_STEPS, Math.max(2000, Math.ceil(20 / (p.fs * ringPeriod))));
 }
 
 /** Build the model, start from the analytic operating point, and find the periodic steady state. */

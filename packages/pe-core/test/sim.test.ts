@@ -327,19 +327,22 @@ describe('second review (node capacitance while the diode conducts, exact Jacobi
     expect(rel(withNode.avg.v_out!, plain.avg.v_out!)).toBeLessThan(1e-2);
   });
 
-  it('the cycle Jacobian is exact: it matches central finite differences at the steady state', () => {
+  it('the cycle Jacobian is exact: J - I matches central differences of the per-cycle change, slow states included', () => {
     for (const p of [
       { topology: 'flyback', Vg: 24, D: 0.45, fs: 1e5, n: 0.5, L: 2e-4, Ron: 0.05, Cnode: 2e-9, load: { kind: 'resistive', R: 8, C: 1e-3 } },
       { topology: 'buck', Vg: 24, D: 0.45, fs: 1e5, L: 5e-6, Ron: 0.05, Cnode: 1e-9, load: { kind: 'resistive', R: 50, C: 1e-3 } },
       { topology: 'boost', Vg: 12, D: 0.3, fs: 1e5, L: 5e-6, Ron: 0.05, RL: 0.02, VF: 0.4, load: { kind: 'resistive', R: 50, C: 1e-4 } },
       { topology: 'forward', Vg: 48, D: 0.4, fs: 1e5, n: 0.5, nr: 1, LM: 1e-3, L: 1e-4, VF: 0.5, load: { kind: 'resistive', R: 1e3, C: 1e-4 } },
       { topology: 'flyback', Vg: 0, D: 0.3, fs: 1e5, n: 0.5, L: 5e-6, Ron: 0.05, Cnode: 1e-9, load: { kind: 'resistive', R: 50, C: 1e-4 }, source: { Voc: 48, Rs: 5, Cbus: 1e-5 } },
+      // slow states: a bus and an output capacitor whose decay per sub-step is below the rounding of 1
+      { topology: 'flyback', Vg: 0, D: 0.2, fs: 1e4, n: 0.1, L: 0.02, VF: 0.5, load: { kind: 'fixed', V: 5 }, source: { Voc: 150, Rs: 1e4, Cbus: 1e5 } },
+      { topology: 'buck', Vg: 12, D: 0.4, fs: 1e6, L: 6e-5, Ron: 0.1, VF: 0.5, load: { kind: 'resistive', R: 1000, C: 1e5 } },
     ] as SimParams[]) {
       const m = buildModel(p);
       const N = stepsFor(p);
       const ss = steadyState(m, initialState(p, m), { stepsPerPeriod: N });
       const x = ss.x0;
-      const J = runCycle(m, x, { stepsPerPeriod: N, jacobian: true }).jac!;
+      const JmI = runCycle(m, x, { stepsPerPeriod: N, jacobian: true }).jacMinusI!;
       const size = x.map((v, j) => Math.max(Math.abs(v), ss.run.variation[j]!, 1e-9));
       for (let j = 0; j < x.length; j++) {
         const h = 1e-7 * size[j]!;
@@ -350,8 +353,11 @@ describe('second review (node capacitance while the diode conducts, exact Jacobi
         const dp = runCycle(m, up, { stepsPerPeriod: N }).dx;
         const dm = runCycle(m, down, { stepsPerPeriod: N }).dx;
         for (let i = 0; i < x.length; i++) {
-          const fd = (i === j ? 1 : 0) + (dp[i]! - dm[i]!) / (2 * h);
-          expect(Math.abs(J[i]![j]! - fd) * (size[j]! / size[i]!)).toBeLessThan(1e-6);
+          const fd = (dp[i]! - dm[i]!) / (2 * h);
+          // relative to the entry, plus the differences' own noise, which scales with how far state i
+          // moves in a cycle: tiny for a slow state, so that a lost decay of order 1e-13 would show
+          const noise = 1e-6 * Math.max(ss.run.variation[i]!, 1e-12 * size[i]!) / size[j]!;
+          expect(Math.abs(JmI[i]![j]! - fd)).toBeLessThan(1e-4 * Math.abs(fd) + noise);
         }
       }
     }
@@ -396,6 +402,50 @@ describe('second review (node capacitance while the diode conducts, exact Jacobi
     const r = simulate({ topology: 'flyback', Vg: 24, D: 0.2, fs: 1e5, n: 2, L: 1e-5, Ron: 0.05, Cnode: 2.5e-13, load: { kind: 'resistive', R: 100, C: 1e-7 } });
     expect(r.converged).toBe(true);
     expect(r.cycles).toBeLessThanOrEqual(8);
+  });
+});
+
+describe('third review (fast ringing, slow states, the Newton line search, still states)', () => {
+  it('a node capacitance that rings too fast to resolve is refused, one that can be resolved is simulated', () => {
+    const p: SimParams = { topology: 'buck', Vg: 24, D: 0.2, fs: 1e5, L: 2e-5, Ron: 0.05, RL: 0.5, load: { kind: 'resistive', R: 100, C: 1e-5 } };
+    expect(() => simulate({ ...p, Cnode: 1e-15 })).toThrow(/rings too fast/);
+    const ok = simulate({ ...p, Cnode: 1e-14 });
+    expect(ok.converged).toBe(true);
+    expect(rel(ok.avg.v_out!, simulate(p).avg.v_out!)).toBeLessThan(1e-2);
+    expect(ok.max.v_sw!).toBeLessThan(25);
+  });
+
+  it('very slow states converge to the right values (their decay per sub-step rounds away in the sub-step matrix)', () => {
+    const fb = { topology: 'flyback', Vg: 0, D: 0.2, n: 0.1, VF: 0.5, load: { kind: 'fixed', V: 5 } } as const;
+    const bus = simulate({ ...fb, fs: 1e5, L: 0.002, source: { Voc: 150, Rs: 1e4, Cbus: 1e5 } });
+    expect(bus.converged).toBe(true);
+    expect(rel(bus.avg.v_in!, 75)).toBeLessThan(1e-6);
+    const buck = (C: number) => simulate({ topology: 'buck', Vg: 12, D: 0.4, fs: 1e6, L: 6e-5, Ron: 0.1, VF: 0.5, load: { kind: 'resistive', R: 1000, C } });
+    const big = buck(1e5);
+    expect(big.converged).toBe(true);
+    expect(rel(big.avg.v_out!, buck(1e-2).avg.v_out!)).toBeLessThan(1e-6);
+  });
+
+  it('a Newton step shortened by the trust region is still taken (a start far below the steady state)', () => {
+    // the initial guess clamps the output to zero (the ideal output is below the diode drop)
+    const low = simulate({ topology: 'buck', Vg: 1, D: 0.1, fs: 1e5, L: 1e-5, VF: 0.7, load: { kind: 'resistive', R: 10, C: 1 } });
+    expect(low.converged).toBe(true);
+    expect(low.avg.v_out!).toBeGreaterThan(0.09);
+    expect(low.avg.v_out!).toBeLessThan(0.1);
+    // a forward converter above its reset limit settles where R_on limits the magnetizing current:
+    // D (V_g - R_on i_pri) = (1 - D) V_g/n_r gives i_pri = 1600 A
+    const fwd = simulate({ topology: 'forward', Vg: 48, D: 0.6, fs: 1e6, n: 0.5, nr: 1, LM: 1e-2, L: 1e-4, VF: 0.5, Ron: 0.01, load: { kind: 'resistive', R: 10, C: 1e-5 } });
+    expect(fwd.converged).toBe(true);
+    expect(rel(fwd.avg.i_M! + 0.5 * fwd.avg.i_L!, 1600)).toBeLessThan(1e-3);
+  });
+
+  it('a state that does not move within the cycle converges at its fixed point', () => {
+    // with R_on = 0 the on-interval and the reverse body-diode interval are the same circuit
+    const r = simulate({ topology: 'buck', Vg: 0, D: 0.5, fs: 1e5, L: 0.002, RL: 0.002, load: { kind: 'fixed', V: 30 }, source: { Voc: 5, Rs: 3.8, Cbus: 1e-5 } });
+    expect(r.converged).toBe(true);
+    const vbus = (5 * 0.002 + 30 * 3.8) / (0.002 + 3.8);
+    expect(rel(r.x0[1]!, vbus)).toBeLessThan(1e-9);
+    expect(rel(r.x0[0]!, (vbus - 30) / 0.002)).toBeLessThan(1e-6);
   });
 });
 

@@ -221,13 +221,20 @@ export function compareRows(r: SimResult): CompareRow[] {
       });
     }
   }
-  // the rise of the inductor current while the switch is on: the peak-to-peak
+  // the rise of the inductor current while the switch is on (from the start of
+  // the period to the last sample of the gate-on intervals): the peak-to-peak
   // ripple in CCM and DCM, also when a node capacitance rings in the idle
-  // interval; not shown when the ideal converter would not raise the current
-  // (an output held at or above the buck's V_g or the forward converter's n V_g)
+  // interval or makes the current peak after turn-off; not shown when the
+  // ideal converter would not raise the current (an output held at or above
+  // the buck's V_g or the forward converter's n V_g)
   const iL = r.waveforms.i_L as number[];
+  const t = r.waveforms.t as number[];
+  const ivs = r.waveforms.interval as string[];
+  const tOff = (p.D / p.fs) * (1 + 1e-9);
+  let kOff = 0;
+  for (let k = 0; k < t.length && t[k]! <= tOff; k++) if (ivs[k] === 'on' || ivs[k] === 'onL0') kOff = k;
   const ripple = sim.analyticRipplePP(p, Vin, V);
-  if (ripple > 0) rows.push({ label: 'Δi_L,pp (on)', unit: 'A', sim: r.max.i_L! - iL[0]!, formula: ripple });
+  if (ripple > 0) rows.push({ label: 'Δi_L,pp (on)', unit: 'A', sim: iL[kOff]! - iL[0]!, formula: ripple });
   const vds: Record<Topology, [string, Record<string, number>]> = {
     buck: ['buck.Vds', { V_g: Vin }],
     boost: ['boost.Vds', { V }],

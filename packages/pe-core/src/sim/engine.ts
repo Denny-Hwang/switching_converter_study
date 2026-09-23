@@ -19,9 +19,11 @@
  * lies far below its own rounding level is still resolved.
  *
  * The periodic steady state is found by Newton shooting on the cycle map.
- * Its Jacobian is exact: the product of the sub-step matrices Phi, of the
+ * Its Jacobian J is exact: the product of the sub-step matrices Phi, of the
  * assignments' matrices and, at every event whose time depends on the state,
- * of the saltation matrix that accounts for that dependence. It is confirmed
+ * of the saltation matrix that accounts for that dependence. The engine
+ * accumulates J - I rather than J (with Phi - I computed directly), so that
+ * a slow state, whose Phi rounds to 1, keeps its decay. It is confirmed
  * by two tests, each below `tol` (default 1e-6), within at most `maxCycles`
  * cycles (default 2000). The spec's criterion: the largest change of any
  * state between two consecutive cycles, relative to how far that state moves
@@ -107,8 +109,8 @@ export interface CycleRun {
   events: { t: number; from: string; to: string }[];
   /** Energy dissipated by instantaneous resets at the edges during the cycle (J). */
   edgeLoss: number;
-  /** Jacobian of the end state with respect to the start state (only when requested). */
-  jac?: Mat;
+  /** Jacobian of the end state with respect to the start state, minus the identity (only when requested; exact to rounding, also for slow states). */
+  jacMinusI?: Mat;
 }
 
 export interface RunOptions {
@@ -118,16 +120,28 @@ export interface RunOptions {
   jacobian?: boolean;
 }
 
+interface StepMats {
+  Phi: Mat;
+  W: Mat;
+  /** Phi - I = A W, without the cancellation of Phi - I. */
+  Psi: Mat;
+}
+
+function stepMats(A: Mat, h: number): StepMats {
+  const { Phi, W } = stepMatrices(A, h);
+  return { Phi, W, Psi: matmul(A, W) };
+}
+
 class StepCache {
-  private readonly cache = new Map<string, { Phi: Mat; W: Mat }>();
+  private readonly cache = new Map<string, StepMats>();
   constructor(
     private readonly model: Model,
     private readonly dt: number,
   ) {}
-  full(name: string): { Phi: Mat; W: Mat } {
+  full(name: string): StepMats {
     let s = this.cache.get(name);
     if (!s) {
-      s = stepMatrices(this.model.intervals[name]!.A, this.dt);
+      s = stepMats(this.model.intervals[name]!.A, this.dt);
       this.cache.set(name, s);
     }
     return s;
@@ -189,18 +203,20 @@ class Shifted {
     return b;
   }
   /** The exact step over a full sub-step. */
-  full(name: string): { Phi: Mat; Gamma: Vec } {
+  full(name: string): { Phi: Mat; Gamma: Vec; Psi: Mat } {
     const s = this.cache.full(name);
     let g = this.gamma.get(name);
     if (!g) {
       g = matvec(s.W, this.input(name));
       this.gamma.set(name, g);
     }
-    return { Phi: s.Phi, Gamma: g };
+    return { Phi: s.Phi, Gamma: g, Psi: s.Psi };
   }
-  /** The exact step over a time h. */
-  step(name: string, h: number): { Phi: Mat; Gamma: Vec } {
-    return affineStep(this.interval(name).A, this.input(name), h);
+  /** The exact step over a time h (with Phi - I when the Jacobian is wanted). */
+  step(name: string, h: number, withPsi = false): { Phi: Mat; Gamma: Vec; Psi?: Mat } {
+    if (!withPsi) return affineStep(this.interval(name).A, this.input(name), h);
+    const s = stepMats(this.interval(name).A, h);
+    return { Phi: s.Phi, Gamma: matvec(s.W, this.input(name)), Psi: s.Psi };
   }
   guard(g: Guard, y: Vec): number {
     return dot(g.c, y) + (dot(g.c, this.x0) + g.d);
@@ -228,6 +244,13 @@ export function applyAssign(x: Vec, set: Assign[] | undefined): Vec {
 function assignJacobian(n: number, set: Assign[] | undefined): Mat {
   const R = identity(n);
   for (const a of set ?? []) R[a.state] = a.c.slice();
+  return R;
+}
+
+/** The assignments' Jacobian minus the identity: zero except the assigned rows, c - e_k. */
+function assignJacobianMinusI(n: number, set: Assign[] | undefined): Mat {
+  const R = identity(n).map((row) => row.map(() => 0));
+  for (const a of set ?? []) R[a.state] = a.c.map((v, j) => v - (j === a.state ? 1 : 0));
   return R;
 }
 
@@ -294,8 +317,8 @@ interface Cursor {
   /** Deviation of the state from the cycle's start state. */
   y: Vec;
   t: number;
-  /** Jacobian of the current state with respect to the cycle's start state. */
-  M?: Mat;
+  /** Jacobian of the current state with respect to the cycle's start state, minus the identity. */
+  N?: Mat;
 }
 
 interface Tracker {
@@ -323,7 +346,7 @@ function integrate(sh: Shifted, cur: Cursor, t1: number, dt: number, tr: Tracker
     const nextGrid = (Math.floor(cur.t / dt + 1e-7) + 1) * dt;
     const tEnd = Math.min(nextGrid, t1);
     const h = tEnd - cur.t;
-    const step = Math.abs(h - dt) <= 1e-9 * dt ? sh.full(cur.iv) : sh.step(cur.iv, h);
+    const step = Math.abs(h - dt) <= 1e-9 * dt ? sh.full(cur.iv) : sh.step(cur.iv, h, !!cur.N);
     const yn = advance(step, cur.y);
     let first: { tau: number; g: Guard } | null = null;
     for (const g of iv.guards) {
@@ -337,7 +360,7 @@ function integrate(sh: Shifted, cur: Cursor, t1: number, dt: number, tr: Tracker
     }
     if (first) {
       if (++guardEvents > 1000) throw new Error(`${model.topology}: too many events in one cycle (chattering)`);
-      const toEvent = sh.step(cur.iv, first.tau);
+      const toEvent = sh.step(cur.iv, first.tau, !!cur.N);
       const ye = advance(toEvent, cur.y);
       run.durations[cur.iv] = (run.durations[cur.iv] ?? 0) + first.tau;
       track(tr, sh, ye);
@@ -345,22 +368,24 @@ function integrate(sh: Shifted, cur: Cursor, t1: number, dt: number, tr: Tracker
       const yr = sh.assign(ye, first.g.reset);
       track(tr, sh, yr);
       const next = sh.interval(first.g.next);
-      if (cur.M) {
+      if (cur.N) {
         // Saltation: the event time depends on the state, S = R + (f+ - R f-) c^T / (c·f-).
+        // With M = I + N and Phi = I + Psi: S Phi M - I = (S - I) + S Psi + S Phi N.
         const n = ye.length;
         const R = assignJacobian(n, first.g.reset);
+        const SmI = assignJacobianMinusI(n, first.g.reset);
         const fm = matvec(iv.A, ye).map((v, i) => v + sh.input(cur.iv)[i]!);
         const fp = matvec(next.A, yr).map((v, i) => v + sh.input(first!.g.next)[i]!);
         const Rfm = matvec(R, fm);
         const denom = dot(first.g.c, fm);
-        const S = R.map((row) => row.slice());
         if (Math.abs(denom) > 1e-300) {
           for (let i = 0; i < n; i++) {
             const w = (fp[i]! - Rfm[i]!) / denom;
-            for (let j = 0; j < n; j++) S[i]![j]! += w * first.g.c[j]!;
+            for (let j = 0; j < n; j++) SmI[i]![j]! += w * first.g.c[j]!;
           }
         }
-        cur.M = matmul(S, matmul(toEvent.Phi, cur.M));
+        const S = addScaled(SmI, identity(n));
+        cur.N = addScaled(addScaled(SmI, matmul(S, toEvent.Psi!)), matmul(S, matmul(toEvent.Phi, cur.N)));
       }
       run.events.push({ t: cur.t + first.tau, from: cur.iv, to: first.g.next });
       cur.t += first.tau;
@@ -370,7 +395,7 @@ function integrate(sh: Shifted, cur: Cursor, t1: number, dt: number, tr: Tracker
       continue;
     }
     run.durations[cur.iv] = (run.durations[cur.iv] ?? 0) + h;
-    if (cur.M) cur.M = matmul(step.Phi, cur.M);
+    if (cur.N) cur.N = addScaled(step.Psi!, matmul(step.Phi, cur.N));
     cur.y = yn;
     cur.t = tEnd;
     track(tr, sh, yn);
@@ -399,14 +424,14 @@ export function runCycle(model: Model, x0: Vec, opts: RunOptions = {}): CycleRun
   const on = model.turnOn(x0);
   run.edgeLoss += on.loss ?? 0;
   const cur: Cursor = { iv: on.interval, y: sh.assign(tr.last, on.set), t: 0 };
-  if (opts.jacobian) cur.M = assignJacobian(n, on.set);
+  if (opts.jacobian) cur.N = assignJacobianMinusI(n, on.set);
   if (record) run.samples.push({ t: 0, interval: cur.iv, x: sh.state(cur.y) });
   track(tr, sh, cur.y);
   integrate(sh, cur, model.D * model.Ts, dt, tr, record);
   const off = model.turnOff(sh.state(cur.y));
   run.edgeLoss += off.loss ?? 0;
   const yoff = sh.assign(cur.y, off.set);
-  if (cur.M) cur.M = matmul(assignJacobian(n, off.set), cur.M);
+  if (cur.N) cur.N = addScaled(assignJacobianMinusI(n, off.set), matmul(assignJacobian(n, off.set), cur.N));
   if (record) run.samples.push({ t: cur.t, interval: off.interval, x: sh.state(yoff) });
   run.events.push({ t: cur.t, from: cur.iv, to: off.interval });
   cur.iv = off.interval;
@@ -415,7 +440,7 @@ export function runCycle(model: Model, x0: Vec, opts: RunOptions = {}): CycleRun
   integrate(sh, cur, model.Ts, dt, tr, record);
   run.dx = cur.y;
   run.x = sh.state(cur.y);
-  if (cur.M) run.jac = cur.M;
+  if (cur.N) run.jacMinusI = cur.N;
   return run;
 }
 
@@ -444,17 +469,22 @@ export interface SteadyResult {
 /** Rounding level of a state relative to its magnitude, the floor of its scale in the line search. */
 const ROUNDING = 1e-12;
 
+/** A change within a few units in the last place of a state's magnitude is no change. */
+const ULPS = 8 * Number.EPSILON;
+
 /**
  * Convergence measure (the spec's criterion): the largest change of a state
  * over one cycle, relative to that state's total variation within the cycle.
  * A state that grows by the same amount every cycle never passes: its change
- * is its whole variation, however large it has grown.
+ * is its whole variation, however large it has grown. A change within a few
+ * units in the last place of the state's magnitude is ignored: a state that
+ * does not move within the cycle has only rounding as its variation.
  */
 function relativeChange(r: CycleRun): number {
   let worst = 0;
   for (let j = 0; j < r.dx.length; j++) {
     const change = Math.abs(r.dx[j]!);
-    if (change === 0) continue;
+    if (change <= ULPS * r.maxAbs[j]!) continue;
     const v = r.variation[j]!;
     worst = Math.max(worst, v > 0 ? change / v : Infinity);
   }
@@ -463,10 +493,9 @@ function relativeChange(r: CycleRun): number {
 
 /** The Newton step to the fixed point of the cycle map, from a run with its Jacobian: (J - I) delta = -(F(x) - x). */
 function newtonStep(r: CycleRun): Vec | null {
-  const n = r.dx.length;
   try {
     const delta = solveVec(
-      addScaled(r.jac!, identity(n), -1),
+      r.jacMinusI!,
       r.dx.map((v) => -v),
     );
     return delta.every((v) => Number.isFinite(v)) ? delta : null;
@@ -533,9 +562,11 @@ export function steadyState(model: Model, x0: Vec, opts: SteadyOptions = {}): St
       // Line search on the squared residual, each state scaled by how far it
       // moves within the cycle. A trial may move more than the base cycle
       // (a rectifier that starts conducting), so each state takes the larger
-      // of its two scales; the base merit uses the same scales. Near the
-      // fixed point both merits are rounding noise, so a trial that passes
-      // both convergence tests is taken as it is.
+      // of its two scales; the base merit uses the same scales. The decrease
+      // asked for is proportional to the fraction of the Newton step taken
+      // (the trust region may have shortened it a lot). Near the fixed point
+      // both merits are rounding noise, so a trial that passes both
+      // convergence tests is taken as it is.
       const base = x.map((_, j) => scaleOf(r, j));
       let accepted = false;
       for (let lambda = 1; lambda > 1e-3 && cycles < maxCycles; lambda /= 2) {
@@ -551,7 +582,7 @@ export function steadyState(model: Model, x0: Vec, opts: SteadyOptions = {}): St
         const resT = relativeChange(rt);
         const stepT = newtonStep(rt);
         const distT = distance(stepT, rt);
-        if (mt < (1 - 1e-4 * lambda) * m0 || (resT < tol && distT < tol)) {
+        if (mt < (1 - 1e-4 * lambda * shrink) * m0 || (resT < tol && distT < tol)) {
           x = xt;
           r = rt;
           res = resT;
@@ -568,14 +599,15 @@ export function steadyState(model: Model, x0: Vec, opts: SteadyOptions = {}): St
   // Plain cycles: the spec's convergence test, and the fallback when Newton
   // stalls. Once they pass it, one cycle with the Jacobian checks the
   // distance to the fixed point, and Newton resumes from there if a slow
-  // state is still off.
+  // state is still off; Newton is also retried every fifty plain cycles.
+  let plain = 0;
   while (!done() && cycles < maxCycles) {
     const xn = r.x;
     r = map(xn);
     x = xn;
     res = relativeChange(r);
     dist = NaN; // not evaluated
-    if (res < tol && cycles < maxCycles) {
+    if ((res < tol || ++plain % 50 === 0) && cycles < maxCycles) {
       r = map(x, true);
       step = newtonStep(r);
       dist = distance(step, r);

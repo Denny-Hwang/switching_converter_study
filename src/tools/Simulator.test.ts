@@ -121,6 +121,16 @@ describe('compare panel', () => {
     expect(compareRows(r).find((x) => x.label === 'Δi_L,pp (on)')).toBeUndefined();
   });
 
+  it('the ripple row is the rise over the on-interval, also when a large node capacitance makes the current peak after turn-off', () => {
+    const r = sim.simulate({
+      topology: 'boost', Vg: 12, D: 0.2, fs: 1e5, L: 2e-5, Ron: 0.05, Cnode: 1e-7,
+      load: { kind: 'resistive', R: 100, C: 1e-5 },
+    });
+    const row = compareRows(r).find((x) => x.label === 'Δi_L,pp (on)')!;
+    expect(r.max.i_L! - (r.waveforms.i_L as number[])[0]!).toBeGreaterThan(1.2 * row.formula);
+    expect(Math.abs(row.sim - row.formula) / row.formula).toBeLessThan(0.01);
+  });
+
   it('a boost whose only loss is the winding resistance is compared with boost.ccm.M_RL', () => {
     const r = sim.simulate({ topology: 'boost', Vg: 12, D: 0.5, fs: 1e5, L: 1e-4, RL: 0.2, load: { kind: 'resistive', R: 10, C: 1e-4 } });
     const m = compareRows(r).find((x) => x.label === '|M|')!;
