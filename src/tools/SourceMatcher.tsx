@@ -25,12 +25,17 @@ import {
   type SinkMode,
 } from 'pe-core';
 import { isToolHash } from '../lib/hash';
+import { fmtValue } from '../lib/format';
 import { useStateHash } from '../lib/useStateHash';
+import { PLOT_CONFIG, axis, baseLayout, logTicks, sub, usePlotTheme } from '../lib/plot';
+import { ChoiceButtons, Choices, FieldLabel, Rich } from './ToolUi';
 import type { EnvelopeReply } from './sourcematch.worker';
 
 export type EnvelopeKind = 'none' | 'sine' | 'points';
 
 export interface SourceLabels {
+  /** Values are entered in base SI units. */
+  siHint: string;
   presets: string;
   source: string;
   converter: string;
@@ -62,6 +67,7 @@ export interface SourceLabels {
   extractionChart: string;
   amplitude: string;
   share: string;
+  plotHint: string;
   lfrCurve: string;
   cvCurve: string;
   actual: string;
@@ -100,6 +106,8 @@ interface Props {
   labels: SourceLabels;
   presets: SourcePreset[];
   simulatorHref: string;
+  /** What each symbol means (i18n/symbols.ts). */
+  symbols: Record<string, string>;
 }
 
 type Group = 'source' | 'converter' | 'sine';
@@ -180,12 +188,8 @@ export function toEnvelope(kind: EnvelopeKind, values: Record<string, string>): 
   return null;
 }
 
-function fmt(x: number | undefined, unit = ''): string {
-  if (x === undefined || !Number.isFinite(x)) return '—';
-  const a = Math.abs(x);
-  const s = a !== 0 && (a < 1e-3 || a >= 1e5) ? x.toExponential(3) : Number(x.toPrecision(4)).toString();
-  return unit ? `${s} ${unit}` : s;
-}
+/** Results with SI prefixes (lib/format.ts). */
+const fmt = (x: number | undefined, unit = '') => fmtValue(x, unit);
 
 function readHash(): URLSearchParams {
   return new URLSearchParams(typeof window === 'undefined' ? '' : window.location.hash.replace(/^#/, ''));
@@ -199,7 +203,11 @@ export function stateFromHash(h: URLSearchParams, presets: SourcePreset[]): { en
   const base = presets[0];
   const values: Record<string, string> = {};
   for (const k of KEYS) values[k] = h.has(k) ? h.get(k)! : base?.values[k] !== undefined ? String(base.values[k]) : '';
-  const env = (ENVELOPES as string[]).includes(h.get('env') ?? '') ? (h.get('env') as EnvelopeKind) : base?.values.fenv !== undefined ? 'sine' : 'none';
+  const env = (ENVELOPES as string[]).includes(h.get('env') ?? '')
+    ? (h.get('env') as EnvelopeKind)
+    : base?.values.fenv !== undefined
+      ? 'sine'
+      : 'none';
   return { env, values };
 }
 
@@ -284,9 +292,7 @@ function purge(el: HTMLDivElement | null) {
   if (el?.hasChildNodes()) import('plotly.js-dist-min').then((mod) => (mod.default ?? mod).purge(el));
 }
 
-const LAYOUT = { paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', legend: { orientation: 'h', y: -0.3 } };
-
-export default function SourceMatcher({ labels, presets, simulatorHref }: Props) {
+export default function SourceMatcher({ labels, presets, simulatorHref, symbols }: Props) {
   const init = useMemo(() => stateFromHash(readHash(), presets), [presets]);
   const [env, setEnv] = useState<EnvelopeKind>(init.env);
   const [values, setValues] = useState<Record<string, string>>(init.values);
@@ -296,6 +302,7 @@ export default function SourceMatcher({ labels, presets, simulatorHref }: Props)
   const extractRef = useRef<HTMLDivElement>(null);
   const switchRef = useRef<HTMLDivElement>(null);
   const envRef = useRef<HTMLDivElement>(null);
+  const theme = usePlotTheme();
   const runner = useEnvelopeRunner();
 
   const spec = useMemo(() => toMatchSpec(values), [values]);
@@ -368,18 +375,48 @@ export default function SourceMatcher({ labels, presets, simulatorHref }: Props)
     const x = sw.map((p) => p.Voc);
     // a constant-voltage sink at V_g,crit for every amplitude that can reach it
     const cv = sw.map((p) => (p.Voc > result.Vgcrit ? evaluate('src.cv_extraction', { V_c: result.Vgcrit, V_oc: p.Voc }) : NaN));
+    const [c0, c1, c2, c3] = theme.colors;
     const extract: Record<string, unknown>[] = [
-      { x, y: sw.map((p) => p.eta), name: labels.actual, mode: 'lines', line: { width: 3 } },
-      { x, y: sw.map(() => result.etaLfr), name: labels.lfrCurve, mode: 'lines', line: { dash: 'dash' } },
-      { x, y: cv, name: labels.cvCurve, mode: 'lines', line: { dash: 'dot' } },
-      { x: [result.point.Voc], y: [result.point.eta], name: 'V_oc', mode: 'markers', marker: { size: 10 } },
+      { x, y: sw.map((p) => p.eta), name: labels.actual, mode: 'lines', line: { color: c0, width: 3 }, hovertemplate: '%{y:.3f}' },
+      {
+        x,
+        y: sw.map(() => result.etaLfr),
+        name: labels.lfrCurve,
+        mode: 'lines',
+        line: { color: c1, width: 2, dash: 'dash' },
+        hovertemplate: '%{y:.3f}',
+      },
+      { x, y: cv, name: sub(labels.cvCurve), mode: 'lines', line: { color: c2, width: 2, dash: 'dot' }, hovertemplate: '%{y:.3f}' },
+      {
+        x: [result.point.Voc],
+        y: [result.point.eta],
+        name: sub('V_oc'),
+        mode: 'markers',
+        marker: { color: c3, size: 10 },
+        hovertemplate: '%{y:.3f}',
+      },
     ];
     const sc = result.switchCurve;
     const switchTraces: Record<string, unknown>[] = [
-      { x: sc.P, y: sc.Vds, name: labels.vdsAxis, mode: 'lines' },
-      { x: [sc.P[0], sc.P[sc.P.length - 1]], y: [result.spec.Vrating, result.spec.Vrating], name: labels.rating, mode: 'lines', line: { dash: 'dot' } },
-      { x: [result.point.P], y: [result.point.Vds], name: 'V_oc', mode: 'markers', marker: { size: 10 } },
+      { x: sc.P, y: sc.Vds, name: labels.vdsAxis, mode: 'lines', line: { color: c0, width: 2 }, hovertemplate: '%{y:.4~g} V' },
+      {
+        x: [sc.P[0], sc.P[sc.P.length - 1]],
+        y: [result.spec.Vrating, result.spec.Vrating],
+        name: labels.rating,
+        mode: 'lines',
+        line: { color: c1, width: 2, dash: 'dot' },
+        hovertemplate: '%{y:.4~g} V',
+      },
+      {
+        x: [result.point.P],
+        y: [result.point.Vds],
+        name: sub('V_oc'),
+        mode: 'markers',
+        marker: { color: c3, size: 10 },
+        hovertemplate: '%{y:.4~g} V',
+      },
     ];
+    const P = sc.P.filter((v) => Number.isFinite(v) && v > 0);
     import('plotly.js-dist-min').then((mod) => {
       if (cancelled) return;
       const Plotly = mod.default ?? mod;
@@ -388,13 +425,39 @@ export default function SourceMatcher({ labels, presets, simulatorHref }: Props)
           extractRef.current,
           extract,
           {
-            ...LAYOUT,
-            margin: { t: 16, r: 16, b: 48, l: 64 },
-            xaxis: { title: { text: `${labels.amplitude} [V]` }, type: 'log' },
-            yaxis: { title: { text: labels.share }, range: [0, 1.05] },
-            shapes: [{ type: 'line', xref: 'x', yref: 'paper', x0: result.VocCrit, x1: result.VocCrit, y0: 0, y1: 1, line: { dash: 'dot', width: 1 } }],
+            ...baseLayout(theme),
+            hovermode: 'x unified',
+            xaxis: axis(theme, `${sub(labels.amplitude)} [V]`, { type: 'log', ...logTicks(Math.min(...x), Math.max(...x)) }),
+            yaxis: axis(theme, labels.share, { range: [0, 1.05] }),
+            shapes: [
+              {
+                type: 'line',
+                xref: 'x',
+                yref: 'paper',
+                x0: result.VocCrit,
+                x1: result.VocCrit,
+                y0: 0,
+                y1: 1,
+                line: { dash: 'dot', width: 1, color: theme.muted },
+              },
+            ],
+            // the vertical line: from this amplitude on, CCM holds the bus at V_g,crit
+            annotations: [
+              {
+                x: Math.log10(result.VocCrit),
+                y: 0.02,
+                xref: 'x',
+                yref: 'paper',
+                text: sub('V_g,crit'),
+                showarrow: false,
+                xanchor: 'left',
+                yanchor: 'bottom',
+                xshift: 3,
+                font: { size: 11, color: theme.muted },
+              },
+            ],
           },
-          { responsive: true, displaylogo: false },
+          PLOT_CONFIG,
         );
       }
       if (switchRef.current) {
@@ -402,19 +465,19 @@ export default function SourceMatcher({ labels, presets, simulatorHref }: Props)
           switchRef.current,
           switchTraces,
           {
-            ...LAYOUT,
-            margin: { t: 16, r: 16, b: 48, l: 64 },
-            xaxis: { title: { text: `${labels.powerAxis} [W]` }, type: 'log' },
-            yaxis: { title: { text: `${labels.vdsAxis} [V]` } },
+            ...baseLayout(theme),
+            hovermode: 'x unified',
+            xaxis: axis(theme, `${labels.powerAxis} [W]`, { type: 'log', ...logTicks(Math.min(...P), Math.max(...P)) }),
+            yaxis: axis(theme, `${labels.vdsAxis} [V]`),
           },
-          { responsive: true, displaylogo: false },
+          PLOT_CONFIG,
         );
       }
     });
     return () => {
       cancelled = true;
     };
-  }, [result, labels]);
+  }, [result, labels, theme]);
 
   // the envelope simulation
   useEffect(() => {
@@ -424,11 +487,20 @@ export default function SourceMatcher({ labels, presets, simulatorHref }: Props)
     }
     let cancelled = false;
     const t = run.t.map((x) => x * 1e3);
+    const [c0, c1, c2, c3] = theme.colors;
     const traces: Record<string, unknown>[] = [
-      { x: t, y: run.Voc, name: labels.voc, mode: 'lines', yaxis: 'y' },
-      { x: t, y: run.Vbus, name: labels.vbus, mode: 'lines', yaxis: 'y' },
-      { x: t, y: run.Pmax, name: labels.pAvail, mode: 'lines', line: { dash: 'dot' }, yaxis: 'y2' },
-      { x: t, y: run.P, name: labels.pIn, mode: 'lines', yaxis: 'y2' },
+      { x: t, y: run.Voc, name: sub(labels.voc), mode: 'lines', yaxis: 'y', line: { color: c0, width: 2 }, hovertemplate: '%{y:.4~g} V' },
+      { x: t, y: run.Vbus, name: sub(labels.vbus), mode: 'lines', yaxis: 'y', line: { color: c1, width: 2 }, hovertemplate: '%{y:.4~g} V' },
+      {
+        x: t,
+        y: run.Pmax,
+        name: sub(labels.pAvail),
+        mode: 'lines',
+        line: { color: c2, width: 2, dash: 'dot' },
+        yaxis: 'y2',
+        hovertemplate: '%{y:.3~g} W',
+      },
+      { x: t, y: run.P, name: sub(labels.pIn), mode: 'lines', yaxis: 'y2', line: { color: c3, width: 2 }, hovertemplate: '%{y:.3~g} W' },
     ];
     import('plotly.js-dist-min').then((mod) => {
       if (cancelled || !envRef.current) return;
@@ -437,20 +509,20 @@ export default function SourceMatcher({ labels, presets, simulatorHref }: Props)
         envRef.current,
         traces,
         {
-          ...LAYOUT,
-          margin: { t: 16, r: 64, b: 48, l: 64 },
-          xaxis: { title: { text: `${labels.time} [ms]` } },
-          yaxis: { title: { text: `${labels.voltage} [V]` } },
+          ...baseLayout(theme),
+          hovermode: 'x unified',
+          xaxis: axis(theme, `${labels.time} [ms]`),
+          yaxis: axis(theme, `${labels.voltage} [V]`),
           // an overlaying axis syncs its ticks to the first axis by default: give it its own
-          yaxis2: { title: { text: `${labels.powerAxis} [W]` }, overlaying: 'y', side: 'right', tickmode: 'auto', showgrid: false },
+          yaxis2: axis(theme, `${labels.powerAxis} [W]`, { overlaying: 'y', side: 'right', tickmode: 'auto', showgrid: false }),
         },
-        { responsive: true, displaylogo: false },
+        PLOT_CONFIG,
       );
     });
     return () => {
       cancelled = true;
     };
-  }, [run, labels]);
+  }, [run, labels, theme]);
 
   function applyPreset(p: SourcePreset) {
     const next: Record<string, string> = {};
@@ -462,12 +534,9 @@ export default function SourceMatcher({ labels, presets, simulatorHref }: Props)
   const input = (f: Field) => {
     const id = `src-${f.key}`;
     return (
-      <div key={f.key} className="pe-sim__row">
-        <label htmlFor={id}>
-          {f.label} {f.unit && <small>[{f.unit}]</small>}
-        </label>
+      <div key={f.key} className="pe-row pe-row--full">
+        <FieldLabel htmlFor={id} sym={f.label} meaning={symbols[f.label]} unit={f.unit} />
         <input id={id} type="number" step="any" value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
-        <span />
       </div>
     );
   };
@@ -475,199 +544,241 @@ export default function SourceMatcher({ labels, presets, simulatorHref }: Props)
   const r = result;
   const pt = r?.point;
   return (
-    <div className="pe-tool pe-explorer pe-sim pe-design">
+    <div className="pe-tool pe-source not-content">
       {presets.length > 0 && (
-        <fieldset>
-          <legend>{labels.presets}</legend>
-          <div className="pe-sim__buttons">
-            {presets.map((p) => (
-              <button key={p.id} type="button" onClick={() => applyPreset(p)}>
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </fieldset>
+        <Choices
+          legend={labels.presets}
+          items={presets.map((p) => ({ id: p.id, label: p.label }))}
+          onPick={(id) => applyPreset(presets.find((p) => p.id === id)!)}
+          wide
+        />
       )}
-      <fieldset>
-        <legend>{labels.source}</legend>
-        {FIELDS.filter((f) => f.group === 'source').map(input)}
-      </fieldset>
-      <fieldset>
-        <legend>{labels.converter}</legend>
-        {FIELDS.filter((f) => f.group === 'converter').map(input)}
-      </fieldset>
-      <fieldset>
-        <legend>{labels.envelope}</legend>
-        <div className="pe-sim__buttons" role="group" aria-label={labels.envelope}>
-          {ENVELOPES.map((k) => (
-            <button key={k} type="button" aria-pressed={env === k} onClick={() => setEnv(k)}>
-              {labels.envelopeKinds[k]}
-            </button>
-          ))}
+      <div className="pe-split pe-split--results">
+        <div className="pe-split__controls">
+          <p className="pe-tool__hint">{labels.siHint}</p>
+          <fieldset>
+            <legend>
+              <Rich text={labels.source} />
+            </legend>
+            {FIELDS.filter((f) => f.group === 'source').map(input)}
+          </fieldset>
+          <fieldset>
+            <legend>
+              <Rich text={labels.converter} />
+            </legend>
+            {FIELDS.filter((f) => f.group === 'converter').map(input)}
+          </fieldset>
+          <fieldset>
+            <legend>
+              <Rich text={labels.envelope} />
+            </legend>
+            <ChoiceButtons
+              legend={labels.envelope}
+              items={ENVELOPES.map((k) => ({ id: k, label: labels.envelopeKinds[k] }))}
+              selected={env}
+              onPick={setEnv}
+            />
+            {env === 'sine' && FIELDS.filter((f) => f.group === 'sine').map(input)}
+            {env === 'points' && (
+              <div className="pe-row pe-row--full">
+                <label htmlFor="src-pts">
+                  <Rich text={labels.pointsHelp} />
+                </label>
+                <input id="src-pts" type="text" value={values.pts ?? ''} onChange={(e) => setValues({ ...values, pts: e.target.value })} />
+              </div>
+            )}
+          </fieldset>
         </div>
-        {env === 'sine' && FIELDS.filter((f) => f.group === 'sine').map(input)}
-        {env === 'points' && (
-          <div className="pe-sim__row">
-            <label htmlFor="src-pts">
-              {labels.pointsHelp}
-            </label>
-            <input id="src-pts" type="text" value={values.pts ?? ''} onChange={(e) => setValues({ ...values, pts: e.target.value })} />
-            <span />
-          </div>
-        )}
-      </fieldset>
-      <section aria-live="polite">
-        {(!r || !envelopeValid) && <p className="pe-sim__error">{labels.invalid}</p>}
-        {pt && pt.Vds > r!.spec.Vrating && <p className="pe-sim__error">{labels.overRating}</p>}
-        {tooLong && (
-          <p className="pe-sim__error">
-            {labels.tooLong.replace('{n}', cycles.toLocaleString()).replace('{max}', ENVELOPE_MAX_CYCLES.toLocaleString())}
-          </p>
-        )}
-        {busy && <p>{labels.running}</p>}
-        {tooFast && need && (
-          <p className="pe-sim__error">
-            {labels.tooFast.replace('{n}', need.period.toLocaleString()).replace('{min}', String(ENVELOPE_MIN_CYCLES))}
-          </p>
-        )}
-        {rippling && <p className="pe-sim__error">{labels.ripple}</p>}
-        {runError && (
-          <p className="pe-sim__error">
-            {labels.runFailed} ({runError})
-          </p>
-        )}
-      </section>
-      {r && pt && (
-        <>
-          <table className="pe-sim__table">
-            <caption>{labels.results}</caption>
-            <thead>
-              <tr>
-                <th scope="col">{labels.quantity}</th>
-                <th scope="col">{labels.value}</th>
-                <th scope="col">{labels.equation}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">{labels.rin}</th>
-                <td>{fmt(r.Rin, 'Ω')}</td>
-                <td>
-                  <code>lfr.R_in</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.etaLfr}</th>
-                <td>{fmt(100 * r.etaLfr, '%')}</td>
-                <td>
-                  <code>lfr.eta</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.vgcrit}</th>
-                <td>{fmt(r.Vgcrit, 'V')}</td>
-                <td>
-                  <code>flyback.V_crit</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.voccrit}</th>
-                <td>{fmt(r.VocCrit, 'V')}</td>
-                <td>
-                  <code>lfr.Vg</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.mode}</th>
-                <td>
-                  <strong>{labels.modes[pt.mode]}</strong>
-                </td>
-                <td />
-              </tr>
-              <tr>
-                <th scope="row">{labels.vg}</th>
-                <td>{fmt(pt.Vg, 'V')}</td>
-                <td>
-                  <code>{pt.mode === 'LFR' ? 'lfr.Vg' : 'flyback.V_crit'}</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.pmax}</th>
-                <td>{fmt(pt.Pmax, 'W')}</td>
-                <td>
-                  <code>src.Pmax</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.eta}</th>
-                <td>
-                  <strong>{fmt(100 * pt.eta, '%')}</strong>
-                </td>
-                <td>
-                  <code>{pt.mode === 'LFR' ? 'lfr.eta' : 'src.cv_extraction'}</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.power}</th>
-                <td>{fmt(pt.P, 'W')}</td>
-                <td />
-              </tr>
-              <tr>
-                <th scope="row">{labels.vds}</th>
-                <td>{fmt(pt.Vds, 'V')}</td>
-                <td>
-                  <code>flyback.Vds_off</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.vdsCcm}</th>
-                <td>{fmt(r.VdsCcm, 'V')}</td>
-                <td>
-                  <code>flyback.Vds_clamped</code>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">{labels.plfr}</th>
-                <td>
-                  {fmt(r.Plfr, 'W')} ({r.limit === 'ccm' ? labels.limitCcm : labels.limitSwitch})
-                </td>
-                <td>
-                  <code>dcm.P_in</code>
-                </td>
-              </tr>
-              {run && (
-                <tr>
-                  <th scope="row">{labels.etaEnvelope}</th>
-                  <td>
-                    <strong>{fmt(100 * run.eta, '%')}</strong>
-                  </td>
-                  <td>
-                    <code>src.cv_extraction</code>, <code>src.Pmax</code>
-                  </td>
-                </tr>
+        <div className="pe-split__view">
+          <section aria-live="polite">
+            {(!r || !envelopeValid) && <p className="pe-sim__error">{labels.invalid}</p>}
+            {pt && pt.Vds > r!.spec.Vrating && <p className="pe-sim__error">{labels.overRating}</p>}
+            {tooLong && (
+              <p className="pe-sim__error">
+                {labels.tooLong.replace('{n}', cycles.toLocaleString()).replace('{max}', ENVELOPE_MAX_CYCLES.toLocaleString())}
+              </p>
+            )}
+            {busy && <p>{labels.running}</p>}
+            {tooFast && need && (
+              <p className="pe-sim__error">
+                {labels.tooFast.replace('{n}', need.period.toLocaleString()).replace('{min}', String(ENVELOPE_MIN_CYCLES))}
+              </p>
+            )}
+            {rippling && <p className="pe-sim__error">{labels.ripple}</p>}
+            {runError && (
+              <p className="pe-sim__error">
+                {labels.runFailed} ({runError})
+              </p>
+            )}
+          </section>
+          {r && pt && (
+            <>
+              <table className="pe-sim__table">
+                <caption>
+                  <Rich text={labels.results} />
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{labels.quantity}</th>
+                    <th scope="col">{labels.value}</th>
+                    <th scope="col">{labels.equation}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.rin} />
+                    </th>
+                    <td>{fmt(r.Rin, 'Ω')}</td>
+                    <td>
+                      <code>lfr.R_in</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.etaLfr} />
+                    </th>
+                    <td>{fmt(100 * r.etaLfr, '%')}</td>
+                    <td>
+                      <code>lfr.eta</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.vgcrit} />
+                    </th>
+                    <td>{fmt(r.Vgcrit, 'V')}</td>
+                    <td>
+                      <code>flyback.V_crit</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.voccrit} />
+                    </th>
+                    <td>{fmt(r.VocCrit, 'V')}</td>
+                    <td>
+                      <code>lfr.Vg</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.mode} />
+                    </th>
+                    <td>
+                      <strong>
+                        <Rich text={labels.modes[pt.mode]} />
+                      </strong>
+                    </td>
+                    <td />
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.vg} />
+                    </th>
+                    <td>{fmt(pt.Vg, 'V')}</td>
+                    <td>
+                      <code>{pt.mode === 'LFR' ? 'lfr.Vg' : 'flyback.V_crit'}</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.pmax} />
+                    </th>
+                    <td>{fmt(pt.Pmax, 'W')}</td>
+                    <td>
+                      <code>src.Pmax</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.eta} />
+                    </th>
+                    <td>
+                      <strong>{fmt(100 * pt.eta, '%')}</strong>
+                    </td>
+                    <td>
+                      <code>{pt.mode === 'LFR' ? 'lfr.eta' : 'src.cv_extraction'}</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.power} />
+                    </th>
+                    <td>{fmt(pt.P, 'W')}</td>
+                    <td />
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.vds} />
+                    </th>
+                    <td>{fmt(pt.Vds, 'V')}</td>
+                    <td>
+                      <code>flyback.Vds_off</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.vdsCcm} />
+                    </th>
+                    <td>{fmt(r.VdsCcm, 'V')}</td>
+                    <td>
+                      <code>flyback.Vds_clamped</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      <Rich text={labels.plfr} />
+                    </th>
+                    <td>
+                      {fmt(r.Plfr, 'W')} (<Rich text={r.limit === 'ccm' ? labels.limitCcm : labels.limitSwitch} />)
+                    </td>
+                    <td>
+                      <code>dcm.P_in</code>
+                    </td>
+                  </tr>
+                  {run && (
+                    <tr>
+                      <th scope="row">
+                        <Rich text={labels.etaEnvelope} />
+                      </th>
+                      <td>
+                        <strong>{fmt(100 * run.eta, '%')}</strong>
+                      </td>
+                      <td>
+                        <code>src.cv_extraction</code>, <code>src.Pmax</code>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+              {Cbus > 0 && (
+                <p>
+                  <a href={`${simulatorHref}#${simulatorHash(r.spec, Cbus)}`}>▶ {labels.simulate}</a>
+                </p>
               )}
-            </tbody>
-          </table>
-          {Cbus > 0 && (
-            <p>
-              <a href={`${simulatorHref}#${simulatorHash(r.spec, Cbus)}`}>▶ {labels.simulate}</a>
-            </p>
+            </>
           )}
-        </>
-      )}
-      <p className="pe-loss__caption">{labels.extractionChart}</p>
-      <div ref={extractRef} role="img" aria-label={labels.extractionChart} style={{ width: '100%', height: 340 }} />
-      <p className="pe-loss__caption">{labels.switchChart}</p>
-      <div ref={switchRef} role="img" aria-label={labels.switchChart} style={{ width: '100%', height: 340 }} />
-      {env !== 'none' && (
-        <>
-          <p className="pe-loss__caption">{labels.envelopeChart}</p>
-          <div ref={envRef} role="img" aria-label={labels.envelopeChart} style={{ width: '100%', height: 360 }} />
-        </>
-      )}
-      <p>
-        <small>{labels.shareUrl}</small>
-      </p>
+          <p className="pe-chart__title">
+            <Rich text={labels.extractionChart} />
+          </p>
+          <div ref={extractRef} className="pe-chart" role="img" aria-label={labels.extractionChart} style={{ height: 340 }} />
+          <p className="pe-chart__title">
+            <Rich text={labels.switchChart} />
+          </p>
+          <div ref={switchRef} className="pe-chart" role="img" aria-label={labels.switchChart} style={{ height: 340 }} />
+          {env !== 'none' && (
+            <>
+              <p className="pe-chart__title">
+                <Rich text={labels.envelopeChart} />
+              </p>
+              <div ref={envRef} className="pe-chart" role="img" aria-label={labels.envelopeChart} style={{ height: 360 }} />
+            </>
+          )}
+          {r && <p className="pe-tool__hint">{labels.plotHint}</p>}
+        </div>
+      </div>
+      <p className="pe-tool__hint">{labels.shareUrl}</p>
     </div>
   );
 }

@@ -9,12 +9,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Bucket, LossBudget as Budget, LossPoint, LossSpec, sim } from 'pe-core';
 import { isToolHash } from '../lib/hash';
+import { PLOT_CONFIG, axis, baseLayout, sub, usePlotTheme } from '../lib/plot';
+import { fmtValue } from '../lib/format';
 import { useStateHash } from '../lib/useStateHash';
 import type { LossReply } from './lossbudget.worker';
+import { Choices, FieldLabel, Rich } from './ToolUi';
 
 type Topology = sim.Topology;
 
 export interface LossLabels {
+  /** Values are entered in base SI units. */
+  siHint: string;
   topology: string;
   presets: string;
   operating: string;
@@ -42,6 +47,7 @@ export interface LossLabels {
   notRegulated: string;
   simulate: string;
   shareUrl: string;
+  plotHint: string;
   flybackRL: string;
   bpk: string;
   resetLimited: string;
@@ -61,6 +67,8 @@ interface Props {
   labels: LossLabels;
   presets: LossPreset[];
   simulatorHref: string;
+  /** What each symbol means (i18n/symbols.ts). */
+  symbols: Record<string, string>;
 }
 
 const TOPOLOGIES: Topology[] = ['buck', 'boost', 'buckboost', 'flyback', 'forward'];
@@ -183,12 +191,8 @@ export function simulatorHash(s: LossSpec, p: LossPoint): string {
   return q.toString();
 }
 
-function fmt(x: number | undefined, unit = ''): string {
-  if (x === undefined || !Number.isFinite(x)) return '—';
-  const a = Math.abs(x);
-  const s = a !== 0 && (a < 1e-3 || a >= 1e5) ? x.toExponential(3) : Number(x.toPrecision(3)).toString();
-  return unit ? `${s} ${unit}` : s;
-}
+/** Results with SI prefixes (lib/format.ts). */
+const fmt = (x: number | undefined, unit = '') => fmtValue(x, unit, 3);
 
 function readHash(): URLSearchParams {
   return new URLSearchParams(typeof window === 'undefined' ? '' : window.location.hash.replace(/^#/, ''));
@@ -200,7 +204,7 @@ function readHash(): URLSearchParams {
  * empty (the core data or the leakage inductance left out on purpose).
  */
 export function stateFromHash(h: URLSearchParams, presets: LossPreset[]): { topo: Topology; values: Record<string, string> } {
-  const topo = (TOPOLOGIES as string[]).includes(h.get('topo') ?? '') ? (h.get('topo') as Topology) : presets[0]?.topology ?? 'buck';
+  const topo = (TOPOLOGIES as string[]).includes(h.get('topo') ?? '') ? (h.get('topo') as Topology) : (presets[0]?.topology ?? 'buck');
   const base = presets.find((p) => p.topology === topo) ?? presets[0];
   const values: Record<string, string> = {};
   for (const k of KEYS) values[k] = h.has(k) ? h.get(k)! : base?.values[k] !== undefined ? String(base.values[k]) : '';
@@ -260,7 +264,7 @@ function useLossRunner(): { run: (spec: LossSpec, done: Done) => void; cancel: (
   return useMemo(() => ({ run, cancel }), [run, cancel]);
 }
 
-export default function LossBudget({ labels, presets, simulatorHref }: Props) {
+export default function LossBudget({ labels, presets, simulatorHref, symbols }: Props) {
   const init = useMemo(() => stateFromHash(readHash(), presets), [presets]);
   const [topo, setTopo] = useState<Topology>(init.topo);
   const [values, setValues] = useState<Record<string, string>>(init.values);
@@ -268,6 +272,7 @@ export default function LossBudget({ labels, presets, simulatorHref }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const loadRef = useRef<HTMLDivElement>(null);
+  const theme = usePlotTheme();
   const freqRef = useRef<HTMLDivElement>(null);
   const runner = useLossRunner();
 
@@ -330,9 +335,21 @@ export default function LossBudget({ labels, presets, simulatorHref }: Props) {
         type: 'bar',
         x,
         y: points.map((p) => p.losses[b]),
-        name: labels.buckets[b],
+        name: sub(labels.buckets[b]),
+        marker: { color: theme.colors[BUCKET_ORDER.indexOf(b)] },
+        hovertemplate: '%{y:.3~g} W',
       }));
-      traces.push({ type: 'scatter', mode: 'lines+markers', x, y: points.map((p) => 100 * p.eta), name: labels.efficiency, yaxis: 'y2' });
+      traces.push({
+        type: 'scatter',
+        mode: 'lines+markers',
+        x,
+        y: points.map((p) => 100 * p.eta),
+        name: labels.efficiency,
+        yaxis: 'y2',
+        line: { color: theme.text, width: 2 },
+        marker: { color: theme.text, size: 6 },
+        hovertemplate: '%{y:.2f} %',
+      });
       import('plotly.js-dist-min').then((mod) => {
         if (cancelled) return;
         const Plotly = mod.default ?? mod;
@@ -340,35 +357,42 @@ export default function LossBudget({ labels, presets, simulatorHref }: Props) {
           el,
           traces,
           {
+            ...baseLayout(theme),
             barmode: 'stack',
-            margin: { t: 16, r: 64, b: 56, l: 64 },
-            xaxis: { title: { text: xTitle }, type: typeof x[0] === 'string' ? 'category' : 'linear' },
-            yaxis: { title: { text: labels.lossAxis } },
+            hovermode: 'x unified',
+            xaxis: axis(theme, xTitle, { type: typeof x[0] === 'string' ? 'category' : 'linear' }),
+            yaxis: axis(theme, labels.lossAxis),
             // an overlaying axis syncs its ticks to the first axis by default: give it its own
-            yaxis2: {
-              title: { text: `${labels.efficiency} [%]` },
+            yaxis2: axis(theme, `${labels.efficiency} [%]`, {
               overlaying: 'y',
               side: 'right',
               range: etaRange,
               tickformat: '.1f',
               tickmode: 'auto',
               showgrid: false,
-            },
-            legend: { orientation: 'h', y: -0.3 },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(0,0,0,0)',
+            }),
           },
-          { responsive: true, displaylogo: false },
+          PLOT_CONFIG,
         );
       });
     };
-    draw(loadRef.current, budget.load, budget.load.map((p) => p.Pout), `${labels.outputPower} [W]`);
+    draw(
+      loadRef.current,
+      budget.load,
+      budget.load.map((p) => p.Pout),
+      `${labels.outputPower} [W]`,
+    );
     // the frequencies are log-spaced: show them as categories, in kHz (a UI label only)
-    draw(freqRef.current, budget.freq, budget.freq.map((p) => String(Number((p.fs / 1000).toPrecision(3)))), `${labels.frequency} [kHz]`);
+    draw(
+      freqRef.current,
+      budget.freq,
+      budget.freq.map((p) => String(Number((p.fs / 1000).toPrecision(3)))),
+      `${labels.frequency} [kHz]`,
+    );
     return () => {
       cancelled = true;
     };
-  }, [budget, labels]);
+  }, [budget, labels, theme]);
 
   function applyPreset(p: LossPreset) {
     const next: Record<string, string> = {};
@@ -386,13 +410,11 @@ export default function LossBudget({ labels, presets, simulatorHref }: Props) {
   const shown = FIELDS.filter((f) => f.show(topo));
   const input = (f: Field) => {
     const id = `loss-${f.key}`;
+    const sym = f.label(topo);
     return (
-      <div key={f.key} className="pe-sim__row">
-        <label htmlFor={id}>
-          {f.label(topo)} {f.unit && <small>[{f.unit}]</small>}
-        </label>
+      <div key={f.key} className="pe-row pe-row--full">
+        <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} />
         <input id={id} type="number" step="any" value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
-        <span />
       </div>
     );
   };
@@ -401,10 +423,12 @@ export default function LossBudget({ labels, presets, simulatorHref }: Props) {
     if (!fields.length) return null;
     return (
       <fieldset>
-        <legend>{legend}</legend>
+        <legend>
+          <Rich text={legend} />
+        </legend>
         {notes.map((note) => (
-          <p key={note}>
-            <small>{note}</small>
+          <p key={note} className="pe-tool__hint">
+            <Rich text={note} />
           </p>
         ))}
         {fields.map(input)}
@@ -418,110 +442,115 @@ export default function LossBudget({ labels, presets, simulatorHref }: Props) {
   const resetLimited = all.some((p) => p.resetLimited);
 
   return (
-    <div className="pe-tool pe-explorer pe-sim pe-loss">
-      <fieldset>
-        <legend>{labels.topology}</legend>
-        <div className="pe-sim__buttons" role="group" aria-label={labels.topology}>
-          {TOPOLOGIES.map((t) => (
-            <button key={t} type="button" aria-pressed={topo === t} onClick={() => changeTopology(t)}>
-              {labels.topologies[t]}
-            </button>
-          ))}
-        </div>
-      </fieldset>
+    <div className="pe-tool pe-loss not-content">
+      <Choices
+        legend={labels.topology}
+        items={TOPOLOGIES.map((t) => ({ id: t, label: labels.topologies[t] }))}
+        selected={topo}
+        onPick={changeTopology}
+      />
       {presets.length > 0 && (
-        <fieldset>
-          <legend>{labels.presets}</legend>
-          <div className="pe-sim__buttons">
-            {presets.map((p) => (
-              <button key={p.id} type="button" onClick={() => applyPreset(p)}>
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </fieldset>
+        <Choices
+          legend={labels.presets}
+          items={presets.map((p) => ({ id: p.id, label: p.label }))}
+          onPick={(id) => applyPreset(presets.find((p) => p.id === id)!)}
+        />
       )}
-      {group('operating', labels.operating)}
-      {group('switch', labels.switchParts)}
-      {group('diode', labels.diodeParts)}
-      {group('inductor', labels.inductorParts, topo === 'flyback' ? [labels.flybackRL, labels.optionalCore] : [labels.optionalCore])}
-      {group('leakage', labels.leakage)}
-      <section aria-live="polite">
-        {error && <p className="pe-sim__error">{error}</p>}
-        {busy && <p>{labels.running}</p>}
-        {unregulated && <p className="pe-sim__error">{labels.notRegulated}</p>}
-        {resetLimited && <p className="pe-sim__error">{labels.resetLimited}</p>}
-      </section>
-      {budget && nominal && (
-        <>
-          <table className="pe-sim__table">
-            <caption>{labels.nominal}</caption>
-            <thead>
-              <tr>
-                <th scope="col">{labels.bucket}</th>
-                <th scope="col">{labels.power}</th>
-                <th scope="col">{labels.share}</th>
-                <th scope="col">{labels.equation}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {BUCKET_ORDER.filter((b) => b !== 'clamp' || budget.spec.topology === 'flyback').map((b) => (
-                <tr key={b}>
-                  <th scope="row">{labels.buckets[b]}</th>
-                  <td>{fmt(nominal.losses[b], 'W')}</td>
-                  <td>{fmt((100 * nominal.losses[b]) / nominal.total, '%')}</td>
-                  <td>
-                    {EQUATIONS[b].map((e) => (
-                      <code key={e}>{e} </code>
-                    ))}
-                  </td>
-                </tr>
-              ))}
-              <tr>
-                <th scope="row">{labels.total}</th>
-                <td>
-                  <strong>{fmt(nominal.total, 'W')}</strong>
-                </td>
-                <td />
-                <td />
-              </tr>
-              <tr>
-                <th scope="row">{labels.efficiency}</th>
-                <td>
-                  <strong>{fmt(100 * nominal.eta, '%')}</strong>
-                </td>
-                <td />
-                <td />
-              </tr>
-              <tr>
-                <th scope="row">
-                  {labels.mode} · {labels.duty}
-                </th>
-                <td>
-                  {nominal.mode} · D = {fmt(nominal.D)}
-                </td>
-                <td />
-                <td />
-              </tr>
-            </tbody>
-          </table>
-          {nominal.inputs.Bpk !== undefined && (
-            <p>
-              {labels.bpk}: <strong>{fmt(nominal.inputs.Bpk, 'T')}</strong> <code>mag.B_pk</code>
-            </p>
+      <div className="pe-split pe-split--results">
+        <div className="pe-split__controls">
+          <p className="pe-tool__hint">{labels.siHint}</p>
+          {group('operating', labels.operating)}
+          {group('switch', labels.switchParts)}
+          {group('diode', labels.diodeParts)}
+          {group('inductor', labels.inductorParts, topo === 'flyback' ? [labels.flybackRL, labels.optionalCore] : [labels.optionalCore])}
+          {group('leakage', labels.leakage)}
+        </div>
+        <div className="pe-split__view">
+          <section aria-live="polite">
+            {error && <p className="pe-sim__error">{error}</p>}
+            {busy && <p>{labels.running}</p>}
+            {unregulated && <p className="pe-sim__error">{labels.notRegulated}</p>}
+            {resetLimited && <p className="pe-sim__error">{labels.resetLimited}</p>}
+          </section>
+          {budget && nominal && (
+            <>
+              <table className="pe-sim__table">
+                <caption>
+                  <Rich text={labels.nominal} />
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{labels.bucket}</th>
+                    <th scope="col">{labels.power}</th>
+                    <th scope="col">{labels.share}</th>
+                    <th scope="col">{labels.equation}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {BUCKET_ORDER.filter((b) => b !== 'clamp' || budget.spec.topology === 'flyback').map((b) => (
+                    <tr key={b}>
+                      <th scope="row">
+                        <Rich text={labels.buckets[b]} />
+                      </th>
+                      <td>{fmt(nominal.losses[b], 'W')}</td>
+                      <td>{fmt((100 * nominal.losses[b]) / nominal.total, '%')}</td>
+                      <td>
+                        {EQUATIONS[b].map((e) => (
+                          <code key={e}>{e} </code>
+                        ))}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <th scope="row">{labels.total}</th>
+                    <td>
+                      <strong>{fmt(nominal.total, 'W')}</strong>
+                    </td>
+                    <td />
+                    <td />
+                  </tr>
+                  <tr>
+                    <th scope="row">{labels.efficiency}</th>
+                    <td>
+                      <strong>{fmt(100 * nominal.eta, '%')}</strong>
+                    </td>
+                    <td />
+                    <td />
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      {labels.mode} · {labels.duty}
+                    </th>
+                    <td>
+                      {nominal.mode} · <i>D</i> = {fmt(nominal.D)}
+                    </td>
+                    <td />
+                    <td />
+                  </tr>
+                </tbody>
+              </table>
+              {nominal.inputs.Bpk !== undefined && (
+                <p>
+                  <Rich text={labels.bpk} />: <strong>{fmt(nominal.inputs.Bpk, 'T')}</strong> <code>mag.B_pk</code>
+                </p>
+              )}
+              <p>
+                <a href={`${simulatorHref}#${simulatorHash(budget.spec, nominal)}`}>▶ {labels.simulate}</a>
+              </p>
+            </>
           )}
-          <p>
-            <a href={`${simulatorHref}#${simulatorHash(budget.spec, nominal)}`}>▶ {labels.simulate}</a>
+          <p className="pe-chart__title">
+            <Rich text={labels.vsLoad} />
           </p>
-        </>
-      )}
-      <p className="pe-loss__caption">{labels.vsLoad}</p>
-      <div ref={loadRef} role="img" aria-label={labels.vsLoad} style={{ width: '100%', height: 380 }} />
-      <p className="pe-loss__caption">{labels.vsFreq}</p>
-      <div ref={freqRef} role="img" aria-label={labels.vsFreq} style={{ width: '100%', height: 380 }} />
-      <p>
-        <small>{labels.shareUrl}</small>
-      </p>
+          <div ref={loadRef} className="pe-chart" role="img" aria-label={labels.vsLoad} style={{ height: 380 }} />
+          <p className="pe-chart__title">
+            <Rich text={labels.vsFreq} />
+          </p>
+          <div ref={freqRef} className="pe-chart" role="img" aria-label={labels.vsFreq} style={{ height: 380 }} />
+          {budget && <p className="pe-tool__hint">{labels.plotHint}</p>}
+        </div>
+      </div>
+      <p className="pe-tool__hint">{labels.shareUrl}</p>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatSI } from './format';
+import { fmtValue, formatSI } from './format';
 
 describe('formatSI', () => {
   it('attaches SI prefixes to prefixable units', () => {
@@ -29,5 +29,20 @@ describe('formatSI', () => {
     expect(formatSI(0, 'V')).toBe('0 V');
     expect(formatSI(-4, 'V')).toBe('-4 V');
     expect(formatSI(Number.POSITIVE_INFINITY, 'V')).toBe('Infinity');
+  });
+});
+
+describe('fmtValue', () => {
+  it('writes results with SI prefixes', () => {
+    expect(fmtValue(2e-4, 'H')).toBe('200 µH');
+    expect(fmtValue(4.1666666e-6, 'F')).toBe('4.167 µF');
+    expect(fmtValue(0.3333333, '')).toBe('0.3333');
+    expect(fmtValue(28.5, '%')).toBe('28.5 %');
+  });
+
+  it('marks a missing value and an unbounded one', () => {
+    expect(fmtValue(undefined, 'V')).toBe('—');
+    expect(fmtValue(Number.NaN, 'V')).toBe('—');
+    expect(fmtValue(Number.POSITIVE_INFINITY)).toBe('∞');
   });
 });

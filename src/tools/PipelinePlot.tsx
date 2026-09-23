@@ -5,6 +5,7 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { evaluate } from 'pe-core';
+import { PLOT_CONFIG, axis, baseLayout, usePlotTheme } from '../lib/plot';
 
 interface Props {
   /** Accessible description of the chart. */
@@ -16,6 +17,7 @@ interface Props {
 export default function PipelinePlot({ label, xTitle }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const theme = usePlotTheme();
 
   useEffect(() => {
     let cancelled = false;
@@ -25,34 +27,32 @@ export default function PipelinePlot({ label, xTitle }: Props) {
         if (cancelled || !el) return;
         const Plotly = mod.default ?? mod;
         const D = Array.from({ length: 86 }, (_, i) => 0.05 + i * 0.01);
-        const traces = ['buck.ccm.M', 'boost.ccm.M'].map((id) => ({
+        const traces = ['buck.ccm.M', 'boost.ccm.M'].map((id, i) => ({
           x: D,
           y: D.map((d) => evaluate(id, { D: d })),
           name: id,
           mode: 'lines',
+          line: { color: theme.colors[i], width: 2 },
         }));
-        Plotly.newPlot(
+        Plotly.react(
           el,
           traces,
           {
-            margin: { t: 40, r: 16, b: 48, l: 56 },
-            xaxis: { title: { text: xTitle } },
-            yaxis: { title: { text: 'M' }, range: [0, 10] },
-            legend: { orientation: 'h', x: 0, y: 1.1 },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(0,0,0,0)',
+            ...baseLayout(theme),
+            xaxis: axis(theme, xTitle),
+            yaxis: axis(theme, 'M', { range: [0, 10] }),
           },
-          { responsive: true, displaylogo: false },
+          PLOT_CONFIG,
         );
       })
       .catch((e: unknown) => setError(String(e)));
     return () => {
       cancelled = true;
     };
-  }, [xTitle]);
+  }, [xTitle, theme]);
 
   return (
-    <div className="pe-tool">
+    <div className="pe-tool not-content">
       <div ref={ref} role="img" aria-label={label} style={{ width: '100%', height: 320 }} />
       {error && <p role="alert">{error}</p>}
     </div>

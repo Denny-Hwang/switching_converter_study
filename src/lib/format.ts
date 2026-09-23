@@ -40,3 +40,14 @@ export function formatSI(value: number, unit: string, sig = 3): string {
   }
   return `${value.toExponential(sig - 1)} ${unit}`;
 }
+
+/**
+ * A value in a tool's results: SI prefixes where the unit takes them
+ * ("200 µH", "4.167 µF"), '—' when there is no value, '∞' when it is
+ * unbounded.
+ */
+export function fmtValue(x: number | undefined, unit = '', sig = 4): string {
+  if (x === undefined || Number.isNaN(x)) return '—';
+  if (!Number.isFinite(x)) return x > 0 ? '∞' : '−∞';
+  return formatSI(x, unit, sig);
+}

@@ -1,10 +1,12 @@
 ---
 /**
  * <LossBudget /> -- the loss-budget island with labels in the page's
- * language and presets from the synthetic loss examples. State lives in the
- * URL hash.
+ * language and presets from the loss examples (examples/synthetic). State
+ * lives in the URL hash. The wrapper lets the tool use the page's full width
+ * (custom.css, .pe-wide).
  */
 import LossIsland from '../tools/LossBudget.tsx';
+import { toolSymbols } from '../i18n/symbols';
 import { ui } from '../i18n/ui';
 import { pageLocale } from '../lib/locale';
 import { pageHref } from '../lib/paths';
@@ -40,6 +42,8 @@ const labels = {
   notRegulated: t['lb.notRegulated'],
   simulate: t['lb.simulate'],
   shareUrl: t['lb.shareUrl'],
+  plotHint: t['tool.plotHint'],
+  siHint: t['tool.siHint'],
   flybackRL: t['lb.flybackRL'],
   bpk: t['lb.bpk'],
   resetLimited: t['lb.resetLimited'],
@@ -68,4 +72,6 @@ const presets = LOSS_PRESETS.map((p) => ({
 const simulatorHref = pageHref(locale, 'simulate/simulator');
 ---
 
-<LossIsland client:only="react" locale={locale} labels={labels} presets={presets} simulatorHref={simulatorHref} />
+<div class="pe-wide">
+  <LossIsland client:only="react" locale={locale} labels={labels} presets={presets} simulatorHref={simulatorHref} symbols={toolSymbols(locale)} />
+</div>

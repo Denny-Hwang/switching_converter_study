@@ -1,10 +1,12 @@
 ---
 /**
  * <ConverterDesigner /> -- the converter-designer island with labels in the
- * page's language and presets from the synthetic design specifications.
- * State lives in the URL hash.
+ * page's language and presets from the example specifications
+ * (examples/synthetic). State lives in the URL hash. The wrapper lets the
+ * tool use the page's full width (custom.css, .pe-wide).
  */
 import DesignerIsland from '../tools/ConverterDesigner.tsx';
+import { toolSymbols } from '../i18n/symbols';
 import { ui } from '../i18n/ui';
 import { pageLocale } from '../lib/locale';
 import { pageHref } from '../lib/paths';
@@ -44,6 +46,8 @@ const labels = {
   lossesAt: t['des.lossesAt'],
   invalid: t['des.invalid'],
   share: t['des.share'],
+  plotHint: t['tool.plotHint'],
+  siHint: t['tool.siHint'],
   warnings: {
     unreachable: t['des.warn.unreachable'],
     reset: t['des.warn.reset'],
@@ -68,11 +72,14 @@ const simulatorHref = pageHref(locale, 'simulate/simulator');
 const lossBudgetHref = pageHref(locale, 'design/loss-budget');
 ---
 
-<DesignerIsland
-  client:only="react"
-  locale={locale}
-  labels={labels}
-  presets={presets}
-  simulatorHref={simulatorHref}
-  lossBudgetHref={lossBudgetHref}
-/>
+<div class="pe-wide">
+  <DesignerIsland
+    client:only="react"
+    locale={locale}
+    labels={labels}
+    presets={presets}
+    simulatorHref={simulatorHref}
+    lossBudgetHref={lossBudgetHref}
+    symbols={toolSymbols(locale)}
+  />
+</div>

@@ -7,9 +7,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import katex from 'katex';
 import { catalog, evaluate } from 'pe-core';
+import { PLOT_CONFIG, axis, baseLayout, usePlotTheme } from '../lib/plot';
+import { latexHtml, symHtml } from '../lib/sym';
 import { useStateHash } from '../lib/useStateHash';
+import { FieldLabel, Rich } from './ToolUi';
 
 interface Labels {
+  /** Values are entered in base SI units. */
+  siHint: string;
   equation: string;
   inputs: string;
   result: string;
@@ -19,6 +24,9 @@ interface Labels {
   logx: string;
   invalid: string;
   share: string;
+  plotHint: string;
+  /** Marker name for the current inputs' point on the sweep. */
+  current: string;
 }
 
 interface Props {
@@ -44,10 +52,22 @@ function unitLabel(name: string): string {
   return u === '1' ? '' : u;
 }
 
-/** "D" or "V [V]": a symbol name with its unit in brackets, if it has one. */
-function withUnit(name: string): string {
+/** What a symbol is, in the page's language. */
+function meaningOf(name: string, locale: 'en' | 'ko'): string {
+  const s = catalog.symbols[name];
+  return (locale === 'ko' ? s?.meaning_ko : s?.meaning) ?? '';
+}
+
+/** A symbol inline, rendered by KaTeX from its catalogue LaTeX. */
+function symbolHtml(name: string): string {
+  return katex.renderToString(catalog.symbols[name]?.latex ?? name, { throwOnError: false });
+}
+
+/** Axis title: the symbol, what it is, and its unit ("D — duty ratio", "V — output voltage [V]"). */
+function axisTitle(name: string, locale: 'en' | 'ko'): string {
   const u = unitLabel(name);
-  return u ? `${name} [${u}]` : name;
+  const meaning = meaningOf(name, locale);
+  return `${latexHtml(catalog.symbols[name]?.latex ?? name)}${meaning ? ` — ${symHtml(meaning)}` : ''}${u ? ` [${u}]` : ''}`;
 }
 
 /** A number field's value; an empty or partial field is NaN, never 0. */
@@ -84,6 +104,7 @@ export default function EquationExplorer({ locale, labels }: Props) {
   const [logx, setLogx] = useState(() => (initial.get('logx') ?? (sweepSym?.scale === 'log' ? '1' : '0')) === '1');
   const plotRef = useRef<HTMLDivElement>(null);
   const mathRef = useRef<HTMLDivElement>(null);
+  const theme = usePlotTheme();
 
   // switching equation: keep values of shared inputs, default the rest
   function changeEquation(id: string) {
@@ -166,92 +187,123 @@ export default function EquationExplorer({ locale, labels }: Props) {
         return null;
       }
     });
+    // the current inputs' point on the curve, when the swept value lies in the plotted range
+    const x0 = numeric[sweep];
+    const here = Number.isFinite(x0) && x0! >= a && x0! <= b && result !== null && Number.isFinite(result) ? [{ x: [x0], y: [result] }] : [];
+    const [c0, c1] = theme.colors;
     import('plotly.js-dist-min').then((mod) => {
       if (cancelled) return;
       const Plotly = mod.default ?? mod;
       Plotly.react(
         el,
-        [{ x: xs, y: ys, mode: 'lines', name: meta.lhs }],
+        [
+          {
+            x: xs,
+            y: ys,
+            mode: 'lines',
+            name: latexHtml(catalog.symbols[meta.lhs]?.latex ?? meta.lhs),
+            line: { color: c0, width: 2 },
+            hovertemplate: '%{y:.4~g}',
+          },
+          ...here.map((p) => ({ ...p, mode: 'markers', name: labels.current, marker: { color: c1, size: 10 }, hovertemplate: '%{y:.4~g}' })),
+        ],
         {
-          margin: { t: 16, r: 16, b: 48, l: 64 },
-          xaxis: { title: { text: withUnit(sweep) }, type: logx ? 'log' : 'linear' },
-          yaxis: { title: { text: withUnit(meta.lhs) } },
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(0,0,0,0)',
+          ...baseLayout(theme),
           showlegend: false,
+          hovermode: 'x unified',
+          xaxis: axis(theme, axisTitle(sweep, locale), { type: logx ? 'log' : 'linear' }),
+          yaxis: axis(theme, axisTitle(meta.lhs, locale)),
         },
-        { responsive: true, displaylogo: false },
+        PLOT_CONFIG,
       );
     });
     return () => {
       cancelled = true;
     };
-  }, [eqId, meta, numeric, sweep, from, to, logx]);
+  }, [eqId, meta, numeric, sweep, from, to, logx, theme, locale, labels, result]);
 
   const title = locale === 'ko' ? meta.title_ko : meta.title;
 
   return (
-    <div className="pe-tool pe-explorer">
-      <label className="pe-explorer__row">
-        <span>{labels.equation}</span>
-        <select value={eqId} onChange={(e) => changeEquation(e.target.value)}>
+    <div className="pe-tool pe-explorer not-content">
+      <div className="pe-row pe-row--full">
+        <label htmlFor="explorer-eq">{labels.equation}</label>
+        <select id="explorer-eq" value={eqId} onChange={(e) => changeEquation(e.target.value)}>
           {ids.map((id) => (
             <option key={id} value={id}>
               {id} — {locale === 'ko' ? catalog.equations[id]!.title_ko : catalog.equations[id]!.title}
             </option>
           ))}
         </select>
-      </label>
+      </div>
       <p className="pe-explorer__title">{title}</p>
       <div ref={mathRef} className="pe-explorer__math" />
-      <fieldset>
-        <legend>{labels.inputs}</legend>
-        {meta.variables.map((v) => (
-          <label key={v} className="pe-explorer__row">
-            <span>
-              {v} {unitLabel(v) && <small>[{unitLabel(v)}]</small>}
-            </span>
-            <input
-              type="number"
-              step="any"
-              value={values[v] ?? ''}
-              onChange={(e) => setValues({ ...values, [v]: e.target.value })}
-            />
-          </label>
-        ))}
-      </fieldset>
-      <p className="pe-explorer__result" aria-live="polite">
-        {labels.result}: <strong>{error ?? `${meta.lhs} = ${fmt(result!)} ${unitLabel(meta.lhs)}`.trim()}</strong>
-      </p>
-      <fieldset>
-        <legend>{labels.sweep}</legend>
-        <label className="pe-explorer__row">
-          <span>{labels.sweep}</span>
-          <select value={sweep} onChange={(e) => changeSweep(e.target.value)}>
+      <div className="pe-split pe-split--sticky pe-split--results">
+        <div className="pe-split__controls">
+          <p className="pe-tool__hint">{labels.siHint}</p>
+          <fieldset>
+            <legend>{labels.inputs}</legend>
             {meta.variables.map((v) => (
-              <option key={v} value={v}>
-                {v}
-              </option>
+              <div key={v} className="pe-row pe-row--full">
+                <FieldLabel htmlFor={`explorer-${v}`} sym={v} symHtml={symbolHtml(v)} meaning={meaningOf(v, locale)} unit={unitLabel(v)} />
+                <input
+                  id={`explorer-${v}`}
+                  type="number"
+                  step="any"
+                  value={values[v] ?? ''}
+                  onChange={(e) => setValues({ ...values, [v]: e.target.value })}
+                />
+              </div>
             ))}
-          </select>
-        </label>
-        <label className="pe-explorer__row">
-          <span>{labels.from}</span>
-          <input type="number" step="any" value={from} onChange={(e) => setFrom(e.target.value)} />
-        </label>
-        <label className="pe-explorer__row">
-          <span>{labels.to}</span>
-          <input type="number" step="any" value={to} onChange={(e) => setTo(e.target.value)} />
-        </label>
-        <label className="pe-explorer__row">
-          <span>{labels.logx}</span>
-          <input type="checkbox" checked={logx} onChange={(e) => setLogx(e.target.checked)} />
-        </label>
-      </fieldset>
-      <div ref={plotRef} role="img" aria-label={`${meta.lhs}(${sweep})`} style={{ width: '100%', height: 340 }} />
-      <p>
-        <small>{labels.share}</small>
-      </p>
+          </fieldset>
+          <p className="pe-explorer__result" aria-live="polite">
+            {labels.result}:{' '}
+            {error ? (
+              <strong>{error}</strong>
+            ) : (
+              <>
+                <span className="pe-sym pe-sym--tex" dangerouslySetInnerHTML={{ __html: symbolHtml(meta.lhs) }} /> ={' '}
+                <strong>
+                  {fmt(result!)} {unitLabel(meta.lhs)}
+                </strong>{' '}
+                <span className="pe-field__meaning">
+                  — <Rich text={meaningOf(meta.lhs, locale)} />
+                </span>
+              </>
+            )}
+          </p>
+          <fieldset>
+            <legend>{labels.sweep}</legend>
+            <div className="pe-row pe-row--full">
+              <label htmlFor="explorer-sweep">{labels.sweep}</label>
+              <select id="explorer-sweep" value={sweep} onChange={(e) => changeSweep(e.target.value)}>
+                {meta.variables.map((v) => (
+                  <option key={v} value={v}>
+                    {v} — {meaningOf(v, locale)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="pe-row pe-row--full">
+              <label htmlFor="explorer-from">{labels.from}</label>
+              <input id="explorer-from" type="number" step="any" value={from} onChange={(e) => setFrom(e.target.value)} />
+            </div>
+            <div className="pe-row pe-row--full">
+              <label htmlFor="explorer-to">{labels.to}</label>
+              <input id="explorer-to" type="number" step="any" value={to} onChange={(e) => setTo(e.target.value)} />
+            </div>
+            <label className="pe-check" htmlFor="explorer-logx">
+              <input id="explorer-logx" type="checkbox" checked={logx} onChange={(e) => setLogx(e.target.checked)} />
+              <span>{labels.logx}</span>
+            </label>
+          </fieldset>
+        </div>
+        <div className="pe-split__view">
+          <div ref={plotRef} className="pe-chart" role="img" aria-label={`${meta.lhs}(${sweep})`} style={{ height: 380 }} />
+          <p className="pe-tool__hint">{labels.plotHint}</p>
+        </div>
+      </div>
+      <p className="pe-tool__hint">{labels.share}</p>
     </div>
   );
 }

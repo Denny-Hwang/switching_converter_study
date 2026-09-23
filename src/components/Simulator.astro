@@ -1,10 +1,12 @@
 ---
 /**
  * <Simulator /> -- the simulator island with labels in the page's language
- * and presets from the synthetic examples. State lives in the URL hash, so
- * "Try it" links (<TrySim>) can preset it.
+ * and presets from the examples (examples/synthetic). State lives in the URL
+ * hash, so "Try it" links (<TrySim>) can preset it. The wrapper lets the tool
+ * use the page's full width (custom.css, .pe-wide).
  */
 import SimulatorIsland from '../tools/Simulator.tsx';
+import { toolSymbols } from '../i18n/symbols';
 import { ui } from '../i18n/ui';
 import { pageLocale } from '../lib/locale';
 import { PRESETS, presetValues } from '../lib/simpresets';
@@ -43,6 +45,8 @@ const labels = {
   time: t['sim.time'],
   running: t['sim.running'],
   slider: t['sim.slider'],
+  plotHint: t['tool.plotHint'],
+  siHint: t['tool.siHint'],
   topologies: {
     buck: t['sim.buck'],
     boost: t['sim.boost'],
@@ -59,4 +63,6 @@ const presets = PRESETS.map((p) => ({
 }));
 ---
 
-<SimulatorIsland client:only="react" locale={locale} labels={labels} presets={presets} />
+<div class="pe-wide">
+  <SimulatorIsland client:only="react" locale={locale} labels={labels} presets={presets} symbols={toolSymbols(locale)} />
+</div>
