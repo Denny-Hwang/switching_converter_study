@@ -746,6 +746,89 @@
       ]
     },
     {
+      "module": "clamp",
+      "source": "python/pe_core/derive/clamp.py",
+      "title": "Flyback clamp: reflected voltage, clamp dissipation, output ceiling",
+      "title_ko": "플라이백 클램프: 반사 전압, 클램프 손실, 출력 상한",
+      "intro": "When the flyback's switch turns off, the magnetizing current passes to the secondary, but the current in the leakage inductance $L_\\mathrm{lk}$ has nowhere to go except a clamp across the primary. The clamp holds the primary at $V_\\mathrm{clamp}$ until that current has fallen to zero.",
+      "intro_ko": "플라이백의 스위치가 꺼지면 자화 전류는 2차 측으로 넘어가지만, 누설 인덕턴스 $L_\\mathrm{lk}$의 전류는 1차 측에 연결된 클램프 외에는 흐를 곳이 없다. 클램프는 이 전류가 0으로 줄어들 때까지 1차 측을 $V_\\mathrm{clamp}$에 묶어 둔다.",
+      "results": [
+        "flyback.V_OR",
+        "clamp.Vds",
+        "clamp.P",
+        "clamp.rcd.V",
+        "flyback.V_ceiling"
+      ],
+      "steps": [
+        {
+          "text": "While the output diode conducts, the secondary winding carries the output voltage plus the diode drop.",
+          "text_ko": "출력 다이오드가 도통하는 동안 2차 권선에는 출력 전압과 다이오드 전압 강하의 합이 걸린다.",
+          "latex": "v_s = V + V_D",
+          "result_for": null
+        },
+        {
+          "text": "An ideal 1:$n$ transformer divides a secondary voltage by $n$ on the primary.",
+          "text_ko": "이상적인 1:$n$ 변압기는 2차 측 전압을 1차 측에서 $n$으로 나눈다.",
+          "latex": "V_\\mathrm{OR} = \\frac{V + V_D}{n}",
+          "result_for": "flyback.V_OR"
+        },
+        {
+          "text": "The switch lies between the input and the primary winding, which the clamp holds at $V_\\mathrm{clamp}$ while it conducts.",
+          "text_ko": "스위치는 입력과 1차 권선 사이에 있으며, 클램프가 도통하는 동안 1차 권선은 $V_\\mathrm{clamp}$에 묶인다.",
+          "latex": "V_\\mathrm{DS} = V_g + V_\\mathrm{clamp}",
+          "result_for": "clamp.Vds"
+        },
+        {
+          "text": "The magnetizing inductance holds $V_\\mathrm{OR}$ while the output diode conducts, so the leakage inductance sees $V_\\mathrm{clamp} - V_\\mathrm{OR}$ and its current falls linearly from $I_\\mathrm{pk}$.",
+          "text_ko": "출력 다이오드가 도통하는 동안 자화 인덕턴스 양단은 $V_\\mathrm{OR}$이므로, 누설 인덕턴스에는 $V_\\mathrm{clamp} - V_\\mathrm{OR}$가 걸려 전류가 $I_\\mathrm{pk}$에서 직선적으로 감소한다.",
+          "latex": "i_\\mathrm{lk} = I_\\mathrm{pk} - \\frac{t \\left(V_\\mathrm{clamp} - V_\\mathrm{OR}\\right)}{L_\\mathrm{lk}}",
+          "result_for": null
+        },
+        {
+          "text": "It reaches zero after",
+          "text_ko": "전류가 0이 되는 시간:",
+          "latex": "t_r = - \\frac{I_\\mathrm{pk} L_\\mathrm{lk}}{V_\\mathrm{OR} - V_\\mathrm{clamp}}",
+          "result_for": null
+        },
+        {
+          "text": "The clamp absorbs its voltage times this falling current: more than the leakage energy $\\tfrac12 L_\\mathrm{lk} I_\\mathrm{pk}^2$, because the reflected voltage keeps driving the current meanwhile.",
+          "text_ko": "클램프는 자기 전압과 이 감소하는 전류의 곱을 흡수한다. 그동안 반사 전압이 전류를 계속 밀어 주므로 누설 에너지 $\\tfrac12 L_\\mathrm{lk} I_\\mathrm{pk}^2$보다 많다.",
+          "latex": "E_\\mathrm{clamp} = - \\frac{L_\\mathrm{lk} V_\\mathrm{clamp} I_\\mathrm{pk}^{2}}{- 2 V_\\mathrm{clamp} + 2 V_\\mathrm{OR}}",
+          "result_for": null
+        },
+        {
+          "text": "Once per switching period.",
+          "text_ko": "스위칭 주기마다 한 번씩.",
+          "latex": "P_\\mathrm{clamp} = - \\frac{L_\\mathrm{lk} V_\\mathrm{clamp} f_s I_\\mathrm{pk}^{2}}{- 2 V_\\mathrm{clamp} + 2 V_\\mathrm{OR}} = \\frac{L_\\mathrm{lk} I_\\mathrm{pk}^{2} f_s V_\\mathrm{clamp}}{2 \\left(V_\\mathrm{clamp} - V_\\mathrm{OR}\\right)}",
+          "result_for": "clamp.P"
+        },
+        {
+          "text": "In an RCD clamp the capacitor holds $V_\\mathrm{clamp}$ and the resistor dissipates the clamp power.",
+          "text_ko": "RCD 클램프에서는 커패시터가 $V_\\mathrm{clamp}$를 유지하고 저항이 클램프 전력을 소산한다.",
+          "latex": "\\frac{V_\\mathrm{clamp}^{2}}{R_\\mathrm{clamp}} = - \\frac{L_\\mathrm{lk} V_\\mathrm{clamp} f_s I_\\mathrm{pk}^{2}}{- 2 V_\\mathrm{clamp} + 2 V_\\mathrm{OR}}",
+          "result_for": null
+        },
+        {
+          "text": "The root above $V_\\mathrm{OR}$.",
+          "text_ko": "$V_\\mathrm{OR}$보다 큰 근.",
+          "latex": "V_\\mathrm{clamp} = \\frac{V_\\mathrm{OR} + \\sqrt{V_\\mathrm{OR}^{2} + 2 R_\\mathrm{clamp} L_\\mathrm{lk} I_\\mathrm{pk}^{2} f_s}}{2}",
+          "result_for": "clamp.rcd.V"
+        },
+        {
+          "text": "With the load removed and the duty ratio fixed, the output keeps charging and its reflected voltage rises until it reaches the clamp voltage; from then on the clamp takes the energy.",
+          "text_ko": "부하를 떼고 듀티비를 고정하면 출력은 계속 충전되고, 반사 전압은 클램프 전압에 도달할 때까지 오른다. 그 뒤에는 클램프가 에너지를 가져간다.",
+          "latex": "\\frac{V_D + V_\\mathrm{o,max}}{n} = V_\\mathrm{clamp}",
+          "result_for": null
+        },
+        {
+          "text": "Solve for the output voltage.",
+          "text_ko": "출력 전압에 대해 푼다.",
+          "latex": "V_\\mathrm{o,max} = n V_\\mathrm{clamp} - V_D",
+          "result_for": "flyback.V_ceiling"
+        }
+      ]
+    },
+    {
       "module": "topologies",
       "source": "python/pe_core/derive/topologies.py",
       "title": "Topology details: dc currents, ripple, switch stress, utilization (CCM)",
@@ -1361,7 +1444,10 @@
       "intro_ko": "선형 에너지원은 테브난 등가회로, 즉 전원 저항 $R_s$ 뒤의 개방 전압 $V_\\mathrm{oc}$로 모델링한다. 가용 전력 중 얼마가 컨버터에 도달하는지는 컨버터 입력이 어떻게 보이는지에 달려 있다.",
       "results": [
         "src.Pmax",
-        "src.cv_extraction"
+        "src.cv_extraction",
+        "lfr.Vg",
+        "lfr.eta",
+        "lfr.Vg_power"
       ],
       "steps": [
         {
@@ -1399,6 +1485,36 @@
           "text_ko": "$P_\\mathrm{max}$로 정규화한다.",
           "latex": "\\eta_\\mathrm{ext} = \\frac{4 V_c \\left(V_\\mathrm{oc} - V_c\\right)}{V_\\mathrm{oc}^{2}}",
           "result_for": "src.cv_extraction"
+        },
+        {
+          "text": "A converter in DCM draws an average input current proportional to its input voltage: its input is a resistance $R_\\mathrm{in}$, the loss-free resistor, which takes the place of $R_L$.",
+          "text_ko": "DCM 컨버터는 입력 전압에 비례하는 평균 입력 전류를 끌어오므로, 입력이 저항 $R_\\mathrm{in}$, 즉 무손실 저항으로 보이며 $R_L$ 자리에 들어간다.",
+          "latex": null,
+          "result_for": null
+        },
+        {
+          "text": "The source resistance and $R_\\mathrm{in}$ divide the source voltage.",
+          "text_ko": "전원 저항과 $R_\\mathrm{in}$이 전원 전압을 분압한다.",
+          "latex": "V_g = \\frac{V_\\mathrm{oc} R_\\mathrm{in}}{R_s + R_\\mathrm{in}}",
+          "result_for": "lfr.Vg"
+        },
+        {
+          "text": "$P_L$ with $R_L = R_\\mathrm{in}$, normalised by $P_\\mathrm{max}$: the source voltage cancels.",
+          "text_ko": "$R_L = R_\\mathrm{in}$일 때의 $P_L$을 $P_\\mathrm{max}$로 정규화한다. 전원 전압은 소거된다.",
+          "latex": "\\eta_\\mathrm{ext} = \\frac{4 R_s R_\\mathrm{in}}{\\left(R_s + R_\\mathrm{in}\\right)^{2}}",
+          "result_for": "lfr.eta"
+        },
+        {
+          "text": "The loss-free resistor draws the power of a resistance at its input voltage.",
+          "text_ko": "무손실 저항은 입력 전압에서 저항이 끌어오는 만큼의 전력을 끌어온다.",
+          "latex": "P = \\frac{V_g^{2}}{R_\\mathrm{in}}",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $V_g$: a larger power needs a higher input voltage.",
+          "text_ko": "$V_g$에 대해 푼다. 전력이 클수록 입력 전압이 높아야 한다.",
+          "latex": "V_g = \\sqrt{P R_\\mathrm{in}}",
+          "result_for": "lfr.Vg_power"
         }
       ]
     },

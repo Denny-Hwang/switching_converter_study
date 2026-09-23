@@ -135,6 +135,22 @@
     "ideal_transformer": {
       "en": "ideal transformer: perfect coupling, no magnetizing current, no losses",
       "ko": "이상적 변압기: 완전 결합, 자화 전류 없음, 손실 없음"
+    },
+    "constant_clamp": {
+      "en": "the clamp holds a constant voltage while it conducts, so the leakage current falls linearly to zero",
+      "ko": "클램프가 도통하는 동안 일정한 전압을 유지하므로 누설 전류가 직선적으로 0까지 감소함"
+    },
+    "rcd_small_ripple": {
+      "en": "RCD clamp: the capacitor's voltage ripple is small and its resistor dissipates the clamp energy",
+      "ko": "RCD 클램프: 커패시터의 전압 리플이 작고 저항이 클램프 에너지를 소산함"
+    },
+    "tvs_linear": {
+      "en": "TVS modelled by its breakdown voltage and a constant dynamic resistance",
+      "ko": "TVS를 항복 전압과 일정한 동저항으로 모델링"
+    },
+    "open_load": {
+      "en": "fixed duty ratio, no regulation, load removed",
+      "ko": "고정 듀티비, 레귤레이션 없음, 부하 제거"
     }
   },
   "symbols": {
@@ -191,6 +207,13 @@
         0.01
       ],
       "scale": "log"
+    },
+    "C_bus": {
+      "latex": "C_\\mathrm{bus}",
+      "unit": "F",
+      "desc": "input bus capacitor that the source charges and the converter draws from",
+      "range": null,
+      "scale": "linear"
     },
     "C_f": {
       "latex": "C_f",
@@ -433,6 +456,16 @@
       ],
       "scale": "log"
     },
+    "I_PP": {
+      "latex": "I_\\mathrm{PP}",
+      "unit": "A",
+      "desc": "peak pulse current at which a TVS's clamping voltage is specified",
+      "range": [
+        0.1,
+        1000.0
+      ],
+      "scale": "log"
+    },
     "I_SENSE": {
       "latex": "I_\\mathrm{SENSE}",
       "unit": "A",
@@ -561,6 +594,16 @@
       "latex": "P",
       "unit": "W",
       "desc": "power",
+      "range": [
+        0.0001,
+        1000.0
+      ],
+      "scale": "log"
+    },
+    "P_clamp": {
+      "latex": "P_\\mathrm{clamp}",
+      "unit": "W",
+      "desc": "power dissipated in the primary clamp",
       "range": null,
       "scale": "linear"
     },
@@ -615,6 +658,16 @@
       ],
       "scale": "log"
     },
+    "R_D": {
+      "latex": "R_D",
+      "unit": "Ω",
+      "desc": "dynamic resistance of a TVS",
+      "range": [
+        0.001,
+        100.0
+      ],
+      "scale": "log"
+    },
     "R_IN": {
       "latex": "R_\\mathrm{IN}",
       "unit": "Ω",
@@ -655,6 +708,16 @@
       ],
       "scale": "log"
     },
+    "R_clamp": {
+      "latex": "R_\\mathrm{clamp}",
+      "unit": "Ω",
+      "desc": "resistor of an RCD clamp",
+      "range": [
+        100.0,
+        1000000.0
+      ],
+      "scale": "log"
+    },
     "R_esr": {
       "latex": "R_\\mathrm{ESR}",
       "unit": "Ω",
@@ -679,8 +742,11 @@
       "latex": "R_\\mathrm{in}",
       "unit": "Ω",
       "desc": "emulated (loss-free) input resistance",
-      "range": null,
-      "scale": "linear"
+      "range": [
+        1.0,
+        10000000.0
+      ],
+      "scale": "log"
     },
     "R_s": {
       "latex": "R_s",
@@ -763,6 +829,16 @@
       "range": null,
       "scale": "linear"
     },
+    "V_BR": {
+      "latex": "V_\\mathrm{BR}",
+      "unit": "V",
+      "desc": "breakdown voltage of a TVS",
+      "range": [
+        1.0,
+        600.0
+      ],
+      "scale": "log"
+    },
     "V_C": {
       "latex": "V_C",
       "unit": "V",
@@ -770,6 +846,16 @@
       "range": [
         0.1,
         400.0
+      ],
+      "scale": "log"
+    },
+    "V_CL": {
+      "latex": "V_\\mathrm{CL}",
+      "unit": "V",
+      "desc": "clamping voltage of a TVS at its peak pulse current I_PP (datasheet)",
+      "range": [
+        1.0,
+        900.0
       ],
       "scale": "log"
     },
@@ -830,6 +916,16 @@
       ],
       "scale": "linear"
     },
+    "V_OR": {
+      "latex": "V_\\mathrm{OR}",
+      "unit": "V",
+      "desc": "output voltage reflected to the primary while the output diode conducts",
+      "range": [
+        1.0,
+        400.0
+      ],
+      "scale": "log"
+    },
     "V_OUT": {
       "latex": "V_\\mathrm{OUT}",
       "unit": "V",
@@ -851,6 +947,16 @@
       "range": [
         0.01,
         1000.0
+      ],
+      "scale": "log"
+    },
+    "V_clamp": {
+      "latex": "V_\\mathrm{clamp}",
+      "unit": "V",
+      "desc": "voltage across the primary clamp while it conducts (the switch then sees V_g + V_clamp)",
+      "range": [
+        1.0,
+        600.0
       ],
       "scale": "log"
     },
@@ -901,6 +1007,13 @@
       ],
       "scale": "log"
     },
+    "V_omax": {
+      "latex": "V_\\mathrm{o,max}",
+      "unit": "V",
+      "desc": "output voltage at which the reflected voltage reaches the clamp voltage",
+      "range": null,
+      "scale": "linear"
+    },
     "V_pk": {
       "latex": "V_\\mathrm{pk}",
       "unit": "V",
@@ -910,6 +1023,13 @@
         400.0
       ],
       "scale": "log"
+    },
+    "V_rating": {
+      "latex": "V_\\mathrm{DS,rated}",
+      "unit": "V",
+      "desc": "drain-source voltage rating of the switch (datasheet)",
+      "range": null,
+      "scale": "linear"
     },
     "V_rms": {
       "latex": "V_\\mathrm{rms}",
@@ -1250,7 +1370,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 200
+      "yaml_line": 215
     },
     "boost.ccm.M": {
       "id": "boost.ccm.M",
@@ -1285,7 +1405,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 215
+      "yaml_line": 230
     },
     "buckboost.ccm.M": {
       "id": "buckboost.ccm.M",
@@ -1320,7 +1440,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 230
+      "yaml_line": 245
     },
     "flyback.ccm.M": {
       "id": "flyback.ccm.M",
@@ -1357,7 +1477,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 245
+      "yaml_line": 260
     },
     "forward.ccm.M": {
       "id": "forward.ccm.M",
@@ -1394,7 +1514,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 260
+      "yaml_line": 275
     },
     "forward.reset.Dmax": {
       "id": "forward.reset.Dmax",
@@ -1427,7 +1547,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 275
+      "yaml_line": 290
     },
     "buck.ripple.iL": {
       "id": "buck.ripple.iL",
@@ -1470,7 +1590,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 293
+      "yaml_line": 308
     },
     "buck.ripple.iL_pp": {
       "id": "buck.ripple.iL_pp",
@@ -1513,7 +1633,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 307
+      "yaml_line": 322
     },
     "K.def": {
       "id": "K.def",
@@ -1549,7 +1669,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 324
+      "yaml_line": 339
     },
     "Kcrit.buck": {
       "id": "Kcrit.buck",
@@ -1585,7 +1705,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 337
+      "yaml_line": 352
     },
     "Kcrit.boost": {
       "id": "Kcrit.boost",
@@ -1621,7 +1741,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 350
+      "yaml_line": 365
     },
     "Kcrit.buckboost": {
       "id": "Kcrit.buckboost",
@@ -1657,7 +1777,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 365
+      "yaml_line": 380
     },
     "Kcrit.flyback": {
       "id": "Kcrit.flyback",
@@ -1695,7 +1815,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 378
+      "yaml_line": 393
     },
     "L.crit": {
       "id": "L.crit",
@@ -1735,7 +1855,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 393
+      "yaml_line": 408
     },
     "buck.dcm.M": {
       "id": "buck.dcm.M",
@@ -1773,7 +1893,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 411
+      "yaml_line": 426
     },
     "boost.dcm.M": {
       "id": "boost.dcm.M",
@@ -1811,7 +1931,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 426
+      "yaml_line": 441
     },
     "buckboost.dcm.M": {
       "id": "buckboost.dcm.M",
@@ -1849,7 +1969,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 441
+      "yaml_line": 456
     },
     "flyback.dcm.M": {
       "id": "flyback.dcm.M",
@@ -1887,7 +2007,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 456
+      "yaml_line": 471
     },
     "dcm.P_in": {
       "id": "dcm.P_in",
@@ -1931,7 +2051,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 476
+      "yaml_line": 491
     },
     "lfr.R_in": {
       "id": "lfr.R_in",
@@ -1973,7 +2093,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 492
+      "yaml_line": 507
     },
     "flyback.V_crit": {
       "id": "flyback.V_crit",
@@ -2015,7 +2135,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 508
+      "yaml_line": 523
     },
     "flyback.Vds_off": {
       "id": "flyback.Vds_off",
@@ -2055,7 +2175,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 522
+      "yaml_line": 537
     },
     "flyback.Vds_clamped": {
       "id": "flyback.Vds_clamped",
@@ -2097,7 +2217,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 536
+      "yaml_line": 551
     },
     "flyback.diode.VR": {
       "id": "flyback.diode.VR",
@@ -2134,7 +2254,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 550
+      "yaml_line": 565
     },
     "flyback.IM": {
       "id": "flyback.IM",
@@ -2176,7 +2296,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 562
+      "yaml_line": 577
     },
     "flyback.ripple.iM": {
       "id": "flyback.ripple.iM",
@@ -2216,7 +2336,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 578
+      "yaml_line": 593
     },
     "flyback.ripple.v": {
       "id": "flyback.ripple.v",
@@ -2260,7 +2380,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 592
+      "yaml_line": 607
     },
     "flyback.Ipk.dcm": {
       "id": "flyback.Ipk.dcm",
@@ -2300,7 +2420,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 608
+      "yaml_line": 623
     },
     "flyback.leak.E": {
       "id": "flyback.leak.E",
@@ -2334,7 +2454,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 625
+      "yaml_line": 640
     },
     "flyback.leak.P": {
       "id": "flyback.leak.P",
@@ -2369,7 +2489,271 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 639
+      "yaml_line": 654
+    },
+    "flyback.V_OR": {
+      "id": "flyback.V_OR",
+      "title": "Flyback: output voltage reflected to the primary",
+      "title_ko": "플라이백: 1차 측으로 반사된 출력 전압",
+      "latex": "V_\\mathrm{OR} = \\frac{V + V_D}{n}",
+      "lhs": "V_OR",
+      "expr": "(V + V_D)/n",
+      "relation": "eq",
+      "variables": [
+        "V",
+        "V_D",
+        "n"
+      ],
+      "constants": [],
+      "symbols": {
+        "V": "output voltage",
+        "V_D": "output-diode drop",
+        "n": "turns ratio N_s/N_p"
+      },
+      "assumptions": [
+        "ideal",
+        "diode_drop"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the primary winding voltage while the output diode conducts; the switch then blocks $V_g$ plus this voltage",
+      "notes_ko": "출력 다이오드가 도통하는 동안의 1차 권선 전압; 이때 스위치는 $V_g$에 이 전압을 더한 값을 차단한다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 6 (Converter Circuits: the flyback's transformer model); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/clamp.py",
+      "n_tests": 7,
+      "yaml_line": 668
+    },
+    "clamp.Vds": {
+      "id": "clamp.Vds",
+      "title": "Flyback: switch voltage while the primary clamp conducts",
+      "title_ko": "플라이백: 1차 측 클램프가 도통하는 동안의 스위치 전압",
+      "latex": "V_\\mathrm{DS} = V_g + V_\\mathrm{clamp}",
+      "lhs": "V_DS",
+      "expr": "V_g + V_clamp",
+      "relation": "eq",
+      "variables": [
+        "V_clamp",
+        "V_g"
+      ],
+      "constants": [],
+      "symbols": {
+        "V_clamp": "clamp voltage",
+        "V_g": "input voltage"
+      },
+      "assumptions": [
+        "ideal"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "after turn-off the leakage inductance drives the drain above $V_g + V_\\mathrm{OR}$ until the clamp conducts and holds it at $V_g + V_\\mathrm{clamp}$",
+      "notes_ko": "턴오프 후 누설 인덕턴스가 드레인을 $V_g + V_\\mathrm{OR}$ 위로 밀어 올리고, 클램프가 도통하면 $V_g + V_\\mathrm{clamp}$에 묶인다",
+      "cites": [
+        {
+          "key": "ti_ssztcv6",
+          "where": "the leakage inductance drives the drain above the reflected output voltage; the clamp limits it"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/clamp.py",
+      "n_tests": 7,
+      "yaml_line": 682
+    },
+    "clamp.P": {
+      "id": "clamp.P",
+      "title": "Power dissipated in a flyback's primary clamp",
+      "title_ko": "플라이백 1차 측 클램프의 소산 전력",
+      "latex": "P_\\mathrm{clamp} = \\frac{L_\\mathrm{lk} I_\\mathrm{pk}^{2} f_s V_\\mathrm{clamp}}{2 \\left(V_\\mathrm{clamp} - V_\\mathrm{OR}\\right)}",
+      "lhs": "P_clamp",
+      "expr": "L_lk*I_pk**2*f_s*V_clamp/(2*(V_clamp - V_OR))",
+      "relation": "eq",
+      "variables": [
+        "I_pk",
+        "L_lk",
+        "V_OR",
+        "V_clamp",
+        "f_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_pk": "peak primary current at turn-off",
+        "L_lk": "leakage inductance",
+        "V_OR": "reflected output voltage",
+        "V_clamp": "clamp voltage",
+        "f_s": "switching frequency"
+      },
+      "assumptions": [
+        "constant_clamp",
+        "steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the leakage energy per cycle times $V_\\mathrm{clamp}/(V_\\mathrm{clamp} - V_\\mathrm{OR})$: while the leakage current falls, the reflected voltage keeps driving energy into the clamp, the more so the closer the clamp voltage is to $V_\\mathrm{OR}$",
+      "notes_ko": "주기당 누설 에너지에 $V_\\mathrm{clamp}/(V_\\mathrm{clamp} - V_\\mathrm{OR})$를 곱한 값: 누설 전류가 감소하는 동안에도 반사 전압이 클램프로 에너지를 계속 밀어 넣으며, 클램프 전압이 $V_\\mathrm{OR}$에 가까울수록 더 많이 밀어 넣는다",
+      "cites": [
+        {
+          "key": "ti_ssztcv6",
+          "where": "clamp dissipation against the ratio of the clamp voltage to the reflected voltage; derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/clamp.py",
+      "n_tests": 7,
+      "yaml_line": 696
+    },
+    "clamp.rcd.V": {
+      "id": "clamp.rcd.V",
+      "title": "Clamp voltage of an RCD clamp set by its resistor",
+      "title_ko": "저항이 정하는 RCD 클램프 전압",
+      "latex": "V_\\mathrm{clamp} = \\frac{V_\\mathrm{OR} + \\sqrt{V_\\mathrm{OR}^{2} + 2 R_\\mathrm{clamp} L_\\mathrm{lk} I_\\mathrm{pk}^{2} f_s}}{2}",
+      "lhs": "V_clamp",
+      "expr": "(V_OR + sqrt(V_OR**2 + 2*R_clamp*L_lk*I_pk**2*f_s))/2",
+      "relation": "eq",
+      "variables": [
+        "I_pk",
+        "L_lk",
+        "R_clamp",
+        "V_OR",
+        "f_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_pk": "peak primary current at turn-off",
+        "L_lk": "leakage inductance",
+        "R_clamp": "clamp resistor",
+        "V_OR": "reflected output voltage",
+        "f_s": "switching frequency"
+      },
+      "assumptions": [
+        "constant_clamp",
+        "rcd_small_ripple",
+        "steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the resistor dissipates the clamp power, $V_\\mathrm{clamp}^2/R_\\mathrm{clamp}$; a larger resistor gives a higher clamp voltage and a lower dissipation",
+      "notes_ko": "저항이 클램프 전력 $V_\\mathrm{clamp}^2/R_\\mathrm{clamp}$를 소산한다; 저항이 클수록 클램프 전압은 높아지고 소산 전력은 줄어든다",
+      "cites": [
+        {
+          "key": "ti_ssztcv6",
+          "where": "RCD clamp: the trade-off between the clamp voltage and its losses; derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/clamp.py",
+      "n_tests": 7,
+      "yaml_line": 711
+    },
+    "tvs.R_D": {
+      "id": "tvs.R_D",
+      "title": "Dynamic resistance of a TVS from its datasheet",
+      "title_ko": "데이터시트로부터 구한 TVS의 동저항",
+      "latex": "R_D = \\frac{V_\\mathrm{CL} - V_\\mathrm{BR}}{I_\\mathrm{PP}}",
+      "lhs": "R_D",
+      "expr": "(V_CL - V_BR)/I_PP",
+      "relation": "eq",
+      "variables": [
+        "I_PP",
+        "V_BR",
+        "V_CL"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_PP": "peak pulse current",
+        "V_BR": "breakdown voltage",
+        "V_CL": "clamping voltage at I_PP"
+      },
+      "assumptions": [
+        "tvs_linear"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the resistance that, in series with the breakdown voltage, gives the datasheet's clamping voltage at its peak pulse current; it applies to the datasheet's pulse duration and grows for longer pulses",
+      "notes_ko": "항복 전압과 직렬로 두었을 때 데이터시트의 피크 펄스 전류에서의 클램핑 전압을 주는 저항; 데이터시트의 펄스 폭에 해당하며 펄스가 길수록 커진다",
+      "cites": [
+        {
+          "key": "st_an316",
+          "where": "clamping voltage = breakdown voltage + dynamic resistance x peak current, solved for the dynamic resistance at the datasheet's clamping voltage and peak pulse current"
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 7,
+      "yaml_line": 725
+    },
+    "tvs.V_clamp": {
+      "id": "tvs.V_clamp",
+      "title": "Clamping voltage of a TVS at a given current",
+      "title_ko": "주어진 전류에서 TVS의 클램핑 전압",
+      "latex": "V_\\mathrm{clamp} = V_\\mathrm{BR} + R_D I_\\mathrm{pk}",
+      "lhs": "V_clamp",
+      "expr": "V_BR + R_D*I_pk",
+      "relation": "eq",
+      "variables": [
+        "I_pk",
+        "R_D",
+        "V_BR"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_pk": "peak current through the TVS",
+        "R_D": "dynamic resistance",
+        "V_BR": "breakdown voltage"
+      },
+      "assumptions": [
+        "tvs_linear"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "a TVS clamps above its breakdown voltage: judge it by its clamping voltage at the actual peak current",
+      "notes_ko": "TVS는 항복 전압보다 높은 전압에서 클램프한다: 실제 피크 전류에서의 클램핑 전압으로 판단해야 한다",
+      "cites": [
+        {
+          "key": "st_an316",
+          "where": "clamping voltage from the breakdown voltage and the dynamic resistance"
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 7,
+      "yaml_line": 739
+    },
+    "flyback.V_ceiling": {
+      "id": "flyback.V_ceiling",
+      "title": "Flyback: open-load output voltage limited by the primary clamp",
+      "title_ko": "플라이백: 1차 측 클램프가 제한하는 무부하 출력 전압",
+      "latex": "V_\\mathrm{o,max} = n V_\\mathrm{clamp} - V_D",
+      "lhs": "V_omax",
+      "expr": "n*V_clamp - V_D",
+      "relation": "eq",
+      "variables": [
+        "V_D",
+        "V_clamp",
+        "n"
+      ],
+      "constants": [],
+      "symbols": {
+        "V_D": "output-diode drop",
+        "V_clamp": "clamp voltage",
+        "n": "turns ratio N_s/N_p"
+      },
+      "assumptions": [
+        "ideal",
+        "diode_drop",
+        "open_load"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "without a load and without regulation the output charges until its reflected voltage reaches the clamp voltage; from then on the clamp takes the energy",
+      "notes_ko": "부하와 레귤레이션이 없으면 출력은 반사 전압이 클램프 전압에 도달할 때까지 충전되고, 그 뒤에는 클램프가 에너지를 가져간다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 6 (Converter Circuits: the flyback's transformer model); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/clamp.py",
+      "n_tests": 7,
+      "yaml_line": 752
     },
     "dcm.ring.f": {
       "id": "dcm.ring.f",
@@ -2403,7 +2787,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 653
+      "yaml_line": 766
     },
     "loss.cond": {
       "id": "loss.cond",
@@ -2437,7 +2821,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 667
+      "yaml_line": 780
     },
     "loss.sw.cap": {
       "id": "loss.sw.cap",
@@ -2475,7 +2859,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 679
+      "yaml_line": 792
     },
     "loss.gate": {
       "id": "loss.gate",
@@ -2511,7 +2895,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 691
+      "yaml_line": 804
     },
     "loss.diode": {
       "id": "loss.diode",
@@ -2549,7 +2933,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 705
+      "yaml_line": 818
     },
     "loss.steinmetz": {
       "id": "loss.steinmetz",
@@ -2593,7 +2977,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 717
+      "yaml_line": 830
     },
     "loss.core": {
       "id": "loss.core",
@@ -2627,7 +3011,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 735
+      "yaml_line": 848
     },
     "mag.L_from_AL": {
       "id": "mag.L_from_AL",
@@ -2665,7 +3049,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 751
+      "yaml_line": 864
     },
     "mag.AL_gap": {
       "id": "mag.AL_gap",
@@ -2712,7 +3096,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 8,
-      "yaml_line": 765
+      "yaml_line": 878
     },
     "mag.B_pk": {
       "id": "mag.B_pk",
@@ -2755,7 +3139,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 783
+      "yaml_line": 896
     },
     "mag.dB_faraday": {
       "id": "mag.dB_faraday",
@@ -2797,7 +3181,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 797
+      "yaml_line": 910
     },
     "src.Pmax": {
       "id": "src.Pmax",
@@ -2831,7 +3215,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 816
+      "yaml_line": 929
     },
     "src.cv_extraction": {
       "id": "src.cv_extraction",
@@ -2865,7 +3249,121 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 830
+      "yaml_line": 943
+    },
+    "lfr.Vg": {
+      "id": "lfr.Vg",
+      "title": "Bus voltage of a loss-free resistor fed by a linear source",
+      "title_ko": "선형 전원에 연결된 무손실 저항의 버스 전압",
+      "latex": "V_g = \\frac{V_\\mathrm{oc} R_\\mathrm{in}}{R_s + R_\\mathrm{in}}",
+      "lhs": "V_g",
+      "expr": "V_oc*R_in/(R_s + R_in)",
+      "relation": "eq",
+      "variables": [
+        "R_in",
+        "R_s",
+        "V_oc"
+      ],
+      "constants": [],
+      "symbols": {
+        "R_in": "loss-free input resistance",
+        "R_s": "source resistance",
+        "V_oc": "open-circuit voltage"
+      },
+      "assumptions": [
+        "linear_source",
+        "dcm",
+        "steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "a converter whose input is a resistance divides the source voltage with the source resistance",
+      "notes_ko": "입력이 저항으로 보이는 컨버터는 전원 전압을 전원 저항과 분압한다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Sec. 4.8 (Maximum Power Transfer); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/harvesting.py",
+      "n_tests": 8,
+      "yaml_line": 959
+    },
+    "lfr.eta": {
+      "id": "lfr.eta",
+      "title": "Extraction fraction of a loss-free resistor",
+      "title_ko": "무손실 저항의 추출 비율",
+      "latex": "\\eta_\\mathrm{ext} = \\frac{4 R_s R_\\mathrm{in}}{\\left(R_s + R_\\mathrm{in}\\right)^{2}}",
+      "lhs": "eta_ext",
+      "expr": "4*R_s*R_in/(R_s + R_in)**2",
+      "relation": "eq",
+      "variables": [
+        "R_in",
+        "R_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "R_in": "loss-free input resistance",
+        "R_s": "source resistance"
+      },
+      "assumptions": [
+        "linear_source",
+        "dcm",
+        "steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "power into the loss-free resistor as a fraction of $P_\\mathrm{max}$; independent of the source amplitude, and 1 when $R_\\mathrm{in} = R_s$",
+      "notes_ko": "무손실 저항으로 들어가는 전력의 $P_\\mathrm{max}$ 대비 비율; 전원 진폭과 무관하며 $R_\\mathrm{in} = R_s$일 때 1",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Sec. 4.8 (Maximum Power Transfer); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/harvesting.py",
+      "n_tests": 8,
+      "yaml_line": 974
+    },
+    "lfr.Vg_power": {
+      "id": "lfr.Vg_power",
+      "title": "Input voltage at which a loss-free resistor draws a given power",
+      "title_ko": "무손실 저항이 주어진 전력을 끌어오는 입력 전압",
+      "latex": "V_g = \\sqrt{P R_\\mathrm{in}}",
+      "lhs": "V_g",
+      "expr": "sqrt(P*R_in)",
+      "relation": "eq",
+      "variables": [
+        "P",
+        "R_in"
+      ],
+      "constants": [],
+      "symbols": {
+        "P": "power drawn",
+        "R_in": "loss-free input resistance"
+      },
+      "assumptions": [
+        "ideal",
+        "dcm",
+        "steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "more power through the same input resistance needs a higher input voltage, which the switch must also block",
+      "notes_ko": "같은 입력 저항으로 더 많은 전력을 끌어오려면 입력 전압이 높아야 하며, 스위치도 그만큼 높은 전압을 차단해야 한다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode); derived here"
+        },
+        {
+          "key": "singer1990",
+          "where": ""
+        }
+      ],
+      "derived_by": "python/pe_core/derive/harvesting.py",
+      "n_tests": 7,
+      "yaml_line": 989
     },
     "sense.current_out_monitor": {
       "id": "sense.current_out_monitor",
@@ -2903,7 +3401,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 846
+      "yaml_line": 1005
     },
     "def.Ts": {
       "id": "def.Ts",
@@ -2935,7 +3433,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 863
+      "yaml_line": 1022
     },
     "def.V": {
       "id": "def.V",
@@ -2969,7 +3467,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 874
+      "yaml_line": 1033
     },
     "sw.v_avg": {
       "id": "sw.v_avg",
@@ -3004,7 +3502,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 889
+      "yaml_line": 1048
     },
     "vsb.v_off": {
       "id": "vsb.v_off",
@@ -3039,7 +3537,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 903
+      "yaml_line": 1062
     },
     "csb.i_off": {
       "id": "csb.i_off",
@@ -3074,7 +3572,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 917
+      "yaml_line": 1076
     },
     "buck.dcm.D2": {
       "id": "buck.dcm.D2",
@@ -3111,7 +3609,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 7,
-      "yaml_line": 931
+      "yaml_line": 1090
     },
     "boost.ccm.M_RL": {
       "id": "boost.ccm.M_RL",
@@ -3151,7 +3649,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 947
+      "yaml_line": 1106
     },
     "boost.ccm.eta_RL": {
       "id": "boost.ccm.eta_RL",
@@ -3191,7 +3689,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 961
+      "yaml_line": 1120
     },
     "buck.ss.Gd0": {
       "id": "buck.ss.Gd0",
@@ -3226,7 +3724,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 976
+      "yaml_line": 1135
     },
     "buck.ss.w0": {
       "id": "buck.ss.w0",
@@ -3263,7 +3761,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 990
+      "yaml_line": 1149
     },
     "buck.ss.Q": {
       "id": "buck.ss.Q",
@@ -3302,7 +3800,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1002
+      "yaml_line": 1161
     },
     "boost.ss.Gd0": {
       "id": "boost.ss.Gd0",
@@ -3339,7 +3837,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1014
+      "yaml_line": 1173
     },
     "boost.ss.w0": {
       "id": "boost.ss.w0",
@@ -3378,7 +3876,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1028
+      "yaml_line": 1187
     },
     "boost.ss.Q": {
       "id": "boost.ss.Q",
@@ -3419,7 +3917,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1040
+      "yaml_line": 1199
     },
     "boost.ss.wz": {
       "id": "boost.ss.wz",
@@ -3458,7 +3956,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1052
+      "yaml_line": 1211
     },
     "buckboost.ss.Gd0": {
       "id": "buckboost.ss.Gd0",
@@ -3495,7 +3993,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1066
+      "yaml_line": 1225
     },
     "buckboost.ss.w0": {
       "id": "buckboost.ss.w0",
@@ -3534,7 +4032,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1080
+      "yaml_line": 1239
     },
     "buckboost.ss.Q": {
       "id": "buckboost.ss.Q",
@@ -3575,7 +4073,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1092
+      "yaml_line": 1251
     },
     "buckboost.ss.wz": {
       "id": "buckboost.ss.wz",
@@ -3614,7 +4112,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1104
+      "yaml_line": 1263
     },
     "pwm.d": {
       "id": "pwm.d",
@@ -3648,7 +4146,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1119
+      "yaml_line": 1278
     },
     "loop.T": {
       "id": "loop.T",
@@ -3686,7 +4184,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1134
+      "yaml_line": 1293
     },
     "loop.suppression": {
       "id": "loop.suppression",
@@ -3719,7 +4217,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1148
+      "yaml_line": 1307
     },
     "buck.IL": {
       "id": "buck.IL",
@@ -3757,7 +4255,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1165
+      "yaml_line": 1324
     },
     "ripple.Ipk": {
       "id": "ripple.Ipk",
@@ -3792,7 +4290,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1179
+      "yaml_line": 1338
     },
     "buck.ripple.v": {
       "id": "buck.ripple.v",
@@ -3831,7 +4329,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1192
+      "yaml_line": 1351
     },
     "boost.IL": {
       "id": "boost.IL",
@@ -3871,7 +4369,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1208
+      "yaml_line": 1367
     },
     "boost.ripple.iL": {
       "id": "boost.ripple.iL",
@@ -3912,7 +4410,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1222
+      "yaml_line": 1381
     },
     "boost.ripple.v": {
       "id": "boost.ripple.v",
@@ -3956,7 +4454,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1234
+      "yaml_line": 1393
     },
     "buckboost.V": {
       "id": "buckboost.V",
@@ -3993,7 +4491,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1248
+      "yaml_line": 1407
     },
     "buckboost.IL": {
       "id": "buckboost.IL",
@@ -4033,7 +4531,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1262
+      "yaml_line": 1421
     },
     "buckboost.ripple.iL": {
       "id": "buckboost.ripple.iL",
@@ -4074,7 +4572,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1276
+      "yaml_line": 1435
     },
     "buckboost.ripple.v": {
       "id": "buckboost.ripple.v",
@@ -4118,7 +4616,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1288
+      "yaml_line": 1447
     },
     "buck.Vds": {
       "id": "buck.Vds",
@@ -4152,7 +4650,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1302
+      "yaml_line": 1461
     },
     "boost.Vds": {
       "id": "boost.Vds",
@@ -4187,7 +4685,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1314
+      "yaml_line": 1473
     },
     "buckboost.Vds": {
       "id": "buckboost.Vds",
@@ -4224,7 +4722,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1326
+      "yaml_line": 1485
     },
     "forward.Vds": {
       "id": "forward.Vds",
@@ -4259,7 +4757,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1338
+      "yaml_line": 1497
     },
     "forward.ripple.iL": {
       "id": "forward.ripple.iL",
@@ -4304,7 +4802,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1352
+      "yaml_line": 1511
     },
     "util.buck": {
       "id": "util.buck",
@@ -4339,7 +4837,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1367
+      "yaml_line": 1526
     },
     "util.boost": {
       "id": "util.boost",
@@ -4374,7 +4872,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1381
+      "yaml_line": 1540
     },
     "util.buckboost": {
       "id": "util.buckboost",
@@ -4409,7 +4907,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1395
+      "yaml_line": 1554
     },
     "util.forward": {
       "id": "util.forward",
@@ -4446,7 +4944,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1409
+      "yaml_line": 1568
     },
     "ind.di": {
       "id": "ind.di",
@@ -4483,7 +4981,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1426
+      "yaml_line": 1585
     },
     "cap.dv": {
       "id": "cap.dv",
@@ -4520,7 +5018,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1440
+      "yaml_line": 1599
     },
     "ind.E": {
       "id": "ind.E",
@@ -4555,7 +5053,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1454
+      "yaml_line": 1613
     },
     "cap.E": {
       "id": "cap.E",
@@ -4589,7 +5087,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1466
+      "yaml_line": 1625
     },
     "imp.ZL": {
       "id": "imp.ZL",
@@ -4624,7 +5122,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1478
+      "yaml_line": 1637
     },
     "imp.ZC": {
       "id": "imp.ZC",
@@ -4659,7 +5157,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1492
+      "yaml_line": 1651
     },
     "rc.fc": {
       "id": "rc.fc",
@@ -4693,7 +5191,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1506
+      "yaml_line": 1665
     },
     "rc.gain": {
       "id": "rc.gain",
@@ -4728,7 +5226,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 8,
-      "yaml_line": 1520
+      "yaml_line": 1679
     },
     "fourier.pulse.harm": {
       "id": "fourier.pulse.harm",
@@ -4765,7 +5263,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 8,
-      "yaml_line": 1535
+      "yaml_line": 1694
     },
     "fourier.pulse.rms": {
       "id": "fourier.pulse.rms",
@@ -4799,7 +5297,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1550
+      "yaml_line": 1709
     },
     "passive.f_srf": {
       "id": "passive.f_srf",
@@ -4833,7 +5331,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1562
+      "yaml_line": 1721
     },
     "cap.esr.ripple": {
       "id": "cap.esr.ripple",
@@ -4867,7 +5365,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1576
+      "yaml_line": 1735
     },
     "mag.H_ampere": {
       "id": "mag.H_ampere",
@@ -4903,7 +5401,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1591
+      "yaml_line": 1750
     },
     "mag.B_H": {
       "id": "mag.B_H",
@@ -4940,7 +5438,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1603
+      "yaml_line": 1762
     },
     "xfmr.V2": {
       "id": "xfmr.V2",
@@ -4978,7 +5476,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1616
+      "yaml_line": 1775
     },
     "xfmr.I2": {
       "id": "xfmr.I2",
@@ -5016,7 +5514,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 1632
+      "yaml_line": 1791
     }
   }
 }

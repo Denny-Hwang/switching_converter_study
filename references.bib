@@ -106,6 +106,30 @@
   urlkind     = {pdf}
 }
 
+@techreport{ti_ssztcv6,
+  author      = {Kollman, Robert},
+  title       = {Snubbing the flyback converter},
+  institution = {Texas Instruments},
+  type        = {Technical Article},
+  number      = {SSZTCV6},
+  year        = {2024},
+  url         = {https://www.ti.com/lit/pdf/ssztcv6},
+  note        = {verified 2026-09-23 (two web-search rounds; ti.com/lit/pdf/ssztcv6, "Technical Article Snubbing the flyback converter Robert Kollman", SSZTCV6, February 2024, a republication of EDN "Power Tips #17"; cited for: the leakage inductance drives the drain above the reflected output voltage until a clamp limits it; the clamp absorbs the average clamp-diode current times the clamp voltage, always more than the leakage energy, "At a Vclamp/Vreset ratio of 1.5, snubber dissipation is almost three times the loss associated with the leakage inductance stored energy", tending to the leakage energy at high clamp voltage; the trade-off between clamp voltage and loss. The closed form in equations.yaml is derived here, not quoted)},
+  urlkind     = {pdf}
+}
+
+@techreport{st_an316,
+  author      = {{STMicroelectronics}},
+  title       = {{TVS} clamping protection mode},
+  institution = {STMicroelectronics},
+  type        = {Application Note},
+  number      = {AN316, Rev. 6},
+  year        = {2022},
+  url         = {https://www.st.com/resource/en/application_note/an316-tvs-clamping-protection-mode-stmicroelectronics.pdf},
+  note        = {verified 2026-09-23 (two web-search rounds; st.com AN316 "TVS clamping protection mode", Rev 6, 14 June 2022, earlier titled "Transil clamping protection mode"; cited for: the clamping voltage at the application current, "VCL typ. = VBR typ. + RD typ." times the peak current; the datasheet VCL is the maximum value for a standard current pulse of peak IPP; RD depends on the pulse duration (read from curves) and VBR rises with temperature; the maximum RD it lists equals (VCL max - VBR max)/IPP)},
+  urlkind     = {pdf}
+}
+
 @techreport{ti_snoa930,
   author      = {{Texas Instruments}},
   title       = {Sensor Design for Inductive Sensing Applications Using {LDC}},

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import sympy as sp
 
-from .common import Derivation, S
+from .common import Derivation, S, positive_root
 
 
 def derive() -> Derivation:
@@ -53,5 +53,39 @@ def derive() -> Derivation:
         "Normalise by $P_\\mathrm{max}$.",
         "$P_\\mathrm{max}$로 정규화한다.",
         S("eta_ext"),
+    )
+
+    Rin, Vg, Pin = S("R_in"), S("V_g"), S("P")
+    d.step(
+        "A converter in DCM draws an average input current proportional to its input voltage: its input is a "
+        "resistance $R_\\mathrm{in}$, the loss-free resistor, which takes the place of $R_L$.",
+        "DCM 컨버터는 입력 전압에 비례하는 평균 입력 전류를 끌어오므로, 입력이 저항 $R_\\mathrm{in}$, 즉 무손실 "
+        "저항으로 보이며 $R_L$ 자리에 들어간다.",
+    )
+    d.result(
+        "lfr.Vg",
+        Voc * Rin / (Rs + Rin),
+        "The source resistance and $R_\\mathrm{in}$ divide the source voltage.",
+        "전원 저항과 $R_\\mathrm{in}$이 전원 전압을 분압한다.",
+        Vg,
+    )
+    d.result(
+        "lfr.eta",
+        sp.simplify(PL.subs(RL, Rin) / Pmax),
+        "$P_L$ with $R_L = R_\\mathrm{in}$, normalised by $P_\\mathrm{max}$: the source voltage cancels.",
+        "$R_L = R_\\mathrm{in}$일 때의 $P_L$을 $P_\\mathrm{max}$로 정규화한다. 전원 전압은 소거된다.",
+        S("eta_ext"),
+    )
+    d.step(
+        "The loss-free resistor draws the power of a resistance at its input voltage.",
+        "무손실 저항은 입력 전압에서 저항이 끌어오는 만큼의 전력을 끌어온다.",
+        sp.Eq(Pin, Vg**2 / Rin),
+    )
+    d.result(
+        "lfr.Vg_power",
+        positive_root(sp.solve(sp.Eq(Pin, Vg**2 / Rin), Vg), {Pin: 0.5, Rin: 200.0}),
+        "Solve for $V_g$: a larger power needs a higher input voltage.",
+        "$V_g$에 대해 푼다. 전력이 클수록 입력 전압이 높아야 한다.",
+        Vg,
     )
     return d

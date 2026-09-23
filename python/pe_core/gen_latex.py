@@ -57,9 +57,10 @@ def build_generated(catalog: Catalog, n_tests: dict[str, int]) -> dict[str, Any]
             "n_tests": n_tests.get(eq.id, 0),
             "yaml_line": eq.line,
         }
-    used = sorted(
-        {v for e in equations.values() for v in e["variables"] + e["constants"]} | {e["lhs"] for e in equations.values()}
-    )
+    # Every symbol of the table, not only those the equations use: worked
+    # examples also show given quantities that no equation takes (a switch's
+    # rating, for instance).
+    used = sorted(catalog.symbols)
     return {
         "_generated_by": "python scripts/gen_equations.py -- DO NOT EDIT; edit equations.yaml instead",
         "_source": "packages/pe-core/equations/equations.yaml",

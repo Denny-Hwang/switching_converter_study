@@ -43,6 +43,7 @@ symbol_table:
   V_D: {latex: "V_D", unit: "V", desc: "forward drop of the output diode", range: [0.1, 1.5]}
   V_gcrit: {latex: "V_{g,\\mathrm{crit}}", unit: "V", desc: "input voltage at the CCM/DCM boundary for a fixed D and a fixed output voltage"}
   V_DS: {latex: "V_\\mathrm{DS}", unit: "V", desc: "switch drain-source voltage while the switch is off"}
+  V_rating: {latex: "V_\\mathrm{DS,rated}", unit: "V", desc: "drain-source voltage rating of the switch (datasheet)"}
   V_R: {latex: "V_R", unit: "V", desc: "reverse voltage across the output diode while the switch is on"}
   V_w: {latex: "V_w", unit: "V", desc: "voltage applied across a winding during t_on", range: [1, 400], scale: log}
   V_sw: {latex: "V_\\mathrm{sw}", unit: "V", desc: "voltage across C_node when the switch turns on", range: [1, 800], scale: log}
@@ -70,10 +71,11 @@ symbol_table:
   L_lk: {latex: "L_\\mathrm{lk}", unit: "H", desc: "leakage inductance referred to the primary", range: [1.0e-8, 1.0e-4], scale: log}
   C_node: {latex: "C_\\mathrm{node}", unit: "F", desc: "total capacitance at the switch node", range: [1.0e-12, 1.0e-8], scale: log}
   R: {latex: "R", unit: "Ω", desc: "load resistance", range: [0.1, 1.0e4], scale: log}
-  R_in: {latex: "R_\\mathrm{in}", unit: "Ω", desc: "emulated (loss-free) input resistance"}
+  R_in: {latex: "R_\\mathrm{in}", unit: "Ω", desc: "emulated (loss-free) input resistance", range: [1, 1.0e7], scale: log}
   R_x: {latex: "R_x", unit: "Ω", desc: "resistance carrying the current (R_DS(on), winding DCR, ESR, ...)", range: [0.001, 10], scale: log}
   r_d: {latex: "r_d", unit: "Ω", desc: "diode dynamic (slope) resistance", range: [0.001, 1], scale: log}
   R_s: {latex: "R_s", unit: "Ω", desc: "source (Thevenin) resistance", range: [1, 1.0e7], scale: log}
+  C_bus: {latex: "C_\\mathrm{bus}", unit: "F", desc: "input bus capacitor that the source charges and the converter draws from"}
   R_SENSE: {latex: "R_\\mathrm{SENSE}", unit: "Ω", desc: "current-sense (shunt) resistor", range: [1.0e-4, 1], scale: log}
   R_IN: {latex: "R_\\mathrm{IN}", unit: "Ω", desc: "gain-setting input resistor of a current-output sense amplifier", range: [10, 1.0e4], scale: log}
   R_OUT: {latex: "R_\\mathrm{OUT}", unit: "Ω", desc: "output resistor of a current-output sense amplifier", range: [1.0e3, 1.0e6], scale: log}
@@ -83,10 +85,19 @@ symbol_table:
   f_s: {latex: "f_s", unit: "Hz", desc: "switching frequency 1/T_s", range: [1.0e3, 1.0e6], scale: log}
   t_on: {latex: "t_\\mathrm{on}", unit: "s", desc: "switch on-time", range: [1.0e-7, 1.0e-3], scale: log}
   f_ring: {latex: "f_\\mathrm{ring}", unit: "Hz", desc: "ringing frequency"}
-  P: {latex: "P", unit: "W", desc: "power"}
+  P: {latex: "P", unit: "W", desc: "power", range: [1.0e-4, 1000], scale: log}
   P_max: {latex: "P_\\mathrm{max}", unit: "W", desc: "maximum power available from a linear source"}
   E_lk: {latex: "E_\\mathrm{lk}", unit: "J", desc: "energy stored in the leakage inductance at turn-off", range: [1.0e-9, 1.0e-2], scale: log}
   P_lk: {latex: "P_\\mathrm{lk}", unit: "W", desc: "leakage energy per cycle times switching frequency"}
+  V_OR: {latex: "V_\\mathrm{OR}", unit: "V", desc: "output voltage reflected to the primary while the output diode conducts", range: [1, 400], scale: log}
+  V_clamp: {latex: "V_\\mathrm{clamp}", unit: "V", desc: "voltage across the primary clamp while it conducts (the switch then sees V_g + V_clamp)", range: [1, 600], scale: log}
+  P_clamp: {latex: "P_\\mathrm{clamp}", unit: "W", desc: "power dissipated in the primary clamp"}
+  R_clamp: {latex: "R_\\mathrm{clamp}", unit: "Ω", desc: "resistor of an RCD clamp", range: [100, 1.0e6], scale: log}
+  V_BR: {latex: "V_\\mathrm{BR}", unit: "V", desc: "breakdown voltage of a TVS", range: [1, 600], scale: log}
+  V_CL: {latex: "V_\\mathrm{CL}", unit: "V", desc: "clamping voltage of a TVS at its peak pulse current I_PP (datasheet)", range: [1, 900], scale: log}
+  I_PP: {latex: "I_\\mathrm{PP}", unit: "A", desc: "peak pulse current at which a TVS's clamping voltage is specified", range: [0.1, 1000], scale: log}
+  R_D: {latex: "R_D", unit: "Ω", desc: "dynamic resistance of a TVS", range: [0.001, 100], scale: log}
+  V_omax: {latex: "V_\\mathrm{o,max}", unit: "V", desc: "output voltage at which the reflected voltage reaches the clamp voltage"}
   # --- averaging, balance, small-signal, control -------------------------------
   v_s_avg: {latex: "\\langle v_s \\rangle", unit: "V", desc: "average (dc component) of the switch-node voltage"}
   v_Lon: {latex: "v_{L,\\mathrm{on}}", unit: "V", desc: "inductor voltage during the on-interval", range: [0.1, 400], scale: log}
@@ -192,6 +203,10 @@ assumption_labels:
   rectangular_pulse: {en: "ideal rectangular pulse train between 0 and V_pk with duty ratio D", ko: "0과 V_pk 사이를 오가는 듀티비 D의 이상적인 직사각형 펄스열"}
   uniform_field: {en: "ungapped core with the field intensity uniform along the path l_e", ko: "공극이 없는 코어에서 자로 l_e를 따라 자계 세기가 균일함"}
   ideal_transformer: {en: "ideal transformer: perfect coupling, no magnetizing current, no losses", ko: "이상적 변압기: 완전 결합, 자화 전류 없음, 손실 없음"}
+  constant_clamp: {en: "the clamp holds a constant voltage while it conducts, so the leakage current falls linearly to zero", ko: "클램프가 도통하는 동안 일정한 전압을 유지하므로 누설 전류가 직선적으로 0까지 감소함"}
+  rcd_small_ripple: {en: "RCD clamp: the capacitor's voltage ripple is small and its resistor dissipates the clamp energy", ko: "RCD 클램프: 커패시터의 전압 리플이 작고 저항이 클램프 에너지를 소산함"}
+  tvs_linear: {en: "TVS modelled by its breakdown voltage and a constant dynamic resistance", ko: "TVS를 항복 전압과 일정한 동저항으로 모델링"}
+  open_load: {en: "fixed duty ratio, no regulation, load removed", ko: "고정 듀티비, 레귤레이션 없음, 부하 제거"}
 
 equations:
   # =========================================================================
@@ -650,6 +665,104 @@ equations:
     tests:
       - {inputs: {E_lk: 2.0e-6, f_s: 1.0e5}, expect: 0.2}
 
+  - id: flyback.V_OR
+    title: "Flyback: output voltage reflected to the primary"
+    title_ko: "플라이백: 1차 측으로 반사된 출력 전압"
+    lhs: V_OR
+    expr: "(V + V_D)/n"
+    symbols: {V: "output voltage", V_D: "output-diode drop", n: "turns ratio N_s/N_p"}
+    assumptions: [ideal, diode_drop]
+    notes: "the primary winding voltage while the output diode conducts; the switch then blocks $V_g$ plus this voltage"
+    notes_ko: "출력 다이오드가 도통하는 동안의 1차 권선 전압; 이때 스위치는 $V_g$에 이 전압을 더한 값을 차단한다"
+    cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits: the flyback's transformer model); derived here"}
+    derived_by: python/pe_core/derive/clamp.py
+    tests:
+      - {inputs: {V: 12.0, V_D: 0.5, n: 0.25}, expect: 50.0}
+
+  - id: clamp.Vds
+    title: "Flyback: switch voltage while the primary clamp conducts"
+    title_ko: "플라이백: 1차 측 클램프가 도통하는 동안의 스위치 전압"
+    lhs: V_DS
+    expr: "V_g + V_clamp"
+    symbols: {V_g: "input voltage", V_clamp: "clamp voltage"}
+    assumptions: [ideal]
+    notes: "after turn-off the leakage inductance drives the drain above $V_g + V_\\mathrm{OR}$ until the clamp conducts and holds it at $V_g + V_\\mathrm{clamp}$"
+    notes_ko: "턴오프 후 누설 인덕턴스가 드레인을 $V_g + V_\\mathrm{OR}$ 위로 밀어 올리고, 클램프가 도통하면 $V_g + V_\\mathrm{clamp}$에 묶인다"
+    cite: {key: ti_ssztcv6, where: "the leakage inductance drives the drain above the reflected output voltage; the clamp limits it"}
+    derived_by: python/pe_core/derive/clamp.py
+    tests:
+      - {inputs: {V_g: 48.0, V_clamp: 75.0}, expect: 123.0}
+
+  - id: clamp.P
+    title: "Power dissipated in a flyback's primary clamp"
+    title_ko: "플라이백 1차 측 클램프의 소산 전력"
+    lhs: P_clamp
+    expr: "L_lk*I_pk**2*f_s*V_clamp/(2*(V_clamp - V_OR))"
+    symbols: {L_lk: "leakage inductance", I_pk: "peak primary current at turn-off", f_s: "switching frequency", V_clamp: "clamp voltage", V_OR: "reflected output voltage"}
+    assumptions: [constant_clamp, steady_state]
+    constraints: ["V_clamp > V_OR"]
+    notes: "the leakage energy per cycle times $V_\\mathrm{clamp}/(V_\\mathrm{clamp} - V_\\mathrm{OR})$: while the leakage current falls, the reflected voltage keeps driving energy into the clamp, the more so the closer the clamp voltage is to $V_\\mathrm{OR}$"
+    notes_ko: "주기당 누설 에너지에 $V_\\mathrm{clamp}/(V_\\mathrm{clamp} - V_\\mathrm{OR})$를 곱한 값: 누설 전류가 감소하는 동안에도 반사 전압이 클램프로 에너지를 계속 밀어 넣으며, 클램프 전압이 $V_\\mathrm{OR}$에 가까울수록 더 많이 밀어 넣는다"
+    cite: {key: ti_ssztcv6, where: "clamp dissipation against the ratio of the clamp voltage to the reflected voltage; derived here"}
+    derived_by: python/pe_core/derive/clamp.py
+    tests:
+      - {inputs: {L_lk: 2.0e-6, I_pk: 2.0, f_s: 1.0e5, V_clamp: 75.0, V_OR: 50.0}, expect: 1.2}
+
+  - id: clamp.rcd.V
+    title: "Clamp voltage of an RCD clamp set by its resistor"
+    title_ko: "저항이 정하는 RCD 클램프 전압"
+    lhs: V_clamp
+    expr: "(V_OR + sqrt(V_OR**2 + 2*R_clamp*L_lk*I_pk**2*f_s))/2"
+    symbols: {V_OR: "reflected output voltage", R_clamp: "clamp resistor", L_lk: "leakage inductance", I_pk: "peak primary current at turn-off", f_s: "switching frequency"}
+    assumptions: [constant_clamp, rcd_small_ripple, steady_state]
+    notes: "the resistor dissipates the clamp power, $V_\\mathrm{clamp}^2/R_\\mathrm{clamp}$; a larger resistor gives a higher clamp voltage and a lower dissipation"
+    notes_ko: "저항이 클램프 전력 $V_\\mathrm{clamp}^2/R_\\mathrm{clamp}$를 소산한다; 저항이 클수록 클램프 전압은 높아지고 소산 전력은 줄어든다"
+    cite: {key: ti_ssztcv6, where: "RCD clamp: the trade-off between the clamp voltage and its losses; derived here"}
+    derived_by: python/pe_core/derive/clamp.py
+    tests:
+      - {inputs: {V_OR: 50.0, R_clamp: 4687.5, L_lk: 2.0e-6, I_pk: 2.0, f_s: 1.0e5}, expect: 75.0}
+
+  - id: tvs.R_D
+    title: "Dynamic resistance of a TVS from its datasheet"
+    title_ko: "데이터시트로부터 구한 TVS의 동저항"
+    lhs: R_D
+    expr: "(V_CL - V_BR)/I_PP"
+    symbols: {V_CL: "clamping voltage at I_PP", V_BR: "breakdown voltage", I_PP: "peak pulse current"}
+    assumptions: [tvs_linear]
+    constraints: ["V_CL > V_BR"]
+    notes: "the resistance that, in series with the breakdown voltage, gives the datasheet's clamping voltage at its peak pulse current; it applies to the datasheet's pulse duration and grows for longer pulses"
+    notes_ko: "항복 전압과 직렬로 두었을 때 데이터시트의 피크 펄스 전류에서의 클램핑 전압을 주는 저항; 데이터시트의 펄스 폭에 해당하며 펄스가 길수록 커진다"
+    cite: {key: st_an316, where: "clamping voltage = breakdown voltage + dynamic resistance x peak current, solved for the dynamic resistance at the datasheet's clamping voltage and peak pulse current"}
+    tests:
+      - {inputs: {V_CL: 90.0, V_BR: 60.0, I_PP: 10.0}, expect: 3.0}
+
+  - id: tvs.V_clamp
+    title: "Clamping voltage of a TVS at a given current"
+    title_ko: "주어진 전류에서 TVS의 클램핑 전압"
+    lhs: V_clamp
+    expr: "V_BR + R_D*I_pk"
+    symbols: {V_BR: "breakdown voltage", R_D: "dynamic resistance", I_pk: "peak current through the TVS"}
+    assumptions: [tvs_linear]
+    notes: "a TVS clamps above its breakdown voltage: judge it by its clamping voltage at the actual peak current"
+    notes_ko: "TVS는 항복 전압보다 높은 전압에서 클램프한다: 실제 피크 전류에서의 클램핑 전압으로 판단해야 한다"
+    cite: {key: st_an316, where: "clamping voltage from the breakdown voltage and the dynamic resistance"}
+    tests:
+      - {inputs: {V_BR: 60.0, R_D: 2.0, I_pk: 3.0}, expect: 66.0}
+
+  - id: flyback.V_ceiling
+    title: "Flyback: open-load output voltage limited by the primary clamp"
+    title_ko: "플라이백: 1차 측 클램프가 제한하는 무부하 출력 전압"
+    lhs: V_omax
+    expr: "n*V_clamp - V_D"
+    symbols: {n: "turns ratio N_s/N_p", V_clamp: "clamp voltage", V_D: "output-diode drop"}
+    assumptions: [ideal, diode_drop, open_load]
+    notes: "without a load and without regulation the output charges until its reflected voltage reaches the clamp voltage; from then on the clamp takes the energy"
+    notes_ko: "부하와 레귤레이션이 없으면 출력은 반사 전압이 클램프 전압에 도달할 때까지 충전되고, 그 뒤에는 클램프가 에너지를 가져간다"
+    cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits: the flyback's transformer model); derived here"}
+    derived_by: python/pe_core/derive/clamp.py
+    tests:
+      - {inputs: {n: 0.25, V_clamp: 100.0, V_D: 0.5}, expect: 24.5}
+
   - id: dcm.ring.f
     title: "Ringing frequency of the switch node in the DCM idle interval"
     title_ko: "DCM 휴지 구간의 스위치 노드 링잉 주파수"
@@ -842,6 +955,52 @@ equations:
     tests:
       - {inputs: {V_c: 5.0, V_oc: 10.0}, expect: 1.0}
       - {inputs: {V_c: 2.5, V_oc: 10.0}, expect: 0.75}
+
+  - id: lfr.Vg
+    title: "Bus voltage of a loss-free resistor fed by a linear source"
+    title_ko: "선형 전원에 연결된 무손실 저항의 버스 전압"
+    lhs: V_g
+    expr: "V_oc*R_in/(R_s + R_in)"
+    symbols: {V_oc: "open-circuit voltage", R_s: "source resistance", R_in: "loss-free input resistance"}
+    assumptions: [linear_source, dcm, steady_state]
+    notes: "a converter whose input is a resistance divides the source voltage with the source resistance"
+    notes_ko: "입력이 저항으로 보이는 컨버터는 전원 전압을 전원 저항과 분압한다"
+    cite: {key: alexander2017, where: "Sec. 4.8 (Maximum Power Transfer); derived here"}
+    derived_by: python/pe_core/derive/harvesting.py
+    tests:
+      - {inputs: {V_oc: 10.0, R_s: 100.0, R_in: 100.0}, expect: 5.0}
+      - {inputs: {V_oc: 12.0, R_s: 100.0, R_in: 300.0}, expect: 9.0}
+
+  - id: lfr.eta
+    title: "Extraction fraction of a loss-free resistor"
+    title_ko: "무손실 저항의 추출 비율"
+    lhs: eta_ext
+    expr: "4*R_s*R_in/(R_s + R_in)**2"
+    symbols: {R_s: "source resistance", R_in: "loss-free input resistance"}
+    assumptions: [linear_source, dcm, steady_state]
+    notes: "power into the loss-free resistor as a fraction of $P_\\mathrm{max}$; independent of the source amplitude, and 1 when $R_\\mathrm{in} = R_s$"
+    notes_ko: "무손실 저항으로 들어가는 전력의 $P_\\mathrm{max}$ 대비 비율; 전원 진폭과 무관하며 $R_\\mathrm{in} = R_s$일 때 1"
+    cite: {key: alexander2017, where: "Sec. 4.8 (Maximum Power Transfer); derived here"}
+    derived_by: python/pe_core/derive/harvesting.py
+    tests:
+      - {inputs: {R_s: 100.0, R_in: 100.0}, expect: 1.0}
+      - {inputs: {R_s: 100.0, R_in: 300.0}, expect: 0.75}
+
+  - id: lfr.Vg_power
+    title: "Input voltage at which a loss-free resistor draws a given power"
+    title_ko: "무손실 저항이 주어진 전력을 끌어오는 입력 전압"
+    lhs: V_g
+    expr: "sqrt(P*R_in)"
+    symbols: {P: "power drawn", R_in: "loss-free input resistance"}
+    assumptions: [ideal, dcm, steady_state]
+    notes: "more power through the same input resistance needs a higher input voltage, which the switch must also block"
+    notes_ko: "같은 입력 저항으로 더 많은 전력을 끌어오려면 입력 전압이 높아야 하며, 스위치도 그만큼 높은 전압을 차단해야 한다"
+    cite:
+      - {key: erickson2020, where: "Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode); derived here"}
+      - {key: singer1990}
+    derived_by: python/pe_core/derive/harvesting.py
+    tests:
+      - {inputs: {P: 0.5, R_in: 200.0}, expect: 10.0}
 
   - id: sense.current_out_monitor
     title: "Output of a current-output high-side current-sense amplifier"
