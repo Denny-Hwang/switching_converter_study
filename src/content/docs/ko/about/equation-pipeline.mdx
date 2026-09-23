@@ -6,6 +6,7 @@ sidebar:
 ---
 
 import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
 import PipelinePlot from '../../../../tools/PipelinePlot.tsx';
 
 이 페이지는 이후 모든 페이지가 의존하는 검증 체인을 실제로 거쳐 봅니다.
@@ -22,11 +23,15 @@ import PipelinePlot from '../../../../tools/PipelinePlot.tsx';
 <Eq id="buck.ccm.M" />
 
 수식 아래의 펼침 메뉴에서 가정과 출처를 확인할 수 있으며, 배지는 패리티
-테스트로 연결됩니다.
+테스트로 연결됩니다. 이 페이지는 파이프라인을 보여 주기 위해서만 수식을
+표시합니다. 수식을 설명하는 본래 위치는
+<EqRef id="buck.ccm.M" label="전압-초 평형 페이지" />입니다.
 
 ## 브라우저에서 동작하는 같은 엔진
 
-아래 차트는 현재 카탈로그에 있는 두 수식의 TypeScript 평가 함수를 호출해
-Plotly로 그리는 React 아일랜드입니다.
+아래 차트는 CCM에서 이상적인 벅과 부스트 변환비의 TypeScript 평가 함수를
+브라우저에서 호출해 Plotly로 그리는 React 아일랜드입니다.
+[수식 탐색기](../../design/explorer/)는 카탈로그의 모든 수식에 대해 같은
+일을 합니다.
 
-<PipelinePlot client:only="react" label="카탈로그의 두 수식에 대한 듀티비 대비 변환비" xTitle="D" />
+<PipelinePlot client:only="react" label="CCM에서 이상적인 벅과 부스트 컨버터의 듀티비 대비 변환비" xTitle="D" />

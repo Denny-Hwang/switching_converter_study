@@ -45,6 +45,7 @@ jobs:
           git diff --exit-code
           test -z "$(git status --porcelain)"
       - run: python scripts/mathlint.py
+      - run: python scripts/modulelint.py
       - run: python scripts/privacy_scan.py
       - run: python scripts/refcheck.py
       - run: python scripts/resources_check.py
@@ -87,6 +88,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: Every internal #fragment link lands on an element id
+        run: python3 scripts/anchorcheck.py dist
       - name: Mirror dist/ under the Pages base path for link checking
         run: |
           rm -rf _linkcheck

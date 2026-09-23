@@ -13,8 +13,12 @@ Checks every tracked (or new, not ignored) text file:
      example or a data-sheet fact). Numbers from synthetic examples are
      rendered by components that read examples/synthetic/*.yaml and never
      appear literally in MDX.
-  4. examples/synthetic/*.yaml must declare `synthetic: true` and a `label`
-     that contains the word "synthetic".
+  4. examples/synthetic/*.yaml must declare `synthetic: true`, a `label`
+     that contains the word "synthetic" and a `label_ko` that contains
+     "합성".
+  5. Quizzes (src/content/quizzes/**/*.yaml) may state exercise numbers with
+     units, so each must declare `numbers: synthetic`; the <Quiz> component
+     prints that note above the questions.
 
     python scripts/privacy_scan.py
 """
@@ -125,6 +129,17 @@ def main() -> int:
             data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
             if data.get("synthetic") is not True or "synthetic" not in str(data.get("label", "")).lower():
                 errors.append(f"{path.relative_to(ROOT)}: must declare `synthetic: true` and a label containing 'synthetic'")
+            if "합성" not in str(data.get("label_ko", "")):
+                errors.append(f"{path.relative_to(ROOT)}: label_ko must contain '합성' (synthetic), shown on Korean pages")
+
+    quizzes = ROOT / "src" / "content" / "quizzes"
+    if quizzes.exists():
+        import yaml  # noqa: PLC0415
+
+        for path in sorted(quizzes.rglob("*.yaml")):
+            data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            if data.get("numbers") != "synthetic":
+                errors.append(f"{path.relative_to(ROOT)}: a quiz must declare `numbers: synthetic`")
 
     if errors:
         print(f"privacy_scan: {len(errors)} error(s)", file=sys.stderr)

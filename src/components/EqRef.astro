@@ -18,7 +18,7 @@ const { id, label } = Astro.props;
 const eq = getEquation(id);
 const locale = pageLocale(Astro);
 const home = (await eqHomes(locale)).get(id);
-if (!home) throw new Error(`<EqRef id="${id}">: no page in locale "${locale}" embeds <Eq id="${id}" />`);
+if (!home) throw new Error(`<EqRef id="${id}">: no page embeds <Eq id="${id}" /> (locale "${locale}", or English as its fallback)`);
 const text = label ?? (locale === 'ko' ? eq.title_ko : eq.title);
 ---
 

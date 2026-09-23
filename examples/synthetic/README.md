@@ -2,16 +2,17 @@
 
 The only non-textbook numbers allowed on the site (PRIVACY_RULES.md): round,
 made-up parameter sets that are **not** taken from any real design. Every
-file must declare `synthetic: true` and a `label` containing the word
-"synthetic" (`scripts/privacy_scan.py` enforces this), and pages must show
-that label wherever the numbers appear (the `<Worked>` component does).
+file must declare `synthetic: true`, a `label` containing the word
+"synthetic" and a `label_ko` containing "합성" (`scripts/privacy_scan.py`
+enforces this), and pages must show that label wherever the numbers appear
+(the `<Worked>` component does).
 
 Schema:
 
 ```yaml
 synthetic: true
 label: "Synthetic ... (round numbers, not a real design)"
-label_ko: "..."
+label_ko: "합성 ... (단순한 어림수이며 실제 설계가 아님)"
 params:      # SI units, keyed by symbol names from equations.yaml
   V_g: 24
 steps:       # evaluated in order by pe-core (runSteps); each result is stored

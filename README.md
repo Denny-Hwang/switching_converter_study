@@ -66,8 +66,8 @@ python scripts/refcheck.py            # citation check
 | Phase | Scope | State |
 | --- | --- | --- |
 | 0 | Scaffold, CI, Pages deployment, equation pipeline skeleton | done |
-| 1 | Equation engine: full seed set, derivations, parity, math/citation lints | in progress |
-| 2 | Core content: theory + main topologies (EN, then KO) | planned |
+| 1 | Equation engine: full seed set, derivations, parity, math/citation lints | done |
+| 2 | Core content: theory + main topologies (EN, then KO) | in progress: 02-theory done (EN + KO); 03-topologies, 00/01 refreshers next |
 | 3 | Time-domain simulator and design tools | planned |
 | 4 | Magnetics, bench, harvesting, gotchas, resources | planned |
 | 5 | LTspice/ngspice/CircuitJS library, missions, v0.1.0 | planned |
@@ -139,8 +139,8 @@ python scripts/refcheck.py            # 인용 검사
 | 단계 | 범위 | 상태 |
 | --- | --- | --- |
 | 0 | 골격, CI, Pages 배포, 수식 파이프라인 뼈대 | 완료 |
-| 1 | 수식 엔진: 전체 기본 세트, 유도, 패리티, 수식·인용 린트 | 진행 중 |
-| 2 | 핵심 콘텐츠: 이론 + 주요 토폴로지 (영어 후 한국어) | 예정 |
+| 1 | 수식 엔진: 전체 기본 세트, 유도, 패리티, 수식·인용 린트 | 완료 |
+| 2 | 핵심 콘텐츠: 이론 + 주요 토폴로지 (영어 후 한국어) | 진행 중: 02-이론 완료(영어·한국어); 03-토폴로지, 00/01 기초 복습 예정 |
 | 3 | 시간 영역 시뮬레이터와 설계 도구 | 예정 |
 | 4 | 자성 부품, 벤치, 하베스팅, 흔한 함정, 자료 모음 | 예정 |
 | 5 | LTspice/ngspice/CircuitJS 라이브러리, 미션, v0.1.0 | 예정 |

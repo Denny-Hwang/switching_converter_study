@@ -6,6 +6,7 @@ sidebar:
 ---
 
 import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
 import PipelinePlot from '../../../../tools/PipelinePlot.tsx';
 
 This page exercises the chain that every later page depends on:
@@ -22,11 +23,15 @@ This page exercises the chain that every later page depends on:
 <Eq id="buck.ccm.M" />
 
 Open the expander under the equation for its assumptions and source; the
-badge links to the parity test.
+badge links to the parity test. This page shows the equation only to
+demonstrate the pipeline: its home, where it is explained, is the
+<EqRef id="buck.ccm.M" label="volt-second balance page" />.
 
 ## The same engine in the browser
 
-The chart below is a React island that calls the TypeScript evaluators for
-the two equations currently in the catalogue and plots them with Plotly.
+The chart below is a React island that calls the TypeScript evaluators of
+the buck and boost CCM conversion ratios in your browser and plots them with
+Plotly. The [equation explorer](../../design/explorer/) does the same for any
+equation in the catalogue.
 
-<PipelinePlot client:only="react" label="Conversion ratio versus duty ratio for the two catalogue equations" xTitle="D" />
+<PipelinePlot client:only="react" label="Conversion ratio versus duty ratio of the ideal buck and boost converters in CCM" xTitle="D" />

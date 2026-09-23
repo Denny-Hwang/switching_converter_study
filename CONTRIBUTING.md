@@ -62,24 +62,38 @@ build specification is `docs/BUILD_SPEC.md`.
 
 ## Module page template
 
-Each module page (`src/content/docs/<lang>/<section>/<module>.mdx`) has, in
-this order:
+Each module page (`src/content/docs/<lang>/<section>/<module>.mdx`) sets
+`module: true` in its frontmatter and has these h2 sections, in this order
+(Korean headings in parentheses):
 
-1. **Intent** — three lines: what you will be able to do after the page.
-2. **Theory** — prose plus `<Eq>` embeds only; each formula appears once and
-   is referred to by link afterwards.
-3. **Worked example** — numbers from a cited textbook example or from
-   `examples/synthetic/`, computed by pe-core at build time (never
-   hand-typed results).
-4. **Try it** — a deep link into a tool with the parameters preset in the URL.
-5. **Bench exercise** — what to build or measure and what to expect.
-6. **Gotchas** — may be empty at first, but the heading must exist.
-7. **Go deeper** — at least two verified resources (with retrieval dates).
-8. **Quiz** — at least five questions with explained answers.
+1. **Intent** (목표) — three lines: what you will be able to do after the page.
+2. **Theory** (이론) — prose plus `<Eq>` embeds only; each formula appears
+   once and is referred to afterwards with `<EqRef id="…" />`, which links to
+   the page that embeds it.
+3. **Worked example** (풀이 예제) — `<Worked example="…" />` renders a table
+   computed by pe-core at build time from `examples/synthetic/<example>.yaml`
+   (or from a cited textbook example); `<Val example="…" name="…" />` puts one
+   of its values into a sentence. Results are never typed by hand.
+4. **Try it** (직접 해 보기) — `<TryIt eq="…" example="…" sweep="…" />` links to
+   the equation explorer (`design/explorer`) with the inputs preset in the URL.
+5. **Bench exercise** (벤치 실습) — what to build or measure and what to expect.
+6. **Gotchas** (주의할 점) — may be empty at first, but the heading must exist.
+7. **Go deeper** (더 알아보기) — `<GoDeeper ids={['…', '…']} />` with at least
+   two verified entries from `resources.yaml` (each has a retrieval date).
+8. **Quiz** (퀴즈) — `<Quiz id="<section>/<module>" />`, which renders
+   `src/content/quizzes/<lang>/<section>/<module>.yaml`: at least five
+   questions, each with 2–6 options, the index of the correct one and an
+   explanation, and `numbers: synthetic` (the component prints that note).
+   Vary the position of the correct option.
+
+The Korean page mirrors the English one: the same components with the same
+attributes (only an `<EqRef>` `label` is translated), the same quiz answer
+key, English technical terms in parentheses on first use.
 
 A module is *done* when both `en/` and `ko/` exist (or KO is listed as
 pending in `docs/STATUS.md`) and `npm run build`, `npm test`, `pytest` and all
-lint scripts pass.
+lint scripts pass; `scripts/modulelint.py` checks the structure above and
+that `docs/STATUS.md` agrees with it.
 
 ## Citations
 
@@ -102,18 +116,27 @@ lint scripts pass.
 - `scripts/mathlint.py`: no hand-typed display math (`$$`, `\[`, `\begin`),
   no hand-typed inline equations (inline math may hold symbols, values and
   inequalities), every `<Eq id>` exists and is embedded at most once per
-  locale, and the derivations page renders every derivation module.
+  locale (pages under `about/` may show one to demonstrate the pipeline), and
+  the derivations page renders every derivation module. Quizzes get the same
+  inline-math check.
+- `scripts/modulelint.py`: the module template and definition of done above,
+  EN/KO mirroring, quizzes, and agreement with `docs/STATUS.md`.
 - `scripts/privacy_scan.py`: no e-mail addresses; no number-with-unit in page
   prose unless the same line carries a `<Cite>` (synthetic values are rendered
-  from `examples/synthetic/*.yaml` by components); the maintainer's local
-  `.private/denylist.txt`, if present.
+  from `examples/synthetic/*.yaml` by components); synthetic examples labelled
+  "synthetic" (and "합성" in Korean); quizzes declare `numbers: synthetic`; the
+  maintainer's local `.private/denylist.txt`, if present.
 - `scripts/refcheck.py`: citation integrity (see above).
+- `scripts/anchorcheck.py` (after `npm run build`): every internal link with a
+  `#fragment` lands on an element id (equation anchors, derivation sections,
+  bibliography entries); lychee then checks every link target, internal and
+  external.
 
 ## Checks to run before a pull request
 
 ```sh
 python scripts/gen_equations.py && git diff --exit-code
 pytest && npm test
-python scripts/mathlint.py && python scripts/privacy_scan.py && python scripts/refcheck.py
-npm run build
+python scripts/mathlint.py && python scripts/modulelint.py && python scripts/privacy_scan.py && python scripts/refcheck.py
+npm run build && python scripts/anchorcheck.py
 ```
