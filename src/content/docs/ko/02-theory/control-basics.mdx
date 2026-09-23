@@ -1,0 +1,110 @@
+---
+title: 제어 기초
+description: PWM 변조기, 전압 모드 피드백 루프의 루프 이득, 그리고 피드백이 외란을 얼마나 억제하는지.
+sidebar:
+  order: 8
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 펄스폭 변조기(pulse-width modulator, PWM)를 모델링하고 그 소신호 이득(small-signal gain)을
+  계산합니다.
+- 주어진 주파수에서 전압 모드(voltage-mode) 피드백 루프의 루프 이득(loop gain)을 계산합니다.
+- 피드백이 외란(disturbance)을 억제하는 정도를 정량화하고, 피드백이 더 이상 도움이 되지
+  않는 영역을 파악합니다.
+
+## 이론
+
+### PWM 변조기
+
+전압 모드 제어기는 제어 전압(control voltage) $V_\mathrm{ctrl}$을 피크 진폭이 $V_M$인 톱니파
+램프(sawtooth ramp)와 비교합니다. 램프가 제어 전압보다 낮은 동안 스위치가 켜져 있으므로,
+듀티비(duty ratio)는 제어 전압에 비례합니다.
+
+<Eq id="pwm.d" />
+
+따라서 제어 전압에서 듀티비까지의 변조기 소신호 이득은 $1/V_M$입니다
+<Cite key="erickson2020" where="Ch. 7" />.
+
+### 루프 이득
+
+전압 모드 루프에서는 출력 전압을 이득이 $H$인 센서(흔히 저항 분압기)로 측정하여
+기준값(reference)과 비교합니다. 보상기(compensator) $G_c$가 그 차이를 증폭하고 변조기가
+이를 듀티비로 바꾸며, 컨버터의 제어-출력 전달함수(control-to-output transfer function)
+$G_{vd}$가 루프를 닫습니다. **루프 이득**은 루프를 한 바퀴 돌며 거치는 이득들의
+곱입니다 <Cite key="erickson2020" where="Ch. 9" />.
+
+<Eq id="loop.T" />
+
+각 주파수에서 크기는 곱해지고 위상은 더해집니다. 벅의 경우 $G_{vd}$는
+[소신호 페이지](../small-signal/)의 전달함수이고, 부스트와 벅-부스트의 경우에는
+[우반평면(RHP) 영점](../rhp-zero/)을 포함합니다.
+
+### 피드백으로 얻는 것
+
+입력 전압이나 부하로부터 루프에 들어오는 외란은 $1 + T$로 나누어져 출력에 도달합니다
+<Cite key="erickson2020" where="Ch. 9" />.
+
+<Eq id="loop.suppression" />
+
+루프 이득이 큰 곳(낮은 주파수)에서는 외란이 대략 루프 이득분의 1로 억제되고, 출력은
+기준값을 $H$로 나눈 값을 따라갑니다. 이때 출력은 컨버터의 이득이 아니라 센서와 기준값에
+의해 정해집니다. 루프 이득이 1보다 훨씬 작은 곳, 즉 크로스오버 주파수(crossover frequency)보다
+높은 주파수에서는 피드백이 아무 효과도 없습니다. 크로스오버 부근에서 루프 이득은
+복소수입니다. 위상 여유(phase margin)가 작으면 $1 + T$의 크기가 1보다 작아지고, 그 부근의
+외란은 억제되는 대신 증폭됩니다 <Cite key="erickson2020" where="Ch. 9" />.
+
+## 풀이 예제
+
+직류(dc)에서 계산한 합성(synthetic) 전압 모드 벅 루프입니다.
+
+<Worked example="control-basic" checks={false} />
+
+변조기는 제어 전압을 <Val example="control-basic" name="D" />의 듀티비로 바꿉니다. 직류에서
+루프 이득은 <Val example="control-basic" name="T_loop" />이므로, 느린 외란은 피드백이 없을
+때의 영향에 비해 <Val example="control-basic" name="S_dist" />배가 되어 출력에 도달합니다.
+
+## 직접 해 보기
+
+<TryIt eq="loop.suppression" example="control-basic" sweep="T_loop" />
+
+루프 이득을 여러 디케이드(decade)에 걸쳐(로그 축) 스윕(sweep)하십시오. 큰 루프 이득이
+10배 늘어날 때마다 억제도 다시 10배 강해집니다.
+
+## 벤치 실습
+
+폐루프(closed-loop) 컨버터의 루프 이득을 주입(injection) 방식으로 측정하십시오. 피드백
+경로에서 출력과 센싱 분압기 사이에 작은 저항을 삽입하고, 절연 변압기(isolation transformer)를
+통해 그 저항 양단에 작은 정현파 신호를 주입하십시오. 주파수 응답 분석기(frequency response
+analyzer, FRA)로 측정한 저항 양쪽 신호의 비가 루프 이득입니다
+<Cite key="erickson2020" where="Ch. 9" />. 크로스오버 주파수와 위상 여유를 구한 다음, 입력
+전압의 계단(step) 변화에 대한 출력의 응답을 저주파에서 루프가 주는 억제와 비교하십시오.
+
+## 주의할 점
+
+- **변조기 이득은 램프 진폭에 따라 달라집니다.** 램프 진폭이 입력 전압에 비례하여 변하는
+  제어기를 쓰면 벅의 루프 이득이 입력 전압과 무관해집니다. 벅의 직류 이득(dc gain)이 입력
+  전압과 같기 때문입니다(<EqRef id="buck.ss.Gd0" />).
+- **직류가 아닌 주파수에서는 복소 루프 이득을 사용하십시오.** 위에 나온 실수 형태의 식은
+  $T$가 실수인 곳에서만 정확합니다. 그 밖의 주파수에서는 복소수 합 $1 + T$의 크기로
+  나누십시오. 루프 이득이 큰 곳에서는 두 결과가 거의 일치합니다.
+- **포화된 변조기는 루프를 개방합니다.** 제어 전압이 램프의 범위를 벗어나면 듀티비가
+  한계값에 고정되고 루프 이득이 무너집니다. 이 페이지의 수식은 더 이상 적용되지 않습니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch9', 'erickson-ch7', 'coursera-converter-control']} />
+
+## 퀴즈
+
+<Quiz id="02-theory/control-basics" />
