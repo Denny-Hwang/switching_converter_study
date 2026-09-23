@@ -11,10 +11,12 @@ resources.yaml (when present), then:
   --online (CI): opens every URL and checks that the page title (<title> in
       <head>, falling back to og:title / name="title" / itemprop="name")
       contains the expected text (`urltitle` in references.bib,
-      `title_match` in resources.yaml). A PDF must start with the %PDF
-      signature, and its document title (document info or XMP) or the text
-      of its first two pages must contain the expected text, compared without
-      case, punctuation or spacing (pypdf reads the file).
+      `title_match` in resources.yaml). A PDF must carry the %PDF
+      signature, and its own title (document info or XMP) or the top of its
+      first page must contain the expected text, as whole words, ignoring
+      case and punctuation (pypdf reads the file). A bib entry's `urlquotes`
+      ("a | b") must each occur in the PDF's text: the statements the site
+      cites it for, confirmed in the document itself.
       Each URL is tried with an honest tool User-Agent and with a browser
       User-Agent, over HTTP/2 and HTTP/1.1 (curl), then urllib: some hosts
       reject one client and accept another.
@@ -64,6 +66,8 @@ RESOURCE_TYPES = {"book", "course", "video", "channel", "app-note", "tool", "pap
 TOOL_AGENT = "switching-converter-study-linkcheck/1.0 (+https://github.com/Denny-Hwang/switching_converter_study)"
 CAP = 6_000_000  # bytes of a page searched for its title; some pages carry megabytes of inline script before <title>
 PDF_CAP = 60_000_000  # bytes kept per response: a PDF is read whole (its cross-reference table is at the end)
+PAGE1_TOP = 600  # characters (normalised) at the top of page 1 where a document shows its title
+MAX_PAGES = 150  # pages read when a bib entry has urlquotes
 BROWSER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 # Titles of interstitial pages served instead of content (consent walls, bot
 # checks). Seeing one is inconclusive, not a mismatch.
@@ -84,10 +88,28 @@ def loose(s: str) -> str:
 
 
 def title_in(expect: str, text: str) -> bool:
-    """True if `expect` occurs in `text`, ignoring case, punctuation and
-    spacing (text extracted from a PDF can lose or gain spaces)."""
+    """True if `expect` occurs in `text` as whole words, ignoring case and
+    punctuation. Text extracted from a PDF can lose or gain spaces, so an
+    expectation of three words or more may also match with every space
+    removed; a shorter one could then match inside other words."""
     e, t = loose(expect), loose(text)
-    return bool(e) and (e in t or e.replace(" ", "") in t.replace(" ", ""))
+    if not e:
+        return False
+    if f" {e} " in f" {t} ":
+        return True
+    return len(e.split()) >= 3 and e.replace(" ", "") in t.replace(" ", "")
+
+
+def near(quote: str, text: str) -> str:
+    """Where the longest run of a quote's consecutive words occurs in the text
+    (for the log when the whole quote does not, so the wording can be read)."""
+    words, t = loose(quote).split(), f" {loose(text)} "
+    for n in range(len(words) - 1, 1, -1):
+        for i in range(len(words) - n + 1):
+            at = t.find(f" {' '.join(words[i : i + n])} ")
+            if at >= 0:
+                return f"{n} of its words in a row occur in: '…{t[max(0, at - 80) : at + 160].strip()}…'"
+    return "no two of its words occur together"
 
 
 def load_resources() -> list[dict]:
@@ -99,22 +121,40 @@ def load_resources() -> list[dict]:
     return list(data.get("resources") or [])
 
 
+def pdf_expect_error(expect: str | None) -> str | None:
+    """Why an expected PDF title cannot identify the document, or None."""
+    if not expect:
+        return None
+    if len(loose(expect).split()) < 3:
+        return f"{expect!r} is too short to identify a PDF: give at least three words of its title"
+    return None
+
+
 def collect() -> tuple[list[dict], list[str]]:
-    """(targets, offline errors). A target: {src, url, expect, kind}."""
+    """(targets, offline errors). A target: {src, url, expect, kind, quotes}."""
     errors: list[str] = []
     targets: list[dict] = []
     for e in bib.load():
         url = e.url
         if not url:
             continue
+        where = f"references.bib:{e.line}: {e.key}"
         expect = e.fields.get("urltitle")
         kind = e.fields.get("urlkind", "html")
+        quotes = [q.strip() for q in e.fields.get("urlquotes", "").split("|") if q.strip()]
         if kind not in ("html", "pdf", "login"):
-            errors.append(f"references.bib:{e.line}: {e.key}: urlkind must be html|pdf|login")
+            errors.append(f"{where}: urlkind must be html|pdf|login")
         if kind in ("html", "pdf") and not expect and not e.is_verify:
             what = "page title" if kind == "html" else "the PDF's title or first page"
-            errors.append(f"references.bib:{e.line}: {e.key}: verified URL needs urltitle = {{...}} (text expected in {what})")
-        targets.append({"src": f"bib:{e.key}", "url": url, "expect": expect, "kind": kind})
+            errors.append(f"{where}: verified URL needs urltitle = {{...}} (text expected in {what})")
+        if kind == "pdf" and (problem := pdf_expect_error(expect)):
+            errors.append(f"{where}: urltitle {problem}")
+        if quotes and kind != "pdf":
+            errors.append(f"{where}: urlquotes are checked in PDFs only")
+        for q in quotes:
+            if len(loose(q).split()) < 2:
+                errors.append(f"{where}: urlquotes entry {q!r} needs at least two words")
+        targets.append({"src": f"bib:{e.key}", "url": url, "expect": expect, "kind": kind, "quotes": quotes})
 
     ids: set[str] = set()
     for i, r in enumerate(load_resources()):
@@ -131,11 +171,17 @@ def collect() -> tuple[list[dict], list[str]]:
             errors.append(f"{where}: retrieved must be YYYY-MM-DD")
         if r.get("language") and r["language"] not in ("en", "ko"):
             errors.append(f"{where}: language must be en or ko")
-        if r.get("urlkind") == "pdf" and str(r.get("title_match", "")).strip().lower() in ("(pdf)", "pdf"):
-            errors.append(f"{where}: title_match must be text from the PDF's title or first page, not a placeholder")
+        if r.get("urlkind") == "pdf" and (problem := pdf_expect_error(r.get("title_match"))):
+            errors.append(f"{where}: title_match {problem}")
         if r.get("url"):
             targets.append(
-                {"src": f"resource:{r.get('id')}", "url": r["url"], "expect": r.get("title_match"), "kind": r.get("urlkind", "html")}
+                {
+                    "src": f"resource:{r.get('id')}",
+                    "url": r["url"],
+                    "expect": r.get("title_match"),
+                    "kind": r.get("urlkind", "html"),
+                    "quotes": [],
+                }
             )
     return targets, errors
 
@@ -153,6 +199,7 @@ class Fetch:
 def _curl(url: str, agent: str, http1: bool, how: str, max_time: int = 30) -> Fetch:
     cmd = [
         "curl", "-sS", "-L", "--compressed", "--max-time", str(max_time), "--connect-timeout", "15",
+        "--max-filesize", str(PDF_CAP),
         "-A", agent,
         "-H", "Accept: text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.8",
         "-H", "Accept-Language: en-US,en;q=0.9",
@@ -223,42 +270,63 @@ def title_candidates(body: bytes) -> list[str]:
     return [t for t in out if t]
 
 
-def pdf_texts(body: bytes, pages: int = 2) -> list[tuple[str, str]]:
-    """[(where, text)]: a PDF's document-info title, its XMP titles, and the
-    text of its first pages, each where present. Raises when the file cannot
-    be parsed at all."""
-    from pypdf import PdfReader  # noqa: PLC0415 - only the online check needs it
+class PdfSetupError(RuntimeError):
+    """pypdf lacks an optional dependency it needs for this PDF (a setup
+    problem, not a property of the document)."""
 
-    # pypdf warns about every font it cannot fully decode; the result below says what it could read
+
+def pdf_texts(body: bytes, pages: int = 1) -> tuple[list[tuple[str, str]], list[str]]:
+    """(titles, page texts): a PDF's document-info title and XMP titles, each
+    where present, and the text of its first `pages` pages. Raises when the
+    file cannot be parsed at all, and PdfSetupError when pypdf lacks an
+    optional dependency."""
+    from pypdf import PdfReader  # noqa: PLC0415 - only the online check needs these
+    from pypdf.errors import DependencyError  # noqa: PLC0415
+
+    # pypdf warns about every font it cannot fully decode; the result says what it could read
     logging.getLogger("pypdf").setLevel(logging.ERROR)
-    reader = PdfReader(io.BytesIO(body), strict=False)
-    out: list[tuple[str, str]] = []
+    titles: list[tuple[str, str]] = []
+    texts: list[str] = []
     try:
-        info = reader.metadata
-        if info is not None and info.title:
-            out.append(("title", str(info.title)))
-    except Exception:  # noqa: BLE001 - a damaged info dictionary: use the pages
-        pass
-    try:
-        xmp = reader.xmp_metadata
-        for title in ((xmp.dc_title or {}).values() if xmp is not None else ()):
-            out.append(("XMP title", str(title)))
-    except Exception:  # noqa: BLE001 - damaged XMP metadata: use the pages
-        pass
-    for i in range(min(pages, len(reader.pages))):
+        reader = PdfReader(io.BytesIO(body), strict=False)
+        count = len(reader.pages)
         try:
-            text = reader.pages[i].extract_text() or ""
-        except Exception:  # noqa: BLE001 - one unreadable page
-            text = ""
-        if text.strip():
-            out.append((f"page {i + 1}", text))
-    return out
+            info = reader.metadata
+            if info is not None and info.title:
+                titles.append(("title", str(info.title)))
+        except DependencyError:
+            raise
+        except Exception:  # noqa: BLE001 - a damaged info dictionary: use the pages
+            pass
+        try:
+            xmp = reader.xmp_metadata
+            for title in ((xmp.dc_title or {}).values() if xmp is not None else ()):
+                titles.append(("XMP title", str(title)))
+        except DependencyError:
+            raise
+        except Exception:  # noqa: BLE001 - damaged XMP metadata: use the pages
+            pass
+        for i in range(min(pages, count)):
+            try:
+                texts.append(reader.pages[i].extract_text() or "")
+            except DependencyError:
+                raise
+            except Exception:  # noqa: BLE001 - one unreadable page
+                texts.append("")
+    except DependencyError as exc:
+        raise PdfSetupError(str(exc)) from exc
+    return titles, texts
 
 
 def judge_pdf(t: dict, f: Fetch) -> tuple[str, str]:
-    """A PDF: its title or first pages must contain the expected text."""
+    """A PDF: its own title, or the top of its first page, must contain the
+    expected text (a document names itself there; other documents it lists
+    further down do not count), and every quote must occur in its text."""
+    quotes = t.get("quotes") or []
     try:
-        texts = pdf_texts(f.body)
+        titles, pages = pdf_texts(f.body, MAX_PAGES if quotes else 1)
+    except PdfSetupError as exc:
+        return "fail", f"{f.how}: pypdf needs an optional dependency to read this PDF ({exc}); install python[dev]"
     except Exception as exc:  # noqa: BLE001 - a damaged or truncated file
         return "inconclusive", f"{f.how}: PDF unreadable ({type(exc).__name__}: {str(exc)[:80]})"
     if not t["expect"]:
@@ -267,19 +335,25 @@ def judge_pdf(t: dict, f: Fetch) -> tuple[str, str]:
     def flat(text: str, n: int) -> str:
         return repr(re.sub(r"\s+", " ", text).strip()[:n])
 
-    for where, text in texts:
-        if title_in(t["expect"], text):
-            if where.endswith("title"):
-                return "ok", f"(pdf) {where}: {flat(text, 110)}"
-            # the page text around the match (normalised), as evidence in the log
-            e, p = loose(t["expect"]), loose(text)
-            at = p.find(e)
-            around = p[max(0, at - 30) : at + len(e) + 30] if at >= 0 else e
-            return "ok", f"(pdf) {where}: '…{around}…'"
-    if not texts:
-        return "inconclusive", f"{f.how}: a PDF with no title and no extractable text"
-    seen = "; ".join(f"{where}: {flat(text, 90)}" for where, text in texts[:3])
-    return "fail", f"{f.how}: the PDF does not contain {t['expect']!r} ({seen})"
+    top = loose(pages[0] if pages else "")[:PAGE1_TOP]
+    tag = f"(pdf, {len(quotes)} quotes found)" if quotes else "(pdf)"
+    evidence = next((f"{where}: {flat(text, 110)}" for where, text in titles if title_in(t["expect"], text)), None)
+    if evidence is None and title_in(t["expect"], top):
+        e = loose(t["expect"])
+        at = top.find(e)
+        evidence = f"top of page 1: '…{top[max(0, at - 30) : at + len(e) + 30] if at >= 0 else e}…'"
+    if evidence is None:
+        if not titles and not top:
+            return "inconclusive", f"{f.how}: a PDF with no title and no extractable text"
+        seen = "; ".join([f"{where}: {flat(text, 90)}" for where, text in titles[:2]] + [f"top of page 1: {top[:90]!r}"])
+        return "fail", f"{f.how}: neither the PDF's title nor the top of its first page contains {t['expect']!r} ({seen})"
+    if quotes:
+        full = " ".join(pages)
+        missing = [q for q in quotes if not title_in(q, full)]
+        if missing:
+            where = "; ".join(f"{q!r}: {near(q, full)}" for q in missing)
+            return "fail", f"{f.how}: {evidence}; not in the PDF's text ({len(pages)} pages read): {where}"
+    return "ok", f"{tag} {evidence}"
 
 
 def judge(t: dict, f: Fetch) -> tuple[str, str]:
@@ -386,7 +460,7 @@ def main() -> int:
     if args.online:
         for t in targets:
             status, detail = check_online(t)
-            print(f"  {status:14s} {t['src']:32s} {t['url']}  {detail[:160]}")
+            print(f"  {status:14s} {t['src']:32s} {t['url']}  {detail[:200]}", flush=True)
             if status == "FAIL":
                 errors.append(f"{t['src']}: {detail} ({t['url']})")
             elif status != "OK":

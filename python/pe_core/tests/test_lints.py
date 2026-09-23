@@ -64,6 +64,9 @@ def test_mathlint_hand_equation(body: str, hand: bool) -> None:
         # another document
         ("TVS clamping protection mode", "Transil clamping protection mode", False),
         ("Snubbing the flyback converter", "Snubbing the forward converter", False),
+        # whole words only: a short expectation must not match inside other words
+        ("LDC", "You should consider the layout", False),
+        ("Sensor Design", "LDC Sensor Designs", False),
         ("", "anything", False),
     ],
 )
@@ -71,9 +74,12 @@ def test_resources_check_title_in(expect: str, text: str, found: bool) -> None:
     assert _script("resources_check").title_in(expect, text) is found
 
 
-def _minimal_pdf(title: str, text: str) -> bytes:
-    """A one-page PDF with a document-info title and one line of Helvetica text."""
+def _minimal_pdf(title: str, text: str, later: str = "") -> bytes:
+    """A one-page PDF with a document-info title, one line of Helvetica text
+    at the top, and optionally a second line further down the page."""
     stream = f"BT /F1 12 Tf 72 720 Td ({text}) Tj ET".encode()
+    if later:
+        stream += f"\nBT /F1 12 Tf 72 100 Td ({later}) Tj ET".encode()
     objects = [
         b"<< /Type /Catalog /Pages 2 0 R >>",
         b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
@@ -97,13 +103,13 @@ def _minimal_pdf(title: str, text: str) -> bytes:
 def test_resources_check_reads_a_pdf_title_and_first_page() -> None:
     rc = _script("resources_check")
     pdf = _minimal_pdf("Snubbing the flyback converter", "Technical Article Snubbing the flyback converter")
-    texts = dict(rc.pdf_texts(pdf))
-    assert texts["title"] == "Snubbing the flyback converter"
-    assert "Snubbing the flyback converter" in texts["page 1"]
+    titles, pages = rc.pdf_texts(pdf)
+    assert dict(titles)["title"] == "Snubbing the flyback converter"
+    assert "Snubbing the flyback converter" in pages[0]
 
-    def judge(expect: str, body: bytes = pdf) -> tuple[str, str]:
+    def judge(expect: str, body: bytes = pdf, quotes: tuple[str, ...] = ()) -> tuple[str, str]:
         fetch = rc.Fetch("test", 200, "https://example.org/a.pdf", "application/pdf", body)
-        return rc.judge({"src": "bib:test", "url": fetch.url, "expect": expect, "kind": "pdf"}, fetch)
+        return rc.judge({"src": "bib:test", "url": fetch.url, "expect": expect, "kind": "pdf", "quotes": list(quotes)}, fetch)
 
     assert judge("Snubbing the flyback converter")[0] == "ok"
     # the right file type is not enough: another document's title fails
@@ -117,6 +123,40 @@ def test_resources_check_reads_a_pdf_title_and_first_page() -> None:
     assert judge("Snubbing", pdf[:60])[0] == "inconclusive"
 
 
+def test_resources_check_takes_a_pdf_title_from_its_title_or_the_top_of_page_1_only() -> None:
+    """A document that lists another document's title further down its first
+    page (a list of related documents) is not that document."""
+    rc = _script("resources_check")
+    filler = " ".join(["Introduction to the topic of this note."] * 25)
+    pdf = _minimal_pdf("Understanding Boost Power Stages", f"Understanding Boost Power Stages. {filler}",
+                       later="Related documents: Understanding Buck Power Stages in Switchmode Power Supplies")
+    fetch = rc.Fetch("test", 200, "https://example.org/b.pdf", "application/pdf", pdf)
+
+    def verdict(expect: str) -> str:
+        return rc.judge({"src": "bib:test", "url": fetch.url, "expect": expect, "kind": "pdf", "quotes": []}, fetch)[0]
+
+    assert verdict("Understanding Boost Power Stages") == "ok"
+    assert verdict("Understanding Buck Power Stages in Switchmode Power Supplies") == "fail"
+
+
+def test_resources_check_confirms_quotes_in_the_pdf_text() -> None:
+    rc = _script("resources_check")
+    pdf = _minimal_pdf("Snubbing the flyback converter", "Technical Article Snubbing the flyback converter",
+                       later="The clamp absorbs more than the leakage energy.")
+    fetch = rc.Fetch("test", 200, "https://example.org/c.pdf", "application/pdf", pdf)
+
+    def judge(*quotes: str) -> tuple[str, str]:
+        return rc.judge({"src": "bib:t", "url": fetch.url, "expect": "Snubbing the flyback converter", "kind": "pdf",
+                         "quotes": list(quotes)}, fetch)
+
+    verdict, detail = judge("absorbs more than the leakage energy", "technical article")
+    assert verdict == "ok" and "2 quotes found" in detail
+    # a statement the document does not make fails, and the log shows where its first words occur
+    verdict, detail = judge("absorbs less than the leakage energy")
+    assert verdict == "fail"
+    assert "4 of its words in a row occur in" in detail and "absorbs more than the leakage energy" in detail
+
+
 def test_resources_check_requires_a_title_for_pdf_references() -> None:
     rc = _script("resources_check")
     _, errors = rc.collect()
@@ -125,4 +165,7 @@ def test_resources_check_requires_a_title_for_pdf_references() -> None:
     pdfs = {src: expect for src, (kind, expect) in kinds.items() if kind == "pdf"}
     assert pdfs, "no PDF references found"
     for src, expect in pdfs.items():
-        assert expect and expect.strip().lower() not in ("(pdf)", "pdf"), src
+        assert expect and rc.pdf_expect_error(expect) is None, src
+    # too short to identify a PDF, or a placeholder
+    for short in ("(pdf)", "LTspice", "Sensor Design"):
+        assert rc.pdf_expect_error(short)

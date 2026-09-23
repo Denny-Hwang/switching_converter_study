@@ -16,8 +16,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# pypdf: the online URL check (scripts/resources_check.py) reads the titles of PDF references.
-dev = ["pytest==9.1.1", "pypdf==6.19.0"]
+# pypdf: the online URL check (scripts/resources_check.py) reads PDF references; its crypto
+# and fonts extras decrypt AES-encrypted files and decode CFF fonts (pinned with them).
+dev = ["pytest==9.1.1", "pypdf[crypto,fonts]==6.19.0", "cryptography==50.0.1", "fonttools==4.65.0"]
 
 [tool.setuptools.packages.find]
 where = ["."]

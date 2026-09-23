@@ -38,9 +38,13 @@ Verification has three layers.
    requires the page title to contain the expected text (`urltitle` in the
    bib entry, `title_match` in resources.yaml). For a PDF, the file must
    carry the PDF signature, and its own title (document info or XMP) or the
-   text of its first two pages must contain the expected text, compared
-   without case, punctuation or spacing (pypdf reads the file). A URL that
-   serves some other PDF therefore fails, not only one that serves no PDF.
+   top of its first page must contain the expected text, of at least three
+   words, as whole words and ignoring case and punctuation (pypdf reads the
+   file). A PDF that only mentions the document further down, in a list of
+   related documents say, does not pass. The statements a page cites a PDF
+   for are listed in the bib entry's `urlquotes`, and each must occur in
+   the PDF's text: the claim is then checked in the document itself, not
+   only in search results.
    lychee opens every URL rendered on the built site. It skips `doi.org`
    links (publishers answer bots with 403; the Crossref check is stronger)
    and `www.analog.com` and `www.st.com` (they reject lychee's HTTP/2
