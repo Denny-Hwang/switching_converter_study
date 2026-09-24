@@ -79,6 +79,19 @@ jobs:
           cache: pip
           cache-dependency-path: python/pyproject.toml
       - run: pip install -e "python[dev]"
+      - name: TEMPORARY - archive captures of candidate URLs for Dowell 1966 and Basso 2014 (removed in the next commit)
+        run: |
+          q() { echo "== $1"; curl -sS -m 90 "https://web.archive.org/cdx/search/cdx?$1&output=json&fl=timestamp,original,statuscode,mimetype&limit=-4" || true; echo; sleep 3; }
+          q "url=ieeexplore.ieee.org/document/5247417"
+          q "url=ieeexplore.ieee.org/document/5247417/"
+          q "url=digital-library.theiet.org/doi/10.1049/piee.1966.0236"
+          q "url=digital-library.theiet.org/doi/abs/10.1049/piee.1966.0236"
+          q "url=digital-library.theiet.org/content/journals/10.1049/piee.1966.0236"
+          q "url=www.accessengineeringlibrary.com/content/book/9780071823463"
+          q "url=mhprofessional.com&matchType=domain&filter=original:.*9780071823463.*"
+          q "url=mheducation.com&matchType=domain&filter=original:.*9780071823463.*"
+          q "url=openlibrary.org/isbn/9780071823463"
+          curl -sS -m 30 -o /dev/null -w "openlibrary live: %{http_code} %{url_effective}\n" -L "https://openlibrary.org/isbn/9780071823463" || true
       - run: python scripts/refcheck.py --online
 
   urls-online:
