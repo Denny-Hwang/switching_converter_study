@@ -12,7 +12,11 @@ Checks every tracked (or new, not ignored) text file:
      source, so the same line must carry a <Cite key="..."> (a textbook
      example or a data-sheet fact). Numbers from synthetic examples are
      rendered by components that read examples/synthetic/*.yaml and never
-     appear literally in MDX.
+     appear literally in MDX. The check covers the electrical units a
+     design's values come in -- V, A, W, Ω (or ohms), Hz, H, F, J, C and
+     °C, with an SI prefix -- written as symbols, in English or in Korean
+     prose; percentages, times, decibels and units spelt out in words are
+     outside it.
   4. examples/synthetic/*.yaml must declare `synthetic: true`, and a `label`
      and `label_ko` that name it as an example ("example", "예제"); every
      page's footer states once that example numbers are synthetic, so the

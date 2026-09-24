@@ -47,8 +47,9 @@ Three things set the gate's window:
 Measure the gate-source voltage at the transistor's own terminals, with a
 short ground connection ([probes](../../06-bench/probes/)), at the switching
 edges and while the controller powers up and resets. A switch whose source
-is not at ground, such as a high-side switch, needs a differential probe:
-a probe's ground lead is tied to the oscilloscope's earth
+is not at the oscilloscope's earth, such as a high-side switch or any switch
+on an off-line primary, needs a differential probe: a probe's ground lead
+is tied to the oscilloscope's earth
 ([gate drive](../../06-bench/gate-drive/)). Compare the gate's high level
 with the drive voltage the transistor's data sheet gives its on-resistance
 at, its peaks with the gate's maximum, and look for any pulse while the
@@ -61,8 +62,9 @@ from a driver whose undervoltage lockout stops it before its supply sags to
 where the switch is only partly on. Keep the gate loop short, so that its ringing
 stays well below the maximum. Place a resistor from gate to source for the
 driver without power <Cite key="nexperia_an90059" />, and for the driver
-with power hold its input low with a pull-down resistor, unless the
-driver's data sheet says its input does so by itself. The gate currents at the edges are worked through in
+with power hold its input at the level that keeps its output low (a
+pull-down resistor on a non-inverting input), unless the driver's data
+sheet says its input does so by itself. The gate currents at the edges are worked through in
 [gate drive](../../06-bench/gate-drive/)
 (<EqRef id="gate.I_on" label="gate current at turn-on" />).
 

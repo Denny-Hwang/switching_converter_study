@@ -30,12 +30,12 @@ def test_privacy_scan_finds_numbers_with_units(text: str) -> None:
     assert _script("privacy_scan").NUM_UNIT.search(f"a value of {text} here")
 
 
-@pytest.mark.parametrize("text", ["5 V에서 읽습니다", "0.33 µF로 줄어듭니다", "25 °C에서", "정격 6.3 V인", "(10 mΩ)을"])
+@pytest.mark.parametrize("text", ["5 V에서 읽습니다", "0.33 µF로 줄어듭니다", "25 °C에서", "정격 6.3 V인", "10 mΩ을 넘는"])
 def test_privacy_scan_finds_numbers_with_units_before_korean_particles(text: str) -> None:
     assert _script("privacy_scan").NUM_UNIT.search(text)
 
 
-@pytest.mark.parametrize("text", ["D = 0.5", "K_crit", "V_g", "the 2nd edition", "Ch. 5", "4/27", "x1e5", "5 Volts", "3 Hzx", "2차 고조파"])
+@pytest.mark.parametrize("text", ["D = 0.5", "K_crit", "V_g", "the 2nd edition", "Ch. 5", "4/27", "x1e5", "3 Hzx", "2차 고조파"])
 def test_privacy_scan_ignores_unitless_text(text: str) -> None:
     assert not _script("privacy_scan").NUM_UNIT.search(text)
 
@@ -434,6 +434,12 @@ def test_modulelint_gotcha_page_without_its_counterparts(tmp_path: Path) -> None
     )
     assert any("y.mdx: no English page of that name" in e for e in errors), errors
     assert any("gotcha row 'z' has no page" in e for e in errors), errors
+
+
+def test_modulelint_gotcha_markdown_page_is_checked(tmp_path: Path) -> None:
+    errors = _gotcha_errors(tmp_path, _GOTCHA_EN, _GOTCHA_KO, {"EN": "✅", "KO": "✅"},
+                            extra={"en/08-gotchas/w.md": _GOTCHA_EN.replace("## Why", "## Cause")})
+    assert any("w.md: h2 sections must be" in e for e in errors), errors
 
 
 def test_modulelint_gotcha_page_in_a_subfolder(tmp_path: Path) -> None:

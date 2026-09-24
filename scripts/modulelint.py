@@ -205,7 +205,7 @@ def check_gotchas(status: dict[tuple[str, str], dict[str, str]]) -> tuple[list[s
     pages: dict[tuple[str, str], tuple[list[str], list[tuple[str, dict[str, str]]]]] = {}
     for locale in SECTIONS:
         folder = DOCS / locale / GOTCHAS_DIR
-        for path in sorted(folder.rglob("*.mdx")) if folder.exists() else []:
+        for path in sorted([*folder.rglob("*.mdx"), *folder.rglob("*.md")]) if folder.exists() else []:
             where = str(path.relative_to(ROOT))
             if path.parent != folder:
                 errors.append(f"{where}: a gotcha page sits directly in {GOTCHAS_DIR}/, not in a subfolder (the index lists only those)")
