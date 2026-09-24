@@ -839,7 +839,7 @@ resources:
     type: paper
     title: "Piezoelectric Energy Harvesting Device Optimization by Synchronous Electric Charge Extraction"
     author: "E. Lefeuvre, A. Badel, C. Richard, D. Guyomar"
-    url: https://journals.sagepub.com/doi/10.1177/1045389X05056859
+    url: http://jim.sagepub.com/content/16/10/865.abstract
     tags: [harvesting, piezoelectric, sece]
     level: advanced
     language: en
