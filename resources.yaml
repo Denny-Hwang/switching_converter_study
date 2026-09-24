@@ -540,7 +540,7 @@ resources:
     cite: adi_an136
 
   - id: ti-slyt614
-    type: app-note
+    type: article
     title: "Five steps to a great PCB layout for a step-down converter (SLYT614)"
     author: "Texas Instruments"
     url: https://www.ti.com/lit/pdf/slyt614
@@ -600,7 +600,7 @@ resources:
     cite: ti_slua887
 
   - id: ti-sszta51
-    type: app-note
+    type: article
     title: "System Trade-offs for High- and Low-side Current Measurements (SSZTA51)"
     author: "Texas Instruments"
     url: https://www.ti.com/lit/pdf/sszta51
@@ -615,7 +615,7 @@ resources:
     cite: ti_sszta51
 
   - id: adi-osullivan2012
-    type: app-note
+    type: article
     title: "Optimize High-Current Sensing Accuracy by Improving Pad Layout of Low-Value Shunt Resistors (Analog Dialogue 46-06)"
     author: "M. O'Sullivan, Analog Devices"
     url: https://www.analog.com/media/en/analog-dialogue/volume-46/number-2/articles/optimize-high-current-sensing-accuracy.pdf
@@ -659,7 +659,7 @@ resources:
     cite: keysight_5988_8008
 
   - id: tek-bw-risetime
-    type: app-note
+    type: article
     title: "How is bandwidth related to rise time for oscilloscopes? (Tektronix FAQ)"
     author: "Tektronix"
     url: https://www.tek.com/en/support/faqs/how-bandwidth-related-rise-time-oscilloscopes
@@ -762,7 +762,7 @@ resources:
     cite: ti_slva139
 
   - id: adi-ceramic-caps
-    type: app-note
+    type: article
     title: "Temperature and Voltage Variation of Ceramic Capacitors, or Why Your 4.7 µF Capacitor Becomes a 0.33 µF Capacitor"
     author: "Analog Devices (Maxim Integrated)"
     url: https://www.analog.com/en/resources/technical-articles/temperature-and-voltage-variation-ceramic-capacitor.html
