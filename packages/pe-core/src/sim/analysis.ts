@@ -4,16 +4,17 @@
  * per cycle; plus `simulate()`, which builds the model, starts from the
  * analytic operating point and finds the periodic steady state.
  *
- * Not every circuit has one. A fixed output fed in CCM gains or loses the
- * same inductor current every cycle unless the duty ratio balances the
- * inductor's volt-seconds exactly; an output capacitor with nothing across
- * it charges for ever. `simulate()` then says which state keeps changing and
- * by how much per cycle, and records the start-up from rest instead.
+ * Not every circuit has one. A fixed output fed in CCM above the duty ratio
+ * that balances the inductor's volt-seconds gains the same inductor current
+ * every cycle (below it, the converter settles in DCM); a boost, buck-boost
+ * or flyback without a node capacitance charges a capacitor alone for ever.
+ * `simulate()` then says which state keeps changing and by how much per
+ * cycle, and records the start-up from rest instead.
  */
 
 import { evaluate } from '../equations';
 import { invert } from '../invert';
-import { runCycle, steadyState, type CycleRun, type Model, type SteadyOptions } from './engine';
+import { runCycle, steadyState, type CycleRun, type Model, type SteadyOptions, type SteadyResult } from './engine';
 import type { Vec } from './linalg';
 import { buildModel, type SimParams } from './models';
 
@@ -23,8 +24,9 @@ export type Mode = 'CCM' | 'DCM' | 'BCM';
  * steady: a periodic steady state was found. runaway: the inductor current
  * changes by the same amount every cycle (the volt-seconds cannot balance),
  * so there is none. charging: the output capacitor, with nothing across it,
- * keeps charging. unsettled: no steady state within the cycle limit for
- * another reason (e.g. an undamped L-C ringing).
+ * keeps charging, and nothing limits its voltage. unsettled: no steady state
+ * found within the cycle limit (a capacitor alone still settling, an
+ * undamped L-C ringing).
  */
 export type Status = 'steady' | 'runaway' | 'charging' | 'unsettled';
 
@@ -36,6 +38,8 @@ export interface Drift {
   vLavg?: number;
   /** Fixed output: the duty ratio that balances the volt-seconds in CCM with ideal parts, from the catalogue's M(D). */
   Dbalance?: number;
+  /** Forward converter: the largest duty ratio that still resets its core (forward.reset.Dmax). */
+  Dmax?: number;
 }
 
 /** The first cycles from rest (zero currents, the output at its start voltage), recorded. */
@@ -45,6 +49,8 @@ export interface StartUp {
   /** State at the start of the last recorded cycle, and at its end. */
   lastStart: Vec;
   end: Vec;
+  /** Sub-steps per recorded cycle. */
+  steps: number;
 }
 
 export interface Waveforms {
@@ -359,13 +365,17 @@ export function startUp(p: SimParams, model: Model, cycles: number, steps: numbe
     }
     x = run.x;
   }
-  return { waveforms: out, cycles: n, lastStart, end: x };
+  return { waveforms: out, cycles: n, lastStart, end: x, steps: perCycle };
 }
 
-/** The duty ratio that holds a fixed output in CCM with ideal parts: the catalogue's M(D) solved for D at M = V/V_g. */
+/**
+ * The duty ratio that holds a fixed output in CCM with ideal parts: the
+ * catalogue's M(D) solved for D at M = V/V_g (negative for the buck-boost,
+ * whose output is inverted; its fixed output is the magnitude).
+ */
 export function balanceDuty(p: SimParams): number | undefined {
   if (p.load.kind !== 'fixed' || !(p.Vg > 0)) return undefined;
-  const M = p.load.V / p.Vg;
+  const M = ((p.topology === 'buckboost' ? -1 : 1) * p.load.V) / p.Vg;
   const eq = { buck: 'buck.ccm.M', boost: 'boost.ccm.M', buckboost: 'buckboost.ccm.M', flyback: 'flyback.ccm.M', forward: 'forward.ccm.M' }[p.topology];
   const inputs: Record<string, number> = p.topology === 'flyback' || p.topology === 'forward' ? { n: p.n ?? 1 } : {};
   try {
@@ -376,11 +386,19 @@ export function balanceDuty(p: SimParams): number | undefined {
   }
 }
 
+/** The forward converter's largest duty ratio that still resets its core (forward.reset.Dmax); none for the others. */
+export function resetLimit(p: SimParams): number | undefined {
+  return p.topology === 'forward' ? evaluate('forward.reset.Dmax', { n_r: p.nr ?? 1 }) : undefined;
+}
+
 /**
  * Why the search found no steady state: a few more cycles from where it
- * stopped show which state keeps changing. The inductor current changing by
- * the same amount every cycle means its volt-seconds cannot balance; an
- * output capacitor with nothing across it charges.
+ * stopped show which state keeps changing. An inductor current (first the
+ * forward converter's magnetizing current, whose core does not reset above
+ * its duty-ratio limit) changing by exactly the same amount every cycle
+ * means its volt-seconds cannot balance: a runaway. A slow transient's
+ * change shrinks from cycle to cycle instead; it, and a capacitor alone
+ * whose voltage still changes, have not settled yet.
  */
 export function diagnose(p: SimParams, model: Model, x: Vec, steps: number): { status: Status; drift?: Drift } {
   const runs: CycleRun[] = [];
@@ -393,27 +411,26 @@ export function diagnose(p: SimParams, model: Model, x: Vec, steps: number): { s
   const last = runs[2]!;
   const prev = runs[1]!;
   const names = model.stateNames;
-  const l = p.load;
-  const iv = names.indexOf('v');
-  if (l.kind === 'network' && l.R === undefined && !l.battery && iv >= 0) {
-    return { status: 'charging', drift: { state: 'v', perCycle: last.dx[iv]! } };
-  }
-  // an inductor current (the forward converter's magnetizing current too)
-  // that changes by the same amount every cycle
   for (const [state, L] of [
-    ['i', p.L],
     ['iM', p.LM ?? NaN],
+    ['i', p.L],
   ] as const) {
     const j = names.indexOf(state);
     if (j < 0) continue;
     const d = last.dx[j]!;
-    const same = Math.abs(d - prev.dx[j]!) <= 1e-3 * Math.abs(d);
-    if (d !== 0 && same && Math.abs(d) >= 1e-6 * Math.max(Math.abs(y[j]!), 1e-12)) {
+    // a pure drift: the same change every cycle, to 1e-9 (a slow transient's change shrinks from cycle to cycle)
+    const same = Math.abs(d - prev.dx[j]!) <= 1e-9 * Math.abs(d);
+    // a change that counts against how far the current moves within the cycle, not rounding
+    if (d !== 0 && same && Math.abs(d) > 1e-6 * Math.max(last.variation[j]!, Math.abs(y[j]!))) {
       const drift: Drift = { state, perCycle: d, vLavg: (L * d) / model.Ts };
       if (state === 'i') drift.Dbalance = balanceDuty(p);
+      const Dmax = resetLimit(p);
+      if (Dmax !== undefined) drift.Dmax = Dmax;
       return { status: 'runaway', drift };
     }
   }
+  const iv = names.indexOf('v');
+  if (chargingLoad(p) && iv >= 0 && last.dx[iv] !== 0) return { status: 'unsettled', drift: { state: 'v', perCycle: last.dx[iv]! } };
   return { status: 'unsettled' };
 }
 
@@ -426,36 +443,96 @@ export function chargingLoad(p: SimParams): boolean {
 }
 
 /**
+ * A capacitor alone that charges without bound: behind a boost, buck-boost
+ * or flyback every cycle stores energy in the inductance and hands it to the
+ * capacitor, whatever its voltage. With a node capacitance the inductance
+ * must also charge that to the output's voltage before the diode conducts,
+ * which it no longer can above some voltage: the output stops there. Behind
+ * a buck the output settles at the input (the switch conducts both ways),
+ * behind a forward converter at or above n V_g less the diode drop.
+ */
+export function unboundedCharging(p: SimParams): boolean {
+  return chargingLoad(p) && (p.topology === 'boost' || p.topology === 'buckboost' || p.topology === 'flyback') && !p.Cnode;
+}
+
+/** A forward converter's capacitor alone is followed from rest for up to this many cycles before the search. */
+export const FOLLOW_CYCLES = 4000;
+
+/**
+ * The steady state a capacitor alone reaches from V_0. Its steady states
+ * may form a range: every voltage that no more charge reaches (a forward
+ * converter's output at or above n V_g less the diode drop; with a node
+ * capacitance, a boost's, buck-boost's or flyback's output above the voltage
+ * to which its inductance can no longer lift the node). The start-up decides
+ * which one it keeps:
+ * - it creeps up to the lowest of them (the charge per cycle shrinking to
+ *   nothing), so a search that ends in the range moves back, by bisection
+ *   towards where it started, to the range's edge (a Newton step may
+ *   overshoot it);
+ * - a forward converter's L-C charge may overshoot n V_g on its first peak
+ *   and stop there, so its start-up is followed first, until the capacitor
+ *   stops changing (at most FOLLOW_CYCLES cycles).
+ * A buck's output has one steady state, the input (its switch conducts
+ * both ways), which the same search finds.
+ */
+function capacitorAlone(p: SimParams, model: Model, opts: SteadyOptions, steps: number): SteadyResult {
+  const iv = model.stateNames.indexOf('v');
+  let start = restState(p, model);
+  if (p.topology === 'forward') {
+    for (let k = 0; k < FOLLOW_CYCLES; k++) {
+      const r = runCycle(model, start, { stepsPerPeriod: 100 });
+      start = r.x;
+      if (k > 0 && r.dx[iv] === 0) break;
+    }
+  }
+  const ss = steadyState(model, start, { stopOnDrift: true, ...opts, stepsPerPeriod: steps });
+  if (!ss.converged) return ss;
+  // the capacitor's voltage at which one cycle from the steady state's other states brings it no charge
+  const at = (v: number) => ss.x0.map((x, j) => (j === iv ? v : x));
+  const stopped = (v: number) => runCycle(model, at(v), { stepsPerPeriod: steps }).dx[iv] === 0;
+  let a = start[iv]!;
+  let b = ss.x0[iv]!;
+  if (!stopped(b) || stopped(a)) return ss;
+  for (let k = 0; k < 80 && Math.abs(b - a) > 1e-12 * Math.abs(b); k++) {
+    const m = 0.5 * (a + b);
+    if (stopped(m)) b = m;
+    else a = m;
+  }
+  const x0 = at(b);
+  return { ...ss, x0, run: runCycle(model, x0, { stepsPerPeriod: steps, record: true }) };
+}
+
+/**
  * Build the model, start from the analytic operating point, and find the
  * periodic steady state. Without one, say why and record the start-up from
  * rest instead; the result's averages then describe the start-up's last
- * cycle. A capacitor alone behind a boost, buck-boost or flyback charges
- * without bound (every cycle adds energy and nothing takes it), so no search
- * is made; behind a buck or a forward converter it stops once the output
- * reaches what the converter can give.
+ * cycle. A capacitor alone that charges without bound is not searched; one
+ * that stops is searched from V_0 for the steady state its start-up reaches
+ * (capacitorAlone).
  */
 export function simulate(p: SimParams, opts: SteadyOptions = {}): SimResult {
   const model = buildModel(p);
   const steps = opts.stepsPerPeriod ?? stepsFor(p);
-  const unbounded = chargingLoad(p) && p.topology !== 'buck' && p.topology !== 'forward';
-  if (!unbounded) {
-    const ss = steadyState(model, initialState(p, model), { stopOnDrift: true, ...opts, stepsPerPeriod: steps });
-    if (ss.converged) return analyse(p, model, ss);
-    const { status, drift } = diagnose(p, model, ss.x0, steps);
-    return withStartUp(p, model, status, drift);
-  }
-  return withStartUp(p, model, 'charging');
+  if (unboundedCharging(p)) return withStartUp(p, model, 'charging');
+  const ss = chargingLoad(p)
+    ? capacitorAlone(p, model, opts, steps)
+    : steadyState(model, initialState(p, model), { stopOnDrift: true, ...opts, stepsPerPeriod: steps });
+  if (ss.converged) return analyse(p, model, ss);
+  const { status, drift } = diagnose(p, model, ss.x0, steps);
+  return withStartUp(p, model, status, drift);
 }
 
 /** The result without a steady state: the start-up from rest, and the analysis of its last cycle. */
 function withStartUp(p: SimParams, model: Model, status: Status, drift?: Drift): SimResult {
   const [cycles, perCycle] = STARTUP[status as keyof typeof STARTUP] ?? STARTUP.unsettled;
   const su = startUp(p, model, cycles, perCycle);
-  // the start-up's last cycle again, for its averages
-  const last = runCycle(model, su.lastStart, { stepsPerPeriod: perCycle, record: true });
+  // the start-up's last cycle again, as it was recorded, for its averages
+  const last = runCycle(model, su.lastStart, { stepsPerPeriod: su.steps, record: true });
   const r = analyse(p, model, { x0: su.lastStart, cycles: su.cycles, converged: false, residual: NaN, run: last });
   let d = drift;
-  if (status === 'charging') d = { state: 'v', perCycle: last.dx[model.stateNames.indexOf('v')]! };
+  const iv = model.stateNames.indexOf('v');
+  // a capacitor alone: its change over the start-up's last cycle
+  if (chargingLoad(p) && iv >= 0 && (status === 'charging' || d?.state === 'v')) d = { state: 'v', perCycle: su.end[iv]! - su.lastStart[iv]! };
   return { ...r, status, drift: d, startUp: su };
 }
 

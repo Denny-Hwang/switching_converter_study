@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { sim } from 'pe-core';
-import { compareRows, fromSlider, hashOf, nextAnchor, parseField, sliderAnchors, stateFromHash, toParams, type SimPreset } from './Simulator';
+import { ui } from '../i18n/ui';
+import { compareRows, fromSlider, hashOf, loadRows, nextAnchor, noSteadyText, parseField, sliderAnchors, stateFromHash, toParams, type SimLabels, type SimPreset } from './Simulator';
 
 const buck = { topo: 'buck' as const, load: 'res' as const, source: false };
 const values = { Vg: '24', D: '0.5', fs: '100000', L: '0.0001', R: '10', C: '0.00001' };
@@ -153,5 +154,81 @@ describe('simulator URL hash', () => {
     expect(toParams(back.fs, back.values)).toEqual(toParams(buck, values));
     // a link that names only some fields (a "Try it" link) takes the rest from the preset
     expect(stateFromHash(new URLSearchParams('topo=buck&D=0.4'), presets).values.Ron).toBe('0.05');
+  });
+});
+
+describe('what the simulator says without a steady state', () => {
+  const t = ui.en;
+  const labels = {
+    runaway: t['sim.runaway'],
+    inductorCurrent: t['sim.inductorCurrent'],
+    magnetizingCurrent: t['sim.magnetizingCurrent'],
+    rises: t['sim.rises'],
+    falls: t['sim.falls'],
+    balance: t['sim.balance'],
+    noReset: t['sim.noReset'],
+    startUp: t['sim.startUp'],
+    charging: t['sim.charging'],
+    settling: t['sim.settling'],
+    unsettled: t['sim.unsettled'],
+  } as SimLabels;
+  const fs = 1e5;
+
+  it('a runaway: the current, its change per cycle, the average inductor voltage, the balancing duty ratio', () => {
+    const r = sim.simulate({ topology: 'buck', Vg: 24, D: 0.8, fs, L: 1e-4, load: { kind: 'fixed', V: 12 } });
+    const text = noSteadyText(r, labels)!;
+    expect(text).toContain('inductor current rises by 720 mA every cycle');
+    expect(text).toContain('an average of 7.2 V instead of 0 V');
+    expect(text).toContain('CCM needs D = 0.5');
+    expect(text).toContain(`first ${r.startUp!.cycles} cycles`);
+  });
+
+  it("a forward converter's core that does not reset: the magnetizing current and the reset limit", () => {
+    const r = sim.simulate({ topology: 'forward', Vg: 24, D: 0.7, fs, L: 1e-4, n: 0.5, nr: 1, LM: 1e-3, load: { kind: 'fixed', V: 8 } });
+    const text = noSteadyText(r, labels)!;
+    expect(text).toContain('magnetizing current rises');
+    expect(text).toContain('D_max = 0.5');
+    expect(text).not.toContain('CCM needs');
+  });
+
+  it('a capacitor that charges without bound, and one that has not settled yet', () => {
+    const charging = sim.simulate({ topology: 'boost', Vg: 12, D: 0.3, fs, L: 1e-4, load: { kind: 'network', C: 1e-5, V0: 0 } });
+    expect(noSteadyText(charging, labels)).toContain('still gains');
+    const settling = sim.simulate({ topology: 'buck', Vg: 24, D: 0.5, fs, L: 1e-4, load: { kind: 'network', C: 1e-2, V0: 0 } }, { maxCycles: 1 });
+    expect(settling.status).toBe('unsettled');
+    expect(noSteadyText(settling, labels)).toContain('has not settled');
+  });
+
+  it('another search cut short, and a steady state (no text)', () => {
+    const p: sim.SimParams = { topology: 'buck', Vg: 24, D: 0.3, fs, L: 2e-5, load: { kind: 'resistive', R: 50, C: 22e-6 } };
+    const cut = sim.simulate(p, { maxCycles: 1 });
+    expect(noSteadyText(cut, labels)).toContain('No periodic steady state within the cycle limit');
+    expect(noSteadyText(sim.simulate(p), labels)).toBeNull();
+  });
+});
+
+describe('the load table', () => {
+  const fs = 1e5;
+  it("splits a battery's power into its open-circuit voltage's and its resistance's, which add up to what the terminals take", () => {
+    const r = sim.simulate({ topology: 'buck', Vg: 24, D: 0.6, fs, L: 1e-4, load: { kind: 'network', C: 22e-6, R: 40, battery: { V: 12, R: 0.5 } } });
+    const rows = Object.fromEntries(loadRows(r).map((x) => [x.label, x.value]));
+    expect(Object.keys(rows)).toEqual(['vout', 'iR', 'ibat', 'pbat', 'pRb']);
+    expect(rows.pbat).toBeCloseTo(12 * rows.ibat!, 12);
+    // v_out = V_b + R_b i_b at every instant, so <v_out i_b> = V_b <i_b> + R_b <i_b^2>
+    const t = r.waveforms.t as number[];
+    const v = r.waveforms.v_out as number[];
+    const i = r.waveforms.i_bat as number[];
+    let pTerm = 0;
+    for (let k = 1; k < t.length; k++) pTerm += 0.5 * (v[k - 1]! * i[k - 1]! + v[k]! * i[k]!) * (t[k]! - t[k - 1]!);
+    pTerm /= t[t.length - 1]! - t[0]!;
+    expect(Math.abs(rows.pbat! + rows.pRb! - pTerm) / pTerm).toBeLessThan(1e-9);
+  });
+
+  it('has no rows for a resistive or a fixed load, and only the output voltage for a capacitor alone', () => {
+    expect(loadRows(sim.simulate({ topology: 'buck', Vg: 24, D: 0.5, fs, L: 1e-4, load: { kind: 'resistive', R: 10, C: 1e-5 } }))).toEqual([]);
+    expect(loadRows(sim.simulate({ topology: 'buck', Vg: 24, D: 0.4, fs, L: 1e-4, load: { kind: 'fixed', V: 12 } }))).toEqual([]);
+    const cap = loadRows(sim.simulate({ topology: 'buck', Vg: 24, D: 0.5, fs, L: 1e-4, load: { kind: 'network', C: 1e-5, V0: 0 } }));
+    expect(cap.map((x) => x.label)).toEqual(['vout']);
+    expect(cap[0]!.value).toBeCloseTo(24, 5);
   });
 });

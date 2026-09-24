@@ -34,7 +34,6 @@ export interface SimLabels {
   status: string;
   mode: string;
   converged: string;
-  notConverged: string;
   cycles: string;
   /** No steady state: '{what}', '{dir}', '{d}', '{v}' filled in. */
   runaway: string;
@@ -44,10 +43,14 @@ export interface SimLabels {
   falls: string;
   /** '{D}' filled in. */
   balance: string;
+  /** '{Dmax}' filled in. */
+  noReset: string;
   /** '{n}' filled in. */
   startUp: string;
   /** '{n}', '{v}', '{dv}' filled in. */
   charging: string;
+  /** '{n}', '{v}', '{dv}' filled in. */
+  settling: string;
   unsettled: string;
   loadTable: string;
   vout: string;
@@ -465,12 +468,16 @@ export function noSteadyText(r: SimResult, labels: SimLabels): string | null {
       d: fmtValue(Math.abs(d.perCycle), 'A'),
       v: fmtValue(d.vLavg ?? NaN, 'V'),
     });
-    if (d.Dbalance !== undefined) text += ` ${fill(labels.balance, { D: fmt(d.Dbalance) })}`;
+    // the forward converter's core that does not reset; else the duty ratio that would balance a fixed output
+    if (d.state === 'iM' && d.Dmax !== undefined) text += ` ${fill(labels.noReset, { Dmax: fmt(d.Dmax) })}`;
+    else if (d.Dbalance !== undefined) text += ` ${fill(labels.balance, { D: fmt(d.Dbalance) })}`;
     return `${text} ${fill(labels.startUp, { n })}`;
   }
-  if (r.status === 'charging' && su && r.drift) {
+  // a capacitor alone: charging without bound, or not settled yet
+  if ((r.status === 'charging' || r.status === 'unsettled') && su && r.drift?.state === 'v') {
     const v = su.waveforms.v_out as number[];
-    return fill(labels.charging, { n, v: fmtValue(v[v.length - 1]!, 'V'), dv: fmtValue(r.drift.perCycle, 'V') });
+    const values = { n, v: fmtValue(v[v.length - 1]!, 'V'), dv: fmtValue(r.drift.perCycle, 'V') };
+    return fill(r.status === 'charging' ? labels.charging : labels.settling, values);
   }
   if (r.status === 'unsettled') return fill(labels.unsettled, { n });
   return null;
@@ -895,7 +902,7 @@ export default function Simulator({ labels, presets, symbols }: Props) {
                     · <Sym text="K" /> = {fmt(result.K)}, <Sym text="K_crit" /> = {fmt(result.Kcrit)}
                   </>
                 )}{' '}
-                · {result.converged ? labels.converged : labels.notConverged} ({labels.cycles}: {result.cycles})
+                · {labels.converged} ({labels.cycles}: {result.cycles})
               </p>
             )}
           </section>
