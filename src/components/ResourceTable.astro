@@ -1,0 +1,138 @@
+---
+/**
+ * <ResourceTable types={['book', 'chapter']} /> -- the resources of
+ * resources.yaml (all of them without `types`) as a table: title with its
+ * author and why, type, level, tags and retrieval date. Every row is in the
+ * HTML; a small script adds a text search and filters by type, level and tag
+ * (without JavaScript the whole table shows).
+ */
+import { ui } from '../i18n/ui';
+import { RESOURCE_LEVELS, RESOURCE_TYPES, resources, typeLabel, type ResourceType } from '../lib/resources';
+import { pageLocale } from '../lib/locale';
+
+interface Props {
+  /** Resource types to list (default: every type). */
+  types?: ResourceType[];
+}
+const { types } = Astro.props;
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const order = Object.keys(RESOURCE_TYPES);
+const rows = resources
+  .filter((r) => !types || types.includes(r.type as ResourceType))
+  .slice()
+  .sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type) || a.title.localeCompare(b.title));
+const shownTypes = order.filter((ty) => rows.some((r) => r.type === ty));
+const tags = [...new Set(rows.flatMap((r) => r.tags))].sort();
+const levels = Object.keys(RESOURCE_LEVELS) as (keyof typeof RESOURCE_LEVELS)[];
+const id = `pe-res-${(types ?? ['all']).join('-')}`;
+---
+
+<div class="pe-res not-content" data-pe-res id={id}>
+  <form class="pe-res__filters" data-filters hidden onsubmit="return false">
+    <label>
+      {t['res.search']}
+      <input type="search" data-f="q" />
+    </label>
+    {
+      shownTypes.length > 1 && (
+        <label>
+          {t['res.type']}
+          <select data-f="type">
+            <option value="">{t['res.all']}</option>
+            {shownTypes.map((ty) => (
+              <option value={ty}>{typeLabel(ty, locale)}</option>
+            ))}
+          </select>
+        </label>
+      )
+    }
+    <label>
+      {t['res.level']}
+      <select data-f="level">
+        <option value="">{t['res.all']}</option>
+        {levels.map((l) => <option value={l}>{RESOURCE_LEVELS[l][locale]}</option>)}
+      </select>
+    </label>
+    <label>
+      {t['res.tag']}
+      <select data-f="tag">
+        <option value="">{t['res.all']}</option>
+        {tags.map((tag) => <option value={tag}>{tag}</option>)}
+      </select>
+    </label>
+    <output data-count aria-live="polite"></output>
+  </form>
+  <div class="pe-res__scroll">
+  <table class="pe-res__table">
+    <thead>
+      <tr>
+        <th scope="col">{t['res.resource']}</th>
+        <th scope="col">{t['res.type']}</th>
+        <th scope="col">{t['res.level']}</th>
+        <th scope="col">{t['res.tags']}</th>
+        <th scope="col">{t['godeeper.retrieved']}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((r) => (
+          <tr
+            data-type={r.type}
+            data-level={r.level}
+            data-tags={r.tags.join(' ')}
+            data-text={`${r.title} ${r.author} ${r.why} ${r.why_ko} ${r.tags.join(' ')}`.toLowerCase()}
+          >
+            <td>
+              <a href={r.url}>{r.title}</a>
+              <br />
+              <span class="pe-res__author">{r.author}</span>
+              <br />
+              <span class="pe-res__why">{locale === 'ko' ? r.why_ko : r.why}</span>
+            </td>
+            <td>{typeLabel(r.type, locale)}</td>
+            <td>{RESOURCE_LEVELS[r.level][locale]}</td>
+            <td class="pe-res__tags">{r.tags.join(', ')}</td>
+            <td class="pe-res__date">{r.retrieved}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  </div>
+  <p class="pe-res__none" data-none hidden>{t['res.none']}</p>
+</div>
+
+<script>
+  function setup(root: HTMLElement): void {
+    const form = root.querySelector<HTMLFormElement>('[data-filters]');
+    const rows = [...root.querySelectorAll<HTMLTableRowElement>('tbody tr')];
+    const count = root.querySelector<HTMLOutputElement>('[data-count]');
+    const none = root.querySelector<HTMLElement>('[data-none]');
+    if (!form || !count || !none) return;
+    const field = (name: string) => form.querySelector<HTMLInputElement | HTMLSelectElement>(`[data-f="${name}"]`);
+    const apply = () => {
+      const q = (field('q')?.value ?? '').trim().toLowerCase();
+      const type = field('type')?.value ?? '';
+      const level = field('level')?.value ?? '';
+      const tag = field('tag')?.value ?? '';
+      let shown = 0;
+      for (const row of rows) {
+        const ok =
+          (!q || q.split(/\s+/).every((w) => (row.dataset.text ?? '').includes(w))) &&
+          (!type || row.dataset.type === type) &&
+          (!level || row.dataset.level === level) &&
+          (!tag || (row.dataset.tags ?? '').split(' ').includes(tag));
+        row.hidden = !ok;
+        if (ok) shown++;
+      }
+      count.value = `${shown} / ${rows.length}`;
+      none.hidden = shown > 0;
+    };
+    form.hidden = false;
+    form.addEventListener('input', apply);
+    form.addEventListener('change', apply);
+    apply();
+  }
+  document.querySelectorAll<HTMLElement>('[data-pe-res]').forEach(setup);
+</script>

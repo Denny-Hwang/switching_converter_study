@@ -47,6 +47,10 @@ description and no tag twice. The index embeds <GotchaIndex part="list" />,
 then under an h2 of its own <GotchaIndex part="tags" />, which lists the
 pages by their tags.
 
+A page under 10-resources/ other than the bibliography lists resources.yaml
+with <ResourceTable types={[...]} />; its Korean mirror lists the same types,
+STATUS has its row, and every type used in resources.yaml has a page.
+
 A page is a tool page when it embeds a tool island (<Explorer />,
 <Simulator />, ...). Each tool page has a "Screenshot" section (KO: 스크린샷)
 that shows an image imported from src/assets/screenshots/<tool>-<locale>.png
@@ -93,6 +97,8 @@ GOTCHA_SECTIONS = {
     "en": ["Symptom", "Why", "How to confirm", "Fix", "References"],
     "ko": ["증상", "원인", "확인 방법", "해결", "참고 자료"],
 }
+RESOURCES_DIR = "10-resources"
+RESOURCE_TABLE = re.compile(r"<ResourceTable\b([^>]*)/>")
 DOD_COLUMNS = ("EN", "KO", "`<Eq>` only", "Try it", "Go deeper ≥ 2", "Gotchas", "Quiz ≥ 5")
 
 
@@ -278,6 +284,42 @@ def check_gotchas(status: dict[tuple[str, str], dict[str, str]]) -> tuple[list[s
     return errors, sum(1 for (loc, _) in pages if loc == "en")
 
 
+def check_resource_pages(status: dict[tuple[str, str], dict[str, str]], resources: dict[str, dict]) -> list[str]:
+    """The pages under 10-resources that list resources.yaml."""
+    errors: list[str] = []
+    listed: dict[tuple[str, str], list[str] | None] = {}
+    for locale in SECTIONS:
+        folder = DOCS / locale / RESOURCES_DIR
+        for path in sorted(folder.glob("*.mdx")) if folder.exists() else []:
+            if path.stem == "bibliography":
+                continue
+            where = str(path.relative_to(ROOT))
+            _, body = frontmatter(strip_code(path.read_text(encoding="utf-8")))
+            tables = RESOURCE_TABLE.findall(body)
+            if len(tables) != 1:
+                errors.append(f"{where}: a resource page embeds exactly one <ResourceTable />, found {len(tables)}")
+                continue
+            m = re.search(r"types\s*=\s*\{([^}]*)\}", tables[0])
+            listed[(locale, path.stem)] = sorted(quoted_list(m.group(1))) if m else None
+    for (locale, slug), types in listed.items():
+        if locale == "en":
+            row = status.get((RESOURCES_DIR, slug))
+            if row is None or "✅" not in row.get("EN", "") or "✅" not in row.get("KO", ""):
+                errors.append(f"docs/STATUS.md: {RESOURCES_DIR}/{slug} needs a row with EN and KO ✅")
+            if ("ko", slug) not in listed:
+                errors.append(f"src/content/docs/en/{RESOURCES_DIR}/{slug}.mdx: no Korean page")
+            elif listed[("ko", slug)] != types:
+                errors.append(f"src/content/docs/ko/{RESOURCES_DIR}/{slug}.mdx: lists types {listed[('ko', slug)]}, the English page {types}")
+        elif ("en", slug) not in listed:
+            errors.append(f"src/content/docs/ko/{RESOURCES_DIR}/{slug}.mdx: no English page of that name")
+    if listed:
+        covered = {ty for (loc, _), types in listed.items() if loc == "en" and types for ty in types}
+        for rid, r in resources.items():
+            if r.get("type") not in covered:
+                errors.append(f"resources.yaml: {rid} has type {r.get('type')!r}, which no 10-resources page lists by type")
+    return errors
+
+
 def check_tool_page(path: Path, locale: str, body: str) -> list[str]:
     """A tool page shows a screenshot of its tool in its own language."""
     where = str(path.relative_to(ROOT))
@@ -417,6 +459,7 @@ def main() -> int:
 
     gotcha_errors, n_gotchas = check_gotchas(status)
     errors += gotcha_errors
+    errors += check_resource_pages(status, resources)
 
     if errors:
         print(f"modulelint: {len(errors)} error(s)", file=sys.stderr)

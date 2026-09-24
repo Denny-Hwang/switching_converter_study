@@ -189,14 +189,19 @@ Gotcha pages are not modules: each follows the template symptom · why · how to
 
 ## 10-resources
 
-| Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| books | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| courses | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| videos | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| app-notes | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| tools | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| papers | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+Generated from `resources.yaml` by `<ResourceTable>`: every row is in the page, and a script adds a text search and filters
+by type, level and tag. Every seed item of BUILD_SPEC §6 is resolved (none removed); `scripts/resources_check.py --online`
+opens every URL and matches its title in CI.
+
+| Page | Phase | EN | KO | Notes |
+| --- | --- | --- | --- | --- |
+| index | 4 | ✅ | ✅ | every resource in one table |
+| books | 4 | ✅ | ✅ | `book`, `chapter`: Erickson & Maksimović (and its chapters), Mohan et al., Basso, Hart, Würth's *Trilogy of Magnetics*, Dixon's *Magnetics Design Handbook* |
+| courses | 4 | ✅ | ✅ | `course`, `lecture`: the CU Boulder specializations and courses, MIT OCW 6.334, 6.002, 6.003 |
+| videos | 4 | ✅ | ✅ | `video`, `channel`: ADI's *LTspice Basics*, TI's PSDS library, Ben-Yaakov's channel |
+| app-notes | 4 | ✅ | ✅ | `app-note`, `datasheet` |
+| tools | 4 | ✅ | ✅ | LTspice, ngspice, CircuitJS1, TDK's Ferrite Magnetic Design Tool, KaTeX, Starlight |
+| papers | 4 | ✅ | ✅ | Zi et al., Singer, Steinmetz, Dowell, Ottman et al. (2002, 2003), Guyomar et al., Lefeuvre et al. (2005, 2006), Esram & Chapman |
 
 ## Site infrastructure pages
 

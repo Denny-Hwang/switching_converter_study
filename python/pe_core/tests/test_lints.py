@@ -451,3 +451,25 @@ def test_modulelint_gotcha_wrong_section_reports_only_that(tmp_path: Path) -> No
     # a page with a wrong section is still a page: its mirror is found, and nothing else is reported
     errors = _gotcha_errors(tmp_path, _GOTCHA_EN.replace("## Why", "## Cause"), _GOTCHA_KO, {"EN": "✅", "KO": "✅"})
     assert len(errors) == 1 and "h2 sections must be" in errors[0], errors
+
+
+def _resource_errors(tmp_path: Path, en_types: str, ko_types: str, row: dict[str, str] | None, resources: dict[str, dict]) -> list[str]:
+    lint = _script("modulelint")
+    for locale, types in (("en", en_types), ("ko", ko_types)):
+        d = tmp_path / "src" / "content" / "docs" / locale / "10-resources"
+        d.mkdir(parents=True)
+        (d / "books.mdx").write_text(f"---\ntitle: Books\n---\n\n<ResourceTable types={{{types}}} />\n", encoding="utf-8")
+    lint.ROOT, lint.DOCS = tmp_path, tmp_path / "src" / "content" / "docs"
+    status = {("10-resources", "books"): row} if row is not None else {}
+    return lint.check_resource_pages(status, resources)
+
+
+def test_modulelint_resource_pages(tmp_path: Path) -> None:
+    ok = {"a": {"type": "book"}}
+    assert _resource_errors(tmp_path / "1", "['book']", "['book']", {"EN": "✅", "KO": "✅"}, ok) == []
+    # the Korean page lists other types
+    assert any("lists types" in e for e in _resource_errors(tmp_path / "2", "['book']", "['paper']", {"EN": "✅", "KO": "✅"}, ok))
+    # a type that no page lists
+    assert any("which no 10-resources page" in e for e in _resource_errors(tmp_path / "3", "['book']", "['book']", {"EN": "✅", "KO": "✅"}, {"a": {"type": "tool"}}))
+    # STATUS lists the page
+    assert any("needs a row" in e for e in _resource_errors(tmp_path / "4", "['book']", "['book']", None, ok))

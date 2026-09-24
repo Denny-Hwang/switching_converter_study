@@ -1,0 +1,13 @@
+---
+title: "도서"
+description: "교과서와 참고서, 그리고 모듈이 링크하는 주 교과서의 장."
+sidebar:
+  order: 1
+---
+
+import ResourceTable from '../../../../components/ResourceTable.astro';
+
+교과서와 참고서는 각 출판사의 페이지로 링크하고, 모듈이 하나씩 링크하는 주
+교과서의 장도 함께 싣습니다. 이 사이트는 책의 사본을 링크하지 않습니다.
+
+<ResourceTable types={['book', 'chapter']} />
