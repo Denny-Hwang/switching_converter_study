@@ -229,6 +229,8 @@ export interface IntervalSpec {
   iD: Lin;
   /** d(vc)/dt times C_node, when vc is a state. */
   qc?: Lin;
+  /** The switch's body diode's forward current, while it conducts. */
+  iBd?: Lin;
   guards: Interval['guards'];
 }
 
@@ -269,6 +271,7 @@ export function outputsFrom(c: Common, L: number, specs: Record<string, Interval
     // fixed output takes the whole output current), and the output capacitor
     const iR = c.hasV && Number.isFinite(c.R) ? v / c.R : 0;
     const iBat = c.battery ? (v - c.battery.V) / c.battery.R : c.hasV ? 0 : iOut;
+    const iIn = e(s.iIn);
     const out: Record<string, number> = {
       i_L: i,
       v_L: e(s.vL) + c.RL * i,
@@ -276,13 +279,22 @@ export function outputsFrom(c: Common, L: number, specs: Record<string, Interval
       i_sw: e(s.iSw),
       i_D: e(s.iD),
       i_out: iOut,
-      i_in: e(s.iIn),
+      i_in: iIn,
       v_in: e(c.vin),
       v_out: v,
       i_R: iR,
       i_bat: iBat,
       i_C: c.hasV ? iOut - iR - iBat : 0,
+      // the node capacitance's current (C_node dvc/dt) and the body diode's
+      i_Cn: s.qc ? e(s.qc) : 0,
+      i_bd: s.iBd ? e(s.iBd) : 0,
     };
+    if (c.src) {
+      // the Thevenin source's current, and the bus capacitor's share of it
+      const iSrc = (c.src.Voc - e(c.vin)) / c.src.Rs;
+      out.i_src = iSrc;
+      out.i_Cbus = iSrc - iIn;
+    }
     return out;
   };
 }
