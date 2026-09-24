@@ -11,6 +11,7 @@
 import { ui } from '../i18n/ui';
 import { RESOURCE_LEVELS, RESOURCE_TYPES, resources, typeLabel, type ResourceType } from '../lib/resources';
 import { pageLocale } from '../lib/locale';
+import { fold } from '../lib/fold';
 
 interface Props {
   /** Resource types to list (default: every type). */
@@ -32,9 +33,6 @@ const allEnglish = rows.every((r) => r.language === 'en');
 const languageName = { en: { en: 'English', ko: '영어' }, ko: { en: 'Korean', ko: '한국어' } } as const;
 // an English title on a Korean page is marked as English for screen readers and hyphenation
 const lang = (l: 'en' | 'ko') => (l === locale ? undefined : l);
-// the search ignores case and accents ("maksimovic" finds "Maksimović", "wurth" finds "Würth"); NFC puts the
-// decomposed Hangul syllables back together, so that "변화" does not find "변환"
-const fold = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').normalize('NFC').toLowerCase();
 const id = `pe-res-${(types ?? ['all']).join('-')}`;
 ---
 
@@ -134,7 +132,8 @@ const id = `pe-res-${(types ?? ['all']).join('-')}`;
 </div>
 
 <script>
-  const fold = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').normalize('NFC').toLowerCase();
+  import { fold } from '../lib/fold';
+
   function setup(root: HTMLElement): void {
     const form = root.querySelector<HTMLFormElement>('[data-filters]');
     const rows = [...root.querySelectorAll<HTMLTableRowElement>('tbody tr')];
