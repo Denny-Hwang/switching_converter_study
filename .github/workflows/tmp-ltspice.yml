@@ -26,13 +26,6 @@ jobs:
           Xvfb :99 -screen 0 1280x1024x24 >/dev/null 2>&1 &
           sleep 2
           DISPLAY=:99 wine msiexec /i lt.msi /qn; echo "msiexec exit $?"
-      - name: Where LTspice keeps its answer to the usage-data question
-        run: |
-          sudo apt-get install -y -qq msitools binutils >/dev/null
-          mkdir -p lt && (cd lt && msiextract ../lt.msi >/dev/null)
-          X="lt/APPDIR:./LTspice.exe"
-          echo "== 16-bit strings"; strings -e l "$X" | grep -n -i -E "usage|telemetr|anonym|consent|analytic" | head -40
-          echo "== 8-bit strings"; strings "$X" | grep -n -i -E "usagedata|telemetr|anonym|consent" | head -40
       - name: Netlist and simulate every schematic with LTspice
         run: |
           sudo apt-get install -y -qq fluxbox imagemagick >/dev/null 2>&1 || true
@@ -41,20 +34,18 @@ jobs:
           (fluxbox >/dev/null 2>&1 &) ; sleep 2
           EXE="$HOME/.wine/drive_c/Program Files/ADI/LTspice/LTspice.exe"
           SHOTS="$GITHUB_WORKSPACE/shots"; mkdir -p "$SHOTS"
-          # LTspice asks once whether to share usage data: decline it with the window manager's focus,
-          # trying the message box's own keys (N for No), then Escape and Alt+N
-          ( n=0; while true; do
+          # LTspice asks once whether to share usage data and keeps the answer in LTspice.ini:
+          # the answer No is written there before it starts
+          INI="$HOME/.wine/drive_c/users/$(whoami)/AppData/Roaming/LTspice.ini"
+          mkdir -p "$(dirname "$INI")"
+          printf '[Options]\r\nCaptureAnalytics=false\r\n' > "$INI"
+          # should it ask all the same, the answer is No (N), and the log says so
+          ( while true; do
               for w in $(xdotool search --name "Share LTspice Usage" 2>/dev/null); do
-                n=$((n+1))
-                echo "dialog $w (try $n): $(xdotool getwindowgeometry $w 2>/dev/null | tr '\n' ' ')"
-                [ $n -le 3 ] && import -window root "$SHOTS/dialog-$n.png" 2>/dev/null
+                echo "LTspice asked about usage data all the same (window $w): answering No"
+                import -window root "$SHOTS/dialog.png" 2>/dev/null
                 xdotool windowactivate --sync $w 2>/dev/null || xdotool windowfocus --sync $w 2>/dev/null || true
-                case $((n % 4)) in
-                  1) xdotool key --clearmodifiers n ;;
-                  2) xdotool key --clearmodifiers Escape ;;
-                  3) xdotool key --clearmodifiers alt+n ;;
-                  0) xdotool key --clearmodifiers Tab Tab space ;;
-                esac
+                xdotool key --clearmodifiers n
               done
               sleep 2
             done ) &

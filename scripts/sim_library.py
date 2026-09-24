@@ -488,10 +488,11 @@ def layout(case: dict) -> Sheet:
 
 
 def directives(case: dict) -> list[str]:
-    """The .cir's parameter, coupling, model and analysis lines, which the schematic carries as text."""
+    """The .cir's parameter, coupling, model, analysis and solver lines, which the schematic carries
+    as text: LTspice integrates as ngspice does."""
     out = []
     for line in netlist(case).splitlines():
-        if line.startswith((".param", ".model", ".tran")) or re.match(r"^K\d", line):
+        if line.startswith((".param", ".model", ".tran", ".options")) or re.match(r"^K\d", line):
             out.append(line.split("  ;")[0].rstrip())
     return out
 
