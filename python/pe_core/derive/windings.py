@@ -21,8 +21,8 @@ from .common import Derivation, S, positive_root
 def derive() -> Derivation:
     d = Derivation(
         module="windings",
-        title="Windings: resistance, skin depth and leakage",
-        title_ko="권선: 저항, 표피 깊이, 누설",
+        title="Windings: resistance, skin depth, thin layers, leakage and the short circuit",
+        title_ko="권선: 저항, 표피 깊이, 얇은 층, 누설, 단락",
         intro=(
             "A winding is a long conductor wound in layers. Its resistance follows from its length and cross-section; "
             "at high frequency the current crowds into a skin; and the field between the windings stores the energy "

@@ -915,7 +915,7 @@ equations:
     notes_ko: "저항을 통해 커패시터를 충전하면 저장되는 만큼(½ C V²)의 에너지를 잃고, 방전할 때는 저장된 에너지를 잃는다. 저항값과 무관하게 한 주기에 C V²이다. 스너버 커패시터가 클수록 감쇠는 잘 되지만 손실도 커진다"
     cite:
       - {key: nexperia_an11160, where: "the power dissipated in the snubber resistor; derived here"}
-      - {key: erickson2020, where: "Ch. 4 (Switch Realization: energy lost charging a capacitance)"}
+      - {key: erickson2020, where: "Ch. 4 (Switch Realization: the energy of a capacitance charged at each switching edge is dissipated)"}
     derived_by: python/pe_core/derive/snubbers.py
     tests:
       - {inputs: {C_snub: 2.2e-10, V_snub: 100.0, f_s: 1.0e5}, expect: 0.22}

@@ -3977,7 +3977,7 @@
         },
         {
           "key": "erickson2020",
-          "where": "Ch. 4 (Switch Realization: energy lost charging a capacitance)"
+          "where": "Ch. 4 (Switch Realization: the energy of a capacitance charged at each switching edge is dissipated)"
         }
       ],
       "derived_by": "python/pe_core/derive/snubbers.py",

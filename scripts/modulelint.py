@@ -65,7 +65,7 @@ TOOL_TAG = re.compile(r"<(" + "|".join(TOOLS) + r")\b")
 SHOT_SECTION = {"en": "Screenshot", "ko": "스크린샷"}
 SHOT_IMPORT = re.compile(r"^import\s+(\w+)\s+from\s+'((?:\.\./)+assets/screenshots/([\w-]+)\.png)';", re.M)
 INLINE = ("Cite", "EqRef", "Val")
-COMPONENT = re.compile(r"<(" + "|".join(BLOCK + INLINE) + r")\b((?:[^>\"'{}]|\"[^\"]*\"|'[^']*'|\{[^}]*\})*)/?>")
+COMPONENT = re.compile(r"<(" + "|".join(BLOCK + INLINE) + r")\b((?:[^>\"'{}]|\"[^\"]*\"|'[^']*'|\{(?:[^{}]|\{[^{}]*\})*\})*)/?>")
 ATTR = re.compile(r"(\w+)\s*=\s*(?:\"([^\"]*)\"|\{([^}]*)\})")
 DOD_COLUMNS = ("EN", "KO", "`<Eq>` only", "Try it", "Go deeper ≥ 2", "Gotchas", "Quiz ≥ 5")
 

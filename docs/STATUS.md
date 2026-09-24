@@ -14,8 +14,9 @@
 | Design-tool additions (Phase 3d) | ✅ 8 equations: `sense.burden`, `sense.voltage_out_monitor`, `sense.offset_current`, `sense.pad_error`, `sense.reading`, `sense.rel_error`, `sense.filter_R` (shunt, voltage-output amplifier, offset, pad resistance, what the amplifier reads, error of the reading, filter behind a current-output amplifier), `adc.nyquist` |
 | Design-tool additions (Phase 3e) | ✅ 13 equations: `mag.N_Bmax`, `mag.gap_length`, `mag.B_ac` (fewest turns for a flux-density limit, gap without fringing, ac flux amplitude from the ripple), `wind.round_area`, `wind.fill`, `wind.rho_T`, `wind.dcr` (copper, window utilization, dc resistance at temperature), `wind.skin_depth`, `wind.porosity`, `wind.phi_round`, `wind.dowell` (ac resistance factor, Dowell), `xfmr.leakage.ps`, `xfmr.leakage.psp` (leakage by winding arrangement) |
 | Simulator review additions | ✅ 2 equations: `vsb.drift` (the inductor current's change over one period, zero in a steady state), `bat.rint` (a battery's current in the Rint model) |
-| Derivations reproduce the YAML (`pytest`) | ✅ 119 of 136 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk`, `mag.B_H`, `loss.core`, `adc.nyquist`, `wind.round_area` and `wind.fill` are definitions, `loss.steinmetz` is an empirical law, `wind.rho_T` is copper's linear temperature coefficient (`nbs_hb100`), `tvs.R_D` and `tvs.V_clamp` are the TVS model of `st_an316`, `wind.porosity`, `wind.phi_round` and `wind.dowell` are Dowell's layer model (`dowell1966`), `bat.rint` is the Rint battery model (`he2011`)) |
-| Symbol meanings: every symbol of `symbol_table` says in a few words what it is (`meaning`, `meaning_ko`, required by the loader) | ✅ 177 of 177; shown next to every tool input, under every `<Eq>` and in every worked example |
+| Magnetics additions (Phase 4a) | ✅ 14 equations: `mag.Kg_req`, `mag.Kg_core` (the core geometrical constant an inductor needs, and a core's), `wind.phi_foil`, `wind.dowell_low`, `wind.loss_rel`, `wind.phi_opt` (a foil layer's thickness in skin depths, Dowell's series for thin layers, the loss against a one-skin-depth layer, the thickness of least loss), `xfmr.k`, `xfmr.L_sc`, `xfmr.L_sc_T` (coupling and the short-circuit inductance, also from the T model), `snub.C_par`, `snub.L_par`, `snub.R`, `snub.P` (a ringing node's capacitance and inductance from two ringing frequencies, the RC snubber and its loss), `meas.L_app` (an impedance meter's reading below self-resonance) |
+| Derivations reproduce the YAML (`pytest`) | ✅ 130 of 150 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk`, `mag.B_H`, `loss.core`, `adc.nyquist`, `wind.round_area`, `wind.fill`, `mag.Kg_core`, `wind.phi_foil` and `xfmr.k` are definitions, `loss.steinmetz` is an empirical law, `wind.rho_T` is copper's linear temperature coefficient (`nbs_hb100`), `tvs.R_D` and `tvs.V_clamp` are the TVS model of `st_an316`, `wind.porosity`, `wind.phi_round` and `wind.dowell` are Dowell's layer model (`dowell1966`), `bat.rint` is the Rint battery model (`he2011`)) |
+| Symbol meanings: every symbol of `symbol_table` says in a few words what it is (`meaning`, `meaning_ko`, required by the loader) | ✅ 196 of 196; shown next to every tool input, under every `<Eq>` and in every worked example |
 | TS/Python parity (`vitest`, 1e-9 rel) | ✅ all shared vectors |
 | Strict KaTeX on every generated formula and derivation step (`vitest`) | ✅ |
 | `references.bib` verified (two web-search rounds + CI Crossref + URL title check; PDFs: title and `urlquotes` read from the file) | ✅ 34 of 34 verified (`steinmetz1984` DOI confirmed by the CI Crossref job; `ti_slva630` and `ti_snoa930` added in Phase 2c; `ti_ssztcv6` and `st_an316` added in Phase 3c; `ti_ina181`, `osullivan2012` and `kester_mt002` added in Phase 3d; `tdk_e25`, `tdk_etd29` and `nbs_hb100` added in Phase 3e, every value the core table and the copper constants take from them found by the CI check in the PDFs; `he2011` added with the simulator's battery load) |
@@ -118,11 +119,11 @@ _Last updated: Phase 3e (magnetics designer). `python scripts/modulelint.py` che
 
 | Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| design-procedure | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| winding-loss | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| leakage | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| snubbers-clamps | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| measurement | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| design-procedure | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `mag.Kg_req`, `mag.Kg_core` |
+| winding-loss | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `wind.phi_foil`, `wind.dowell_low`, `wind.loss_rel`, `wind.phi_opt` |
+| leakage | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `xfmr.k`, `xfmr.L_sc`, `xfmr.L_sc_T` |
+| snubbers-clamps | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `snub.C_par`, `snub.L_par`, `snub.R`, `snub.P` |
+| measurement | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `meas.L_app` |
 
 ## 05-simulation
 

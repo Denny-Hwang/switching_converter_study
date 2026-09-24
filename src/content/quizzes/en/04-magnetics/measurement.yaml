@@ -1,0 +1,51 @@
+# Quiz for 04-magnetics/measurement. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A winding resonates at 1 MHz. At what test frequency does an LCR meter read its inductance within about 1 %?'
+    options:
+      - '100 kHz or lower'
+      - '500 kHz'
+      - '1 MHz'
+      - 'At any frequency'
+    answer: 0
+    explain: 'At a tenth of the self-resonance the reading is 1 % high; closer to it, much more.'
+  - q: 'At 0.71 of the self-resonant frequency, what does the meter read?'
+    options:
+      - 'About twice the inductance'
+      - 'About half the inductance'
+      - 'The inductance'
+      - 'About ten times the inductance'
+    answer: 0
+    explain: 'One over one minus 0.71 squared is 2.'
+  - q: 'Why measure a winding''s dc resistance with four wires?'
+    options:
+      - 'The resistance of the leads and their contacts stays out of the reading'
+      - 'It removes the winding''s inductance'
+      - 'It gives the ac resistance'
+      - 'It heats the winding less'
+    answer: 0
+    explain: 'One pair carries the current, the other senses the voltage and carries almost none, so the leads drop no voltage in the reading.'
+  - q: 'How does a voltage pulse show that a core saturates?'
+    options:
+      - 'The current ramps faster once the core saturates'
+      - 'The current stops rising'
+      - 'The voltage across the winding rises'
+      - 'The current falls'
+    answer: 0
+    explain: 'The current ramps at the voltage over the inductance; when the core saturates the inductance collapses and the ramp steepens.'
+  - q: 'With the secondary shorted, what does the primary''s inductance reading give?'
+    options:
+      - 'The leakage inductance, referred to the primary'
+      - 'The magnetizing inductance'
+      - 'The winding capacitance'
+      - 'The turns ratio'
+    answer: 0
+    explain: 'The short cancels the shared flux; what the primary still sees is the flux the windings do not share.'
+  - q: 'What does an LCR meter''s reading, taken without dc current, not tell?'
+    options:
+      - 'Whether the core saturates at the operating current'
+      - 'The winding''s inductance at low current'
+      - 'Whether the test frequency is near self-resonance'
+      - 'The inductance at the test frequency'
+    answer: 0
+    explain: 'Its small signal does not reach the flux density of the peak current: check saturation with a current pulse.'

@@ -1,0 +1,124 @@
+---
+title: 스너버와 클램프
+description: 클램프로 스위치의 전압 스파이크를 제한하는 방법, 측정한 두 링잉 주파수로 값을 정한 RC 스너버로 링잉을 감쇠시키는 방법, 그리고 각각이 소산하는 전력을 다룹니다.
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 피크 전압을 제한하고 누설 에너지를 흡수하는 클램프(clamp)와, 링잉(ringing)을 감쇠시키는 스너버(snubber)를 구별합니다.
+- 두 번의 측정으로 링잉하는 노드의 기생 커패시턴스(parasitic capacitance)와 기생 인덕턴스(parasitic inductance)를 구하고, 이로부터 RC 스너버의 값을 정합니다.
+- 클램프와 스너버가 소산하는 전력을 추정합니다.
+
+## 이론
+
+### 클램프
+
+플라이백의 스위치가 턴오프(turn-off)하면 누설 인덕턴스(leakage inductance)가 전류를
+계속 흘리면서, 클램프가 제한할 때까지 드레인 전압을 입력 전압과 반사된 출력
+전압(<EqRef id="flyback.V_OR" label="반사 전압" />)의 합보다 높이 밀어
+올립니다 <Cite key="ti_ssztcv6" />(<EqRef id="clamp.Vds" label="클램프된 스위치 전압" />).
+클램프는 누설 에너지보다 많은 에너지를 흡수하며, 클램프 전압이 반사 전압(reflected voltage)에
+가까울수록 누설 전류가 리셋(reset)되는 데 더 오래 걸리고(<EqRef id="clamp.t_reset" label="리셋 시간" />)
+클램프가 더 많이 소산합니다(<EqRef id="clamp.P" label="클램프 전력" />)
+<Cite key="ti_ssztcv6" />. RCD 클램프의 전압은 그 저항이 클램프의 전력을 소산하는
+값에서 자리를 잡습니다(<EqRef id="clamp.rcd.V" label="RCD 클램프 전압" />). TVS는
+항복 전압(breakdown voltage)에 동저항(dynamic resistance)과 전류의 곱을 더한
+전압에서 클램프합니다(<EqRef id="tvs.V_clamp" label="TVS 클램핑 전압" />)
+<Cite key="st_an316" />. [클램프 점검 도구](../../design/clamp-check/)는 두 클램프를
+모두 계산합니다.
+
+### 링잉과 기생 성분
+
+스위치나 다이오드의 도통이 멈추면 노드의 기생 인덕턴스와 기생 커패시턴스가
+링잉합니다. 그 값은 링잉 주파수를 두 번, 즉 만든 그대로의 상태에서 한 번, 값을 아는
+커패시터를 노드 양단에 추가한 상태에서 한 번 측정하여 구합니다
+<Cite key="nexperia_an11160" />.
+
+<Eq id="snub.C_par" />
+
+<Eq id="snub.L_par" />
+
+### RC 스너버
+
+노드 양단에 커패시터와 직렬로 연결한 저항이 링잉을 감쇠시킵니다. 그 저항값은 링잉의
+특성 임피던스(characteristic impedance)입니다 <Cite key="nexperia_an11160" />.
+
+<Eq id="snub.R" />
+
+스너버 커패시터는 링잉을 저항으로 전달해야 하므로 $C_\mathrm{par}$보다 커야
+합니다. 스너버 커패시터가 $C_\mathrm{par}$의 세 배 이상이면 링잉의 감쇠비(damping ratio)는
+약 0.5이고, 링잉은 한 주기 안에 진폭의 몇 퍼센트로 줄어듭니다. 스너버 커패시터가
+$C_\mathrm{par}$와 같으면 감쇠비는 0.16에 불과합니다. 에지(edge)마다 스너버
+커패시터가 저항을 통해 충전되거나 방전되며, 저항은 그 값과 관계없이 같은 에너지를
+소산합니다.
+
+<Eq id="snub.P" />
+
+커패시터가 클수록 감쇠는 잘 되지만 소산도 커집니다. 스너버는 감쇠와 손실 사이의
+절충입니다 <Cite key="nexperia_an11160" />.
+
+## 풀이 예제
+
+링잉하는 노드와 그 스너버의 예제입니다.
+
+<Worked example="rc-snubber" />
+
+링잉 주파수는 <Val example="rc-snubber" name="f_r0" />에서
+<Val example="rc-snubber" name="f_r1" />까지 내려가며, 이때 추가한 커패시턴스는
+<Val example="rc-snubber" name="C_add" />입니다. 따라서 노드 자체의 커패시턴스는
+<Val example="rc-snubber" name="C_par" />이고 인덕턴스는
+<Val example="rc-snubber" name="L_par" />입니다. 스너버 저항은
+<Val example="rc-snubber" name="R_snub" />입니다. $C_\mathrm{par}$의 세 배가 넘는
+<Val example="rc-snubber" name="C_snub" />의 스너버 커패시터는, 노드가
+<Val example="rc-snubber" name="V_snub" />만큼 <Val example="rc-snubber" name="f_s" />의
+주파수로 스윙(swing)할 때 <Val example="rc-snubber" name="P" />의 전력을 소산합니다.
+
+## 직접 해 보기
+
+<TryIt eq="snub.C_par" example="rc-snubber" sweep="f_r1" />
+
+$f_{r1}$을 $f_{r0}$ 쪽으로 스윕(sweep)하십시오. 주파수가 조금만 내려가도
+$C_\mathrm{par}$가 크게 나오고, 두 주파수 중 어느 하나에 작은 오차가 있어도 그
+값에 큰 오차가 생깁니다. 주파수가 분명히 내려갈 만큼 충분한
+커패시턴스를 추가하십시오.
+
+[클램프 점검 도구](../../design/clamp-check/)는 누설 인덕턴스와 피크 전류로부터
+플라이백의 TVS 또는 RCD 클램프를 계산합니다.
+
+## 벤치 실습
+
+짧은 접지 스프링(ground spring)으로 스위치 노드를 프로빙하고, 스위칭 에지(switching edge)
+뒤의 링잉 주파수를 읽으십시오. 예상되는 기생 커패시턴스의 몇 배인 C0G 커패시터를
+소자 가까이에 추가하고 주파수를 다시 읽으십시오. $C_\mathrm{par}$,
+$L_\mathrm{par}$, 스너버 저항을 계산하고, 그 소산 전력에 맞는 정격의 저항으로
+스너버를 만든 뒤 감쇠와 저항의 온도를 확인하십시오.
+
+## 주의할 점
+
+- **TVS는 실제 전류에서의 클램핑 전압(clamping voltage)으로 판단하십시오.** TVS의
+  클램핑 전압은 항복 전압만이 아니라, 항복 전압에 동저항과 전류의 곱을 더한
+  값입니다 <Cite key="st_an316" />.
+- **반사 전압에 가까운 클램프 전압은 전력을 낭비합니다.** 이때 클램프는 누설
+  에너지보다 훨씬 많은 에너지를 가져갑니다 <Cite key="ti_ssztcv6" />.
+- **스너버의 손실은 저항에 의존하지 않습니다.** 손실은 커패시터, 전압 스윙, 스위칭
+  주파수가 정합니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['nexperia-an11160', 'ti-ssztcv6', 'erickson-ch4']} />
+
+## 퀴즈
+
+<Quiz id="04-magnetics/snubbers-clamps" />

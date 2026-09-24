@@ -108,3 +108,12 @@ def test_core_constant_grows_as_the_fifth_power_of_size() -> None:
     assert abs(k2 / k1 - s**5) < mp.mpf("1e-30")
     # twice the K_g: about 15 % larger in each dimension
     assert abs(mp.mpf(2) ** mp.mpf("0.2") - mp.mpf("1.1487")) < mp.mpf("1e-4")
+
+
+def test_three_layers_against_thickness_as_the_winding_loss_page_says() -> None:
+    """Try it on the winding-loss page: with three layers the factor stays close
+    to 1 up to half a skin depth, has nearly doubled at one, and rises steeply
+    beyond."""
+    assert dowell(mp.mpf("0.5"), 3) < 1.1
+    assert 1.8 < dowell(mp.mpf(1), 3) < 2
+    assert dowell(mp.mpf(2), 3) > 10

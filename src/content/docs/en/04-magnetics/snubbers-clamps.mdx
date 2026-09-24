@@ -1,0 +1,128 @@
+---
+title: Snubbers and clamps
+description: Limiting a switch's voltage spike with a clamp, damping the ringing with an RC snubber sized from two measured ringing frequencies, and what each dissipates.
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Tell a clamp, which limits the peak voltage and absorbs the leakage energy, from a snubber, which damps the ringing.
+- Find a ringing node's parasitic capacitance and inductance from two measurements, and size an RC snubber from them.
+- Estimate what a clamp and a snubber dissipate.
+
+## Theory
+
+### Clamps
+
+When a flyback's switch turns off, its leakage inductance keeps the current
+flowing and drives the drain above the input voltage plus the reflected
+output voltage (<EqRef id="flyback.V_OR" label="reflected voltage" />) until
+a clamp limits it <Cite key="ti_ssztcv6" />
+(<EqRef id="clamp.Vds" label="clamped switch voltage" />). The clamp absorbs
+more than the leakage energy, and the closer its voltage is to the reflected
+voltage, the longer the leakage current takes to reset
+(<EqRef id="clamp.t_reset" label="reset time" />) and the more it dissipates
+(<EqRef id="clamp.P" label="clamp power" />) <Cite key="ti_ssztcv6" />. An
+RCD clamp's voltage settles where its resistor dissipates the clamp's power
+(<EqRef id="clamp.rcd.V" label="RCD clamp voltage" />). A TVS clamps at its
+breakdown voltage plus its dynamic resistance times the current
+(<EqRef id="tvs.V_clamp" label="TVS clamping voltage" />)
+<Cite key="st_an316" />. The [clamp check](../../design/clamp-check/) sizes
+both.
+
+### Ringing and its parasitics
+
+When a switch or a diode stops conducting, the node's parasitic inductance
+and capacitance ring. Their values follow from the ringing frequency
+measured twice: as built, and with a known capacitor added across the node
+<Cite key="nexperia_an11160" />:
+
+<Eq id="snub.C_par" />
+
+<Eq id="snub.L_par" />
+
+### The RC snubber
+
+A resistor across the node, in series with a capacitor, damps the ring. Its
+value is the ring's characteristic impedance <Cite key="nexperia_an11160" />:
+
+<Eq id="snub.R" />
+
+The snubber capacitor must pass the ringing to the resistor, so it has to be
+larger than $C_\mathrm{par}$. With it at three times $C_\mathrm{par}$ or more,
+the ring's damping ratio is about 0.5 and it falls to a few per cent of its
+amplitude within one period; with it equal to $C_\mathrm{par}$, the damping
+ratio is only 0.16. Every edge charges or discharges the snubber capacitor
+through the resistor, which dissipates the same energy whatever its value:
+
+<Eq id="snub.P" />
+
+A larger capacitor damps better and dissipates more: a snubber is a
+compromise between damping and loss <Cite key="nexperia_an11160" />.
+
+## Worked example
+
+An example ringing node and its snubber:
+
+<Worked example="rc-snubber" />
+
+The ring falls from <Val example="rc-snubber" name="f_r0" /> to
+<Val example="rc-snubber" name="f_r1" /> with
+<Val example="rc-snubber" name="C_add" /> added, so the node's own
+capacitance is <Val example="rc-snubber" name="C_par" /> and its inductance
+<Val example="rc-snubber" name="L_par" />. The snubber resistor is
+<Val example="rc-snubber" name="R_snub" />. A snubber capacitor of
+<Val example="rc-snubber" name="C_snub" />, more than three times
+$C_\mathrm{par}$, on a node that swings through
+<Val example="rc-snubber" name="V_snub" /> at
+<Val example="rc-snubber" name="f_s" />, dissipates
+<Val example="rc-snubber" name="P" />.
+
+## Try it
+
+<TryIt eq="snub.C_par" example="rc-snubber" sweep="f_r1" />
+
+Sweep $f_{r1}$ towards $f_{r0}$: a small drop in frequency gives a large
+$C_\mathrm{par}$, and a small error in either frequency a large error in it.
+Add enough capacitance to lower the frequency clearly.
+
+The [clamp check](../../design/clamp-check/) sizes a flyback's TVS or RCD
+clamp from its leakage inductance and peak current.
+
+## Bench exercise
+
+Probe the switch node with a short ground spring and read the ringing
+frequency after the switching edge. Add a C0G capacitor of a few times the
+expected parasitic capacitance, close to the device, and read the frequency
+again. Compute $C_\mathrm{par}$, $L_\mathrm{par}$ and the snubber resistor;
+build the snubber with a resistor rated for its dissipation, and check the
+damping and the resistor's temperature.
+
+## Gotchas
+
+- **Judge a TVS by its clamping voltage at the real current.** Its clamping
+  voltage is its breakdown voltage plus its dynamic resistance times the
+  current, not the breakdown voltage alone <Cite key="st_an316" />.
+- **A clamp voltage close to the reflected voltage wastes power.** The clamp
+  then takes much more than the leakage energy <Cite key="ti_ssztcv6" />.
+- **The snubber's loss does not depend on its resistor.** It is set by the
+  capacitor, the voltage swing and the switching frequency.
+
+## Go deeper
+
+<GoDeeper ids={['nexperia-an11160', 'ti-ssztcv6', 'erickson-ch4']} />
+
+## Quiz
+
+<Quiz id="04-magnetics/snubbers-clamps" />

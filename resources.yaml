@@ -464,6 +464,21 @@ resources:
     urlkind: pdf
     cite: nexperia_an11160
 
+  - id: ti-ssztcv6
+    type: app-note
+    title: "Snubbing the flyback converter (SSZTCV6)"
+    author: "R. Kollman, Texas Instruments"
+    url: https://www.ti.com/lit/pdf/ssztcv6
+    tags: [snubbers, clamps, flyback, leakage]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "How a flyback's leakage inductance drives the switch above the reflected voltage, and how the clamp voltage trades against the clamp's loss."
+    why_ko: "플라이백의 누설 인덕턴스가 스위치 전압을 반사 전압보다 높이 밀어 올리는 과정, 그리고 클램프 전압과 클램프 손실의 맞교환."
+    title_match: "Snubbing the flyback converter"
+    urlkind: pdf
+    cite: ti_ssztcv6
+
   - id: keysight-imh
     type: app-note
     title: "Impedance Measurement Handbook (5950-3000)"

@@ -15,8 +15,8 @@ from .common import Derivation, S
 def derive() -> Derivation:
     d = Derivation(
         module="magnetics",
-        title="Magnetic circuits: A_L, inductance, peak and swing flux density",
-        title_ko="자기 회로: A_L, 인덕턴스, 피크 및 변화 자속 밀도",
+        title="Magnetic circuits: A_L, inductance, flux density and the core geometrical constant",
+        title_ko="자기 회로: A_L, 인덕턴스, 자속 밀도, 코어 기하 상수",
         intro=(
             "A magnetic path behaves like a resistive circuit: the magnetomotive force $N i$ drives flux $\\Phi$ "
             "through reluctances $\\mathcal{R} = l/(\\mu A)$. With a uniform flux density over the effective area $A_e$, "

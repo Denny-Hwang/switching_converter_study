@@ -63,6 +63,11 @@ export default defineConfig({
               translations: { ko: '03 · 토폴로지' },
               items: [{ autogenerate: { directory: '03-topologies' } }],
             },
+            {
+              label: '04 · Magnetics',
+              translations: { ko: '04 · 자성 부품' },
+              items: [{ autogenerate: { directory: '04-magnetics' } }],
+            },
           ],
         },
         {

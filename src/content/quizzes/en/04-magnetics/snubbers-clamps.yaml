@@ -1,0 +1,59 @@
+# Quiz for 04-magnetics/snubbers-clamps. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A node rings at 20 MHz, and at 10 MHz with $150\,\mathrm{pF}$ added across it. What is its own capacitance?'
+    options:
+      - '$50\,\mathrm{pF}$'
+      - '$150\,\mathrm{pF}$'
+      - '$75\,\mathrm{pF}$'
+      - '$37.5\,\mathrm{pF}$'
+    answer: 0
+    explain: 'Halving the frequency needs four times the capacitance, so the added 150 pF is three times the node''s own.'
+  - q: 'What resistance should an RC snubber have?'
+    options:
+      - 'The ring''s characteristic impedance: the square root of its inductance over its capacitance'
+      - 'As small as possible'
+      - 'As large as possible'
+      - 'The load resistance'
+    answer: 0
+    explain: 'That value gives the ring a quality factor of about 1, so it dies out within about a period.'
+  - q: 'An RC snubber of $220\,\mathrm{pF}$ sees a 100 V swing at each edge, at 100 kHz. What does it dissipate?'
+    options:
+      - '$0.22\,\mathrm{W}$'
+      - '$0.11\,\mathrm{W}$'
+      - '$22\,\mathrm{mW}$'
+      - '$2.2\,\mathrm{W}$'
+    answer: 0
+    explain: 'Charging and discharging each lose half of C V squared: C V squared per period, times the frequency.'
+  - q: 'How does the snubber resistor''s value change the snubber''s loss?'
+    options:
+      - 'It does not: the capacitor, the voltage swing and the frequency set it'
+      - 'A larger resistor lowers it'
+      - 'A smaller resistor lowers it'
+      - 'The loss is in the capacitor, not the resistor'
+    answer: 0
+    explain: 'Charging a capacitor through a resistor loses the same energy whatever the resistance.'
+  - q: 'Why must the snubber capacitor be several times the node''s own capacitance?'
+    options:
+      - 'So that it passes the ringing to the resistor, which then damps it'
+      - 'To lower the snubber''s loss'
+      - 'To raise the ringing frequency'
+      - 'To protect the resistor from the voltage'
+    answer: 0
+    explain: 'A small snubber capacitor leaves the resistor out of the ring; at three times the node''s capacitance or more, the damping ratio is about 0.5.'
+  - q: 'In the TVS model, a TVS with a 150 V breakdown voltage and a dynamic resistance of $0.5\,\Omega$ carries 10 A. What does it clamp at?'
+    options:
+      - '$155\,\mathrm{V}$'
+      - '$150\,\mathrm{V}$'
+      - '$145\,\mathrm{V}$'
+      - '$160\,\mathrm{V}$'
+    answer: 0
+    explain: 'The breakdown voltage plus the dynamic resistance times the current: 150 V plus 5 V.'
+  - q: 'What happens to a flyback clamp''s loss if its voltage is set just above the reflected voltage?'
+    options:
+      - 'It rises far above the leakage energy per period'
+      - 'It falls to the leakage energy per period'
+      - 'It becomes zero'
+      - 'It does not change'
+    answer: 0
+    explain: 'The leakage current then takes long to reset, and the clamp keeps drawing energy from the transformer meanwhile.'

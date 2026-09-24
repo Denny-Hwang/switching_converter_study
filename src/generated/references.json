@@ -202,6 +202,33 @@
       "kind": "Application Note",
       "url": "https://assets.nexperia.com/documents/application-note/AN11160.pdf"
     },
+    "keysight_5950_3000": {
+      "key": "keysight_5950_3000",
+      "type": "manual",
+      "label": "Keysight Technologies, Impedance Measurement Handbook",
+      "authors": [],
+      "title": "Impedance Measurement Handbook: A guide to measurement technology and techniques",
+      "verified": true,
+      "edition": "6th",
+      "organization": "Keysight Technologies",
+      "number": "5950-3000",
+      "url": "https://www.keysight.com/us/en/assets/7018-06840/application-notes/5950-3000.pdf"
+    },
+    "keithley_llmh7": {
+      "key": "keithley_llmh7",
+      "type": "techreport",
+      "label": "Keithley Instruments 2014",
+      "authors": [
+        "Keithley Instruments"
+      ],
+      "title": "Low Level Measurements Handbook: Precision DC Current, Voltage, and Resistance Measurements",
+      "verified": true,
+      "institution": "Keithley Instruments (Tektronix)",
+      "number": "7th edition",
+      "year": "2014",
+      "kind": "Handbook",
+      "url": "https://download.tek.com/document/LowLevelHandbook_7Ed.pdf"
+    },
     "ti_snoa930": {
       "key": "ti_snoa930",
       "type": "techreport",

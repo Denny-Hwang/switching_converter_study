@@ -1458,8 +1458,8 @@
     {
       "module": "magnetics",
       "source": "python/pe_core/derive/magnetics.py",
-      "title": "Magnetic circuits: A_L, inductance, peak and swing flux density",
-      "title_ko": "자기 회로: A_L, 인덕턴스, 피크 및 변화 자속 밀도",
+      "title": "Magnetic circuits: A_L, inductance, flux density and the core geometrical constant",
+      "title_ko": "자기 회로: A_L, 인덕턴스, 자속 밀도, 코어 기하 상수",
       "intro": "A magnetic path behaves like a resistive circuit: the magnetomotive force $N i$ drives flux $\\Phi$ through reluctances $\\mathcal{R} = l/(\\mu A)$. With a uniform flux density over the effective area $A_e$, $B = \\Phi/A_e$.",
       "intro_ko": "자기 경로는 저항 회로처럼 동작한다. 기자력 $N i$가 자기저항 $\\mathcal{R} = l/(\\mu A)$를 통해 자속 $\\Phi$를 흐르게 한다. 유효 단면적 $A_e$에서 자속 밀도가 균일하면 $B = \\Phi/A_e$이다.",
       "results": [
@@ -1598,8 +1598,8 @@
     {
       "module": "windings",
       "source": "python/pe_core/derive/windings.py",
-      "title": "Windings: resistance, skin depth and leakage",
-      "title_ko": "권선: 저항, 표피 깊이, 누설",
+      "title": "Windings: resistance, skin depth, thin layers, leakage and the short circuit",
+      "title_ko": "권선: 저항, 표피 깊이, 얇은 층, 누설, 단락",
       "intro": "A winding is a long conductor wound in layers. Its resistance follows from its length and cross-section; at high frequency the current crowds into a skin; and the field between the windings stores the energy that appears as leakage inductance.",
       "intro_ko": "권선은 층으로 감긴 긴 도체이다. 저항은 길이와 단면적에서 나오고, 주파수가 높으면 전류가 표면층으로 몰리며, 권선 사이의 자계는 누설 인덕턴스로 나타나는 에너지를 저장한다.",
       "results": [

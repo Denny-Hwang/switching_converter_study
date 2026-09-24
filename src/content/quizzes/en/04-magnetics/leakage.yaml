@@ -1,0 +1,51 @@
+# Quiz for 04-magnetics/leakage. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'Two windings read $400\,\mu\mathrm{H}$ and $25\,\mu\mathrm{H}$, each with the other open, and their mutual inductance is $99\,\mu\mathrm{H}$. What is their coupling coefficient?'
+    options:
+      - '0.99'
+      - '0.25'
+      - '4'
+      - '0.0099'
+    answer: 0
+    explain: 'The mutual inductance over the square root of the product of the two inductances: 99 over 100.'
+  - q: 'A primary reads $1\,\mathrm{mH}$ with the secondary open, and the coupling coefficient is 0.99. What does it read with the secondary shorted?'
+    options:
+      - '$19.9\,\mu\mathrm{H}$'
+      - '$10\,\mu\mathrm{H}$'
+      - '$990\,\mu\mathrm{H}$'
+      - '$1.99\,\mu\mathrm{H}$'
+    answer: 0
+    explain: 'The open-circuit inductance times one minus the coupling coefficient squared: 1 mH times 0.0199.'
+  - q: 'What does the short-circuit test measure?'
+    options:
+      - 'The primary''s and the secondary''s leakage together, referred to the primary'
+      - 'The magnetizing inductance'
+      - 'The primary''s leakage alone'
+      - 'The winding capacitance'
+    answer: 0
+    explain: 'With the magnetizing inductance much larger than the leakage, the reading is nearly the sum of the two leakage inductances referred to the primary.'
+  - q: 'Splitting the primary around the secondary (P-S-P) changes the leakage roughly how?'
+    options:
+      - 'To about a quarter'
+      - 'To about half'
+      - 'It doubles'
+      - 'Not at all'
+    answer: 0
+    explain: 'The peak MMF in the window halves, and the stored energy goes with its square.'
+  - q: 'A core''s gap is made twice as long. What happens to the leakage inductance?'
+    options:
+      - 'It barely changes: the winding geometry sets it'
+      - 'It halves'
+      - 'It doubles'
+      - 'It vanishes'
+    answer: 0
+    explain: 'The gap lowers the magnetizing inductance; the leakage is set by the field between the windings, which the gap hardly touches.'
+  - q: 'Where does a flyback''s leakage energy go when the switch turns off?'
+    options:
+      - 'To the clamp or snubber, every period'
+      - 'To the output'
+      - 'Into the core, where it is lost as core loss'
+      - 'It stays in the leakage inductance'
+    answer: 0
+    explain: 'The leakage flux does not link the secondary, so its energy cannot reach the output; a clamp or snubber must take it.'

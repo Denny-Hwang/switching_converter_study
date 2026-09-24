@@ -72,9 +72,10 @@ With a core of large enough $K_g$ <Cite key="erickson2020" where="Ch. 11" />:
    whole turn. The magnetics designer takes them at the core's smallest
    cross-section, where the flux density is highest.
 2. **Gap.** The gap that gives the inductance with those turns
-   (<EqRef id="mag.gap_length" label="gap length" />). Fringing flux lets a
-   real gap be somewhat longer <Cite key="dixon2001" />; for a table core,
-   the data sheet's gapped sets give measured values.
+   (<EqRef id="mag.gap_length" label="gap length" />). Fringing flux adds
+   to the gap's inductance, so a real gap must be somewhat longer
+   <Cite key="dixon2001" />; for a table core, the data sheet's gapped sets
+   give measured values.
 3. **Wire.** The largest copper area per turn that fits: the window times
    $K_u$, shared by the turns (<EqRef id="wind.fill" label="window utilization" />).
 4. **Check.** The winding's resistance
@@ -124,7 +125,8 @@ fraction of the current here (see [winding loss](../winding-loss/)).
 
 <TryIt eq="mag.Kg_req" example="kg-inductor" sweep="B_max" />
 
-Sweep $B_\mathrm{max}$: the required $K_g$ falls as its square. Then halve
+Sweep $B_\mathrm{max}$: the required $K_g$ is inversely proportional to its
+square, so doubling it divides the $K_g$ needed by four. Then halve
 $R_\mathrm{dc}$: halving the copper loss doubles the $K_g$ needed.
 
 <TryMag example="mag-kg" />
