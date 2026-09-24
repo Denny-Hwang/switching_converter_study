@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SLIVER, atRest, branchFlow, elementStates, modes, runCycle, buildModel, schematic, simulate, type ElementInMode, type SimParams } from '../src/sim';
+import { SLIVER, atRest, branchFlow, elementStates, modes, netsOf, runCycle, buildModel, schematic, simulate, wireSides, type ElementInMode, type SimParams } from '../src/sim';
 
 /**
  * The operating modes: each mode is one interval of the engine, lasting what
@@ -446,9 +446,10 @@ describe('each energy state agrees with the physics of its element', () => {
         if (e.kind === 'inductor' && e.signChanges === 0 && e.vAvg !== undefined && (e.state === 'storing' || e.state === 'releasing')) {
           const dir = Math.sign(e.avg);
           const vInd = dir * (e.vAvg - (e.vRes ?? 0));
-          // the change it makes, L (i1 - i0) / T along the arrow, where that is clear of the trapezoids' error
+          // the change it makes, L (i1 - i0) / T along the arrow, where that is clear of rounding (the averages are
+          // exact integrals: the identity holds to about 1e-12 of the voltages)
           const want = e.state === 'storing' ? 1 : -1;
-          if (Math.sign(vInd) !== want && Math.abs(vInd) > 1e-6 * Math.max(Math.abs(e.v0!), Math.abs(e.v1!), 1e-12)) out.push(`${at}: the inductance's average voltage along the arrow is ${vInd}`);
+          if (Math.sign(vInd) !== want && Math.abs(vInd) > 1e-9 * Math.max(Math.abs(e.v0!), Math.abs(e.v1!), 1e-12)) out.push(`${at}: the inductance's average voltage along the arrow is ${vInd}`);
         }
         if (e.id === 'C' && (e.state === 'charging' || e.state === 'discharging')) {
           const dv = e.v1! - e.v0!;
@@ -514,6 +515,22 @@ describe('each energy state agrees with the physics of its element', () => {
   });
 });
 
+describe("an inductor's state reads its current's exact extremes in the mode", () => {
+  it('a boost whose inductor current peaks inside the first sub-step of a node capacitance\'s rise stores, then releases', () => {
+    // the second review of the mode averages: at the samples the current only falls, 7.266749 A to zero, but the exact
+    // solution peaks at 7.269264 A within the first sub-step, 346 times the change floor
+    const p: SimParams = { topology: 'boost', Vg: 16.6, D: 0.232, fs: 50000, L: 1.3e-5, Ron: 0.328, VF: 0.421, Cnode: 1e-9, load: { kind: 'network', C: 3.21e-7, V0: 0 }, source: { Voc: 21.9, Rs: 0.251, Cbus: 1.63e-4 } };
+    const r = simulate(p);
+    expect(r.status).toBe('steady');
+    const rise = modes(r).find((m) => m.kind === 'rise')!;
+    const L = byId(elementStates(r, rise)).L!;
+    const iL = (r.waveforms.i_L as number[]).slice(rise.k0, rise.k1 + 1);
+    expect(Math.max(...iL)).toBe(iL[0]);
+    expect(L.max).toBeGreaterThan(L.i0 + 1e-3);
+    expect(L.state).toBe('storeRelease');
+  });
+});
+
 describe("each mode's averages are the exact integrals of its part of the period", () => {
   const cases: [string, SimParams][] = [
     ['buck in CCM with losses', { topology: 'buck', Vg: 24, D: 0.5, fs, L: 1e-4, Ron: 0.1, RL: 0.05, VF: 0.5, load: { kind: 'resistive', R: 6, C: 1e-4 } }],
@@ -558,6 +575,55 @@ describe("each mode's averages are the exact integrals of its part of the period
       for (const m of ms) {
         const flow = branchFlow(r, m, s);
         for (const e of elementStates(r, m, s)) expect(flow.get(e.id)!.avg).toBe(e.avg);
+      }
+    });
+
+    it(`${name}: in each mode, the inductors' voltages, the capacitors' charges and the wires' currents are exact`, () => {
+      // independent of how an average is divided: each is checked against the change it makes over the mode.
+      // Trapezoids between the samples miss these by up to the whole value (the 200 pF flyback)
+      const r = simulate(p);
+      const s = schematic(p);
+      const t = r.waveforms.t as number[];
+      const Lof = (id: string) => (id === 'LM' && p.topology === 'forward' ? p.LM! : p.L);
+      const Cof: Record<string, [number, string]> = { C: [(p.load as { C: number }).C, 'i_C'], Cn: [p.Cnode ?? 0, 'i_Cn'], Cbus: [p.source?.Cbus ?? 0, 'i_Cbus'] };
+      const net = netsOf(s);
+      const sides = wireSides(s);
+      const byId = new Map(s.branches.map((b) => [b.id, b]));
+      for (const m of modes(r)) {
+        const span = t[m.k1]! - t[m.k0]!;
+        if (!(span > 0)) continue;
+        const es = elementStates(r, m, s);
+        const at = (id: string) => `mode ${m.index} (${m.kind}) ${id}`;
+        for (const e of es) {
+          // an inductance: its average voltage, less its resistance's drop, is L (i1 - i0) over the mode's length
+          if (e.kind === 'inductor' && e.vAvg !== undefined) {
+            const scale = Math.max(Math.abs(e.v0!), Math.abs(e.v1!), Math.abs(e.vAvg), 1e-12);
+            expect(Math.abs(e.vAvg - (e.vRes ?? 0) - (Lof(e.id) * (e.i1 - e.i0)) / span), at(e.id)).toBeLessThanOrEqual(1e-10 * scale);
+          }
+          // a capacitor's charge over the mode is C times its voltage's change (the node capacitance only while the
+          // switch is off: while it conducts, the model leaves the node capacitance out, its charge lost at turn-on)
+          if (e.kind === 'capacitor' && e.v0 !== undefined && Cof[e.id] && (e.id !== 'Cn' || !m.gate)) {
+            const [C, key] = Cof[e.id]!;
+            const scale = Math.max(Math.abs(r.max[key]!), Math.abs(r.min[key]!)) * span;
+            expect(Math.abs(e.avg * span - C * (e.v1! - e.v0!)), at(e.id)).toBeLessThanOrEqual(1e-10 * scale);
+          }
+        }
+        // a wire's average: what the counting elements on its `from` side put into that side, from their own averages
+        const flow = branchFlow(r, m, s);
+        const avgOf = new Map(es.map((e) => [e.id, e.avg]));
+        for (const w of s.branches) {
+          if (w.kind !== 'wire') continue;
+          const N = net.get(w.from)!;
+          const near = sides.get(w.id)![0].filter((id) => flow.get(id)!.active);
+          let sum = 0;
+          let peak = 0;
+          for (const id of near) {
+            sum += (net.get(byId.get(id)!.to) === N ? 1 : -1) * avgOf.get(id)!;
+            const e = es.find((x) => x.id === id)!;
+            peak = Math.max(peak, Math.abs(e.min), Math.abs(e.max));
+          }
+          expect(Math.abs(flow.get(w.id)!.avg - sum), at(w.id)).toBeLessThanOrEqual(1e-12 * peak + 1e-300);
+        }
       }
     });
   }

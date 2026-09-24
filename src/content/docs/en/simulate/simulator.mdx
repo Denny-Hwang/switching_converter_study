@@ -209,9 +209,9 @@ For the selected mode the view shows:
   the fixed output, the input or the source and its bus capacitor, from
   their states in the table;
 - **a table** of every element's state, its current at the start and the
-  end of the mode with its average over it (the exact integral over the
-  mode, as the period's averages are), and its voltage where the simulator
-  has it. Each current is positive in the direction of the
+  end of the mode with its average over it (like the period's averages, the
+  exact integral over the mode divided by the mode's length; the voltages'
+  averages too), and its voltage where the simulator has it. Each current is positive in the direction of the
   element's arrow on the circuit, the direction of its average current in
   the mode; a negative value flows against the arrow. An inductor's voltage
   is taken along its arrow too, so that a positive voltage across the
@@ -234,7 +234,9 @@ carries none is idle, or ringing with a node capacitance. Each state is
 read at the samples the simulator records in the mode, every sub-step (a
 two-thousandth of the period) and both sides of every event: a mode shorter
 than a sub-step, such as a node capacitance's rise of a few nanoseconds, is
-read from its two ends.
+read from its two ends. An inductor's state also reads its current's exact
+extremes in the mode, between the samples: a current that peaks inside the
+first sub-step after a node capacitance's rise stores, then releases.
 
 A current smaller than a thousandth of its scale counts as none, in the
 drawing, the states and the table. The scale is the largest current,
