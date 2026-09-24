@@ -1,0 +1,154 @@
+---
+title: "Winding loss: skin and proximity effects"
+description: Why a winding's resistance rises with frequency, Dowell's ac resistance factor for layered windings, its series for thin layers, and the layer thickness of least loss.
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Explain the skin effect in one conductor and the proximity effect between the layers of a winding.
+- Estimate a layered winding's ac resistance with Dowell's factor, and for thin layers with its series.
+- Choose the layer thickness and the number of layers, knowing that a thicker layer can lose more.
+
+## Theory
+
+### Skin effect
+
+An alternating current crowds towards the surface of a conductor: its
+density falls by a factor $e$ for every skin depth
+(<EqRef id="wind.skin_depth" label="skin depth" />) into the conductor
+<Cite key="erickson2020" where="Ch. 10" />. A conductor much thicker than a
+skin depth carries the current in a surface layer, and its resistance is
+higher than at dc.
+
+### Proximity effect
+
+In a winding of several layers, each layer sits in the field of the layers
+beside it, which induces eddy currents in it. Their loss adds to that of the
+layer's own current, and it grows quickly with the number of layers
+<Cite key="erickson2020" where="Ch. 10" />.
+
+### Dowell's factor
+
+Dowell treated each layer as a foil spanning the window's breadth, with a
+one-dimensional field across the layers <Cite key="dowell1966" />. The
+ratio of the ac to the dc resistance
+(<EqRef id="wind.dowell" label="Dowell's factor" />) then depends on the
+number of layers $M_\ell$ from zero MMF to its peak and on the layer
+thickness measured in skin depths:
+
+<Eq id="wind.phi_foil" />
+
+A layer of round wire is replaced by an equivalent foil
+(<EqRef id="wind.porosity" label="layer porosity" />,
+<EqRef id="wind.phi_round" label="round wire as a foil" />)
+<Cite key="erickson2020" where="Ch. 10" />.
+
+### Thin layers
+
+For layers up to about a skin depth thick, the first terms of Dowell's
+factor are enough <Cite key="dowell1966" />:
+
+<Eq id="wind.dowell_low" />
+
+The excess resistance grows as the fourth power of the thickness and as the
+square of the number of layers.
+
+### The thickness of least loss
+
+At a given frequency the skin depth is fixed. A thicker layer then has a
+lower dc resistance, but a larger $F_R$. Measured against a layer one skin
+depth thick carrying the same current as dc, the loss is:
+
+<Eq id="wind.loss_rel" />
+
+With the series for thin layers, the loss is least at:
+
+<Eq id="wind.phi_opt" />
+
+There $F_R = 4/3$, whatever the number of layers. The more layers, the
+thinner the best layer. Hurley, Gath and Breslin give the optimum for any
+periodic current, from the rms values of the current and of its derivative
+<Cite key="hurley2000" />.
+
+### Converter currents
+
+A converter's winding current is not sinusoidal. Its dc part sees the dc
+resistance, and each harmonic sees Dowell's factor at its own frequency; the
+loss is the sum over the harmonics <Cite key="erickson2020" where="Ch. 10" />.
+An inductor with a small ripple carries mostly dc, so $F_R$ matters little.
+A flyback winding carries pulses, whose harmonics are large.
+
+### Interleaving
+
+Splitting a transformer's primary and placing the secondary between the
+halves lowers the peak MMF in the window and the number of layers from zero
+to peak MMF, and with them the proximity loss
+<Cite key="erickson2020" where="Ch. 10" />. It also lowers the leakage
+(see [leakage inductance](../leakage/)).
+
+## Worked example
+
+An example foil winding, three layers from zero to peak MMF:
+
+<Worked example="dowell-foil" />
+
+At <Val example="dowell-foil" name="f" /> and
+<Val example="dowell-foil" name="T_w" />, copper's skin depth is
+<Val example="dowell-foil" name="delta_s" />, so the
+<Val example="dowell-foil" name="h_l" /> foil is
+<Val example="dowell-foil" name="phi_l" /> skin depths thick. Three layers
+give $F_R$ of <Val example="dowell-foil" name="F_R" />. The series gives
+<Val example="dowell-foil" name="F_R_low" />: too high, because the foil is
+thicker than a skin depth. For three layers the loss is least at
+<Val example="dowell-foil" name="phi_opt" /> skin depths, where the factor is
+<Val example="dowell-foil" name="F_R_opt" />. The relative loss falls from
+<Val example="dowell-foil" name="P_rel" /> to
+<Val example="dowell-foil" name="P_rel_opt" />: the thinner foil loses less,
+although its dc resistance is higher.
+
+## Try it
+
+<TryIt eq="wind.dowell" example="dowell-foil" sweep="phi_l" />
+
+Sweep $\varphi$: below 1 the factor stays close to 1, above it rises
+steeply. Change $M_\ell$ from 3 to 1 and to 6 and compare.
+
+## Bench exercise
+
+Measure the series resistance of a transformer's primary with its secondary
+shorted, from a low frequency to a few times the switching frequency, and
+well below the self-resonance (see [Measuring magnetics](../measurement/)).
+The secondary's current then opposes the primary's, as in operation. Divide
+by the dc resistance and compare the rise with Dowell's factor for your
+number of layers.
+
+## Gotchas
+
+- **More copper can lose more.** Past the thickness of least loss, a thicker
+  foil or a thicker wire raises the loss at the switching frequency.
+- **Count the layers from zero MMF.** $M_\ell$ is the number of layers from a
+  point of zero MMF to the peak; interleaving halves it
+  <Cite key="erickson2020" where="Ch. 10" />.
+- **Next to a gap the field is not one-dimensional.** Dowell's factor does not
+  describe turns in the gap's fringing field <Cite key="dowell1966" />; keep
+  windings away from a gap or expect more loss there.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch10', 'coursera-magnetics', 'ti-slup132']} />
+
+## Quiz
+
+<Quiz id="04-magnetics/winding-loss" />

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { evaluate, magnetics } from 'pe-core';
 import { CORES } from '../lib/cores';
-import { MAG_PRESETS, magValues } from '../lib/magpresets';
+import { MAG_PRESETS, magHash, magValues } from '../lib/magpresets';
+import { presetSpec } from '../lib/magworked';
 import { FIELDS, frChart, hashOf, resultOf, stateFromHash, toMagSpec, withCore, type MagPreset } from './MagneticsDesigner';
 
 const strings = (v: Record<string, number>) => Object.fromEntries(Object.entries(v).map(([k, x]) => [k, String(x)]));
@@ -113,6 +114,16 @@ describe('magnetics-designer URL hash', () => {
     expect(s.values.Ae).toBe('0.00006');
     expect(s.values.le).toBe(inductor.le);
     expect(resultOf(s.device, s.core, s.arr, s.values)).not.toBeNull();
+  });
+
+  it('a page link to a preset (<TryMag />) opens exactly that preset’s design', () => {
+    for (const p of MAG_PRESETS) {
+      const s = stateFromHash(new URLSearchParams(magHash(p.example)), presets);
+      expect(s.device, p.example).toBe(p.device);
+      expect(s.core, p.example).toBe(p.core);
+      const tool = resultOf(s.device, s.core, s.arr, s.values);
+      expect(tool, p.example).toEqual(magnetics(presetSpec(p.example)));
+    }
   });
 
   it('a hash of another device takes that device’s preset for the fields it lacks', () => {

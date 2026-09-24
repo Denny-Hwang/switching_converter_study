@@ -11,7 +11,7 @@ import { catalog } from 'pe-core';
 import { REPO_BLOB } from '../config';
 import { ui } from '../i18n/ui';
 import { katexOptions } from '../math/katex-options';
-import { getExample } from '../lib/examples';
+import { getExample, symbolOf } from '../lib/examples';
 import { formatSI } from '../lib/format';
 import { eqAnchor, eqHomes } from '../lib/eqhomes';
 import { pageHref } from '../lib/paths';
@@ -37,9 +37,12 @@ const meaningOf = (s: { meaning: string; meaning_ko: string }) => symHtml(locale
 const names = show ?? [...Object.keys(ex.params), ...ex.results.map((r) => r.name)];
 const rows = names.map((name) => {
   if (name in ex.params) {
-    const sym = catalog.symbols[name];
-    if (!sym) throw new Error(`<Worked example="${example}">: param ${name} is not a known symbol`);
-    return { name, latex: sym.latex, meaning: meaningOf(sym), value: formatSI(ex.params[name]!, sym.unit), given: true as const };
+    // a catalogue symbol, or one with a suffix (f_lo: the frequency f, tagged "lo")
+    const of = symbolOf(name);
+    if (!of) throw new Error(`<Worked example="${example}">: param ${name} is not a known symbol`);
+    const sym = catalog.symbols[of.symbol]!;
+    const latex = of.suffix ? `{${sym.latex}}_{\\mathrm{${of.suffix}}}` : sym.latex;
+    return { name, latex, meaning: meaningOf(sym), value: formatSI(ex.params[name]!, sym.unit), given: true as const };
   }
   const r = ex.results.find((x) => x.name === name);
   if (!r) throw new Error(`<Worked example="${example}">: "${name}" is neither a param nor a step result`);

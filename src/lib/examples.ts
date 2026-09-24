@@ -4,7 +4,7 @@
  * pe-core's runSteps, so pages never contain hand-typed results.
  */
 import yaml from 'js-yaml';
-import { checkCondition, runSteps, type Context, type StepResult, type StepSpec } from 'pe-core';
+import { catalog, checkCondition, runSteps, type Context, type StepResult, type StepSpec } from 'pe-core';
 
 export interface ExampleCheck {
   when: string;
@@ -77,4 +77,19 @@ export function getExample(name: string): EvaluatedExample {
   const evaluated = { ...ex, context, results, checkResults };
   cache.set(name, evaluated);
   return evaluated;
+}
+
+/**
+ * The catalogue symbol a context name stands for: the name itself, or a
+ * symbol with a suffix (`f_lo` is the frequency `f`, tagged "lo"), the
+ * longest symbol that fits. Lets an example give one quantity twice (a meter
+ * read at two frequencies) and still show its symbol, meaning and unit.
+ */
+export function symbolOf(name: string): { symbol: string; suffix: string } | undefined {
+  if (catalog.symbols[name]) return { symbol: name, suffix: '' };
+  let best: string | undefined;
+  for (const s of Object.keys(catalog.symbols)) {
+    if (name.startsWith(`${s}_`) && name.length > s.length + 1 && (!best || s.length > best.length)) best = s;
+  }
+  return best ? { symbol: best, suffix: name.slice(best.length + 1) } : undefined;
 }

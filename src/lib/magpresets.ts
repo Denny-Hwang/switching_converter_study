@@ -45,6 +45,7 @@ export interface MagPresetSpec {
 export const MAG_PRESETS: MagPresetSpec[] = [
   { example: 'mag-inductor', device: 'inductor', core: 'e25' },
   { example: 'mag-flyback', device: 'flyback', core: 'etd29', arrangement: 'ps' },
+  { example: 'mag-kg', device: 'inductor', core: 'etd29' },
 ];
 
 /** Magnetics-designer field values from a synthetic example. */
@@ -56,4 +57,18 @@ export function magValues(example: string): Record<string, number> {
     values[f] = v;
   }
   return values;
+}
+
+/**
+ * The magnetics designer's URL hash for a preset: its device, core (and the
+ * flyback's arrangement) and every field its example sets, so that a page
+ * can link straight to that design (<TryMag />).
+ */
+export function magHash(example: string): string {
+  const p = MAG_PRESETS.find((x) => x.example === example);
+  if (!p) throw new Error(`no magnetics preset "${example}"`);
+  const q = new URLSearchParams({ dev: p.device, core: p.core });
+  if (p.device === 'flyback') q.set('arr', p.arrangement ?? 'ps');
+  for (const [k, v] of Object.entries(magValues(example))) q.set(k, String(v));
+  return q.toString();
 }

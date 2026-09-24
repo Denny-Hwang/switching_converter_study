@@ -187,6 +187,21 @@
       "kind": "Application Note",
       "url": "https://www.st.com/resource/en/application_note/an316-tvs-clamping-protection-mode-stmicroelectronics.pdf"
     },
+    "nexperia_an11160": {
+      "key": "nexperia_an11160",
+      "type": "techreport",
+      "label": "Nexperia 2024",
+      "authors": [
+        "Nexperia"
+      ],
+      "title": "Designing RC snubbers",
+      "verified": true,
+      "institution": "Nexperia",
+      "number": "AN11160, Rev. 3.1",
+      "year": "2024",
+      "kind": "Application Note",
+      "url": "https://assets.nexperia.com/documents/application-note/AN11160.pdf"
+    },
     "ti_snoa930": {
       "key": "ti_snoa930",
       "type": "techreport",
@@ -302,6 +317,24 @@
       "pages": "1387–1394",
       "year": "1966",
       "doi": "10.1049/piee.1966.0236"
+    },
+    "hurley2000": {
+      "key": "hurley2000",
+      "type": "article",
+      "label": "Hurley et al. 2000",
+      "authors": [
+        "W. G. Hurley",
+        "E. Gath",
+        "J. G. Breslin"
+      ],
+      "title": "Optimizing the AC resistance of multilayer transformer windings with arbitrary current waveforms",
+      "verified": true,
+      "journal": "IEEE Transactions on Power Electronics",
+      "number": "2",
+      "volume": "15",
+      "pages": "369–376",
+      "year": "2000",
+      "doi": "10.1109/63.838110"
     },
     "ottman2002": {
       "key": "ottman2002",

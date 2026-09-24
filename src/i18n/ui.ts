@@ -393,6 +393,13 @@ export const ui = {
     'mag.warn.layerFull': "A layer's turns do not fit in the winding breadth: side by side over their insulation (turns per layer × strands × d_o) they take more than b_w. Use more layers or thinner wire.",
     'trysim.open': 'Open in the simulator',
     'trysim.preset': 'Preset from the example',
+    'trymag.open': 'Open in the magnetics designer',
+    'trymag.preset': 'Preset from the example',
+    'corekg.caption': 'The table cores against the K_g the example needs',
+    'corekg.core': 'Core (data sheet)',
+    'corekg.margin': 'K_g over the need',
+    'corekg.fits': 'meets it',
+    'corekg.short': 'too small',
   },
   ko: {
     'eq.details': '가정, 표기 규약, 출처',
@@ -787,6 +794,13 @@ export const ui = {
     'mag.warn.layerFull': '한 층의 턴들이 권선 폭 안에 들어가지 않습니다. 절연 피막까지 포함해 나란히 놓으면(층당 턴 수 × 소선 수 × d_o) b_w보다 넓습니다. 층을 늘리거나 더 가는 선을 쓰십시오.',
     'trysim.open': '시뮬레이터에서 열기',
     'trysim.preset': '예제에서 가져온 초기값',
+    'trymag.open': '자성 부품 설계 도구에서 열기',
+    'trymag.preset': '예제에서 가져온 초기값',
+    'corekg.caption': '표의 코어와 예제에 필요한 K_g 비교',
+    'corekg.core': '코어(데이터시트)',
+    'corekg.margin': '필요한 K_g 대비 비율',
+    'corekg.fits': '충족',
+    'corekg.short': '부족',
   },
 } as const;
 

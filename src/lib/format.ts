@@ -17,13 +17,16 @@ const PREFIXABLE = new Set(['V', 'A', 'W', 'Ω', 'H', 'F', 'Hz', 's', 'J', 'C', 
 
 /**
  * Lengths, areas and volumes of parts in millimetres, as data sheets give
- * them (0.25 mm, 52.5 mm², 3020 mm³): the factor to mm, the unit, and the
- * size in SI below which a value is written so.
+ * them (0.25 mm, 52.5 mm², 3020 mm³), and the core geometrical constant in
+ * cm⁵: the factor, the unit, and the size in SI below which a value is
+ * written so.
  */
 const MILLI: Record<string, readonly [number, string, number]> = {
   m: [1e3, 'mm', 1],
   'm²': [1e6, 'mm²', 1e-2],
   'm³': [1e9, 'mm³', 1e-3],
+  // the core geometrical constant in cm⁵, as textbook tables give it (0.0525 cm⁵)
+  'm⁵': [1e10, 'cm⁵', 1e-3],
 };
 
 function trim(x: number, sig: number): string {

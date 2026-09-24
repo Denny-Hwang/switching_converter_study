@@ -34,6 +34,9 @@ describe('formatSI', () => {
     expect(formatSI(1.7241e-8, 'Ω·m', 5)).toBe('17.241 nΩ·m');
     // beyond the size of a part: plain SI
     expect(formatSI(2, 'm')).toBe('2 m');
+    // the core geometrical constant, in cm⁵ as textbook tables give it
+    expect(formatSI(5.245733888888889e-12, 'm⁵')).toBe('0.0525 cm⁵');
+    expect(formatSI(1.0611212121212122e-11, 'm⁵')).toBe('0.106 cm⁵');
   });
 
   it('handles zero, negative and non-finite values', () => {

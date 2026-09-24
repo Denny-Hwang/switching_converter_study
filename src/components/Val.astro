@@ -4,7 +4,7 @@
  * formatted with its unit. Lets prose mention numbers without typing them.
  */
 import { catalog } from 'pe-core';
-import { getExample } from '../lib/examples';
+import { getExample, symbolOf } from '../lib/examples';
 import { formatSI } from '../lib/format';
 
 interface Props {
@@ -16,8 +16,10 @@ const { example, name, sig = 3 } = Astro.props;
 const ex = getExample(example);
 let value: number | undefined;
 let symbol = name;
-if (name in ex.params) value = ex.params[name];
-else {
+if (name in ex.params) {
+  value = ex.params[name];
+  symbol = symbolOf(name)?.symbol ?? name;
+} else {
   const r = ex.results.find((x) => x.name === name);
   if (r) {
     value = r.value;
