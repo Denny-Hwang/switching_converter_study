@@ -849,6 +849,107 @@
       ]
     },
     {
+      "module": "snubbers",
+      "source": "python/pe_core/derive/snubbers.py",
+      "title": "Snubbers: parasitics from the ringing, damping resistance and loss",
+      "title_ko": "스너버: 링잉에서 구한 기생 성분, 감쇠 저항, 손실",
+      "intro": "A switching edge makes a node's parasitic inductance and capacitance ring. Their values, which cannot be read from the layout, follow from the ringing frequency measured twice: as built, and with a known capacitor added.",
+      "intro_ko": "스위칭 에지는 노드의 기생 인덕턴스와 커패시턴스를 링잉시킨다. 레이아웃에서 읽을 수 없는 이 값들은 링잉 주파수를 두 번, 즉 원래 회로에서 한 번, 알려진 커패시터를 더해서 한 번 재면 구할 수 있다.",
+      "results": [
+        "snub.C_par",
+        "snub.L_par",
+        "snub.R",
+        "snub.P",
+        "snub.P_R"
+      ],
+      "steps": [
+        {
+          "text": "As built, the node rings at the resonance of its inductance and capacitance:",
+          "text_ko": "원래 회로에서 노드는 인덕턴스와 커패시턴스의 공진 주파수로 링잉한다.",
+          "latex": "f_{r0} = \\frac{1}{2 \\pi \\sqrt{C_\\mathrm{par}} \\sqrt{L_\\mathrm{par}}}",
+          "result_for": null
+        },
+        {
+          "text": "A known capacitor across the node adds to the capacitance but leaves the inductance as it is:",
+          "text_ko": "노드에 알려진 커패시터를 달면 커패시턴스에 더해지고 인덕턴스는 그대로이다.",
+          "latex": "f_{r1} = \\frac{1}{2 \\pi \\sqrt{L_\\mathrm{par}} \\sqrt{C_\\mathrm{add} + C_\\mathrm{par}}}",
+          "result_for": null
+        },
+        {
+          "text": "The inductance cancels from the ratio of the two frequencies, $x = f_{r0}/f_{r1}$:",
+          "text_ko": "두 주파수의 비 $x = f_{r0}/f_{r1}$에서 인덕턴스가 소거된다.",
+          "latex": "x^{2} = \\frac{C_\\mathrm{add} + C_\\mathrm{par}}{C_\\mathrm{par}}",
+          "result_for": null
+        },
+        {
+          "text": "Solved for the node's capacitance:",
+          "text_ko": "노드의 커패시턴스에 대해 풀면:",
+          "latex": "C_\\mathrm{par} = \\frac{C_\\mathrm{add} f_{r1}^{2}}{f_{r0}^{2} - f_{r1}^{2}} = \\frac{C_\\mathrm{add}}{\\left(\\frac{f_{r0}}{f_{r1}}\\right)^{2} - 1}",
+          "result_for": "snub.C_par"
+        },
+        {
+          "text": "and the first resonance then gives the inductance:",
+          "text_ko": "그러면 첫 번째 공진에서 인덕턴스가 나온다.",
+          "latex": "L_\\mathrm{par} = \\frac{1}{4 \\pi^{2} f_{r0}^{2} C_\\mathrm{par}}",
+          "result_for": "snub.L_par"
+        },
+        {
+          "text": "AN11160 takes the damping factor of the parasitic inductance, the snubber resistor and the snubber capacitor in series, leaving the node's own capacitance out. That loop's natural frequencies solve",
+          "text_ko": "AN11160은 기생 인덕턴스, 스너버 저항, 스너버 커패시터를 직렬로 본 루프의 감쇠 계수를 쓰며, 노드 자체의 커패시턴스는 넣지 않는다. 이 루프의 고유 주파수는 다음 식을 만족한다.",
+          "latex": "1 + s C_\\mathrm{snub} R_\\mathrm{snub} + C_\\mathrm{snub} L_\\mathrm{par} s^{2} = 0",
+          "result_for": null
+        },
+        {
+          "text": "Divided by $L_\\mathrm{par} C_\\mathrm{snub}$ and written as $s^2 + 2\\zeta\\omega_0 s + \\omega_0^2 = 0$, with $\\omega_0 = 1/\\sqrt{L_\\mathrm{par} C_\\mathrm{snub}}$, its damping factor is",
+          "text_ko": "$L_\\mathrm{par} C_\\mathrm{snub}$로 나누어 $\\omega_0 = 1/\\sqrt{L_\\mathrm{par} C_\\mathrm{snub}}$인 $s^2 + 2\\zeta\\omega_0 s + \\omega_0^2 = 0$ 꼴로 쓰면, 감쇠 계수는 다음과 같다.",
+          "latex": "\\zeta = \\frac{R_\\mathrm{snub} \\sqrt{C_\\mathrm{snub}}}{2 \\sqrt{L_\\mathrm{par}}}",
+          "result_for": null
+        },
+        {
+          "text": "Solved for the resistance:",
+          "text_ko": "저항에 대해 풀면:",
+          "latex": "R_\\mathrm{snub} = 2 \\zeta \\sqrt{\\frac{L_\\mathrm{par}}{C_\\mathrm{snub}}}",
+          "result_for": "snub.R"
+        },
+        {
+          "text": "At an edge the node steps by $V_\\mathrm{snub}$ and the snubber capacitor charges through the resistor, $i = (V_\\mathrm{snub}/R)\\,e^{-t/(R C_\\mathrm{snub})}$; the energy the resistor takes does not depend on $R$:",
+          "text_ko": "에지에서 노드 전압이 $V_\\mathrm{snub}$만큼 바뀌면 스너버 커패시터가 저항을 통해 충전된다: $i = (V_\\mathrm{snub}/R)\\,e^{-t/(R C_\\mathrm{snub})}$. 저항이 가져가는 에너지는 $R$과 무관하다.",
+          "latex": "E_R = \\frac{C_\\mathrm{snub} V_\\mathrm{snub}^{2}}{2}",
+          "result_for": null
+        },
+        {
+          "text": "The next edge discharges the capacitor, through the resistor and the switch that turns on, and loses its stored energy, as much again, so each period loses",
+          "text_ko": "다음 에지에서는 커패시터가 저항과 켜지는 스위치를 통해 방전하며 저장된 에너지, 즉 같은 양을 다시 잃는다. 따라서 한 주기에 잃는 에너지는 다음과 같다.",
+          "latex": "2 E_R = C_\\mathrm{snub} V_\\mathrm{snub}^{2}",
+          "result_for": null
+        },
+        {
+          "text": "At $f_s$ periods per second:",
+          "text_ko": "초당 $f_s$ 주기이므로:",
+          "latex": "P = C_\\mathrm{snub} V_\\mathrm{snub}^{2} f_s",
+          "result_for": "snub.P"
+        },
+        {
+          "text": "AN11160 rates the resistor from the edge that charges the capacitor while the parasitic inductance carries a current $I_\\mathrm{ring}$. The source delivers the capacitor's charge $C_\\mathrm{snub} V_\\mathrm{snub}$ at $V_\\mathrm{snub}$:",
+          "text_ko": "AN11160은 기생 인덕턴스에 전류 $I_\\mathrm{ring}$이 흐르는 동안 커패시터를 충전하는 에지로 저항의 정격을 정한다. 전원은 커패시터의 전하 $C_\\mathrm{snub} V_\\mathrm{snub}$을 전압 $V_\\mathrm{snub}$에서 공급한다.",
+          "latex": "E_s = C_\\mathrm{snub} V_\\mathrm{snub}^{2}",
+          "result_for": null
+        },
+        {
+          "text": "The capacitor keeps half of that energy and the inductance gives up all of its own, $L_\\mathrm{par} I_\\mathrm{ring}^2/2$; the resistor takes the rest, whatever its value:",
+          "text_ko": "커패시터는 그 에너지의 절반을 저장하고 인덕턴스는 자신의 에너지 $L_\\mathrm{par} I_\\mathrm{ring}^2/2$를 모두 내놓는다. 나머지는 저항값과 관계없이 저항이 가져간다.",
+          "latex": "W_R = \\frac{C_\\mathrm{snub} V_\\mathrm{snub}^{2}}{2} + \\frac{L_\\mathrm{par} I_\\mathrm{ring}^{2}}{2}",
+          "result_for": null
+        },
+        {
+          "text": "Once per period:",
+          "text_ko": "한 주기에 한 번이므로:",
+          "latex": "P_{R,\\mathrm{snub}} = \\frac{f_s \\left(C_\\mathrm{snub} V_\\mathrm{snub}^{2} + L_\\mathrm{par} I_\\mathrm{ring}^{2}\\right)}{2}",
+          "result_for": "snub.P_R"
+        }
+      ]
+    },
+    {
       "module": "topologies",
       "source": "python/pe_core/derive/topologies.py",
       "title": "Topology details: dc currents, ripple, switch stress, utilization (CCM)",
@@ -1376,8 +1477,8 @@
     {
       "module": "magnetics",
       "source": "python/pe_core/derive/magnetics.py",
-      "title": "Magnetic circuits: A_L, inductance, peak and swing flux density",
-      "title_ko": "자기 회로: A_L, 인덕턴스, 피크 및 변화 자속 밀도",
+      "title": "Magnetic circuits: A_L, inductance, flux density and the core geometrical constant",
+      "title_ko": "자기 회로: A_L, 인덕턴스, 자속 밀도, 코어 기하 상수",
       "intro": "A magnetic path behaves like a resistive circuit: the magnetomotive force $N i$ drives flux $\\Phi$ through reluctances $\\mathcal{R} = l/(\\mu A)$. With a uniform flux density over the effective area $A_e$, $B = \\Phi/A_e$.",
       "intro_ko": "자기 경로는 저항 회로처럼 동작한다. 기자력 $N i$가 자기저항 $\\mathcal{R} = l/(\\mu A)$를 통해 자속 $\\Phi$를 흐르게 한다. 유효 단면적 $A_e$에서 자속 밀도가 균일하면 $B = \\Phi/A_e$이다.",
       "results": [
@@ -1387,6 +1488,7 @@
         "mag.B_ac",
         "mag.N_Bmax",
         "mag.gap_length",
+        "mag.Kg_req",
         "mag.dB_faraday"
       ],
       "steps": [
@@ -1463,6 +1565,42 @@
           "result_for": "mag.gap_length"
         },
         {
+          "text": "Choosing a core. The winding's $N$ turns of copper area $A_w$ may fill only $K_u$ of the window $W_A$:",
+          "text_ko": "코어 고르기. 구리 단면적 $A_w$인 $N$ 턴의 권선은 창 $W_A$의 $K_u$만 차지할 수 있다.",
+          "latex": "K_u W_A = A_w N",
+          "result_for": null
+        },
+        {
+          "text": "At the limit, its resistance, $N$ turns of mean length MLT, equals the copper-loss budget $R_\\mathrm{dc,max}$:",
+          "text_ko": "한계에서는 평균 길이 MLT인 $N$ 턴의 저항이 구리 손실 한도 $R_\\mathrm{dc,max}$와 같다.",
+          "latex": "R_\\mathrm{dc,max} = \\frac{\\mathrm{MLT} N \\rho_w}{A_w}",
+          "result_for": null
+        },
+        {
+          "text": "The window fixes the wire, $A_w = K_u W_A/N$, so the resistance grows as the square of the turns:",
+          "text_ko": "창이 선재를 정하므로($A_w = K_u W_A/N$) 저항은 턴 수의 제곱으로 커진다.",
+          "latex": "R_\\mathrm{dc,max} = \\frac{\\mathrm{MLT} \\rho_w N^{2}}{K_u W_A}",
+          "result_for": null
+        },
+        {
+          "text": "The flux limit fixes the turns, $N = L I_\\mathrm{pk}/(B_\\mathrm{max} A_e)$:",
+          "text_ko": "자속 한계가 턴 수를 정한다: $N = L I_\\mathrm{pk}/(B_\\mathrm{max} A_e)$.",
+          "latex": "R_\\mathrm{dc,max} = \\frac{\\mathrm{MLT} \\rho_w I_\\mathrm{pk}^{2} L^{2}}{A_e^{2} B_\\mathrm{max}^{2} K_u W_A}",
+          "result_for": null
+        },
+        {
+          "text": "Collecting the core's dimensions on one side defines the core geometrical constant; the other side depends on the specification alone.",
+          "text_ko": "코어 치수를 한쪽으로 모으면 코어 기하 상수가 정의되고, 다른 쪽은 사양에만 의존한다.",
+          "latex": "K_g = \\frac{W_A A_e^{2}}{\\mathrm{MLT}}",
+          "result_for": null
+        },
+        {
+          "text": "A core meets the flux limit, the window and the resistance budget together when its $K_g$ is at least:",
+          "text_ko": "코어의 $K_g$가 다음 값 이상이면 자속 한계, 창, 저항 한도를 함께 만족한다.",
+          "latex": "K_g = \\frac{\\rho_w L^{2} I_\\mathrm{pk}^{2}}{B_\\mathrm{max}^{2} R_\\mathrm{dc,max} K_u}",
+          "result_for": "mag.Kg_req"
+        },
+        {
           "text": "Faraday's law: $v = N A_e\\,dB/dt$, so the change of $B$ over the on-time is the integral of $v/(N A_e)$.",
           "text_ko": "패러데이 법칙: $v = N A_e\\,dB/dt$이므로 온 구간 동안의 $B$ 변화는 $v/(N A_e)$의 적분이다.",
           "latex": "\\Delta B = \\int\\limits_{0}^{t_\\mathrm{on}} \\frac{V_w}{A_e N}\\, dt",
@@ -1479,15 +1617,21 @@
     {
       "module": "windings",
       "source": "python/pe_core/derive/windings.py",
-      "title": "Windings: resistance, skin depth and leakage",
-      "title_ko": "권선: 저항, 표피 깊이, 누설",
+      "title": "Windings: resistance, skin depth, thin layers, leakage and the short circuit",
+      "title_ko": "권선: 저항, 표피 깊이, 얇은 층, 누설, 단락",
       "intro": "A winding is a long conductor wound in layers. Its resistance follows from its length and cross-section; at high frequency the current crowds into a skin; and the field between the windings stores the energy that appears as leakage inductance.",
       "intro_ko": "권선은 층으로 감긴 긴 도체이다. 저항은 길이와 단면적에서 나오고, 주파수가 높으면 전류가 표면층으로 몰리며, 권선 사이의 자계는 누설 인덕턴스로 나타나는 에너지를 저장한다.",
       "results": [
         "wind.dcr",
         "wind.skin_depth",
+        "wind.dowell_low",
+        "wind.loss_rel",
+        "wind.phi_opt",
         "xfmr.leakage.ps",
-        "xfmr.leakage.psp"
+        "xfmr.leakage.psp",
+        "xfmr.L_sc",
+        "xfmr.L_sc_T",
+        "xfmr.V_oc"
       ],
       "steps": [
         {
@@ -1521,6 +1665,48 @@
           "result_for": "wind.skin_depth"
         },
         {
+          "text": "Dowell's ac resistance factor of $M_\\ell$ layers, each $\\varphi$ skin depths thick (`wind.dowell`):",
+          "text_ko": "두께가 표피 깊이의 $\\varphi$배인 층 $M_\\ell$개의 Dowell 교류 저항 계수(`wind.dowell`):",
+          "latex": "F_R = \\varphi \\left(\\frac{\\sin{\\left(2 \\varphi \\right)} + \\sinh{\\left(2 \\varphi \\right)}}{- \\cos{\\left(2 \\varphi \\right)} + \\cosh{\\left(2 \\varphi \\right)}} + \\frac{\\left(- \\frac{2}{3} + \\frac{2 M_\\ell^{2}}{3}\\right) \\left(- \\sin{\\left(\\varphi \\right)} + \\sinh{\\left(\\varphi \\right)}\\right)}{\\cos{\\left(\\varphi \\right)} + \\cosh{\\left(\\varphi \\right)}}\\right)",
+          "result_for": null
+        },
+        {
+          "text": "For thin layers, expand the hyperbolic and circular functions in powers of $\\varphi$: the terms up to $\\varphi^3$ cancel and the first excess is of fourth order.",
+          "text_ko": "얇은 층에서는 쌍곡선 함수와 삼각 함수를 $\\varphi$의 거듭제곱으로 전개한다. $\\varphi^3$까지의 항은 상쇄되고 첫 초과 항은 4차이다.",
+          "latex": "F_R = 1 - \\frac{\\varphi^{4}}{45} + \\frac{M_\\ell^{2} \\varphi^{4}}{9} = 1 + \\frac{\\left(5 M_\\ell^{2} - 1\\right) \\varphi^{4}}{45}",
+          "result_for": "wind.dowell_low"
+        },
+        {
+          "text": "At a given frequency the skin depth is fixed, so a layer $\\varphi$ skin depths thick has the dc resistance $R_\\delta/\\varphi$, $R_\\delta$ being that of a layer one skin depth thick. Carrying a current $I$, it loses",
+          "text_ko": "주파수가 정해지면 표피 깊이도 정해지므로, 두께가 표피 깊이의 $\\varphi$배인 층의 직류 저항은 $R_\\delta/\\varphi$이다($R_\\delta$는 두께 한 표피 깊이 층의 직류 저항). 전류 $I$가 흐르면 손실은 다음과 같다.",
+          "latex": "P = \\frac{F_R R_\\delta I^{2}}{\\varphi}",
+          "result_for": null
+        },
+        {
+          "text": "Relative to the loss of a layer one skin depth thick carrying the same current as dc, $R_\\delta I^2$:",
+          "text_ko": "같은 전류가 직류로 흐르는 두께 한 표피 깊이 층의 손실 $R_\\delta I^2$에 대한 비는 다음과 같다.",
+          "latex": "P/P_\\delta = \\frac{F_R}{\\varphi}",
+          "result_for": "wind.loss_rel"
+        },
+        {
+          "text": "With the series for thin layers:",
+          "text_ko": "얇은 층의 급수를 쓰면:",
+          "latex": "P/P_\\delta = \\frac{1 - \\frac{\\varphi^{4}}{45} + \\frac{M_\\ell^{2} \\varphi^{4}}{9}}{\\varphi}",
+          "result_for": null
+        },
+        {
+          "text": "It is least where its derivative vanishes:",
+          "text_ko": "도함수가 0인 곳에서 가장 작다.",
+          "latex": "\\varphi_\\mathrm{opt} = \\left(\\frac{15}{5 M_\\ell^{2} - 1}\\right)^{\\frac{1}{4}}",
+          "result_for": "wind.phi_opt"
+        },
+        {
+          "text": "There the ac resistance factor is the same for every number of layers:",
+          "text_ko": "그곳에서 교류 저항 계수는 층 수와 관계없이 같다.",
+          "latex": "F_R = \\frac{4}{3}",
+          "result_for": null
+        },
+        {
           "text": "The field in the window runs along the breadth $b_w$, so $H = \\mathcal{F}/b_w$ where $\\mathcal{F}$ is the MMF enclosed at that height; the energy it stores over the turn length MLT is",
           "text_ko": "창 안의 자계는 폭 $b_w$ 방향으로 향하므로 그 높이까지 둘러싸인 기자력을 $\\mathcal{F}$라 하면 $H = \\mathcal{F}/b_w$이고, 턴 길이 MLT에 걸쳐 저장되는 에너지는 다음과 같다.",
           "latex": "E = \\frac{\\mathrm{MLT} \\mu_0 \\int \\mathcal{F}^{2}\\, dy}{2 b_w}",
@@ -1549,6 +1735,115 @@
           "text_ko": "최대 기자력이 절반이 되므로 에너지와 누설은 약 1/4로 줄고, 두 간격이 모두 들어간다.",
           "latex": "L_\\mathrm{lk} = \\frac{\\mathrm{MLT} \\mu_0 N^{2} \\left(h_p + h_s + 6 h_g\\right)}{12 b_w} = \\frac{\\mu_0 N^{2} \\mathrm{MLT} \\left(\\frac{h_p}{3} + 2 h_g + \\frac{h_s}{3}\\right)}{4 b_w}",
           "result_for": "xfmr.leakage.psp"
+        },
+        {
+          "text": "Two coupled windings, each with its own inductance and the mutual inductance $L_{12}$ between them:",
+          "text_ko": "각자의 인덕턴스와 둘 사이의 상호 인덕턴스 $L_{12}$를 갖는 두 결합 권선:",
+          "latex": "v_1 = \\frac{di_1}{dt} L_{11} + \\frac{di_2}{dt} L_{12}",
+          "result_for": null
+        },
+        {
+          "text": "and at winding 2:",
+          "text_ko": "권선 2에서는:",
+          "latex": "v_2 = \\frac{di_1}{dt} L_{12} + \\frac{di_2}{dt} L_{22}",
+          "result_for": null
+        },
+        {
+          "text": "Shorting winding 2 sets $v_2 = 0$, so its current changes against winding 1's:",
+          "text_ko": "권선 2를 단락하면 $v_2 = 0$이므로 그 전류는 권선 1의 전류와 반대로 변한다.",
+          "latex": "\\frac{di_2}{dt} = - \\frac{\\frac{di_1}{dt} L_{12}}{L_{22}}",
+          "result_for": null
+        },
+        {
+          "text": "Winding 1 then sees the inductance $v_1/(di_1/dt)$:",
+          "text_ko": "그러면 권선 1이 보는 인덕턴스는 $v_1/(di_1/dt)$이다.",
+          "latex": "L_\\mathrm{sc} = L_{11} - \\frac{L_{12}^{2}}{L_{22}}",
+          "result_for": null
+        },
+        {
+          "text": "With the coupling coefficient $k = L_{12}/\\sqrt{L_{11} L_{22}}$ (`xfmr.k`):",
+          "text_ko": "결합 계수 $k = L_{12}/\\sqrt{L_{11} L_{22}}$(`xfmr.k`)를 쓰면:",
+          "latex": "L_\\mathrm{sc} = L_{11} \\left(1 - k^{2}\\right)",
+          "result_for": "xfmr.L_sc"
+        },
+        {
+          "text": "In the transformer model (1:$n$, magnetizing inductance $L_M$ and the leakage inductances, all referred to the primary) the winding inductances are",
+          "text_ko": "변압기 모델(1:$n$, 1차 기준의 자화 인덕턴스 $L_M$와 누설 인덕턴스)에서 권선 인덕턴스는 다음과 같다.",
+          "latex": "L_{11} = L_M + L_{\\ell 1}",
+          "result_for": null
+        },
+        {
+          "text": "the mutual inductance,",
+          "text_ko": "상호 인덕턴스는",
+          "latex": "L_{12} = L_M n",
+          "result_for": null
+        },
+        {
+          "text": "and winding 2's inductance (its leakage $L_{\\ell 2} = n^2 L_{\\ell 2}'$):",
+          "text_ko": "권선 2의 인덕턴스는(누설 $L_{\\ell 2} = n^2 L_{\\ell 2}'$)",
+          "latex": "L_{22} = n^{2} \\left(L_M + L_{\\ell 2}'\\right)",
+          "result_for": null
+        },
+        {
+          "text": "Substituting them, the turns ratio cancels: the primary's leakage in series with the secondary's in parallel with $L_M$.",
+          "text_ko": "이를 대입하면 권선비가 소거된다. 1차 누설에, 2차 누설과 $L_M$의 병렬이 직렬로 더해진다.",
+          "latex": "L_\\mathrm{sc} = L_{\\ell 1} + \\frac{L_{\\ell 2}' L_M}{L_{\\ell 2}' + L_M}",
+          "result_for": "xfmr.L_sc_T"
+        },
+        {
+          "text": "With winding 2 open, no current flows in it ($di_2/dt = 0$), and the two voltages stand in the ratio",
+          "text_ko": "권선 2를 개방하면 그 권선에는 전류가 흐르지 않으므로($di_2/dt = 0$) 두 전압의 비는 다음과 같다.",
+          "latex": "V_2/V_1 = \\frac{L_{12}}{L_{11}}",
+          "result_for": null
+        },
+        {
+          "text": "In the transformer model: slightly below the turns ratio, the primary's leakage taking its share of the voltage.",
+          "text_ko": "변압기 모델에서는 1차 누설이 전압의 일부를 나누어 가지므로 권선비보다 조금 작다.",
+          "latex": "V_2/V_1 = \\frac{n L_M}{L_{\\ell 1} + L_M}",
+          "result_for": "xfmr.V_oc"
+        }
+      ]
+    },
+    {
+      "module": "measurement",
+      "source": "python/pe_core/derive/measurement.py",
+      "title": "Measurement: inductance read near self-resonance",
+      "title_ko": "측정: 자기 공진 근처에서 읽히는 인덕턴스",
+      "intro": "A winding is an inductance with its turns' capacitance in parallel. An impedance meter divides the reactance it measures by $\\omega$ and reports that as the inductance.",
+      "intro_ko": "권선은 턴 사이 커패시턴스가 병렬로 붙은 인덕턴스이다. 임피던스 측정기는 측정한 리액턴스를 $\\omega$로 나누어 인덕턴스로 표시한다.",
+      "results": [
+        "meas.L_app"
+      ],
+      "steps": [
+        {
+          "text": "The inductance and the capacitance in parallel:",
+          "text_ko": "병렬로 연결된 인덕턴스와 커패시턴스:",
+          "latex": "Z = \\frac{1}{i C_p \\omega - \\frac{i}{L \\omega}}",
+          "result_for": null
+        },
+        {
+          "text": "which is a pure reactance,",
+          "text_ko": "이는 순수 리액턴스이다.",
+          "latex": "Z = - \\frac{i L \\omega}{-1 + C_p L \\omega^{2}}",
+          "result_for": null
+        },
+        {
+          "text": "so the meter reads the inductance $Z/(j\\omega)$:",
+          "text_ko": "따라서 측정기는 $Z/(j\\omega)$를 인덕턴스로 읽는다.",
+          "latex": "L_\\mathrm{app} = - \\frac{L}{-1 + C_p L \\omega^{2}}",
+          "result_for": null
+        },
+        {
+          "text": "The self-resonant frequency (`passive.f_srf`) gives $\\omega^2 L C_p = (f/f_\\mathrm{srf})^2$:",
+          "text_ko": "자기 공진 주파수(`passive.f_srf`)로 쓰면 $\\omega^2 L C_p = (f/f_\\mathrm{srf})^2$이다.",
+          "latex": "f_\\mathrm{srf} = \\frac{1}{2 \\pi \\sqrt{C_p} \\sqrt{L}}",
+          "result_for": null
+        },
+        {
+          "text": "Substituting $\\omega = 2\\pi f$:",
+          "text_ko": "$\\omega = 2\\pi f$를 대입하면:",
+          "latex": "L_\\mathrm{app} = - \\frac{L f_\\mathrm{srf}^{2}}{f^{2} - f_\\mathrm{srf}^{2}} = \\frac{L}{1 - \\left(\\frac{f}{f_\\mathrm{srf}}\\right)^{2}}",
+          "result_for": "meas.L_app"
         }
       ]
     },

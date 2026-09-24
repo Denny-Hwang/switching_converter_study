@@ -169,3 +169,23 @@ def test_resources_check_requires_a_title_for_pdf_references() -> None:
     # too short to identify a PDF, or a placeholder
     for short in ("(pdf)", "LTspice", "Sensor Design"):
         assert rc.pdf_expect_error(short)
+
+
+def test_modulelint_mirrors_every_block_component() -> None:
+    """The Korean page must show the English page's figures, core tables and
+    magnetics links too, with the same attributes in the same order."""
+    ml = _script("modulelint")
+    en = ml.components('<Figure name="buck" />\n<CoreKg example="kg-inductor" />\n<MagWorked example="mag-kg" />\n<TryMag example="mag-kg" />')
+    assert [c for c, _ in ml.signature(en, ml.BLOCK)] == ["Figure", "CoreKg", "MagWorked", "TryMag"]
+    for changed in (
+        '<Figure name="buck" />\n<CoreKg example="kg-inductor" />\n<MagWorked example="mag-kg" />\n<TryMag example="mag-inductor" />',
+        '<Figure name="buck" />\n<MagWorked example="mag-kg" />\n<TryMag example="mag-kg" />',
+        '<CoreKg example="kg-inductor" />\n<Figure name="buck" />\n<MagWorked example="mag-kg" />\n<TryMag example="mag-kg" />',
+    ):
+        assert ml.signature(ml.components(changed), ml.BLOCK) != ml.signature(en, ml.BLOCK)
+
+
+def test_modulelint_names_components_it_does_not_compare() -> None:
+    ml = _script("modulelint")
+    assert ml.unknown_components('<Eq id="x" /> <NewTable example="a" /> <Cite key="k" /> <b>bold</b>') == ["NewTable"]
+    assert ml.unknown_components('<Eq id="x" /> <Val example="a" name="b" /> <em>text</em>') == []

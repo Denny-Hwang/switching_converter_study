@@ -1,0 +1,22 @@
+synthetic: true
+label: "K_g inductor example"
+label_ko: "K_g 인덕터 예제"
+# A filter inductor's specification for the core geometrical constant: 100 µH
+# at 5 A peak and 4.5 A rms, flux density at most 0.3 T, copper at 100 °C, a
+# winding of at most 30 mΩ (the resistance budget R_dcmax) that fills at most
+# 40 % of the window. The same operating point is the magnetics designer's
+# preset mag-kg (ETD 29/16/10).
+params:
+  rho_20: 1.7241e-8
+  alpha_20: 0.00393
+  T_w: 100
+  L: 1.0e-4
+  I_pk: 5.0
+  I_rms: 4.5
+  B_max: 0.3
+  R_dcmax: 0.03
+  K_u: 0.4
+steps:
+  - wind.rho_T
+  - mag.Kg_req
+  - {eq: loss.cond, bind: {R_x: R_dcmax}, as: P_cu}

@@ -1,0 +1,22 @@
+synthetic: true
+label: "RC snubber example"
+label_ko: "RC 스너버 예제"
+# A node that rings at 20 MHz, and at 10 MHz with 150 pF added across it; an
+# RC snubber of 100 pF (twice the node's capacitance) with a damping factor of
+# 0.75, on a node that swings through 100 V at 100 kHz, with 0.5 A in the
+# parasitic inductance when the ring starts.
+params:
+  f_r0: 2.0e7
+  f_r1: 1.0e7
+  C_add: 1.5e-10
+  C_snub: 1.0e-10
+  zeta: 0.75
+  V_snub: 100
+  f_s: 1.0e5
+  I_ring: 0.5
+steps:
+  - snub.C_par
+  - snub.L_par
+  - snub.R
+  - snub.P
+  - snub.P_R

@@ -17,19 +17,27 @@ interface Props {
   sweep?: string;
   /** Map equation inputs to example context names, e.g. {M: 'M_dcm'}. */
   bind?: Record<string, string>;
+  /** The sweep's range and axis, where the input's catalogue range would hide what the page describes. */
+  from?: number;
+  to?: number;
+  logx?: boolean;
 }
-const { eq, example, sweep, bind = {} } = Astro.props;
+const { eq, example, sweep, bind = {}, from, to, logx } = Astro.props;
 const meta = getEquation(eq);
 const ex = getExample(example);
 const params = new URLSearchParams({ eq });
 for (const v of meta.variables) {
   const val = ex.context[bind[v] ?? v];
   if (val === undefined) throw new Error(`<TryIt eq="${eq}" example="${example}">: no value for input ${v}`);
-  params.set(v, String(val));
+  // twelve digits: an example's computed value carries no binary noise into the explorer's field
+  params.set(v, String(Number(val.toPrecision(12))));
 }
 const sw = sweep ?? meta.variables[0];
 if (!sw || !meta.variables.includes(sw)) throw new Error(`<TryIt eq="${eq}">: cannot sweep "${sweep}"`);
 params.set('sweep', sw);
+if (from !== undefined) params.set('from', String(from));
+if (to !== undefined) params.set('to', String(to));
+if (logx !== undefined) params.set('logx', logx ? '1' : '0');
 const locale = pageLocale(Astro);
 const t = ui[locale];
 const href = `${pageHref(locale, 'design/explorer')}#${params.toString()}`;

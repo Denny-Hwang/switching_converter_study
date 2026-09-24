@@ -143,6 +143,34 @@ resources:
     title_match: "Basic Magnetics Theory"
     cite: erickson2020
 
+  - id: erickson-ch11
+    type: chapter
+    title: "Inductor Design (Ch. 11)"
+    author: "R. W. Erickson, D. Maksimović"
+    url: https://link.springer.com/chapter/10.1007/978-3-030-43881-4_11
+    tags: [magnetics, inductor-design, core-geometrical-constant]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "The constraints a filter inductor must meet, the core geometrical constant K_g that turns them into a core size, and a step-by-step design procedure."
+    why_ko: "필터 인덕터가 지켜야 할 제약, 그것을 코어 크기로 바꾸는 코어 기하 상수 K_g, 그리고 단계별 설계 절차."
+    title_match: "Inductor Design"
+    cite: erickson2020
+
+  - id: erickson-ch12
+    type: chapter
+    title: "Transformer Design (Ch. 12)"
+    author: "R. W. Erickson, D. Maksimović"
+    url: https://link.springer.com/chapter/10.1007/978-3-030-43881-4_12
+    tags: [magnetics, transformer-design, core-loss, winding-loss]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "Designing a transformer when core loss, rather than saturation, limits the ac flux density, with copper and core loss traded against each other."
+    why_ko: "포화가 아니라 코어 손실이 교류 자속 밀도를 제한할 때의 변압기 설계. 구리 손실과 코어 손실을 서로 맞바꾼다."
+    title_match: "Transformer Design"
+    cite: erickson2020
+
   - id: erickson-ch15
     type: chapter
     title: "AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode (Ch. 15)"
@@ -420,6 +448,66 @@ resources:
     title_match: "Magnetics Design Handbook"
     urlkind: login
     cite: dixon2001
+
+  - id: nexperia-an11160
+    type: app-note
+    title: "Designing RC snubbers (AN11160)"
+    author: "Nexperia"
+    url: https://assets.nexperia.com/documents/application-note/AN11160.pdf
+    tags: [snubbers, ringing, measurement]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "How to find a ringing node's parasitic capacitance and inductance with an added capacitor, then choose the RC snubber's capacitor and its resistor from a damping factor, trading peak voltage against loss."
+    why_ko: "커패시터를 더해 링잉 노드의 기생 커패시턴스와 인덕턴스를 구한 뒤, 피크 전압과 손실을 맞바꾸며 RC 스너버의 커패시터와 감쇠 계수로 정하는 저항을 고르는 방법."
+    title_match: "Designing RC snubbers"
+    urlkind: pdf
+    cite: nexperia_an11160
+
+  - id: ti-ssztcv6
+    type: article
+    title: "Snubbing the flyback converter (SSZTCV6)"
+    author: "R. Kollman, Texas Instruments"
+    url: https://www.ti.com/lit/pdf/ssztcv6
+    tags: [snubbers, clamps, flyback, leakage]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "How a flyback's leakage inductance drives the switch above the reflected voltage, and how the clamp voltage trades against the clamp's loss."
+    why_ko: "플라이백의 누설 인덕턴스가 스위치 전압을 반사 전압보다 높이 밀어 올리는 과정, 그리고 클램프 전압과 클램프 손실의 맞교환."
+    title_match: "Snubbing the flyback converter"
+    urlkind: pdf
+    cite: ti_ssztcv6
+
+  - id: keysight-imh
+    type: app-note
+    title: "Impedance Measurement Handbook (5950-3000)"
+    author: "Keysight Technologies"
+    url: https://www.keysight.com/us/en/assets/7018-06840/application-notes/5950-3000.pdf
+    tags: [measurement, impedance, lcr-meter]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "How LCR meters and impedance analyzers measure, why a component's measured value depends on the test frequency and signal, and how to connect and compensate the test fixture."
+    why_ko: "LCR 미터와 임피던스 분석기가 측정하는 원리, 부품의 측정값이 측정 주파수와 신호에 따라 달라지는 이유, 그리고 측정 지그(test fixture)의 연결과 보정 방법."
+    title_match: "Impedance Measurement Handbook"
+    urlkind: pdf
+    cite: keysight_5950_3000
+
+  - id: keithley-llmh
+    type: app-note
+    title: "Low Level Measurements Handbook, 7th edition"
+    author: "Keithley Instruments (Tektronix)"
+    url: https://download.tek.com/document/LowLevelHandbook_7Ed.pdf
+    tags: [measurement, resistance, four-wire]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "Precision dc measurements, among them low resistances with the four-wire (Kelvin) method, which keeps the test leads' resistance out of the reading."
+    why_ko: "정밀 직류 측정. 그중에서도 테스트 리드의 저항을 측정값에서 빼 주는 4선식(켈빈) 저저항 측정법."
+    title_match: "Low Level Measurements Handbook"
+    urlkind: pdf
+    cite: keithley_llmh7
 
   # --- video ---------------------------------------------------------------------
   - id: benyaakov-channel

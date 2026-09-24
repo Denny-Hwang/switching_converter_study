@@ -1,0 +1,14 @@
+synthetic: true
+label: "Winding self-resonance example"
+label_ko: "권선 자기 공진 예제"
+# A 1 mH winding with 20 pF across it, read by an impedance meter at 100 kHz
+# and at 1 MHz.
+params:
+  L: 1.0e-3
+  C_p: 2.0e-11
+  f_lo: 1.0e5
+  f_hi: 1.0e6
+steps:
+  - passive.f_srf
+  - {eq: meas.L_app, bind: {f: f_lo}, as: L_app_lo}
+  - {eq: meas.L_app, bind: {f: f_hi}, as: L_app_hi}

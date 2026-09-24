@@ -169,6 +169,42 @@
   urltitle    = {TVS clamping protection mode},
   urlkind     = {pdf}
 }
+@techreport{nexperia_an11160,
+  author      = {{Nexperia}},
+  title       = {Designing {RC} snubbers},
+  institution = {Nexperia},
+  type        = {Application Note},
+  number      = {AN11160, Rev. 3.1},
+  year        = {2024},
+  url         = {https://assets.nexperia.com/documents/application-note/AN11160.pdf},
+  note        = {verified 2026-09-24 (web search: nexperia.com AN11160 "Designing RC snubbers", Rev. 3.1, 21 October 2024, first published by NXP as Rev. 1, 25 April 2012; second review read the full text of Rev. 3.0, 3 February 2023, and the search index shows Rev. 3.1 with the same wording; cited for: Sec. 3, the ringing frequency measured before and after a known capacitor C_add is added across the switch gives the parasitic capacitance, C_LK = C_add/(x^2 - 1) with x the ratio of the two frequencies, and the parasitic inductance from the resonance; Sec. 2, the damping factor of L_LK, R_S and C_S in series, zeta = (R_S/2) sqrt(C_S/L_LK), set between 0.5 and 1 for the least peak voltage, so R_S between Z_0 and 2 Z_0 with Z_0 = sqrt(L_LK/C_S); C_S large enough to take up the leakage energy and small enough to discharge within the on-time; the average power loss due to the snubber, C_S V_DD^2 f_sw, the leakage energy being lost with or without a snubber; Sec. 4, C_S of 1 to 2 times C_LK as a starting point and the best R_S by trials; the power dissipation in the snubber resistor, f_sw/2 (C_S V_DD^2 + L_LK I_RM^2), from the energy lost in it at turn-off (Sec. 2), about 103 mW in its example (the review of the magnetics pages read this in the Rev. 3.0 text); the compromise between damping and loss. It does not set R_S to the characteristic impedance of L_LK and C_LK)},
+  urltitle    = {Designing RC snubbers},
+  urlquotes   = {the damping factor should be set to somewhere between 0.5 to 1 to achieve minimum peak voltage | is a good starting point in terms of the compromise between power loss and peak voltage | the second term is inevitable even if a snubber is not used | It is a matter of compromise between damping the oscillations and keeping the energy loss low | Power dissipation in the snubber resistor should be taken into consideration when selecting the components},
+  urlkind     = {pdf}
+}
+@manual{keysight_5950_3000,
+  title        = {Impedance Measurement Handbook: A guide to measurement technology and techniques},
+  organization = {Keysight Technologies},
+  edition      = {6th},
+  number       = {5950-3000},
+  url          = {https://www.keysight.com/us/en/assets/7018-06840/application-notes/5950-3000.pdf},
+  note         = {verified 2026-09-24 (web search: keysight.com asset page 7018-06840, "Impedance Measurement Handbook, A guide to measurement technology and techniques, 6th Edition", application note 5950-3000; its publication year was not confirmed and is left out; cited for: the value a meter measures is the component's effective value at the test frequency and signal, parasitics included; four-terminal connections keep the leads' impedance out of the measurement; an inductor of low reactance is modelled by its inductance in series with a resistance (the web-search index quotes the sentence; the CI check finds it in the PDF))},
+  urltitle     = {Impedance Measurement Handbook},
+  urlquotes    = {When the inductor has a low reactance},
+  urlkind      = {pdf}
+}
+@techreport{keithley_llmh7,
+  author      = {{Keithley Instruments}},
+  title       = {Low Level Measurements Handbook: Precision {DC} Current, Voltage, and Resistance Measurements},
+  institution = {Keithley Instruments (Tektronix)},
+  type        = {Handbook},
+  number      = {7th edition},
+  year        = {2014},
+  url         = {https://download.tek.com/document/LowLevelHandbook_7Ed.pdf},
+  note        = {verified 2026-09-24 (web search: tek.com "Keithley Low Level Measurements Handbook - 7th Edition" page and the download.tek.com PDF, "Low Level Measurements Handbook - 7th Edition Precision DC Current, Voltage, and Resistance Measurements"; cited for: the four-wire (Kelvin) method removes the test leads' resistance from a low-resistance measurement)},
+  urltitle    = {Low Level Measurements Handbook},
+  urlkind     = {pdf}
+}
 
 @techreport{ti_snoa930,
   author      = {{Texas Instruments}},
@@ -268,6 +304,17 @@
   year    = {1966},
   doi     = {10.1049/piee.1966.0236},
   note    = {verified 2026-09-23 (IET Digital Library page for the DOI; Crossref chooser link)}
+}
+@article{hurley2000,
+  author  = {Hurley, W. G. and Gath, E. and Breslin, J. G.},
+  title   = {Optimizing the {AC} resistance of multilayer transformer windings with arbitrary current waveforms},
+  journal = {IEEE Transactions on Power Electronics},
+  volume  = {15},
+  number  = {2},
+  pages   = {369--376},
+  year    = {2000},
+  doi     = {10.1109/63.838110},
+  note    = {verified 2026-09-24 (web search: IEEE Xplore document 838110 and Semantic Scholar, title, authors, vol. 15 no. 2 pp. 369-376, March 2000; the abstract gives the optimum foil or layer thickness for any periodic waveform from the rms values of the current and of its derivative; DOI confirmed by the CI Crossref job)}
 }
 
 @article{ottman2002,

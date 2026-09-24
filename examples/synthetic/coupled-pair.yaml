@@ -1,0 +1,21 @@
+synthetic: true
+label: "Coupled windings example"
+label_ko: "결합 권선 예제"
+# Two windings as an impedance meter sees them: 404 µH at the primary with the
+# secondary open, 25.25 µH at the secondary with the primary open, 100 µH
+# mutual inductance. They are the transformer model with L_M = 400 µH,
+# n = 0.25, 4 µH primary leakage and 0.25 µH secondary leakage (4 µH referred
+# to the primary).
+params:
+  L_11: 4.04e-4
+  L_22: 2.525e-5
+  L_12: 1.0e-4
+  L_M: 4.0e-4
+  L_l1: 4.0e-6
+  L_l2p: 4.0e-6
+  n: 0.25
+steps:
+  - xfmr.k
+  - xfmr.L_sc
+  - {eq: xfmr.L_sc_T, as: L_sc_T}
+  - xfmr.V_oc

@@ -1,0 +1,166 @@
+---
+title: Inductor design procedure
+description: Choosing a filter inductor's core with the core geometrical constant K_g, then its turns, gap and wire, and checking the flux density, the window and the copper loss.
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+import CoreKg from '../../../../components/CoreKg.astro';
+import MagWorked from '../../../../components/MagWorked.astro';
+import TryMag from '../../../../components/TryMag.astro';
+
+## Intent
+
+- Turn a filter inductor's specification (inductance, peak current, flux limit, copper-loss budget) into a core size with the core geometrical constant $K_g$.
+- Carry the chosen core through the turns, the gap and the wire, and check each constraint.
+- Recognize when core loss rather than saturation limits the flux density.
+
+## Theory
+
+### Four constraints
+
+A filter inductor must meet four constraints at once
+<Cite key="erickson2020" where="Ch. 11" />:
+
+1. **Flux density.** At the peak current the flux density stays below
+   $B_\mathrm{max}$, which sets the fewest turns
+   (<EqRef id="mag.N_Bmax" label="turns for a flux limit" />).
+2. **Inductance.** With those turns, the gap sets the inductance
+   (<EqRef id="mag.gap_length" label="gap length" />).
+3. **Window.** The copper fills no more of the window than can be wound, the
+   window utilization $K_u$ (<EqRef id="wind.fill" label="window utilization" />).
+4. **Resistance.** The winding's resistance stays within the copper-loss
+   budget $R_\mathrm{dc,max}$ (<EqRef id="wind.dcr" label="dc resistance" />).
+
+The turns, the gap and the wire can each meet one constraint; the core must
+leave room to meet them together.
+
+### The core geometrical constant
+
+Eliminating the turns and the wire from the flux, window and resistance
+constraints leaves the specification on one side and the core's dimensions
+on the other <Cite key="erickson2020" where="Ch. 11" />:
+
+<Eq id="mag.Kg_req" />
+
+The core's dimensions combine into the same quantity
+<Cite key="erickson2020" where="Ch. 11" />:
+
+<Eq id="mag.Kg_core" />
+
+A core whose own $K_g$ is at least the required value can meet the flux
+limit, the window and the resistance budget together; the gap then sets the
+inductance. The product $L I_\mathrm{pk}$ and the flux limit enter squared,
+the resistance budget and $K_u$ once: a higher flux limit shrinks the core
+most. The gap does not enter $K_g$: it is chosen after the core.
+
+### The procedure
+
+The steps below are adapted from the $K_g$ method
+<Cite key="erickson2020" where="Ch. 11" />. They take the turns first, as the
+magnetics designer computes them. With a core of large enough $K_g$:
+
+1. **Turns.** The fewest turns that keep the flux density at $B_\mathrm{max}$
+   (<EqRef id="mag.N_Bmax" label="turns for a flux limit" />), rounded up to a
+   whole turn. The magnetics designer takes them at the core's smallest
+   cross-section, where the flux density is highest.
+2. **Gap.** The gap that gives the inductance with those turns
+   (<EqRef id="mag.gap_length" label="gap length" />). Fringing flux adds
+   to the gap's inductance, so a real gap must be somewhat longer
+   <Cite key="dixon2001" />; for a table core, the data sheet's gapped sets
+   give measured values.
+3. **Wire.** The largest copper area per turn that fits: the window times
+   $K_u$, shared by the turns (<EqRef id="wind.fill" label="window utilization" />).
+4. **Check.** The winding's resistance
+   (<EqRef id="wind.dcr" label="dc resistance" />) then meets the budget,
+   provided the core's $K_g$ exceeds the requirement by enough to cover the
+   turns added by rounding up.
+
+### When core loss limits the flux density
+
+The procedure limits the flux density at the peak current. In a filter
+inductor with a small ripple the flux is mostly dc, which causes no core
+loss, so saturation sets the limit <Cite key="erickson2020" where="Ch. 10" />.
+With a large ripple, as in a DCM inductor or a flyback transformer, the ac
+flux amplitude (<EqRef id="mag.B_ac" label="ac flux amplitude" />) causes core
+loss (<EqRef id="loss.steinmetz" label="Steinmetz equation" />) that can
+limit the flux before saturation does; the design must then also keep the
+core loss within its budget <Cite key="erickson2020" where="Ch. 12" />.
+
+## Worked example
+
+An example filter inductor's specification and the core geometrical
+constant it needs:
+
+<Worked example="kg-inductor" />
+
+It needs a $K_g$ of <Val example="kg-inductor" name="K_g" />. At its rms
+current, the resistance budget of <Val example="kg-inductor" name="R_dcmax" />
+allows a copper loss of <Val example="kg-inductor" name="P_cu" />. The two
+cores of the magnetics designer's table, with the values their data sheets
+give:
+
+<CoreKg example="kg-inductor" />
+
+The E 25/13/7 core is too small. The ETD 29/16/10 core has about twice the
+$K_g$ needed, and the magnetics designer carries out the rest of the
+procedure on it:
+
+<MagWorked example="mag-kg" />
+
+The turns are rounded up at the smallest cross-section. Three strands in
+four layers fill less of the window than $K_u$ allows, and the winding's dc
+resistance stays below the budget. Dowell's factor at $f_s$ is large for this
+winding, but only the ripple flows at $f_s$, and its rms value is a small
+fraction of the current here (see [winding loss](../winding-loss/)).
+
+## Try it
+
+<TryIt eq="mag.Kg_req" example="kg-inductor" sweep="B_max" />
+
+Sweep $B_\mathrm{max}$: the required $K_g$ is inversely proportional to its
+square, so doubling it divides the $K_g$ needed by four. Then halve
+$R_\mathrm{dc,max}$: halving the copper loss doubles the $K_g$ needed.
+
+<TryMag example="mag-kg" />
+
+In the magnetics designer, switch the core to E 25/13/7. It needs more
+turns, and the same wire no longer fits the window: the designer warns.
+Wire thin enough to fit has a resistance above the example's budget.
+
+## Bench exercise
+
+Wind the design on a gapped core set. Measure its inductance with an LCR
+meter at a frequency well below its self-resonance, and its dc resistance
+with four wires (see [Measuring magnetics](../measurement/)). Then find the
+current at which it saturates with the pulse test described there, and
+compare it with the design's peak current.
+
+## Gotchas
+
+- **$K_g$ leaves out core loss.** It covers the flux limit, the window and
+  the copper loss. With a large flux swing, check the core loss as well
+  <Cite key="erickson2020" where="Ch. 12" />.
+- **Round up, then check again.** Rounding the turns up, or taking them at a
+  smaller cross-section, adds turns and resistance: a core with barely the
+  required $K_g$ can then miss the budget.
+- **The gap estimate ignores fringing.** Use a data sheet's gapped set, or
+  expect a real gap somewhat longer than the estimate
+  <Cite key="dixon2001" />.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch11', 'ti-slup132', 'coursera-magnetics']} />
+
+## Quiz
+
+<Quiz id="04-magnetics/design-procedure" />

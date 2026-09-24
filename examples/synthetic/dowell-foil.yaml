@@ -1,0 +1,22 @@
+synthetic: true
+label: "Foil winding example"
+label_ko: "박판 권선 예제"
+# A copper foil winding at 100 kHz and 100 °C: three layers of 0.3 mm foil
+# from zero MMF to its peak.
+params:
+  rho_20: 1.7241e-8
+  alpha_20: 0.00393
+  T_w: 100
+  f: 1.0e5
+  h_l: 3.0e-4
+  M_l: 3
+steps:
+  - wind.rho_T
+  - wind.skin_depth
+  - wind.phi_foil
+  - wind.dowell
+  - {eq: wind.dowell_low, as: F_R_low}
+  - wind.loss_rel
+  - wind.phi_opt
+  - {eq: wind.dowell, bind: {phi_l: phi_opt}, as: F_R_opt}
+  - {eq: wind.loss_rel, bind: {F_R: F_R_opt, phi_l: phi_opt}, as: P_rel_opt}

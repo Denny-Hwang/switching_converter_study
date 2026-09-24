@@ -1,0 +1,83 @@
+---
+/**
+ * <CoreKg example="kg-inductor" /> -- the core table's cores against the core
+ * geometrical constant a synthetic example needs (its K_g, mag.Kg_req): each
+ * core's data-sheet A_e, W_A and MLT with their citation, its own K_g
+ * (mag.Kg_core) and how it compares. Computed at build time by pe-core.
+ */
+import katex from 'katex';
+import { catalog } from 'pe-core';
+import { ui } from '../i18n/ui';
+import { katexOptions } from '../math/katex-options';
+import { getExample } from '../lib/examples';
+import { coreKg } from '../lib/corekg';
+import { formatSI } from '../lib/format';
+import { BIBLIOGRAPHY_SLUG, pageHref } from '../lib/paths';
+import { pageLocale } from '../lib/locale';
+import { citable } from '../lib/references';
+import { symHtml } from '../lib/sym';
+
+interface Props {
+  example: string;
+}
+const { example } = Astro.props;
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const ex = getExample(example);
+const need = ex.context.K_g;
+if (!(need !== undefined && need > 0)) throw new Error(`<CoreKg example="${example}">: the example computes no K_g (mag.Kg_req)`);
+const tex = (s: string) => katex.renderToString(catalog.symbols[s]!.latex, katexOptions(false));
+const rows = coreKg(need).map((r) => {
+  const k = r.entry.core;
+  return {
+    name: r.entry.name,
+    material: r.entry.material,
+    // the data sheet's entry in the bibliography; its label repeats the core's name, so the name is the link
+    cite: citable(r.entry.cite).label,
+    href: pageHref(locale, BIBLIOGRAPHY_SLUG, r.entry.cite),
+    Ae: formatSI(k.Ae, 'm²'),
+    WA: formatSI(k.WA, 'm²'),
+    MLT: formatSI(k.MLT, 'm'),
+    Kg: formatSI(r.Kg, 'm⁵'),
+    margin: formatSI(r.margin, '1'),
+    fits: r.margin >= 1,
+  };
+});
+const label = locale === 'ko' ? ex.label_ko : ex.label;
+---
+
+<figure class="pe-worked not-content">
+  <figcaption class="pe-worked__label">
+    <span set:html={symHtml(`${label}: ${t['corekg.caption']}`)} /> (<span set:html={tex('K_g')} /> = {formatSI(need, 'm⁵')})
+  </figcaption>
+  <table>
+    <thead>
+      <tr>
+        <th>{t['corekg.core']}</th>
+        <th set:html={tex('A_e')} />
+        <th set:html={tex('W_A')} />
+        <th set:html={tex('MLT')} />
+        <th set:html={tex('K_g')} />
+        <th set:html={symHtml(t['corekg.margin'])} />
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((r) => (
+          <tr>
+            <td>
+              <a href={r.href} title={r.cite}>{r.name}</a>, {r.material}
+            </td>
+            <td class="pe-worked__value">{r.Ae}</td>
+            <td class="pe-worked__value">{r.WA}</td>
+            <td class="pe-worked__value">{r.MLT}</td>
+            <td class="pe-worked__value">{r.Kg}</td>
+            <td class="pe-worked__value">
+              {r.margin} ({r.fits ? t['corekg.fits'] : t['corekg.short']})
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</figure>

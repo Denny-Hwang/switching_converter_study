@@ -199,6 +199,34 @@
     "fixed_clamp": {
       "en": "a clamp whose voltage does not depend on the power it absorbs (a TVS or Zener clamp)",
       "ko": "흡수하는 전력에 따라 전압이 변하지 않는 클램프(TVS 또는 제너 클램프)"
+    },
+    "thin_layers": {
+      "en": "layers thin compared with the skin depth (φ up to about 1): the leading terms of Dowell's factor",
+      "ko": "표피 깊이에 비해 얇은 층(φ가 약 1 이하): Dowell 계수의 앞쪽 항"
+    },
+    "layer_resistance": {
+      "en": "the layers' breadth and turns fixed, so a layer's dc resistance is inversely proportional to its thickness",
+      "ko": "층의 폭과 턴 수가 고정되어 층의 직류 저항이 두께에 반비례함"
+    },
+    "coupled_windings": {
+      "en": "two linearly coupled windings without resistance",
+      "ko": "저항이 없는, 선형으로 결합된 두 권선"
+    },
+    "t_model": {
+      "en": "transformer modelled by its magnetizing inductance and one leakage inductance per winding (T model), referred to the primary",
+      "ko": "변압기를 자화 인덕턴스와 권선마다 하나의 누설 인덕턴스로 모델링(T 모델), 1차 기준"
+    },
+    "unchanged_inductance": {
+      "en": "the added capacitor does not change the inductance that rings",
+      "ko": "추가한 커패시터가 링잉하는 인덕턴스를 바꾸지 않음"
+    },
+    "snubber_full_swing": {
+      "en": "the snubber capacitor charges through its resistor to V at one edge and discharges through it at the other, once per switching period",
+      "ko": "스너버 커패시터가 한 에지에서 저항을 통해 V까지 충전되고 다른 에지에서 저항을 통해 방전됨(스위칭 주기마다 한 번)"
+    },
+    "snubber_charging_edge": {
+      "en": "the edge that charges the snubber capacitor, once per switching period: the node steps by V_snub while the parasitic inductance carries I_ring; the node's own capacitance is left out (AN11160)",
+      "ko": "스위칭 주기마다 한 번 스너버 커패시터를 충전하는 에지: 기생 인덕턴스에 I_ring이 흐르는 동안 노드 전압이 V_snub만큼 바뀜; 노드 자체의 커패시턴스는 무시함(AN11160)"
     }
   },
   "symbols": {
@@ -292,6 +320,18 @@
       ],
       "scale": "log"
     },
+    "C_add": {
+      "latex": "C_\\mathrm{add}",
+      "unit": "F",
+      "desc": "known capacitance added across a ringing node to measure its parasitics",
+      "meaning": "capacitance added for the measurement",
+      "meaning_ko": "측정을 위해 더한 커패시턴스",
+      "range": [
+        1e-12,
+        1e-08
+      ],
+      "scale": "log"
+    },
     "C_bus": {
       "latex": "C_\\mathrm{bus}",
       "unit": "F",
@@ -334,6 +374,30 @@
       "range": [
         1e-12,
         1e-08
+      ],
+      "scale": "log"
+    },
+    "C_par": {
+      "latex": "C_\\mathrm{par}",
+      "unit": "F",
+      "desc": "parasitic capacitance of a ringing node",
+      "meaning": "parasitic capacitance of the node",
+      "meaning_ko": "노드의 기생 커패시턴스(parasitic capacitance)",
+      "range": [
+        1e-12,
+        1e-08
+      ],
+      "scale": "log"
+    },
+    "C_snub": {
+      "latex": "C_\\mathrm{snub}",
+      "unit": "F",
+      "desc": "capacitance of an RC snubber",
+      "meaning": "snubber capacitance",
+      "meaning_ko": "스너버 커패시턴스",
+      "range": [
+        1e-12,
+        1e-07
       ],
       "scale": "log"
     },
@@ -703,6 +767,18 @@
       ],
       "scale": "log"
     },
+    "I_ring": {
+      "latex": "I_\\mathrm{ring}",
+      "unit": "A",
+      "desc": "current in the parasitic inductance when the ring starts (for a diode, its peak reverse-recovery current; I_RM in AN11160)",
+      "meaning": "current when the ring starts",
+      "meaning_ko": "링잉이 시작될 때의 전류",
+      "range": [
+        0.01,
+        100.0
+      ],
+      "scale": "log"
+    },
     "I_rms": {
       "latex": "I_\\mathrm{rms}",
       "unit": "A",
@@ -751,6 +827,15 @@
       ],
       "scale": "log"
     },
+    "K_g": {
+      "latex": "K_g",
+      "unit": "m⁵",
+      "desc": "core geometrical constant A_e² W_A / MLT",
+      "meaning": "core geometrical constant",
+      "meaning_ko": "코어 기하 상수(core geometrical constant)",
+      "range": null,
+      "scale": "linear"
+    },
     "K_u": {
       "latex": "K_u",
       "unit": "1",
@@ -772,6 +857,42 @@
       ],
       "scale": "log"
     },
+    "L_11": {
+      "latex": "L_{11}",
+      "unit": "H",
+      "desc": "inductance of winding 1 with winding 2 open",
+      "meaning": "inductance of winding 1, winding 2 open",
+      "meaning_ko": "권선 2를 개방했을 때 권선 1의 인덕턴스",
+      "range": [
+        1e-06,
+        0.01
+      ],
+      "scale": "log"
+    },
+    "L_12": {
+      "latex": "L_{12}",
+      "unit": "H",
+      "desc": "mutual inductance of two windings",
+      "meaning": "mutual inductance",
+      "meaning_ko": "상호 인덕턴스(mutual inductance)",
+      "range": [
+        1e-07,
+        0.001
+      ],
+      "scale": "log"
+    },
+    "L_22": {
+      "latex": "L_{22}",
+      "unit": "H",
+      "desc": "inductance of winding 2 with winding 1 open",
+      "meaning": "inductance of winding 2, winding 1 open",
+      "meaning_ko": "권선 1을 개방했을 때 권선 2의 인덕턴스",
+      "range": [
+        1e-06,
+        0.01
+      ],
+      "scale": "log"
+    },
     "L_M": {
       "latex": "L_M",
       "unit": "H",
@@ -784,6 +905,15 @@
       ],
       "scale": "log"
     },
+    "L_app": {
+      "latex": "L_\\mathrm{app}",
+      "unit": "H",
+      "desc": "inductance an impedance meter reads (the reactance over ω)",
+      "meaning": "inductance the meter reads",
+      "meaning_ko": "측정기가 읽는 인덕턴스",
+      "range": null,
+      "scale": "linear"
+    },
     "L_crit": {
       "latex": "L_\\mathrm{crit}",
       "unit": "H",
@@ -792,6 +922,30 @@
       "meaning_ko": "임계 인덕턴스(CCM/DCM 경계)",
       "range": null,
       "scale": "linear"
+    },
+    "L_l1": {
+      "latex": "L_{\\ell 1}",
+      "unit": "H",
+      "desc": "leakage inductance of the primary winding (T model)",
+      "meaning": "primary leakage inductance",
+      "meaning_ko": "1차 누설 인덕턴스",
+      "range": [
+        1e-08,
+        0.0001
+      ],
+      "scale": "log"
+    },
+    "L_l2p": {
+      "latex": "L_{\\ell 2}'",
+      "unit": "H",
+      "desc": "leakage inductance of the secondary winding referred to the primary, L_l2/n² (T model)",
+      "meaning": "secondary leakage inductance, referred to the primary",
+      "meaning_ko": "1차로 환산한 2차 누설 인덕턴스",
+      "range": [
+        1e-08,
+        0.0001
+      ],
+      "scale": "log"
     },
     "L_lk": {
       "latex": "L_\\mathrm{lk}",
@@ -804,6 +958,27 @@
         0.0001
       ],
       "scale": "log"
+    },
+    "L_par": {
+      "latex": "L_\\mathrm{par}",
+      "unit": "H",
+      "desc": "parasitic inductance that rings with C_par (leakage, wiring)",
+      "meaning": "parasitic (ringing) inductance",
+      "meaning_ko": "기생(링잉) 인덕턴스",
+      "range": [
+        1e-09,
+        0.0001
+      ],
+      "scale": "log"
+    },
+    "L_sc": {
+      "latex": "L_\\mathrm{sc}",
+      "unit": "H",
+      "desc": "inductance of winding 1 with winding 2 shorted",
+      "meaning": "inductance with the other winding shorted",
+      "meaning_ko": "다른 권선을 단락했을 때의 인덕턴스",
+      "range": null,
+      "scale": "linear"
     },
     "M": {
       "latex": "M",
@@ -874,6 +1049,15 @@
       ],
       "scale": "log"
     },
+    "P_Rsnub": {
+      "latex": "P_{R,\\mathrm{snub}}",
+      "unit": "W",
+      "desc": "power dissipated in the snubber resistor",
+      "meaning": "dissipation in the snubber resistor",
+      "meaning_ko": "스너버 저항의 소산 전력",
+      "range": null,
+      "scale": "linear"
+    },
     "P_clamp": {
       "latex": "P_\\mathrm{clamp}",
       "unit": "W",
@@ -898,6 +1082,15 @@
       "desc": "maximum power available from a linear source",
       "meaning": "largest power available",
       "meaning_ko": "최대 가용 전력",
+      "range": null,
+      "scale": "linear"
+    },
+    "P_rel": {
+      "latex": "P/P_\\delta",
+      "unit": "1",
+      "desc": "loss of a layer relative to that of a layer one skin depth thick carrying the same current as dc",
+      "meaning": "loss relative to one skin depth of dc",
+      "meaning_ko": "두께 한 표피 깊이 층의 직류 손실에 대한 손실 비",
       "range": null,
       "scale": "linear"
     },
@@ -1039,6 +1232,18 @@
       "range": null,
       "scale": "linear"
     },
+    "R_dcmax": {
+      "latex": "R_\\mathrm{dc,max}",
+      "unit": "Ω",
+      "desc": "largest winding dc resistance allowed: the copper-loss budget",
+      "meaning": "largest winding resistance allowed",
+      "meaning_ko": "허용되는 최대 권선 저항",
+      "range": [
+        0.001,
+        1.0
+      ],
+      "scale": "log"
+    },
     "R_esr": {
       "latex": "R_\\mathrm{ESR}",
       "unit": "Ω",
@@ -1107,6 +1312,15 @@
         10000000.0
       ],
       "scale": "log"
+    },
+    "R_snub": {
+      "latex": "R_\\mathrm{snub}",
+      "unit": "Ω",
+      "desc": "resistance of an RC snubber",
+      "meaning": "snubber resistance",
+      "meaning_ko": "스너버 저항",
+      "range": null,
+      "scale": "linear"
     },
     "R_x": {
       "latex": "R_x",
@@ -1537,6 +1751,15 @@
       "range": null,
       "scale": "linear"
     },
+    "V_ratio": {
+      "latex": "V_2/V_1",
+      "unit": "1",
+      "desc": "ratio of the open secondary's voltage to the voltage applied to the primary",
+      "meaning": "open-circuit voltage ratio",
+      "meaning_ko": "개방 전압비(open-circuit voltage ratio)",
+      "range": null,
+      "scale": "linear"
+    },
     "V_rms": {
       "latex": "V_\\mathrm{rms}",
       "unit": "V",
@@ -1545,6 +1768,18 @@
       "meaning_ko": "실효 전압(rms)",
       "range": null,
       "scale": "linear"
+    },
+    "V_snub": {
+      "latex": "V_\\mathrm{snub}",
+      "unit": "V",
+      "desc": "voltage the snubbed node swings through at each switching edge",
+      "meaning": "voltage swing at each edge",
+      "meaning_ko": "스위칭 에지마다의 전압 변화폭",
+      "range": [
+        1.0,
+        1000.0
+      ],
+      "scale": "log"
     },
     "V_sw": {
       "latex": "V_\\mathrm{sw}",
@@ -1771,6 +2006,30 @@
       ],
       "scale": "log"
     },
+    "f_r0": {
+      "latex": "f_{r0}",
+      "unit": "Hz",
+      "desc": "ringing frequency of a node as built",
+      "meaning": "ringing frequency as built",
+      "meaning_ko": "원래 회로의 링잉 주파수",
+      "range": [
+        100000.0,
+        100000000.0
+      ],
+      "scale": "log"
+    },
+    "f_r1": {
+      "latex": "f_{r1}",
+      "unit": "Hz",
+      "desc": "ringing frequency with the added capacitance",
+      "meaning": "ringing frequency with C_add",
+      "meaning_ko": "C_add를 더했을 때의 링잉 주파수",
+      "range": [
+        100000.0,
+        100000000.0
+      ],
+      "scale": "log"
+    },
     "f_ring": {
       "latex": "f_\\mathrm{ring}",
       "unit": "Hz",
@@ -1906,6 +2165,18 @@
       ],
       "scale": "log"
     },
+    "k_c": {
+      "latex": "k",
+      "unit": "1",
+      "desc": "coupling coefficient of two windings, L_12/sqrt(L_11 L_22)",
+      "meaning": "coupling coefficient",
+      "meaning_ko": "결합 계수(coupling coefficient)",
+      "range": [
+        0.9,
+        0.999
+      ],
+      "scale": "linear"
+    },
     "k_s": {
       "latex": "k_s",
       "unit": "1",
@@ -2029,6 +2300,15 @@
       ],
       "scale": "log"
     },
+    "phi_opt": {
+      "latex": "\\varphi_\\mathrm{opt}",
+      "unit": "1",
+      "desc": "layer thickness of least loss, in skin depths",
+      "meaning": "layer thickness of least loss, in skin depths",
+      "meaning_ko": "손실이 가장 작은 층 두께(표피 깊이 단위)",
+      "range": null,
+      "scale": "linear"
+    },
     "r_d": {
       "latex": "r_d",
       "unit": "Ω",
@@ -2139,6 +2419,18 @@
       "meaning_ko": "스위치 노드 평균 전압",
       "range": null,
       "scale": "linear"
+    },
+    "zeta": {
+      "latex": "\\zeta",
+      "unit": "1",
+      "desc": "damping factor of the parasitic inductance, the snubber resistor and the snubber capacitor in series (AN11160's definition)",
+      "meaning": "damping factor",
+      "meaning_ko": "감쇠 계수(damping factor)",
+      "range": [
+        0.1,
+        2.0
+      ],
+      "scale": "linear"
     }
   },
   "constants": {
@@ -2181,7 +2473,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 273
+      "yaml_line": 305
     },
     "boost.ccm.M": {
       "id": "boost.ccm.M",
@@ -2216,7 +2508,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 288
+      "yaml_line": 320
     },
     "buckboost.ccm.M": {
       "id": "buckboost.ccm.M",
@@ -2251,7 +2543,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 303
+      "yaml_line": 335
     },
     "flyback.ccm.M": {
       "id": "flyback.ccm.M",
@@ -2288,7 +2580,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 318
+      "yaml_line": 350
     },
     "forward.ccm.M": {
       "id": "forward.ccm.M",
@@ -2325,7 +2617,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 333
+      "yaml_line": 365
     },
     "forward.reset.Dmax": {
       "id": "forward.reset.Dmax",
@@ -2358,7 +2650,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 348
+      "yaml_line": 380
     },
     "buck.ripple.iL": {
       "id": "buck.ripple.iL",
@@ -2401,7 +2693,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 366
+      "yaml_line": 398
     },
     "buck.ripple.iL_pp": {
       "id": "buck.ripple.iL_pp",
@@ -2444,7 +2736,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 380
+      "yaml_line": 412
     },
     "K.def": {
       "id": "K.def",
@@ -2480,7 +2772,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 397
+      "yaml_line": 429
     },
     "Kcrit.buck": {
       "id": "Kcrit.buck",
@@ -2516,7 +2808,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 410
+      "yaml_line": 442
     },
     "Kcrit.boost": {
       "id": "Kcrit.boost",
@@ -2552,7 +2844,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 423
+      "yaml_line": 455
     },
     "Kcrit.buckboost": {
       "id": "Kcrit.buckboost",
@@ -2588,7 +2880,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 438
+      "yaml_line": 470
     },
     "Kcrit.flyback": {
       "id": "Kcrit.flyback",
@@ -2626,7 +2918,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 451
+      "yaml_line": 483
     },
     "L.crit": {
       "id": "L.crit",
@@ -2666,7 +2958,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 466
+      "yaml_line": 498
     },
     "buck.dcm.M": {
       "id": "buck.dcm.M",
@@ -2704,7 +2996,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 484
+      "yaml_line": 516
     },
     "boost.dcm.M": {
       "id": "boost.dcm.M",
@@ -2742,7 +3034,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 499
+      "yaml_line": 531
     },
     "buckboost.dcm.M": {
       "id": "buckboost.dcm.M",
@@ -2780,7 +3072,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 514
+      "yaml_line": 546
     },
     "flyback.dcm.M": {
       "id": "flyback.dcm.M",
@@ -2818,7 +3110,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 529
+      "yaml_line": 561
     },
     "dcm.P_in": {
       "id": "dcm.P_in",
@@ -2862,7 +3154,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 549
+      "yaml_line": 581
     },
     "lfr.R_in": {
       "id": "lfr.R_in",
@@ -2904,7 +3196,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 565
+      "yaml_line": 597
     },
     "flyback.V_crit": {
       "id": "flyback.V_crit",
@@ -2946,7 +3238,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 581
+      "yaml_line": 613
     },
     "flyback.Vds_off": {
       "id": "flyback.Vds_off",
@@ -2986,7 +3278,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 595
+      "yaml_line": 627
     },
     "flyback.Vds_clamped": {
       "id": "flyback.Vds_clamped",
@@ -3028,7 +3320,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 609
+      "yaml_line": 641
     },
     "flyback.diode.VR": {
       "id": "flyback.diode.VR",
@@ -3065,7 +3357,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 623
+      "yaml_line": 655
     },
     "flyback.IM": {
       "id": "flyback.IM",
@@ -3107,7 +3399,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 635
+      "yaml_line": 667
     },
     "flyback.ripple.iM": {
       "id": "flyback.ripple.iM",
@@ -3147,7 +3439,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 651
+      "yaml_line": 683
     },
     "flyback.ripple.v": {
       "id": "flyback.ripple.v",
@@ -3191,7 +3483,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 665
+      "yaml_line": 697
     },
     "flyback.Ipk.dcm": {
       "id": "flyback.Ipk.dcm",
@@ -3231,7 +3523,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 681
+      "yaml_line": 713
     },
     "flyback.leak.E": {
       "id": "flyback.leak.E",
@@ -3265,7 +3557,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 698
+      "yaml_line": 730
     },
     "flyback.leak.P": {
       "id": "flyback.leak.P",
@@ -3300,7 +3592,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 712
+      "yaml_line": 744
     },
     "flyback.V_OR": {
       "id": "flyback.V_OR",
@@ -3337,7 +3629,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 726
+      "yaml_line": 758
     },
     "clamp.Vds": {
       "id": "clamp.Vds",
@@ -3371,7 +3663,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 740
+      "yaml_line": 772
     },
     "clamp.t_reset": {
       "id": "clamp.t_reset",
@@ -3409,7 +3701,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 754
+      "yaml_line": 786
     },
     "clamp.P": {
       "id": "clamp.P",
@@ -3450,7 +3742,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 769
+      "yaml_line": 801
     },
     "clamp.rcd.V": {
       "id": "clamp.rcd.V",
@@ -3492,7 +3784,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 784
+      "yaml_line": 816
     },
     "tvs.R_D": {
       "id": "tvs.R_D",
@@ -3528,7 +3820,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 798
+      "yaml_line": 830
     },
     "tvs.V_clamp": {
       "id": "tvs.V_clamp",
@@ -3564,7 +3856,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 812
+      "yaml_line": 844
     },
     "flyback.V_ceiling": {
       "id": "flyback.V_ceiling",
@@ -3603,7 +3895,194 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 825
+      "yaml_line": 857
+    },
+    "snub.C_par": {
+      "id": "snub.C_par",
+      "title": "Parasitic capacitance from two ringing frequencies",
+      "title_ko": "두 링잉 주파수로 구한 기생 커패시턴스",
+      "latex": "C_\\mathrm{par} = \\frac{C_\\mathrm{add}}{\\left(\\frac{f_{r0}}{f_{r1}}\\right)^{2} - 1}",
+      "lhs": "C_par",
+      "expr": "C_add/((f_r0/f_r1)**2 - 1)",
+      "relation": "eq",
+      "variables": [
+        "C_add",
+        "f_r0",
+        "f_r1"
+      ],
+      "constants": [],
+      "symbols": {
+        "C_add": "known capacitance added across the ringing node",
+        "f_r0": "ringing frequency without it",
+        "f_r1": "ringing frequency with it"
+      },
+      "assumptions": [
+        "lossless_lc",
+        "unchanged_inductance"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "an added capacitance comparable to $C_\\mathrm{par}$ lowers the frequency clearly (adding three times $C_\\mathrm{par}$ halves it); a much smaller one changes it too little to measure",
+      "notes_ko": "$C_\\mathrm{par}$와 비슷한 크기의 커패시턴스를 더하면 주파수가 분명히 내려간다($C_\\mathrm{par}$의 세 배를 더하면 절반). 훨씬 작은 값은 측정할 수 있을 만큼 바꾸지 못한다",
+      "cites": [
+        {
+          "key": "nexperia_an11160",
+          "where": "Sec. 3 (Determining C_LK and L_LK): the ringing frequency before and after a known capacitor is added; derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/snubbers.py",
+      "n_tests": 8,
+      "yaml_line": 871
+    },
+    "snub.L_par": {
+      "id": "snub.L_par",
+      "title": "Parasitic inductance of a ringing node",
+      "title_ko": "링잉 노드의 기생 인덕턴스",
+      "latex": "L_\\mathrm{par} = \\frac{1}{4 \\pi^{2} f_{r0}^{2} C_\\mathrm{par}}",
+      "lhs": "L_par",
+      "expr": "1/(4*pi**2*f_r0**2*C_par)",
+      "relation": "eq",
+      "variables": [
+        "C_par",
+        "f_r0"
+      ],
+      "constants": [],
+      "symbols": {
+        "C_par": "parasitic capacitance of the node",
+        "f_r0": "ringing frequency"
+      },
+      "assumptions": [
+        "lossless_lc"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "",
+      "notes_ko": "",
+      "cites": [
+        {
+          "key": "nexperia_an11160",
+          "where": "Sec. 3 (Determining C_LK and L_LK): the inductance from the ringing frequency and the capacitance; derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/snubbers.py",
+      "n_tests": 8,
+      "yaml_line": 888
+    },
+    "snub.R": {
+      "id": "snub.R",
+      "title": "RC snubber resistance for a damping factor",
+      "title_ko": "감쇠 계수로 정한 RC 스너버 저항",
+      "latex": "R_\\mathrm{snub} = 2 \\zeta \\sqrt{\\frac{L_\\mathrm{par}}{C_\\mathrm{snub}}}",
+      "lhs": "R_snub",
+      "expr": "2*zeta*sqrt(L_par/C_snub)",
+      "relation": "eq",
+      "variables": [
+        "C_snub",
+        "L_par",
+        "zeta"
+      ],
+      "constants": [],
+      "symbols": {
+        "C_snub": "snubber capacitance",
+        "L_par": "parasitic (ringing) inductance",
+        "zeta": "damping factor"
+      },
+      "assumptions": [
+        "lossless_lc"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "AN11160 takes the damping factor of the parasitic inductance, the resistor and the snubber capacitor in series, and sets it between 0.5 and 1 for the least peak voltage: the resistor lies between $\\sqrt{L_\\mathrm{par}/C_\\mathrm{snub}}$ and twice that, and the best value in that range is found by trials. The node's own capacitance is left out of this damping factor",
+      "notes_ko": "AN11160은 기생 인덕턴스, 저항, 스너버 커패시터를 직렬로 본 감쇠 계수를 쓰며, 피크 전압이 가장 낮도록 이를 0.5에서 1 사이로 잡는다. 저항은 $\\sqrt{L_\\mathrm{par}/C_\\mathrm{snub}}$와 그 두 배 사이에 있고, 그 범위에서 가장 좋은 값은 몇 번 시험해 찾는다. 노드 자체의 커패시턴스는 이 감쇠 계수에 들어가지 않는다",
+      "cites": [
+        {
+          "key": "nexperia_an11160",
+          "where": "Sec. 2 (Designing the snubber - theory): the damping factor and the range of the snubber resistor; Sec. 4: the best value by trials"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/snubbers.py",
+      "n_tests": 8,
+      "yaml_line": 902
+    },
+    "snub.P": {
+      "id": "snub.P",
+      "title": "Loss an RC snubber adds",
+      "title_ko": "RC 스너버가 더하는 손실",
+      "latex": "P = C_\\mathrm{snub} V_\\mathrm{snub}^{2} f_s",
+      "lhs": "P",
+      "expr": "C_snub*V_snub**2*f_s",
+      "relation": "eq",
+      "variables": [
+        "C_snub",
+        "V_snub",
+        "f_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "C_snub": "snubber capacitance",
+        "V_snub": "voltage the node swings through at each edge",
+        "f_s": "switching frequency"
+      },
+      "assumptions": [
+        "snubber_full_swing"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "charging the snubber capacitor through its resistor loses as much energy as it stores, ½ C V², and the next edge discharges it, through the resistor and the switch that turns on, losing the stored energy: C V² per period, whatever the resistance. The parasitic inductance's energy is lost with or without a snubber. A larger snubber capacitor lowers the peak voltage the best resistor can reach, and loses more",
+      "notes_ko": "저항을 통해 스너버 커패시터를 충전하면 저장되는 만큼(½ C V²)의 에너지를 잃고, 다음 에지에서 저항과 켜지는 스위치를 통해 방전하면서 저장된 에너지를 잃는다. 저항값과 무관하게 한 주기에 C V²이다. 기생 인덕턴스의 에너지는 스너버가 있든 없든 잃는다. 스너버 커패시터가 클수록 가장 좋은 저항으로 얻을 수 있는 피크 전압은 낮아지지만 손실은 커진다",
+      "cites": [
+        {
+          "key": "nexperia_an11160",
+          "where": "Sec. 2 (Designing the snubber - theory): the average power loss due to the snubber; derived here"
+        },
+        {
+          "key": "erickson2020",
+          "where": "Ch. 4 (Switch Realization: the energy of a capacitance charged at each switching edge is dissipated)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/snubbers.py",
+      "n_tests": 7,
+      "yaml_line": 917
+    },
+    "snub.P_R": {
+      "id": "snub.P_R",
+      "title": "Dissipation in an RC snubber's resistor",
+      "title_ko": "RC 스너버 저항의 소산 전력",
+      "latex": "P_{R,\\mathrm{snub}} = \\frac{f_s \\left(C_\\mathrm{snub} V_\\mathrm{snub}^{2} + L_\\mathrm{par} I_\\mathrm{ring}^{2}\\right)}{2}",
+      "lhs": "P_Rsnub",
+      "expr": "f_s*(C_snub*V_snub**2 + L_par*I_ring**2)/2",
+      "relation": "eq",
+      "variables": [
+        "C_snub",
+        "I_ring",
+        "L_par",
+        "V_snub",
+        "f_s"
+      ],
+      "constants": [],
+      "symbols": {
+        "C_snub": "snubber capacitance",
+        "I_ring": "current in it when the ring starts",
+        "L_par": "parasitic (ringing) inductance",
+        "V_snub": "voltage the node steps by at the edge",
+        "f_s": "switching frequency"
+      },
+      "assumptions": [
+        "snubber_charging_edge"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "AN11160 rates the resistor from this edge: the resistor takes as much energy as the capacitor stores and the parasitic inductance's energy. That can exceed the loss the snubber adds (`snub.P`), which leaves out the inductance's energy because it is lost with or without a snubber. Where the switch that turns on discharges the capacitor through the resistor, that edge heats the resistor too, with up to the capacitor's stored energy, and its rating must allow for it",
+      "notes_ko": "AN11160은 이 에지로 저항의 정격을 정한다. 저항은 커패시터가 저장하는 만큼의 에너지와 기생 인덕턴스의 에너지를 받는다. 이 값은 스너버가 더하는 손실(`snub.P`)보다 클 수 있다. 그 손실은 인덕턴스의 에너지를 빼는데, 그 에너지는 스너버가 있든 없든 잃기 때문이다. 켜지는 스위치가 저항을 통해 커패시터를 방전하는 회로에서는 그 에지도 저항을 가열하며(최대 커패시터에 저장된 에너지만큼), 정격에 이를 넣어야 한다",
+      "cites": [
+        {
+          "key": "nexperia_an11160",
+          "where": "Sec. 4 (Designing the snubber - in practice): the power dissipation in the snubber resistor; Sec. 2: the energy lost in the resistor at turn-off; derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/snubbers.py",
+      "n_tests": 8,
+      "yaml_line": 933
     },
     "dcm.ring.f": {
       "id": "dcm.ring.f",
@@ -3637,7 +4116,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 839
+      "yaml_line": 949
     },
     "loss.cond": {
       "id": "loss.cond",
@@ -3671,7 +4150,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 853
+      "yaml_line": 963
     },
     "loss.sw.cap": {
       "id": "loss.sw.cap",
@@ -3709,7 +4188,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 865
+      "yaml_line": 975
     },
     "loss.gate": {
       "id": "loss.gate",
@@ -3745,7 +4224,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 877
+      "yaml_line": 987
     },
     "loss.diode": {
       "id": "loss.diode",
@@ -3783,7 +4262,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 891
+      "yaml_line": 1001
     },
     "loss.steinmetz": {
       "id": "loss.steinmetz",
@@ -3827,7 +4306,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 903
+      "yaml_line": 1013
     },
     "loss.core": {
       "id": "loss.core",
@@ -3861,7 +4340,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 921
+      "yaml_line": 1031
     },
     "mag.L_from_AL": {
       "id": "mag.L_from_AL",
@@ -3899,7 +4378,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 937
+      "yaml_line": 1047
     },
     "mag.AL_gap": {
       "id": "mag.AL_gap",
@@ -3946,7 +4425,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 8,
-      "yaml_line": 951
+      "yaml_line": 1061
     },
     "mag.B_pk": {
       "id": "mag.B_pk",
@@ -3989,7 +4468,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 969
+      "yaml_line": 1079
     },
     "mag.B_ac": {
       "id": "mag.B_ac",
@@ -4028,7 +4507,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 983
+      "yaml_line": 1093
     },
     "mag.dB_faraday": {
       "id": "mag.dB_faraday",
@@ -4070,7 +4549,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 999
+      "yaml_line": 1109
     },
     "mag.N_Bmax": {
       "id": "mag.N_Bmax",
@@ -4109,7 +4588,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 1015
+      "yaml_line": 1125
     },
     "mag.gap_length": {
       "id": "mag.gap_length",
@@ -4154,7 +4633,87 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 1029
+      "yaml_line": 1139
+    },
+    "mag.Kg_req": {
+      "id": "mag.Kg_req",
+      "title": "Core geometrical constant an inductor needs",
+      "title_ko": "인덕터에 필요한 코어 기하 상수",
+      "latex": "K_g = \\frac{\\rho_w L^{2} I_\\mathrm{pk}^{2}}{B_\\mathrm{max}^{2} R_\\mathrm{dc,max} K_u}",
+      "lhs": "K_g",
+      "expr": "rho_w*L**2*I_pk**2/(B_max**2*R_dcmax*K_u)",
+      "relation": "eq",
+      "variables": [
+        "B_max",
+        "I_pk",
+        "K_u",
+        "L",
+        "R_dcmax",
+        "rho_w"
+      ],
+      "constants": [],
+      "symbols": {
+        "B_max": "largest flux density allowed",
+        "I_pk": "peak winding current",
+        "K_u": "window utilization that can be wound",
+        "L": "inductance",
+        "R_dcmax": "largest winding resistance allowed (the copper-loss budget)",
+        "rho_w": "resistivity of the winding conductor"
+      },
+      "assumptions": [
+        "linear_magnetics",
+        "uniform_flux",
+        "uniform_dc_current"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the specification's side of the four constraints (flux density, inductance, window, resistance) with the turns and the wire eliminated; any core whose own $K_g$ is at least this large can meet them, and its gap then sets the inductance. SI units, m⁵ (tables often give cm⁵: 1 m⁵ = 10¹⁰ cm⁵)",
+      "notes_ko": "네 가지 제약(자속 밀도, 인덕턴스, 창, 저항)에서 턴 수와 선재를 소거하고 남은 사양 쪽 값이다. 코어 자체의 $K_g$가 이 값 이상인 코어는 모든 제약을 만족할 수 있으며, 인덕턴스는 공극으로 맞춘다. SI 단위 m⁵(표는 흔히 cm⁵로 준다: 1 m⁵ = 10¹⁰ cm⁵)",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 11 (Inductor Design: the core geometrical constant K_g); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/magnetics.py",
+      "n_tests": 8,
+      "yaml_line": 1154
+    },
+    "mag.Kg_core": {
+      "id": "mag.Kg_core",
+      "title": "Core geometrical constant of a core",
+      "title_ko": "코어의 기하 상수",
+      "latex": "K_g = \\frac{A_e^{2} W_A}{\\mathrm{MLT}}",
+      "lhs": "K_g",
+      "expr": "A_e**2*W_A/MLT",
+      "relation": "eq",
+      "variables": [
+        "A_e",
+        "MLT",
+        "W_A"
+      ],
+      "constants": [],
+      "symbols": {
+        "A_e": "effective core area",
+        "MLT": "mean length per turn",
+        "W_A": "winding window area"
+      },
+      "assumptions": [
+        "definition"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the core's side: it grows as the fifth power of the core's linear size, so a core with twice the $K_g$ is only about 15 % larger in each dimension",
+      "notes_ko": "코어 쪽 값이다. 코어 선형 크기의 5제곱으로 커지므로, $K_g$가 두 배인 코어는 각 치수가 약 15 %만 크다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 11 (Inductor Design: the core geometrical constant K_g)"
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 8,
+      "yaml_line": 1170
     },
     "wind.fill": {
       "id": "wind.fill",
@@ -4190,7 +4749,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1044
+      "yaml_line": 1184
     },
     "wind.dcr": {
       "id": "wind.dcr",
@@ -4228,7 +4787,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 7,
-      "yaml_line": 1057
+      "yaml_line": 1197
     },
     "wind.skin_depth": {
       "id": "wind.skin_depth",
@@ -4265,7 +4824,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 8,
-      "yaml_line": 1071
+      "yaml_line": 1211
     },
     "wind.dowell": {
       "id": "wind.dowell",
@@ -4303,7 +4862,157 @@
       ],
       "derived_by": null,
       "n_tests": 9,
-      "yaml_line": 1086
+      "yaml_line": 1226
+    },
+    "wind.phi_foil": {
+      "id": "wind.phi_foil",
+      "title": "Foil thickness in skin depths",
+      "title_ko": "표피 깊이로 잰 박판 두께",
+      "latex": "\\varphi = \\frac{h}{\\delta}",
+      "lhs": "phi_l",
+      "expr": "h_l/delta_s",
+      "relation": "eq",
+      "variables": [
+        "delta_s",
+        "h_l"
+      ],
+      "constants": [],
+      "symbols": {
+        "delta_s": "skin depth at the frequency of the current",
+        "h_l": "foil (layer) thickness"
+      },
+      "assumptions": [
+        "definition"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "for round wire, `wind.phi_round` gives the equivalent foil's $\\varphi$",
+      "notes_ko": "둥근 선에서는 `wind.phi_round`가 등가 박판의 $\\varphi$를 준다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory: eddy currents in winding conductors)"
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 7,
+      "yaml_line": 1243
+    },
+    "wind.dowell_low": {
+      "id": "wind.dowell_low",
+      "title": "AC resistance factor of thin layers (Dowell's series)",
+      "title_ko": "얇은 층의 교류 저항 계수 (Dowell 식의 급수)",
+      "latex": "F_R \\approx 1 + \\frac{\\left(5 M_\\ell^{2} - 1\\right) \\varphi^{4}}{45}",
+      "lhs": "F_R",
+      "expr": "1 + (5*M_l**2 - 1)*phi_l**4/45",
+      "relation": "approx",
+      "variables": [
+        "M_l",
+        "phi_l"
+      ],
+      "constants": [],
+      "symbols": {
+        "M_l": "number of layers from zero MMF to its peak",
+        "phi_l": "layer thickness over skin depth"
+      },
+      "assumptions": [
+        "dowell_layers",
+        "thin_layers"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the first terms of Dowell's factor in powers of $\\varphi$: the excess loss grows as $\\varphi^4$ and, through the proximity effect, as $M_\\ell^2$. For $\\varphi \\le 1$ it lies above the exact factor by at most about 4 %",
+      "notes_ko": "Dowell 계수를 $\\varphi$의 거듭제곱으로 전개한 첫 항들이다. 초과 손실은 $\\varphi^4$에 비례하고, 근접 효과 때문에 $M_\\ell^2$에 비례해 커진다. $\\varphi \\le 1$에서는 정확한 계수보다 최대 약 4 % 크다",
+      "cites": [
+        {
+          "key": "dowell1966",
+          "where": "the one-dimensional model of foil layers whose factor this series expands"
+        },
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory: eddy currents in winding conductors); derived here as the series of Dowell's factor"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/windings.py",
+      "n_tests": 8,
+      "yaml_line": 1256
+    },
+    "wind.loss_rel": {
+      "id": "wind.loss_rel",
+      "title": "Loss of a winding layer at a given frequency, against its thickness",
+      "title_ko": "주파수가 정해졌을 때 권선 층 두께에 따른 손실",
+      "latex": "P/P_\\delta = \\frac{F_R}{\\varphi}",
+      "lhs": "P_rel",
+      "expr": "F_R/phi_l",
+      "relation": "eq",
+      "variables": [
+        "F_R",
+        "phi_l"
+      ],
+      "constants": [],
+      "symbols": {
+        "F_R": "ac resistance factor",
+        "phi_l": "layer thickness over skin depth"
+      },
+      "assumptions": [
+        "dowell_layers",
+        "layer_resistance"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the loss relative to that of a layer one skin depth thick carrying the same current as dc: a thicker layer lowers the dc resistance ($1/\\varphi$) and raises $F_R$",
+      "notes_ko": "같은 전류가 직류로 흐르는 두께 한 표피 깊이 층의 손실에 대한 비이다. 층이 두꺼우면 직류 저항($1/\\varphi$)은 줄고 $F_R$는 커진다",
+      "cites": [
+        {
+          "key": "dowell1966",
+          "where": ""
+        },
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory: eddy currents in winding conductors); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/windings.py",
+      "n_tests": 8,
+      "yaml_line": 1274
+    },
+    "wind.phi_opt": {
+      "id": "wind.phi_opt",
+      "title": "Layer thickness of least loss",
+      "title_ko": "손실이 가장 작은 층 두께",
+      "latex": "\\varphi_\\mathrm{opt} \\approx \\left(\\frac{15}{5 M_\\ell^{2} - 1}\\right)^{\\frac{1}{4}}",
+      "lhs": "phi_opt",
+      "expr": "(15/(5*M_l**2 - 1))**(1/4)",
+      "relation": "approx",
+      "variables": [
+        "M_l"
+      ],
+      "constants": [],
+      "symbols": {
+        "M_l": "number of layers from zero MMF to its peak"
+      },
+      "assumptions": [
+        "dowell_layers",
+        "thin_layers",
+        "layer_resistance"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "at a given frequency a thicker layer has less dc resistance but a larger $F_R$; their product, the loss, is least at this thickness, where $F_R = 4/3$. The more layers, the thinner the best layer. From the series of Dowell's factor: within 2 % of the exact optimum for two or more layers; for one layer the exact optimum is $\\varphi = \\pi/2$",
+      "notes_ko": "주파수가 같을 때 층이 두꺼우면 직류 저항은 작아지지만 $F_R$가 커진다. 둘의 곱인 손실은 이 두께에서 가장 작고, 이때 $F_R = 4/3$이다. 층이 많을수록 최적 층은 얇다. Dowell 계수의 급수에서 나온 값으로, 층이 두 개 이상이면 정확한 최적값과 2 % 이내로 맞고, 층이 하나이면 정확한 최적값은 $\\varphi = \\pi/2$이다",
+      "cites": [
+        {
+          "key": "dowell1966",
+          "where": ""
+        },
+        {
+          "key": "hurley2000",
+          "where": "the optimum layer thickness, for any periodic current waveform; derived here for a sinusoidal current"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/windings.py",
+      "n_tests": 8,
+      "yaml_line": 1292
     },
     "xfmr.leakage.ps": {
       "id": "xfmr.leakage.ps",
@@ -4348,7 +5057,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 7,
-      "yaml_line": 1103
+      "yaml_line": 1310
     },
     "xfmr.leakage.psp": {
       "id": "xfmr.leakage.psp",
@@ -4393,7 +5102,159 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 7,
-      "yaml_line": 1117
+      "yaml_line": 1324
+    },
+    "xfmr.k": {
+      "id": "xfmr.k",
+      "title": "Coupling coefficient of two windings",
+      "title_ko": "두 권선의 결합 계수",
+      "latex": "k = \\frac{L_{12}}{\\sqrt{L_{11} L_{22}}}",
+      "lhs": "k_c",
+      "expr": "L_12/sqrt(L_11*L_22)",
+      "relation": "eq",
+      "variables": [
+        "L_11",
+        "L_12",
+        "L_22"
+      ],
+      "constants": [],
+      "symbols": {
+        "L_11": "inductance of winding 1 with winding 2 open",
+        "L_12": "mutual inductance",
+        "L_22": "inductance of winding 2 with winding 1 open"
+      },
+      "assumptions": [
+        "definition"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "1 for perfect coupling; the leakage inductances make it smaller",
+      "notes_ko": "완전 결합이면 1이고, 누설 인덕턴스가 있으면 1보다 작다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory: the transformer model; coupled inductors)"
+        },
+        {
+          "key": "alexander2017",
+          "where": "Ch. 13 (Magnetically Coupled Circuits)"
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 7,
+      "yaml_line": 1338
+    },
+    "xfmr.L_sc": {
+      "id": "xfmr.L_sc",
+      "title": "Inductance of a winding with the other winding shorted",
+      "title_ko": "다른 권선을 단락했을 때 한 권선의 인덕턴스",
+      "latex": "L_\\mathrm{sc} = L_{11} \\left(1 - k^{2}\\right)",
+      "lhs": "L_sc",
+      "expr": "L_11*(1 - k_c**2)",
+      "relation": "eq",
+      "variables": [
+        "L_11",
+        "k_c"
+      ],
+      "constants": [],
+      "symbols": {
+        "L_11": "inductance of winding 1 with winding 2 open",
+        "k_c": "coupling coefficient"
+      },
+      "assumptions": [
+        "coupled_windings"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the short holds the second winding's voltage, the rate of change of its flux linkage, at zero, so its current cancels most of the flux the two windings share; what is left is mainly the two windings' leakage (`xfmr.L_sc_T`): 1 − k² is small for a well-coupled transformer",
+      "notes_ko": "단락하면 둘째 권선의 전압, 즉 쇄교 자속의 변화율이 0으로 묶이므로 그 전류가 두 권선이 공유하는 자속의 대부분을 상쇄한다. 남는 것은 주로 두 권선의 누설이다(`xfmr.L_sc_T`). 결합이 좋은 변압기에서는 1 − k²가 작다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory: the transformer model; coupled inductors); derived here"
+        },
+        {
+          "key": "alexander2017",
+          "where": "Ch. 13 (Magnetically Coupled Circuits)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/windings.py",
+      "n_tests": 8,
+      "yaml_line": 1353
+    },
+    "xfmr.L_sc_T": {
+      "id": "xfmr.L_sc_T",
+      "title": "Short-circuit inductance in the transformer model",
+      "title_ko": "변압기 모델에서 본 단락 인덕턴스",
+      "latex": "L_\\mathrm{sc} = L_{\\ell 1} + \\frac{L_{\\ell 2}' L_M}{L_{\\ell 2}' + L_M}",
+      "lhs": "L_sc",
+      "expr": "L_l1 + L_l2p*L_M/(L_l2p + L_M)",
+      "relation": "eq",
+      "variables": [
+        "L_M",
+        "L_l1",
+        "L_l2p"
+      ],
+      "constants": [],
+      "symbols": {
+        "L_M": "magnetizing inductance referred to the primary",
+        "L_l1": "primary leakage inductance",
+        "L_l2p": "secondary leakage inductance referred to the primary"
+      },
+      "assumptions": [
+        "coupled_windings",
+        "t_model"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "with $L_M$ much larger than the leakage inductances, $L_\\mathrm{sc} \\approx L_{\\ell 1} + L_{\\ell 2}'$: the short-circuit test measures the total leakage referred to the primary, not how it divides between the windings",
+      "notes_ko": "$L_M$가 누설 인덕턴스보다 훨씬 크면 $L_\\mathrm{sc} \\approx L_{\\ell 1} + L_{\\ell 2}'$이다. 단락 시험은 1차 기준으로 환산한 전체 누설을 잴 뿐, 그것이 두 권선에 어떻게 나뉘는지는 알려 주지 않는다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory: the transformer model with magnetizing and leakage inductances); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/windings.py",
+      "n_tests": 7,
+      "yaml_line": 1370
+    },
+    "xfmr.V_oc": {
+      "id": "xfmr.V_oc",
+      "title": "Open-circuit voltage ratio of a transformer",
+      "title_ko": "변압기의 개방 전압비",
+      "latex": "V_2/V_1 = \\frac{n L_M}{L_{\\ell 1} + L_M}",
+      "lhs": "V_ratio",
+      "expr": "n*L_M/(L_l1 + L_M)",
+      "relation": "eq",
+      "variables": [
+        "L_M",
+        "L_l1",
+        "n"
+      ],
+      "constants": [],
+      "symbols": {
+        "L_M": "magnetizing inductance referred to the primary",
+        "L_l1": "primary leakage inductance",
+        "n": "turns ratio N_s/N_p"
+      },
+      "assumptions": [
+        "coupled_windings",
+        "t_model"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the primary's leakage and the magnetizing inductance divide the applied voltage, so the ratio reads below the turns ratio by about $L_{\\ell 1}/L_M$ (1 % for a leakage of 1 % of $L_M$). Driven from the secondary, $V_1/V_2$ reads below $1/n$ by about the secondary's leakage over $L_M$, both referred to the primary. A driven winding whose resistance is not small against its reactance lowers the ratio further",
+      "notes_ko": "1차 누설 인덕턴스와 자화 인덕턴스가 인가 전압을 나누어 가지므로, 전압비는 권선비보다 약 $L_{\\ell 1}/L_M$만큼 낮게 읽힌다(누설이 $L_M$의 1 %이면 1 %). 2차 쪽에서 구동하면 $V_1/V_2$가 $1/n$보다 약 2차 누설을 $L_M$으로 나눈 비율만큼(둘 다 1차 기준) 낮게 읽힌다. 구동하는 권선의 저항이 그 리액턴스에 비해 작지 않으면 전압비는 더 낮아진다",
+      "cites": [
+        {
+          "key": "erickson2020",
+          "where": "Ch. 10 (Basic Magnetics Theory: the transformer model with magnetizing and leakage inductances); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/windings.py",
+      "n_tests": 8,
+      "yaml_line": 1384
     },
     "wind.rho_T": {
       "id": "wind.rho_T",
@@ -4429,7 +5290,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1131
+      "yaml_line": 1399
     },
     "wind.round_area": {
       "id": "wind.round_area",
@@ -4463,7 +5324,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1145
+      "yaml_line": 1413
     },
     "wind.porosity": {
       "id": "wind.porosity",
@@ -4505,7 +5366,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1159
+      "yaml_line": 1427
     },
     "wind.phi_round": {
       "id": "wind.phi_round",
@@ -4545,7 +5406,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1175
+      "yaml_line": 1443
     },
     "src.Pmax": {
       "id": "src.Pmax",
@@ -4579,7 +5440,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 1194
+      "yaml_line": 1462
     },
     "src.cv_power": {
       "id": "src.cv_power",
@@ -4615,7 +5476,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1208
+      "yaml_line": 1476
     },
     "src.cv_extraction": {
       "id": "src.cv_extraction",
@@ -4649,7 +5510,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1223
+      "yaml_line": 1491
     },
     "lfr.Vg": {
       "id": "lfr.Vg",
@@ -4687,7 +5548,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1239
+      "yaml_line": 1507
     },
     "lfr.eta": {
       "id": "lfr.eta",
@@ -4723,7 +5584,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1254
+      "yaml_line": 1522
     },
     "lfr.Vg_power": {
       "id": "lfr.Vg_power",
@@ -4763,7 +5624,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 1269
+      "yaml_line": 1537
     },
     "sense.current_out_monitor": {
       "id": "sense.current_out_monitor",
@@ -4801,7 +5662,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1285
+      "yaml_line": 1553
     },
     "sense.burden": {
       "id": "sense.burden",
@@ -4835,7 +5696,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1299
+      "yaml_line": 1567
     },
     "sense.voltage_out_monitor": {
       "id": "sense.voltage_out_monitor",
@@ -4873,7 +5734,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 8,
-      "yaml_line": 1313
+      "yaml_line": 1581
     },
     "sense.offset_current": {
       "id": "sense.offset_current",
@@ -4911,7 +5772,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1328
+      "yaml_line": 1596
     },
     "sense.pad_error": {
       "id": "sense.pad_error",
@@ -4949,7 +5810,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1344
+      "yaml_line": 1612
     },
     "sense.reading": {
       "id": "sense.reading",
@@ -4991,7 +5852,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 9,
-      "yaml_line": 1360
+      "yaml_line": 1628
     },
     "sense.rel_error": {
       "id": "sense.rel_error",
@@ -5033,7 +5894,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 8,
-      "yaml_line": 1378
+      "yaml_line": 1646
     },
     "sense.filter_R": {
       "id": "sense.filter_R",
@@ -5068,7 +5929,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 8,
-      "yaml_line": 1395
+      "yaml_line": 1663
     },
     "adc.nyquist": {
       "id": "adc.nyquist",
@@ -5101,7 +5962,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1410
+      "yaml_line": 1678
     },
     "def.Ts": {
       "id": "def.Ts",
@@ -5133,7 +5994,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1426
+      "yaml_line": 1694
     },
     "def.V": {
       "id": "def.V",
@@ -5167,7 +6028,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1437
+      "yaml_line": 1705
     },
     "sw.v_avg": {
       "id": "sw.v_avg",
@@ -5202,7 +6063,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1452
+      "yaml_line": 1720
     },
     "vsb.v_off": {
       "id": "vsb.v_off",
@@ -5237,7 +6098,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1466
+      "yaml_line": 1734
     },
     "vsb.drift": {
       "id": "vsb.drift",
@@ -5273,7 +6134,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1480
+      "yaml_line": 1748
     },
     "csb.i_off": {
       "id": "csb.i_off",
@@ -5308,7 +6169,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1494
+      "yaml_line": 1762
     },
     "buck.dcm.D2": {
       "id": "buck.dcm.D2",
@@ -5345,7 +6206,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 7,
-      "yaml_line": 1508
+      "yaml_line": 1776
     },
     "boost.ccm.M_RL": {
       "id": "boost.ccm.M_RL",
@@ -5385,7 +6246,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1524
+      "yaml_line": 1792
     },
     "boost.ccm.eta_RL": {
       "id": "boost.ccm.eta_RL",
@@ -5425,7 +6286,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1538
+      "yaml_line": 1806
     },
     "buck.ss.Gd0": {
       "id": "buck.ss.Gd0",
@@ -5460,7 +6321,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1553
+      "yaml_line": 1821
     },
     "buck.ss.w0": {
       "id": "buck.ss.w0",
@@ -5497,7 +6358,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1567
+      "yaml_line": 1835
     },
     "buck.ss.Q": {
       "id": "buck.ss.Q",
@@ -5536,7 +6397,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1579
+      "yaml_line": 1847
     },
     "boost.ss.Gd0": {
       "id": "boost.ss.Gd0",
@@ -5573,7 +6434,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1591
+      "yaml_line": 1859
     },
     "boost.ss.w0": {
       "id": "boost.ss.w0",
@@ -5612,7 +6473,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1605
+      "yaml_line": 1873
     },
     "boost.ss.Q": {
       "id": "boost.ss.Q",
@@ -5653,7 +6514,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1617
+      "yaml_line": 1885
     },
     "boost.ss.wz": {
       "id": "boost.ss.wz",
@@ -5692,7 +6553,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1629
+      "yaml_line": 1897
     },
     "buckboost.ss.Gd0": {
       "id": "buckboost.ss.Gd0",
@@ -5729,7 +6590,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1643
+      "yaml_line": 1911
     },
     "buckboost.ss.w0": {
       "id": "buckboost.ss.w0",
@@ -5768,7 +6629,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1657
+      "yaml_line": 1925
     },
     "buckboost.ss.Q": {
       "id": "buckboost.ss.Q",
@@ -5809,7 +6670,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1669
+      "yaml_line": 1937
     },
     "buckboost.ss.wz": {
       "id": "buckboost.ss.wz",
@@ -5848,7 +6709,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1681
+      "yaml_line": 1949
     },
     "pwm.d": {
       "id": "pwm.d",
@@ -5882,7 +6743,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1696
+      "yaml_line": 1964
     },
     "loop.T": {
       "id": "loop.T",
@@ -5920,7 +6781,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1711
+      "yaml_line": 1979
     },
     "loop.suppression": {
       "id": "loop.suppression",
@@ -5953,7 +6814,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1725
+      "yaml_line": 1993
     },
     "buck.IL": {
       "id": "buck.IL",
@@ -5991,7 +6852,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1742
+      "yaml_line": 2010
     },
     "ripple.Ipk": {
       "id": "ripple.Ipk",
@@ -6026,7 +6887,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1756
+      "yaml_line": 2024
     },
     "buck.ripple.v": {
       "id": "buck.ripple.v",
@@ -6065,7 +6926,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1769
+      "yaml_line": 2037
     },
     "boost.IL": {
       "id": "boost.IL",
@@ -6105,7 +6966,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1785
+      "yaml_line": 2053
     },
     "boost.ripple.iL": {
       "id": "boost.ripple.iL",
@@ -6146,7 +7007,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1799
+      "yaml_line": 2067
     },
     "boost.ripple.v": {
       "id": "boost.ripple.v",
@@ -6190,7 +7051,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1811
+      "yaml_line": 2079
     },
     "buckboost.V": {
       "id": "buckboost.V",
@@ -6227,7 +7088,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1825
+      "yaml_line": 2093
     },
     "buckboost.IL": {
       "id": "buckboost.IL",
@@ -6267,7 +7128,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1839
+      "yaml_line": 2107
     },
     "buckboost.ripple.iL": {
       "id": "buckboost.ripple.iL",
@@ -6308,7 +7169,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1853
+      "yaml_line": 2121
     },
     "buckboost.ripple.v": {
       "id": "buckboost.ripple.v",
@@ -6352,7 +7213,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1865
+      "yaml_line": 2133
     },
     "buck.Vds": {
       "id": "buck.Vds",
@@ -6386,7 +7247,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1879
+      "yaml_line": 2147
     },
     "boost.Vds": {
       "id": "boost.Vds",
@@ -6421,7 +7282,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1891
+      "yaml_line": 2159
     },
     "buckboost.Vds": {
       "id": "buckboost.Vds",
@@ -6458,7 +7319,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1903
+      "yaml_line": 2171
     },
     "forward.Vds": {
       "id": "forward.Vds",
@@ -6493,7 +7354,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1915
+      "yaml_line": 2183
     },
     "forward.ripple.iL": {
       "id": "forward.ripple.iL",
@@ -6538,7 +7399,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1929
+      "yaml_line": 2197
     },
     "util.buck": {
       "id": "util.buck",
@@ -6573,7 +7434,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1944
+      "yaml_line": 2212
     },
     "util.boost": {
       "id": "util.boost",
@@ -6608,7 +7469,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1958
+      "yaml_line": 2226
     },
     "util.buckboost": {
       "id": "util.buckboost",
@@ -6643,7 +7504,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1972
+      "yaml_line": 2240
     },
     "util.forward": {
       "id": "util.forward",
@@ -6680,7 +7541,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 1986
+      "yaml_line": 2254
     },
     "ind.di": {
       "id": "ind.di",
@@ -6717,7 +7578,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2003
+      "yaml_line": 2271
     },
     "cap.dv": {
       "id": "cap.dv",
@@ -6754,7 +7615,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2017
+      "yaml_line": 2285
     },
     "ind.E": {
       "id": "ind.E",
@@ -6789,7 +7650,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2031
+      "yaml_line": 2299
     },
     "cap.E": {
       "id": "cap.E",
@@ -6823,7 +7684,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2043
+      "yaml_line": 2311
     },
     "imp.ZL": {
       "id": "imp.ZL",
@@ -6858,7 +7719,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2055
+      "yaml_line": 2323
     },
     "imp.ZC": {
       "id": "imp.ZC",
@@ -6893,7 +7754,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2069
+      "yaml_line": 2337
     },
     "rc.fc": {
       "id": "rc.fc",
@@ -6927,7 +7788,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2083
+      "yaml_line": 2351
     },
     "rc.gain": {
       "id": "rc.gain",
@@ -6962,7 +7823,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 8,
-      "yaml_line": 2097
+      "yaml_line": 2365
     },
     "fourier.pulse.harm": {
       "id": "fourier.pulse.harm",
@@ -6999,7 +7860,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 8,
-      "yaml_line": 2112
+      "yaml_line": 2380
     },
     "fourier.pulse.rms": {
       "id": "fourier.pulse.rms",
@@ -7033,7 +7894,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2127
+      "yaml_line": 2395
     },
     "passive.f_srf": {
       "id": "passive.f_srf",
@@ -7067,7 +7928,44 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2139
+      "yaml_line": 2407
+    },
+    "meas.L_app": {
+      "id": "meas.L_app",
+      "title": "Inductance a meter reads below self-resonance",
+      "title_ko": "자기 공진 아래에서 측정기가 읽는 인덕턴스",
+      "latex": "L_\\mathrm{app} = \\frac{L}{1 - \\left(\\frac{f}{f_\\mathrm{srf}}\\right)^{2}}",
+      "lhs": "L_app",
+      "expr": "L/(1 - (f/f_srf)**2)",
+      "relation": "eq",
+      "variables": [
+        "L",
+        "f",
+        "f_srf"
+      ],
+      "constants": [],
+      "symbols": {
+        "L": "inductance",
+        "f": "test frequency",
+        "f_srf": "self-resonant frequency"
+      },
+      "assumptions": [
+        "lossless_lc",
+        "sinusoidal_steady_state"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the winding's capacitance in parallel makes the reading rise with the test frequency: 1 % high at a tenth of $f_\\mathrm{srf}$, twice the inductance at 0.71 $f_\\mathrm{srf}$; above $f_\\mathrm{srf}$ the part is capacitive",
+      "notes_ko": "권선의 병렬 커패시턴스 때문에 측정값이 측정 주파수와 함께 커진다. $f_\\mathrm{srf}$의 1/10에서 1 % 크고, 0.71 $f_\\mathrm{srf}$에서 두 배가 된다. $f_\\mathrm{srf}$보다 높으면 부품은 용량성이다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 9 (Sinusoids and Phasors: impedances in parallel); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/measurement.py",
+      "n_tests": 8,
+      "yaml_line": 2421
     },
     "cap.esr.ripple": {
       "id": "cap.esr.ripple",
@@ -7101,7 +7999,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2153
+      "yaml_line": 2438
     },
     "mag.H_ampere": {
       "id": "mag.H_ampere",
@@ -7137,7 +8035,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2168
+      "yaml_line": 2453
     },
     "mag.B_H": {
       "id": "mag.B_H",
@@ -7174,7 +8072,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 2180
+      "yaml_line": 2465
     },
     "xfmr.V2": {
       "id": "xfmr.V2",
@@ -7212,7 +8110,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2193
+      "yaml_line": 2478
     },
     "xfmr.I2": {
       "id": "xfmr.I2",
@@ -7250,7 +8148,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2209
+      "yaml_line": 2494
     },
     "bat.rint": {
       "id": "bat.rint",
@@ -7286,7 +8184,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 2227
+      "yaml_line": 2512
     }
   }
 }

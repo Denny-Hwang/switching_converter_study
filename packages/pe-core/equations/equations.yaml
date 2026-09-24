@@ -213,6 +213,31 @@ symbol_table:
   V_2: {latex: "V_2", unit: "V", desc: "secondary winding voltage", meaning: "secondary voltage", meaning_ko: "2차 전압"}
   I_1: {latex: "I_1", unit: "A", desc: "primary winding current", meaning: "primary current", meaning_ko: "1차 전류", range: [0.001, 100], scale: log}
   I_2: {latex: "I_2", unit: "A", desc: "secondary winding current", meaning: "secondary current", meaning_ko: "2차 전류"}
+  # --- 04-magnetics: core selection, windings, coupling, snubbers, measurement -----
+  K_g: {latex: "K_g", unit: "m⁵", desc: "core geometrical constant A_e² W_A / MLT", meaning: "core geometrical constant", meaning_ko: "코어 기하 상수(core geometrical constant)"}
+  R_dcmax: {latex: "R_\\mathrm{dc,max}", unit: "Ω", desc: "largest winding dc resistance allowed: the copper-loss budget", meaning: "largest winding resistance allowed", meaning_ko: "허용되는 최대 권선 저항", range: [0.001, 1], scale: log}
+  P_rel: {latex: "P/P_\\delta", unit: "1", desc: "loss of a layer relative to that of a layer one skin depth thick carrying the same current as dc", meaning: "loss relative to one skin depth of dc", meaning_ko: "두께 한 표피 깊이 층의 직류 손실에 대한 손실 비"}
+  phi_opt: {latex: "\\varphi_\\mathrm{opt}", unit: "1", desc: "layer thickness of least loss, in skin depths", meaning: "layer thickness of least loss, in skin depths", meaning_ko: "손실이 가장 작은 층 두께(표피 깊이 단위)"}
+  k_c: {latex: "k", unit: "1", desc: "coupling coefficient of two windings, L_12/sqrt(L_11 L_22)", meaning: "coupling coefficient", meaning_ko: "결합 계수(coupling coefficient)", range: [0.9, 0.999]}
+  L_11: {latex: "L_{11}", unit: "H", desc: "inductance of winding 1 with winding 2 open", meaning: "inductance of winding 1, winding 2 open", meaning_ko: "권선 2를 개방했을 때 권선 1의 인덕턴스", range: [1.0e-6, 0.01], scale: log}
+  L_22: {latex: "L_{22}", unit: "H", desc: "inductance of winding 2 with winding 1 open", meaning: "inductance of winding 2, winding 1 open", meaning_ko: "권선 1을 개방했을 때 권선 2의 인덕턴스", range: [1.0e-6, 0.01], scale: log}
+  L_12: {latex: "L_{12}", unit: "H", desc: "mutual inductance of two windings", meaning: "mutual inductance", meaning_ko: "상호 인덕턴스(mutual inductance)", range: [1.0e-7, 1.0e-3], scale: log}
+  L_sc: {latex: "L_\\mathrm{sc}", unit: "H", desc: "inductance of winding 1 with winding 2 shorted", meaning: "inductance with the other winding shorted", meaning_ko: "다른 권선을 단락했을 때의 인덕턴스"}
+  L_l1: {latex: "L_{\\ell 1}", unit: "H", desc: "leakage inductance of the primary winding (T model)", meaning: "primary leakage inductance", meaning_ko: "1차 누설 인덕턴스", range: [1.0e-8, 1.0e-4], scale: log}
+  L_l2p: {latex: "L_{\\ell 2}'", unit: "H", desc: "leakage inductance of the secondary winding referred to the primary, L_l2/n² (T model)", meaning: "secondary leakage inductance, referred to the primary", meaning_ko: "1차로 환산한 2차 누설 인덕턴스", range: [1.0e-8, 1.0e-4], scale: log}
+  C_add: {latex: "C_\\mathrm{add}", unit: "F", desc: "known capacitance added across a ringing node to measure its parasitics", meaning: "capacitance added for the measurement", meaning_ko: "측정을 위해 더한 커패시턴스", range: [1.0e-12, 1.0e-8], scale: log}
+  f_r0: {latex: "f_{r0}", unit: "Hz", desc: "ringing frequency of a node as built", meaning: "ringing frequency as built", meaning_ko: "원래 회로의 링잉 주파수", range: [1.0e5, 1.0e8], scale: log}
+  f_r1: {latex: "f_{r1}", unit: "Hz", desc: "ringing frequency with the added capacitance", meaning: "ringing frequency with C_add", meaning_ko: "C_add를 더했을 때의 링잉 주파수", range: [1.0e5, 1.0e8], scale: log}
+  C_par: {latex: "C_\\mathrm{par}", unit: "F", desc: "parasitic capacitance of a ringing node", meaning: "parasitic capacitance of the node", meaning_ko: "노드의 기생 커패시턴스(parasitic capacitance)", range: [1.0e-12, 1.0e-8], scale: log}
+  L_par: {latex: "L_\\mathrm{par}", unit: "H", desc: "parasitic inductance that rings with C_par (leakage, wiring)", meaning: "parasitic (ringing) inductance", meaning_ko: "기생(링잉) 인덕턴스", range: [1.0e-9, 1.0e-4], scale: log}
+  R_snub: {latex: "R_\\mathrm{snub}", unit: "Ω", desc: "resistance of an RC snubber", meaning: "snubber resistance", meaning_ko: "스너버 저항"}
+  C_snub: {latex: "C_\\mathrm{snub}", unit: "F", desc: "capacitance of an RC snubber", meaning: "snubber capacitance", meaning_ko: "스너버 커패시턴스", range: [1.0e-12, 1.0e-7], scale: log}
+  zeta: {latex: "\\zeta", unit: "1", desc: "damping factor of the parasitic inductance, the snubber resistor and the snubber capacitor in series (AN11160's definition)", meaning: "damping factor", meaning_ko: "감쇠 계수(damping factor)", range: [0.1, 2]}
+  V_snub: {latex: "V_\\mathrm{snub}", unit: "V", desc: "voltage the snubbed node swings through at each switching edge", meaning: "voltage swing at each edge", meaning_ko: "스위칭 에지마다의 전압 변화폭", range: [1, 1000], scale: log}
+  L_app: {latex: "L_\\mathrm{app}", unit: "H", desc: "inductance an impedance meter reads (the reactance over ω)", meaning: "inductance the meter reads", meaning_ko: "측정기가 읽는 인덕턴스"}
+  V_ratio: {latex: "V_2/V_1", unit: "1", desc: "ratio of the open secondary's voltage to the voltage applied to the primary", meaning: "open-circuit voltage ratio", meaning_ko: "개방 전압비(open-circuit voltage ratio)"}
+  I_ring: {latex: "I_\\mathrm{ring}", unit: "A", desc: "current in the parasitic inductance when the ring starts (for a diode, its peak reverse-recovery current; I_RM in AN11160)", meaning: "current when the ring starts", meaning_ko: "링잉이 시작될 때의 전류", range: [0.01, 100], scale: log}
+  P_Rsnub: {latex: "P_{R,\\mathrm{snub}}", unit: "W", desc: "power dissipated in the snubber resistor", meaning: "dissipation in the snubber resistor", meaning_ko: "스너버 저항의 소산 전력"}
 
 # Human-readable labels for the `assumptions` tags (shown in the <Eq> expander).
 assumption_labels:
@@ -265,6 +290,13 @@ assumption_labels:
   linear_temperature: {en: "resistance linear in temperature near 20 °C", ko: "20 °C 부근에서 온도에 선형인 저항"}
   square_equivalent: {en: "each round conductor replaced by a square conductor of the same area, the layer by a foil of that thickness", ko: "둥근 도체를 같은 면적의 정사각형 도체로, 층을 그 두께의 박판(foil)으로 대치"}
   fixed_clamp: {en: "a clamp whose voltage does not depend on the power it absorbs (a TVS or Zener clamp)", ko: "흡수하는 전력에 따라 전압이 변하지 않는 클램프(TVS 또는 제너 클램프)"}
+  thin_layers: {en: "layers thin compared with the skin depth (φ up to about 1): the leading terms of Dowell's factor", ko: "표피 깊이에 비해 얇은 층(φ가 약 1 이하): Dowell 계수의 앞쪽 항"}
+  layer_resistance: {en: "the layers' breadth and turns fixed, so a layer's dc resistance is inversely proportional to its thickness", ko: "층의 폭과 턴 수가 고정되어 층의 직류 저항이 두께에 반비례함"}
+  coupled_windings: {en: "two linearly coupled windings without resistance", ko: "저항이 없는, 선형으로 결합된 두 권선"}
+  t_model: {en: "transformer modelled by its magnetizing inductance and one leakage inductance per winding (T model), referred to the primary", ko: "변압기를 자화 인덕턴스와 권선마다 하나의 누설 인덕턴스로 모델링(T 모델), 1차 기준"}
+  unchanged_inductance: {en: "the added capacitor does not change the inductance that rings", ko: "추가한 커패시터가 링잉하는 인덕턴스를 바꾸지 않음"}
+  snubber_full_swing: {en: "the snubber capacitor charges through its resistor to V at one edge and discharges through it at the other, once per switching period", ko: "스너버 커패시터가 한 에지에서 저항을 통해 V까지 충전되고 다른 에지에서 저항을 통해 방전됨(스위칭 주기마다 한 번)"}
+  snubber_charging_edge: {en: "the edge that charges the snubber capacitor, once per switching period: the node steps by V_snub while the parasitic inductance carries I_ring; the node's own capacitance is left out (AN11160)", ko: "스위칭 주기마다 한 번 스너버 커패시터를 충전하는 에지: 기생 인덕턴스에 I_ring이 흐르는 동안 노드 전압이 V_snub만큼 바뀜; 노드 자체의 커패시턴스는 무시함(AN11160)"}
 
 equations:
   # =========================================================================
@@ -836,6 +868,84 @@ equations:
     tests:
       - {inputs: {n: 0.25, V_clamp: 100.0, V_D: 0.5}, expect: 24.5}
 
+  - id: snub.C_par
+    title: "Parasitic capacitance from two ringing frequencies"
+    title_ko: "두 링잉 주파수로 구한 기생 커패시턴스"
+    lhs: C_par
+    expr: "C_add/((f_r0/f_r1)**2 - 1)"
+    symbols: {C_add: "known capacitance added across the ringing node", f_r0: "ringing frequency without it", f_r1: "ringing frequency with it"}
+    assumptions: [lossless_lc, unchanged_inductance]
+    constraints: ["f_r0 > f_r1"]
+    notes: "an added capacitance comparable to $C_\\mathrm{par}$ lowers the frequency clearly (adding three times $C_\\mathrm{par}$ halves it); a much smaller one changes it too little to measure"
+    notes_ko: "$C_\\mathrm{par}$와 비슷한 크기의 커패시턴스를 더하면 주파수가 분명히 내려간다($C_\\mathrm{par}$의 세 배를 더하면 절반). 훨씬 작은 값은 측정할 수 있을 만큼 바꾸지 못한다"
+    cite: {key: nexperia_an11160, where: "Sec. 3 (Determining C_LK and L_LK): the ringing frequency before and after a known capacitor is added; derived here"}
+    derived_by: python/pe_core/derive/snubbers.py
+    tests:
+      - {inputs: {C_add: 1.5e-10, f_r0: 2.0e7, f_r1: 1.0e7}, expect: 5.0e-11}
+      # AN11160's own example (Sec. 3): 1 nF added, 91.74 MHz and 61.3 MHz, which it rounds to 807 pF
+      - {inputs: {C_add: 1.0e-9, f_r0: 9.174e7, f_r1: 6.13e7}, expect: 8.066243792901876e-10}
+
+  - id: snub.L_par
+    title: "Parasitic inductance of a ringing node"
+    title_ko: "링잉 노드의 기생 인덕턴스"
+    lhs: L_par
+    expr: "1/(4*pi**2*f_r0**2*C_par)"
+    symbols: {f_r0: "ringing frequency", C_par: "parasitic capacitance of the node"}
+    assumptions: [lossless_lc]
+    cite: {key: nexperia_an11160, where: "Sec. 3 (Determining C_LK and L_LK): the inductance from the ringing frequency and the capacitance; derived here"}
+    derived_by: python/pe_core/derive/snubbers.py
+    tests:
+      - {inputs: {f_r0: 2.0e7, C_par: 5.0e-11}, expect: 1.2665147955292222e-06}
+      # AN11160's own example (Sec. 3): 91.74 MHz and 807 pF give 3.73 nH
+      - {inputs: {f_r0: 9.174e7, C_par: 8.07e-10}, expect: 3.729488368105348e-09}
+
+  - id: snub.R
+    title: "RC snubber resistance for a damping factor"
+    title_ko: "감쇠 계수로 정한 RC 스너버 저항"
+    lhs: R_snub
+    expr: "2*zeta*sqrt(L_par/C_snub)"
+    symbols: {zeta: "damping factor", L_par: "parasitic (ringing) inductance", C_snub: "snubber capacitance"}
+    assumptions: [lossless_lc]
+    notes: "AN11160 takes the damping factor of the parasitic inductance, the resistor and the snubber capacitor in series, and sets it between 0.5 and 1 for the least peak voltage: the resistor lies between $\\sqrt{L_\\mathrm{par}/C_\\mathrm{snub}}$ and twice that, and the best value in that range is found by trials. The node's own capacitance is left out of this damping factor"
+    notes_ko: "AN11160은 기생 인덕턴스, 저항, 스너버 커패시터를 직렬로 본 감쇠 계수를 쓰며, 피크 전압이 가장 낮도록 이를 0.5에서 1 사이로 잡는다. 저항은 $\\sqrt{L_\\mathrm{par}/C_\\mathrm{snub}}$와 그 두 배 사이에 있고, 그 범위에서 가장 좋은 값은 몇 번 시험해 찾는다. 노드 자체의 커패시턴스는 이 감쇠 계수에 들어가지 않는다"
+    cite: {key: nexperia_an11160, where: "Sec. 2 (Designing the snubber - theory): the damping factor and the range of the snubber resistor; Sec. 4: the best value by trials"}
+    derived_by: python/pe_core/derive/snubbers.py
+    tests:
+      - {inputs: {zeta: 0.75, L_par: 1.2665147955292222e-06, C_snub: 1.0e-10}, expect: 168.80930927945738}
+      - {inputs: {zeta: 0.5, L_par: 1.0e-8, C_snub: 1.0e-9}, expect: 3.1622776601683795}
+
+  - id: snub.P
+    title: "Loss an RC snubber adds"
+    title_ko: "RC 스너버가 더하는 손실"
+    lhs: P
+    expr: "C_snub*V_snub**2*f_s"
+    symbols: {C_snub: "snubber capacitance", V_snub: "voltage the node swings through at each edge", f_s: "switching frequency"}
+    assumptions: [snubber_full_swing]
+    notes: "charging the snubber capacitor through its resistor loses as much energy as it stores, ½ C V², and the next edge discharges it, through the resistor and the switch that turns on, losing the stored energy: C V² per period, whatever the resistance. The parasitic inductance's energy is lost with or without a snubber. A larger snubber capacitor lowers the peak voltage the best resistor can reach, and loses more"
+    notes_ko: "저항을 통해 스너버 커패시터를 충전하면 저장되는 만큼(½ C V²)의 에너지를 잃고, 다음 에지에서 저항과 켜지는 스위치를 통해 방전하면서 저장된 에너지를 잃는다. 저항값과 무관하게 한 주기에 C V²이다. 기생 인덕턴스의 에너지는 스너버가 있든 없든 잃는다. 스너버 커패시터가 클수록 가장 좋은 저항으로 얻을 수 있는 피크 전압은 낮아지지만 손실은 커진다"
+    cite:
+      - {key: nexperia_an11160, where: "Sec. 2 (Designing the snubber - theory): the average power loss due to the snubber; derived here"}
+      - {key: erickson2020, where: "Ch. 4 (Switch Realization: the energy of a capacitance charged at each switching edge is dissipated)"}
+    derived_by: python/pe_core/derive/snubbers.py
+    tests:
+      - {inputs: {C_snub: 2.2e-10, V_snub: 100.0, f_s: 1.0e5}, expect: 0.22}
+
+  - id: snub.P_R
+    title: "Dissipation in an RC snubber's resistor"
+    title_ko: "RC 스너버 저항의 소산 전력"
+    lhs: P_Rsnub
+    expr: "f_s*(C_snub*V_snub**2 + L_par*I_ring**2)/2"
+    symbols: {f_s: "switching frequency", C_snub: "snubber capacitance", V_snub: "voltage the node steps by at the edge", L_par: "parasitic (ringing) inductance", I_ring: "current in it when the ring starts"}
+    assumptions: [snubber_charging_edge]
+    notes: "AN11160 rates the resistor from this edge: the resistor takes as much energy as the capacitor stores and the parasitic inductance's energy. That can exceed the loss the snubber adds (`snub.P`), which leaves out the inductance's energy because it is lost with or without a snubber. Where the switch that turns on discharges the capacitor through the resistor, that edge heats the resistor too, with up to the capacitor's stored energy, and its rating must allow for it"
+    notes_ko: "AN11160은 이 에지로 저항의 정격을 정한다. 저항은 커패시터가 저장하는 만큼의 에너지와 기생 인덕턴스의 에너지를 받는다. 이 값은 스너버가 더하는 손실(`snub.P`)보다 클 수 있다. 그 손실은 인덕턴스의 에너지를 빼는데, 그 에너지는 스너버가 있든 없든 잃기 때문이다. 켜지는 스위치가 저항을 통해 커패시터를 방전하는 회로에서는 그 에지도 저항을 가열하며(최대 커패시터에 저장된 에너지만큼), 정격에 이를 넣어야 한다"
+    cite: {key: nexperia_an11160, where: "Sec. 4 (Designing the snubber - in practice): the power dissipation in the snubber resistor; Sec. 2: the energy lost in the resistor at turn-off; derived here"}
+    derived_by: python/pe_core/derive/snubbers.py
+    tests:
+      - {inputs: {f_s: 1.0e5, C_snub: 1.0e-10, V_snub: 100.0, L_par: 1.0e-6, I_ring: 1.0}, expect: 0.1}
+      # AN11160's own example (Sec. 4): 300 kHz, 1.6 nF, 20 V, 3.73 nH and 3.64 A, about 103 mW (its worked line prints the inductance as 3.37 nH; the rounded result is the same)
+      - {inputs: {f_s: 3.0e5, C_snub: 1.6e-9, V_snub: 20.0, L_par: 3.73e-9, I_ring: 3.64}, expect: 0.103413151200}
+
   - id: dcm.ring.f
     title: "Ringing frequency of the switch node in the DCM idle interval"
     title_ko: "DCM 휴지 구간의 스위치 노드 링잉 주파수"
@@ -1041,6 +1151,36 @@ equations:
     tests:
       - {inputs: {A_e: 5.0e-5, N: 16.0, L: 1.0e-4, l_e: 0.05, mu_i: 2000.0}, expect: 1.358495438638e-4}
 
+  - id: mag.Kg_req
+    title: "Core geometrical constant an inductor needs"
+    title_ko: "인덕터에 필요한 코어 기하 상수"
+    lhs: K_g
+    expr: "rho_w*L**2*I_pk**2/(B_max**2*R_dcmax*K_u)"
+    symbols: {rho_w: "resistivity of the winding conductor", L: "inductance", I_pk: "peak winding current", B_max: "largest flux density allowed", R_dcmax: "largest winding resistance allowed (the copper-loss budget)", K_u: "window utilization that can be wound"}
+    ranges: {K_u: [0.1, 0.7]}
+    assumptions: [linear_magnetics, uniform_flux, uniform_dc_current]
+    notes: "the specification's side of the four constraints (flux density, inductance, window, resistance) with the turns and the wire eliminated; any core whose own $K_g$ is at least this large can meet them, and its gap then sets the inductance. SI units, m⁵ (tables often give cm⁵: 1 m⁵ = 10¹⁰ cm⁵)"
+    notes_ko: "네 가지 제약(자속 밀도, 인덕턴스, 창, 저항)에서 턴 수와 선재를 소거하고 남은 사양 쪽 값이다. 코어 자체의 $K_g$가 이 값 이상인 코어는 모든 제약을 만족할 수 있으며, 인덕턴스는 공극으로 맞춘다. SI 단위 m⁵(표는 흔히 cm⁵로 준다: 1 m⁵ = 10¹⁰ cm⁵)"
+    cite: {key: erickson2020, where: "Ch. 11 (Inductor Design: the core geometrical constant K_g); derived here"}
+    derived_by: python/pe_core/derive/magnetics.py
+    tests:
+      - {inputs: {rho_w: 1.7241e-8, L: 1.0e-4, I_pk: 5.0, B_max: 0.3, R_dcmax: 0.03, K_u: 0.4}, expect: 3.990972222222222e-12}
+      - {inputs: {rho_w: 2.0e-8, L: 1.0e-3, I_pk: 1.0, B_max: 0.25, R_dcmax: 0.1, K_u: 0.5}, expect: 6.4e-12}
+
+  - id: mag.Kg_core
+    title: "Core geometrical constant of a core"
+    title_ko: "코어의 기하 상수"
+    lhs: K_g
+    expr: "A_e**2*W_A/MLT"
+    symbols: {A_e: "effective core area", W_A: "winding window area", MLT: "mean length per turn"}
+    assumptions: [definition]
+    notes: "the core's side: it grows as the fifth power of the core's linear size, so a core with twice the $K_g$ is only about 15 % larger in each dimension"
+    notes_ko: "코어 쪽 값이다. 코어 선형 크기의 5제곱으로 커지므로, $K_g$가 두 배인 코어는 각 치수가 약 15 %만 크다"
+    cite: {key: erickson2020, where: "Ch. 11 (Inductor Design: the core geometrical constant K_g)"}
+    tests:
+      - {inputs: {A_e: 5.25e-5, W_A: 6.1e-5, MLT: 0.05}, expect: 3.362625e-12}
+      - {inputs: {A_e: 7.6e-5, W_A: 9.7e-5, MLT: 0.0528}, expect: 1.061121212121212e-11}
+
   - id: wind.fill
     title: "Window utilization of a winding"
     title_ko: "권선의 창 이용률"
@@ -1100,6 +1240,73 @@ equations:
       - {inputs: {phi_l: 1.0, M_l: 3.0}, expect: 1.9399646964915157}
       - {inputs: {phi_l: 0.5, M_l: 2.0}, expect: 1.0263231266309407}
 
+  - id: wind.phi_foil
+    title: "Foil thickness in skin depths"
+    title_ko: "표피 깊이로 잰 박판 두께"
+    lhs: phi_l
+    expr: "h_l/delta_s"
+    symbols: {h_l: "foil (layer) thickness", delta_s: "skin depth at the frequency of the current"}
+    assumptions: [definition]
+    notes: "for round wire, `wind.phi_round` gives the equivalent foil's $\\varphi$"
+    notes_ko: "둥근 선에서는 `wind.phi_round`가 등가 박판의 $\\varphi$를 준다"
+    cite: {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: eddy currents in winding conductors)"}
+    tests:
+      - {inputs: {h_l: 3.0e-4, delta_s: 2.0897837969378229e-4}, expect: 1.4355552016413966}
+
+  - id: wind.dowell_low
+    title: "AC resistance factor of thin layers (Dowell's series)"
+    title_ko: "얇은 층의 교류 저항 계수 (Dowell 식의 급수)"
+    lhs: F_R
+    relation: approx
+    expr: "1 + (5*M_l**2 - 1)*phi_l**4/45"
+    symbols: {phi_l: "layer thickness over skin depth", M_l: "number of layers from zero MMF to its peak"}
+    assumptions: [dowell_layers, thin_layers]
+    notes: "the first terms of Dowell's factor in powers of $\\varphi$: the excess loss grows as $\\varphi^4$ and, through the proximity effect, as $M_\\ell^2$. For $\\varphi \\le 1$ it lies above the exact factor by at most about 4 %"
+    notes_ko: "Dowell 계수를 $\\varphi$의 거듭제곱으로 전개한 첫 항들이다. 초과 손실은 $\\varphi^4$에 비례하고, 근접 효과 때문에 $M_\\ell^2$에 비례해 커진다. $\\varphi \\le 1$에서는 정확한 계수보다 최대 약 4 % 크다"
+    cite:
+      - {key: dowell1966, where: "the one-dimensional model of foil layers whose factor this series expands"}
+      - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: eddy currents in winding conductors); derived here as the series of Dowell's factor"}
+    derived_by: python/pe_core/derive/windings.py
+    tests:
+      - {inputs: {phi_l: 0.5, M_l: 2.0}, expect: 1.0263888888888888}
+      - {inputs: {phi_l: 1.0, M_l: 3.0}, expect: 1.9777777777777779}
+
+  - id: wind.loss_rel
+    title: "Loss of a winding layer at a given frequency, against its thickness"
+    title_ko: "주파수가 정해졌을 때 권선 층 두께에 따른 손실"
+    lhs: P_rel
+    expr: "F_R/phi_l"
+    symbols: {F_R: "ac resistance factor", phi_l: "layer thickness over skin depth"}
+    ranges: {F_R: [1, 100]}
+    assumptions: [dowell_layers, layer_resistance]
+    notes: "the loss relative to that of a layer one skin depth thick carrying the same current as dc: a thicker layer lowers the dc resistance ($1/\\varphi$) and raises $F_R$"
+    notes_ko: "같은 전류가 직류로 흐르는 두께 한 표피 깊이 층의 손실에 대한 비이다. 층이 두꺼우면 직류 저항($1/\\varphi$)은 줄고 $F_R$는 커진다"
+    cite:
+      - {key: dowell1966}
+      - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: eddy currents in winding conductors); derived here"}
+    derived_by: python/pe_core/derive/windings.py
+    tests:
+      - {inputs: {F_R: 1.3333333333333333, phi_l: 0.7641166194509462}, expect: 1.7449343456125794}
+      - {inputs: {F_R: 3.1875334226106182, phi_l: 1.2521493198384908}, expect: 2.5456496059286}
+
+  - id: wind.phi_opt
+    title: "Layer thickness of least loss"
+    title_ko: "손실이 가장 작은 층 두께"
+    lhs: phi_opt
+    relation: approx
+    expr: "(15/(5*M_l**2 - 1))**(1/4)"
+    symbols: {M_l: "number of layers from zero MMF to its peak"}
+    assumptions: [dowell_layers, thin_layers, layer_resistance]
+    notes: "at a given frequency a thicker layer has less dc resistance but a larger $F_R$; their product, the loss, is least at this thickness, where $F_R = 4/3$. The more layers, the thinner the best layer. From the series of Dowell's factor: within 2 % of the exact optimum for two or more layers; for one layer the exact optimum is $\\varphi = \\pi/2$"
+    notes_ko: "주파수가 같을 때 층이 두꺼우면 직류 저항은 작아지지만 $F_R$가 커진다. 둘의 곱인 손실은 이 두께에서 가장 작고, 이때 $F_R = 4/3$이다. 층이 많을수록 최적 층은 얇다. Dowell 계수의 급수에서 나온 값으로, 층이 두 개 이상이면 정확한 최적값과 2 % 이내로 맞고, 층이 하나이면 정확한 최적값은 $\\varphi = \\pi/2$이다"
+    cite:
+      - {key: dowell1966}
+      - {key: hurley2000, where: "the optimum layer thickness, for any periodic current waveform; derived here for a sinusoidal current"}
+    derived_by: python/pe_core/derive/windings.py
+    tests:
+      - {inputs: {M_l: 2.0}, expect: 0.9426151476815119}
+      - {inputs: {M_l: 3.0}, expect: 0.7641166194509462}
+
   - id: xfmr.leakage.ps
     title: "Leakage inductance of a primary-secondary winding arrangement"
     title_ko: "1차-2차 권선 배치의 누설 인덕턴스"
@@ -1127,6 +1334,67 @@ equations:
     derived_by: python/pe_core/derive/windings.py
     tests:
       - {inputs: {N: 20.0, MLT: 0.05, h_p: 1.0e-3, h_g: 2.0e-4, h_s: 1.0e-3, b_w: 0.02}, expect: 3.3510321638291e-7}
+
+  - id: xfmr.k
+    title: "Coupling coefficient of two windings"
+    title_ko: "두 권선의 결합 계수"
+    lhs: k_c
+    expr: "L_12/sqrt(L_11*L_22)"
+    symbols: {L_12: "mutual inductance", L_11: "inductance of winding 1 with winding 2 open", L_22: "inductance of winding 2 with winding 1 open"}
+    assumptions: [definition]
+    notes: "1 for perfect coupling; the leakage inductances make it smaller"
+    notes_ko: "완전 결합이면 1이고, 누설 인덕턴스가 있으면 1보다 작다"
+    cite:
+      - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: the transformer model; coupled inductors)"}
+      - {key: alexander2017, where: "Ch. 13 (Magnetically Coupled Circuits)"}
+    tests:
+      - {inputs: {L_12: 1.0e-4, L_11: 4.04e-4, L_22: 2.525e-5}, expect: 0.9900990099009901}
+
+  - id: xfmr.L_sc
+    title: "Inductance of a winding with the other winding shorted"
+    title_ko: "다른 권선을 단락했을 때 한 권선의 인덕턴스"
+    lhs: L_sc
+    expr: "L_11*(1 - k_c**2)"
+    symbols: {L_11: "inductance of winding 1 with winding 2 open", k_c: "coupling coefficient"}
+    assumptions: [coupled_windings]
+    notes: "the short holds the second winding's voltage, the rate of change of its flux linkage, at zero, so its current cancels most of the flux the two windings share; what is left is mainly the two windings' leakage (`xfmr.L_sc_T`): 1 − k² is small for a well-coupled transformer"
+    notes_ko: "단락하면 둘째 권선의 전압, 즉 쇄교 자속의 변화율이 0으로 묶이므로 그 전류가 두 권선이 공유하는 자속의 대부분을 상쇄한다. 남는 것은 주로 두 권선의 누설이다(`xfmr.L_sc_T`). 결합이 좋은 변압기에서는 1 − k²가 작다"
+    cite:
+      - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: the transformer model; coupled inductors); derived here"}
+      - {key: alexander2017, where: "Ch. 13 (Magnetically Coupled Circuits)"}
+    derived_by: python/pe_core/derive/windings.py
+    tests:
+      - {inputs: {L_11: 1.0e-3, k_c: 0.99}, expect: 1.99e-5}
+      - {inputs: {L_11: 4.04e-4, k_c: 0.9900990099009901}, expect: 7.96039603960396e-6}
+
+  - id: xfmr.L_sc_T
+    title: "Short-circuit inductance in the transformer model"
+    title_ko: "변압기 모델에서 본 단락 인덕턴스"
+    lhs: L_sc
+    expr: "L_l1 + L_l2p*L_M/(L_l2p + L_M)"
+    symbols: {L_l1: "primary leakage inductance", L_l2p: "secondary leakage inductance referred to the primary", L_M: "magnetizing inductance referred to the primary"}
+    assumptions: [coupled_windings, t_model]
+    notes: "with $L_M$ much larger than the leakage inductances, $L_\\mathrm{sc} \\approx L_{\\ell 1} + L_{\\ell 2}'$: the short-circuit test measures the total leakage referred to the primary, not how it divides between the windings"
+    notes_ko: "$L_M$가 누설 인덕턴스보다 훨씬 크면 $L_\\mathrm{sc} \\approx L_{\\ell 1} + L_{\\ell 2}'$이다. 단락 시험은 1차 기준으로 환산한 전체 누설을 잴 뿐, 그것이 두 권선에 어떻게 나뉘는지는 알려 주지 않는다"
+    cite: {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: the transformer model with magnetizing and leakage inductances); derived here"}
+    derived_by: python/pe_core/derive/windings.py
+    tests:
+      - {inputs: {L_l1: 4.0e-6, L_l2p: 4.0e-6, L_M: 4.0e-4}, expect: 7.96039603960396e-6}
+
+  - id: xfmr.V_oc
+    title: "Open-circuit voltage ratio of a transformer"
+    title_ko: "변압기의 개방 전압비"
+    lhs: V_ratio
+    expr: "n*L_M/(L_l1 + L_M)"
+    symbols: {n: "turns ratio N_s/N_p", L_M: "magnetizing inductance referred to the primary", L_l1: "primary leakage inductance"}
+    assumptions: [coupled_windings, t_model]
+    notes: "the primary's leakage and the magnetizing inductance divide the applied voltage, so the ratio reads below the turns ratio by about $L_{\\ell 1}/L_M$ (1 % for a leakage of 1 % of $L_M$). Driven from the secondary, $V_1/V_2$ reads below $1/n$ by about the secondary's leakage over $L_M$, both referred to the primary. A driven winding whose resistance is not small against its reactance lowers the ratio further"
+    notes_ko: "1차 누설 인덕턴스와 자화 인덕턴스가 인가 전압을 나누어 가지므로, 전압비는 권선비보다 약 $L_{\\ell 1}/L_M$만큼 낮게 읽힌다(누설이 $L_M$의 1 %이면 1 %). 2차 쪽에서 구동하면 $V_1/V_2$가 $1/n$보다 약 2차 누설을 $L_M$으로 나눈 비율만큼(둘 다 1차 기준) 낮게 읽힌다. 구동하는 권선의 저항이 그 리액턴스에 비해 작지 않으면 전압비는 더 낮아진다"
+    cite: {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: the transformer model with magnetizing and leakage inductances); derived here"}
+    derived_by: python/pe_core/derive/windings.py
+    tests:
+      - {inputs: {n: 0.25, L_M: 4.0e-4, L_l1: 4.0e-6}, expect: 0.24752475247524752}
+      - {inputs: {n: 2.0, L_M: 1.0e-3, L_l1: 1.0e-5}, expect: 1.9801980198019802}
 
   - id: wind.rho_T
     title: "Resistivity of a conductor at its temperature"
@@ -2149,6 +2417,23 @@ equations:
     derived_by: python/pe_core/derive/foundations.py
     tests:
       - {inputs: {L: 1.0e-3, C_p: 1.0e-11}, expect: 1591549.4309189534}
+
+  - id: meas.L_app
+    title: "Inductance a meter reads below self-resonance"
+    title_ko: "자기 공진 아래에서 측정기가 읽는 인덕턴스"
+    lhs: L_app
+    expr: "L/(1 - (f/f_srf)**2)"
+    symbols: {L: "inductance", f: "test frequency", f_srf: "self-resonant frequency"}
+    ranges: {f_srf: [1.0e4, 1.0e8]}
+    constraints: ["f < f_srf"]
+    assumptions: [lossless_lc, sinusoidal_steady_state]
+    notes: "the winding's capacitance in parallel makes the reading rise with the test frequency: 1 % high at a tenth of $f_\\mathrm{srf}$, twice the inductance at 0.71 $f_\\mathrm{srf}$; above $f_\\mathrm{srf}$ the part is capacitive"
+    notes_ko: "권선의 병렬 커패시턴스 때문에 측정값이 측정 주파수와 함께 커진다. $f_\\mathrm{srf}$의 1/10에서 1 % 크고, 0.71 $f_\\mathrm{srf}$에서 두 배가 된다. $f_\\mathrm{srf}$보다 높으면 부품은 용량성이다"
+    cite: {key: alexander2017, where: "Ch. 9 (Sinusoids and Phasors: impedances in parallel); derived here"}
+    derived_by: python/pe_core/derive/measurement.py
+    tests:
+      - {inputs: {L: 1.0e-3, f: 1.0e5, f_srf: 1.0e6}, expect: 0.00101010101010101}
+      - {inputs: {L: 1.0e-3, f: 1.0e6, f_srf: 1125395.3951963827}, expect: 0.004752136904873465}
 
   - id: cap.esr.ripple
     title: "Ripple voltage across a capacitor's series resistance"

@@ -1,0 +1,153 @@
+---
+title: 인덕터 설계 절차
+description: 코어 기하 상수 K_g로 필터 인덕터의 코어를 고르고, 이어서 턴 수, 공극, 선재를 정한 뒤 자속 밀도, 창, 구리 손실을 점검하는 과정을 다룹니다.
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+import CoreKg from '../../../../components/CoreKg.astro';
+import MagWorked from '../../../../components/MagWorked.astro';
+import TryMag from '../../../../components/TryMag.astro';
+
+## 목표
+
+- 코어 기하 상수(core geometrical constant) $K_g$를 사용하여 필터 인덕터의 사양(인덕턴스, 피크 전류, 자속 밀도 한계, 구리 손실 예산(copper-loss budget))을 코어 크기로 바꿉니다.
+- 고른 코어에 대해 턴 수, 공극(air gap), 선재(wire)를 차례로 정하고, 각 제약 조건을 점검합니다.
+- 포화(saturation)가 아니라 코어 손실(core loss)이 자속 밀도(flux density)를 제한하는 경우를 알아봅니다.
+
+## 이론
+
+### 네 가지 제약 조건
+
+필터 인덕터는 다음 네 가지 제약 조건을 동시에 만족해야 합니다
+<Cite key="erickson2020" where="Ch. 11" />.
+
+1. **자속 밀도.** 피크 전류에서 자속 밀도가 $B_\mathrm{max}$보다 낮게 유지되어야
+   하며, 이 조건이 최소 턴 수를 정합니다(<EqRef id="mag.N_Bmax" label="자속 밀도 한계에 맞춘 턴 수" />).
+2. **인덕턴스.** 그 턴 수에서 공극이 인덕턴스를 정합니다(<EqRef id="mag.gap_length" label="공극 길이" />).
+3. **창.** 구리가 창(window)에서 차지하는 비율, 즉 창 이용률(window utilization)
+   $K_u$는 실제로 감을 수 있는 값을 넘지 않아야 합니다(<EqRef id="wind.fill" label="창 이용률" />).
+4. **저항.** 권선의 저항은 구리 손실 예산 $R_\mathrm{dc,max}$ 이내에
+   머물러야 합니다(<EqRef id="wind.dcr" label="직류 저항" />).
+
+턴 수, 공극, 선재는 각각 하나의 제약 조건을 만족시킬 수 있습니다. 이들을 함께
+만족시킬 여지는 코어가 남겨 주어야 합니다.
+
+### 코어 기하 상수
+
+자속 밀도, 창, 저항 제약 조건에서 턴 수와 선재를 소거하면 한쪽에는 사양이, 다른
+쪽에는 코어의 치수가 남습니다 <Cite key="erickson2020" where="Ch. 11" />.
+
+<Eq id="mag.Kg_req" />
+
+코어의 치수를 조합하면 같은 양이 됩니다 <Cite key="erickson2020" where="Ch. 11" />.
+
+<Eq id="mag.Kg_core" />
+
+코어 자체의 $K_g$가 필요한 값 이상이면 그 코어는 자속 밀도 한계, 창, 저항 예산을
+함께 만족시킬 수 있으며, 그다음 공극이 인덕턴스를 정합니다. 곱 $L I_\mathrm{pk}$와
+자속 밀도 한계는 제곱으로, 저항 예산과 $K_u$는 1제곱으로 들어갑니다. 자속 밀도
+한계를 높이는 것이 코어를 가장 크게 줄입니다. 공극은 $K_g$에 들어가지 않습니다.
+공극은 코어를 고른 뒤에 정합니다.
+
+### 절차
+
+아래 단계는 $K_g$ 방법 <Cite key="erickson2020" where="Ch. 11" />을 바탕으로 이
+사이트가 조정한 것으로, 자성 부품 설계 도구처럼 턴 수를 먼저 정합니다. $K_g$가
+충분히 큰 코어를 고르면 다음과 같이 진행합니다.
+
+1. **턴 수.** 자속 밀도를 $B_\mathrm{max}$로 유지하는 최소 턴 수(<EqRef id="mag.N_Bmax" label="자속 밀도 한계에 맞춘 턴 수" />)를
+   정수 턴으로 올림한 값입니다. 자성 부품 설계 도구는 자속 밀도가 가장 높은 곳인
+   코어의 최소 단면적에서 턴 수를 구합니다.
+2. **공극.** 그 턴 수로 인덕턴스를 얻는 공극입니다(<EqRef id="mag.gap_length" label="공극 길이" />).
+   프린징(fringing) 자속이 공극의 인덕턴스를 늘리므로 실제 공극은 다소 더 길어야
+   합니다 <Cite key="dixon2001" />. 표의 코어라면 데이터시트의 공극 코어 세트가 측정값을
+   줍니다.
+3. **선재.** 창에 들어가는 가장 큰 1턴당 구리 단면적입니다. 창에 $K_u$를 곱한 값을
+   턴들이 나누어 가집니다(<EqRef id="wind.fill" label="창 이용률" />).
+4. **점검.** 코어의 $K_g$가 올림으로 늘어난 턴을 감당할 만큼 요구값보다 충분히
+   크다면, 이제 권선의 저항(<EqRef id="wind.dcr" label="직류 저항" />)은 예산을
+   만족합니다.
+
+### 코어 손실이 자속 밀도를 제한하는 경우
+
+이 절차는 피크 전류에서의 자속 밀도를 제한합니다. 리플이 작은 필터 인덕터에서는
+자속이 대부분 직류이고 직류 자속은 코어 손실을 일으키지 않으므로, 포화가 한계를
+정합니다 <Cite key="erickson2020" where="Ch. 10" />.
+DCM 인덕터나 플라이백 변압기처럼 리플이 크면, 교류 자속 진폭(<EqRef id="mag.B_ac" label="교류 자속 진폭" />)이
+코어 손실(<EqRef id="loss.steinmetz" label="스타인메츠 식" />)을 일으키며, 이
+손실이 포화보다 먼저 자속을 제한할 수 있습니다. 그러면 설계는 코어 손실도 예산
+안에 두어야 합니다 <Cite key="erickson2020" where="Ch. 12" />.
+
+## 풀이 예제
+
+필터 인덕터의 사양 예제와, 그 인덕터에 필요한 코어 기하 상수입니다.
+
+<Worked example="kg-inductor" />
+
+필요한 $K_g$는 <Val example="kg-inductor" name="K_g" />입니다. 이 인덕터의 실효
+전류(rms current)에서 <Val example="kg-inductor" name="R_dcmax" />의 저항 예산이
+허용하는 구리 손실은 <Val example="kg-inductor" name="P_cu" />입니다. 자성 부품
+설계 도구의 표에 있는 두 코어를, 그 데이터시트가 제시하는 값과 함께 보이면 다음과
+같습니다.
+
+<CoreKg example="kg-inductor" />
+
+E 25/13/7 코어는 너무 작습니다. ETD 29/16/10 코어는 필요한 $K_g$의 약 두 배를
+가지며, 자성 부품 설계 도구는 이 코어로 나머지 절차를 수행합니다.
+
+<MagWorked example="mag-kg" />
+
+턴 수는 최소 단면적에서 구해 정수로 올림했습니다. 소선(strand) 세 가닥을 네 층으로
+감은 권선은 창에서 $K_u$가 허용하는 것보다 적은 부분을 차지하며, 권선의 직류 저항은
+예산보다 낮게 유지됩니다. 이 권선은 $f_s$에서의 Dowell 계수가 크지만, $f_s$의
+주파수로 흐르는 것은 리플뿐이며 여기서 리플의 실효값은 전류의 작은 부분입니다([권선 손실](../winding-loss/) 참고).
+
+## 직접 해 보기
+
+<TryIt eq="mag.Kg_req" example="kg-inductor" sweep="B_max" />
+
+$B_\mathrm{max}$를 스윕(sweep)하십시오. 필요한 $K_g$는 그 제곱에 반비례하므로,
+두 배로 올리면 필요한 $K_g$가 4분의 1이 됩니다. 그다음 $R_\mathrm{dc,max}$를 절반으로 줄이십시오. 구리 손실을 절반으로
+줄이면 필요한 $K_g$는 두 배가 됩니다.
+
+<TryMag example="mag-kg" />
+
+자성 부품 설계 도구에서 코어를 E 25/13/7로 바꾸십시오. 턴 수가 더 필요하고, 같은
+선재는 더 이상 창에 들어가지 않으므로 도구가 경고합니다. 창에 들어갈 만큼 가는
+선재는 저항이 예제의 예산을 넘습니다.
+
+## 벤치 실습
+
+설계한 인덕터를 공극 코어 세트에 감으십시오. LCR 미터로 자기 공진(self-resonance)보다
+충분히 낮은 주파수에서 인덕턴스를 측정하고, 4선식(four-wire)으로 직류 저항을
+측정하십시오([자성 부품 측정](../measurement/) 참고). 그다음 그 페이지에서 설명하는
+펄스 시험으로 포화가 일어나는 전류를 찾아, 설계의 피크 전류와 비교하십시오.
+
+## 주의할 점
+
+- **$K_g$에는 코어 손실이 빠져 있습니다.** 이 상수가 다루는 것은 자속 밀도 한계,
+  창, 구리 손실입니다. 자속 변화폭(flux swing)이 크면 코어 손실도 점검하십시오
+  <Cite key="erickson2020" where="Ch. 12" />.
+- **올림한 뒤 다시 점검하십시오.** 턴 수를 올림하거나 더 작은 단면적에서 턴 수를
+  구하면 턴 수와 저항이 늘어납니다. 그러면 필요한 $K_g$를 겨우 갖춘 코어는 예산을
+  맞추지 못할 수 있습니다.
+- **공극 추정은 프린징을 무시합니다.** 데이터시트의 공극 코어 세트를 쓰거나, 실제
+  공극이 추정보다 다소 길 것으로 예상하십시오 <Cite key="dixon2001" />.
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch11', 'ti-slup132', 'coursera-magnetics']} />
+
+## 퀴즈
+
+<Quiz id="04-magnetics/design-procedure" />

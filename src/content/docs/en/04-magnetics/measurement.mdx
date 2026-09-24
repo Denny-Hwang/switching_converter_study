@@ -1,0 +1,152 @@
+---
+title: Measuring magnetics
+description: Measuring a wound part's inductance, leakage, turns ratio and dc resistance, and its saturation with a current pulse; and the readings that mislead, from self-resonance, the test leads and the missing dc current.
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Measure a wound part's inductance, leakage, turns ratio and dc resistance, and know what limits each reading.
+- Find the current at which a core saturates with a voltage pulse.
+- Recognize readings distorted by self-resonance, by the test leads, and by the missing dc current.
+
+## Theory
+
+### What an impedance meter reads
+
+An LCR meter applies a small sinusoidal signal at its test frequency and
+reports the part's effective value there, its parasitics included
+<Cite key="keysight_5950_3000" />. A winding's turns have capacitance
+between them, in parallel with its inductance
+(<EqRef id="passive.f_srf" label="self-resonant frequency" />), and the
+reading rises as the test frequency approaches the self-resonance:
+
+<Eq id="meas.L_app" />
+
+A test frequency well below the self-resonance reads the inductance; at a
+tenth of it the reading is 1 % high.
+
+### DC resistance
+
+A two-wire ohmmeter reads the winding together with its test leads and
+their contacts. The four-wire (Kelvin) method passes the current through one
+pair of leads and senses the voltage with another, so the leads' resistance
+stays out of the reading <Cite key="keithley_llmh7" />. A winding of a few
+turns can have a resistance well below that of the leads.
+
+### Leakage, coupling and turns ratio
+
+With the other winding shorted, a winding's inductance is its leakage
+(<EqRef id="xfmr.L_sc" label="short-circuit inductance" />); with it open,
+its full inductance (see [leakage inductance](../leakage/)). The test
+frequency has a window. It must stay well below the self-resonance, as for
+any inductance, and be high enough that the short takes the current: the
+magnetizing inductance's reactance must be much larger than the shorted
+winding's resistance referred to the measured side, or part of the current
+flows through the magnetizing inductance and the reading rises towards the
+open-circuit inductance (derived from the transformer model
+<Cite key="erickson2020" where="Ch. 10" />). The leakage's reactance can be
+smaller than the windings' resistance at a low test frequency: read it as a
+series inductance, the model for an inductor of low reactance
+<Cite key="keysight_5950_3000" />.
+
+The ratio of the open-circuit voltages is close to the turns ratio
+(<EqRef id="xfmr.V2" label="ideal transformer" />) but slightly below it:
+the primary's leakage and the magnetizing inductance divide the applied
+voltage (derived here):
+
+<Eq id="xfmr.V_oc" />
+
+For the [coupled windings example](../leakage/#worked-example), the ratio
+reads <Val example="coupled-pair" name="V_ratio" sig={4} /> for a turns ratio
+of <Val example="coupled-pair" name="n" />. A test frequency so low that the
+driven winding's resistance is not small against its reactance lowers the
+ratio further.
+
+### Saturation
+
+An impedance meter's small signal and zero dc current do not show
+saturation. A voltage step across the winding makes its current ramp at the
+voltage over the inductance (<EqRef id="ind.di" label="inductor current" />).
+Past the saturation flux density the core's permeability collapses and the
+inductance falls sharply <Cite key="erickson2020" where="Ch. 10" /> (see
+[magnetic materials and the B-H curve](../../01-physics/ferrites-bh/)), so the ramp
+steepens: the current where the slope starts to rise is the saturation
+current.
+
+### The B-H loop
+
+With two windings on an ungapped core, Ampère's law gives the field
+intensity from the primary's current
+(<EqRef id="mag.H_ampere" label="Ampère's law" />), and
+Faraday's law the flux density from the integral of the open secondary's
+voltage (<EqRef id="mag.dB_faraday" label="Faraday's law" />)
+<Cite key="erickson2020" where="Ch. 10" />. Plotted against each other, the
+two trace the core's B-H loop.
+
+## Worked example
+
+An example winding read at two test frequencies:
+
+<Worked example="lcr-srf" />
+
+The winding resonates at <Val example="lcr-srf" name="f_srf" />. At
+<Val example="lcr-srf" name="f_lo" /> the meter reads
+<Val example="lcr-srf" name="L_app_lo" sig={4} />, close to the
+<Val example="lcr-srf" name="L" /> of the winding. At
+<Val example="lcr-srf" name="f_hi" />, close to the self-resonance, it reads
+<Val example="lcr-srf" name="L_app_hi" />.
+
+## Try it
+
+<TryIt eq="meas.L_app" example="lcr-srf" sweep="f" bind={{ f: 'f_lo' }} />
+
+Sweep the test frequency: the reading is flat at low frequency and rises
+steeply towards the self-resonance. Raise $f_\mathrm{srf}$, as a winding
+with less capacitance would have, and compare.
+
+## Bench exercise
+
+Measure a winding with many turns, such as a flyback primary, at each test
+frequency of an LCR meter, and find its self-resonance with an impedance
+analyzer or a frequency sweep. Estimate its capacitance from the
+self-resonance (<EqRef id="passive.f_srf" label="self-resonant frequency" />),
+and compare the readings with the apparent-inductance equation. Then measure
+its dc resistance with two wires and with four: the difference is the
+leads and their contacts.
+
+## Gotchas
+
+- **Test frequency against self-resonance.** A winding with many turns
+  resonates low. The meter reads the effective value at its test frequency,
+  parasitics included <Cite key="keysight_5950_3000" />: close to the
+  self-resonance, that is well above the inductance
+  (<EqRef id="meas.L_app" label="apparent inductance" />).
+- **Two-wire resistance includes the leads.** Use four wires for a winding's
+  dc resistance <Cite key="keithley_llmh7" />.
+- **No dc current, no saturation.** A meter's reading holds at the peak
+  current only if the core does not saturate there: check that with a
+  current pulse at the design's peak current.
+- **The open-circuit ratio is not quite the turns ratio.** It reads low by
+  about the driven winding's leakage over the magnetizing inductance
+  (<EqRef id="xfmr.V_oc" label="open-circuit voltage ratio" />), and lower
+  still where the winding's resistance takes a share of the voltage.
+
+## Go deeper
+
+<GoDeeper ids={['keysight-imh', 'keithley-llmh', 'erickson-ch10']} />
+
+## Quiz
+
+<Quiz id="04-magnetics/measurement" />

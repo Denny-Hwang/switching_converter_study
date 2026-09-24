@@ -1,0 +1,136 @@
+---
+title: 누설 인덕턴스
+description: 한 권선이 다른 권선과 공유하지 않는 자속으로서의 누설 인덕턴스, 결합 계수, 단락 시험, 변압기 모델, 그리고 권선 배치가 누설을 정하는 방식을 다룹니다.
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 누설 인덕턴스(leakage inductance)를, 한 권선과는 쇄교(linkage)하지만 다른 권선과는 쇄교하지 않고 주로 권선 사이에 저장되는 자속(flux)으로 설명합니다.
+- 결합 계수(coupling coefficient), 단락 인덕턴스(short-circuit inductance), 그리고 변압기 모델(transformer model)의 누설 인덕턴스들을 서로 관련짓습니다.
+- 권선 배치(winding arrangement)에 따른 누설과, 그 누설이 플라이백(flyback)에서 치르게 하는 대가를 추정합니다.
+
+## 이론
+
+### 결합 권선
+
+하나의 코어에 감긴 두 권선은 자속의 대부분을 공유하지만, 전부를 공유하지는
+않습니다. 단자에서 보면 두 권선은 두 개의 자기 인덕턴스(self-inductance) $L_{11}$,
+$L_{22}$와 하나의 상호 인덕턴스(mutual inductance) $L_{12}$로 동작합니다
+<Cite key="erickson2020" where="Ch. 10" />,
+<Cite key="alexander2017" where="Ch. 13" />. 두 권선이 자속을 얼마나 공유하는지를
+나타내는 것이 결합 계수입니다.
+
+<Eq id="xfmr.k" />
+
+### 단락 시험(short-circuit test)
+
+2차 권선을 단락(short circuit)하면 그 전압, 즉 쇄교 자속(flux linkage)의 변화율이
+0으로 묶입니다. 그러면 그 전류가 두 권선이 공유하는 자속의 대부분을 상쇄하고, 1차
+권선에는 주로 두 권선의 누설이 보입니다(여기서 유도).
+
+<Eq id="xfmr.L_sc" />
+
+$k$가 1에 가까우면 이 값은 $L_{11}$의 작은 일부입니다. 2차 권선을 단락한 채 1차
+측에 연결한 임피던스 측정기(impedance meter)는 이 값을 직접 측정합니다.
+
+### 변압기 모델
+
+변압기 모델은 각 권선의 인덕턴스를 누설 인덕턴스와, 두 권선이 공유하는 자화
+인덕턴스(magnetizing inductance) $L_M$으로 나누고, 그 사이에 이상적인 1:$n$
+변압기를 둡니다 <Cite key="erickson2020" where="Ch. 10" />. 2차 권선을 단락한
+상태에서 1차 측에서 보면 다음과 같습니다.
+
+<Eq id="xfmr.L_sc_T" />
+
+$L_M$이 누설 인덕턴스보다 훨씬 크므로, 단락 시험은 1차 측으로
+환산한(referred) 두 누설 인덕턴스의 합, 즉 플라이백의 클램프(clamp)가 흡수해야
+하는 누설 $L_\mathrm{lk}$를 측정합니다. 단락 시험은 그 합이 두 권선에 어떻게
+나뉘는지는 알려 주지 않습니다.
+
+### 누설 자속이 있는 곳
+
+누설 자속은 권선 창(winding window)을 지나갑니다. 그 에너지는 창을 가로지르는
+기자력(magnetomotive force)으로부터 구해집니다. 기자력은 1차 권선의 층들을 지나며
+커지고, 두 권선 사이의 간격에서는 최대값에 머물며, 2차 권선을 지나며 다시 0으로
+떨어집니다(<EqRef id="xfmr.leakage.ps" label="누설, P-S" />)
+<Cite key="erickson2020" where="Ch. 10" />. 1차 권선을 2차 권선 양쪽으로 나누면
+최대값이 절반이 되고 누설은 약 1/4로 줄어듭니다(<EqRef id="xfmr.leakage.psp" label="누설, P-S-P" />).
+이 식들에는 권선의 기하 구조와 진공 투자율(permeability of free space)만
+들어갑니다. 코어 재료와 공극은 자화 인덕턴스를 정할 뿐, 누설은 정하지 않습니다.
+
+### 누설의 대가
+
+플라이백의 스위치가 꺼지면, 누설 인덕턴스에 저장된 에너지(<EqRef id="flyback.leak.E" label="누설 에너지" />)는
+2차 측에 도달할 수 없습니다. 이 에너지는 매 주기 클램프나 스너버(snubber)로
+갑니다(<EqRef id="flyback.leak.P" label="누설 전력" />)
+<Cite key="erickson2020" where="Ch. 4" />. [스너버와 클램프](../snubbers-clamps/)를
+참고하십시오.
+
+## 풀이 예제
+
+임피던스 측정기로 읽은 값으로 나타낸 권선 한 쌍의 예제입니다.
+
+<Worked example="coupled-pair" />
+
+결합 계수는 <Val example="coupled-pair" name="k_c" sig={4} />입니다. 2차 권선을
+단락하면 1차 측의 측정값은 <Val example="coupled-pair" name="L_sc" />입니다. 자화
+인덕턴스가 <Val example="coupled-pair" name="L_M" />이고, 1차 측과 2차 측의 누설이
+각각 <Val example="coupled-pair" name="L_l1" />,
+<Val example="coupled-pair" name="L_l2p" />(둘 다 1차 측으로 환산한 값)인 변압기
+모델로 구한 값도 같은 <Val example="coupled-pair" name="L_sc_T" />이며, 이는 두
+누설의 합에 가깝습니다. 2차 권선을 개방하면 전압비는
+<Val example="coupled-pair" name="V_ratio" sig={4} />로, 권선비
+<Val example="coupled-pair" name="n" />보다 조금 작습니다([자성 부품
+측정](../measurement/#누설-결합-권선비) 참고).
+
+## 직접 해 보기
+
+<TryIt eq="xfmr.L_sc" example="coupled-pair" sweep="k_c" />
+
+$k$를 0.9에서 1 쪽으로 스윕(sweep)하십시오. 단락 인덕턴스는 $1 - k^2$에 비례하여
+줄어듭니다. 1 근처에서는 $k$가 조금만 바뀌어도 누설이 크게 바뀝니다.
+
+## 벤치 실습
+
+2차 권선을 개방한 상태에서, 그다음 짧고 폭이 넓은 연결 도체로 단락한 상태에서,
+LCR 미터로 변압기 1차 권선의 직렬 인덕턴스(series inductance)를 측정하십시오. 측정
+주파수는 자기 공진(self-resonance)보다 충분히 낮고, 단락 상태의 측정값이 주파수에
+따라 더는 변하지 않을 만큼 높게 고르십시오([자성 부품
+측정](../measurement/#누설-결합-권선비) 참고). 두 측정값의 비로부터
+단락 식을 통해 $k$를 구할 수 있습니다. 그다음 두 권선을 가동 접속(series aiding)과
+차동 접속(series opposing)으로 직렬 연결하십시오. 두 측정값의 차는 상호 인덕턴스의
+네 배입니다 <Cite key="alexander2017" where="Ch. 13" />. 측정한 누설을 권선의 기하
+구조로부터 구한 추정값과 비교하십시오.
+
+## 주의할 점
+
+- **단락 연결 자체의 인덕턴스가 더해집니다.** 길거나 가는 단락선은 측정값을
+  키우므로, 짧고 폭이 넓은 연결 도체를 쓰십시오.
+- **측정 주파수가 너무 낮으면 크게 읽힙니다.** 2차 권선을 단락한 상태에서는 자화
+  인덕턴스의 리액턴스가 1차 측으로 환산한 2차 권선 저항보다 훨씬 커야 합니다. 그렇지
+  않으면 자화 인덕턴스가 전류의 일부를 흘리고, 측정값은 개방 상태의 인덕턴스 쪽으로
+  커집니다.
+- **단락 시험은 합을 줍니다.** 단락 시험은 1차 측과 2차 측의 누설을 합쳐서, 1차
+  측으로 환산한 값으로 측정합니다.
+- **공극은 누설을 없애지 않습니다.** 코어에 공극(air gap)을 두면 $L_M$과 $k$는
+  낮아지지만, 누설 인덕턴스 자체는 권선이 정합니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch10', 'erickson-ch12', 'ti-slup132']} />
+
+## 퀴즈
+
+<Quiz id="04-magnetics/leakage" />

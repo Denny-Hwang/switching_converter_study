@@ -83,6 +83,16 @@ const base: Readonly<Record<string, Evaluator>> = {
   'tvs.R_D': eq(['V_CL', 'V_BR', 'I_PP'], ({ V_CL, V_BR, I_PP }) => (V_CL - V_BR) / I_PP),
   'tvs.V_clamp': eq(['V_BR', 'R_D', 'I_pk'], ({ V_BR, R_D, I_pk }) => V_BR + R_D * I_pk),
   'flyback.V_ceiling': eq(['n', 'V_clamp', 'V_D'], ({ n, V_clamp, V_D }) => n * V_clamp - V_D),
+
+  // --- RC snubber: parasitics from two ringing frequencies, damping, loss ------
+  'snub.C_par': eq(['C_add', 'f_r0', 'f_r1'], ({ C_add, f_r0, f_r1 }) => C_add / (sq(f_r0 / f_r1) - 1)),
+  'snub.L_par': eq(['f_r0', 'C_par'], ({ f_r0, C_par }) => 1 / (4 * sq(Math.PI) * sq(f_r0) * C_par)),
+  'snub.R': eq(['zeta', 'L_par', 'C_snub'], ({ zeta, L_par, C_snub }) => 2 * zeta * Math.sqrt(L_par / C_snub)),
+  'snub.P': eq(['C_snub', 'V_snub', 'f_s'], ({ C_snub, V_snub, f_s }) => C_snub * sq(V_snub) * f_s),
+  'snub.P_R': eq(['f_s', 'C_snub', 'V_snub', 'L_par', 'I_ring'], ({ f_s, C_snub, V_snub, L_par, I_ring }) =>
+    (f_s * (C_snub * sq(V_snub) + L_par * sq(I_ring))) / 2,
+  ),
+
   'dcm.ring.f': eq(['L_M', 'C_node'], ({ L_M, C_node }) => 1 / (2 * Math.PI * Math.sqrt(L_M * C_node))),
   'loss.cond': eq(['I_rms', 'R_x'], ({ I_rms, R_x }) => sq(I_rms) * R_x),
   'loss.sw.cap': eq(['C_node', 'V_sw', 'f_s'], ({ C_node, V_sw, f_s }) => 0.5 * C_node * sq(V_sw) * f_s),
@@ -101,6 +111,10 @@ const base: Readonly<Record<string, Evaluator>> = {
   'mag.dB_faraday': eq(['V_w', 't_on', 'N', 'A_e'], ({ V_w, t_on, N, A_e }) => (V_w * t_on) / (N * A_e)),
   'mag.N_Bmax': eq(['L', 'I_pk', 'B_max', 'A_e'], ({ L, I_pk, B_max, A_e }) => (L * I_pk) / (B_max * A_e)),
   'mag.gap_length': eq(['A_e', 'N', 'L', 'l_e', 'mu_i'], ({ A_e, N, L, l_e, mu_i }) => (MU_0 * A_e * sq(N)) / L - l_e / mu_i),
+  'mag.Kg_req': eq(['rho_w', 'L', 'I_pk', 'B_max', 'R_dcmax', 'K_u'], ({ rho_w, L, I_pk, B_max, R_dcmax, K_u }) =>
+    (rho_w * sq(L) * sq(I_pk)) / (sq(B_max) * R_dcmax * K_u),
+  ),
+  'mag.Kg_core': eq(['A_e', 'W_A', 'MLT'], ({ A_e, W_A, MLT }) => (sq(A_e) * W_A) / MLT),
   'wind.fill': eq(['N', 'A_w', 'W_A'], ({ N, A_w, W_A }) => (N * A_w) / W_A),
   'wind.dcr': eq(['rho_w', 'N', 'MLT', 'A_w'], ({ rho_w, N, MLT, A_w }) => (rho_w * N * MLT) / A_w),
   'wind.skin_depth': eq(['rho_w', 'f'], ({ rho_w, f }) => Math.sqrt(rho_w / (Math.PI * MU_0 * f))),
@@ -115,10 +129,18 @@ const base: Readonly<Record<string, Evaluator>> = {
   'xfmr.leakage.psp': eq(['N', 'MLT', 'h_p', 'h_g', 'h_s', 'b_w'], ({ N, MLT, h_p, h_g, h_s, b_w }) =>
     (MU_0 * sq(N) * MLT * (h_p / 3 + 2 * h_g + h_s / 3)) / (4 * b_w),
   ),
+  'xfmr.k': eq(['L_12', 'L_11', 'L_22'], ({ L_12, L_11, L_22 }) => L_12 / Math.sqrt(L_11 * L_22)),
+  'xfmr.L_sc': eq(['L_11', 'k_c'], ({ L_11, k_c }) => L_11 * (1 - sq(k_c))),
+  'xfmr.L_sc_T': eq(['L_l1', 'L_l2p', 'L_M'], ({ L_l1, L_l2p, L_M }) => L_l1 + (L_l2p * L_M) / (L_l2p + L_M)),
+  'xfmr.V_oc': eq(['n', 'L_M', 'L_l1'], ({ n, L_M, L_l1 }) => (n * L_M) / (L_l1 + L_M)),
   'wind.rho_T': eq(['rho_20', 'alpha_20', 'T_w'], ({ rho_20, alpha_20, T_w }) => rho_20 * (1 + alpha_20 * (T_w - 20))),
   'wind.round_area': eq(['k_s', 'd_w'], ({ k_s, d_w }) => (k_s * Math.PI * sq(d_w)) / 4),
   'wind.porosity': eq(['N_l', 'k_s', 'd_w', 'b_w'], ({ N_l, k_s, d_w, b_w }) => (N_l * k_s * Math.sqrt(Math.PI / 4) * d_w) / b_w),
   'wind.phi_round': eq(['eta_p', 'd_w', 'delta_s'], ({ eta_p, d_w, delta_s }) => (Math.sqrt(eta_p) * Math.sqrt(Math.PI / 4) * d_w) / delta_s),
+  'wind.phi_foil': eq(['h_l', 'delta_s'], ({ h_l, delta_s }) => h_l / delta_s),
+  'wind.dowell_low': eq(['phi_l', 'M_l'], ({ phi_l, M_l }) => 1 + ((5 * sq(M_l) - 1) * sq(sq(phi_l))) / 45),
+  'wind.loss_rel': eq(['F_R', 'phi_l'], ({ F_R, phi_l }) => F_R / phi_l),
+  'wind.phi_opt': eq(['M_l'], ({ M_l }) => Math.pow(15 / (5 * sq(M_l) - 1), 0.25)),
 
   // --- sources, extraction, sensing -----------------------------------------
   'src.Pmax': eq(['V_oc', 'R_s'], ({ V_oc, R_s }) => sq(V_oc) / (4 * R_s)),
@@ -243,6 +265,7 @@ const foundations: Readonly<Record<string, Evaluator>> = {
   'rc.fc': eq(['R_f', 'C_f'], ({ R_f, C_f }) => 1 / (2 * Math.PI * R_f * C_f)),
   'rc.gain': eq(['f', 'f_c'], ({ f, f_c }) => 1 / Math.hypot(1, f / f_c)),
   'passive.f_srf': eq(['L', 'C_p'], ({ L, C_p }) => 1 / (2 * Math.PI * Math.sqrt(L * C_p))),
+  'meas.L_app': eq(['L', 'f', 'f_srf'], ({ L, f, f_srf }) => L / (1 - sq(f / f_srf))),
   'cap.esr.ripple': eq(['R_esr', 'Delta_i_pp'], ({ R_esr, Delta_i_pp }) => R_esr * Delta_i_pp),
 
   // --- rectangular pulse train ---------------------------------------------------

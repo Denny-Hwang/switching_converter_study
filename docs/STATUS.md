@@ -14,11 +14,12 @@
 | Design-tool additions (Phase 3d) | ✅ 8 equations: `sense.burden`, `sense.voltage_out_monitor`, `sense.offset_current`, `sense.pad_error`, `sense.reading`, `sense.rel_error`, `sense.filter_R` (shunt, voltage-output amplifier, offset, pad resistance, what the amplifier reads, error of the reading, filter behind a current-output amplifier), `adc.nyquist` |
 | Design-tool additions (Phase 3e) | ✅ 13 equations: `mag.N_Bmax`, `mag.gap_length`, `mag.B_ac` (fewest turns for a flux-density limit, gap without fringing, ac flux amplitude from the ripple), `wind.round_area`, `wind.fill`, `wind.rho_T`, `wind.dcr` (copper, window utilization, dc resistance at temperature), `wind.skin_depth`, `wind.porosity`, `wind.phi_round`, `wind.dowell` (ac resistance factor, Dowell), `xfmr.leakage.ps`, `xfmr.leakage.psp` (leakage by winding arrangement) |
 | Simulator review additions | ✅ 2 equations: `vsb.drift` (the inductor current's change over one period, zero in a steady state), `bat.rint` (a battery's current in the Rint model) |
-| Derivations reproduce the YAML (`pytest`) | ✅ 119 of 136 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk`, `mag.B_H`, `loss.core`, `adc.nyquist`, `wind.round_area` and `wind.fill` are definitions, `loss.steinmetz` is an empirical law, `wind.rho_T` is copper's linear temperature coefficient (`nbs_hb100`), `tvs.R_D` and `tvs.V_clamp` are the TVS model of `st_an316`, `wind.porosity`, `wind.phi_round` and `wind.dowell` are Dowell's layer model (`dowell1966`), `bat.rint` is the Rint battery model (`he2011`)) |
-| Symbol meanings: every symbol of `symbol_table` says in a few words what it is (`meaning`, `meaning_ko`, required by the loader) | ✅ 177 of 177; shown next to every tool input, under every `<Eq>` and in every worked example |
+| Magnetics additions (Phase 4a) | ✅ 16 equations: `mag.Kg_req`, `mag.Kg_core` (the core geometrical constant an inductor needs, and a core's), `wind.phi_foil`, `wind.dowell_low`, `wind.loss_rel`, `wind.phi_opt` (a foil layer's thickness in skin depths, Dowell's series for thin layers, the loss against a one-skin-depth layer, the thickness of least loss), `xfmr.k`, `xfmr.L_sc`, `xfmr.L_sc_T`, `xfmr.V_oc` (coupling and the short-circuit inductance, also from the T model, and the open-circuit voltage ratio, just below the turns ratio), `snub.C_par`, `snub.L_par`, `snub.R`, `snub.P`, `snub.P_R` (a ringing node's capacitance and inductance from two ringing frequencies, the RC snubber, the loss it adds and what its resistor dissipates), `meas.L_app` (an impedance meter's reading below self-resonance) |
+| Derivations reproduce the YAML (`pytest`) | ✅ 132 of 152 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk`, `mag.B_H`, `loss.core`, `adc.nyquist`, `wind.round_area`, `wind.fill`, `mag.Kg_core`, `wind.phi_foil` and `xfmr.k` are definitions, `loss.steinmetz` is an empirical law, `wind.rho_T` is copper's linear temperature coefficient (`nbs_hb100`), `tvs.R_D` and `tvs.V_clamp` are the TVS model of `st_an316`, `wind.porosity`, `wind.phi_round` and `wind.dowell` are Dowell's layer model (`dowell1966`), `bat.rint` is the Rint battery model (`he2011`)) |
+| Symbol meanings: every symbol of `symbol_table` says in a few words what it is (`meaning`, `meaning_ko`, required by the loader) | ✅ 201 of 201; shown next to every tool input, under every `<Eq>` and in every worked example |
 | TS/Python parity (`vitest`, 1e-9 rel) | ✅ all shared vectors |
 | Strict KaTeX on every generated formula and derivation step (`vitest`) | ✅ |
-| `references.bib` verified (two web-search rounds + CI Crossref + URL title check; PDFs: title and `urlquotes` read from the file) | ✅ 34 of 34 verified (`steinmetz1984` DOI confirmed by the CI Crossref job; `ti_slva630` and `ti_snoa930` added in Phase 2c; `ti_ssztcv6` and `st_an316` added in Phase 3c; `ti_ina181`, `osullivan2012` and `kester_mt002` added in Phase 3d; `tdk_e25`, `tdk_etd29` and `nbs_hb100` added in Phase 3e, every value the core table and the copper constants take from them found by the CI check in the PDFs; `he2011` added with the simulator's battery load) |
+| `references.bib` verified (two web-search rounds + CI Crossref + URL title check; PDFs: title and `urlquotes` read from the file) | ✅ 41 of 41 verified (`steinmetz1984` DOI confirmed by the CI Crossref job; `ti_slva630` and `ti_snoa930` added in Phase 2c; `ti_ssztcv6` and `st_an316` added in Phase 3c; `ti_ina181`, `osullivan2012` and `kester_mt002` added in Phase 3d; `tdk_e25`, `tdk_etd29` and `nbs_hb100` added in Phase 3e, every value the core table and the copper constants take from them found by the CI check in the PDFs; `he2011` added with the simulator's battery load, `vanloan1978`, `parlett1969` and `higham2005` with its exact steps; `keysight_5950_3000`, `keithley_llmh7`, `hurley2000` and `nexperia_an11160` added in Phase 4a) |
 
 ## Simulator and tools (Phase 3)
 
@@ -51,15 +52,15 @@
 | Item | State |
 | --- | --- |
 | Symbols explained where they appear: under every `<Eq>` (`<dl>` of symbol and meaning) and next to every symbol of a worked example | ✅ every page, EN and KO |
-| Example numbers: each worked example, preset and quiz example is labelled an example; every page's footer states once that example numbers are synthetic (`PRIVACY_RULES.md`, checked by `privacy_scan.py`) | ✅ 38 examples, EN and KO |
-| Wording: filler and repeated statements removed; Korean pages give the English term in parentheses at the first use of a technical term (BUILD_SPEC §8) | ✅ all 72 pages (36 EN, 36 KO) |
+| Example numbers: each worked example, preset and quiz example is labelled an example; every page's footer states once that example numbers are synthetic (`PRIVACY_RULES.md`, checked by `privacy_scan.py`) | ✅ 50 examples, EN and KO |
+| Wording: filler and repeated statements removed; Korean pages give the English term in parentheses at the first use of a technical term (BUILD_SPEC §8) | ✅ all 84 pages (42 EN, 42 KO) |
 | Figures drawn from code (`scripts/gen_figures.py`): schematics in schemdraw, idealized waveforms in matplotlib, in the site's symbols; inlined in the theme's text colour, with a caption and a text alternative in EN and KO and the source each follows (`src/lib/figures.ts`, tested); CI redraws them and fails on a difference | ✅ 8 figures: buck, boost, buck-boost, flyback and forward schematics; the buck's switch-node voltage, volt-second balance, inductor current in CCM, at the boundary and in DCM |
 
 Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); theory uses only `<Eq>` embeds and each Eq has ≥ 1 test vector; "Try it" links a tool preset; "Go deeper" has ≥ 2 verified resources with retrieval dates; a gotchas subsection exists; quiz with ≥ 5 explained questions; build, tests and all lints green.
 
 Legend: ✅ done · 🟡 partial · ⬜ not started · ➖ not applicable. "Phase" is the build phase that delivers the module (docs/BUILD_SPEC.md §7); "later" = not scheduled in phases 0–5. 00-foundations and 01-physics are compact refreshers (Phase 2 scope).
 
-_Last updated: Phase 3e (magnetics designer). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
+_Last updated: Phase 4a (04-magnetics). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
 
 "Try it" links open the [equation explorer](../src/content/docs/en/design/explorer.mdx) with a synthetic preset. Pages whose example is a whole converter also open the [simulator](../src/content/docs/en/simulate/simulator.mdx) with it (`<TrySim>`, Phase 3a); design-tool presets come with the design tools.
 
@@ -118,11 +119,11 @@ _Last updated: Phase 3e (magnetics designer). `python scripts/modulelint.py` che
 
 | Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| design-procedure | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| winding-loss | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| leakage | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| snubbers-clamps | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| measurement | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| design-procedure | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `mag.Kg_req`, `mag.Kg_core` |
+| winding-loss | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `wind.phi_foil`, `wind.dowell_low`, `wind.loss_rel`, `wind.phi_opt` |
+| leakage | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `xfmr.k`, `xfmr.L_sc`, `xfmr.L_sc_T` |
+| snubbers-clamps | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `snub.C_par`, `snub.L_par`, `snub.R`, `snub.P`, `snub.P_R` |
+| measurement | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `meas.L_app`, `xfmr.V_oc` |
 
 ## 05-simulation
 
@@ -190,7 +191,7 @@ _Last updated: Phase 3e (magnetics designer). `python scripts/modulelint.py` che
 | design/explorer | ✅ | ✅ | Phase 2a: evaluate and sweep any catalogue equation; state in the URL hash ("Try it" target); screenshot and keyboard check (Phase 3a) |
 | simulate/simulator | ✅ | ✅ | Phase 3a: the pe-core simulator; state in the URL hash (`<TrySim>` target); screenshot and keyboard check |
 | design/converter-designer | ✅ | ✅ | Phase 3b; state in the URL hash; screenshot and keyboard check |
-| design/magnetics-designer | ✅ | ✅ | Phase 3e; homes the thirteen magnetics and winding equations (`mag.N_Bmax`, `mag.gap_length`, `mag.B_ac`, `wind.*`, `xfmr.leakage.*`) until the 04-magnetics pages (Phase 4); state in the URL hash; screenshot and keyboard check |
+| design/magnetics-designer | ✅ | ✅ | Phase 3e; homes the thirteen magnetics and winding equations (`mag.N_Bmax`, `mag.gap_length`, `mag.B_ac`, `wind.round_area`, `wind.fill`, `wind.rho_T`, `wind.dcr`, `wind.skin_depth`, `wind.porosity`, `wind.phi_round`, `wind.dowell`, `xfmr.leakage.ps`, `xfmr.leakage.psp`); the 04-magnetics pages refer to them; state in the URL hash; screenshot and keyboard check |
 | design/loss-budget | ✅ | ✅ | Phase 3b; state in the URL hash; screenshot and keyboard check |
 | design/clamp-check | ✅ | ✅ | Phase 3c; homes the eight clamp equations (`flyback.V_OR`, `clamp.*`, `tvs.*`, `flyback.V_ceiling`); state in the URL hash; screenshot and keyboard check |
 | design/source-matcher | ✅ | ✅ | Phase 3c; homes `src.Pmax`, `src.cv_power`, `src.cv_extraction`, `lfr.Vg`, `lfr.eta`, `lfr.Vg_power` until the harvesting pages (Phase 4); state in the URL hash; screenshot and keyboard check |

@@ -1,0 +1,140 @@
+---
+title: Leakage inductance
+description: Leakage inductance as the flux one winding does not share with the other, the coupling coefficient, the short-circuit test, the transformer model, and how the winding arrangement sets the leakage.
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Explain leakage inductance as the flux that links one winding but not the other, stored mostly between the windings.
+- Relate the coupling coefficient, the short-circuit inductance and the leakage inductances of the transformer model.
+- Estimate the leakage of a winding arrangement, and what it costs in a flyback.
+
+## Theory
+
+### Coupled windings
+
+Two windings on one core share most of their flux, but not all of it. At
+their terminals they behave as two self-inductances, $L_{11}$ and $L_{22}$,
+and a mutual inductance $L_{12}$ <Cite key="erickson2020" where="Ch. 10" />,
+<Cite key="alexander2017" where="Ch. 13" />. How much of the flux they share
+is the coupling coefficient:
+
+<Eq id="xfmr.k" />
+
+### The short-circuit test
+
+Shorting the secondary holds its voltage, the rate of change of its flux
+linkage, at zero: its current then cancels most of the flux the two windings
+share, and the primary sees mainly the two windings' leakage (derived here):
+
+<Eq id="xfmr.L_sc" />
+
+With $k$ close to 1 this is a small fraction of $L_{11}$: an impedance meter
+at the primary, with the secondary shorted, measures it directly.
+
+### The transformer model
+
+The transformer model splits each winding's inductance into a leakage
+inductance and the magnetizing inductance $L_M$ the two share, with an ideal
+1:$n$ transformer between them <Cite key="erickson2020" where="Ch. 10" />.
+Seen from the primary with the secondary shorted:
+
+<Eq id="xfmr.L_sc_T" />
+
+Since $L_M$ is much larger than the leakage inductances, the short-circuit
+test measures the sum of the two leakage inductances referred to the
+primary, the leakage $L_\mathrm{lk}$ that a flyback's clamp has to absorb.
+It does not tell how that sum divides between the windings.
+
+### Where the leakage flux lives
+
+The leakage flux runs through the winding window. Its energy follows from the
+magnetomotive force across the window: it rises through the primary's
+layers, stays at its peak across the spacing, and falls back to zero
+through the secondary (<EqRef id="xfmr.leakage.ps" label="leakage, P-S" />)
+<Cite key="erickson2020" where="Ch. 10" />. Splitting the primary around the
+secondary halves the peak and brings the leakage down to about a quarter
+(<EqRef id="xfmr.leakage.psp" label="leakage, P-S-P" />). Only the winding
+geometry and the permeability of free space enter these equations: the core
+material and the gap set the magnetizing inductance, not the leakage.
+
+### What leakage costs
+
+When a flyback's switch turns off, the energy stored in the leakage
+inductance (<EqRef id="flyback.leak.E" label="leakage energy" />) cannot
+reach the secondary. It goes to a clamp or a snubber in every period
+(<EqRef id="flyback.leak.P" label="leakage power" />)
+<Cite key="erickson2020" where="Ch. 4" />; see
+[snubbers and clamps](../snubbers-clamps/).
+
+## Worked example
+
+An example pair of windings, as an impedance meter reads them:
+
+<Worked example="coupled-pair" />
+
+The coupling coefficient is <Val example="coupled-pair" name="k_c" sig={4} />.
+With the secondary shorted, the primary reads
+<Val example="coupled-pair" name="L_sc" />. The transformer model with
+<Val example="coupled-pair" name="L_M" /> magnetizing inductance and
+<Val example="coupled-pair" name="L_l1" /> and
+<Val example="coupled-pair" name="L_l2p" /> of leakage at the primary and
+the secondary, both referred to the primary, gives the same value,
+<Val example="coupled-pair" name="L_sc_T" />: nearly the sum of the two.
+With the secondary open, the voltage ratio is
+<Val example="coupled-pair" name="V_ratio" sig={4} />, just below the turns
+ratio of <Val example="coupled-pair" name="n" /> (see
+[measuring magnetics](../measurement/#leakage-coupling-and-turns-ratio)).
+
+## Try it
+
+<TryIt eq="xfmr.L_sc" example="coupled-pair" sweep="k_c" />
+
+Sweep $k$ from 0.9 towards 1: the short-circuit inductance falls with
+$1 - k^2$. A small change in $k$ near 1 changes the leakage a lot.
+
+## Bench exercise
+
+Measure a transformer's primary inductance with the secondary open, then
+with it shorted by a short, wide link, with an LCR meter reading the series
+inductance. Choose a test frequency well below the self-resonance and high
+enough that the shorted reading no longer changes with frequency (see
+[Measuring magnetics](../measurement/#leakage-coupling-and-turns-ratio)). The
+ratio of the two readings gives $k$ through the short-circuit equation. Then
+connect the two windings in series, aiding and opposing: the difference of
+the two readings is four times the mutual inductance
+<Cite key="alexander2017" where="Ch. 13" />. Compare the measured leakage
+with the estimate from the winding geometry.
+
+## Gotchas
+
+- **The short adds its own inductance.** A long or thin shorting wire adds
+  to the reading; use a short, wide link.
+- **Too low a test frequency reads high.** With the secondary shorted, the
+  magnetizing inductance's reactance must be much larger than the
+  secondary's resistance referred to the primary; otherwise it carries part
+  of the current and the reading rises towards the open-circuit inductance.
+- **The test gives the sum.** The short-circuit test measures the primary's
+  and the secondary's leakage together, referred to the primary.
+- **A gap does not remove leakage.** Gapping the core lowers $L_M$ and $k$,
+  but the leakage inductance itself is set by the windings.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch10', 'erickson-ch12', 'ti-slup132']} />
+
+## Quiz
+
+<Quiz id="04-magnetics/leakage" />

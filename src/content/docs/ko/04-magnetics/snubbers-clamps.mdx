@@ -1,0 +1,146 @@
+---
+title: 스너버와 클램프
+description: 클램프로 스위치의 전압 스파이크를 제한하는 방법, 측정한 두 링잉 주파수로 값을 정한 RC 스너버로 링잉을 감쇠시키는 방법, 그리고 각각이 소산하는 전력을 다룹니다.
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 피크 전압을 제한하고 누설 에너지를 흡수하는 클램프(clamp)와, 링잉(ringing)을 감쇠시키는 스너버(snubber)를 구별합니다.
+- 두 번의 측정으로 링잉하는 노드의 기생 커패시턴스(parasitic capacitance)와 기생 인덕턴스(parasitic inductance)를 구하고, 이로부터 RC 스너버의 값을 정합니다.
+- 클램프와 스너버가 소산하는 전력을 추정합니다.
+
+## 이론
+
+### 클램프
+
+플라이백의 스위치가 턴오프(turn-off)하면 누설 인덕턴스(leakage inductance)가 전류를
+계속 흘리면서, 클램프가 제한할 때까지 드레인 전압을 입력 전압과 반사된 출력
+전압(<EqRef id="flyback.V_OR" label="반사 전압" />)의 합보다 높이 밀어
+올립니다 <Cite key="ti_ssztcv6" />(<EqRef id="clamp.Vds" label="클램프된 스위치 전압" />).
+클램프는 누설 에너지보다 많은 에너지를 흡수하며, 클램프 전압이 반사 전압(reflected voltage)에
+가까울수록 누설 전류가 리셋(reset)되는 데 더 오래 걸리고(<EqRef id="clamp.t_reset" label="리셋 시간" />)
+클램프가 더 많이 소산합니다(<EqRef id="clamp.P" label="클램프 전력" />)
+<Cite key="ti_ssztcv6" />. RCD 클램프의 전압은 그 저항이 클램프의 전력을 소산하는
+값에서 자리를 잡습니다(<EqRef id="clamp.rcd.V" label="RCD 클램프 전압" />). TVS는
+항복 전압(breakdown voltage)에 동저항(dynamic resistance)과 전류의 곱을 더한
+전압에서 클램프합니다(<EqRef id="tvs.V_clamp" label="TVS 클램핑 전압" />)
+<Cite key="st_an316" />. [클램프 점검 도구](../../design/clamp-check/)는 두 클램프를
+모두 계산합니다.
+
+### 링잉과 기생 성분
+
+스위치나 다이오드의 도통이 멈추면 노드의 기생 인덕턴스와 기생 커패시턴스가
+링잉합니다. 그 값은 링잉 주파수를 두 번, 즉 만든 그대로의 상태에서 한 번, 값을 아는
+커패시터를 노드 양단에 추가한 상태에서 한 번 측정하여 구합니다
+<Cite key="nexperia_an11160" />.
+
+<Eq id="snub.C_par" />
+
+<Eq id="snub.L_par" />
+
+### RC 스너버
+
+노드 양단에 커패시터와 직렬로 연결한 저항이 링잉을 감쇠시킵니다. AN11160은 두
+소자를 차례로 정합니다 <Cite key="nexperia_an11160" />.
+
+- **커패시터.** $C_\mathrm{par}$의 한 배에서 두 배가 좋은 출발점이며, 손실과 피크
+  전압 사이의 절충입니다. 또한 기생 인덕턴스의 에너지를 받아낼 만큼 커야 하고,
+  온 시간(on-time) 안에 방전될 만큼 작아야 합니다.
+- **저항.** 기생 인덕턴스, 저항, 스너버 커패시터를 직렬로 본 감쇠 계수(damping
+  factor)로 정합니다. 감쇠 계수가 0.5에서 1 사이이면 피크 전압이 가장 낮으며, 그
+  범위에서 가장 좋은 값은 몇 가지를 시험해 찾습니다.
+
+<Eq id="snub.R" />
+
+에지(edge)마다 스너버 커패시터가 충전되거나 방전됩니다. 이로 인해 더해지는 손실은
+저항값과 관계없으며, 기생 인덕턴스의 에너지는 스너버가 있든 없든 잃습니다
+<Cite key="nexperia_an11160" />.
+
+<Eq id="snub.P" />
+
+커패시터가 클수록 가장 좋은 저항으로 얻을 수 있는 피크 전압은 낮아지지만 손실은
+커집니다. 스너버는 감쇠와 손실 사이의 절충입니다 <Cite key="nexperia_an11160" />.
+
+저항에는 따로 정격이 필요합니다. 커패시터를 충전하는 에지에서 저항은 커패시터가
+저장하는 만큼의 에너지와 기생 인덕턴스의 에너지를 함께 받으며, AN11160은 이 둘로
+저항의 정격을 정합니다 <Cite key="nexperia_an11160" />.
+
+<Eq id="snub.P_R" />
+
+켜지는 스위치가 저항을 통해 커패시터를 방전하는 회로에서는 그 에지도 저항을
+가열하며, 이때 저항이 받는 에너지는 커패시터에 저장된 에너지까지 이를 수 있습니다.
+
+## 풀이 예제
+
+링잉하는 노드와 그 스너버의 예제입니다.
+
+<Worked example="rc-snubber" />
+
+링잉 주파수는 <Val example="rc-snubber" name="f_r0" />에서
+<Val example="rc-snubber" name="f_r1" />까지 내려가며, 이때 추가한 커패시턴스는
+<Val example="rc-snubber" name="C_add" />입니다. 따라서 노드 자체의 커패시턴스는
+<Val example="rc-snubber" name="C_par" />이고 인덕턴스는
+<Val example="rc-snubber" name="L_par" />입니다. $C_\mathrm{par}$의 두 배인
+<Val example="rc-snubber" name="C_snub" />의 스너버 커패시터와, 범위의 가운데인 감쇠
+계수 <Val example="rc-snubber" name="zeta" />로 정한 저항은
+<Val example="rc-snubber" name="R_snub" />입니다. 노드가
+<Val example="rc-snubber" name="V_snub" />만큼 <Val example="rc-snubber" name="f_s" />의
+주파수로 스윙(swing)하면 스너버는 <Val example="rc-snubber" name="P" />의 손실을
+더합니다. 링잉이 시작될 때 기생 인덕턴스에
+<Val example="rc-snubber" name="I_ring" />가 흐르면, 저항은 커패시터를 충전하는
+에지에서 <Val example="rc-snubber" name="P_Rsnub" />를 소산하며, 다른 에지가 저항을
+통해 커패시터를 방전하면 그보다 더 소산합니다.
+
+## 직접 해 보기
+
+<TryIt eq="snub.C_par" example="rc-snubber" sweep="f_r1" from={5e6} to={1.96e7} />
+
+$f_{r1}$을 $f_{r0}$ 쪽으로 스윕(sweep)하십시오. 주파수가 조금만 내려가도
+$C_\mathrm{par}$가 크게 나오고, 두 주파수 중 어느 하나에 작은 오차가 있어도 그
+값에 큰 오차가 생깁니다. 주파수가 분명히 내려갈 만큼 충분한
+커패시턴스를 추가하십시오.
+
+[클램프 점검 도구](../../design/clamp-check/)는 누설 인덕턴스와 피크 전류로부터
+플라이백의 TVS 또는 RCD 클램프를 계산합니다.
+
+## 벤치 실습
+
+짧은 접지 스프링(ground spring)으로 스위치 노드를 프로빙하고, 스위칭 에지(switching edge)
+뒤의 링잉 주파수를 읽으십시오. 예상되는 기생 커패시턴스의 몇 배인 C0G 커패시터를
+소자 가까이에 추가하고 주파수를 다시 읽으십시오. $C_\mathrm{par}$와
+$L_\mathrm{par}$를 계산하고, 스너버 커패시터와 범위 안의 감쇠 계수에 맞는 저항을 정한
+뒤, 그 주변의 저항 몇 개를 시험하십시오. 소산 전력에 맞는 정격의 저항으로 스너버를
+만들고(<EqRef id="snub.P_R" label="스너버 저항의 소산 전력" />), 피크 전압과 저항의
+온도를 확인하십시오.
+
+## 주의할 점
+
+- **TVS는 실제 전류에서의 클램핑 전압(clamping voltage)으로 판단하십시오.** TVS의
+  클램핑 전압은 항복 전압만이 아니라, 항복 전압에 동저항과 전류의 곱을 더한
+  값입니다 <Cite key="st_an316" />.
+- **반사 전압에 가까운 클램프 전압은 전력을 낭비합니다.** 이때 클램프는 누설
+  에너지보다 훨씬 많은 에너지를 가져갑니다 <Cite key="ti_ssztcv6" />.
+- **스너버의 손실이 곧 저항의 정격은 아닙니다.** 스너버가 더하는 손실은 저항과
+  관계없이 커패시터, 전압 스윙, 스위칭 주파수가 정하지만
+  <Cite key="nexperia_an11160" />, 저항은 기생 인덕턴스의 에너지도 받습니다
+  (<EqRef id="snub.P_R" label="스너버 저항의 소산 전력" />).
+
+## 더 알아보기
+
+<GoDeeper ids={['nexperia-an11160', 'ti-ssztcv6', 'erickson-ch4']} />
+
+## 퀴즈
+
+<Quiz id="04-magnetics/snubbers-clamps" />

@@ -15,8 +15,8 @@ from .common import Derivation, S
 def derive() -> Derivation:
     d = Derivation(
         module="magnetics",
-        title="Magnetic circuits: A_L, inductance, peak and swing flux density",
-        title_ko="자기 회로: A_L, 인덕턴스, 피크 및 변화 자속 밀도",
+        title="Magnetic circuits: A_L, inductance, flux density and the core geometrical constant",
+        title_ko="자기 회로: A_L, 인덕턴스, 자속 밀도, 코어 기하 상수",
         intro=(
             "A magnetic path behaves like a resistive circuit: the magnetomotive force $N i$ drives flux $\\Phi$ "
             "through reluctances $\\mathcal{R} = l/(\\mu A)$. With a uniform flux density over the effective area $A_e$, "
@@ -101,6 +101,43 @@ def derive() -> Derivation:
         "$N$이 정해지면 인덕턴스 $L = N^2/(\\mathcal{R}_c + \\mathcal{R}_g)$가 공극 자기저항을, 따라서 공극 길이를 "
         "정한다.",
         lg,
+    )
+
+    rho, Aw, WA, MLT, Ku, Rdc = S("rho_w"), S("A_w"), S("W_A"), S("MLT"), S("K_u"), S("R_dcmax")
+    d.step(
+        "Choosing a core. The winding's $N$ turns of copper area $A_w$ may fill only $K_u$ of the window $W_A$:",
+        "코어 고르기. 구리 단면적 $A_w$인 $N$ 턴의 권선은 창 $W_A$의 $K_u$만 차지할 수 있다.",
+        sp.Eq(Ku * WA, N * Aw),
+    )
+    d.step(
+        "At the limit, its resistance, $N$ turns of mean length MLT, equals the copper-loss budget $R_\\mathrm{dc,max}$:",
+        "한계에서는 평균 길이 MLT인 $N$ 턴의 저항이 구리 손실 한도 $R_\\mathrm{dc,max}$와 같다.",
+        sp.Eq(Rdc, rho * N * MLT / Aw),
+    )
+    r_fill = sp.solve(sp.Eq(Rdc, rho * N * MLT / Aw).subs(Aw, Ku * WA / N), Rdc)[0]
+    d.step(
+        "The window fixes the wire, $A_w = K_u W_A/N$, so the resistance grows as the square of the turns:",
+        "창이 선재를 정하므로($A_w = K_u W_A/N$) 저항은 턴 수의 제곱으로 커진다.",
+        sp.Eq(Rdc, r_fill),
+    )
+    r_core = r_fill.subs(N, L * Ipk / (Bmax * Ae))
+    d.step(
+        "The flux limit fixes the turns, $N = L I_\\mathrm{pk}/(B_\\mathrm{max} A_e)$:",
+        "자속 한계가 턴 수를 정한다: $N = L I_\\mathrm{pk}/(B_\\mathrm{max} A_e)$.",
+        sp.Eq(Rdc, r_core),
+    )
+    d.step(
+        "Collecting the core's dimensions on one side defines the core geometrical constant; the other side depends on "
+        "the specification alone.",
+        "코어 치수를 한쪽으로 모으면 코어 기하 상수가 정의되고, 다른 쪽은 사양에만 의존한다.",
+        sp.Eq(S("K_g"), Ae**2 * WA / MLT),
+    )
+    d.result(
+        "mag.Kg_req",
+        sp.simplify(Ae**2 * WA / sp.solve(sp.Eq(Rdc, r_core), MLT)[0]),
+        "A core meets the flux limit, the window and the resistance budget together when its $K_g$ is at least:",
+        "코어의 $K_g$가 다음 값 이상이면 자속 한계, 창, 저항 한도를 함께 만족한다.",
+        S("K_g"),
     )
 
     faraday = sp.Integral(Vw / (N * Ae), (t, 0, ton))
