@@ -79,31 +79,6 @@ jobs:
           cache: pip
           cache-dependency-path: python/pyproject.toml
       - run: pip install -e "python[dev]"
-      - name: TEMPORARY - what McGraw Hill's page for Basso's second edition names (removed in the next commit)
-        run: |
-          python - <<'EOF'
-          import re, sys
-          sys.path.insert(0, "scripts")
-          import resources_check as rc
-          url = "https://www.mheducation.com/highered/mhp/product/switch-mode-power-supplies-second-edition.html"
-          f = next((f for f in rc.attempts(url) if f.status == 200), None)
-          if f is None:
-              sys.exit("no HTTP 200 from " + url)
-          body = f.body[: rc.CAP]
-          print(f.how, f.url, len(body), "bytes; title:", repr(rc.page_title(body)))
-          for m in re.finditer(rb"<meta[^>]+>", body):
-              s = m.group(0).decode("utf-8", "replace")
-              if re.search(r"og:|book:|isbn|author|description", s, re.I):
-                  print("meta:", " ".join(s.split())[:400])
-          for m in re.finditer(rb"<script[^>]*ld\+json[^>]*>(.*?)</script>", body, re.S | re.I):
-              print("ld+json:", " ".join(m.group(1).decode("utf-8", "replace").split())[:1500])
-          text = " ".join(rc.html_text(body).split())
-          for w in ("Basso", "9780071823463", "9780071824736", "0071823468", "Second Edition", "SPICE"):
-              hits = [m.start() for m in re.finditer(re.escape(w), text)]
-              print(f"== {w}: {len(hits)} in the page's text")
-              for at in hits[:3]:
-                  print("   ..." + text[max(0, at - 160) : at + 160] + "...")
-          EOF
       - run: python scripts/refcheck.py --online
 
   urls-online:
