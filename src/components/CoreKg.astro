@@ -15,6 +15,7 @@ import { formatSI } from '../lib/format';
 import { BIBLIOGRAPHY_SLUG, pageHref } from '../lib/paths';
 import { pageLocale } from '../lib/locale';
 import { citable } from '../lib/references';
+import { symHtml } from '../lib/sym';
 
 interface Props {
   example: string;
@@ -29,7 +30,9 @@ const tex = (s: string) => katex.renderToString(catalog.symbols[s]!.latex, katex
 const rows = coreKg(need).map((r) => {
   const k = r.entry.core;
   return {
-    name: `${r.entry.name}, ${r.entry.material}`,
+    name: r.entry.name,
+    material: r.entry.material,
+    // the data sheet's entry in the bibliography; its label repeats the core's name, so the name is the link
     cite: citable(r.entry.cite).label,
     href: pageHref(locale, BIBLIOGRAPHY_SLUG, r.entry.cite),
     Ae: formatSI(k.Ae, 'm²'),
@@ -45,7 +48,7 @@ const label = locale === 'ko' ? ex.label_ko : ex.label;
 
 <figure class="pe-worked not-content">
   <figcaption class="pe-worked__label">
-    {label}: {t['corekg.caption']} (<span set:html={tex('K_g')} /> = {formatSI(need, 'm⁵')})
+    <span set:html={symHtml(`${label}: ${t['corekg.caption']}`)} /> (<span set:html={tex('K_g')} /> = {formatSI(need, 'm⁵')})
   </figcaption>
   <table>
     <thead>
@@ -55,7 +58,7 @@ const label = locale === 'ko' ? ex.label_ko : ex.label;
         <th set:html={tex('W_A')} />
         <th set:html={tex('MLT')} />
         <th set:html={tex('K_g')} />
-        <th>{t['corekg.margin']}</th>
+        <th set:html={symHtml(t['corekg.margin'])} />
       </tr>
     </thead>
     <tbody>
@@ -63,7 +66,7 @@ const label = locale === 'ko' ? ex.label_ko : ex.label;
         rows.map((r) => (
           <tr>
             <td>
-              {r.name} (<a href={r.href}>{r.cite}</a>)
+              <a href={r.href} title={r.cite}>{r.name}</a>, {r.material}
             </td>
             <td class="pe-worked__value">{r.Ae}</td>
             <td class="pe-worked__value">{r.WA}</td>

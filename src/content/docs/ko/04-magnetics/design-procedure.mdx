@@ -20,7 +20,7 @@ import TryMag from '../../../../components/TryMag.astro';
 
 ## 목표
 
-- 코어 기하 상수(core geometrical constant) $K_g$를 사용하여 필터 인덕터의 사양(인덕턴스, 피크 전류, 자속 밀도 한계, 구리 손실 예산)을 코어 크기로 바꿉니다.
+- 코어 기하 상수(core geometrical constant) $K_g$를 사용하여 필터 인덕터의 사양(인덕턴스, 피크 전류, 자속 밀도 한계, 구리 손실 예산(copper-loss budget))을 코어 크기로 바꿉니다.
 - 고른 코어에 대해 턴 수, 공극(air gap), 선재(wire)를 차례로 정하고, 각 제약 조건을 점검합니다.
 - 포화(saturation)가 아니라 코어 손실(core loss)이 자속 밀도(flux density)를 제한하는 경우를 알아봅니다.
 
@@ -36,7 +36,7 @@ import TryMag from '../../../../components/TryMag.astro';
 2. **인덕턴스.** 그 턴 수에서 공극이 인덕턴스를 정합니다(<EqRef id="mag.gap_length" label="공극 길이" />).
 3. **창.** 구리가 창(window)에서 차지하는 비율, 즉 창 이용률(window utilization)
    $K_u$는 실제로 감을 수 있는 값을 넘지 않아야 합니다(<EqRef id="wind.fill" label="창 이용률" />).
-4. **저항.** 권선의 저항은 구리 손실 예산(copper-loss budget) $R_\mathrm{dc}$ 이내에
+4. **저항.** 권선의 저항은 구리 손실 예산 $R_\mathrm{dc,max}$ 이내에
    머물러야 합니다(<EqRef id="wind.dcr" label="직류 저항" />).
 
 턴 수, 공극, 선재는 각각 하나의 제약 조건을 만족시킬 수 있습니다. 이들을 함께
@@ -95,7 +95,7 @@ DCM 인덕터나 플라이백 변압기처럼 리플이 크면, 교류 자속 �
 <Worked example="kg-inductor" />
 
 필요한 $K_g$는 <Val example="kg-inductor" name="K_g" />입니다. 이 인덕터의 실효
-전류(rms current)에서 <Val example="kg-inductor" name="R_dc" />의 저항 예산이
+전류(rms current)에서 <Val example="kg-inductor" name="R_dcmax" />의 저항 예산이
 허용하는 구리 손실은 <Val example="kg-inductor" name="P_cu" />입니다. 자성 부품
 설계 도구의 표에 있는 두 코어를, 그 데이터시트가 제시하는 값과 함께 보이면 다음과
 같습니다.
@@ -117,7 +117,7 @@ E 25/13/7 코어는 너무 작습니다. ETD 29/16/10 코어는 필요한 $K_g$�
 <TryIt eq="mag.Kg_req" example="kg-inductor" sweep="B_max" />
 
 $B_\mathrm{max}$를 스윕(sweep)하십시오. 필요한 $K_g$는 그 제곱에 반비례하므로,
-두 배로 올리면 필요한 $K_g$가 4분의 1이 됩니다. 그다음 $R_\mathrm{dc}$를 절반으로 줄이십시오. 구리 손실을 절반으로
+두 배로 올리면 필요한 $K_g$가 4분의 1이 됩니다. 그다음 $R_\mathrm{dc,max}$를 절반으로 줄이십시오. 구리 손실을 절반으로
 줄이면 필요한 $K_g$는 두 배가 됩니다.
 
 <TryMag example="mag-kg" />

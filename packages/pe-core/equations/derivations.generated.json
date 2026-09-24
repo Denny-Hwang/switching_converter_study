@@ -859,7 +859,8 @@
         "snub.C_par",
         "snub.L_par",
         "snub.R",
-        "snub.P"
+        "snub.P",
+        "snub.P_R"
       ],
       "steps": [
         {
@@ -927,6 +928,24 @@
           "text_ko": "초당 $f_s$ 주기이므로:",
           "latex": "P = C_\\mathrm{snub} V_\\mathrm{snub}^{2} f_s",
           "result_for": "snub.P"
+        },
+        {
+          "text": "AN11160 rates the resistor from the edge that charges the capacitor while the parasitic inductance carries a current $I_\\mathrm{ring}$. The source delivers the capacitor's charge $C_\\mathrm{snub} V_\\mathrm{snub}$ at $V_\\mathrm{snub}$:",
+          "text_ko": "AN11160은 기생 인덕턴스에 전류 $I_\\mathrm{ring}$이 흐르는 동안 커패시터를 충전하는 에지로 저항의 정격을 정한다. 전원은 커패시터의 전하 $C_\\mathrm{snub} V_\\mathrm{snub}$을 전압 $V_\\mathrm{snub}$에서 공급한다.",
+          "latex": "E_s = C_\\mathrm{snub} V_\\mathrm{snub}^{2}",
+          "result_for": null
+        },
+        {
+          "text": "The capacitor keeps half of that energy and the inductance gives up all of its own, $L_\\mathrm{par} I_\\mathrm{ring}^2/2$; the resistor takes the rest, whatever its value:",
+          "text_ko": "커패시터는 그 에너지의 절반을 저장하고 인덕턴스는 자신의 에너지 $L_\\mathrm{par} I_\\mathrm{ring}^2/2$를 모두 내놓는다. 나머지는 저항값과 관계없이 저항이 가져간다.",
+          "latex": "W_R = \\frac{C_\\mathrm{snub} V_\\mathrm{snub}^{2}}{2} + \\frac{L_\\mathrm{par} I_\\mathrm{ring}^{2}}{2}",
+          "result_for": null
+        },
+        {
+          "text": "Once per period:",
+          "text_ko": "한 주기에 한 번이므로:",
+          "latex": "P_{R,\\mathrm{snub}} = \\frac{f_s \\left(C_\\mathrm{snub} V_\\mathrm{snub}^{2} + L_\\mathrm{par} I_\\mathrm{ring}^{2}\\right)}{2}",
+          "result_for": "snub.P_R"
         }
       ]
     },
@@ -1552,21 +1571,21 @@
           "result_for": null
         },
         {
-          "text": "Its resistance, $N$ turns of mean length MLT, is the copper-loss budget $R_\\mathrm{dc}$:",
-          "text_ko": "평균 길이 MLT인 $N$ 턴의 저항이 구리 손실 한도 $R_\\mathrm{dc}$이다.",
-          "latex": "R_\\mathrm{dc} = \\frac{\\mathrm{MLT} N \\rho_w}{A_w}",
+          "text": "At the limit, its resistance, $N$ turns of mean length MLT, equals the copper-loss budget $R_\\mathrm{dc,max}$:",
+          "text_ko": "한계에서는 평균 길이 MLT인 $N$ 턴의 저항이 구리 손실 한도 $R_\\mathrm{dc,max}$와 같다.",
+          "latex": "R_\\mathrm{dc,max} = \\frac{\\mathrm{MLT} N \\rho_w}{A_w}",
           "result_for": null
         },
         {
           "text": "The window fixes the wire, $A_w = K_u W_A/N$, so the resistance grows as the square of the turns:",
           "text_ko": "창이 선재를 정하므로($A_w = K_u W_A/N$) 저항은 턴 수의 제곱으로 커진다.",
-          "latex": "R_\\mathrm{dc} = \\frac{\\mathrm{MLT} \\rho_w N^{2}}{K_u W_A}",
+          "latex": "R_\\mathrm{dc,max} = \\frac{\\mathrm{MLT} \\rho_w N^{2}}{K_u W_A}",
           "result_for": null
         },
         {
           "text": "The flux limit fixes the turns, $N = L I_\\mathrm{pk}/(B_\\mathrm{max} A_e)$:",
           "text_ko": "자속 한계가 턴 수를 정한다: $N = L I_\\mathrm{pk}/(B_\\mathrm{max} A_e)$.",
-          "latex": "R_\\mathrm{dc} = \\frac{\\mathrm{MLT} \\rho_w I_\\mathrm{pk}^{2} L^{2}}{A_e^{2} B_\\mathrm{max}^{2} K_u W_A}",
+          "latex": "R_\\mathrm{dc,max} = \\frac{\\mathrm{MLT} \\rho_w I_\\mathrm{pk}^{2} L^{2}}{A_e^{2} B_\\mathrm{max}^{2} K_u W_A}",
           "result_for": null
         },
         {
@@ -1578,7 +1597,7 @@
         {
           "text": "A core meets the flux limit, the window and the resistance budget together when its $K_g$ is at least:",
           "text_ko": "코어의 $K_g$가 다음 값 이상이면 자속 한계, 창, 저항 한도를 함께 만족한다.",
-          "latex": "K_g = \\frac{\\rho_w L^{2} I_\\mathrm{pk}^{2}}{B_\\mathrm{max}^{2} R_\\mathrm{dc} K_u}",
+          "latex": "K_g = \\frac{\\rho_w L^{2} I_\\mathrm{pk}^{2}}{B_\\mathrm{max}^{2} R_\\mathrm{dc,max} K_u}",
           "result_for": "mag.Kg_req"
         },
         {
@@ -1611,7 +1630,8 @@
         "xfmr.leakage.ps",
         "xfmr.leakage.psp",
         "xfmr.L_sc",
-        "xfmr.L_sc_T"
+        "xfmr.L_sc_T",
+        "xfmr.V_oc"
       ],
       "steps": [
         {
@@ -1657,8 +1677,14 @@
           "result_for": "wind.dowell_low"
         },
         {
-          "text": "At a given frequency the skin depth is fixed, so a layer $\\varphi$ skin depths thick has a dc resistance proportional to $1/\\varphi$. Its loss, relative to that of a layer one skin depth thick carrying the same current as dc, is",
-          "text_ko": "주파수가 정해지면 표피 깊이도 정해지므로, 두께가 표피 깊이의 $\\varphi$배인 층의 직류 저항은 $1/\\varphi$에 비례한다. 같은 전류가 직류로 흐르는 두께 한 표피 깊이 층의 손실에 대한 비는 다음과 같다.",
+          "text": "At a given frequency the skin depth is fixed, so a layer $\\varphi$ skin depths thick has the dc resistance $R_\\delta/\\varphi$, $R_\\delta$ being that of a layer one skin depth thick. Carrying a current $I$, it loses",
+          "text_ko": "주파수가 정해지면 표피 깊이도 정해지므로, 두께가 표피 깊이의 $\\varphi$배인 층의 직류 저항은 $R_\\delta/\\varphi$이다($R_\\delta$는 두께 한 표피 깊이 층의 직류 저항). 전류 $I$가 흐르면 손실은 다음과 같다.",
+          "latex": "P = \\frac{F_R R_\\delta I^{2}}{\\varphi}",
+          "result_for": null
+        },
+        {
+          "text": "Relative to the loss of a layer one skin depth thick carrying the same current as dc, $R_\\delta I^2$:",
+          "text_ko": "같은 전류가 직류로 흐르는 두께 한 표피 깊이 층의 손실 $R_\\delta I^2$에 대한 비는 다음과 같다.",
           "latex": "P/P_\\delta = \\frac{F_R}{\\varphi}",
           "result_for": "wind.loss_rel"
         },
@@ -1763,6 +1789,18 @@
           "text_ko": "이를 대입하면 권선비가 소거된다. 1차 누설에, 2차 누설과 $L_M$의 병렬이 직렬로 더해진다.",
           "latex": "L_\\mathrm{sc} = L_{\\ell 1} + \\frac{L_{\\ell 2}' L_M}{L_{\\ell 2}' + L_M}",
           "result_for": "xfmr.L_sc_T"
+        },
+        {
+          "text": "With winding 2 open, no current flows in it ($di_2/dt = 0$), and the two voltages stand in the ratio",
+          "text_ko": "권선 2를 개방하면 그 권선에는 전류가 흐르지 않으므로($di_2/dt = 0$) 두 전압의 비는 다음과 같다.",
+          "latex": "V_2/V_1 = \\frac{L_{12}}{L_{11}}",
+          "result_for": null
+        },
+        {
+          "text": "In the transformer model: slightly below the turns ratio, the primary's leakage taking its share of the voltage.",
+          "text_ko": "변압기 모델에서는 1차 누설이 전압의 일부를 나누어 가지므로 권선비보다 조금 작다.",
+          "latex": "V_2/V_1 = \\frac{n L_M}{L_{\\ell 1} + L_M}",
+          "result_for": "xfmr.V_oc"
         }
       ]
     },

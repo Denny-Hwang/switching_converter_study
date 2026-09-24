@@ -103,15 +103,15 @@ def derive() -> Derivation:
         lg,
     )
 
-    rho, Aw, WA, MLT, Ku, Rdc = S("rho_w"), S("A_w"), S("W_A"), S("MLT"), S("K_u"), S("R_dc")
+    rho, Aw, WA, MLT, Ku, Rdc = S("rho_w"), S("A_w"), S("W_A"), S("MLT"), S("K_u"), S("R_dcmax")
     d.step(
         "Choosing a core. The winding's $N$ turns of copper area $A_w$ may fill only $K_u$ of the window $W_A$:",
         "코어 고르기. 구리 단면적 $A_w$인 $N$ 턴의 권선은 창 $W_A$의 $K_u$만 차지할 수 있다.",
         sp.Eq(Ku * WA, N * Aw),
     )
     d.step(
-        "Its resistance, $N$ turns of mean length MLT, is the copper-loss budget $R_\\mathrm{dc}$:",
-        "평균 길이 MLT인 $N$ 턴의 저항이 구리 손실 한도 $R_\\mathrm{dc}$이다.",
+        "At the limit, its resistance, $N$ turns of mean length MLT, equals the copper-loss budget $R_\\mathrm{dc,max}$:",
+        "한계에서는 평균 길이 MLT인 $N$ 턴의 저항이 구리 손실 한도 $R_\\mathrm{dc,max}$와 같다.",
         sp.Eq(Rdc, rho * N * MLT / Aw),
     )
     r_fill = sp.solve(sp.Eq(Rdc, rho * N * MLT / Aw).subs(Aw, Ku * WA / N), Rdc)[0]

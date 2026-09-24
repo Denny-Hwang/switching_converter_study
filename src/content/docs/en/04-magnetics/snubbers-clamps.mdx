@@ -78,6 +78,16 @@ A larger capacitor lowers the peak voltage the best resistor can reach, and
 loses more: a snubber is a compromise between damping and loss
 <Cite key="nexperia_an11160" />.
 
+The resistor needs its own rating. At the edge that charges the capacitor it
+takes as much energy as the capacitor stores, and the parasitic inductance's
+energy as well; AN11160 rates it from these <Cite key="nexperia_an11160" />:
+
+<Eq id="snub.P_R" />
+
+Where the switch that turns on discharges the capacitor through the
+resistor, that edge heats the resistor too, with up to the capacitor's
+stored energy.
+
 ## Worked example
 
 An example ringing node and its snubber:
@@ -94,11 +104,15 @@ damping factor of <Val example="rc-snubber" name="zeta" />, the middle of the
 range, give a resistor of <Val example="rc-snubber" name="R_snub" />. On a
 node that swings through <Val example="rc-snubber" name="V_snub" /> at
 <Val example="rc-snubber" name="f_s" />, the snubber adds a loss of
-<Val example="rc-snubber" name="P" />.
+<Val example="rc-snubber" name="P" />. With
+<Val example="rc-snubber" name="I_ring" /> in the parasitic inductance when
+the ring starts, the resistor dissipates
+<Val example="rc-snubber" name="P_Rsnub" /> at the edge that charges the
+capacitor, and more if the other edge discharges the capacitor through it.
 
 ## Try it
 
-<TryIt eq="snub.C_par" example="rc-snubber" sweep="f_r1" />
+<TryIt eq="snub.C_par" example="rc-snubber" sweep="f_r1" from={5e6} to={1.96e7} />
 
 Sweep $f_{r1}$ towards $f_{r0}$: a small drop in frequency gives a large
 $C_\mathrm{par}$, and a small error in either frequency a large error in it.
@@ -115,7 +129,8 @@ expected parasitic capacitance, close to the device, and read the frequency
 again. Compute $C_\mathrm{par}$ and $L_\mathrm{par}$, choose the snubber
 capacitor and the resistor for a damping factor in the range, and try a few
 resistors around it. Build the snubber with a resistor rated for its
-dissipation, and check the peak voltage and the resistor's temperature.
+dissipation (<EqRef id="snub.P_R" label="snubber resistor dissipation" />),
+and check the peak voltage and the resistor's temperature.
 
 ## Gotchas
 
@@ -124,9 +139,11 @@ dissipation, and check the peak voltage and the resistor's temperature.
   current, not the breakdown voltage alone <Cite key="st_an316" />.
 - **A clamp voltage close to the reflected voltage wastes power.** The clamp
   then takes much more than the leakage energy <Cite key="ti_ssztcv6" />.
-- **The snubber's loss does not depend on its resistor.** It is set by the
-  capacitor, the voltage swing and the switching frequency
-  <Cite key="nexperia_an11160" />.
+- **The snubber's loss is not its resistor's rating.** The loss the snubber
+  adds is set by the capacitor, the voltage swing and the switching
+  frequency, whatever the resistor <Cite key="nexperia_an11160" />; the
+  resistor also takes the parasitic inductance's energy
+  (<EqRef id="snub.P_R" label="snubber resistor dissipation" />).
 
 ## Go deeper
 

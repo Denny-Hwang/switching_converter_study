@@ -17,15 +17,15 @@ import { magValues } from './magpresets';
 
 const strings = (v: Record<string, number>) => Object.fromEntries(Object.entries(v).map(([k, x]) => [k, String(x)]));
 const need = getExample('kg-inductor');
-const budget = need.params.R_dc!;
+const budget = need.params.R_dcmax!;
 const Ku = need.params.K_u!;
 
 describe('the design-procedure page, as its worked example computes', () => {
-  it("its Try it: doubling B_max divides the K_g needed by four; halving R_dc doubles it", () => {
-    const x = { rho_w: 1.7241e-8, L: need.params.L!, I_pk: need.params.I_pk!, B_max: need.params.B_max!, R_dc: budget, K_u: Ku };
+  it("its Try it: doubling B_max divides the K_g needed by four; halving R_dc,max doubles it", () => {
+    const x = { rho_w: 1.7241e-8, L: need.params.L!, I_pk: need.params.I_pk!, B_max: need.params.B_max!, R_dcmax: budget, K_u: Ku };
     const kg = evaluate('mag.Kg_req', x);
     expect(evaluate('mag.Kg_req', { ...x, B_max: 2 * x.B_max }) / kg).toBeCloseTo(0.25, 12);
-    expect(evaluate('mag.Kg_req', { ...x, R_dc: x.R_dc / 2 }) / kg).toBeCloseTo(2, 12);
+    expect(evaluate('mag.Kg_req', { ...x, R_dcmax: x.R_dcmax / 2 }) / kg).toBeCloseTo(2, 12);
   });
 
   it('the ETD 29 has about twice the K_g the example needs; the E 25 too little', () => {

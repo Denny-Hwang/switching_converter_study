@@ -1,12 +1,12 @@
 """Snubbers: the parasitic capacitance and inductance of a ringing node from
 two measured ringing frequencies, the RC snubber's resistance for a damping
-factor, and the loss the snubber adds.
+factor, the loss the snubber adds and what its resistor dissipates.
 
 References: Nexperia AN11160 "Designing RC snubbers" (the measurement with an
 added capacitor, Sec. 3; the damping factor of the parasitic inductance, the
 resistor and the snubber capacitor in series, and the snubber's average power
-loss, Sec. 2); Erickson & Maksimović (2020), Ch. 4 (energy lost charging a
-capacitance).
+loss, Sec. 2; the power dissipation in the snubber resistor, Sec. 4); Erickson
+& Maksimović (2020), Ch. 4 (energy lost charging a capacitance).
 """
 
 from __future__ import annotations
@@ -115,5 +115,32 @@ def derive() -> Derivation:
         "At $f_s$ periods per second:",
         "초당 $f_s$ 주기이므로:",
         P,
+    )
+    Ir = S("I_ring")
+    Es = d.local("E_s", "E_s", positive=True)
+    W = d.local("W_R", "W_R", positive=True)
+    delivered = Vs * (Cs * Vs)
+    d.step(
+        "AN11160 rates the resistor from the edge that charges the capacitor while the parasitic inductance carries a "
+        "current $I_\\mathrm{ring}$. The source delivers the capacitor's charge $C_\\mathrm{snub} V_\\mathrm{snub}$ at "
+        "$V_\\mathrm{snub}$:",
+        "AN11160은 기생 인덕턴스에 전류 $I_\\mathrm{ring}$이 흐르는 동안 커패시터를 충전하는 에지로 저항의 정격을 정한다. "
+        "전원은 커패시터의 전하 $C_\\mathrm{snub} V_\\mathrm{snub}$을 전압 $V_\\mathrm{snub}$에서 공급한다.",
+        sp.Eq(Es, delivered),
+    )
+    W_R = delivered - Cs * Vs**2 / 2 + Lpar * Ir**2 / 2
+    d.step(
+        "The capacitor keeps half of that energy and the inductance gives up all of its own, $L_\\mathrm{par} "
+        "I_\\mathrm{ring}^2/2$; the resistor takes the rest, whatever its value:",
+        "커패시터는 그 에너지의 절반을 저장하고 인덕턴스는 자신의 에너지 $L_\\mathrm{par} I_\\mathrm{ring}^2/2$를 모두 "
+        "내놓는다. 나머지는 저항값과 관계없이 저항이 가져간다.",
+        sp.Eq(W, W_R),
+    )
+    d.result(
+        "snub.P_R",
+        sp.factor(W_R * fs),
+        "Once per period:",
+        "한 주기에 한 번이므로:",
+        S("P_Rsnub"),
     )
     return d

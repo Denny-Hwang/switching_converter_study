@@ -21,6 +21,14 @@ describe('formatSI', () => {
     expect(formatSI(15.705, 'V', 3)).toBe('15.7 V');
   });
 
+  it('rounds a computed value as the decimal it stands for, not its binary noise', () => {
+    // 4.5 A rms in 30 mΩ: 0.6075 W, computed as 0.60749999…
+    expect(4.5 ** 2 * 0.03).toBeLessThan(0.6075);
+    expect(formatSI(4.5 ** 2 * 0.03, 'W')).toBe('608 mW');
+    expect(formatSI(4.5 ** 2 * 0.03, 'W', 4)).toBe('607.5 mW');
+    expect(formatSI(0.6074, 'W')).toBe('607 mW');
+  });
+
   it('moves to the next prefix instead of printing 1000', () => {
     expect(formatSI(999.8, 'V')).toBe('1 kV');
   });

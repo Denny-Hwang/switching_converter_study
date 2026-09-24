@@ -3,11 +3,11 @@ numbers: synthetic
 questions:
   - q: 'A winding resonates at 1 MHz. At what test frequency does an LCR meter read its inductance within about 1 %?'
     options:
+      - '100 kHz or lower'
       - '500 kHz'
       - '1 MHz'
       - 'At any frequency'
-      - '100 kHz or lower'
-    answer: 3
+    answer: 0
     explain: 'At a tenth of the self-resonance the reading is 1 % high; closer to it, much more.'
   - q: 'At 0.71 of the self-resonant frequency, what does the meter read?'
     options:
@@ -45,7 +45,15 @@ questions:
     options:
       - 'The winding''s inductance at low current'
       - 'Whether the core saturates at the operating current'
-      - 'Whether the test frequency is near self-resonance'
+      - 'The series resistance at the test frequency'
       - 'The inductance at the test frequency'
     answer: 1
     explain: 'Its small signal does not reach the flux density of the peak current: check saturation with a current pulse.'
+  - q: 'A transformer''s primary leakage is 1 % of its magnetizing inductance, and its turns ratio n is 0.25. Driven from the primary, at a test frequency where the winding''s resistance is negligible, what does the open-circuit voltage ratio read?'
+    options:
+      - '0.2525'
+      - '0.25'
+      - '0.2475'
+      - '0.2'
+    answer: 2
+    explain: 'The primary''s leakage and the magnetizing inductance divide the applied voltage, so the ratio is the turns ratio divided by 1.01: about 1 % low.'

@@ -39,7 +39,7 @@ A filter inductor must meet four constraints at once
 3. **Window.** The copper fills no more of the window than can be wound, the
    window utilization $K_u$ (<EqRef id="wind.fill" label="window utilization" />).
 4. **Resistance.** The winding's resistance stays within the copper-loss
-   budget $R_\mathrm{dc}$ (<EqRef id="wind.dcr" label="dc resistance" />).
+   budget $R_\mathrm{dc,max}$ (<EqRef id="wind.dcr" label="dc resistance" />).
 
 The turns, the gap and the wire can each meet one constraint; the core must
 leave room to meet them together.
@@ -104,7 +104,7 @@ constant it needs:
 <Worked example="kg-inductor" />
 
 It needs a $K_g$ of <Val example="kg-inductor" name="K_g" />. At its rms
-current, the resistance budget of <Val example="kg-inductor" name="R_dc" />
+current, the resistance budget of <Val example="kg-inductor" name="R_dcmax" />
 allows a copper loss of <Val example="kg-inductor" name="P_cu" />. The two
 cores of the magnetics designer's table, with the values their data sheets
 give:
@@ -129,7 +129,7 @@ fraction of the current here (see [winding loss](../winding-loss/)).
 
 Sweep $B_\mathrm{max}$: the required $K_g$ is inversely proportional to its
 square, so doubling it divides the $K_g$ needed by four. Then halve
-$R_\mathrm{dc}$: halving the copper loss doubles the $K_g$ needed.
+$R_\mathrm{dc,max}$: halving the copper loss doubles the $K_g$ needed.
 
 <TryMag example="mag-kg" />
 

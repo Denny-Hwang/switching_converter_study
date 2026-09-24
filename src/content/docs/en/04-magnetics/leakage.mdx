@@ -93,6 +93,10 @@ With the secondary shorted, the primary reads
 <Val example="coupled-pair" name="L_l2p" /> of leakage at the primary and
 the secondary, both referred to the primary, gives the same value,
 <Val example="coupled-pair" name="L_sc_T" />: nearly the sum of the two.
+With the secondary open, the voltage ratio is
+<Val example="coupled-pair" name="V_ratio" sig={4} />, just below the turns
+ratio of <Val example="coupled-pair" name="n" /> (see
+[measuring magnetics](../measurement/#leakage-coupling-and-turns-ratio)).
 
 ## Try it
 
@@ -104,8 +108,10 @@ $1 - k^2$. A small change in $k$ near 1 changes the leakage a lot.
 ## Bench exercise
 
 Measure a transformer's primary inductance with the secondary open, then
-with it shorted by a short, wide link, with an LCR meter at a frequency well
-below the self-resonance (see [Measuring magnetics](../measurement/)). The
+with it shorted by a short, wide link, with an LCR meter reading the series
+inductance. Choose a test frequency well below the self-resonance and high
+enough that the shorted reading no longer changes with frequency (see
+[Measuring magnetics](../measurement/#leakage-coupling-and-turns-ratio)). The
 ratio of the two readings gives $k$ through the short-circuit equation. Then
 connect the two windings in series, aiding and opposing: the difference of
 the two readings is four times the mutual inductance
@@ -116,6 +122,10 @@ with the estimate from the winding geometry.
 
 - **The short adds its own inductance.** A long or thin shorting wire adds
   to the reading; use a short, wide link.
+- **Too low a test frequency reads high.** With the secondary shorted, the
+  magnetizing inductance's reactance must be much larger than the
+  secondary's resistance referred to the primary; otherwise it carries part
+  of the current and the reading rises towards the open-circuit inductance.
 - **The test gives the sum.** The short-circuit test measures the primary's
   and the secondary's leakage together, referred to the primary.
 - **A gap does not remove leakage.** Gapping the core lowers $L_M$ and $k$,

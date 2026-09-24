@@ -4,10 +4,10 @@ questions:
   - q: 'A node rings at 20 MHz, and at 10 MHz with $150\,\mathrm{pF}$ added across it. What is its own capacitance?'
     options:
       - '$150\,\mathrm{pF}$'
+      - '$50\,\mathrm{pF}$'
       - '$75\,\mathrm{pF}$'
       - '$37.5\,\mathrm{pF}$'
-      - '$50\,\mathrm{pF}$'
-    answer: 3
+    answer: 1
     explain: 'Halving the frequency needs four times the capacitance, so the added 150 pF is three times the node''s own.'
   - q: 'How does AN11160 choose an RC snubber''s resistor?'
     options:
@@ -57,3 +57,11 @@ questions:
       - 'It does not change'
     answer: 1
     explain: 'The leakage current then takes long to reset, and the clamp keeps drawing energy from the transformer meanwhile.'
+  - q: 'At the edge that charges the snubber capacitor, AN11160 has the resistor take as much energy as the capacitor stores. What else does it count in the resistor''s rating?'
+    options:
+      - 'The load''s power'
+      - 'Nothing else'
+      - 'The parasitic inductance''s energy when the ring starts'
+      - 'The gate-drive energy'
+    answer: 2
+    explain: 'The energy in the parasitic inductance when the ring starts goes into the resistor as well, so the resistor can dissipate more than the loss the snubber adds.'

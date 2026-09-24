@@ -89,6 +89,9 @@ const base: Readonly<Record<string, Evaluator>> = {
   'snub.L_par': eq(['f_r0', 'C_par'], ({ f_r0, C_par }) => 1 / (4 * sq(Math.PI) * sq(f_r0) * C_par)),
   'snub.R': eq(['zeta', 'L_par', 'C_snub'], ({ zeta, L_par, C_snub }) => 2 * zeta * Math.sqrt(L_par / C_snub)),
   'snub.P': eq(['C_snub', 'V_snub', 'f_s'], ({ C_snub, V_snub, f_s }) => C_snub * sq(V_snub) * f_s),
+  'snub.P_R': eq(['f_s', 'C_snub', 'V_snub', 'L_par', 'I_ring'], ({ f_s, C_snub, V_snub, L_par, I_ring }) =>
+    (f_s * (C_snub * sq(V_snub) + L_par * sq(I_ring))) / 2,
+  ),
 
   'dcm.ring.f': eq(['L_M', 'C_node'], ({ L_M, C_node }) => 1 / (2 * Math.PI * Math.sqrt(L_M * C_node))),
   'loss.cond': eq(['I_rms', 'R_x'], ({ I_rms, R_x }) => sq(I_rms) * R_x),
@@ -108,8 +111,8 @@ const base: Readonly<Record<string, Evaluator>> = {
   'mag.dB_faraday': eq(['V_w', 't_on', 'N', 'A_e'], ({ V_w, t_on, N, A_e }) => (V_w * t_on) / (N * A_e)),
   'mag.N_Bmax': eq(['L', 'I_pk', 'B_max', 'A_e'], ({ L, I_pk, B_max, A_e }) => (L * I_pk) / (B_max * A_e)),
   'mag.gap_length': eq(['A_e', 'N', 'L', 'l_e', 'mu_i'], ({ A_e, N, L, l_e, mu_i }) => (MU_0 * A_e * sq(N)) / L - l_e / mu_i),
-  'mag.Kg_req': eq(['rho_w', 'L', 'I_pk', 'B_max', 'R_dc', 'K_u'], ({ rho_w, L, I_pk, B_max, R_dc, K_u }) =>
-    (rho_w * sq(L) * sq(I_pk)) / (sq(B_max) * R_dc * K_u),
+  'mag.Kg_req': eq(['rho_w', 'L', 'I_pk', 'B_max', 'R_dcmax', 'K_u'], ({ rho_w, L, I_pk, B_max, R_dcmax, K_u }) =>
+    (rho_w * sq(L) * sq(I_pk)) / (sq(B_max) * R_dcmax * K_u),
   ),
   'mag.Kg_core': eq(['A_e', 'W_A', 'MLT'], ({ A_e, W_A, MLT }) => (sq(A_e) * W_A) / MLT),
   'wind.fill': eq(['N', 'A_w', 'W_A'], ({ N, A_w, W_A }) => (N * A_w) / W_A),
@@ -129,6 +132,7 @@ const base: Readonly<Record<string, Evaluator>> = {
   'xfmr.k': eq(['L_12', 'L_11', 'L_22'], ({ L_12, L_11, L_22 }) => L_12 / Math.sqrt(L_11 * L_22)),
   'xfmr.L_sc': eq(['L_11', 'k_c'], ({ L_11, k_c }) => L_11 * (1 - sq(k_c))),
   'xfmr.L_sc_T': eq(['L_l1', 'L_l2p', 'L_M'], ({ L_l1, L_l2p, L_M }) => L_l1 + (L_l2p * L_M) / (L_l2p + L_M)),
+  'xfmr.V_oc': eq(['n', 'L_M', 'L_l1'], ({ n, L_M, L_l1 }) => (n * L_M) / (L_l1 + L_M)),
   'wind.rho_T': eq(['rho_20', 'alpha_20', 'T_w'], ({ rho_20, alpha_20, T_w }) => rho_20 * (1 + alpha_20 * (T_w - 20))),
   'wind.round_area': eq(['k_s', 'd_w'], ({ k_s, d_w }) => (k_s * Math.PI * sq(d_w)) / 4),
   'wind.porosity': eq(['N_l', 'k_s', 'd_w', 'b_w'], ({ N_l, k_s, d_w, b_w }) => (N_l * k_s * Math.sqrt(Math.PI / 4) * d_w) / b_w),

@@ -1,7 +1,8 @@
 """Windings: dc resistance, skin depth, Dowell's factor for thin layers and
 the layer thickness of least loss, the leakage inductance of two windings
 (primary-secondary, and the primary split around the secondary), and the
-inductance a winding shows with the other winding shorted.
+inductance a winding shows with the other winding shorted, and the voltage
+ratio with it open.
 
 References: Erickson & Maksimović (2020), Ch. 10 (eddy currents in winding
 conductors; leakage flux in windings and MMF diagrams; interleaving; the
@@ -90,14 +91,22 @@ def derive() -> Derivation:
         FR,
     )
     rel = S("P_rel")
+    Rd = d.local("R_delta", r"R_\delta", positive=True)
+    Iw = d.local("I_lyr", "I", positive=True)
+    Pl = d.local("P_l", "P", positive=True)
+    layer_loss = FR * (Rd / phi) * Iw**2
+    d.step(
+        "At a given frequency the skin depth is fixed, so a layer $\\varphi$ skin depths thick has the dc resistance "
+        "$R_\\delta/\\varphi$, $R_\\delta$ being that of a layer one skin depth thick. Carrying a current $I$, it loses",
+        "주파수가 정해지면 표피 깊이도 정해지므로, 두께가 표피 깊이의 $\\varphi$배인 층의 직류 저항은 $R_\\delta/\\varphi$이다"
+        "($R_\\delta$는 두께 한 표피 깊이 층의 직류 저항). 전류 $I$가 흐르면 손실은 다음과 같다.",
+        sp.Eq(Pl, layer_loss),
+    )
     d.result(
         "wind.loss_rel",
-        FR / phi,
-        "At a given frequency the skin depth is fixed, so a layer $\\varphi$ skin depths thick has a dc resistance "
-        "proportional to $1/\\varphi$. Its loss, relative to that of a layer one skin depth thick carrying the same current "
-        "as dc, is",
-        "주파수가 정해지면 표피 깊이도 정해지므로, 두께가 표피 깊이의 $\\varphi$배인 층의 직류 저항은 $1/\\varphi$에 "
-        "비례한다. 같은 전류가 직류로 흐르는 두께 한 표피 깊이 층의 손실에 대한 비는 다음과 같다.",
+        sp.simplify(layer_loss / (Rd * Iw**2)),
+        "Relative to the loss of a layer one skin depth thick carrying the same current as dc, $R_\\delta I^2$:",
+        "같은 전류가 직류로 흐르는 두께 한 표피 깊이 층의 손실 $R_\\delta I^2$에 대한 비는 다음과 같다.",
         rel,
     )
     d.step(
@@ -220,5 +229,19 @@ def derive() -> Derivation:
         "with $L_M$.",
         "이를 대입하면 권선비가 소거된다. 1차 누설에, 2차 누설과 $L_M$의 병렬이 직렬로 더해진다.",
         Lsc,
+    )
+    Vr = S("V_ratio")
+    open_ratio = sp.simplify((L12 * di1 + L22 * 0) / (L11 * di1 + L12 * 0))
+    d.step(
+        "With winding 2 open, no current flows in it ($di_2/dt = 0$), and the two voltages stand in the ratio",
+        "권선 2를 개방하면 그 권선에는 전류가 흐르지 않으므로($di_2/dt = 0$) 두 전압의 비는 다음과 같다.",
+        sp.Eq(Vr, open_ratio),
+    )
+    d.result(
+        "xfmr.V_oc",
+        sp.simplify(open_ratio.subs(tmodel)),
+        "In the transformer model: slightly below the turns ratio, the primary's leakage taking its share of the voltage.",
+        "변압기 모델에서는 1차 누설이 전압의 일부를 나누어 가지므로 권선비보다 조금 작다.",
+        Vr,
     )
     return d

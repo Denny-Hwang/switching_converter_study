@@ -4,10 +4,10 @@ questions:
   - q: 'Two windings read $400\,\mu\mathrm{H}$ and $25\,\mu\mathrm{H}$, each with the other open, and their mutual inductance is $99\,\mu\mathrm{H}$. What is their coupling coefficient?'
     options:
       - '0.25'
+      - '0.99'
       - '4'
       - '0.0099'
-      - '0.99'
-    answer: 3
+    answer: 1
     explain: 'The mutual inductance over the square root of the product of the two inductances: 99 over 100.'
   - q: 'A primary reads $1\,\mathrm{mH}$ with the secondary open, and the coupling coefficient is 0.99. What does it read with the secondary shorted?'
     options:

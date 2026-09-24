@@ -67,7 +67,7 @@ from pe_core import bib  # noqa: E402
 
 RESOURCES = ROOT / "resources.yaml"
 DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-RESOURCE_TYPES = {"book", "course", "video", "channel", "app-note", "tool", "paper", "datasheet", "lecture", "chapter"}
+RESOURCE_TYPES = {"book", "course", "video", "channel", "app-note", "article", "tool", "paper", "datasheet", "lecture", "chapter"}
 TOOL_AGENT = "switching-converter-study-linkcheck/1.0 (+https://github.com/Denny-Hwang/switching_converter_study)"
 CAP = 6_000_000  # bytes of a page searched for its title; some pages carry megabytes of inline script before <title>
 PDF_CAP = 60_000_000  # bytes kept per response: a PDF is read whole (its cross-reference table is at the end)

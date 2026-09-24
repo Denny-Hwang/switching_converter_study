@@ -132,9 +132,15 @@ rises steeply beyond. Change $M_\ell$ from 3 to 1 and to 6 and compare.
 Measure the series resistance of a transformer's primary with its secondary
 shorted, from a low frequency to a few times the switching frequency, and
 well below the self-resonance (see [Measuring magnetics](../measurement/)).
-The secondary's current then opposes the primary's, as in operation. Divide
-by the dc resistance and compare the rise with Dowell's factor for your
-number of layers.
+The secondary's current then opposes the primary's, as in operation, and the
+reading holds both windings: the primary's resistance plus the secondary's
+divided by the square of the turns ratio. At the low end, where the short
+already takes the current (see
+[Measuring magnetics](../measurement/#leakage-coupling-and-turns-ratio)) but
+neither resistance has started to rise, it is the two dc resistances so
+combined. Divide by that value, not by the primary's dc resistance alone, and
+compare the rise with the two windings' Dowell factors, each for its own
+number of layers, weighted by their shares of that value.
 
 ## Gotchas
 

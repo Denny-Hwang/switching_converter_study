@@ -73,6 +73,15 @@ import Quiz from '../../../../components/Quiz.astro';
 커패시터가 클수록 가장 좋은 저항으로 얻을 수 있는 피크 전압은 낮아지지만 손실은
 커집니다. 스너버는 감쇠와 손실 사이의 절충입니다 <Cite key="nexperia_an11160" />.
 
+저항에는 따로 정격이 필요합니다. 커패시터를 충전하는 에지에서 저항은 커패시터가
+저장하는 만큼의 에너지와 기생 인덕턴스의 에너지를 함께 받으며, AN11160은 이 둘로
+저항의 정격을 정합니다 <Cite key="nexperia_an11160" />.
+
+<Eq id="snub.P_R" />
+
+켜지는 스위치가 저항을 통해 커패시터를 방전하는 회로에서는 그 에지도 저항을
+가열하며, 이때 저항이 받는 에너지는 커패시터에 저장된 에너지까지 이를 수 있습니다.
+
 ## 풀이 예제
 
 링잉하는 노드와 그 스너버의 예제입니다.
@@ -89,11 +98,14 @@ import Quiz from '../../../../components/Quiz.astro';
 <Val example="rc-snubber" name="R_snub" />입니다. 노드가
 <Val example="rc-snubber" name="V_snub" />만큼 <Val example="rc-snubber" name="f_s" />의
 주파수로 스윙(swing)하면 스너버는 <Val example="rc-snubber" name="P" />의 손실을
-더합니다.
+더합니다. 링잉이 시작될 때 기생 인덕턴스에
+<Val example="rc-snubber" name="I_ring" />가 흐르면, 저항은 커패시터를 충전하는
+에지에서 <Val example="rc-snubber" name="P_Rsnub" />를 소산하며, 다른 에지가 저항을
+통해 커패시터를 방전하면 그보다 더 소산합니다.
 
 ## 직접 해 보기
 
-<TryIt eq="snub.C_par" example="rc-snubber" sweep="f_r1" />
+<TryIt eq="snub.C_par" example="rc-snubber" sweep="f_r1" from={5e6} to={1.96e7} />
 
 $f_{r1}$을 $f_{r0}$ 쪽으로 스윕(sweep)하십시오. 주파수가 조금만 내려가도
 $C_\mathrm{par}$가 크게 나오고, 두 주파수 중 어느 하나에 작은 오차가 있어도 그
@@ -110,7 +122,8 @@ $C_\mathrm{par}$가 크게 나오고, 두 주파수 중 어느 하나에 작은 
 소자 가까이에 추가하고 주파수를 다시 읽으십시오. $C_\mathrm{par}$와
 $L_\mathrm{par}$를 계산하고, 스너버 커패시터와 범위 안의 감쇠 계수에 맞는 저항을 정한
 뒤, 그 주변의 저항 몇 개를 시험하십시오. 소산 전력에 맞는 정격의 저항으로 스너버를
-만들고, 피크 전압과 저항의 온도를 확인하십시오.
+만들고(<EqRef id="snub.P_R" label="스너버 저항의 소산 전력" />), 피크 전압과 저항의
+온도를 확인하십시오.
 
 ## 주의할 점
 
@@ -119,8 +132,10 @@ $L_\mathrm{par}$를 계산하고, 스너버 커패시터와 범위 안의 감쇠
   값입니다 <Cite key="st_an316" />.
 - **반사 전압에 가까운 클램프 전압은 전력을 낭비합니다.** 이때 클램프는 누설
   에너지보다 훨씬 많은 에너지를 가져갑니다 <Cite key="ti_ssztcv6" />.
-- **스너버의 손실은 저항에 의존하지 않습니다.** 손실은 커패시터, 전압 스윙, 스위칭
-  주파수가 정합니다 <Cite key="nexperia_an11160" />.
+- **스너버의 손실이 곧 저항의 정격은 아닙니다.** 스너버가 더하는 손실은 저항과
+  관계없이 커패시터, 전압 스윙, 스위칭 주파수가 정하지만
+  <Cite key="nexperia_an11160" />, 저항은 기생 인덕턴스의 에너지도 받습니다
+  (<EqRef id="snub.P_R" label="스너버 저항의 소산 전력" />).
 
 ## 더 알아보기
 

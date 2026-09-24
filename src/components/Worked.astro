@@ -81,7 +81,7 @@ function conditionHtml(when: string): string {
 ---
 
 <figure class="pe-worked not-content">
-  <figcaption class="pe-worked__label">{label}</figcaption>
+  <figcaption class="pe-worked__label" set:html={symHtml(label)} />
   <table>
     <thead>
       <tr><th>{t['worked.symbol']}</th><th>{t['worked.value']}</th><th>{t['worked.source']}</th></tr>

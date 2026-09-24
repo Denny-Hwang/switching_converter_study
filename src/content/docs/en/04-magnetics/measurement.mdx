@@ -49,9 +49,30 @@ turns can have a resistance well below that of the leads.
 
 With the other winding shorted, a winding's inductance is its leakage
 (<EqRef id="xfmr.L_sc" label="short-circuit inductance" />); with it open,
-its full inductance (see [leakage inductance](../leakage/)). The ratio of
-the open-circuit voltages at a low test frequency gives the turns ratio
-(<EqRef id="xfmr.V2" label="ideal transformer" />).
+its full inductance (see [leakage inductance](../leakage/)). The test
+frequency has a window. It must stay well below the self-resonance, as for
+any inductance, and be high enough that the short takes the current: the
+magnetizing inductance's reactance must be much larger than the shorted
+winding's resistance referred to the measured side, or part of the current
+flows through the magnetizing inductance and the reading rises towards the
+open-circuit inductance (derived from the transformer model
+<Cite key="erickson2020" where="Ch. 10" />). The leakage's reactance can be
+smaller than the windings' resistance at a low test frequency: read it as a
+series inductance, the model for an inductor of low reactance
+<Cite key="keysight_5950_3000" />.
+
+The ratio of the open-circuit voltages is close to the turns ratio
+(<EqRef id="xfmr.V2" label="ideal transformer" />) but slightly below it:
+the primary's leakage and the magnetizing inductance divide the applied
+voltage (derived here):
+
+<Eq id="xfmr.V_oc" />
+
+For the [coupled windings example](../leakage/#worked-example), the ratio
+reads <Val example="coupled-pair" name="V_ratio" sig={4} /> for a turns ratio
+of <Val example="coupled-pair" name="n" />. A test frequency so low that the
+driven winding's resistance is not small against its reactance lowers the
+ratio further.
 
 ### Saturation
 
@@ -66,8 +87,9 @@ current.
 
 ### The B-H loop
 
-With two windings, Ampère's law gives the field intensity from the
-primary's current (<EqRef id="mag.H_ampere" label="Ampère's law" />), and
+With two windings on an ungapped core, Ampère's law gives the field
+intensity from the primary's current
+(<EqRef id="mag.H_ampere" label="Ampère's law" />), and
 Faraday's law the flux density from the integral of the open secondary's
 voltage (<EqRef id="mag.dB_faraday" label="Faraday's law" />)
 <Cite key="erickson2020" where="Ch. 10" />. Plotted against each other, the
@@ -116,6 +138,10 @@ leads and their contacts.
 - **No dc current, no saturation.** A meter's reading holds at the peak
   current only if the core does not saturate there: check that with a
   current pulse at the design's peak current.
+- **The open-circuit ratio is not quite the turns ratio.** It reads low by
+  about the driven winding's leakage over the magnetizing inductance
+  (<EqRef id="xfmr.V_oc" label="open-circuit voltage ratio" />), and lower
+  still where the winding's resistance takes a share of the voltage.
 
 ## Go deeper
 

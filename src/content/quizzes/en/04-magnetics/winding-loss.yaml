@@ -5,9 +5,9 @@ questions:
     options:
       - 'The current crowding to the surface of a single conductor'
       - 'The capacitance between adjacent turns'
-      - 'Core loss next to the winding'
       - 'Eddy currents induced in a layer by the field of the other layers'
-    answer: 3
+      - 'Core loss next to the winding'
+    answer: 2
     explain: 'Each layer of a winding sits in the field of the layers beside it; the eddy currents that field induces add loss, growing quickly with the number of layers.'
   - q: 'A foil is 0.3 mm thick, and the skin depth at the frequency of interest is 0.2 mm. What is the foil''s thickness in skin depths?'
     options:

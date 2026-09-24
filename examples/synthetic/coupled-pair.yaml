@@ -13,7 +13,9 @@ params:
   L_M: 4.0e-4
   L_l1: 4.0e-6
   L_l2p: 4.0e-6
+  n: 0.25
 steps:
   - xfmr.k
   - xfmr.L_sc
   - {eq: xfmr.L_sc_T, as: L_sc_T}
+  - xfmr.V_oc

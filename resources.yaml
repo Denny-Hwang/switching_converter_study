@@ -465,7 +465,7 @@ resources:
     cite: nexperia_an11160
 
   - id: ti-ssztcv6
-    type: app-note
+    type: article
     title: "Snubbing the flyback converter (SSZTCV6)"
     author: "R. Kollman, Texas Instruments"
     url: https://www.ti.com/lit/pdf/ssztcv6
@@ -489,7 +489,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "How LCR meters and impedance analyzers measure, why a component's measured value depends on the test frequency and signal, and how to connect and compensate the test fixture."
-    why_ko: "LCR 미터와 임피던스 분석기가 측정하는 원리, 부품의 측정값이 시험 주파수와 신호에 따라 달라지는 이유, 그리고 시험 지그의 연결과 보정 방법."
+    why_ko: "LCR 미터와 임피던스 분석기가 측정하는 원리, 부품의 측정값이 측정 주파수와 신호에 따라 달라지는 이유, 그리고 측정 지그(test fixture)의 연결과 보정 방법."
     title_match: "Impedance Measurement Handbook"
     urlkind: pdf
     cite: keysight_5950_3000
@@ -504,7 +504,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "Precision dc measurements, among them low resistances with the four-wire (Kelvin) method, which keeps the test leads' resistance out of the reading."
-    why_ko: "정밀 직류 측정. 그중에서도 시험 리드의 저항을 측정값에서 빼 주는 4선식(켈빈) 저저항 측정법."
+    why_ko: "정밀 직류 측정. 그중에서도 테스트 리드의 저항을 측정값에서 빼 주는 4선식(켈빈) 저저항 측정법."
     title_match: "Low Level Measurements Handbook"
     urlkind: pdf
     cite: keithley_llmh7
