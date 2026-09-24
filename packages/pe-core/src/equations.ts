@@ -284,6 +284,22 @@ const foundations: Readonly<Record<string, Evaluator>> = {
 
   // --- a battery at a converter's output (Rint model) ------------------------------
   'bat.rint': eq(['V', 'V_b', 'R_b'], ({ V, V_b, R_b }) => (V - V_b) / R_b),
+
+  // --- 06-bench -----------------------------------------------------------------------
+  'layout.v_spike': eq(['L_loop', 'Delta_I', 't_edge'], ({ L_loop, Delta_I, t_edge }) => (L_loop * Delta_I) / t_edge),
+  'boot.C': eq(['Q_boot', 'Delta_V_boot'], ({ Q_boot, Delta_V_boot }) => Q_boot / Delta_V_boot),
+  'probe.t_rise': eq(['BW'], ({ BW }) => Math.log(9) / (2 * Math.PI * BW)),
+  'probe.f_ring': eq(['L_gnd', 'C_probe'], ({ L_gnd, C_probe }) => 1 / (2 * Math.PI * Math.sqrt(L_gnd * C_probe))),
+  'layout.L_ring': eq(['f_ring', 'C_node'], ({ f_ring, C_node }) => 1 / (4 * Math.PI * Math.PI * f_ring * f_ring * C_node)),
+  'inrush.I_pk': eq(['V_g', 'R_ser'], ({ V_g, R_ser }) => V_g / R_ser),
+  'inrush.I2t': eq(['V_g', 'C_in', 'R_ser'], ({ V_g, C_in, R_ser }) => (V_g * V_g * C_in) / (2 * R_ser)),
+  'inrush.I_ramp': eq(['C_in', 'V_g', 't_ramp'], ({ C_in, V_g, t_ramp }) => (C_in * V_g) / t_ramp),
+  'gate.I_on': eq(['V_GS', 'V_pl', 'R_G'], ({ V_GS, V_pl, R_G }) => (V_GS - V_pl) / R_G),
+  'gate.I_off': eq(['V_pl', 'R_G'], ({ V_pl, R_G }) => V_pl / R_G),
+  'gate.t_pl': eq(['Q_GD', 'I_G'], ({ Q_GD, I_G }) => Q_GD / I_G),
+  'therm.Tj': eq(['T_A', 'P_D', 'theta_JC', 'theta_CS', 'theta_SA'], ({ T_A, P_D, theta_JC, theta_CS, theta_SA }) => T_A + P_D * (theta_JC + theta_CS + theta_SA)),
+  'therm.psi': eq(['T_T', 'Psi_JT', 'P_D'], ({ T_T, Psi_JT, P_D }) => T_T + Psi_JT * P_D),
+  'bat.v_term': eq(['V_b', 'I_b', 'R_b'], ({ V_b, I_b, R_b }) => V_b + I_b * R_b),
 };
 
 function merge(...groups: Readonly<Record<string, Evaluator>>[]): Readonly<Record<string, Evaluator>> {

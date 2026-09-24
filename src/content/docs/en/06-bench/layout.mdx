@@ -1,0 +1,126 @@
+---
+title: PCB layout for switching converters
+description: The hot loop whose current switches at every edge, the voltage its inductance develops, and where the input capacitor, the ground layer, the switch node and the feedback trace go.
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Find the loop in a converter whose current switches on and off at every edge.
+- Estimate the voltage that loop's inductance develops over an edge.
+- Place the input capacitor, the ground layer, the switch node and the feedback trace accordingly.
+
+## Theory
+
+### The hot loop
+
+In a buck converter the switch draws a pulse of the inductor's current from
+the input capacitor while it is on; the source, behind its wiring, supplies
+about the average and recharges the capacitor while the switch is off. At
+every edge the currents of the switch, of the diode (or the second switch)
+and of the input capacitor step by the inductor's current, while the
+inductor's current flows on <Cite key="erickson2020" where="Ch. 2" />: the
+loop of those three is the one whose current switches. Every loop has
+inductance, and over an edge that changes the current by $\Delta I$ in
+$t_\mathrm{edge}$ it develops a voltage
+(<EqRef id="ind.di" label="inductor law" />):
+
+<Eq id="layout.v_spike" />
+
+By Kirchhoff's voltage law that voltage adds to the input voltage across
+the switch while its current falls <Cite key="alexander2017" where="Ch. 2 (Basic Laws)" />:
+the overshoot at every turn-off edge. For the same edge it is proportional
+to the loop's inductance, and a shorter, tighter loop has less. The input
+capacitor closes that loop, so it goes right at the switches: TI calls it
+the single most important component for the reliable operation of a
+step-down converter <Cite key="ti_slyt614" />.
+
+After the turn-off edge the loop's inductance rings with the switch node's
+capacitance, and the ring's frequency gives the inductance without a
+current probe in the loop:
+
+<Eq id="layout.L_ring" />
+
+### The ground layer and the switch node
+
+A ground layer directly next to the outside layer that carries the power
+stage belongs in every such board <Cite key="adi_an136" />. The switch node
+swings between the input voltage and ground at every edge, and the stray
+capacitance between its copper and a neighbouring trace carries a current
+in proportion to that swing's rate (<EqRef id="cap.dv" label="capacitor law" />).
+But the node also carries the inductor's current and draws heat from the
+switches, so its area cannot be too small either: AN-136 treats it as a
+compromise <Cite key="adi_an136" />.
+
+### The feedback trace
+
+The controller regulates what the feedback trace brings it: a voltage
+picked up on the way is regulated into the output as if it were the
+output's own. Route the trace as far from the inductor and the noisy power
+traces as possible <Cite key="ti_snva021" />. Since the controller
+regulates the voltage at the trace's far end, take it from the point where
+the output voltage matters, with its own return (a Kelvin connection, see
+[current sensing](../current-sensing/)).
+
+## Worked example
+
+Two loops with the same edge:
+
+<Worked example="bench-layout" />
+
+The same current step develops <Val example="bench-layout" name="V_spike" />
+in <Val example="bench-layout" name="L_loop" /> and only
+<Val example="bench-layout" name="V_spike_tight" /> in the tighter loop of
+<Val example="bench-layout" name="L_loop_tight" />.
+
+## Try it
+
+<TryIt eq="layout.v_spike" example="bench-layout" sweep="L_loop" />
+
+Sweep the loop's inductance: the voltage follows it in proportion. Halve
+$t_\mathrm{edge}$, as a faster switch would, and the voltage doubles.
+
+## Bench exercise
+
+On a converter board, trace the hot loop: the input capacitor, the switch
+and the diode or second switch. Measure the overshoot at turn-off across
+the low-side switch or diode, whose one end is at ground, with the shortest
+ground connection your probe allows (see [probes](../probes/)); a switch
+whose terminals both move needs a differential probe. A current probe needs
+a wire loop added to the hot loop, which adds inductance of its own, so
+estimate the loop's inductance from the ring that follows the edge instead,
+with the switch node's capacitance from the data sheets (the switch's
+output capacitance, the diode's). With the edge's current step and fall
+time, compare the overshoot with the loop-voltage equation.
+Then add a small ceramic capacitor right across the switch pair, making the
+loop shorter, and measure again.
+
+## Gotchas
+
+- **An input capacitor placed far away** makes the loop that switches its
+  current large, and the overshoot with it
+  (<EqRef id="layout.v_spike" label="loop voltage" />).
+- **A switch node with too little copper** runs hot, and one with too much
+  couples its swing into its neighbours: its area is a compromise
+  <Cite key="adi_an136" />.
+- **A long probe ground lead** adds its own loop and makes the overshoot
+  look larger than it is <Cite key="adi_an1144" /> (see [probes](../probes/)).
+
+## Go deeper
+
+<GoDeeper ids={['adi-an136', 'ti-slyt614', 'ti-snva021']} />
+
+## Quiz
+
+<Quiz id="06-bench/layout" />

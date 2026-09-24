@@ -96,7 +96,7 @@ symbol_table:
   C_bus: {latex: "C_\\mathrm{bus}", unit: "F", desc: "input bus capacitor that the source charges and the converter draws from", meaning: "input bus capacitor", meaning_ko: "입력 버스 커패시터"}
   V_b: {latex: "V_b", unit: "V", desc: "open-circuit voltage of a battery (Rint model)", meaning: "battery open-circuit voltage", meaning_ko: "배터리 개방 전압(open-circuit voltage)", range: [1, 100], scale: log}
   R_b: {latex: "R_b", unit: "Ω", desc: "internal resistance of a battery (Rint model)", meaning: "battery internal resistance", meaning_ko: "배터리 내부 저항(internal resistance)", range: [0.001, 10], scale: log}
-  I_b: {latex: "I_b", unit: "A", desc: "battery current, positive when it charges the battery", meaning: "battery current (charging positive)", meaning_ko: "배터리 전류(충전 방향이 양)"}
+  I_b: {latex: "I_b", unit: "A", desc: "battery current, positive when it charges the battery", meaning: "battery current (charging positive)", meaning_ko: "배터리 전류(충전 방향이 양)", range: [-10, 10]}
   R_SENSE: {latex: "R_\\mathrm{SENSE}", unit: "Ω", desc: "current-sense (shunt) resistor", meaning: "sense (shunt) resistor", meaning_ko: "센스 저항(shunt)", range: [1.0e-4, 1], scale: log}
   R_IN: {latex: "R_\\mathrm{IN}", unit: "Ω", desc: "gain-setting input resistor of a current-output sense amplifier", meaning: "gain-setting input resistor", meaning_ko: "이득 설정 입력 저항", range: [10, 1.0e4], scale: log}
   R_OUT: {latex: "R_\\mathrm{OUT}", unit: "Ω", desc: "output resistor of a current-output sense amplifier", meaning: "output resistor", meaning_ko: "출력 저항", range: [1.0e3, 1.0e6], scale: log}
@@ -238,6 +238,38 @@ symbol_table:
   V_ratio: {latex: "V_2/V_1", unit: "1", desc: "ratio of the open secondary's voltage to the voltage applied to the primary", meaning: "open-circuit voltage ratio", meaning_ko: "개방 전압비(open-circuit voltage ratio)"}
   I_ring: {latex: "I_\\mathrm{ring}", unit: "A", desc: "current in the parasitic inductance when the ring starts (for a diode, its peak reverse-recovery current; I_RM in AN11160)", meaning: "current when the ring starts", meaning_ko: "링잉이 시작될 때의 전류", range: [0.01, 100], scale: log}
   P_Rsnub: {latex: "P_{R,\\mathrm{snub}}", unit: "W", desc: "power dissipated in the snubber resistor", meaning: "dissipation in the snubber resistor", meaning_ko: "스너버 저항의 소산 전력"}
+  # --- 06-bench: layout, gate drive, probes, protection ---------------------------------
+  L_loop: {latex: "L_\\mathrm{loop}", unit: "H", desc: "inductance of the loop a switched current flows around (traces, vias, component leads)", meaning: "loop inductance", meaning_ko: "루프 인덕턴스(loop inductance)", range: [1.0e-10, 1.0e-7], scale: log}
+  Delta_I: {latex: "\\Delta I", unit: "A", desc: "change of the current in the loop over a switching edge", meaning: "current change over the edge", meaning_ko: "에지 동안의 전류 변화", range: [0.1, 100], scale: log}
+  t_edge: {latex: "t_\\mathrm{edge}", unit: "s", desc: "duration of the current's switching edge (its rise or fall)", meaning: "edge duration", meaning_ko: "에지 지속 시간", range: [1.0e-9, 1.0e-6], scale: log}
+  V_spike: {latex: "V_\\mathrm{spike}", unit: "V", desc: "voltage the loop inductance develops during the edge", meaning: "voltage across the loop inductance", meaning_ko: "루프 인덕턴스에 걸리는 전압"}
+  Q_boot: {latex: "Q_\\mathrm{boot}", unit: "C", desc: "charge the bootstrap capacitor supplies while the high-side switch is on: the gate charge, and the leakage and quiescent currents times the on-time", meaning: "charge drawn from the bootstrap capacitor", meaning_ko: "부트스트랩 커패시터에서 빠져나가는 전하", range: [1.0e-9, 1.0e-6], scale: log}
+  Delta_V_boot: {latex: "\\Delta V_\\mathrm{boot}", unit: "V", desc: "droop allowed across the bootstrap capacitor while it supplies that charge", meaning: "allowed bootstrap droop", meaning_ko: "허용하는 부트스트랩 전압 강하", range: [0.05, 2], scale: log}
+  C_boot: {latex: "C_\\mathrm{boot}", unit: "F", desc: "bootstrap capacitance", meaning: "bootstrap capacitance", meaning_ko: "부트스트랩 커패시턴스"}
+  BW: {latex: "f_\\mathrm{BW}", unit: "Hz", desc: "-3 dB bandwidth of a measurement system (probe and oscilloscope)", meaning: "-3 dB bandwidth", meaning_ko: "-3 dB 대역폭(bandwidth)", range: [1.0e6, 1.0e10], scale: log}
+  t_rise: {latex: "t_\\mathrm{rise}", unit: "s", desc: "10-90 % rise time of a step response", meaning: "10-90 % rise time", meaning_ko: "10-90 % 상승 시간(rise time)"}
+  R_ser: {latex: "R_\\mathrm{ser}", unit: "Ω", desc: "total resistance in series with a charging capacitor: the source's, the wiring's and the capacitor's ESR", meaning: "series resistance of the charging path", meaning_ko: "충전 경로의 직렬 저항", range: [1.0e-3, 100], scale: log}
+  C_in: {latex: "C_\\mathrm{in}", unit: "F", desc: "input capacitance charged when the supply is switched on", meaning: "input capacitance", meaning_ko: "입력 커패시턴스", range: [1.0e-7, 1.0e-2], scale: log}
+  I_inrush: {latex: "I_\\mathrm{inrush}", unit: "A", desc: "peak of the inrush current", meaning: "peak inrush current", meaning_ko: "돌입 전류(inrush) 최댓값"}
+  I_ramp: {latex: "I_\\mathrm{ramp}", unit: "A", desc: "current into a capacitor whose voltage is ramped linearly", meaning: "current of a controlled ramp", meaning_ko: "램프 제어 시 전류"}
+  L_gnd: {latex: "L_\\mathrm{gnd}", unit: "H", desc: "inductance of the loop a probe's tip and ground lead form", meaning: "probe ground-loop inductance", meaning_ko: "프로브 접지 루프 인덕턴스", range: [1.0e-9, 1.0e-6], scale: log}
+  C_probe: {latex: "C_\\mathrm{probe}", unit: "F", desc: "a probe's input capacitance at its tip", meaning: "probe input capacitance", meaning_ko: "프로브 입력 커패시턴스", range: [1.0e-12, 1.0e-10], scale: log}
+  f_probe: {latex: "f_\\mathrm{probe}", unit: "Hz", desc: "ringing frequency of a probe's ground loop with its input capacitance", meaning: "probe ringing frequency", meaning_ko: "프로브 링잉 주파수"}
+  t_ramp: {latex: "t_\\mathrm{ramp}", unit: "s", desc: "time a controlled voltage takes to ramp linearly from zero to its final value", meaning: "ramp time", meaning_ko: "램프 시간(ramp time)", range: [1.0e-5, 1.0e-1], scale: log}
+  I2t: {latex: "I^2 t", unit: "A²s", desc: "joule integral of a current pulse: the integral of the current squared over the pulse", meaning: "joule integral of the pulse", meaning_ko: "펄스의 줄 적분(I²t)"}
+  V_pl: {latex: "V_\\mathrm{pl}", unit: "V", desc: "gate-source voltage on the Miller plateau, read from the gate-charge curve at the operating drain current", meaning: "Miller plateau voltage", meaning_ko: "밀러 플래토(Miller plateau) 전압", range: [2, 8]}
+  R_G: {latex: "R_G", unit: "Ω", desc: "total resistance of the gate loop: the driver's output, the external resistor and the device's internal gate resistance", meaning: "gate-loop resistance", meaning_ko: "게이트 루프 저항", range: [0.5, 50], scale: log}
+  I_G: {latex: "I_G", unit: "A", desc: "gate current while the gate voltage sits on the plateau", meaning: "gate current on the plateau", meaning_ko: "플래토 동안의 게이트 전류", range: [0.01, 10], scale: log}
+  Q_GD: {latex: "Q_\\mathrm{GD}", unit: "C", desc: "gate-drain charge: the charge the gate takes along the plateau of the gate-charge curve", meaning: "gate-drain (Miller) charge", meaning_ko: "게이트-드레인(밀러) 전하", range: [1.0e-10, 1.0e-7], scale: log}
+  t_pl: {latex: "t_\\mathrm{pl}", unit: "s", desc: "time the gate spends on the plateau, while the drain voltage makes its transition", meaning: "time on the plateau", meaning_ko: "플래토에 머무는 시간"}
+  T_J: {latex: "T_J", unit: "°C", desc: "junction temperature of a semiconductor", meaning: "junction temperature", meaning_ko: "접합 온도(junction temperature)"}
+  T_A: {latex: "T_A", unit: "°C", desc: "ambient temperature", meaning: "ambient temperature", meaning_ko: "주위 온도(ambient temperature)", range: [-40, 85]}
+  T_T: {latex: "T_T", unit: "°C", desc: "temperature measured at the top of the package", meaning: "package-top temperature", meaning_ko: "패키지 윗면 온도", range: [-40, 150]}
+  P_D: {latex: "P_D", unit: "W", desc: "power the device dissipates", meaning: "dissipated power", meaning_ko: "소산 전력", range: [0.01, 100], scale: log}
+  theta_JC: {latex: "\\theta_\\mathrm{JC}", unit: "K/W", desc: "junction-to-case thermal resistance", meaning: "junction-to-case thermal resistance", meaning_ko: "접합-케이스 열저항", range: [0.1, 10], scale: log}
+  theta_CS: {latex: "\\theta_\\mathrm{CS}", unit: "K/W", desc: "case-to-heat-sink thermal resistance (the interface: pad, grease, insulator)", meaning: "case-to-sink thermal resistance", meaning_ko: "케이스-방열판 열저항", range: [0.05, 5], scale: log}
+  theta_SA: {latex: "\\theta_\\mathrm{SA}", unit: "K/W", desc: "heat-sink-to-ambient thermal resistance", meaning: "sink-to-ambient thermal resistance", meaning_ko: "방열판-주위 열저항", range: [0.5, 100], scale: log}
+  Psi_JT: {latex: "\\Psi_\\mathrm{JT}", unit: "K/W", desc: "junction-to-top characterization parameter: the junction's rise above the package top per watt of the device's power", meaning: "junction-to-top characterization parameter", meaning_ko: "접합-윗면 특성 파라미터", range: [0.1, 20], scale: log}
 
 # Human-readable labels for the `assumptions` tags (shown in the <Eq> expander).
 assumption_labels:
@@ -297,6 +329,15 @@ assumption_labels:
   unchanged_inductance: {en: "the added capacitor does not change the inductance that rings", ko: "추가한 커패시터가 링잉하는 인덕턴스를 바꾸지 않음"}
   snubber_full_swing: {en: "the snubber capacitor charges through its resistor to V at one edge and discharges through it at the other, once per switching period", ko: "스너버 커패시터가 한 에지에서 저항을 통해 V까지 충전되고 다른 에지에서 저항을 통해 방전됨(스위칭 주기마다 한 번)"}
   snubber_charging_edge: {en: "the edge that charges the snubber capacitor, once per switching period: the node steps by V_snub while the parasitic inductance carries I_ring; the node's own capacitance is left out (AN11160)", ko: "스위칭 주기마다 한 번 스너버 커패시터를 충전하는 에지: 기생 인덕턴스에 I_ring이 흐르는 동안 노드 전압이 V_snub만큼 바뀜; 노드 자체의 커패시턴스는 무시함(AN11160)"}
+  linear_edge: {en: "the current changes linearly over the edge", ko: "에지 동안 전류가 직선적으로 변함"}
+  bootstrap_no_recharge: {en: "the bootstrap capacitor alone supplies the charge while the high-side switch is on; it recharges only while the low side conducts", ko: "하이사이드 스위치가 켜져 있는 동안 부트스트랩 커패시터만 전하를 공급하고, 로우사이드가 도통할 때만 재충전됨"}
+  first_order_response: {en: "single-pole (first-order) response to a step", ko: "계단 입력에 대한 단일 극점(1차) 응답"}
+  rc_step: {en: "an empty capacitor charged from a voltage step through a constant series resistance; the wiring's inductance negligible (its time constant, L over the series resistance, far shorter than the R-C one)", ko: "빈 커패시터가 일정한 직렬 저항을 통해 전압 계단으로 충전됨. 배선 인덕턴스는 무시함(그 시정수, 곧 L을 직렬 저항으로 나눈 값이 R-C 시정수보다 훨씬 짧음)"}
+  linear_ramp: {en: "an empty capacitor whose voltage is ramped linearly from zero to its final value", ko: "빈 커패시터의 전압을 0에서 최종값까지 선형으로 올림"}
+  series_ramp: {en: "the ramp is set by an element in series with a fixed supply V_g (a load switch or a hot-swap switch)", ko: "고정 전원 V_g와 직렬인 소자(부하 스위치, 핫스왑 스위치)가 램프를 만듦"}
+  gate_plateau: {en: "the gate voltage stays at the plateau voltage while the drain voltage makes its transition; the driver switches between V_GS and 0 behind the gate-loop resistance", ko: "드레인 전압이 전이하는 동안 게이트 전압이 플래토 전압에 머묾; 드라이버는 게이트 루프 저항 뒤에서 V_GS와 0 사이를 스위칭함"}
+  series_heat_path: {en: "steady state; all of the device's power flows through each part of the path in turn: junction to case, case to heat sink, heat sink to ambient", ko: "정상상태; 소자의 전력 전부가 경로의 각 부분(접합→케이스, 케이스→방열판, 방열판→주위)을 차례로 지나감"}
+  characterization_parameter: {en: "the device is mounted and cooled as it was characterized (on a board, without a heat sink on the package); the parameter is not a thermal resistance: only part of the power flows through the package top", ko: "소자가 특성화할 때와 같이 실장·냉각됨(기판 위, 패키지에 방열판 없음). 이 파라미터는 열저항이 아님: 전력의 일부만 패키지 윗면을 지남"}
 
 equations:
   # =========================================================================
@@ -2522,3 +2563,209 @@ equations:
     tests:
       - {inputs: {V: 14.4, V_b: 12.0, R_b: 0.5}, expect: 4.8}
       - {inputs: {V: 11.0, V_b: 12.0, R_b: 0.5}, expect: -2.0}
+
+  # --- 06-bench ----------------------------------------------------------------------
+  - id: layout.v_spike
+    title: "Voltage across a loop's inductance during a switching edge"
+    title_ko: "스위칭 에지 동안 루프 인덕턴스에 걸리는 전압"
+    lhs: V_spike
+    expr: "L_loop*Delta_I/t_edge"
+    symbols: {L_loop: "loop inductance", Delta_I: "current change over the edge", t_edge: "edge duration"}
+    assumptions: [linear_edge]
+    notes: "for the same edge the voltage is proportional to the loop's inductance, and a faster edge raises it in proportion: 10 nH carrying 10 A that stops in 10 ns develops 10 V"
+    notes_ko: "같은 에지라면 전압은 루프 인덕턴스에 비례하고, 에지가 빨라지면 그만큼 커진다. 10 A가 흐르던 10 nH 루프에서 전류가 10 ns 만에 멈추면 10 V가 생긴다"
+    cite: {key: alexander2017, where: "Ch. 6 (Capacitors and Inductors); derived here"}
+    derived_by: python/pe_core/derive/bench.py
+    tests:
+      - {inputs: {L_loop: 1.0e-8, Delta_I: 10.0, t_edge: 1.0e-8}, expect: 10.0}
+      - {inputs: {L_loop: 2.0e-9, Delta_I: 30.0, t_edge: 5.0e-9}, expect: 12.0}
+
+  - id: layout.L_ring
+    title: "Loop inductance from the ring after a switching edge"
+    title_ko: "스위칭 에지 뒤 링잉으로 구한 루프 인덕턴스"
+    lhs: L_loop
+    expr: "1/(4*pi**2*f_ring**2*C_node)"
+    symbols: {f_ring: "frequency of the ring after the turn-off edge", C_node: "switch-node capacitance (the switch's output capacitance, the diode's)"}
+    ranges: {f_ring: [1.0e7, 1.0e9], C_node: [1.0e-11, 1.0e-9]}
+    assumptions: [lossless_lc]
+    notes: "after the turn-off edge the loop's inductance rings with the switch node's capacitance; the ring's frequency, read on an oscilloscope, gives the inductance without a current probe in the loop"
+    notes_ko: "턴오프 에지 뒤에 루프 인덕턴스는 스위치 노드 커패시턴스와 링잉한다. 오실로스코프로 읽은 링잉 주파수로 루프에 전류 프로브를 넣지 않고 인덕턴스를 구한다"
+    cite: {key: alexander2017, where: "Ch. 14 (Frequency Response: series resonance); derived here"}
+    derived_by: python/pe_core/derive/bench.py
+    tests:
+      - {inputs: {f_ring: 1.0e8, C_node: 2.5e-10}, expect: 1.0132118364233778e-08}
+
+  - id: boot.C
+    title: "Bootstrap capacitance for an allowed droop"
+    title_ko: "허용 전압 강하에 맞춘 부트스트랩 커패시턴스"
+    lhs: C_boot
+    expr: "Q_boot/Delta_V_boot"
+    symbols: {Q_boot: "charge drawn while the high side is on", Delta_V_boot: "allowed droop"}
+    assumptions: [bootstrap_no_recharge]
+    notes: "the capacitor's voltage falls by the charge it supplies divided by its capacitance; halving the allowed droop doubles the capacitance needed"
+    notes_ko: "커패시터 전압은 공급한 전하를 커패시턴스로 나눈 만큼 떨어진다. 허용 강하를 절반으로 줄이면 필요한 커패시턴스는 두 배가 된다"
+    cite: {key: alexander2017, where: "Ch. 6 (Capacitors and Inductors); derived here"}
+    derived_by: python/pe_core/derive/bench.py
+    tests:
+      - {inputs: {Q_boot: 5.0e-8, Delta_V_boot: 0.5}, expect: 1.0e-7}
+
+  - id: probe.t_rise
+    title: "Rise time of a single-pole system"
+    title_ko: "단일 극점 시스템의 상승 시간"
+    lhs: t_rise
+    expr: "log(9)/(2*pi*BW)"
+    symbols: {BW: "-3 dB bandwidth"}
+    assumptions: [first_order_response]
+    notes: "ln 9/(2π) = 0.350, so a 100 MHz single-pole system shows an ideal step rising in 3.5 ns; a response of another shape has another constant"
+    notes_ko: "ln 9/(2π) = 0.350이므로, 100 MHz 단일 극점 시스템은 이상적인 계단이 3.5 ns에 걸쳐 오르는 것으로 보여 준다. 응답의 모양이 다르면 상수도 달라진다"
+    cite: {key: alexander2017, where: "Ch. 7 (First-Order Circuits) and Ch. 14 (Frequency Response); derived here"}
+    derived_by: python/pe_core/derive/bench.py
+    tests:
+      - {inputs: {BW: 1.0e8}, expect: 3.4969915256605984e-09}
+
+  - id: probe.f_ring
+    title: "Ringing frequency of a probe's ground loop"
+    title_ko: "프로브 접지 루프의 링잉 주파수"
+    lhs: f_probe
+    expr: "1/(2*pi*sqrt(L_gnd*C_probe))"
+    symbols: {L_gnd: "inductance of the tip-and-ground loop", C_probe: "probe input capacitance"}
+    assumptions: [lossless_lc]
+    notes: "the loop's inductance and the probe's input capacitance form a series L-C that every fast edge excites: a ringing of the probe, not of the circuit. A shorter ground makes the inductance smaller and the ring faster"
+    notes_ko: "루프 인덕턴스와 프로브 입력 커패시턴스가 직렬 L-C를 이루어, 빠른 에지마다 여기된다. 회로가 아니라 프로브의 링잉이다. 접지를 짧게 하면 인덕턴스가 작아져 링잉 주파수가 높아진다"
+    cite: {key: alexander2017, where: "Ch. 14 (Frequency Response: series resonance); derived here"}
+    derived_by: python/pe_core/derive/bench.py
+    tests:
+      - {inputs: {L_gnd: 1.0e-7, C_probe: 1.0e-11}, expect: 159154943.09189537}
+
+  - id: inrush.I_pk
+    title: "Peak inrush current into an empty capacitor"
+    title_ko: "빈 커패시터로 흐르는 돌입 전류의 최댓값"
+    lhs: I_inrush
+    expr: "V_g/R_ser"
+    symbols: {V_g: "voltage switched on", R_ser: "series resistance of the charging path"}
+    assumptions: [rc_step]
+    notes: "at the step the empty capacitor has no voltage across it, so the whole step falls across the series resistance, and the current then decays with the time constant $R_\\mathrm{ser} C_\\mathrm{in}$. In this R-C model the capacitance does not limit the peak; inductance in the leads slows the rise, lowers the peak (which then depends on the capacitance too) and, with little resistance, makes the capacitor's voltage overshoot the supply"
+    notes_ko: "계단이 인가되는 순간 빈 커패시터 양단 전압은 0이므로 계단 전압 전체가 직렬 저항에 걸리고, 이후 전류는 시정수 $R_\\mathrm{ser} C_\\mathrm{in}$으로 감소한다. 이 R-C 모델에서는 커패시턴스가 최댓값을 제한하지 않는다. 리드의 인덕턴스는 상승을 늦추고 최댓값을 낮추며(그때는 커패시턴스도 최댓값에 영향을 준다), 저항이 작으면 커패시터 전압이 전원 전압을 넘어 오버슈트하게 만든다"
+    cite: {key: alexander2017, where: "Ch. 7 (First-Order Circuits); derived here"}
+    derived_by: python/pe_core/derive/bench.py
+    tests:
+      - {inputs: {V_g: 48.0, R_ser: 0.1}, expect: 480.0}
+
+  - id: inrush.I2t
+    title: "Joule integral of the inrush pulse"
+    title_ko: "돌입 전류 펄스의 줄 적분"
+    lhs: I2t
+    expr: "V_g**2*C_in/(2*R_ser)"
+    symbols: {V_g: "voltage switched on", C_in: "input capacitance", R_ser: "series resistance of the charging path"}
+    assumptions: [rc_step]
+    notes: "the integral of the decaying current squared; times $R_\\mathrm{ser}$ it is the energy the resistance dissipates while the capacitor charges, $C_\\mathrm{in} V_g^2/2$, as much as the capacitor stores whatever the resistance. Inductance in the leads does not change it: the source still delivers $C_\\mathrm{in} V_g^2$ and the capacitor keeps half"
+    notes_ko: "감소하는 전류의 제곱을 적분한 값이다. 여기에 $R_\\mathrm{ser}$를 곱하면 커패시터가 충전되는 동안 저항이 소산하는 에너지 $C_\\mathrm{in} V_g^2/2$가 되며, 저항값과 관계없이 커패시터에 저장되는 에너지와 같다. 리드의 인덕턴스는 이 값을 바꾸지 않는다. 전원은 여전히 $C_\\mathrm{in} V_g^2$를 내보내고 커패시터는 그 절반을 저장한다"
+    cite: {key: alexander2017, where: "Ch. 7 (First-Order Circuits); derived here"}
+    derived_by: python/pe_core/derive/bench.py
+    tests:
+      - {inputs: {V_g: 48.0, C_in: 1.0e-4, R_ser: 0.1}, expect: 1.152}
+
+  - id: inrush.I_ramp
+    title: "Inrush current with a controlled voltage ramp"
+    title_ko: "전압 상승을 제어할 때의 돌입 전류"
+    lhs: I_ramp
+    expr: "C_in*V_g/t_ramp"
+    symbols: {C_in: "input capacitance", V_g: "final voltage", t_ramp: "ramp time"}
+    assumptions: [linear_ramp, series_ramp]
+    notes: "a capacitor's current is $C \\, dv/dt$, so a constant slope draws a constant current, inversely proportional to the ramp time. With no other resistance in the path, the element that sets the ramp in series with the supply drops $V_g - v_C$ while carrying it and dissipates $C_\\mathrm{in} V_g^2/2$ over the ramp, as much as a series resistance would from a step: the ramp lowers the current and spreads the energy over time, but does not remove it. A source that ramps its own output (a converter's soft start) has no such element: its path loses only the resistance's share, $2 R_\\mathrm{ser} C_\\mathrm{in}/t_\\mathrm{ramp}$ of the stored energy"
+    notes_ko: "커패시터 전류는 $C \\, dv/dt$이므로, 기울기가 일정하면 전류도 일정하고 램프 시간에 반비례한다. 경로에 다른 저항이 없으면, 전원과 직렬로 램프를 만드는 소자는 이 전류를 흘리는 동안 $V_g - v_C$를 떠안아 램프 동안 $C_\\mathrm{in} V_g^2/2$를 소산한다. 계단 입력 때 직렬 저항이 소산하는 양과 같다. 램프는 전류를 낮추고 에너지를 시간에 걸쳐 나눌 뿐, 에너지를 없애지는 않는다. 컨버터의 소프트 스타트처럼 전원 자신이 출력을 램프로 올리면 그런 소자가 없으며, 경로는 저항의 몫, 곧 저장 에너지의 $2 R_\\mathrm{ser} C_\\mathrm{in}/t_\\mathrm{ramp}$만 잃는다"
+    cite: {key: alexander2017, where: "Ch. 6 (Capacitors and Inductors); derived here"}
+    derived_by: python/pe_core/derive/bench.py
+    tests:
+      - {inputs: {C_in: 1.0e-4, V_g: 48.0, t_ramp: 4.8e-3}, expect: 1.0}
+
+  - id: gate.I_on
+    title: "Gate current on the Miller plateau at turn-on"
+    title_ko: "턴온 때 밀러 플래토의 게이트 전류"
+    lhs: I_G
+    expr: "(V_GS - V_pl)/R_G"
+    symbols: {V_GS: "driver's on voltage", V_pl: "plateau voltage", R_G: "gate-loop resistance"}
+    ranges: {V_GS: [10, 20], V_pl: [2, 8]}
+    assumptions: [gate_plateau]
+    notes: "with the gate held at the plateau, what the driver's voltage exceeds it by drives the current through the gate loop's resistance; a plateau close to the drive voltage leaves little current, and a slow turn-on"
+    notes_ko: "게이트가 플래토에 묶여 있는 동안에는 드라이버 전압이 플래토 전압을 넘는 만큼이 게이트 루프 저항에 전류를 흘린다. 플래토가 구동 전압에 가까우면 전류가 작아 턴온이 느리다"
+    cite:
+      - {key: balogh2018, where: "MOSFET turn-on (the Miller plateau)"}
+      - {key: alexander2017, where: "Ch. 2 (Basic Laws: Ohm's law); derived here"}
+    derived_by: python/pe_core/derive/bench.py
+    tests:
+      - {inputs: {V_GS: 10.0, V_pl: 4.5, R_G: 5.0}, expect: 1.1}
+
+  - id: gate.I_off
+    title: "Gate current on the Miller plateau at turn-off"
+    title_ko: "턴오프 때 밀러 플래토의 게이트 전류"
+    lhs: I_G
+    expr: "V_pl/R_G"
+    symbols: {V_pl: "plateau voltage", R_G: "gate-loop resistance"}
+    assumptions: [gate_plateau]
+    notes: "the driver pulls the gate to zero, so the plateau voltage itself drives the current out; with the same gate-loop resistance at both edges and a plateau below half the drive voltage, turn-off draws less current than turn-on and takes longer (a driver that sinks more strongly than it sources, or a turn-off diode across the gate resistor, changes that)"
+    notes_ko: "드라이버가 게이트를 0으로 끌어내리므로 플래토 전압 자체가 전류를 빼낸다. 두 에지에서 게이트 루프 저항이 같고 플래토가 구동 전압의 절반보다 낮으면 턴오프 전류가 턴온보다 작아 더 오래 걸린다(끌어내리는 능력이 공급 능력보다 강한 드라이버나 게이트 저항에 병렬로 넣은 턴오프 다이오드는 이를 바꾼다)"
+    cite:
+      - {key: balogh2018, where: "MOSFET turn-off (the Miller plateau)"}
+      - {key: alexander2017, where: "Ch. 2 (Basic Laws: Ohm's law); derived here"}
+    derived_by: python/pe_core/derive/bench.py
+    tests:
+      - {inputs: {V_pl: 4.5, R_G: 5.0}, expect: 0.9}
+
+  - id: gate.t_pl
+    title: "Time on the Miller plateau"
+    title_ko: "밀러 플래토에 머무는 시간"
+    lhs: t_pl
+    expr: "Q_GD/I_G"
+    symbols: {Q_GD: "gate-drain charge", I_G: "gate current on the plateau"}
+    assumptions: [gate_plateau]
+    notes: "the plateau lasts while the gate delivers the gate-drain charge at a constant current, and the drain voltage makes its transition meanwhile; a larger gate current shortens it in proportion"
+    notes_ko: "플래토는 게이트가 일정한 전류로 게이트-드레인 전하를 전달하는 동안 지속되며, 그동안 드레인 전압이 전이한다. 게이트 전류가 커지면 그에 비례해 짧아진다"
+    cite:
+      - {key: vishay_an608a, where: "Q_GD, the charge taken on the Miller plateau"}
+      - {key: alexander2017, where: "Ch. 1 (Basic Concepts: charge and current); derived here"}
+    derived_by: python/pe_core/derive/bench.py
+    tests:
+      - {inputs: {Q_GD: 1.0e-8, I_G: 1.1}, expect: 9.090909090909091e-09}
+
+  - id: therm.Tj
+    title: "Junction temperature through a series thermal path"
+    title_ko: "직렬 열 경로를 통한 접합 온도"
+    lhs: T_J
+    expr: "T_A + P_D*(theta_JC + theta_CS + theta_SA)"
+    symbols: {T_A: "ambient temperature", P_D: "dissipated power", theta_JC: "junction-to-case", theta_CS: "case-to-sink", theta_SA: "sink-to-ambient"}
+    assumptions: [series_heat_path]
+    notes: "each part of the path raises the temperature by its thermal resistance times the power through it, and the rises add; the largest resistance in the chain takes the largest share of the junction's rise, so lowering it helps most"
+    notes_ko: "경로의 각 부분은 그 열저항과 지나가는 전력의 곱만큼 온도를 올리고, 이 상승분이 더해진다. 사슬에서 가장 큰 열저항이 접합 온도 상승에서 가장 큰 몫을 차지하므로, 그것을 낮추는 것이 가장 효과적이다"
+    cite: {key: ti_spra953, where: "thermal resistance as a temperature difference per watt; derived here"}
+    derived_by: python/pe_core/derive/bench.py
+    tests:
+      - {inputs: {T_A: 40.0, P_D: 2.0, theta_JC: 1.5, theta_CS: 0.5, theta_SA: 20.0}, expect: 84.0}
+
+  - id: therm.psi
+    title: "Junction temperature from the package-top temperature"
+    title_ko: "패키지 윗면 온도로 구한 접합 온도"
+    lhs: T_J
+    expr: "T_T + Psi_JT*P_D"
+    symbols: {T_T: "package-top temperature", Psi_JT: "junction-to-top characterization parameter", P_D: "dissipated power"}
+    assumptions: [characterization_parameter]
+    notes: "only part of the power flows through the package top, so the parameter is not a true thermal resistance and is not added into a series path; it relates the measured top to the junction for the device's whole power, in the conditions it was characterized in: with a heat sink on the package it no longer applies"
+    notes_ko: "전력의 일부만 패키지 윗면을 지나므로 이 파라미터는 진정한 열저항이 아니며 직렬 경로에 더하지 않는다. 측정한 윗면 온도와 접합 온도를 소자 전체 전력에 대해, 특성화한 조건에서만 이어 준다. 패키지에 방열판을 붙이면 더 이상 맞지 않는다"
+    cite: {key: ti_spra953, where: "Psi_JT, the junction-to-top characterization parameter"}
+    tests:
+      - {inputs: {T_T: 80.0, Psi_JT: 2.0, P_D: 2.0}, expect: 84.0}
+
+  - id: bat.v_term
+    title: "Terminal voltage of a battery in the Rint model"
+    title_ko: "Rint 모델에서 배터리의 단자 전압"
+    lhs: V
+    expr: "V_b + I_b*R_b"
+    symbols: {V_b: "open-circuit voltage", I_b: "battery current, charging positive", R_b: "internal resistance"}
+    assumptions: [rint_battery]
+    notes: "charging lifts the terminals above the open-circuit voltage by the current times the internal resistance, and discharging pulls them below; a charger that holds the terminals at a voltage limit delivers less current when the resistance is higher"
+    notes_ko: "충전하면 단자 전압이 개방 전압보다 전류와 내부 저항의 곱만큼 높아지고, 방전하면 그만큼 낮아진다. 단자를 전압 한계에 묶어 두는 충전기는 저항이 클수록 전류를 적게 흘린다"
+    cite: {key: he2011, where: "Sec. 2.1 (The Rint Model)"}
+    derived_by: python/pe_core/derive/bench.py
+    tests:
+      - {inputs: {V_b: 3.6, I_b: 2.0, R_b: 0.05}, expect: 3.7}
+      - {inputs: {V_b: 3.6, I_b: -2.0, R_b: 0.05}, expect: 3.5}

@@ -24,4 +24,5 @@ MODULES = (
     "measurement",
     "harvesting",
     "sensing",
+    "bench",
 )

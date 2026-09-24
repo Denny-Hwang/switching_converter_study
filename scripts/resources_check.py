@@ -15,8 +15,9 @@ resources.yaml (when present), then:
       signature, and its own title (document info or XMP) or the top of its
       first page must contain the expected text, as whole words, ignoring
       case and punctuation (pypdf reads the file). A bib entry's `urlquotes`
-      ("a | b") must each occur in the PDF's text: the statements the site
-      cites it for, confirmed in the document itself.
+      ("a | b") must each occur in the PDF's text, or in an HTML page's
+      visible text (its markup, scripts and styles removed): the statements
+      the site cites it for, confirmed in the document itself.
       Each URL is tried with an honest tool User-Agent and with a browser
       User-Agent, over HTTP/2 and HTTP/1.1 (curl), then urllib: some hosts
       reject one client and accept another.
@@ -154,8 +155,8 @@ def collect() -> tuple[list[dict], list[str]]:
             errors.append(f"{where}: verified URL needs urltitle = {{...}} (text expected in {what})")
         if kind == "pdf" and (problem := pdf_expect_error(expect)):
             errors.append(f"{where}: urltitle {problem}")
-        if quotes and kind != "pdf":
-            errors.append(f"{where}: urlquotes are checked in PDFs only")
+        if quotes and kind == "login":
+            errors.append(f"{where}: urlquotes cannot be checked behind a login")
         for q in quotes:
             if len(loose(q).split()) < 2:
                 errors.append(f"{where}: urlquotes entry {q!r} needs at least two words")
@@ -258,6 +259,16 @@ def page_title(body: bytes) -> str:
             if m.group(1).strip():
                 return _text(m.group(1))
     return ""
+
+
+def html_text(body: bytes) -> str:
+    """The visible text of an HTML page: its markup, scripts, styles and
+    comments removed, entities decoded."""
+    s = body[:CAP].decode("utf-8", "replace")
+    s = re.sub(r"(?s)<!--.*?-->", " ", s)
+    s = re.sub(r"(?is)<(script|style|noscript|template)\b.*?</\1\s*>", " ", s)
+    s = re.sub(r"(?s)<[^>]+>", " ", s)
+    return html.unescape(s)
 
 
 def title_candidates(body: bytes) -> list[str]:
@@ -376,7 +387,15 @@ def judge(t: dict, f: Fetch) -> tuple[str, str]:
         return "ok", title
     for cand in title_candidates(f.body):
         if t["expect"] and norm(t["expect"]) in norm(cand):
-            return "ok", cand
+            quotes = t.get("quotes") or []
+            if not quotes:
+                return "ok", cand
+            text = html_text(f.body)
+            missing = [q for q in quotes if not title_in(q, text)]
+            if missing:
+                where = "; ".join(f"{q!r}: {near(q, text)}" for q in missing)
+                return "fail", f"{f.how}: page title {cand!r}; not in the page's text: {where}"
+            return "ok", f"(html, {len(quotes)} quotes found) {cand}"
     if not title or any(w in norm(title) for w in INTERSTITIAL):
         snippet = re.sub(rb"\s+", b" ", f.body[:160]).decode("utf-8", "replace")
         return "inconclusive", f"{f.how}: no page title (title {title!r}, final URL {f.url}, body starts {snippet!r})"

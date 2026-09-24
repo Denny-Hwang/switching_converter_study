@@ -1,0 +1,16 @@
+synthetic: true
+label: "Thermal example"
+label_ko: "열 예제"
+# 2 W dissipated in a switch on a heat sink, in 40 C air; and, apart from
+# it, a device without a heat sink, 2 W too, whose package top reads 70 C.
+params:
+  P_D: 2.0
+  T_A: 40.0
+  theta_JC: 1.5
+  theta_CS: 0.5
+  theta_SA: 20.0
+  T_T: 70.0
+  Psi_JT: 2.0
+steps:
+  - therm.Tj
+  - {eq: therm.psi, as: T_J_top}

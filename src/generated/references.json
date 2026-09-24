@@ -527,6 +527,221 @@
       "year": "2005",
       "doi": "10.1137/04061101X"
     },
+    "adi_an136": {
+      "key": "adi_an136",
+      "type": "manual",
+      "label": "Analog Devices (Linear Technology), AN-136",
+      "authors": [],
+      "title": "AN-136: PCB Layout Considerations for Non-Isolated Switching Power Supplies",
+      "verified": true,
+      "organization": "Analog Devices (Linear Technology)",
+      "url": "https://www.analog.com/en/resources/app-notes/an-136.html"
+    },
+    "ti_slyt614": {
+      "key": "ti_slyt614",
+      "type": "techreport",
+      "label": "Texas Instruments 2015",
+      "authors": [
+        "Texas Instruments"
+      ],
+      "title": "Five steps to a great PCB layout for a step-down converter",
+      "verified": true,
+      "institution": "Texas Instruments",
+      "number": "SLYT614",
+      "year": "2015",
+      "kind": "Analog Applications Journal",
+      "url": "https://www.ti.com/lit/pdf/slyt614"
+    },
+    "ti_snva021": {
+      "key": "ti_snva021",
+      "type": "techreport",
+      "label": "Texas Instruments 2013",
+      "authors": [
+        "Texas Instruments"
+      ],
+      "title": "AN-1149 Layout Guidelines for Switching Power Supplies",
+      "verified": true,
+      "institution": "Texas Instruments (National Semiconductor)",
+      "number": "SNVA021C",
+      "year": "2013",
+      "kind": "Application Report",
+      "url": "https://www.ti.com/lit/pdf/snva021"
+    },
+    "vishay_an608a": {
+      "key": "vishay_an608a",
+      "type": "manual",
+      "label": "Vishay Siliconix, Power MOSFET Basics",
+      "authors": [],
+      "title": "Power MOSFET Basics: Understanding Gate Charge and Using it to Assess Switching Performance",
+      "verified": true,
+      "organization": "Vishay Siliconix",
+      "url": "https://www.vishay.com/docs/73217/an608a.pdf"
+    },
+    "ti_slua887": {
+      "key": "ti_slua887",
+      "type": "techreport",
+      "label": "Texas Instruments 2023",
+      "authors": [
+        "Texas Instruments"
+      ],
+      "title": "Bootstrap Circuitry Selection for Half-Bridge Configurations",
+      "verified": true,
+      "institution": "Texas Instruments",
+      "number": "SLUA887A",
+      "year": "2023",
+      "kind": "Application Report",
+      "url": "https://www.ti.com/lit/an/slua887a/slua887a.pdf"
+    },
+    "epc_wp008": {
+      "key": "epc_wp008",
+      "type": "manual",
+      "label": "Efficient Power Conversion (EPC), eGaN FET Drivers and Layout Considerations",
+      "authors": [],
+      "title": "eGaN FET Drivers and Layout Considerations",
+      "verified": true,
+      "organization": "Efficient Power Conversion (EPC)",
+      "url": "https://epc-co.com/epc/portals/0/epc/documents/papers/eGaN%20FET%20Drivers%20and%20Layout%20Considerations.pdf"
+    },
+    "ti_sszta51": {
+      "key": "ti_sszta51",
+      "type": "manual",
+      "label": "Texas Instruments, System Trade-offs for High- and Low-side Current Measurements",
+      "authors": [],
+      "title": "System Trade-offs for High- and Low-side Current Measurements",
+      "verified": true,
+      "organization": "Texas Instruments",
+      "url": "https://www.ti.com/lit/pdf/sszta51"
+    },
+    "adi_an1144": {
+      "key": "adi_an1144",
+      "type": "manual",
+      "label": "Analog Devices, AN-1144",
+      "authors": [],
+      "title": "AN-1144: Measuring Output Ripple and Switching Transients in Switching Regulators",
+      "verified": true,
+      "organization": "Analog Devices",
+      "url": "https://www.analog.com/en/resources/app-notes/an-1144.html"
+    },
+    "keysight_5988_8008": {
+      "key": "keysight_5988_8008",
+      "type": "manual",
+      "label": "Keysight Technologies (Agilent Technologies), Understanding Oscilloscope Frequency Response and Its Effect on Rise-Time Accuracy",
+      "authors": [],
+      "title": "Understanding Oscilloscope Frequency Response and Its Effect on Rise-Time Accuracy",
+      "verified": true,
+      "organization": "Keysight Technologies (Agilent Technologies)",
+      "url": "https://www.keysight.com/us/en/assets/7018-01129/application-notes/5988-8008.pdf"
+    },
+    "tek_bw_risetime": {
+      "key": "tek_bw_risetime",
+      "type": "manual",
+      "label": "Tektronix, How is bandwidth related to rise time for oscilloscopes?",
+      "authors": [],
+      "title": "How is bandwidth related to rise time for oscilloscopes?",
+      "verified": true,
+      "organization": "Tektronix",
+      "url": "https://www.tek.com/en/support/faqs/how-bandwidth-related-rise-time-oscilloscopes"
+    },
+    "ti_spra953": {
+      "key": "ti_spra953",
+      "type": "techreport",
+      "label": "Texas Instruments 2003",
+      "authors": [
+        "Texas Instruments"
+      ],
+      "title": "Semiconductor and IC Package Thermal Metrics",
+      "verified": true,
+      "institution": "Texas Instruments",
+      "number": "SPRA953",
+      "year": "2003",
+      "kind": "Application Report",
+      "url": "https://www.ti.com/lit/pdf/spra953"
+    },
+    "microchip_apt0403": {
+      "key": "microchip_apt0403",
+      "type": "techreport",
+      "label": "Advanced Power Technology 2006",
+      "authors": [
+        "Advanced Power Technology"
+      ],
+      "title": "Power MOSFET Tutorial",
+      "verified": true,
+      "institution": "Advanced Power Technology (Microchip Technology)",
+      "number": "APT-0403 Rev B",
+      "year": "2006",
+      "kind": "Application Note",
+      "url": "https://ww1.microchip.com/downloads/aemDocuments/documents/PSDS/ApplicationNotes/ApplicationNotes/APT0403.pdf"
+    },
+    "ti_slva670": {
+      "key": "ti_slva670",
+      "type": "techreport",
+      "label": "Texas Instruments 2015",
+      "authors": [
+        "Texas Instruments"
+      ],
+      "title": "Managing Inrush Current",
+      "verified": true,
+      "institution": "Texas Instruments",
+      "number": "SLVA670A",
+      "year": "2015",
+      "kind": "Application Report",
+      "url": "https://www.ti.com/lit/pdf/slva670"
+    },
+    "ti_slva139": {
+      "key": "ti_slva139",
+      "type": "techreport",
+      "label": "Texas Instruments 2003",
+      "authors": [
+        "Texas Instruments"
+      ],
+      "title": "Reverse Current/Battery Protection Circuits",
+      "verified": true,
+      "institution": "Texas Instruments",
+      "number": "SLVA139",
+      "year": "2003",
+      "kind": "Application Report",
+      "url": "https://www.ti.com/lit/pdf/slva139"
+    },
+    "littelfuse_fuseology": {
+      "key": "littelfuse_fuseology",
+      "type": "manual",
+      "label": "Littelfuse, Fuseology",
+      "authors": [],
+      "title": "Fuseology: Fuse Facts and Fuse Selection Guide",
+      "verified": true,
+      "organization": "Littelfuse",
+      "url": "https://www.littelfuse.com/assetdocs/fuseology-fuse-facts-and-fuse-selection-guide?assetguid=be92b28c-1f63-4f48-a505-55c582b7c1ae"
+    },
+    "adi_ceramic_caps": {
+      "key": "adi_ceramic_caps",
+      "type": "manual",
+      "label": "Analog Devices (Maxim Integrated), Temperature and Voltage Variation of Ceramic Capacitors, or Why Your 4.7 µF Capacitor Becomes a 0.33 µF Capacitor",
+      "authors": [],
+      "title": "Temperature and Voltage Variation of Ceramic Capacitors, or Why Your 4.7 µF Capacitor Becomes a 0.33 µF Capacitor",
+      "verified": true,
+      "organization": "Analog Devices (Maxim Integrated)",
+      "url": "https://www.analog.com/en/resources/technical-articles/temperature-and-voltage-variation-ceramic-capacitor.html"
+    },
+    "cde_ae_guide": {
+      "key": "cde_ae_guide",
+      "type": "manual",
+      "label": "Cornell Dubilier Electronics, Aluminum Electrolytic Capacitor Application Guide",
+      "authors": [],
+      "title": "Aluminum Electrolytic Capacitor Application Guide",
+      "verified": true,
+      "organization": "Cornell Dubilier Electronics",
+      "url": "https://www.cde.com/resources/technical-papers/KNO_CD_AEappGuide_R2.pdf"
+    },
+    "jeita_liion": {
+      "key": "jeita_liion",
+      "type": "manual",
+      "label": "Japan Electronics and Information Technology Industries Association (JEITA), A Guide to the Safe Use of Lithium-Ion Secondary Cells in Notebook-type Personal Computers and Tablet Terminals",
+      "authors": [],
+      "title": "A Guide to the Safe Use of Lithium-Ion Secondary Cells in Notebook-type Personal Computers and Tablet Terminals",
+      "verified": true,
+      "organization": "Japan Electronics and Information Technology Industries Association (JEITA)",
+      "url": "https://home.jeita.or.jp/upload_file/20210407112651_JbDgUSWGiB.pdf"
+    },
     "benyaakov_youtube": {
       "key": "benyaakov_youtube",
       "type": "misc",

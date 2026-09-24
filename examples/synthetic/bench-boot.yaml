@@ -1,0 +1,10 @@
+synthetic: true
+label: "Bootstrap example"
+label_ko: "부트스트랩 예제"
+# 50 nC drawn from the bootstrap capacitor per high-side on-time, with 0.5 V
+# of droop allowed.
+params:
+  Q_boot: 5.0e-8
+  Delta_V_boot: 0.5
+steps:
+  - boot.C

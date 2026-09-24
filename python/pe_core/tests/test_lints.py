@@ -157,6 +157,29 @@ def test_resources_check_confirms_quotes_in_the_pdf_text() -> None:
     assert "4 of its words in a row occur in" in detail and "absorbs more than the leakage energy" in detail
 
 
+def test_resources_check_confirms_quotes_in_an_html_page_text() -> None:
+    rc = _script("resources_check")
+    page = (
+        b"<html><head><title>AN-0: Layout Notes | Example</title><script>var s = 'a ground layer in a script';</script>"
+        b"<style>.x{content:'a ground layer in a style'}</style></head><body><!-- a ground layer in a comment -->"
+        b"<p>It is important to always have a <b>ground&nbsp;layer</b> next to the power stage layer.</p></body></html>"
+    )
+    fetch = rc.Fetch("test", 200, "https://example.org/an-0.html", "text/html", page)
+
+    def judge(*quotes: str) -> tuple[str, str]:
+        return rc.judge({"src": "bib:t", "url": fetch.url, "expect": "Layout Notes", "kind": "html", "quotes": list(quotes)}, fetch)
+
+    # the page's visible text, across its inline markup and entities
+    verdict, detail = judge("always have a ground layer next to the power stage layer")
+    assert verdict == "ok" and "1 quotes found" in detail
+    # text only in a script, a style or a comment is not on the page
+    assert rc.loose(rc.html_text(page)).count("ground layer") == 1
+    verdict, detail = judge("a ground layer in a script")
+    assert verdict == "fail" and "not in the page's text" in detail
+    # without quotes, the title alone decides
+    assert judge()[0] == "ok"
+
+
 def test_resources_check_requires_a_title_for_pdf_references() -> None:
     rc = _script("resources_check")
     _, errors = rc.collect()

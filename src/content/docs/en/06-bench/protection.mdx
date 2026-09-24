@@ -1,0 +1,153 @@
+---
+title: Protection
+description: The inrush current into an empty input capacitor and its joule integral, a controlled voltage ramp that lowers it without removing the energy, a fuse in warm air, and a series diode against a reversed battery.
+sidebar:
+  order: 6
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Estimate the peak current and the joule integral when a supply is switched onto an empty input capacitor.
+- Choose a voltage ramp for a given inrush current, and know where its energy goes.
+- Know what warm air does to a fuse, and what a series diode against a reversed battery costs.
+
+## Theory
+
+### Inrush from a step
+
+At the instant a supply is switched onto an empty capacitor, the capacitor
+has no voltage across it. When the wiring's inductance is small, its own
+time constant (the inductance over the series resistance) far shorter than
+$R_\mathrm{ser} C_\mathrm{in}$, the whole step falls across the resistance
+in series with the capacitor: the source's, the wiring's and the capacitor's
+own ESR. That resistance then sets the peak <Cite key="alexander2017" where="Ch. 7 (First-Order Circuits)" />:
+
+<Eq id="inrush.I_pk" />
+
+The current then decays with the time constant $R_\mathrm{ser} C_\mathrm{in}$.
+The integral of its square over the pulse, its joule integral, is
+
+<Eq id="inrush.I2t" />
+
+A resistance in the path times the joule integral is the heat the pulse
+leaves in it. The series resistance as a whole takes as much as the
+capacitor stores, whatever its value
+(<EqRef id="cap.E" label="energy stored in a capacitor" />), and each part
+of it (a fuse's element, a switch, the wiring) takes its own share.
+
+More inductance in the leads slows the current's rise and lowers its peak,
+which then depends on the capacitance too; with little resistance, the
+capacitor's voltage rings above the supply. The joule integral does not
+change: the source still delivers twice what the capacitor stores, and the
+resistance dissipates the rest.
+
+### A controlled ramp
+
+Making the voltage across the capacitor rise more slowly reduces the inrush
+<Cite key="ti_slva670" />. A capacitor's current is its capacitance times
+the rate of change of its voltage, so a linear ramp from zero draws a
+constant current:
+
+<Eq id="inrush.I_ramp" />
+
+When an element in series with a fixed supply (a load switch or a hot-swap
+switch) sets the ramp, it carries that current while it drops the rest of
+the supply's voltage. Over the ramp, the path still dissipates as much as
+the capacitor stores, and nearly all of it in that element when the ramp is
+long against $R_\mathrm{ser} C_\mathrm{in}$. The ramp lowers the current and
+spreads the energy over time; it does not remove it. A source that ramps
+its own output, such as a converter's soft start, has no such element to
+heat.
+
+### A fuse in warm air
+
+The higher the ambient temperature, the hotter a fuse operates, and the
+shorter its life <Cite key="littelfuse_fuseology" />. A fuse beside a hot
+heat sink or inside a warm enclosure runs in a higher ambient than the same
+fuse on an open bench.
+
+### A reversed battery
+
+A diode in series with the battery protects against a battery connected
+backwards <Cite key="ti_slva139" />: reversed, the diode blocks. The right way round, it carries the whole load current for as long
+as the circuit runs, and costs its forward drop times the average current,
+plus its resistance's share
+(<EqRef id="loss.diode" label="diode conduction loss" />). The drop is a
+larger fraction of a lower battery voltage, and so is the loss.
+
+## Worked example
+
+A supply switched onto an empty input capacitor, and the same capacitor
+brought up by a controlled ramp:
+
+<Worked example="bench-inrush" />
+
+Through <Val example="bench-inrush" name="R_ser" /> in all, the empty
+<Val example="bench-inrush" name="C_in" /> capacitor draws
+<Val example="bench-inrush" name="I_inrush" /> at the step, and the pulse's
+joule integral is <Val example="bench-inrush" name="I2t" />. Ramped to
+<Val example="bench-inrush" name="V_g" /> over
+<Val example="bench-inrush" name="t_ramp" />, the same capacitor draws a
+constant <Val example="bench-inrush" name="I_ramp" />. Nearly all the
+energy the series resistance took at the step now goes to the ramp's
+element.
+
+## Try it
+
+<TryIt eq="inrush.I_pk" example="bench-inrush" sweep="R_ser" />
+
+Sweep the series resistance: the peak follows its inverse. A capacitor of
+lower ESR draws a higher peak.
+
+<TryIt eq="inrush.I_ramp" example="bench-inrush" sweep="t_ramp" />
+
+Sweep the ramp time: doubling it halves the current.
+
+## Bench exercise
+
+Start from a low voltage and a current-limited source. With a current probe
+on the input lead, switch the source onto a converter's empty input
+capacitor and capture the current's peak and its decay; a current limit in
+the source caps the peak, so note it. Estimate the path's resistance: the
+wiring's and the switch's with a four-wire milliohm meter, the capacitor's
+ESR from its data sheet or an impedance meter at a high frequency, and the
+source's from its data sheet or its voltage drop under a known load step.
+Compare the peak with the step's equation: a lower peak and a capacitor
+voltage ringing above the supply point to the leads' inductance. Square the
+captured current in the oscilloscope's math, integrate it, and compare with
+the joule integral.
+Then slow the switch's turn-on and repeat: the peak falls. Capture the
+switch's voltage as well; its product with the current, integrated over
+the ramp, is the energy the switch now absorbs.
+
+## Gotchas
+
+- **In the R-C model the capacitance does not limit the peak** from a step;
+  only the series resistance does
+  (<EqRef id="inrush.I_pk" label="peak inrush current" />). Inductance in
+  the leads lowers the peak and can make the capacitor's voltage ring above
+  the supply.
+- **A ramp set by a series element does not remove the energy.** The path
+  still dissipates as much as the capacitor stores, now mostly in that
+  element (<EqRef id="inrush.I_ramp" label="ramped inrush" />).
+- **A warm fuse ages faster** <Cite key="littelfuse_fuseology" />.
+- **A series diode costs power for as long as the circuit runs**, not only
+  when something goes wrong (<EqRef id="loss.diode" label="diode conduction loss" />).
+
+## Go deeper
+
+<GoDeeper ids={['ti-slva670', 'littelfuse-fuseology', 'ti-slva139']} />
+
+## Quiz
+
+<Quiz id="06-bench/protection" />

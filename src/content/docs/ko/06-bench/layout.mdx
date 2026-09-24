@@ -1,0 +1,114 @@
+---
+title: 스위칭 컨버터의 PCB 레이아웃(layout)
+description: 에지마다 전류가 스위칭되는 핫 루프, 그 인덕턴스가 만드는 전압, 그리고 입력 커패시터·접지층·스위치 노드·피드백 배선을 어디에 둘지.
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 컨버터에서 에지마다 전류가 켜지고 꺼지는 루프를 찾습니다.
+- 그 루프의 인덕턴스가 에지 동안 만드는 전압을 어림합니다.
+- 그에 맞춰 입력 커패시터, 접지층, 스위치 노드, 피드백 배선의 위치를 정합니다.
+
+## 이론
+
+### 핫 루프
+
+벅 컨버터에서 스위치는 켜져 있는 동안 인덕터 전류만큼의 펄스 전류를 입력
+커패시터에서 끌어옵니다. 배선 뒤의 전원은 대략 평균 전류만 공급하며, 스위치가
+꺼져 있는 동안 커패시터를 다시 충전합니다. 에지마다 스위치, 다이오드(또는 두 번째
+스위치), 입력 커패시터의 전류가 인덕터 전류만큼 계단처럼 바뀌지만 인덕터 전류는
+계속 흐릅니다 <Cite key="erickson2020" where="Ch. 2" />. 전류가 스위칭되는 루프는
+이 셋으로 이루어진 루프, 곧 핫 루프(hot loop)입니다. 모든 루프에는 인덕턴스가
+있으며, 에지 동안 $t_\mathrm{edge}$에 걸쳐 전류가 $\Delta I$만큼 바뀌면 다음
+전압이 생깁니다(<EqRef id="ind.di" label="인덕터의 법칙" />).
+
+<Eq id="layout.v_spike" />
+
+키르히호프 전압 법칙에 따라 이 전압은 스위치 전류가 떨어지는 동안 스위치 양단에서
+입력 전압에 더해집니다 <Cite key="alexander2017" where="Ch. 2 (Basic Laws)" />.
+턴오프 에지마다 생기는 오버슈트(overshoot)입니다. 같은 에지라면 이 전압은 루프
+인덕턴스에 비례하므로, 루프가 짧고 조밀할수록 작아집니다. 입력 커패시터가 그 루프를
+닫으므로 스위치 바로 옆에 둡니다. TI는 입력 커패시터를 강압 컨버터가 안정적으로
+동작하는 데 가장 중요한 단일 부품이라고 부릅니다 <Cite key="ti_slyt614" />.
+
+턴오프 에지 뒤에 루프 인덕턴스는 스위치 노드 커패시턴스와 링잉(ringing)하며, 그
+주파수로 루프에 전류 프로브를 넣지 않고도 인덕턴스를 구할 수 있습니다.
+
+<Eq id="layout.L_ring" />
+
+### 접지층과 스위치 노드
+
+전력단을 싣는 바깥 층 바로 옆에 접지층(ground layer)을 두는 것은 이런 기판이라면
+모두 갖추어야 할 요소입니다 <Cite key="adi_an136" />. 스위치 노드(switch node)는
+에지마다 입력 전압과 접지 사이를 오가며, 그 구리와 이웃 배선 사이의 부유
+커패시턴스(stray capacitance)에는 이 전압 변화율에 비례하는 전류가 흐릅니다
+(<EqRef id="cap.dv" label="커패시터의 법칙" />). 그러나 이 노드는 인덕터 전류도
+흘리고 스위치의 열도 빼내므로 면적이 너무 작아서도 안 됩니다. AN-136은 이를 절충의
+문제로 다룹니다 <Cite key="adi_an136" />.
+
+### 피드백 배선
+
+제어기는 피드백 배선(feedback trace)이 가져오는 전압을 조정합니다. 도중에 유기된
+전압은 출력 자신의 전압인 것처럼 출력에 반영됩니다. 이 배선은 인덕터와 잡음이 많은
+전력 배선에서 되도록 멀리 둡니다 <Cite key="ti_snva021" />. 제어기는 배선 끝의
+전압을 조정하므로, 출력 전압이 중요한 지점에서 자기만의 귀환 경로와 함께 따옵니다
+(켈빈 연결(Kelvin connection), [전류 감지](../current-sensing/) 참고).
+
+## 풀이 예제
+
+같은 에지가 지나는 두 루프:
+
+<Worked example="bench-layout" />
+
+같은 전류 계단이 <Val example="bench-layout" name="L_loop" />에서는
+<Val example="bench-layout" name="V_spike" />를, 더 조밀한
+<Val example="bench-layout" name="L_loop_tight" /> 루프에서는
+<Val example="bench-layout" name="V_spike_tight" />만을 만듭니다.
+
+## 직접 해 보기
+
+<TryIt eq="layout.v_spike" example="bench-layout" sweep="L_loop" />
+
+루프 인덕턴스를 바꿔 보면 전압이 그에 비례해 따라갑니다. 더 빠른 스위치처럼
+$t_\mathrm{edge}$를 절반으로 줄이면 전압은 두 배가 됩니다.
+
+## 벤치 실습
+
+컨버터 기판에서 입력 커패시터, 스위치, 다이오드(또는 두 번째 스위치)로 이루어진 핫
+루프를 찾습니다. 한쪽 끝이 접지인 로우사이드 스위치나 다이오드 양단에서, 프로브가
+허용하는 가장 짧은 접지 연결로([프로브](../probes/) 참고) 턴오프 오버슈트를 잽니다.
+두 단자가 모두 움직이는 스위치에는 차동 프로브가 필요합니다. 전류 프로브를 쓰려면 핫
+루프에 전선 고리를 덧대야 하고, 그 고리가 인덕턴스를 더합니다. 그러니 에지 뒤의
+링잉과 데이터시트의 스위치 노드 커패시턴스(스위치의 출력 커패시턴스, 다이오드의
+커패시턴스)로 루프 인덕턴스를 어림합니다. 에지의 전류 계단과 하강 시간으로 오버슈트를
+루프 전압 식과 비교합니다. 이어서 스위치 쌍 바로 옆에 작은 세라믹 커패시터를 달아
+루프를 줄이고 다시 잽니다.
+
+## 주의할 점
+
+- **멀리 둔 입력 커패시터**는 전류가 스위칭되는 루프를 크게 만들고, 오버슈트도 함께
+  키웁니다(<EqRef id="layout.v_spike" label="루프 전압" />).
+- **구리가 너무 적은 스위치 노드**는 뜨거워지고, 너무 많으면 전압 변화를 이웃에
+  결합시킵니다. 그 면적은 절충의 문제입니다 <Cite key="adi_an136" />.
+- **긴 프로브 접지선**은 자신의 루프를 더해 오버슈트를 실제보다 크게 보이게 합니다
+  <Cite key="adi_an1144" />([프로브](../probes/) 참고).
+
+## 더 알아보기
+
+<GoDeeper ids={['adi-an136', 'ti-slyt614', 'ti-snva021']} />
+
+## 퀴즈
+
+<Quiz id="06-bench/layout" />

@@ -1,0 +1,14 @@
+synthetic: true
+label: "Inrush example"
+label_ko: "돌입 전류 예제"
+# 48 V switched onto an empty 100 uF input capacitor through 0.1 ohm in all;
+# then the same capacitor brought up by a controlled ramp over 4.8 ms.
+params:
+  V_g: 48.0
+  R_ser: 0.1
+  C_in: 1.0e-4
+  t_ramp: 4.8e-3
+steps:
+  - inrush.I_pk
+  - inrush.I2t
+  - inrush.I_ramp

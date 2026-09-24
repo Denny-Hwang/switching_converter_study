@@ -1,0 +1,51 @@
+# Quiz for 06-bench/gate-drive. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'What does the gate-source voltage do while the drain voltage falls at turn-on?'
+    options:
+      - 'It rises at its fastest'
+      - 'It falls to zero'
+      - 'It oscillates'
+      - 'It stays constant: the Miller plateau'
+    answer: 3
+    explain: 'All the gate current the driver can supply discharges the gate-drain capacitance as the drain voltage falls, so the gate voltage stays on the plateau.'
+  - q: 'A 12 V driver drives a gate through 4 ohm in all; the plateau is at 4 V. What is the gate current on the plateau at turn-on?'
+    options:
+      - '3 A'
+      - '2 A'
+      - '1 A'
+      - '4 A'
+    answer: 1
+    explain: 'The driver''s voltage less the plateau, 8 V, across the 4 ohm gate loop.'
+  - q: 'The gate-drain charge is 20 nC and the gate current on the plateau is 2 A. How long does the drain voltage take to switch?'
+    options:
+      - '40 ns'
+      - '1 ns'
+      - '10 ns'
+      - '100 ns'
+    answer: 2
+    explain: 'The plateau lasts the gate-drain charge over the gate current: 20 nC over 2 A.'
+  - q: 'The gate loop has the same resistance at both edges; the plateau is at 3 V and the drive voltage is 10 V. Which transition is slower?'
+    options:
+      - 'Turn-on'
+      - 'They take the same time'
+      - 'It depends only on the gate-drain charge'
+      - 'Turn-off, because the plateau voltage drives less current than the 7 V left at turn-on'
+    answer: 3
+    explain: 'At turn-on 7 V drives the gate current; at turn-off only the 3 V plateau does, through the same resistance.'
+  - q: 'A bootstrap capacitor supplies 40 nC while the high side is on, and may droop by 0.4 V. What capacitance does it need at least?'
+    options:
+      - '100 nF'
+      - '16 nF'
+      - '10 nF'
+      - '1 uF'
+    answer: 0
+    explain: 'The charge over the allowed droop: 40 nC over 0.4 V.'
+  - q: 'What can happen when a bootstrap capacitor is too small?'
+    options:
+      - 'Its droop can let the driver''s undervoltage lockout turn the high-side switch off'
+      - 'The low-side switch cannot turn on'
+      - 'The switching frequency doubles'
+      - 'Nothing: the driver regulates its own supply'
+    answer: 0
+    explain: 'The capacitor alone supplies the high side while it is on; too little capacitance droops below the driver''s lockout threshold.'

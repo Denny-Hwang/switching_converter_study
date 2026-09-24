@@ -60,7 +60,7 @@ Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); th
 
 Legend: ✅ done · 🟡 partial · ⬜ not started · ➖ not applicable. "Phase" is the build phase that delivers the module (docs/BUILD_SPEC.md §7); "later" = not scheduled in phases 0–5. 00-foundations and 01-physics are compact refreshers (Phase 2 scope).
 
-_Last updated: Phase 4a (04-magnetics). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
+_Last updated: Phase 4b (06-bench). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
 
 "Try it" links open the [equation explorer](../src/content/docs/en/design/explorer.mdx) with a synthetic preset. Pages whose example is a whole converter also open the [simulator](../src/content/docs/en/simulate/simulator.mdx) with it (`<TrySim>`, Phase 3a); design-tool presets come with the design tools.
 
@@ -139,13 +139,13 @@ _Last updated: Phase 4a (04-magnetics). `python scripts/modulelint.py` checks ev
 
 | Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| layout | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| gate-drive | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| current-sensing | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| probes | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| thermal | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| protection | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| low-temp | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| layout | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `layout.v_spike`, `layout.L_ring` |
+| gate-drive | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `gate.I_on`, `gate.I_off`, `gate.t_pl`, `boot.C` |
+| current-sensing | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `sense.burden`, `sense.pad_error` (moved from design/sense-chain, which links to them) |
+| probes | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `probe.t_rise`, `probe.f_ring` |
+| thermal | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `therm.Tj`, `therm.psi` |
+| protection | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `inrush.I_pk`, `inrush.I2t`, `inrush.I_ramp` |
+| low-temp | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `bat.v_term` |
 
 ## 07-harvesting
 

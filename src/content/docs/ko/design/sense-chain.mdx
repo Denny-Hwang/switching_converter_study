@@ -43,9 +43,8 @@ $\varepsilon_\mathrm{max}$는 의미 있는 가장 작은 전류 $I_\mathrm{min}
 ### 센스 전압과 부담 전압
 
 옴의 법칙에 따라 션트는 전류를 센스 전압으로 바꿉니다
-<Cite key="alexander2017" where="Ch. 2" />.
-
-<Eq id="sense.burden" />
+<Cite key="alexander2017" where="Ch. 2" />
+(<EqRef id="sense.burden" label="센스 전압" />, [전류 센싱](../../06-bench/current-sensing/) 페이지).
 
 이 전압은 증폭기의 신호이면서 동시에 부담 전압, 즉 션트가 측정 대상 회로에서
 가져가는 전압입니다. 션트가 클수록 신호가 커지지만, 부담 전압과 손실도 커집니다.
@@ -88,9 +87,8 @@ REF 전압은 전류가 0일 때의 출력을 정합니다. 그러면 전류의 
 되어 측정 오차를 키웁니다 <Cite key="osullivan2012" />. 센스 연결이 패드 너머에
 있으면, 증폭기는 션트와 패드를 함께 흐르는 부하 전류,
 즉 $R_\mathrm{SENSE} + R_\mathrm{pad}$에 걸린 전압을 봅니다. 따라서 측정값은
-모든 전류에서 같은 비율만큼 크게 나옵니다.
-
-<Eq id="sense.pad_error" />
+모든 전류에서 같은 비율만큼 크게 나옵니다
+(<EqRef id="sense.pad_error" label="패드 오차" />, [전류 센싱](../../06-bench/current-sensing/) 참고).
 
 켈빈 연결(Kelvin connection)은 패드를 센스 경로에서 뺍니다. 4단자 션트를
 쓰거나, 2단자 션트를 4패드(분할 패드) 레이아웃에 올리면 됩니다

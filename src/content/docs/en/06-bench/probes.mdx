@@ -1,0 +1,114 @@
+---
+title: Probes and measurement bandwidth
+description: What a probe's ground lead adds to a switching edge, how a measurement system's bandwidth limits the rise time it shows, and how to measure a converter's output ripple.
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Know what a probe's ground lead adds to a measurement of a fast edge.
+- Relate a measurement system's bandwidth to the fastest rise it can show.
+- Measure a converter's output ripple with a short ground connection.
+
+## Theory
+
+### The ground lead
+
+A probe measures between its tip and its ground connection, and the leads
+that reach them form a loop. That loop introduces parasitic inductance,
+which inaccurately increases the amplitude of switching transients
+<Cite key="adi_an1144" />. With the probe's input capacitance it forms a
+series L-C that every fast edge excites, ringing at its resonant frequency:
+a ringing of the probe, not of the circuit.
+
+<Eq id="probe.f_ring" />
+
+A shorter ground makes the loop smaller: the tip-and-barrel method removes
+the long ground lead and connects the probe's barrel to the ground
+reference directly <Cite key="adi_an1144" />.
+
+### Bandwidth and rise time
+
+A probe and an oscilloscope together respond to a step no faster than their
+bandwidth allows. For a single-pole response, the 10-90 % rise time follows
+from the bandwidth:
+
+<Eq id="probe.t_rise" />
+
+Historically, oscilloscopes' responses tended to follow this rule
+approximately <Cite key="tek_bw_risetime" />; the constant depends on the shape of the
+response, and a flat-response oscilloscope measures rise times more
+accurately than a Gaussian-response one of the same bandwidth
+<Cite key="keysight_5988_8008" />. An ideal step, infinitely fast, is shown
+rising in the system's own rise time: to see an edge's own rise time, the
+system's must be well below it.
+
+### Output ripple
+
+A converter's output ripple is small next to the output voltage, and the
+switching transients that ride on it are fast: the loop of a long ground
+lead exaggerates them <Cite key="adi_an1144" />, and they look like ripple.
+Measure it with the tip-and-barrel method at the output capacitor
+<Cite key="adi_an1144" />. A bandwidth limit
+on the oscilloscope's channel attenuates what lies above it
+(<EqRef id="rc.gain" label="first-order low-pass" />): set it well above the
+ripple's own frequencies, or it attenuates the ripple as well.
+
+## Worked example
+
+A measurement system and a probe with a long ground lead:
+
+<Worked example="bench-probe" />
+
+The system shows an ideal step rising in
+<Val example="bench-probe" name="t_rise" />, and the ground loop's
+<Val example="bench-probe" name="L_gnd" /> with the probe's
+<Val example="bench-probe" name="C_probe" /> rings at
+<Val example="bench-probe" name="f_probe" />.
+
+## Try it
+
+<TryIt eq="probe.t_rise" example="bench-probe" sweep="BW" />
+
+Sweep the bandwidth: the rise time falls in inverse proportion.
+
+<TryIt eq="probe.f_ring" example="bench-probe" sweep="L_gnd" />
+
+Sweep the ground loop's inductance: a shorter ground rings faster, and
+further above the edges you measure.
+
+## Bench exercise
+
+Measure the same switching edge twice: with the probe's long ground lead,
+and with a ground spring or the tip-and-barrel method. Compare the overshoot
+and the ringing's frequency, and estimate the lead's inductance from that
+frequency and the probe's input capacitance on its data sheet. Then measure
+the output ripple both ways, with the channel's bandwidth limit on and off.
+
+## Gotchas
+
+- **A ringing that moves with the ground lead** is the probe's, not the
+  circuit's: shorten the ground and it changes <Cite key="adi_an1144" />.
+- **An edge much faster than the system** is shown with about the system's
+  rise time (<EqRef id="probe.t_rise" label="rise time" />).
+- **A bandwidth limit near the ripple's frequencies** attenuates the ripple
+  itself (<EqRef id="rc.gain" label="first-order low-pass" />).
+
+## Go deeper
+
+<GoDeeper ids={['adi-an1144', 'keysight-5988-8008', 'tek-bw-risetime']} />
+
+## Quiz
+
+<Quiz id="06-bench/probes" />

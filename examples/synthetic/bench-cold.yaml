@@ -1,0 +1,17 @@
+synthetic: true
+label: "Cold example"
+label_ko: "저온 예제"
+# A cell at 3.7 V open-circuit charged at 1 A through 0.1 ohm; and an output
+# capacitor of 0.05 ohm ESR under 2 A peak-to-peak ripple, with its ESR
+# ten times higher at its low-temperature limit.
+params:
+  V_b: 3.7
+  I_b: 1.0
+  R_b: 0.1
+  R_esr: 0.05
+  R_esr_cold: 0.5
+  Delta_i_pp: 2.0
+steps:
+  - bat.v_term
+  - cap.esr.ripple
+  - {eq: cap.esr.ripple, bind: {R_esr: R_esr_cold}, as: Delta_v_esr_cold}

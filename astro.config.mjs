@@ -68,6 +68,11 @@ export default defineConfig({
               translations: { ko: '04 · 자성 부품' },
               items: [{ autogenerate: { directory: '04-magnetics' } }],
             },
+            {
+              label: '06 · Bench',
+              translations: { ko: '06 · 벤치(실험대)' },
+              items: [{ autogenerate: { directory: '06-bench' } }],
+            },
           ],
         },
         {

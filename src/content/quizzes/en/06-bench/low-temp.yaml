@@ -1,0 +1,59 @@
+# Quiz for 06-bench/low-temp. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'An output capacitor has 0.02 ohm of ESR, and the ripple current into it is 3 A peak-to-peak. What ripple does the ESR develop?'
+    options:
+      - '60 mV peak-to-peak'
+      - '6 mV peak-to-peak'
+      - '0.6 V peak-to-peak'
+      - '150 mV peak-to-peak'
+    answer: 0
+    explain: 'The ESR times the peak-to-peak ripple current: 0.02 ohm times 3 A.'
+  - q: 'Suppose the same capacitor is an aluminum electrolytic whose data sheet shows its ESR rising more than tenfold at its low-temperature limit. What happens to that ripple there?'
+    options:
+      - 'It stays at 60 mV'
+      - 'It falls, since the capacitor is cold'
+      - 'It rises more than tenfold, past 0.6 V'
+      - 'It disappears'
+    answer: 2
+    explain: 'The ESR ripple is proportional to the ESR: a limit met at room temperature can be exceeded in the cold.'
+  - q: 'What does a class-2 ceramic capacitor''s code, such as X7R, tell you?'
+    options:
+      - 'Its capacitance at its rated voltage'
+      - 'How its capacitance changes with temperature, and nothing about its dc voltage'
+      - 'That its capacitance does not change'
+      - 'Its ESR'
+    answer: 1
+    explain: 'The code implies nothing about voltage coefficients: check the capacitance at the dc voltage it runs at.'
+  - q: 'A cell has 3.6 V open-circuit and 0.08 ohm internal resistance. Charged at 2.5 A, where do its terminals sit?'
+    options:
+      - '3.8 V'
+      - '3.6 V'
+      - '3.4 V'
+      - '4.2 V'
+    answer: 0
+    explain: 'The charging current lifts the terminals by 2.5 A times 0.08 ohm, 0.2 V.'
+  - q: 'A charger holds a cell''s terminals at 4.2 V while its open-circuit voltage is 4.0 V. How much current flows with 0.1 ohm of internal resistance, and with 0.4 ohm?'
+    options:
+      - '2 A both times'
+      - '0.5 A, then 2 A'
+      - '2 A, then 0.5 A'
+      - '42 A, then 10.5 A'
+    answer: 2
+    explain: 'The current is (4.2 V - 4.0 V) over the resistance: a higher resistance takes less current at the same limit.'
+  - q: 'A cell''s terminal voltage drops from 3.70 V to 3.52 V when its discharge current steps from 1 A to 3 A. What is its internal resistance?'
+    options:
+      - '0.18 ohm'
+      - '0.06 ohm'
+      - '1.17 ohm'
+      - '0.09 ohm'
+    answer: 3
+    explain: 'In the Rint model the voltage step over the current step is the resistance: 0.18 V over 2 A.'
+  - q: 'Why must a lithium-ion cell not be charged below its lower charging temperature?'
+    options:
+      - 'Its open-circuit voltage becomes zero'
+      - 'The charger''s voltage limit no longer applies'
+      - 'Its carbon anode receives lithium ions less readily, and metallic lithium deposits more easily on its negative electrode'
+      - 'Its internal resistance becomes zero'
+    answer: 2
+    explain: 'The cold slows the anode''s uptake of lithium ions, and the lithium that is not taken up can deposit as metal.'

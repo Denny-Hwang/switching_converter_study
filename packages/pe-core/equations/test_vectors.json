@@ -10862,6 +10862,964 @@
         "V_b": 1.79985
       },
       "value": 16.3480956161024
+    },
+    {
+      "id": "layout.v_spike",
+      "source": "yaml",
+      "inputs": {
+        "Delta_I": 10.0,
+        "L_loop": 1e-08,
+        "t_edge": 1e-08
+      },
+      "value": 10.0
+    },
+    {
+      "id": "layout.v_spike",
+      "source": "yaml",
+      "inputs": {
+        "Delta_I": 30.0,
+        "L_loop": 2e-09,
+        "t_edge": 5e-09
+      },
+      "value": 12.0
+    },
+    {
+      "id": "layout.v_spike",
+      "source": "random",
+      "inputs": {
+        "Delta_I": 0.208103,
+        "L_loop": 3.77081e-08,
+        "t_edge": 9.40484e-07
+      },
+      "value": 0.008343755698448885
+    },
+    {
+      "id": "layout.v_spike",
+      "source": "random",
+      "inputs": {
+        "Delta_I": 27.6534,
+        "L_loop": 4.07294e-08,
+        "t_edge": 1.20139e-08
+      },
+      "value": 93.75027176520531
+    },
+    {
+      "id": "layout.v_spike",
+      "source": "random",
+      "inputs": {
+        "Delta_I": 0.236478,
+        "L_loop": 2.28308e-08,
+        "t_edge": 7.55093e-08
+      },
+      "value": 0.07150088694240313
+    },
+    {
+      "id": "layout.v_spike",
+      "source": "random",
+      "inputs": {
+        "Delta_I": 4.4735,
+        "L_loop": 4.9509e-09,
+        "t_edge": 9.71143e-09
+      },
+      "value": 2.28059628190699
+    },
+    {
+      "id": "layout.v_spike",
+      "source": "random",
+      "inputs": {
+        "Delta_I": 0.187584,
+        "L_loop": 1.0789e-10,
+        "t_edge": 1.48326e-07
+      },
+      "value": 0.00013644565187492414
+    },
+    {
+      "id": "layout.v_spike",
+      "source": "random",
+      "inputs": {
+        "Delta_I": 0.102937,
+        "L_loop": 6.57437e-10,
+        "t_edge": 2.08497e-08
+      },
+      "value": 0.0032458305140601546
+    },
+    {
+      "id": "layout.L_ring",
+      "source": "yaml",
+      "inputs": {
+        "C_node": 2.5e-10,
+        "f_ring": 100000000.0
+      },
+      "value": 1.0132118364233776e-08
+    },
+    {
+      "id": "layout.L_ring",
+      "source": "random",
+      "inputs": {
+        "C_node": 2.08455e-11,
+        "f_ring": 948353000.0
+      },
+      "value": 1.3511012692274361e-09
+    },
+    {
+      "id": "layout.L_ring",
+      "source": "random",
+      "inputs": {
+        "C_node": 1.1683e-10,
+        "f_ring": 685648000.0
+      },
+      "value": 4.611937991998162e-10
+    },
+    {
+      "id": "layout.L_ring",
+      "source": "random",
+      "inputs": {
+        "C_node": 1.01823e-11,
+        "f_ring": 727347000.0
+      },
+      "value": 4.702307990643505e-09
+    },
+    {
+      "id": "layout.L_ring",
+      "source": "random",
+      "inputs": {
+        "C_node": 2.79153e-10,
+        "f_ring": 59241800.0
+      },
+      "value": 2.5854817258656542e-08
+    },
+    {
+      "id": "layout.L_ring",
+      "source": "random",
+      "inputs": {
+        "C_node": 1.30839e-10,
+        "f_ring": 247015000.0
+      },
+      "value": 3.1729000671465348e-09
+    },
+    {
+      "id": "layout.L_ring",
+      "source": "random",
+      "inputs": {
+        "C_node": 8.30297e-11,
+        "f_ring": 528350000.0
+      },
+      "value": 1.0928570821543622e-09
+    },
+    {
+      "id": "boot.C",
+      "source": "yaml",
+      "inputs": {
+        "Delta_V_boot": 0.5,
+        "Q_boot": 5e-08
+      },
+      "value": 1e-07
+    },
+    {
+      "id": "boot.C",
+      "source": "random",
+      "inputs": {
+        "Delta_V_boot": 1.43621,
+        "Q_boot": 1.25513e-08
+      },
+      "value": 8.739181596006155e-09
+    },
+    {
+      "id": "boot.C",
+      "source": "random",
+      "inputs": {
+        "Delta_V_boot": 1.08891,
+        "Q_boot": 2.06977e-09
+      },
+      "value": 1.9007723319649924e-09
+    },
+    {
+      "id": "boot.C",
+      "source": "random",
+      "inputs": {
+        "Delta_V_boot": 0.137062,
+        "Q_boot": 1.14009e-08
+      },
+      "value": 8.318060439800967e-08
+    },
+    {
+      "id": "boot.C",
+      "source": "random",
+      "inputs": {
+        "Delta_V_boot": 0.477809,
+        "Q_boot": 9.90714e-07
+      },
+      "value": 2.073451944186903e-06
+    },
+    {
+      "id": "boot.C",
+      "source": "random",
+      "inputs": {
+        "Delta_V_boot": 0.0754557,
+        "Q_boot": 1.19694e-09
+      },
+      "value": 1.586281752074396e-08
+    },
+    {
+      "id": "boot.C",
+      "source": "random",
+      "inputs": {
+        "Delta_V_boot": 0.384655,
+        "Q_boot": 2.66925e-08
+      },
+      "value": 6.939335248469407e-08
+    },
+    {
+      "id": "probe.t_rise",
+      "source": "yaml",
+      "inputs": {
+        "BW": 100000000.0
+      },
+      "value": 3.4969915256605976e-09
+    },
+    {
+      "id": "probe.t_rise",
+      "source": "random",
+      "inputs": {
+        "BW": 1900060.0
+      },
+      "value": 1.8404637357033977e-07
+    },
+    {
+      "id": "probe.t_rise",
+      "source": "random",
+      "inputs": {
+        "BW": 169192000.0
+      },
+      "value": 2.0668775862101033e-09
+    },
+    {
+      "id": "probe.t_rise",
+      "source": "random",
+      "inputs": {
+        "BW": 5301250.0
+      },
+      "value": 6.596541430154393e-08
+    },
+    {
+      "id": "probe.t_rise",
+      "source": "random",
+      "inputs": {
+        "BW": 347233000.0
+      },
+      "value": 1.0071022989348932e-09
+    },
+    {
+      "id": "probe.t_rise",
+      "source": "random",
+      "inputs": {
+        "BW": 198589000.0
+      },
+      "value": 1.7609190467048012e-09
+    },
+    {
+      "id": "probe.t_rise",
+      "source": "random",
+      "inputs": {
+        "BW": 79135800.0
+      },
+      "value": 4.418975388712312e-09
+    },
+    {
+      "id": "probe.f_ring",
+      "source": "yaml",
+      "inputs": {
+        "C_probe": 1e-11,
+        "L_gnd": 1e-07
+      },
+      "value": 159154943.09189534
+    },
+    {
+      "id": "probe.f_ring",
+      "source": "random",
+      "inputs": {
+        "C_probe": 1.67602e-12,
+        "L_gnd": 7.1349e-08
+      },
+      "value": 460242359.98952776
+    },
+    {
+      "id": "probe.f_ring",
+      "source": "random",
+      "inputs": {
+        "C_probe": 4.22888e-11,
+        "L_gnd": 4.73453e-08
+      },
+      "value": 112478370.09460779
+    },
+    {
+      "id": "probe.f_ring",
+      "source": "random",
+      "inputs": {
+        "C_probe": 2.44178e-11,
+        "L_gnd": 3.73677e-09
+      },
+      "value": 526888453.96897316
+    },
+    {
+      "id": "probe.f_ring",
+      "source": "random",
+      "inputs": {
+        "C_probe": 2.121e-11,
+        "L_gnd": 1.76307e-07
+      },
+      "value": 82302877.52665372
+    },
+    {
+      "id": "probe.f_ring",
+      "source": "random",
+      "inputs": {
+        "C_probe": 3.7327e-12,
+        "L_gnd": 4.75594e-07
+      },
+      "value": 119451169.12890418
+    },
+    {
+      "id": "probe.f_ring",
+      "source": "random",
+      "inputs": {
+        "C_probe": 4.4648e-12,
+        "L_gnd": 4.71383e-08
+      },
+      "value": 346922261.56794107
+    },
+    {
+      "id": "inrush.I_pk",
+      "source": "yaml",
+      "inputs": {
+        "R_ser": 0.1,
+        "V_g": 48.0
+      },
+      "value": 480.0
+    },
+    {
+      "id": "inrush.I_pk",
+      "source": "random",
+      "inputs": {
+        "R_ser": 0.00669573,
+        "V_g": 173.658
+      },
+      "value": 25935.633605297702
+    },
+    {
+      "id": "inrush.I_pk",
+      "source": "random",
+      "inputs": {
+        "R_ser": 0.0685343,
+        "V_g": 11.2942
+      },
+      "value": 164.79631367067293
+    },
+    {
+      "id": "inrush.I_pk",
+      "source": "random",
+      "inputs": {
+        "R_ser": 0.0447683,
+        "V_g": 51.2052
+      },
+      "value": 1143.7825425580154
+    },
+    {
+      "id": "inrush.I_pk",
+      "source": "random",
+      "inputs": {
+        "R_ser": 0.922821,
+        "V_g": 62.7498
+      },
+      "value": 67.99780239071282
+    },
+    {
+      "id": "inrush.I_pk",
+      "source": "random",
+      "inputs": {
+        "R_ser": 64.5369,
+        "V_g": 1.77264
+      },
+      "value": 0.027467076974568037
+    },
+    {
+      "id": "inrush.I_pk",
+      "source": "random",
+      "inputs": {
+        "R_ser": 0.166369,
+        "V_g": 1.78941
+      },
+      "value": 10.75566962595195
+    },
+    {
+      "id": "inrush.I2t",
+      "source": "yaml",
+      "inputs": {
+        "C_in": 0.0001,
+        "R_ser": 0.1,
+        "V_g": 48.0
+      },
+      "value": 1.152
+    },
+    {
+      "id": "inrush.I2t",
+      "source": "random",
+      "inputs": {
+        "C_in": 1.163e-05,
+        "R_ser": 7.56718,
+        "V_g": 74.239
+      },
+      "value": 0.004235258093320762
+    },
+    {
+      "id": "inrush.I2t",
+      "source": "random",
+      "inputs": {
+        "C_in": 3.49805e-07,
+        "R_ser": 0.00287783,
+        "V_g": 1.28391
+      },
+      "value": 0.00010018438684387552
+    },
+    {
+      "id": "inrush.I2t",
+      "source": "random",
+      "inputs": {
+        "C_in": 0.00442314,
+        "R_ser": 7.32455,
+        "V_g": 274.761
+      },
+      "value": 22.79449204396038
+    },
+    {
+      "id": "inrush.I2t",
+      "source": "random",
+      "inputs": {
+        "C_in": 0.00451345,
+        "R_ser": 9.78303,
+        "V_g": 16.3282
+      },
+      "value": 0.0615009575065178
+    },
+    {
+      "id": "inrush.I2t",
+      "source": "random",
+      "inputs": {
+        "C_in": 0.00113482,
+        "R_ser": 0.00165307,
+        "V_g": 98.293
+      },
+      "value": 3316.2779392651796
+    },
+    {
+      "id": "inrush.I2t",
+      "source": "random",
+      "inputs": {
+        "C_in": 1.07371e-06,
+        "R_ser": 4.78798,
+        "V_g": 2.11721
+      },
+      "value": 5.02611646461557e-07
+    },
+    {
+      "id": "inrush.I_ramp",
+      "source": "yaml",
+      "inputs": {
+        "C_in": 0.0001,
+        "V_g": 48.0,
+        "t_ramp": 0.0048
+      },
+      "value": 1.0000000000000002
+    },
+    {
+      "id": "inrush.I_ramp",
+      "source": "random",
+      "inputs": {
+        "C_in": 1.93863e-07,
+        "V_g": 85.8631,
+        "t_ramp": 0.00200199
+      },
+      "value": 0.008314566084396026
+    },
+    {
+      "id": "inrush.I_ramp",
+      "source": "random",
+      "inputs": {
+        "C_in": 9.1388e-07,
+        "V_g": 2.20082,
+        "t_ramp": 0.00879511
+      },
+      "value": 0.00022868223155821817
+    },
+    {
+      "id": "inrush.I_ramp",
+      "source": "random",
+      "inputs": {
+        "C_in": 1.59539e-06,
+        "V_g": 1.96079,
+        "t_ramp": 3.87211e-05
+      },
+      "value": 0.08078863353830341
+    },
+    {
+      "id": "inrush.I_ramp",
+      "source": "random",
+      "inputs": {
+        "C_in": 0.000942226,
+        "V_g": 30.7941,
+        "t_ramp": 0.00217081
+      },
+      "value": 13.365979365582433
+    },
+    {
+      "id": "inrush.I_ramp",
+      "source": "random",
+      "inputs": {
+        "C_in": 2.67023e-07,
+        "V_g": 11.958,
+        "t_ramp": 0.0694752
+      },
+      "value": 4.595972424692552e-05
+    },
+    {
+      "id": "inrush.I_ramp",
+      "source": "random",
+      "inputs": {
+        "C_in": 1.4094e-05,
+        "V_g": 160.012,
+        "t_ramp": 0.000119955
+      },
+      "value": 18.800459572339626
+    },
+    {
+      "id": "gate.I_on",
+      "source": "yaml",
+      "inputs": {
+        "R_G": 5.0,
+        "V_GS": 10.0,
+        "V_pl": 4.5
+      },
+      "value": 1.1
+    },
+    {
+      "id": "gate.I_on",
+      "source": "random",
+      "inputs": {
+        "R_G": 12.4019,
+        "V_GS": 12.1022,
+        "V_pl": 2.26761
+      },
+      "value": 0.7929905901515091
+    },
+    {
+      "id": "gate.I_on",
+      "source": "random",
+      "inputs": {
+        "R_G": 9.35763,
+        "V_GS": 16.6601,
+        "V_pl": 5.28997
+      },
+      "value": 1.215065139356867
+    },
+    {
+      "id": "gate.I_on",
+      "source": "random",
+      "inputs": {
+        "R_G": 0.894853,
+        "V_GS": 12.1034,
+        "V_pl": 3.78901
+      },
+      "value": 9.291347293913079
+    },
+    {
+      "id": "gate.I_on",
+      "source": "random",
+      "inputs": {
+        "R_G": 1.51277,
+        "V_GS": 12.9462,
+        "V_pl": 4.30911
+      },
+      "value": 5.7094535190412286
+    },
+    {
+      "id": "gate.I_on",
+      "source": "random",
+      "inputs": {
+        "R_G": 0.729473,
+        "V_GS": 16.055,
+        "V_pl": 6.71047
+      },
+      "value": 12.809973775588677
+    },
+    {
+      "id": "gate.I_on",
+      "source": "random",
+      "inputs": {
+        "R_G": 22.3842,
+        "V_GS": 10.0415,
+        "V_pl": 6.42739
+      },
+      "value": 0.16145808204001033
+    },
+    {
+      "id": "gate.I_off",
+      "source": "yaml",
+      "inputs": {
+        "R_G": 5.0,
+        "V_pl": 4.5
+      },
+      "value": 0.9
+    },
+    {
+      "id": "gate.I_off",
+      "source": "random",
+      "inputs": {
+        "R_G": 2.287,
+        "V_pl": 6.18398
+      },
+      "value": 2.7039702667249674
+    },
+    {
+      "id": "gate.I_off",
+      "source": "random",
+      "inputs": {
+        "R_G": 3.40684,
+        "V_pl": 2.24469
+      },
+      "value": 0.6588774348076223
+    },
+    {
+      "id": "gate.I_off",
+      "source": "random",
+      "inputs": {
+        "R_G": 12.7393,
+        "V_pl": 5.63847
+      },
+      "value": 0.4426043817164208
+    },
+    {
+      "id": "gate.I_off",
+      "source": "random",
+      "inputs": {
+        "R_G": 9.1163,
+        "V_pl": 7.35366
+      },
+      "value": 0.8066496275901406
+    },
+    {
+      "id": "gate.I_off",
+      "source": "random",
+      "inputs": {
+        "R_G": 18.9992,
+        "V_pl": 7.23597
+      },
+      "value": 0.380856562381574
+    },
+    {
+      "id": "gate.I_off",
+      "source": "random",
+      "inputs": {
+        "R_G": 39.3385,
+        "V_pl": 3.19337
+      },
+      "value": 0.08117670983896182
+    },
+    {
+      "id": "gate.t_pl",
+      "source": "yaml",
+      "inputs": {
+        "I_G": 1.1,
+        "Q_GD": 1e-08
+      },
+      "value": 9.09090909090909e-09
+    },
+    {
+      "id": "gate.t_pl",
+      "source": "random",
+      "inputs": {
+        "I_G": 0.429524,
+        "Q_GD": 3.20845e-08
+      },
+      "value": 7.469780501205985e-08
+    },
+    {
+      "id": "gate.t_pl",
+      "source": "random",
+      "inputs": {
+        "I_G": 0.0225053,
+        "Q_GD": 1.33697e-09
+      },
+      "value": 5.940689526467099e-08
+    },
+    {
+      "id": "gate.t_pl",
+      "source": "random",
+      "inputs": {
+        "I_G": 8.08994,
+        "Q_GD": 1.62303e-09
+      },
+      "value": 2.0062324318845379e-10
+    },
+    {
+      "id": "gate.t_pl",
+      "source": "random",
+      "inputs": {
+        "I_G": 0.193505,
+        "Q_GD": 4.07703e-08
+      },
+      "value": 2.106937805224671e-07
+    },
+    {
+      "id": "gate.t_pl",
+      "source": "random",
+      "inputs": {
+        "I_G": 1.10424,
+        "Q_GD": 2.11259e-09
+      },
+      "value": 1.9131619937694703e-09
+    },
+    {
+      "id": "gate.t_pl",
+      "source": "random",
+      "inputs": {
+        "I_G": 0.0882613,
+        "Q_GD": 1.09985e-09
+      },
+      "value": 1.2461293907975524e-08
+    },
+    {
+      "id": "therm.Tj",
+      "source": "yaml",
+      "inputs": {
+        "P_D": 2.0,
+        "T_A": 40.0,
+        "theta_CS": 0.5,
+        "theta_JC": 1.5,
+        "theta_SA": 20.0
+      },
+      "value": 84.0
+    },
+    {
+      "id": "therm.Tj",
+      "source": "random",
+      "inputs": {
+        "P_D": 20.9222,
+        "T_A": 0.665428,
+        "theta_CS": 3.19697,
+        "theta_JC": 9.36003,
+        "theta_SA": 2.41793
+      },
+      "value": 313.973908446
+    },
+    {
+      "id": "therm.Tj",
+      "source": "random",
+      "inputs": {
+        "P_D": 0.0109212,
+        "T_A": 61.3843,
+        "theta_CS": 1.52919,
+        "theta_JC": 1.22661,
+        "theta_SA": 27.1477
+      },
+      "value": 61.7108821042
+    },
+    {
+      "id": "therm.Tj",
+      "source": "random",
+      "inputs": {
+        "P_D": 22.4214,
+        "T_A": 69.1108,
+        "theta_CS": 0.130265,
+        "theta_JC": 2.44443,
+        "theta_SA": 57.6806
+      },
+      "value": 1420.1188713129998
+    },
+    {
+      "id": "therm.Tj",
+      "source": "random",
+      "inputs": {
+        "P_D": 47.1391,
+        "T_A": -20.7167,
+        "theta_CS": 1.53676,
+        "theta_JC": 3.98236,
+        "theta_SA": 5.91742
+      },
+      "value": 518.391502714
+    },
+    {
+      "id": "therm.Tj",
+      "source": "random",
+      "inputs": {
+        "P_D": 54.7154,
+        "T_A": -20.0134,
+        "theta_CS": 1.91947,
+        "theta_JC": 0.215237,
+        "theta_SA": 20.0377
+      },
+      "value": 1193.1587179678002
+    },
+    {
+      "id": "therm.Tj",
+      "source": "random",
+      "inputs": {
+        "P_D": 1.76822,
+        "T_A": 66.659,
+        "theta_CS": 0.153676,
+        "theta_JC": 0.950807,
+        "theta_SA": 89.2518
+      },
+      "value": 226.42878672626
+    },
+    {
+      "id": "therm.psi",
+      "source": "yaml",
+      "inputs": {
+        "P_D": 2.0,
+        "Psi_JT": 2.0,
+        "T_T": 80.0
+      },
+      "value": 84.0
+    },
+    {
+      "id": "therm.psi",
+      "source": "random",
+      "inputs": {
+        "P_D": 0.544506,
+        "Psi_JT": 0.124596,
+        "T_T": 60.5774
+      },
+      "value": 60.645243269576
+    },
+    {
+      "id": "therm.psi",
+      "source": "random",
+      "inputs": {
+        "P_D": 4.04512,
+        "Psi_JT": 0.116351,
+        "T_T": 55.9138
+      },
+      "value": 56.38445375712
+    },
+    {
+      "id": "therm.psi",
+      "source": "random",
+      "inputs": {
+        "P_D": 86.5587,
+        "Psi_JT": 1.77528,
+        "T_T": 37.6226
+      },
+      "value": 191.288528936
+    },
+    {
+      "id": "therm.psi",
+      "source": "random",
+      "inputs": {
+        "P_D": 0.652729,
+        "Psi_JT": 1.47109,
+        "T_T": 48.477
+      },
+      "value": 49.43722310461
+    },
+    {
+      "id": "therm.psi",
+      "source": "random",
+      "inputs": {
+        "P_D": 0.0116695,
+        "Psi_JT": 0.407171,
+        "T_T": -23.503
+      },
+      "value": -23.4982485180155
+    },
+    {
+      "id": "therm.psi",
+      "source": "random",
+      "inputs": {
+        "P_D": 98.7354,
+        "Psi_JT": 0.2449,
+        "T_T": 129.712
+      },
+      "value": 153.89229945999998
+    },
+    {
+      "id": "bat.v_term",
+      "source": "yaml",
+      "inputs": {
+        "I_b": 2.0,
+        "R_b": 0.05,
+        "V_b": 3.6
+      },
+      "value": 3.7
+    },
+    {
+      "id": "bat.v_term",
+      "source": "yaml",
+      "inputs": {
+        "I_b": -2.0,
+        "R_b": 0.05,
+        "V_b": 3.6
+      },
+      "value": 3.5
+    },
+    {
+      "id": "bat.v_term",
+      "source": "random",
+      "inputs": {
+        "I_b": 5.4045,
+        "R_b": 0.00150479,
+        "V_b": 30.4195
+      },
+      "value": 30.427632637555
+    },
+    {
+      "id": "bat.v_term",
+      "source": "random",
+      "inputs": {
+        "I_b": 6.73397,
+        "R_b": 0.176205,
+        "V_b": 96.3717
+      },
+      "value": 97.55825918385
+    },
+    {
+      "id": "bat.v_term",
+      "source": "random",
+      "inputs": {
+        "I_b": 2.64868,
+        "R_b": 4.31538,
+        "V_b": 1.07285
+      },
+      "value": 12.502910698400001
+    },
+    {
+      "id": "bat.v_term",
+      "source": "random",
+      "inputs": {
+        "I_b": -6.63208,
+        "R_b": 1.08998,
+        "V_b": 12.0626
+      },
+      "value": 4.8337654416
+    },
+    {
+      "id": "bat.v_term",
+      "source": "random",
+      "inputs": {
+        "I_b": 8.77318,
+        "R_b": 0.0562938,
+        "V_b": 49.4019
+      },
+      "value": 49.895775640284
+    },
+    {
+      "id": "bat.v_term",
+      "source": "random",
+      "inputs": {
+        "I_b": 1.49439,
+        "R_b": 0.0329186,
+        "V_b": 72.9483
+      },
+      "value": 72.997493226654
     }
   ]
 }

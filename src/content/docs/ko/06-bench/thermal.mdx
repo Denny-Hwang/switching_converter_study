@@ -1,0 +1,109 @@
+---
+title: 열 설계
+description: 소자의 전력과 열 경로를 따라 놓인 열저항으로 구한 접합 온도, 데이터시트의 접합-주위 값이 알려 주지 않는 것, 그리고 패키지 윗면 온도로 어림한 접합 온도.
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 소자의 전력과 열 경로를 따라 놓인 열저항으로 접합 온도를 어림합니다.
+- 데이터시트의 접합-주위 열저항이 내 기판에 대해 알려 주지 않는 것을 알아 둡니다.
+- 패키지 윗면에서 잰 온도로 접합 온도를 어림합니다.
+
+## 이론
+
+### 직렬 경로
+
+열저항(thermal resistance)은 그것을 가로질러 흐르는 전력 1와트당 온도 차입니다 <Cite key="ti_spra953" />.
+방열판(heat sink)에 붙은 소자는 전력을 주로 접합(junction)에서 케이스로,
+인터페이스(패드, 그리스, 절연체)를 거쳐 방열판으로, 방열판에서 공기로 내보냅니다.
+전력 전부가 이 경로를 지난다고 보면, 각 부분은 그 열저항과 전력의 곱만큼 온도를
+올립니다.
+
+<Eq id="therm.Tj" />
+
+사슬에서 가장 큰 열저항이 접합 온도 상승의 가장 큰 몫을 차지하므로, 그것을 낮추는
+것이 가장 효과적입니다.
+
+데이터시트의 접합-주위 열저항 $\theta_\mathrm{JA}$는 가장 흔히 보고되는 열 지표이며,
+흔히 오용됩니다 <Cite key="ti_spra953" />. 이 값은 소자를 측정했을 때의 기판과 공기
+흐름을 포함해 접합에서 공기까지의 전체 경로를 나타낼 뿐, 내 기판 위의 경로를 나타내지
+않습니다.
+
+### 패키지 윗면에서
+
+방열판이 없는 소자는 리드, 기판, 윗면으로 전력을 내보내며, 전력의 일부만 윗면을
+지납니다. 접합-윗면 특성 파라미터(junction-to-top characterization parameter)
+$\Psi_\mathrm{JT}$는 소자 전체 전력에 대해 접합 온도를 패키지 윗면에서 잰 온도와
+연결합니다. 진정한 열저항이 아니며, 직렬 경로에 더하지 않습니다 <Cite key="ti_spra953" />.
+
+<Eq id="therm.psi" />
+
+데이터시트의 값은 그 값을 구한 조건에서 성립합니다. 패키지에 방열판을 달면 더는 맞지
+않습니다.
+
+### 온도와 손실
+
+실리콘 MOSFET의 온저항(on-resistance)은 접합 온도와 함께 커집니다.
+인용한 튜토리얼에서는 25 °C에서 125 °C 사이에 대략 두 배가 되며 <Cite key="microchip_apt0403" />,
+쓰려는 부품의 배율은 데이터시트의 정규화 온저항 곡선에서 읽습니다. 도통 손실도 함께
+커집니다(<EqRef id="loss.cond" label="도통 손실" />). 뜨거운 접합은 더 많이 소산하고,
+그것이 접합을 더 달굽니다. 손실은 상온이 아니라 그 손실이 만드는 접합 온도에서
+어림합니다.
+
+## 풀이 예제
+
+방열판에 붙은 스위치, 그리고 그와 별개로 패키지 윗면을 잰, 방열판 없는 소자:
+
+<Worked example="bench-thermal" />
+
+직렬 경로로 보면 스위치의 접합은 <Val example="bench-thermal" name="T_J" />에 있고,
+상승의 대부분은 방열판의 <Val example="bench-thermal" name="theta_SA" />에서 생깁니다.
+방열판 없는 소자는 패키지 윗면이 <Val example="bench-thermal" name="T_T" />일 때 특성
+파라미터로 구하면 <Val example="bench-thermal" name="T_J_top" />입니다.
+
+## 직접 해 보기
+
+<TryIt eq="therm.Tj" example="bench-thermal" sweep="theta_SA" />
+
+방열판의 열저항을 바꿔 보면, 예제에서는 이것이 사슬에서 가장 크므로 접합 온도가
+그대로 따라갑니다. 대신 접합-케이스 열저항을 낮추면 그 예제에서는 접합 온도가 훨씬
+덜 움직입니다.
+
+## 벤치 실습
+
+컨버터를 전부하로 돌려 온도가 안정되게 하고, 각 소자의 전력을 손실 모델로, 또는
+측정한 입력 전력에서 출력 전력을 뺀 값으로 구합니다. 방열판에 붙은 스위치는 주위
+온도를 재고 직렬 경로로 접합 온도를 어림합니다. 방열판이 없는 소자(제어기, 또는
+기판으로 냉각되는 표면 실장 스위치)는 패키지 윗면을 재고 데이터시트의 특성
+파라미터로 접합 온도를 어림합니다. 열화상 카메라는 표면의 방사율(emissivity)에
+맞추고, 열전대(thermocouple)의 선이 작은 패키지에서 열을 빼앗지 않게 합니다. 각
+어림값을 데이터시트의 접합-주위 열저항이 예측하는 값과 비교합니다.
+
+## 주의할 점
+
+- **접합-주위 열저항**은 측정 당시의 기판과 공기 흐름에 속한 값이며, 흔히 오용됩니다
+  <Cite key="ti_spra953" />.
+- **특성 파라미터는 열저항이 아닙니다.** 직렬 경로에 더하지 않습니다
+  <Cite key="ti_spra953" />.
+- **상온에서 어림한 손실**은 너무 작습니다. 온저항은 접합 온도와 함께 커집니다
+  <Cite key="microchip_apt0403" />.
+
+## 더 알아보기
+
+<GoDeeper ids={['ti-spra953', 'ti-slva462', 'microchip-apt0403']} />
+
+## 퀴즈
+
+<Quiz id="06-bench/thermal" />

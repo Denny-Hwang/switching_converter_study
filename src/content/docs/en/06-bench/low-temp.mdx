@@ -1,0 +1,119 @@
+---
+title: Low temperature
+description: What the cold does to an aluminum electrolytic capacitor's ESR and the ripple across it, why a ceramic capacitor's temperature code says nothing about its dc voltage, and a battery's terminal voltage and charging in the cold.
+sidebar:
+  order: 7
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Estimate the ripple an aluminum electrolytic capacitor's ESR develops in the cold.
+- Know what a ceramic capacitor's temperature code does not tell.
+- Read a battery's terminal voltage in the Rint model, and know why a lithium-ion cell is not charged in the cold.
+
+## Theory
+
+### Aluminum electrolytic capacitors
+
+An aluminum electrolytic capacitor's ESR can increase more than tenfold at
+its low-temperature limit <Cite key="cde_ae_guide" />; the part's data sheet
+gives its own low-temperature figures. The ripple voltage across the ESR
+rises in proportion
+(<EqRef id="cap.esr.ripple" label="ripple voltage across the ESR" />): a
+converter whose output ripple meets its limit at room temperature can
+exceed it in the cold.
+
+### Ceramic capacitors
+
+A class-2 ceramic capacitor's code, such as X7R, describes how its
+capacitance changes with temperature, and implies nothing about voltage
+coefficients <Cite key="adi_ceramic_caps" />: what the dc voltage across it
+takes away is not in the code. The dc voltage alone can leave a small
+fraction of the nominal capacitance: the article's own example, a 4.7 µF Y5V capacitor rated 6.3 V, keeps 0.33 µF at 5 V at room temperature <Cite key="adi_ceramic_caps" />,
+and temperature changes it again. Check the capacitance at the dc voltage it
+runs at, across the temperatures it will see.
+
+### Batteries
+
+In the Rint model a battery is its open-circuit voltage behind an internal
+resistance, and both are functions of the state of charge, the state of
+health and the temperature <Cite key="he2011" where="Sec. 2.1" />. A charging
+current lifts the terminals above the open-circuit voltage:
+
+<Eq id="bat.v_term" />
+
+A charger that holds the terminals at a voltage limit therefore delivers
+less current into a battery whose resistance is higher: take the resistance
+at the temperature the battery runs at.
+
+At low temperature, a lithium-ion cell's carbon anode receives lithium ions
+less readily, and metallic lithium deposits form more easily on its negative
+electrode. Below the lower charging temperature specified for the cell, it
+must not be charged <Cite key="jeita_liion" />.
+
+## Worked example
+
+A cell being charged, and an output capacitor's ESR ripple at room
+temperature and at its low-temperature limit:
+
+<Worked example="bench-cold" />
+
+Charged at <Val example="bench-cold" name="I_b" /> through
+<Val example="bench-cold" name="R_b" />, the cell's terminals sit at
+<Val example="bench-cold" name="V" />, above its open-circuit
+<Val example="bench-cold" name="V_b" />. The capacitor's ESR develops
+<Val example="bench-cold" name="Delta_v_esr" /> of peak-to-peak ripple at room temperature and
+<Val example="bench-cold" name="Delta_v_esr_cold" /> with its ESR ten times
+higher.
+
+## Try it
+
+<TryIt eq="cap.esr.ripple" example="bench-cold" sweep="R_esr" />
+
+Sweep the ESR across a decade: the ripple follows it.
+
+<TryIt eq="bat.v_term" example="bench-cold" sweep="R_b" />
+
+Sweep the internal resistance: at the same charging current, the terminals
+rise with it.
+
+## Bench exercise
+
+Measure a converter's output ripple at room temperature, then with its
+output capacitor cooled (a cold chamber, or cold spray on the capacitor
+alone), with the probe's ground connection kept short
+([probes](../probes/)). Where the ESR's part dominates the ripple, divide
+the ripple by the peak-to-peak ripple current into the capacitor to
+estimate the ESR, and compare the two temperatures. Watch for condensation as the capacitor warms again. For a
+battery, log its terminal voltage and current at two temperatures while it
+discharges at a constant current, and estimate its resistance from a step
+in the current at each.
+
+## Gotchas
+
+- **An electrolytic's ESR** can increase more than tenfold at its
+  low-temperature limit <Cite key="cde_ae_guide" />.
+- **A ceramic's code says nothing about its dc voltage**
+  <Cite key="adi_ceramic_caps" />.
+- **A lithium-ion cell below its lower charging temperature** must not be
+  charged <Cite key="jeita_liion" />.
+- **A charger at its voltage limit** delivers less current into a battery
+  of higher resistance (<EqRef id="bat.v_term" label="terminal voltage" />).
+
+## Go deeper
+
+<GoDeeper ids={['cde-ae-guide', 'adi-ceramic-caps', 'jeita-liion']} />
+
+## Quiz
+
+<Quiz id="06-bench/low-temp" />

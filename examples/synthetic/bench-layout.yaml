@@ -1,0 +1,13 @@
+synthetic: true
+label: "Layout example"
+label_ko: "레이아웃 예제"
+# 10 A stopping in 10 ns: through a loop of 10 nH, and through a tighter
+# loop of 2 nH.
+params:
+  L_loop: 1.0e-8
+  L_loop_tight: 2.0e-9
+  Delta_I: 10.0
+  t_edge: 1.0e-8
+steps:
+  - layout.v_spike
+  - {eq: layout.v_spike, bind: {L_loop: L_loop_tight}, as: V_spike_tight}

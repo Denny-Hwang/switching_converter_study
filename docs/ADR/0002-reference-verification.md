@@ -42,9 +42,10 @@ Verification has three layers.
    words, as whole words and ignoring case and punctuation (pypdf reads the
    file). A PDF that only mentions the document further down, in a list of
    related documents say, does not pass. The statements a page cites a PDF
-   for are listed in the bib entry's `urlquotes`, and each must occur in
-   the PDF's text: the claim is then checked in the document itself, not
-   only in search results.
+   or a web page for are listed in the bib entry's `urlquotes`, and each
+   must occur in the PDF's text, or in the web page's visible text (its
+   markup, scripts, styles and comments removed): the claim is then checked
+   in the document itself, not only in search results.
    lychee opens every URL rendered on the built site. It skips `doi.org`
    links (publishers answer bots with 403; the Crossref check is stronger)
    and `www.analog.com` and `www.st.com` (they reject lychee's HTTP/2

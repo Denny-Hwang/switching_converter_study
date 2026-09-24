@@ -523,3 +523,285 @@ resources:
     why_ko: "수식을 최소화한 직관적 설명; 개별 영상이 검증될 때까지 채널로 연결."
     title_match: "Sam Ben-Yaakov"
     cite: benyaakov_youtube
+
+  # --- 06-bench ----------------------------------------------------------------------
+  - id: adi-an136
+    type: app-note
+    title: "AN-136: PCB Layout Considerations for Non-Isolated Switching Power Supplies"
+    author: "Analog Devices (Linear Technology)"
+    url: https://www.analog.com/en/resources/app-notes/an-136.html
+    tags: [layout, bench]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "The hot loop, the layer stack and the switch node of a buck converter's board, step by step."
+    why_ko: "벅 컨버터 기판의 핫 루프, 층 구성, 스위치 노드를 단계별로 설명."
+    title_match: "PCB Layout Considerations for Non-Isolated Switching Power Supplies"
+    cite: adi_an136
+
+  - id: ti-slyt614
+    type: app-note
+    title: "Five steps to a great PCB layout for a step-down converter (SLYT614)"
+    author: "Texas Instruments"
+    url: https://www.ti.com/lit/pdf/slyt614
+    tags: [layout, bench]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "Five steps to a step-down converter's board, with the input capacitor as its most important component."
+    why_ko: "입력 커패시터를 가장 중요한 부품으로 두는, 강압 컨버터 기판을 위한 다섯 단계."
+    title_match: "Five steps to a great PCB layout for a step-down converter"
+    urlkind: pdf
+    cite: ti_slyt614
+
+  - id: ti-snva021
+    type: app-note
+    title: "AN-1149 Layout Guidelines for Switching Power Supplies (SNVA021C)"
+    author: "Texas Instruments"
+    url: https://www.ti.com/lit/pdf/snva021
+    tags: [layout, bench]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "Current loops, ground planes, the feedback trace and the input capacitor, in a short note."
+    why_ko: "전류 루프, 접지면, 피드백 배선, 입력 커패시터를 짧게 정리한 노트."
+    title_match: "Layout Guidelines for Switching Power Supplies"
+    urlkind: pdf
+    cite: ti_snva021
+
+  - id: vishay-an608a
+    type: app-note
+    title: "Power MOSFET Basics: Understanding Gate Charge and Using it to Assess Switching Performance (AN608A)"
+    author: "Vishay Siliconix"
+    url: https://www.vishay.com/docs/73217/an608a.pdf
+    tags: [gate-drive, semiconductors, bench]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "The gate-charge curve read interval by interval, and what each charge says about the switching times."
+    why_ko: "게이트 전하 곡선을 구간별로 읽고, 각 전하가 스위칭 시간에 대해 말해 주는 것."
+    title_match: "Understanding Gate Charge"
+    urlkind: pdf
+    cite: vishay_an608a
+
+  - id: ti-slua887
+    type: app-note
+    title: "Bootstrap Circuitry Selection for Half-Bridge Configurations (SLUA887A)"
+    author: "Texas Instruments"
+    url: https://www.ti.com/lit/an/slua887a/slua887a.pdf
+    tags: [gate-drive, bench]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "Choosing the bootstrap capacitor, diode and resistor of a half-bridge driver, and what goes wrong when they are too small."
+    why_ko: "하프 브리지 드라이버의 부트스트랩 커패시터·다이오드·저항 선정과, 값이 너무 작을 때 생기는 문제."
+    title_match: "Bootstrap Circuitry Selection for Half-Bridge Configurations"
+    urlkind: pdf
+    cite: ti_slua887
+
+  - id: ti-sszta51
+    type: app-note
+    title: "System Trade-offs for High- and Low-side Current Measurements (SSZTA51)"
+    author: "Texas Instruments"
+    url: https://www.ti.com/lit/pdf/sszta51
+    tags: [current-sensing, bench]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "A short comparison of placing the shunt in the ground return or on the supply side."
+    why_ko: "션트를 접지 귀환 경로에 둘지 전원 쪽에 둘지를 짧게 비교."
+    title_match: "High- and Low-side Current Measurements"
+    urlkind: pdf
+    cite: ti_sszta51
+
+  - id: adi-osullivan2012
+    type: app-note
+    title: "Optimize High-Current Sensing Accuracy by Improving Pad Layout of Low-Value Shunt Resistors (Analog Dialogue 46-06)"
+    author: "M. O'Sullivan, Analog Devices"
+    url: https://www.analog.com/media/en/analog-dialogue/volume-46/number-2/articles/optimize-high-current-sensing-accuracy.pdf
+    tags: [current-sensing, layout, bench]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "How the solder of a low-value shunt enters the reading, and the four-pad layout that keeps it out."
+    why_ko: "저저항 션트의 납땜이 측정값에 끼어드는 방식과, 이를 빼는 4패드 배치."
+    title_match: "Optimize High-Current Sensing Accuracy by Improving Pad Layout of Low-Value Shunt Resistors"
+    urlkind: pdf
+    cite: osullivan2012
+
+  - id: adi-an1144
+    type: app-note
+    title: "AN-1144: Measuring Output Ripple and Switching Transients in Switching Regulators"
+    author: "Analog Devices"
+    url: https://www.analog.com/en/resources/app-notes/an-1144.html
+    tags: [probes, measurement, bench]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "How a probe's ground lead exaggerates switching transients, and the tip-and-barrel method for output ripple."
+    why_ko: "프로브 접지선이 스위칭 과도를 부풀리는 방식과, 출력 리플을 재는 팁-앤-배럴(tip-and-barrel) 방법."
+    title_match: "Measuring Output Ripple and Switching Transients"
+    cite: adi_an1144
+
+  - id: keysight-5988-8008
+    type: app-note
+    title: "Understanding Oscilloscope Frequency Response and Its Effect on Rise-Time Accuracy (5988-8008)"
+    author: "Keysight Technologies"
+    url: https://www.keysight.com/us/en/assets/7018-01129/application-notes/5988-8008.pdf
+    tags: [probes, measurement, bench]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "Why the rise time an oscilloscope shows depends on the shape of its frequency response, not on its bandwidth alone."
+    why_ko: "오실로스코프가 보여 주는 상승 시간이 대역폭뿐 아니라 주파수 응답의 모양에 따라 달라지는 이유."
+    title_match: "Oscilloscope Frequency Response"
+    urlkind: pdf
+    cite: keysight_5988_8008
+
+  - id: tek-bw-risetime
+    type: app-note
+    title: "How is bandwidth related to rise time for oscilloscopes? (Tektronix FAQ)"
+    author: "Tektronix"
+    url: https://www.tek.com/en/support/faqs/how-bandwidth-related-rise-time-oscilloscopes
+    tags: [probes, measurement, bench]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "The 0.35 rule between an oscilloscope's bandwidth and its rise time, and where it holds."
+    why_ko: "오실로스코프 대역폭과 상승 시간 사이의 0.35 규칙과 그것이 성립하는 범위."
+    title_match: "How is bandwidth related to rise time"
+    cite: tek_bw_risetime
+
+  - id: ti-spra953
+    type: app-note
+    title: "Semiconductor and IC Package Thermal Metrics (SPRA953)"
+    author: "Texas Instruments"
+    url: https://www.ti.com/lit/pdf/spra953
+    tags: [thermal, bench]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "What the thermal resistances and characterization parameters on a data sheet mean, how they are measured, and how they are misused."
+    why_ko: "데이터시트의 열저항과 특성 파라미터가 뜻하는 것, 측정 방법, 흔한 오용."
+    title_match: "Semiconductor and IC Package Thermal Metrics"
+    urlkind: pdf
+    cite: ti_spra953
+
+  - id: ti-slva462
+    type: app-note
+    title: "Understanding Thermal Dissipation and Design of a Heatsink (SLVA462)"
+    author: "Texas Instruments"
+    url: https://www.ti.com/lit/pdf/slva462
+    tags: [thermal, bench]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "The thermal path from a junction to the air, and sizing a heat sink from it."
+    why_ko: "접합에서 공기까지의 열 경로와, 이를 바탕으로 방열판 크기를 정하는 법."
+    title_match: "Understanding Thermal Dissipation and Design of a Heatsink"
+    urlkind: pdf
+
+  - id: microchip-apt0403
+    type: app-note
+    title: "Power MOSFET Tutorial (APT-0403)"
+    author: "Advanced Power Technology (Microchip)"
+    url: https://ww1.microchip.com/downloads/aemDocuments/documents/PSDS/ApplicationNotes/ApplicationNotes/APT0403.pdf
+    tags: [thermal, semiconductors, bench]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "A power MOSFET's structure, its data sheet's parameters and how they change with temperature."
+    why_ko: "전력 MOSFET의 구조, 데이터시트 파라미터, 그리고 그것들이 온도에 따라 변하는 방식."
+    title_match: "Power MOSFET Tutorial"
+    urlkind: pdf
+    cite: microchip_apt0403
+
+  - id: ti-slva670
+    type: app-note
+    title: "Managing Inrush Current (SLVA670A)"
+    author: "Texas Instruments"
+    url: https://www.ti.com/lit/pdf/slva670
+    tags: [protection, inrush, bench]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "Where inrush current comes from when a load's capacitance is switched on, and how a slower voltage rise reduces it."
+    why_ko: "부하의 커패시턴스를 연결할 때 돌입 전류가 생기는 이유와, 전압 상승을 늦춰 그것을 줄이는 방법."
+    title_match: "Managing Inrush Current"
+    urlkind: pdf
+    cite: ti_slva670
+
+  - id: littelfuse-fuseology
+    type: app-note
+    title: "Fuseology: Fuse Facts and Fuse Selection Guide"
+    author: "Littelfuse"
+    url: https://www.littelfuse.com/assetdocs/fuseology-fuse-facts-and-fuse-selection-guide?assetguid=be92b28c-1f63-4f48-a505-55c582b7c1ae
+    tags: [protection, fuse, bench]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "How a fuse's ratings are defined, and what its current, its pulses and its ambient temperature do to it."
+    why_ko: "퓨즈의 정격이 정의되는 방식, 그리고 전류, 펄스, 주위 온도가 퓨즈에 주는 영향."
+    title_match: "Fuse Selection Guide"
+    urlkind: pdf
+    cite: littelfuse_fuseology
+
+  - id: ti-slva139
+    type: app-note
+    title: "Reverse Current/Battery Protection Circuits (SLVA139)"
+    author: "Texas Instruments"
+    url: https://www.ti.com/lit/pdf/slva139
+    tags: [protection, battery, bench]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "Circuits that protect a load against a battery connected backwards, starting from a diode in series with the battery."
+    why_ko: "배터리에 직렬로 넣은 다이오드부터 시작해, 거꾸로 연결된 배터리로부터 부하를 보호하는 회로들."
+    title_match: "Reverse Current/Battery Protection Circuits"
+    urlkind: pdf
+    cite: ti_slva139
+
+  - id: adi-ceramic-caps
+    type: app-note
+    title: "Temperature and Voltage Variation of Ceramic Capacitors, or Why Your 4.7 µF Capacitor Becomes a 0.33 µF Capacitor"
+    author: "Analog Devices (Maxim Integrated)"
+    url: https://www.analog.com/en/resources/technical-articles/temperature-and-voltage-variation-ceramic-capacitor.html
+    tags: [capacitors, temperature, bench]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "How a class-2 ceramic capacitor's capacitance changes with temperature and with its dc voltage, and why its code tells only the first."
+    why_ko: "2종 세라믹 커패시터의 커패시턴스가 온도와 DC 전압에 따라 변하는 방식, 그리고 그 코드가 앞의 것만 알려 주는 이유."
+    title_match: "Temperature and Voltage Variation of Ceramic Capacitors"
+    urlkind: html
+    cite: adi_ceramic_caps
+
+  - id: cde-ae-guide
+    type: app-note
+    title: "Aluminum Electrolytic Capacitor Application Guide"
+    author: "Cornell Dubilier Electronics"
+    url: https://www.cde.com/resources/technical-papers/KNO_CD_AEappGuide_R2.pdf
+    tags: [capacitors, temperature, bench]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "How an aluminum electrolytic capacitor's capacitance, ESR and life change with temperature, ripple current and voltage."
+    why_ko: "알루미늄 전해 커패시터의 커패시턴스, ESR, 수명이 온도, 리플 전류, 전압에 따라 변하는 방식."
+    title_match: "Aluminum Electrolytic Capacitor Application Guide"
+    urlkind: pdf
+    cite: cde_ae_guide
+
+  - id: jeita-liion
+    type: app-note
+    title: "A Guide to the Safe Use of Lithium-Ion Secondary Cells in Notebook-type Personal Computers and Tablet Terminals"
+    author: "JEITA"
+    url: https://home.jeita.or.jp/upload_file/20210407112651_JbDgUSWGiB.pdf
+    tags: [battery, temperature, bench]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "Why a lithium-ion cell's charging is limited in temperature, voltage and current, and what a charger must do outside those limits."
+    why_ko: "리튬이온 셀의 충전이 온도, 전압, 전류로 제한되는 이유와, 그 한계를 벗어났을 때 충전기가 해야 할 일."
+    title_match: "A Guide to the Safe Use of Lithium-Ion Secondary Cells"
+    urlkind: pdf
+    cite: jeita_liion

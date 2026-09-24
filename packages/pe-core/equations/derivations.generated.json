@@ -2034,6 +2034,205 @@
           "result_for": "sense.filter_R"
         }
       ]
+    },
+    {
+      "module": "bench",
+      "source": "python/pe_core/derive/bench.py",
+      "title": "Bench: edges, gate drive, rise time, inrush, heat and a battery's terminals",
+      "title_ko": "벤치: 에지, 게이트 구동, 상승 시간, 돌입 전류, 열, 배터리 단자",
+      "intro": "Results of the inductor's and the capacitor's laws, the first-order step response, Ohm's law across a gate resistor, a series thermal path and the Rint battery model, in the form they take on the bench.",
+      "intro_ko": "인덕터와 커패시터의 법칙, 1차 회로의 계단 응답, 게이트 저항에 걸린 옴의 법칙, 직렬 열 경로, Rint 배터리 모델에서 나오는 결과를 벤치에서 보이는 형태로 정리한다.",
+      "results": [
+        "layout.v_spike",
+        "layout.L_ring",
+        "gate.I_on",
+        "gate.I_off",
+        "gate.t_pl",
+        "boot.C",
+        "probe.t_rise",
+        "probe.f_ring",
+        "inrush.I_pk",
+        "inrush.I2t",
+        "inrush.I_ramp",
+        "therm.Tj",
+        "bat.v_term"
+      ],
+      "steps": [
+        {
+          "text": "The voltage across an inductance is proportional to the rate of change of its current:",
+          "text_ko": "인덕턴스 양단 전압은 전류의 변화율에 비례한다.",
+          "latex": "v = L_\\mathrm{loop} \\frac{d}{d t} i{\\left(t \\right)}",
+          "result_for": null
+        },
+        {
+          "text": "A current that changes by $\\Delta I$ linearly over the edge $t_\\mathrm{edge}$ changes at a constant rate:",
+          "text_ko": "에지 $t_\\mathrm{edge}$ 동안 $\\Delta I$만큼 직선적으로 변하는 전류는 일정한 속도로 변한다.",
+          "latex": "\\frac{d}{d t} i{\\left(t \\right)} = \\frac{\\Delta I}{t_\\mathrm{edge}}",
+          "result_for": null
+        },
+        {
+          "text": "so throughout the edge the loop's inductance develops",
+          "text_ko": "따라서 에지 내내 루프 인덕턴스에 걸리는 전압은",
+          "latex": "V_\\mathrm{spike} = \\frac{L_\\mathrm{loop} \\Delta I}{t_\\mathrm{edge}}",
+          "result_for": "layout.v_spike"
+        },
+        {
+          "text": "After the turn-off edge the loop's inductance rings with the switch node's capacitance, a series L-C, at",
+          "text_ko": "턴오프 에지 뒤에 루프 인덕턴스는 스위치 노드 커패시턴스와 직렬 L-C를 이루어 다음 주파수로 링잉한다.",
+          "latex": "f_\\mathrm{ring} = \\frac{1}{2 \\pi \\sqrt{C_\\mathrm{node}} \\sqrt{L_\\mathrm{loop}}}",
+          "result_for": null
+        },
+        {
+          "text": "so the ring's frequency gives the loop's inductance:",
+          "text_ko": "따라서 링잉 주파수로 루프 인덕턴스를 구한다.",
+          "latex": "L_\\mathrm{loop} = \\frac{1}{4 \\pi^{2} f_\\mathrm{ring}^{2} C_\\mathrm{node}}",
+          "result_for": "layout.L_ring"
+        },
+        {
+          "text": "While the drain voltage makes its transition the gate stays at the plateau voltage $V_\\mathrm{pl}$. The driver switches its output to $V_\\mathrm{GS}$ (turn-on) or to 0 (turn-off) behind the gate loop's resistance $R_G$, so by Ohm's law the gate current is constant meanwhile:",
+          "text_ko": "드레인 전압이 전이하는 동안 게이트는 플래토 전압 $V_\\mathrm{pl}$에 머문다. 드라이버는 게이트 루프 저항 $R_G$ 뒤에서 출력을 $V_\\mathrm{GS}$(턴온) 또는 0(턴오프)으로 바꾸므로, 옴의 법칙에 따라 그동안 게이트 전류는 일정하다.",
+          "latex": null,
+          "result_for": null
+        },
+        {
+          "text": "at turn-on",
+          "text_ko": "턴온 때",
+          "latex": "I_G = \\frac{V_\\mathrm{GS} - V_\\mathrm{pl}}{R_G}",
+          "result_for": "gate.I_on"
+        },
+        {
+          "text": "and at turn-off",
+          "text_ko": "턴오프 때",
+          "latex": "I_G = \\frac{V_\\mathrm{pl}}{R_G}",
+          "result_for": "gate.I_off"
+        },
+        {
+          "text": "A constant current delivers charge at a constant rate:",
+          "text_ko": "일정한 전류는 일정한 속도로 전하를 전달한다.",
+          "latex": "q = I_G t",
+          "result_for": null
+        },
+        {
+          "text": "so the plateau, along which the gate takes the gate-drain charge $Q_\\mathrm{GD}$, lasts",
+          "text_ko": "따라서 게이트가 게이트-드레인 전하 $Q_\\mathrm{GD}$를 받는 플래토는 다음 시간 동안 지속된다.",
+          "latex": "t_\\mathrm{pl} = \\frac{Q_\\mathrm{GD}}{I_G}",
+          "result_for": "gate.t_pl"
+        },
+        {
+          "text": "A capacitor's charge is its capacitance times its voltage, so supplying the charge $Q_\\mathrm{boot}$ lowers its voltage by",
+          "text_ko": "커패시터의 전하는 커패시턴스와 전압의 곱이므로, 전하 $Q_\\mathrm{boot}$를 공급하면 전압이 다음만큼 떨어진다.",
+          "latex": "\\Delta V_\\mathrm{boot} = \\frac{Q_\\mathrm{boot}}{C_\\mathrm{boot}}",
+          "result_for": null
+        },
+        {
+          "text": "For a droop of at most $\\Delta V_\\mathrm{boot}$ the capacitance must be at least",
+          "text_ko": "강하가 $\\Delta V_\\mathrm{boot}$ 이하가 되려면 커패시턴스는 적어도 다음과 같아야 한다.",
+          "latex": "C_\\mathrm{boot} = \\frac{Q_\\mathrm{boot}}{\\Delta V_\\mathrm{boot}}",
+          "result_for": "boot.C"
+        },
+        {
+          "text": "A single-pole system answers a unit step with",
+          "text_ko": "단일 극점 시스템은 단위 계단에 다음과 같이 응답한다.",
+          "latex": "y = 1 - e^{- \\frac{t}{\\tau}}",
+          "result_for": null
+        },
+        {
+          "text": "It reaches 10 % and 90 % of its final value at",
+          "text_ko": "최종값의 10 %와 90 %에 도달하는 시각은 각각 다음과 같다.",
+          "latex": "\\left( t_{10} = \\tau \\ln{\\left(\\frac{10}{9} \\right)}, \\  t_{90} = \\tau \\ln{\\left(10 \\right)}\\right)",
+          "result_for": null
+        },
+        {
+          "text": "so its 10-90 % rise time is",
+          "text_ko": "따라서 10-90 % 상승 시간은",
+          "latex": "t_\\mathrm{rise} = 2 \\tau \\ln{\\left(3 \\right)}",
+          "result_for": null
+        },
+        {
+          "text": "Its -3 dB bandwidth is the corner frequency of the same pole:",
+          "text_ko": "-3 dB 대역폭은 같은 극점의 차단 주파수이다.",
+          "latex": "f_\\mathrm{BW} = \\frac{1}{2 \\pi \\tau}",
+          "result_for": null
+        },
+        {
+          "text": "Eliminating $\\tau$:",
+          "text_ko": "$\\tau$를 소거하면:",
+          "latex": "t_\\mathrm{rise} = \\frac{\\ln{\\left(3 \\right)}}{\\pi f_\\mathrm{BW}} = \\frac{\\ln{\\left(9 \\right)}}{2 \\pi f_\\mathrm{BW}}",
+          "result_for": "probe.t_rise"
+        },
+        {
+          "text": "The tip-and-ground loop's inductance and the probe's input capacitance form a series L-C; without loss its current $i$ obeys",
+          "text_ko": "팁과 접지가 이루는 루프의 인덕턴스와 프로브 입력 커패시턴스는 직렬 L-C를 이룬다. 손실이 없으면 전류 $i$는 다음을 따른다.",
+          "latex": "L_\\mathrm{gnd} \\frac{d^{2}}{d t^{2}} i{\\left(t \\right)} + \\frac{i{\\left(t \\right)}}{C_\\mathrm{probe}} = 0",
+          "result_for": null
+        },
+        {
+          "text": "whose solutions ring at the angular frequency",
+          "text_ko": "그 해는 다음 각주파수로 링잉한다.",
+          "latex": "\\omega_0 = \\frac{1}{\\sqrt{C_\\mathrm{probe}} \\sqrt{L_\\mathrm{gnd}}}",
+          "result_for": null
+        },
+        {
+          "text": "that is, the frequency",
+          "text_ko": "곧 주파수는",
+          "latex": "f_\\mathrm{probe} = \\frac{1}{2 \\pi \\sqrt{L_\\mathrm{gnd} C_\\mathrm{probe}}}",
+          "result_for": "probe.f_ring"
+        },
+        {
+          "text": "An empty capacitor switched onto a step $V_g$ through a series resistance charges with the current",
+          "text_ko": "빈 커패시터가 직렬 저항을 통해 계단 전압 $V_g$에 연결되면 다음 전류로 충전된다.",
+          "latex": "i = \\frac{V_g e^{- \\frac{t}{C_\\mathrm{in} R_\\mathrm{ser}}}}{R_\\mathrm{ser}}",
+          "result_for": null
+        },
+        {
+          "text": "which is largest at the step, when the capacitor has no voltage across it:",
+          "text_ko": "이 전류는 커패시터 전압이 0인 계단 순간에 가장 크다.",
+          "latex": "I_\\mathrm{inrush} = \\frac{V_g}{R_\\mathrm{ser}}",
+          "result_for": "inrush.I_pk"
+        },
+        {
+          "text": "The integral of its square over the whole pulse is",
+          "text_ko": "펄스 전체에 걸친 전류 제곱의 적분은",
+          "latex": "I^2 t = \\frac{V_g^{2} C_\\mathrm{in}}{2 R_\\mathrm{ser}}",
+          "result_for": "inrush.I2t"
+        },
+        {
+          "text": "A capacitor's current is its capacitance times the rate of change of its voltage:",
+          "text_ko": "커패시터 전류는 커패시턴스와 전압 변화율의 곱이다.",
+          "latex": "i = C_\\mathrm{in} \\frac{d}{d t} v{\\left(t \\right)}",
+          "result_for": null
+        },
+        {
+          "text": "so a voltage ramped linearly from zero to $V_g$ over $t_\\mathrm{ramp}$ draws a constant current:",
+          "text_ko": "따라서 전압을 $t_\\mathrm{ramp}$ 동안 0에서 $V_g$까지 선형으로 올리면 일정한 전류가 흐른다.",
+          "latex": "I_\\mathrm{inrush} = \\frac{C_\\mathrm{in} V_g}{t_\\mathrm{ramp}}",
+          "result_for": "inrush.I_ramp"
+        },
+        {
+          "text": "A thermal resistance is the temperature difference across a part of the heat's path per watt flowing through it. With all of the device's power flowing from the junction to the case, the case to the heat sink and the heat sink to the ambient in turn,",
+          "text_ko": "열저항은 열 경로의 한 부분 양단 온도 차를 그 부분을 지나는 전력 1 W당으로 나타낸 값이다. 소자의 전력 전부가 접합에서 케이스로, 케이스에서 방열판으로, 방열판에서 주위로 차례로 흐르면",
+          "latex": "\\left( T_J - T_C = P_D \\theta_\\mathrm{JC}, \\  T_C - T_S = P_D \\theta_\\mathrm{CS}, \\  T_S - T_A = P_D \\theta_\\mathrm{SA}\\right)",
+          "result_for": null
+        },
+        {
+          "text": "and the rises add up from the ambient:",
+          "text_ko": "주위 온도부터 상승분이 더해진다.",
+          "latex": "T_J = T_A + P_D \\left(\\theta_\\mathrm{JC} + \\theta_\\mathrm{CS} + \\theta_\\mathrm{SA}\\right)",
+          "result_for": "therm.Tj"
+        },
+        {
+          "text": "The Rint model is the open-circuit voltage behind the internal resistance; the charging current flows into the positive terminal through the resistance (`bat.rint`):",
+          "text_ko": "Rint 모델은 내부 저항 뒤의 개방 전압이다. 충전 전류는 저항을 거쳐 양극 단자로 들어간다(`bat.rint`).",
+          "latex": "I_b = \\frac{V - V_b}{R_b}",
+          "result_for": null
+        },
+        {
+          "text": "so the terminals sit at",
+          "text_ko": "따라서 단자 전압은",
+          "latex": "V = V_b + I_b R_b",
+          "result_for": "bat.v_term"
+        }
+      ]
     }
   ]
 }

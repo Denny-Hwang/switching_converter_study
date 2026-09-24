@@ -1,0 +1,119 @@
+---
+title: Thermal design
+description: A device's junction temperature from its power and the thermal resistances along the heat's path, what a data sheet's junction-to-ambient figure does not tell, and the junction estimated from a package-top temperature.
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Estimate a device's junction temperature from its power and the thermal resistances along the heat's path.
+- Know what a data sheet's junction-to-ambient resistance does not tell about your board.
+- Estimate the junction from a temperature measured on top of the package.
+
+## Theory
+
+### A series path
+
+A thermal resistance is a temperature difference per watt of the power that
+flows across it <Cite key="ti_spra953" />. On a heat sink, a device sheds
+its power mainly from its junction to its case, through the interface (a
+pad, grease or an insulator) to the heat sink, and from the heat sink to the
+air. Taking all of it along that path, each part raises the temperature by
+its resistance times the power:
+
+<Eq id="therm.Tj" />
+
+The largest resistance in the chain takes the largest share of the
+junction's rise, so lowering it helps most.
+
+A data sheet's junction-to-ambient resistance $\theta_\mathrm{JA}$ is the
+most commonly reported thermal metric, and it is often misused
+<Cite key="ti_spra953" />: it describes the whole path from the junction to
+the air as the device was measured, board and airflow included, not the
+path on your board.
+
+### From the package top
+
+A device without a heat sink sheds its power through its leads, its board
+and its top, and only part of the power flows through the top. The
+junction-to-top characterization parameter $\Psi_\mathrm{JT}$ relates the
+junction to a temperature measured on top of the package, for the device's
+whole power; it is not a true thermal resistance, and is not added into a
+series path <Cite key="ti_spra953" />:
+
+<Eq id="therm.psi" />
+
+A data sheet's value holds in the conditions it was characterized in; with
+a heat sink on the package it no longer applies.
+
+### Temperature and loss
+
+A silicon MOSFET's on-resistance rises with its junction temperature: in
+the cited tutorial it roughly doubles from 25 °C to 125 °C <Cite key="microchip_apt0403" />,
+and the data sheet's normalized on-resistance curve gives the factor for the
+part you use. The conduction loss rises with it
+(<EqRef id="loss.cond" label="conduction loss" />). A hotter junction
+dissipates more, which heats it further: estimate the loss at the junction
+temperature it causes, not at room temperature.
+
+## Worked example
+
+A switch on a heat sink; and, apart from it, a device without a heat sink
+whose package top is measured:
+
+<Worked example="bench-thermal" />
+
+Through the series path the switch's junction sits at
+<Val example="bench-thermal" name="T_J" />, most of the rise across the heat
+sink's <Val example="bench-thermal" name="theta_SA" />. For the device
+without a heat sink, a package top at <Val example="bench-thermal" name="T_T" />
+and the characterization parameter give
+<Val example="bench-thermal" name="T_J_top" />.
+
+## Try it
+
+<TryIt eq="therm.Tj" example="bench-thermal" sweep="theta_SA" />
+
+Sweep the heat sink's resistance: in the example it is the largest in the
+chain, and the junction follows it. Lowering the junction-to-case
+resistance instead moves the junction far less there.
+
+## Bench exercise
+
+Run a converter at full load until its temperatures settle, and find each
+device's power from the loss model or from the measured input less output.
+For a switch on a heat sink, measure the ambient and estimate the junction
+through the series path. For a device without a heat sink (a controller, or
+a surface-mount switch cooled by its board), measure the top of its package
+and estimate the junction with the data sheet's characterization parameter:
+set a thermal camera to the surface's emissivity, and keep a thermocouple's
+wire from drawing heat off a small package. Compare each estimate with what
+the data sheet's junction-to-ambient resistance would predict.
+
+## Gotchas
+
+- **The junction-to-ambient resistance** belongs to the board and airflow
+  it was measured with, and is often misused <Cite key="ti_spra953" />.
+- **A characterization parameter is not a thermal resistance**: do not add
+  it into a series path <Cite key="ti_spra953" />.
+- **Loss estimated at room temperature** is too low: the on-resistance
+  rises with the junction's temperature <Cite key="microchip_apt0403" />.
+
+## Go deeper
+
+<GoDeeper ids={['ti-spra953', 'ti-slva462', 'microchip-apt0403']} />
+
+## Quiz
+
+<Quiz id="06-bench/thermal" />
