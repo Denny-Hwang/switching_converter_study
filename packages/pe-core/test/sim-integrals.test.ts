@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildModel, checkRange, linearIntegral, periodIntegrals, quadraticIntegral, runCycle, simulate, stepsFor, type CycleRun, type Model, type SimParams, type Topology } from '../src/sim';
+import { affineStep, buildModel, checkRange, linearIntegral, periodIntegrals, quadraticIntegral, runCycle, simulate, stepsFor, type CycleRun, type IntegralOptions, type Model, type SimParams, type Topology } from '../src/sim';
 
 const rel = (a: number, b: number) => Math.abs(a - b) / Math.abs(b);
 
@@ -168,7 +168,7 @@ describe('a ring riding on a steeper ramp: its slope dips through zero and back 
   // within acos(B) of the ring's rising zero crossing. At 20 sub-steps per ring and at the 3-per-ring floor, a
   // sub-step can hold both turns with both ends sloping down; the slope's rate shows the dip, and both turns are
   // searched
-  const segment = (w: number, h: number, beta: number, phi: number) => {
+  const segment = (w: number, h: number, beta: number, phi: number, opts: IntegralOptions = {}) => {
     const model = {
       topology: 'test',
       stateNames: ['p', 'q', 'r'],
@@ -198,7 +198,7 @@ describe('a ring riding on a steeper ramp: its slope dips through zero and back 
         { t: h, interval: 'only', x: [Math.sin(phi + w * h), Math.cos(phi + w * h), beta * h] },
       ],
     } as unknown as CycleRun;
-    return periodIntegrals(model, run);
+    return periodIntegrals(model, run, [], opts);
   };
 
   it('both turns are found, at 20 and at 3 sub-steps per ring', () => {
@@ -233,6 +233,20 @@ describe('a ring riding on a steeper ramp: its slope dips through zero and back 
     }
     // the cases do hold such double turns
     expect(inside).toBeGreaterThanOrEqual(10);
+  });
+
+  it('a slope that cannot reach zero at the rate it changes is not searched for a dip', () => {
+    // a ramp a hundred times steeper than the ring: the slope, w (cos(w t + phi) + 100), turns inside the sub-step
+    // (its rate changes sign at the ring's trough) but stays above 99 w, so the output rises throughout
+    const h = 1e-6;
+    const w = 1 / h;
+    const phi = Math.PI - 0.5;
+    const stats = { searches: 0 };
+    const ex = segment(w, h, 100 * w, phi, { stats });
+    expect(stats.searches).toBe(0);
+    // the extremes are the samples'
+    expect(ex.min.y!).toBe(Math.sin(phi));
+    expect(Math.abs(ex.max.y! - (Math.sin(phi + w * h) + 100 * w * h))).toBeLessThan(1e-13);
   });
 });
 
@@ -464,29 +478,88 @@ describe('a stiff input bus: the exponentials less the identity', () => {
     // the samples alone miss it by 28 nV
     expect(Math.max(...(r.waveforms.v_in as number[]))).toBeLessThan(37.60936801);
   });
+
+  it('slopes carried from the rate of change start few root searches', () => {
+    // the tenth review's circuit A#34, a flyback on a 1 aF bus behind 2.56 Ω: computed as c·F z at each checkpoint,
+    // its slopes carried the rounding of the bus's large terms and started 1869 root searches (4.2 s against 0.17 s)
+    const p: SimParams = { topology: 'flyback', Vg: 0, D: 0.268, fs: 5830, L: 5.02e-6, Ron: 0.00101, RL: 0.00108, VF: 0.366, n: 0.811, source: { Voc: 10, Rs: 2.56, Cbus: 1.03e-18 }, load: { kind: 'resistive', R: 46.9, C: 1.51e-6 } };
+    const r = simulate(p);
+    expect(r.status).toBe('steady');
+    const model = buildModel(p);
+    const stats = { searches: 0 };
+    periodIntegrals(model, runCycle(model, r.x0, { stepsPerPeriod: stepsFor(p), record: true }), [], { stats });
+    expect(stats.searches).toBeLessThan(40);
+  });
+});
+
+describe('a stiff bus behind a source resistance that is not small: balanced exponentials', () => {
+  // the tenth review's circuit A#147, a flyback whose 1.36 aF bus sits behind 26.8 Ω. Beside the bus's own rate,
+  // 1/(R_s C_bus), its coupling to the inductor, 1/C_bus, is R_s times larger: the on-interval's matrix is far larger
+  // than its fastest mode. Its exponential then took more squarings than the dynamics need, and their products cost
+  // the slow states their digits: the step came out 6.7e-5 off at 10 Ω and 2.1e-4 at 30 Ω, <v_out> 1.2e-3 off, and
+  // two grids of sub-steps 1.3e-3 apart. Balanced by powers of two first, it keeps them
+  const A147: SimParams = { topology: 'flyback', Vg: 0, D: 0.271, fs: 5750, L: 4.84e-4, Ron: 0.00115, RL: 0.00169, VF: 0.923, n: 6.86, source: { Voc: 217, Rs: 26.8, Cbus: 1.36e-18 }, load: { kind: 'resistive', R: 900, C: 8.55e-4 } };
+
+  it('the step of the on-interval against a 90-digit exponential', () => {
+    // with R_s C_bus = 1e-18 s; the references are 90-digit exponentials of the same matrices
+    for (const [Rs, ref] of [
+      [10, { phi00: 0.99820448128513775973, phi20: -9.9820448128515838965, phi02: 2.0624059530685090057e-15, phi22: -2.0624059530685516295e-14, g0: 0.038951693831462351474, g2: 216.61048306168985191 }],
+      [30, { phi00: 0.99462412472422471935, phi20: -29.838723741728590269, phi02: 2.0550085221576166201e-15, phi22: -6.1650255664732318208e-14, g0: 0.03888181701609696377, g2: 215.83354548953046093 }],
+    ] as const) {
+      const p: SimParams = { ...A147, source: { Voc: 217, Rs, Cbus: 1e-18 / Rs } };
+      const model = buildModel(p);
+      const on = model.intervals.on!;
+      const { Phi, Gamma } = affineStep(on.A, on.b, model.Ts / stepsFor(p, model));
+      for (const [got, want] of [
+        [Phi[0]![0]!, ref.phi00],
+        [Phi[2]![0]!, ref.phi20],
+        [Phi[0]![2]!, ref.phi02],
+        [Phi[1]![1]!, 0.99999988699607949848],
+        [Gamma[0]!, ref.g0],
+        [Gamma[2]!, ref.g2],
+      ]) {
+        expect(rel(got, want), `R_s ${Rs}`).toBeLessThan(1e-14);
+      }
+      // the bus's own decay, e^{-h/(R_s C_bus)}, is long gone: what is left of it is kept to rounding against Φ's norm
+      expect(Math.abs(Phi[2]![2]! - ref.phi22)).toBeLessThan(1e-15 * Math.abs(ref.phi20));
+    }
+  });
+
+  it('two grids of sub-steps agree', () => {
+    const a = simulate(A147);
+    const b = simulate(A147, { stepsPerPeriod: 3 * stepsFor(A147) + 7 });
+    expect([a.status, b.status]).toEqual(['steady', 'steady']);
+    for (const k of ['v_out', 'i_L', 'v_in']) expect(rel(b.avg[k]!, a.avg[k]!), k).toBeLessThan(1e-12);
+    for (const k of ['i_sw', 'i_L', 'i_D']) expect(rel(b.meanSquare[k]!, a.meanSquare[k]!), k).toBeLessThan(1e-12);
+    // unbalanced, 264.635 V
+    expect(rel(a.avg.v_out!, 264.95232130602)).toBeLessThan(1e-10);
+  });
 });
 
 describe('a diode current that flows for femtoseconds', () => {
   it('keeps its mean square: from a reference in its own interval, not one whose formula makes it -2.4 A', () => {
     // the ninth review's circuit: the period starts in the reverse interval with the inductor at -2.4 A; the
     // diode's formula of the off interval, evaluated there, is -2.4 A, and taken from that state, <i_D^2> came out
-    // -1.1e-28 A². The 60-digit references through the same samples
+    // -1.1e-28 A². The 60-digit references through the same samples: a current of 1e-17 A on average, which the
+    // rounding of the steps decides (balancing them moved it by 13 %, every step still exact to 5e-14 of the
+    // states' scale); recompute them if the engine's samples change
     const p: SimParams = { topology: 'flyback', Vg: 34.4, D: 0.723, fs: 274000, L: 1.18e-5, n: 0.998, Ron: 0.0085, VF: 0.751, Cnode: 4.5e-12, load: { kind: 'network', C: 3.92e-8, V0: 0 } };
     const r = simulate(p);
     const model = buildModel(p);
     const run = runCycle(model, r.x0, { stepsPerPeriod: stepsFor(p), record: true });
     const ex = periodIntegrals(model, run, [['i_D', 'i_D'], ['v_out', 'i_out']]);
     expect(ex.quad['i_D*i_D']!).toBeGreaterThan(0);
-    expect(rel(ex.quad['i_D*i_D']! * p.fs, 8.569997407903061e-24)).toBeLessThan(1e-9);
-    expect(rel(ex.quad['v_out*i_out']! * p.fs, 2.687218888048309e-13)).toBeLessThan(1e-9);
-    expect(rel(ex.lin.i_D! * p.fs, 3.146720628202002e-17)).toBeLessThan(1e-9);
+    expect(rel(ex.quad['i_D*i_D']! * p.fs, 1.030156821338647e-23)).toBeLessThan(1e-9);
+    expect(rel(ex.quad['v_out*i_out']! * p.fs, 3.0379793077360076e-13)).toBeLessThan(1e-9);
+    expect(rel(ex.lin.i_D! * p.fs, 3.5574594232801914e-17)).toBeLessThan(1e-9);
   });
 });
 
 describe('slopes within their own rounding', () => {
   it('start no root searches', () => {
-    // the eighth review's circuits whose samples' rounding, amplified by a fast mode, turns the slopes at every
-    // sub-step's start: searched, they cost 8092 and 1263 root searches; dismissed as rounding, none and 6
+    // the eighth review's circuits, whose samples' rounding, amplified by a fast mode, turned the slopes at every
+    // sub-step's start while they were computed from the state: 8092 and 1263 root searches. Carried from the rate
+    // of change at the sample, the slopes turn a few times at most
     for (const p of [
       { topology: 'forward', Vg: 25.7, D: 0.513, fs: 24100, L: 2.7e-5, n: 0.588, nr: 0.642, LM: 3.97e-4, Ron: 0.136, RL: 0.00781, VF: 0.632, load: { kind: 'network', C: 1.06e-9, R: 65.4, battery: { V: 317, R: 0.0428 } } },
       { topology: 'boost', Vg: 73.6, D: 0.12, fs: 112000, L: 2.31e-4, Ron: 0.578, RL: 0.00319, VF: 0.972, load: { kind: 'network', C: 3.98e-10, R: 42, battery: { V: 66.2, R: 0.00438 } } },
@@ -499,14 +572,114 @@ describe('slopes within their own rounding', () => {
       expect(stats.searches, p.topology).toBeLessThan(40);
     }
   });
+
+  it("a transient that the start sample's rounding sets off is not searched", () => {
+    // y = G (x − X) + r with x′ = −k (x − X) and r′ = β: a battery's current behind a fast R_b C, beside a slow ramp.
+    // A sample one unit in the last place above X starts a transient whose slope, −G k ulp(X) = −0.25, turns within
+    // a time constant against β = 0.2: a dip of 2 % of G ulp(X), within the rounding of the output's terms, G X ε.
+    // The slope lies within the rounding of the terms of c·(A x + b) at that sample, which a fast mode amplifies
+    const [k, X, G, beta, h] = [2 ** 30, 1024, 1024, 0.2, 2 ** -20];
+    const model = {
+      topology: 'test',
+      stateNames: ['x', 'r'],
+      Ts: h,
+      D: 0.5,
+      intervals: {
+        only: {
+          name: 'only',
+          gate: true,
+          A: [
+            [-k, 0],
+            [0, 0],
+          ],
+          b: [k * X, beta],
+          guards: [],
+        },
+      },
+      idle: [],
+      turnOn: () => ({ interval: 'only' }),
+      turnOff: () => ({ interval: 'only' }),
+      outputs: (x: number[]) => ({ y: G * x[0]! - G * X + x[1]! }),
+    } as unknown as Model;
+    const ulp = 2 ** -42;
+    const run = {
+      samples: [
+        { t: 0, interval: 'only', x: [X + ulp, 0] },
+        { t: h, interval: 'only', x: [X, beta * h] },
+      ],
+    } as unknown as CycleRun;
+    const stats = { searches: 0 };
+    const ex = periodIntegrals(model, run, [], { stats });
+    expect(stats.searches).toBe(0);
+    // the solution's least value, where the transient's slope meets the ramp's, is within the output's rounding
+    const tau = Math.log(1.25) / k;
+    const least = G * ulp * Math.exp(-k * tau) + beta * tau;
+    expect(ex.min.y!).toBe(G * ulp);
+    expect(ex.min.y! - least).toBeGreaterThan(0);
+    expect(ex.min.y! - least).toBeLessThan(Number.EPSILON * G * X);
+  });
+});
+
+describe('an output whose constant terms dwarf its turns', () => {
+  it('keeps a crest far below the rounding of those terms', () => {
+    // y = G s − G + p with s = 1, a constant state, and p a ring of 1e-8 cresting between two samples: like a
+    // battery's current, whose terms V_b/R_b dwarf it. In the deviation the terms' constant part is the value at the
+    // reference state, and the turn keeps its digits. A floor at the rounding of the terms, 64 ε times 2G, dismissed
+    // it: the crest came out 7.6e-10 low, the whole of its rise above the samples
+    const [G, amp, h] = [1e6, 1e-8, 1e-6];
+    const w = Math.PI / 4 / h;
+    const phi = Math.PI / 2 - (w * h) / 2;
+    const model = {
+      topology: 'test',
+      stateNames: ['p', 'q', 's'],
+      Ts: h,
+      D: 0.5,
+      intervals: {
+        only: {
+          name: 'only',
+          gate: true,
+          A: [
+            [0, w, 0],
+            [-w, 0, 0],
+            [0, 0, 0],
+          ],
+          b: [0, 0, 0],
+          guards: [],
+        },
+      },
+      idle: [],
+      turnOn: () => ({ interval: 'only' }),
+      turnOff: () => ({ interval: 'only' }),
+      outputs: (x: number[]) => ({ y: G * x[2]! - G + x[0]! }),
+    } as unknown as Model;
+    const at = (t: number) => [amp * Math.sin(w * t + phi), amp * Math.cos(w * t + phi), 1];
+    const run = {
+      samples: [
+        { t: 0, interval: 'only', x: at(0) },
+        { t: h, interval: 'only', x: at(h) },
+      ],
+    } as unknown as CycleRun;
+    const ex = periodIntegrals(model, run);
+    expect(Math.abs(ex.max.y! - amp)).toBeLessThan(1e-6 * amp);
+    // the samples lie 7.6e-10 below it
+    expect(Math.max(at(0)[0]!, at(h)[0]!)).toBeLessThan(amp - 7e-10);
+  });
 });
 
 describe('parameters whose equations overflow', () => {
   it('are refused before the search, not after it', () => {
-    // a switch of 1e300 ohm: its slopes' rates overflow. Refused after the search, it took 17 s
+    // a switch of 1e300 ohm: its slopes' rates overflow. Refused after the search, it took 17 s; before it, a few
+    // milliseconds, well within this test's time limit
     const p: SimParams = { topology: 'boost', Vg: 12, D: 0.5, fs: 1e5, L: 1e-4, Ron: 1e300, load: { kind: 'resistive', R: 10, C: 1e-4 } };
     expect(() => checkRange(buildModel(p))).toThrow(/out of range/);
     expect(() => simulate(p)).toThrow(/out of range/);
+  }, 3000);
+
+  it('a circuit that rings too fast is told so first, with its remedy', () => {
+    // an inductance of 1e-160 H: its equations overflow too, but the page names the ring and what to change
+    const p: SimParams = { topology: 'boost', Vg: 12, D: 0.5, fs: 1e5, L: 1e-160, Ron: 0.05, load: { kind: 'resistive', R: 10, C: 1e-4 } };
+    expect(() => checkRange(buildModel(p))).toThrow(/out of range/);
+    expect(() => simulate(p)).toThrow(/rings too fast/);
   });
 
   it('are refused, not integrated for ever', () => {

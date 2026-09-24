@@ -195,9 +195,13 @@ periodic steady state.
   circuit that rings so fast that a ring would still span fewer than three
   sub-steps is refused: a diode could turn on and off again between two
   sub-steps unseen. A start-up drawn without a steady state follows the
-  same rule. The exponential is formed, and squared, less the identity, so
-  that a time constant far shorter than a sub-step does not cost the slower
-  states their digits.
+  same rule. The exponential is formed, and squared, less the identity,
+  after the states are rescaled by powers of two, which is exact, until each
+  state's couplings to the others are of similar size in both directions: a
+  tiny bus capacitance behind a source resistance that is not small would
+  otherwise make the matrix far larger than its fastest mode. So a time
+  constant far shorter than a sub-step does not cost the slower states their
+  digits.
 - **Events** such as the diode current reaching zero or a clamp starting to
   conduct are located inside a sub-step on the same exact solution, by a
   search that keeps the event bracketed like bisection (regula falsi in its
@@ -208,36 +212,42 @@ periodic steady state.
   passes the diode's turn-on voltage just before its current ends at the
   peak. The gate edges fall exactly at the start of the period and at the
   duty ratio.
-- **Averages, powers and extremes.** Within an interval every quantity
-  the page reports is a straight (affine) function of the states, and
-  between two samples the states follow the interval's equations exactly.
-  So the averages, the powers, and the mean squares behind the rms values
-  and the conduction losses are the exact integrals of that solution over
-  every sub-step, not straight lines through the samples. They are taken
-  from the exponential of a larger matrix built from the interval's
-  equations <Cite key="vanloan1978" />, formed less the identity like the
-  steps, in each state's deviation from the first state the period visits
-  in that interval, with the rate of change there summed in twice the
+- **Averages, powers and extremes.** Within an interval every quantity the
+  page reports is a straight (affine) function of the states, and between
+  two samples the states follow the interval's equations exactly. So the
+  averages, the powers, and the mean squares behind the rms values and the
+  conduction losses are the exact integrals of that solution over every
+  sub-step, not straight lines through the samples. They are taken from the
+  exponential of a larger matrix built from the interval's equations
+  <Cite key="vanloan1978" />, rescaled and formed less the identity like the
+  steps, in each state's deviation from the first state the period visits in
+  that interval, with the rate of change there summed in twice the
   precision. A quantity whose constant part dwarfs what varies, such as a
   battery's current behind a small resistance, then keeps the digits its
   samples give it: a unit in the last place of the battery's voltage over
-  its resistance. A transient faster than a sub-step, such as a time
-  constant far shorter than one, is integrated as exactly as a slow one.
-  Through the same samples, the results agree with a 60-digit integration
-  to a few parts in a trillion of each quantity's scale in the tested
-  circuits, including ones whose time constant is several hundred billion
-  times shorter than a sub-step; between two grids of sub-steps they agree
-  to about one part in ten billion. Each quantity's largest
-  and smallest value also include a peak between two samples: where its
-  slope changes sign within a sub-step, and where the slope dips through
-  zero and back within one (a ring riding on a steeper ramp). The slope is
-  also checked close to the sub-step's start, where a fast transient
-  decays. Each slope is the rate of change at the sample, summed in twice
-  the precision and carried along the sub-step like the states, so an
-  input bus behind a tiny source resistance and capacitance, whose slope
-  is what is left of terms many orders of magnitude larger, still has its
-  peak placed to rounding. The plots draw the samples, so a peak narrower
-  than a sub-step can be in the numbers but not in the plot.
+  its resistance, a resolution that the current of the capacitor beside it
+  shares. A transient faster than a sub-step, such as a time constant far
+  shorter than one, is integrated as exactly as a slow one. Through the same
+  samples, the results agree with a 60-digit integration to a few parts in a
+  trillion of each quantity's scale in the tested circuits, including ones
+  whose time constant is several hundred billion times shorter than a
+  sub-step, and between two grids of sub-steps to about one part in ten
+  billion. Over hundreds of random circuits, two grids from the same start
+  agree as closely against the circuit's largest current or voltage, down to
+  the battery current's resolution, wherever they see the same events; where
+  one grid sees a diode conduct briefly inside a sub-step and the other does
+  not, they differ by what that conduction carries (see Outside the model
+  below). Each quantity's largest and smallest value also include a peak
+  between two samples: where its slope changes sign within a sub-step, and
+  where the slope dips through zero and back within one (a ring riding on a
+  steeper ramp). The slope is also checked close to the sub-step's start,
+  where a fast transient decays. Each slope is the rate of change at the
+  sample, summed in twice the precision and carried along the sub-step like
+  the states, so an input bus behind a tiny source resistance and
+  capacitance, whose slope is what is left of terms many orders of magnitude
+  larger, still has its peak placed to rounding. The plots draw the samples,
+  so a peak narrower than a sub-step can be in the numbers but not in the
+  plot.
 - **Rounding.** Within a period the simulator follows each state's
   deviation from its value at the start of the period. Its rounding errors
   then scale with how far the state moves, not with its size, so the change
@@ -338,9 +348,11 @@ against the equations:
     a forward converter beyond its reset limit on one; a forward converter
     whose switch drop, $R_\mathrm{on}$ times its current, exceeds a sagging
     bus while the switch is on, which forward-biases $D_2$ (and $D_3$ once
-    the drop exceeds $(1 + 1/n_r)$ times the bus); a boost into a
-    fixed output below its input, whose current through $R_\mathrm{on}$
-    lifts the switch node above the output;
+    the drop exceeds $(1 + 1/n_r)$ times the bus); a boost whose output
+    falls below its input (held there by a fixed output or a battery, or
+    pulled there by a load too heavy for it), whose current through
+    $R_\mathrm{on}$ lifts the switch node above the output while the switch
+    is on;
   - the switch voltage falling below zero, where the ideal body diode would
     conduct. Without a capacitance across the switch, the switch voltage
     follows the input bus in the idle interval of DCM, so a bus below zero
@@ -355,14 +367,16 @@ against the equations:
   and ngspice with every diode in place agrees with them within the SPICE
   comparison's tolerance. In the tests' sweep of ordinary circuits, over
   every converter, load, source and node capacitance, nothing is flagged.
-  Among random circuits a flag is rare, and genuine where it appears: a
-  ring that forward-biases a diode within a sub-step and turns back before
-  its end, a turn-on that the event search, which checks the conditions at
-  each sub-step's end, does not see. A diode's excess over its drop
-  counts from a ten-thousandth of the circuit's largest voltage, and so
-  does the switch voltage's dip below zero: what a diode forward-biased by
-  less would take changes the results by about as little, below the four
-  digits the page shows.
+  Among random circuits, most flags are the cases above: a weak source
+  whose bus falls below zero, or a boost whose output falls below its input.
+  The rest come from a capacitance across the switch whose ring
+  forward-biases a diode, or takes the switch below zero, within a sub-step
+  and turns back before its end: a turn-on that the event search, which
+  checks the conditions at each sub-step's end, does not see. A diode's
+  excess over its drop counts from a ten-thousandth of the circuit's
+  largest voltage, and so does the switch voltage's dip below zero: what a
+  diode forward-biased by less would take changes the results by about as
+  little, below the four digits the page shows.
 
 Two further suites check the simulator by other means:
 

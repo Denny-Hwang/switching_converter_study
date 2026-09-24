@@ -339,12 +339,13 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
  * switch's body diode, ideal in the models, would conduct), and each diode
  * the model holds off above its drop (the two-switch converters' diode D
  * and the forward converter's D1 and D2, with V_F; its reset diode D3,
- * ideal): a diode with that drop would conduct there. Rounding is not: the
- * switch voltage is measured against a billionth of the largest voltage
- * involved (never less than the circuit's given voltage). A diode's excess
- * over its drop counts from a ten-thousandth of it: what a diode
- * forward-biased by less would take changes the results by about as little,
- * below the four digits the page shows. Over a steady period the exact
+ * ideal): a diode with that drop would conduct there. Rounding is not, and
+ * neither is a dip too small to matter: the switch voltage counts from a
+ * ten-thousandth of the largest voltage involved (never less than the
+ * circuit's given voltage) below zero, and a diode's excess over its drop
+ * from a ten-thousandth of it. What a switch or a diode that conducted by
+ * less would take changes the results by about as little, below the four
+ * digits the page shows. Over a steady period the exact
  * extremes count too (`ex`): a ring can cross a threshold and return between
  * two samples.
  */
@@ -746,9 +747,10 @@ function capacitorAlone(p: SimParams, model: Model, opts: SteadyOptions, steps: 
  */
 export function simulate(p: SimParams, opts: SteadyOptions = {}): SimResult {
   const model = buildModel(p);
-  // parameters whose equations overflow are refused before the search, not after it
+  // a circuit that rings too fast for the sub-steps is refused with its remedy (stepsFor); then parameters whose
+  // equations overflow, before the search rather than after it
+  const steps = opts.stepsPerPeriod ?? stepsFor(p, model);
   checkRange(model);
-  const steps = opts.stepsPerPeriod ?? stepsFor(p);
   if (unboundedCharging(p)) return withStartUp(p, model, 'charging');
   const ss = chargingLoad(p)
     ? capacitorAlone(p, model, opts, steps)

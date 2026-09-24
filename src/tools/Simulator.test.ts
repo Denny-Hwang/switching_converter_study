@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { sim } from 'pe-core';
 import { ui } from '../i18n/ui';
+import { fmtValue } from '../lib/format';
 import { compareRows, fromSlider, hashOf, loadRows, nextAnchor, noSteadyText, outsideModelText, parseField, sliderAnchors, stateFromHash, toParams, type SimLabels, type SimPreset } from './Simulator';
 
 const buck = { topo: 'buck' as const, load: 'res' as const, source: false };
@@ -232,13 +233,15 @@ describe('what the simulator says without a steady state', () => {
     const bb = sim.simulate({ topology: 'buckboost', Vg: 24, D: 0.6, fs, L: 1e-4, Ron: 0.05, source: { Voc: 24, Rs: 20, Cbus: 1e-7 }, load: { kind: 'resistive', R: 5, C: 1e-5 } });
     const both = outsideModelText(bb, out)!;
     expect(both.indexOf('The voltage across the diode D')).toBe(0);
-    expect(both).toContain('The switch voltage falls below 0 V within the period');
+    const bbSwitch = t['sim.switchBelowZero']!.replace('{v}', fmtValue(bb.switchBelowZero, 'V')).replace('{where}', 'within the period (counting the solution between the drawn samples)').replace('{holds}', 'so these results may not hold');
+    expect(bbSwitch).toMatch(/^The switch voltage falls to −[0-9.]+ m?V within the period \(counting the solution between the drawn samples\), below 0 V: /);
+    expect(both.endsWith(` ${bbSwitch}`)).toBe(true);
     // the switch voltage alone
-    expect(outsideModelText({ ...bb, diodes: undefined }, out)).toContain('The switch voltage falls below 0 V within the period');
+    expect(outsideModelText({ ...bb, diodes: undefined }, out)).toBe(bbSwitch);
     // a start-up: from the first cycle that leaves the model (a boost charging a capacitor alone from a weak source)
     const boost = sim.simulate({ topology: 'boost', Vg: 5.11, D: 0.234, fs, L: 1.71e-5, source: { Voc: 5.11, Rs: 13.1, Cbus: 7.21e-7 }, load: { kind: 'network', C: 8.53e-6, V0: 0 } });
     expect(boost.switchFrom).toBeGreaterThanOrEqual(1);
-    expect(outsideModelText(boost, out)).toContain(`The switch voltage falls below 0 V in the start-up, first in cycle ${boost.switchFrom} (to `);
+    expect(outsideModelText(boost, out)).toContain(`The switch voltage falls to ${fmtValue(boost.switchBelowZero, 'V')} in the start-up, first in cycle ${boost.switchFrom}, below 0 V: `);
     expect(outsideModelText(boost, out)).toContain('so the start-up may not hold from that cycle on.');
     // the forward converter names its reset diode
     const fwd = sim.simulate({ topology: 'forward', Vg: 48, D: 0.7, fs, L: 1e-4, n: 0.5, nr: 1, LM: 1e-3, Ron: 0.01, source: { Voc: 48, Rs: 10, Cbus: 1e-6 }, load: { kind: 'resistive', R: 10, C: 1e-5 } });

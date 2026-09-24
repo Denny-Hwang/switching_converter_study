@@ -146,13 +146,81 @@ export function expm(a: Mat): Mat {
 }
 
 /**
+ * Powers of two d that balance a matrix's rows against its columns (Parlett
+ * and Reinsch, without permutations), or null where none is needed. The
+ * similar matrix D⁻¹ a D is exact in binary, and e^{D⁻¹ a D} = D⁻¹ e^a D. A
+ * matrix whose large entries sit off its diagonal, such as a stiff bus's
+ * 1/C_bus beside its 1/(R_s C_bus) behind a source resistance that is not
+ * small, has a norm far above its eigenvalues: its exponential asks for more
+ * squarings than its dynamics need, and their products add numbers of very
+ * different sizes, which costs the slow states their digits. Balanced, it
+ * does neither.
+ */
+export function balancing(a: Mat): Vec | null {
+  const m = a.length;
+  const d = new Array<number>(m).fill(1);
+  const B = a.map((r) => r.slice());
+  let any = false;
+  for (let sweep = 0; sweep < 100; sweep++) {
+    let done = true;
+    for (let i = 0; i < m; i++) {
+      let c = 0;
+      let r = 0;
+      for (let j = 0; j < m; j++) {
+        if (j === i) continue;
+        c += Math.abs(B[j]![i]!);
+        r += Math.abs(B[i]![j]!);
+      }
+      if (!(c > 0 && r > 0) || !Number.isFinite(c + r)) continue;
+      const sum = c + r;
+      let f = 1;
+      while (c < r / 2 && d[i]! * f < 2 ** 300) {
+        f *= 2;
+        c *= 4;
+      }
+      while (c > r * 2 && d[i]! * f > 2 ** -300) {
+        f /= 2;
+        c /= 4;
+      }
+      if ((c + r) / f < 0.95 * sum) {
+        done = false;
+        any = true;
+        d[i]! *= f;
+        for (let j = 0; j < m; j++) B[i]![j]! /= f;
+        for (let j = 0; j < m; j++) B[j]![i]! *= f;
+      }
+    }
+    if (done) break;
+  }
+  return any ? d : null;
+}
+
+/** D⁻¹ a D for powers of two d: the entries a_ij d_j / d_i, exact in binary. */
+export function similar(a: Mat, d: Vec): Mat {
+  return a.map((r, i) => r.map((v, j) => v * (d[j]! / d[i]!)));
+}
+
+function finite(a: Mat): boolean {
+  return a.every((r) => r.every(Number.isFinite));
+}
+
+/**
  * e^a − I, kept apart from the identity throughout: the approximant less
  * the identity, (V − U)⁻¹(V + U) − I, is (V − U)⁻¹ 2U, and each squaring is
  * E ← 2E + E². A slow mode's small change then keeps its digits however many
  * squarings a fast mode asks for; squaring e^a itself carries it as 1 plus a
- * small number and multiplies that number's rounding by 2^s.
+ * small number and multiplies that number's rounding by 2^s. The matrix is
+ * balanced first (balancing), and the result scaled back, D (e^b − I) D⁻¹.
  */
 export function expmMinusI(a: Mat): Mat {
+  const d = balancing(a);
+  const b = d ? similar(a, d) : a;
+  if (d && !finite(b)) return expmMinusIOf(a);
+  const E = expmMinusIOf(b);
+  return d ? similar(E, d.map((v) => 1 / v)) : E;
+}
+
+function expmMinusIOf(a: Mat): Mat {
   const { U, V, s } = pade13(a);
   let E = solve(addScaled(V, U, -1), scaleMat(U, 2));
   for (let k = 0; k < s; k++) E = addScaled(matmul(E, E), E, 2);
@@ -211,45 +279,13 @@ export function stepMatrices(A: Mat, h: number): { Phi: Mat; W: Mat } {
 export function eigenvalues(m: Mat): { re: number; im: number }[] {
   const n = m.length;
   if (n === 0) return [];
+  if (!finite(m)) throw new Error('eigenvalues: the matrix is not finite');
+  // balanced by powers of two (balancing), which leaves the eigenvalues as they are
+  const d = balancing(m);
+  const bal = d ? similar(m, d) : m;
+  if (!finite(bal)) throw new Error('eigenvalues: the matrix is not finite');
   // 1-based copy, as the classic routines index it
-  const a: number[][] = Array.from({ length: n + 1 }, (_, i) => Array.from({ length: n + 1 }, (_, j) => (i > 0 && j > 0 ? m[i - 1]![j - 1]! : 0)));
-  for (let i = 1; i <= n; i++) for (let j = 1; j <= n; j++) if (!Number.isFinite(a[i]![j]!)) throw new Error('eigenvalues: the matrix is not finite');
-
-  // balance: scale rows and columns by powers of two until their norms are close
-  const RADIX = 2;
-  const sqrdx = RADIX * RADIX;
-  for (let done = false; !done; ) {
-    done = true;
-    for (let i = 1; i <= n; i++) {
-      let r = 0;
-      let c = 0;
-      for (let j = 1; j <= n; j++) {
-        if (j === i) continue;
-        c += Math.abs(a[j]![i]!);
-        r += Math.abs(a[i]![j]!);
-      }
-      if (c !== 0 && r !== 0) {
-        let g = r / RADIX;
-        let f = 1;
-        const s = c + r;
-        while (c < g) {
-          f *= RADIX;
-          c *= sqrdx;
-        }
-        g = r * RADIX;
-        while (c > g) {
-          f /= RADIX;
-          c /= sqrdx;
-        }
-        if ((c + r) / f < 0.95 * s) {
-          done = false;
-          g = 1 / f;
-          for (let j = 1; j <= n; j++) a[i]![j]! *= g;
-          for (let j = 1; j <= n; j++) a[j]![i]! *= f;
-        }
-      }
-    }
-  }
+  const a: number[][] = Array.from({ length: n + 1 }, (_, i) => Array.from({ length: n + 1 }, (_, j) => (i > 0 && j > 0 ? bal[i - 1]![j - 1]! : 0)));
 
   // reduce to upper Hessenberg form by elimination with partial pivoting
   for (let mm = 2; mm < n; mm++) {

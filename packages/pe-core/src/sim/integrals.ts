@@ -17,7 +17,11 @@
  * a slow mode's small change keeps its digits however many squarings a fast
  * mode asks for; what rounding remains grows only with the number of
  * squarings, the logarithm of the ratio of a sub-step to the fastest time
- * constant.
+ * constant. They are balanced by powers of two first (linalg.ts balancing),
+ * the quadratic integral's doublings included, so that a matrix whose large
+ * entries sit off its diagonal (a stiff bus's 1/C_bus behind a source
+ * resistance that is not small) asks for no more squarings than its dynamics
+ * need.
  *
  * In each interval z holds the deviation from the first state the period
  * visits in it, [x − x_r; 1]: an output whose constant part dwarfs what
@@ -38,22 +42,22 @@
  * zero, its turning point is found, and both turns are searched when the
  * slope changes sign there. A sign change of a slope within its own rounding
  * is noise and is not searched, and neither is one so small that the output
- * moves by less than a trillionth of its range, or by less than the rounding
- * of its own value at the sample (the stored state's rounding starts a fast
- * mode's transient no larger than that). The slopes are c·ż, with ż the rate
- * of change A x + b at the sample, summed in twice the precision and carried
- * to each checkpoint by the same exponentials as the state. Computed as
- * c·F z, a slope of a few volts per second would be what is left of the
- * deviation's large terms (a stiff bus's 1/(R_s C_bus) times its deviation,
- * 1e13 V/s and more), with only its first digits. The slope's rounding is a
- * few units in the last place of the terms it is summed from, |c|·|ż|; at a
- * segment's start also the terms of c·(A x + b) at the sample's own state,
- * whose digits a fast mode amplifies. The checkpoints, the segment's end
- * included (the start propagated by e^{F h}), lie on one solution.
+ * moves by less than a trillionth of its range. The slopes are c·ż, with ż
+ * the rate of change A x + b at the sample, summed in twice the precision
+ * and carried to each checkpoint by the same exponentials as the state.
+ * Computed as c·F z, a slope of a few volts per second would be what is left
+ * of the deviation's large terms (a stiff bus's 1/(R_s C_bus) times its
+ * deviation, 1e13 V/s and more), with only its first digits. The slope's
+ * rounding is a few units in the last place of the terms it is summed from,
+ * |c|·|ż|; at a segment's start also the terms of c·(A x + b) at the
+ * sample's own state, whose digits a fast mode amplifies. A dip that the
+ * slope's rate could not carry to zero within the stretch is not searched.
+ * The checkpoints, the segment's end included (the start propagated by
+ * e^{F h}), lie on one solution.
  */
 
 import { OVERFLOW, type CycleRun, type Model } from './engine';
-import { eigenvalues, expmMinusI, matmul, matvec, norm1, zeros, type Mat, type Vec } from './linalg';
+import { balancing, eigenvalues, expmMinusI, matmul, matvec, norm1, similar, zeros, type Mat, type Vec } from './linalg';
 
 export interface PeriodIntegrals {
   /** ∫ y dt over the recorded period, for every output. */
@@ -176,6 +180,20 @@ export function linearIntegral(F: Mat, h: number): { Phi: Mat; Int: Mat } {
  * D(2τ) = 2D + D², for the reason expmMinusI does.
  */
 export function quadraticIntegral(F: Mat, Q: Mat, h: number): Mat {
+  // in balanced coordinates (linalg.ts, balancing), doublings included: with F = D F_b D⁻¹, the integral is
+  // D⁻¹ W_b D⁻¹ for the weight D Q D, all exact in binary
+  const d = balancing(F);
+  if (d) {
+    const Fb = similar(F, d);
+    const Qb = Q.map((r, i) => r.map((v, j) => v * d[i]! * d[j]!));
+    if (Fb.every((r) => r.every(Number.isFinite)) && Qb.every((r) => r.every(Number.isFinite))) {
+      return quadraticIntegralOf(Fb, Qb, h).map((r, i) => r.map((v, j) => v / d[i]! / d[j]!));
+    }
+  }
+  return quadraticIntegralOf(F, Q, h);
+}
+
+function quadraticIntegralOf(F: Mat, Q: Mat, h: number): Mat {
   const m = F.length;
   const size = norm1(F) * h;
   // a norm that overflows would ask for infinitely many doublings
@@ -367,8 +385,6 @@ interface Rows {
   speed: number;
   out: number[];
   C: Vec[];
-  /** Each output's constant term in the original coordinates, c_0 = y(0): with c·x, the terms of its value. */
-  c0: number[];
   CF: Vec[];
   CF2: Vec[];
   absC: Vec[];
@@ -506,8 +522,7 @@ export function periodIntegrals(
       const qb = ks.indexOf(pb);
       return qa >= 0 && qb >= 0 ? [qa, qb] : null;
     });
-    const c0 = ks.map((k) => forms[name]![k]![n]!);
-    rows[name] = { xr, F, speed: modeSpeed(iv.A), out: ks.map((k) => index.get(k)!), C, c0, CF, CF2, absC, absCF, absCA, absCb, pairRows };
+    rows[name] = { xr, F, speed: modeSpeed(iv.A), out: ks.map((k) => index.get(k)!), C, CF, CF2, absC, absCF, absCA, absCb, pairRows };
   }
   const lo = new Array<number>(N).fill(Infinity);
   const hi = new Array<number>(N).fill(-Infinity);
@@ -646,19 +661,11 @@ export function periodIntegrals(
       if (y < lo[out]!) lo[out] = y;
       if (y > hi[out]!) hi[out] = y;
     };
-    // the rounding of the output's own value at the sample, the terms of c·x + c_0: the stored state's rounding
-    // starts a fast mode's transient whose wiggle is no larger (a battery's current, resolved to eps V_b / R_b)
-    const valueLevel = (q: number) => {
-      const c = r.C[q]!;
-      let sum = Math.abs(r.c0[q]!);
-      for (let i = 0; i < n; i++) sum += Math.abs(c[i]! * x0[i]!);
-      return sum;
-    };
-    // a slope that moves the output by less than a trillionth of its range over the stretch, or by less than the
-    // rounding of its value, or that lies within its own rounding
+    // a slope that moves the output by less than a trillionth of its range over the stretch, or that lies within
+    // its own rounding. The output's value is not a floor: in the deviation, its large constant part (a battery's
+    // V_b / R_b) is the value at x_r, and a turn far smaller than that part keeps its digits
     const noise = (q: number, j: number, len: number, s: number) =>
-      Math.abs(s) * len <= Math.max(1e-12 * range[r.out[q]!]!, SLOPE_ROUNDING * valueLevel(q)) ||
-      Math.abs(s) <= SLOPE_ROUNDING * Math.max(level(q, j), level(q, j + 1));
+      Math.abs(s) * len <= 1e-12 * range[r.out[q]!]! || Math.abs(s) <= SLOPE_ROUNDING * Math.max(level(q, j), level(q, j + 1));
     for (let q = 0; q < r.out.length; q++) {
       const out = r.out[q]!;
       for (let j = 0; j < nc; j++) {
