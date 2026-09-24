@@ -21,15 +21,17 @@ several times over, while everything behaves at room temperature.
 
 ## Why
 
-An aluminum electrolytic capacitor's ESR can increase more than tenfold at
-its low-temperature limit <Cite key="cde_ae_guide" />. The ripple current
+The electrolyte's resistivity rises in the cold, and an aluminum
+electrolytic capacitor's ESR at its lowest rated temperature is often 10 to
+100 times its room-temperature ESR <Cite key="cde_ae_guide" />. The ripple current
 through the capacitor makes a ripple voltage across the ESR in proportion,
 which adds to the capacitive ripple
 (<EqRef id="cap.esr.ripple" label="ESR ripple" />). In the cold example,
 <Val example="bench-cold" name="R_esr" /> of ESR under
 <Val example="bench-cold" name="Delta_i_pp" /> of ripple current, peak to
 peak, gives <Val example="bench-cold" name="Delta_v_esr" /> peak to peak;
-ten times the ESR, <Val example="bench-cold" name="R_esr_cold" />, gives
+ten times the ESR, the low end of that range,
+<Val example="bench-cold" name="R_esr_cold" />, gives
 <Val example="bench-cold" name="Delta_v_esr_cold" />.
 
 ## How to confirm
@@ -49,6 +51,7 @@ ripple as well.
 ## References
 
 - <Cite key="cde_ae_guide" />: an aluminum electrolytic capacitor's ESR at
-  its low-temperature limit.
+  its lowest rated temperature, often 10 to 100 times its room-temperature
+  ESR.
 - [Low temperature](../../06-bench/low-temp/): the ESR ripple, worked
   through, and a bench exercise.

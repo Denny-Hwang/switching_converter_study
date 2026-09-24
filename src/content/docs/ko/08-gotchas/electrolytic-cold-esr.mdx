@@ -21,13 +21,14 @@ import Val from '../../../../components/Val.astro';
 
 ## 원인
 
-알루미늄 전해 커패시터의 ESR(등가 직렬 저항)은 저온 한계에서 10배 넘게 커질 수
-있습니다 <Cite key="cde_ae_guide" />. 커패시터를 흐르는 리플 전류는 ESR 양단에
+전해액의 저항률은 추위에 커지고, 알루미늄 전해 커패시터의 ESR(등가 직렬 저항)은 정격
+최저 온도에서 상온 ESR의 10~100배가 되는 경우가 많습니다 <Cite key="cde_ae_guide" />.
+커패시터를 흐르는 리플 전류는 ESR 양단에
 비례하는 리플 전압을 만들고, 이것이 용량성 리플에 더해집니다
 (<EqRef id="cap.esr.ripple" label="ESR 리플" />). 저온 예제에서 피크-피크
 <Val example="bench-cold" name="Delta_i_pp" />의 리플 전류를 받는
 <Val example="bench-cold" name="R_esr" />의 ESR은 피크-피크
-<Val example="bench-cold" name="Delta_v_esr" />를 만들고, 그 열 배인
+<Val example="bench-cold" name="Delta_v_esr" />를 만들고, 그 범위의 가장 낮은 쪽인 열 배,
 <Val example="bench-cold" name="R_esr_cold" />는
 <Val example="bench-cold" name="Delta_v_esr_cold" />를 만듭니다.
 
@@ -44,5 +45,6 @@ import Val from '../../../../components/Val.astro';
 
 ## 참고 자료
 
-- <Cite key="cde_ae_guide" />: 저온 한계에서의 알루미늄 전해 커패시터 ESR.
+- <Cite key="cde_ae_guide" />: 정격 최저 온도에서의 알루미늄 전해 커패시터 ESR(상온 ESR의
+  10~100배인 경우가 많음).
 - [저온](../../06-bench/low-temp/): ESR 리플의 풀이와 벤치 실습.
