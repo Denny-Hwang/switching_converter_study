@@ -1,0 +1,43 @@
+# Quiz for 09-missions/m3-boost-rhp-zero. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'Right after a step increase of the boost''s duty ratio, the output voltage:'
+    options:
+      - 'Rises at once'
+      - 'Dips briefly, then rises to its new value'
+      - 'Stays put until the inductor saturates'
+      - 'Oscillates at the switching frequency'
+    answer: 1
+    explain: 'The diode conducts for a shorter part of each period before the inductor current has grown, so the average current into the output first falls. That is the right-half-plane zero at work.'
+  - q: 'A boost at $D$ = 0.5 with $R$ = 40 ohm and $L$ = 200 µH. What is its RHP zero, $(1-D)^2 R / L$?'
+    options:
+      - '50 krad/s'
+      - '200 krad/s'
+      - '100 krad/s'
+      - '12.5 krad/s'
+    answer: 0
+    explain: '0.25 times 40 ohm is 10 ohm, over 200 µH gives 50 000 rad/s, about 8 kHz.'
+  - q: 'The load current of that boost doubles (its $R$ halves). The zero:'
+    options:
+      - 'Doubles'
+      - 'Halves'
+      - 'Stays where it is'
+      - 'Moves into the left half-plane'
+    answer: 1
+    explain: 'The zero is proportional to $R$: a heavier load pulls it down, which is why full load is the worst case.'
+  - q: 'Which operating point of a boost with a regulated output sets the lowest RHP zero?'
+    options:
+      - 'Light load at the highest input voltage'
+      - 'Full load at the lowest input voltage'
+      - 'Light load at the lowest input voltage'
+      - 'Full load at the highest input voltage'
+    answer: 1
+    explain: 'The zero falls with a smaller $R$ (heavier load) and with a larger $D$, and the regulated boost needs its largest $D$ at its lowest input voltage.'
+  - q: 'Why can a compensator not cancel the RHP zero with a pole at the same place?'
+    options:
+      - 'The pole would have to be in the right half-plane, which is unstable'
+      - 'Poles cannot be placed above the switching frequency'
+      - 'The zero is not a real number'
+      - 'The pole would slow the loop down too much'
+    answer: 0
+    explain: 'Cancelling a zero at $+\omega_z$ takes a pole at $+\omega_z$: an unstable pole inside the loop.'

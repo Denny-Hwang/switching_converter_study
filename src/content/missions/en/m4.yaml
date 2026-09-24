@@ -1,0 +1,17 @@
+# Acceptance criteria of mission M4 (src/content/docs/en/09-missions/m4-buck-inductor.mdx).
+# The ids are the same in every language: the progress kept in the browser is shared.
+criteria:
+  - id: kg
+    text: 'The core geometrical constant $K_g$ the example inductor needs.'
+    check: {example: kg-inductor, name: K_g, tol: 0.02}
+  - id: copper-loss
+    text: 'The copper loss its resistance budget allows at the rms current.'
+    check: {example: kg-inductor, name: P_cu, tol: 0.01}
+  - id: core
+    text: 'The smallest table core that meets the $K_g$, and by how much.'
+  - id: turns
+    text: 'In the designer, the fewest turns for $B_\mathrm{max}$ at $A_\mathrm{min}$, checked by hand.'
+  - id: gap-window
+    text: 'The gap for the inductance at those turns, a winding within $K_u$ of the window, and its resistance within the budget.'
+  - id: smaller-core
+    text: 'On the E 25/13/7 core, what fails first, and what one change would fix it at what cost.'

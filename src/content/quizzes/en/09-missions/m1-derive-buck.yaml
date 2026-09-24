@@ -1,0 +1,51 @@
+# Quiz for 09-missions/m1-derive-buck. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'Why is the inductor voltage, averaged over one switching period, zero in steady state?'
+    options:
+      - 'Because the output capacitor holds the output voltage constant'
+      - 'Because the inductor current ends each period at the value it started with'
+      - 'Because the switch and the diode conduct for equal times'
+      - 'Because the input voltage is constant'
+    answer: 1
+    explain: 'The change of the inductor current over a period is its average voltage times the period over the inductance. A current that repeats from period to period changes by zero, so the average voltage is zero: that is volt-second balance.'
+  - q: 'A buck converter in CCM runs from 48 V at a duty ratio of 0.25. What is its output voltage?'
+    options:
+      - '36 V'
+      - '64 V'
+      - '12 V'
+      - '16 V'
+    answer: 2
+    explain: 'The conversion ratio is the duty ratio: 0.25 times 48 V is 12 V.'
+  - q: 'The inductor current of a buck swings between 1.0 A and 1.6 A. What is $\Delta i_L$ in this site''s convention?'
+    options:
+      - '0.6 A'
+      - '0.3 A'
+      - '1.3 A'
+      - '1.6 A'
+    answer: 1
+    explain: 'The peak-to-peak ripple is 0.6 A, and $\Delta i_L$ is half of it, 0.3 A, as in Erickson. The average current is 1.3 A.'
+  - q: 'The inductance of a buck in CCM is doubled, all else unchanged. What happens to $\Delta i_L$?'
+    options:
+      - 'It halves'
+      - 'It doubles'
+      - 'It stays the same'
+      - 'It falls to a quarter'
+    answer: 0
+    explain: 'The current''s slope during the on-interval is the inductor voltage over the inductance, so the rise over the same time halves.'
+  - q: 'You change the expected value of one test of an equation in equations.yaml and leave its expression alone. What happens?'
+    options:
+      - 'Nothing, until the site is built'
+      - 'Only the TypeScript tests fail'
+      - 'The generator refuses, naming the entry, the test and the value the expression gives'
+      - 'mathlint reports a hand-typed formula'
+    answer: 2
+    explain: 'Loading the catalogue evaluates every test against its expression, so the generator, and pytest, stop at the first mismatch and say where it is.'
+  - q: 'You change an expression and its expected values so that they agree with each other. Which check still catches it?'
+    options:
+      - 'None: the tests pass'
+      - 'The derivation test: the sympy derivation must reproduce the expression in equations.yaml'
+      - 'The privacy scan'
+      - 'The link checker'
+    answer: 1
+    explain: 'The test values only check the expression against itself. The derivation in python/pe_core/derive/ is independent of the YAML, and pytest compares the two.'

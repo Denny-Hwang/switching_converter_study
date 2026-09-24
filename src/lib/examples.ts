@@ -93,3 +93,15 @@ export function symbolOf(name: string): { symbol: string; suffix: string } | und
   }
   return best ? { symbol: best, suffix: name.slice(best.length + 1) } : undefined;
 }
+
+/**
+ * One value of an example by its context name, a parameter or a step's result, with the
+ * catalogue symbol it stands for (whose unit and meaning describe it).
+ */
+export function exampleValue(example: string, name: string): { value: number; symbol: string } {
+  const ex = getExample(example);
+  if (name in ex.params) return { value: ex.params[name]!, symbol: symbolOf(name)?.symbol ?? name };
+  const r = ex.results.find((x) => x.name === name);
+  if (r) return { value: r.value, symbol: r.symbol };
+  throw new Error(`examples/synthetic/${example}.yaml has no parameter or result "${name}"`);
+}

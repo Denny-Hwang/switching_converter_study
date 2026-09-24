@@ -1,0 +1,19 @@
+# Acceptance criteria of mission M6 (src/content/docs/en/09-missions/m6-lfr-matching.mdx).
+# The ids are the same in every language: the progress kept in the browser is shared.
+criteria:
+  - id: available
+    text: 'The most power the example source can deliver.'
+    check: {example: source-lfr, name: P_max, tol: 0.01}
+  - id: input-resistance
+    text: 'The flyback''s input resistance at the example''s $D$, $f_s$ and $L_M$.'
+    check: {example: source-lfr, name: R_in, tol: 0.01}
+  - id: match-inductance
+    text: 'The magnetizing inductance that matches the source at that $D$ and $f_s$.'
+    check: {example: lfr-flyback, name: L_M, tol: 0.01}
+  - id: bus
+    text: 'The bus voltage at the match.'
+    check: {example: source-lfr, name: V_g, tol: 0.01}
+  - id: mismatch
+    text: 'With $D$ doubled, your predicted input resistance and share of the power agree with the source matcher.'
+  - id: limit
+    text: 'The source amplitude at which CCM takes over the bus, and the switch voltage there against its rating.'

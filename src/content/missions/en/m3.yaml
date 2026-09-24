@@ -1,0 +1,18 @@
+# Acceptance criteria of mission M3 (src/content/docs/en/09-missions/m3-boost-rhp-zero.mdx).
+# The ids are the same in every language: the progress kept in the browser is shared.
+criteria:
+  - id: picture
+    text: 'In two sentences, why a step of $D$ first lowers the boost''s output, and why the buck has no such zero.'
+  - id: omega-z
+    text: 'The boost example''s RHP zero $\omega_z$.'
+    check: {example: boost-basic, name: omega_z, tol: 0.01}
+  - id: omega-0
+    text: 'Its double pole $\omega_0$.'
+    check: {example: boost-basic, name: omega_0, tol: 0.01}
+  - id: moves
+    text: 'In the explorer: halving $R$ halves $\omega_z$, and a larger $D$ lowers it.'
+  - id: buckboost
+    text: 'The buck-boost example''s RHP zero.'
+    check: {example: buckboost-basic, name: omega_z, tol: 0.01}
+  - id: worst-case
+    text: 'The operating point that sets the lowest zero, and why the crossover must stay well below it.'

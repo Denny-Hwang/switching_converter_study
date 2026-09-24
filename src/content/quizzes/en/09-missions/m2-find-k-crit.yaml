@@ -1,0 +1,51 @@
+# Quiz for 09-missions/m2-find-k-crit. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A buck has $L$ = 50 µH, $f_s$ = 200 kHz and a load of 20 ohm. What is $K$?'
+    options:
+      - '0.5'
+      - '1'
+      - '2'
+      - '0.25'
+    answer: 1
+    explain: '$K$ is $2L$ over $R T_s$, that is $2 L f_s$ over $R$: 2 times 50 µH times 200 kHz is 20 ohm, and over 20 ohm that gives 1.'
+  - q: 'That buck runs at $D$ = 0.75. Is it in CCM?'
+    options:
+      - 'Yes: $K$ = 1 is above $K_\mathrm{crit}$ = 0.25'
+      - 'No: $K$ = 1 is below $K_\mathrm{crit}$ = 1.33'
+      - 'Only if the output capacitor is large'
+      - 'It is exactly at the boundary'
+    answer: 0
+    explain: 'The buck''s critical value is $1 - D$ = 0.25, and CCM needs $K > K_\mathrm{crit}$.'
+  - q: 'The load of a buck in CCM gets lighter and lighter. What happens first?'
+    options:
+      - 'The inductor saturates'
+      - 'The output voltage falls'
+      - 'The inductor current reaches zero before the period ends: the converter enters DCM'
+      - 'The ripple of the inductor current grows'
+    answer: 2
+    explain: 'A larger $R$ lowers $K$. The ripple does not depend on the load, so as the average current falls, the valley of the current reaches zero, and below $K_\mathrm{crit}$ it stays there for part of the period.'
+  - q: 'At which duty ratio is the boost''s critical value largest?'
+    options:
+      - '$D$ = 1/2'
+      - '$D$ = 1/3'
+      - '$D$ = 2/3'
+      - 'It rises all the way to $D$ = 1'
+    answer: 1
+    explain: 'The boost''s critical value, $D(1-D)^2$, has zero slope at $D$ = 1/3, where it is 4/27. A boost with $K$ above 4/27 stays in CCM at every duty ratio.'
+  - q: 'A buck at $D$ = 0.5 enters DCM as its load gets lighter. Compared with $D V_g$, its output voltage is:'
+    options:
+      - 'Higher'
+      - 'Lower'
+      - 'The same: the ratio is $D$ in both modes'
+      - 'Zero'
+    answer: 0
+    explain: 'In DCM the ratio depends on $K$ as well, and rises from $D$ towards 1 as the load gets lighter.'
+  - q: 'You double the switching frequency of a buck that sits just inside DCM. What happens?'
+    options:
+      - 'Nothing: the boundary depends only on $D$'
+      - '$K$ doubles, and the converter can move back into CCM'
+      - '$K$ halves, and it moves deeper into DCM'
+      - 'The duty ratio doubles'
+    answer: 1
+    explain: '$K$, which is $2 L f_s$ over $R$, grows with $f_s$: the ripple shrinks, so the valley of the current lifts off zero.'

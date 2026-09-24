@@ -1,0 +1,89 @@
+---
+title: M4 · Design a CCM buck inductor
+description: Size a filter inductor for a buck in CCM with the core geometrical constant, then finish it in the magnetics designer, turns, gap and window, and find what fails first on a smaller core.
+sidebar:
+  order: 4
+mission:
+  id: m4
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import TryMag from '../../../../components/TryMag.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Goal
+
+- Turn an inductor's specification into the core geometrical constant $K_g$ it needs, and choose a core.
+- Finish the design in the magnetics designer: the fewest turns for the flux density, the gap for the inductance, and a winding that fits the window within its resistance budget.
+- Find what fails first when the core is too small, and what it would take to make it work.
+
+## Before you start
+
+- Read the [design procedure](../../04-magnetics/design-procedure/) and the [magnetics designer](../../design/magnetics-designer/).
+- Know where the specification comes from: the inductance and the peak current from the converter (the [buck](../../03-topologies/buck/) and the [converter designer](../../design/converter-designer/)), and $\Delta i$ as half the peak-to-peak ripple.
+
+## Steps
+
+### 1. The specification
+
+The example inductor has $L$ = <Val example="kg-inductor" name="L" />,
+a peak current of <Val example="kg-inductor" name="I_pk" /> and an rms
+current of <Val example="kg-inductor" name="I_rms" />. It may reach
+$B_\mathrm{max}$ = <Val example="kg-inductor" name="B_max" />, its winding
+may fill $K_u$ = <Val example="kg-inductor" name="K_u" /> of the window, and
+its winding resistance budget is <Val example="kg-inductor" name="R_dcmax" />.
+
+### 2. The K_g it needs
+
+Work out the $K_g$ the specification needs
+(<EqRef id="mag.Kg_req" label="the core geometrical constant needed" />),
+with the wire's resistivity at the winding's temperature
+(<EqRef id="wind.rho_T" label="resistivity at temperature" />), and the
+copper loss the resistance budget allows at the rms current
+(<EqRef id="loss.cond" label="conduction loss" />). Enter both below.
+
+### 3. The core
+
+Compare your $K_g$ with the table cores in the design procedure's
+[worked example](../../04-magnetics/design-procedure/#worked-example) and take
+the smallest one that meets it. Note by how much it does.
+
+### 4. Turns, gap and window
+
+Open the magnetics designer on that core:
+
+<TryMag example="mag-kg" />
+
+Check the fewest turns by hand
+(<EqRef id="mag.N_Bmax" label="fewest turns for B_max" />), at the smallest
+cross-section $A_\mathrm{min}$. Then read the gap for the inductance at those
+turns (<EqRef id="mag.gap_length" label="gap length" />), how much of the
+window the winding fills, and its dc resistance against the budget.
+
+### 5. The smaller core
+
+Switch the core to E 25/13/7. Find the first thing that fails: the turns the
+flux density needs, the window, or the resistance. Then change one thing, the
+wire, the budget or $B_\mathrm{max}$, and say what the change costs.
+
+## Acceptance criteria
+
+<Mission id="m4" />
+
+## Gotchas
+
+- $B_\mathrm{max}$ is not the material's saturation flux density. It lies below it at the core's hottest, with a margin, as the magnetics designer's page explains.
+- The turns follow from the flux density at the smallest cross-section, where it is highest, not at the effective area $A_e$.
+- The gap estimate ignores fringing. A real gap must be longer for the same inductance, which is why data sheets give the $A_L$ of gapped sets.
+- $\Delta i$ in the designer is half the peak-to-peak ripple. Entering the full swing doubles the flux swing, and the core loss it predicts grows more than that, as a power of the swing (<EqRef id="loss.steinmetz" label="core loss per volume" />).
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch11', 'coursera-magnetics']} />
+
+## Quiz
+
+<Quiz id="09-missions/m4-buck-inductor" />

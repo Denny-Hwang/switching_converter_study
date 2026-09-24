@@ -184,9 +184,24 @@ Gotcha pages are not modules: each follows the template symptom · why · how to
 
 ## 09-missions
 
-| Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
+Nine missions with acceptance criteria (`<Mission>`: src/content/missions/<locale>/<id>.yaml, the same criterion ids in
+both languages) and a local-only progress tracker: localStorage in the reader's browser (src/lib/missionstore.ts), no
+account, nothing sent; the index lists every mission with its progress (`<MissionProgress>`). A criterion with an answer
+check takes a number and ticks itself within its tolerance of a synthetic example's value. `modulelint.py` checks each
+page: its sections (Goal, Before you start, Steps, Acceptance criteria, Gotchas, Go deeper, Quiz), a tool link in its
+steps, its criteria in both languages, two resources and its quiz.
+
+| Mission | Phase | EN | KO | Criteria ≥ 3 | Tool link | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| m1 … m9 + quizzes | 5 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| m1-derive-buck | 5 | ✅ | pending | ✅ | ✅ | ✅ | ✅ | ✅ | explorer (`buck.ripple.iL`); checks `buck-basic` V and Δi_L; the catalogue's checks broken on purpose |
+| m2-find-k-crit | 5 | ✅ | pending | ✅ | ✅ | ✅ | ✅ | ✅ | simulator (buck, boost, light-load buck), explorer (`Kcrit.boost`); checks K_crit, the DCM output |
+| m3-boost-rhp-zero | 5 | ✅ | pending | ✅ | ✅ | ✅ | ✅ | ✅ | explorer (`boost.ss.wz`); checks ω_z, ω_0 of `boost-basic`, ω_z of `buckboost-basic` |
+| m4-buck-inductor | 5 | ✅ | pending | ✅ | ✅ | ✅ | ✅ | ✅ | magnetics designer (`mag-kg`); checks K_g and the copper loss of `kg-inductor` |
+| m5-flyback-clamp | 5 | ✅ | pending | ✅ | ✅ | ✅ | ✅ | ✅ | simulator (`flyback-ccm`), clamp check (RCD, TVS); checks V_DS, V_R, V_OR, the clamped V_DS, the ceiling |
+| m6-lfr-matching | 5 | ✅ | pending | ✅ | ✅ | ✅ | ✅ | ✅ | source matcher (`source-lfr`); checks P_max, R_in, L_M, V_g |
+| m7-loss-budget | 5 | ✅ | pending | ✅ | ✅ | ✅ | ✅ | ✅ | loss budget (`loss-buck`, which now computes its gate-drive loss); checks P_gate; a bench plan |
+| m8-sense-chain | 5 | ✅ | pending | ✅ | ✅ | ✅ | ✅ | ✅ | sense chain (`sense-current`); checks the burden, the offset-equivalent current, the filter corner |
+| m9-write-a-gotcha | 5 | ✅ | pending | ✅ | ✅ | ✅ | ✅ | ✅ | simulator (`sim-buck-fixed`); the gotcha template and the site's checks |
 
 ## 10-resources
 

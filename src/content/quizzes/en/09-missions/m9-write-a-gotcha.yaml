@@ -1,0 +1,43 @@
+# Quiz for 09-missions/m9-write-a-gotcha. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'Where may a number on a gotcha page come from?'
+    options:
+      - 'From the project where the mistake happened, rounded'
+      - 'From a synthetic example shown with <Val>, or from a source cited on the same line'
+      - 'From memory'
+      - 'From any web page'
+    answer: 1
+    explain: 'The privacy rules allow textbook or data-sheet numbers with their source, and synthetic example values; nothing from a real project, even rounded.'
+  - q: 'Which section tells a reader how to be sure the gotcha is what they are seeing?'
+    options:
+      - 'Symptom'
+      - 'Why'
+      - 'How to confirm'
+      - 'References'
+    answer: 2
+    explain: 'The same symptom can have several causes. How to confirm gives a measurement or a check that tells this one apart.'
+  - q: 'A new reference still carries a VERIFY note. May the page cite it?'
+    options:
+      - 'Yes, if the title looks right'
+      - 'No: refcheck fails until the DOI or URL has been opened and matched and the note removed'
+      - 'Yes, in the Korean page only'
+      - 'Only in a footnote'
+    answer: 1
+    explain: 'An unverified entry may not be cited from a published page, so that no citation points to something nobody has checked.'
+  - q: 'The Korean page is not written yet. What does the site need?'
+    options:
+      - 'Nothing'
+      - 'A row in docs/STATUS.md that marks the Korean page pending'
+      - 'A machine translation'
+      - 'The English page moved out of 08-gotchas'
+    answer: 1
+    explain: 'modulelint accepts an English page without its Korean mirror only when STATUS marks the Korean page pending.'
+  - q: 'Why describe the symptom before the cause?'
+    options:
+      - 'Because the template sorts sections alphabetically'
+      - 'Because the reader who needs the page knows only what they see, not yet why'
+      - 'Because causes are hard to write'
+      - 'It does not matter'
+    answer: 1
+    explain: 'A gotcha is found by its symptom. Written with the cause in mind, it does not match what the next person sees on the bench.'

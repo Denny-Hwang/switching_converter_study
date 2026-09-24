@@ -1,0 +1,82 @@
+---
+title: M9 · Write a gotcha page
+description: Turn a mistake of your own at the bench into a page for this site, from its symptom to its fix, with synthetic numbers, verified sources and the site's checks passing.
+sidebar:
+  order: 9
+mission:
+  id: m9
+---
+
+import TrySim from '../../../../components/TrySim.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Goal
+
+- Write up one mistake you made, so that the next person recognizes it from its symptom.
+- Explain its mechanism, a check that tells it apart from other causes, and its fix, each backed by a source.
+- Get the page through the site's checks, in English and in Korean or with the Korean page marked pending.
+
+## Before you start
+
+- Read the [gotchas](../../08-gotchas/) to see how they are written, and the template in `docs/GOTCHA_TEMPLATE.md` in the repository.
+- Read `PRIVACY_RULES.md`: nothing from a real project, and no names of institutions, devices or deployments.
+
+## Steps
+
+### 1. Choose the mistake
+
+Pick a mistake you made yourself, and describe it by what you saw first,
+before you knew the cause. Strip it of everything that belongs to the project
+it happened in: the page must be true of any design.
+
+### 2. Reproduce it
+
+Show the mechanism with the site's own tools where you can. A converter-level
+mistake can often be shown in the simulator, as the
+[flyback pinned by its source](../../08-gotchas/flyback-source-pinning/)
+gotcha does. The simulator's preset of a buck into a fixed voltage, for
+example, shows an inductor current that never settles:
+
+<TrySim example="sim-buck-fixed" topology="buck" />
+
+### 3. Write the page
+
+Follow the template: the tags, then Symptom, Why, How to confirm, Fix and
+References. Give every number through a synthetic example
+(`examples/synthetic/<name>.yaml`, shown with `<Val>`), or from a cited source
+on the same line. Link equations with `<EqRef>`; a new equation goes into
+`equations.yaml` first.
+
+### 4. Back every claim
+
+Cite a source for every statement about a device or a method, from
+`references.bib`. A new entry keeps a `VERIFY` note until its DOI or URL has
+been opened and matched, and until then no published page may cite it.
+
+### 5. Run the checks
+
+Run `python scripts/modulelint.py`, `python scripts/privacy_scan.py`,
+`python scripts/mathlint.py` and `python scripts/refcheck.py`, then
+`npm run build`. Add the page's row to `docs/STATUS.md`, write the Korean
+page or mark it pending there, and open a pull request if you want it on the
+site.
+
+## Acceptance criteria
+
+<Mission id="m9" />
+
+## Gotchas
+
+- A symptom described with the cause already in mind helps no one who has not found the cause yet. Describe what you saw.
+- Numbers from the project you were working on are not allowed, even rounded. Make a synthetic example with round values that show the same effect.
+- A fix without a check is a guess: say how to tell that the fix worked.
+
+## Go deeper
+
+<GoDeeper ids={['keysight-imh', 'keithley-llmh']} />
+
+## Quiz
+
+<Quiz id="09-missions/m9-write-a-gotcha" />

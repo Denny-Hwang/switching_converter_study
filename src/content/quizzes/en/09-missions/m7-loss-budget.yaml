@@ -1,0 +1,51 @@
+# Quiz for 09-missions/m7-loss-budget. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'The load current of a converter halves. Its conduction loss in a fixed resistance:'
+    options:
+      - 'Halves'
+      - 'Falls to about a quarter'
+      - 'Stays the same'
+      - 'Doubles'
+    answer: 1
+    explain: 'Conduction loss is the rms current squared times the resistance: half the current, a quarter of the loss (a little more, since the ripple does not shrink with the load).'
+  - q: 'Which losses stay the same when the load falls to a tenth?'
+    options:
+      - 'The conduction losses'
+      - 'The diode''s forward-drop loss'
+      - 'The gate drive, and the capacitive loss at turn-on in CCM'
+      - 'None'
+    answer: 2
+    explain: 'The gate drive depends on the gate charge, the drive voltage and $f_s$; the capacitive loss on the node capacitance, the voltage at turn-on and $f_s$. Neither follows the load current, so at light load they dominate.'
+  - q: 'A gate charge of 20 nC is driven to 12 V at 250 kHz. What is the gate-drive loss?'
+    options:
+      - '60 mW'
+      - '6 mW'
+      - '0.24 mW'
+      - '600 mW'
+    answer: 0
+    explain: '20 nC times 12 V is 240 nJ per cycle, times 250 kHz: 60 mW, in the driver and the gate resistances.'
+  - q: 'The switching frequency doubles. Which losses double with it?'
+    options:
+      - 'Conduction'
+      - 'Gate drive and capacitive turn-on'
+      - 'Only the core loss'
+      - 'All of them'
+    answer: 1
+    explain: 'Both are an energy lost once per cycle, times the number of cycles per second. The core loss depends on the frequency and on the flux swing, which shrinks with the ripple, and the conduction loss follows the currents.'
+  - q: 'A measurement system has a bandwidth of 100 MHz. About what rise time does it show for an ideal step?'
+    options:
+      - '35 ns'
+      - '3.5 ns'
+      - '0.35 ns'
+      - '10 ns'
+    answer: 1
+    explain: 'For a single-pole response the rise time is about 0.35 over the bandwidth: 3.5 ns. An edge much faster than that shows at the system''s own rise time.'
+  - q: 'Why can a loss budget from an ideal-transition simulation be too optimistic for a hard-switched converter?'
+    options:
+      - 'It ignores the overlap of voltage and current during each transition'
+      - 'It ignores the conduction loss'
+      - 'It counts the gate drive twice'
+      - 'It is not: simulations always overestimate losses'
+    answer: 0
+    explain: 'With instantaneous transitions, the switch never carries current while it blocks voltage, so the overlap loss is missing and must be estimated or measured separately.'

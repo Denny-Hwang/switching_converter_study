@@ -1,0 +1,15 @@
+# Acceptance criteria of mission M9 (src/content/docs/en/09-missions/m9-write-a-gotcha.mdx).
+# The ids are the same in every language: the progress kept in the browser is shared.
+criteria:
+  - id: symptom
+    text: 'A mistake of your own, described by what you saw first, with nothing from the project it happened in.'
+  - id: template
+    text: 'The page follows the template: its tags, then Symptom, Why, How to confirm, Fix and References.'
+  - id: numbers
+    text: 'Every number comes from a synthetic example through `<Val>`, or from a source cited on the same line.'
+  - id: sources
+    text: 'Every claim about a device or a method cites a verified entry of `references.bib`.'
+  - id: checks
+    text: '`modulelint`, `privacy_scan`, `mathlint` and `refcheck` pass, and the site builds.'
+  - id: korean
+    text: 'A Korean page, or a STATUS row that marks it pending.'

@@ -570,6 +570,104 @@ html:lang(ko) body {
   color: var(--sl-color-accent);
 }
 
+/* ---- missions: acceptance criteria and progress ----------------------------- */
+.pe-mission {
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.5rem;
+}
+.pe-mission__list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+.pe-mission__item {
+  margin: 0.6rem 0;
+}
+.pe-mission__label {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  cursor: pointer;
+}
+.pe-mission__box {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.2rem;
+  accent-color: var(--sl-color-accent);
+}
+.pe-mission__box:focus-visible,
+.pe-mission__form input:focus-visible,
+.pe-mission__form button:focus-visible,
+.pe-mission__reset:focus-visible,
+.pe-mprog button:focus-visible {
+  outline: 2px solid var(--sl-color-accent-high);
+  outline-offset: 2px;
+}
+.pe-mission__form,
+.pe-mission__answer {
+  margin: 0.35rem 0 0 1.7rem;
+  font-size: var(--sl-text-sm);
+}
+.pe-mission__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+.pe-mission__form input {
+  width: 9rem;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--sl-color-gray-4);
+  border-radius: 0.3rem;
+  background: var(--sl-color-black);
+  color: var(--sl-color-white);
+}
+.pe-mission__form button,
+.pe-mission__reset,
+.pe-mprog button {
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--sl-color-accent);
+  border-radius: 0.3rem;
+  background: transparent;
+  color: var(--sl-color-text-accent);
+  cursor: pointer;
+}
+.pe-mission__form output {
+  flex-basis: 100%;
+}
+.pe-mission__answer summary {
+  cursor: pointer;
+  color: var(--sl-color-accent);
+}
+.pe-mission__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+  margin-top: 0.6rem;
+}
+.pe-mission__count {
+  font-weight: 600;
+}
+.pe-mission__note {
+  margin-top: 0.3rem;
+  color: var(--sl-color-gray-2);
+}
+.pe-mprog table {
+  width: 100%;
+}
+.pe-mprog__cell {
+  white-space: nowrap;
+}
+.pe-mprog progress {
+  width: 5rem;
+  margin-right: 0.4rem;
+  vertical-align: middle;
+  accent-color: var(--sl-color-accent);
+}
+
 /* ---- equation explorer ---------------------------------------------------- */
 .pe-explorer__title {
   font-weight: 600;

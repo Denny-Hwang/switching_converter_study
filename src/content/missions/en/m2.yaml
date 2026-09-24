@@ -1,0 +1,16 @@
+# Acceptance criteria of mission M2 (src/content/docs/en/09-missions/m2-find-k-crit.mdx).
+# The ids are the same in every language: the progress kept in the browser is shared.
+criteria:
+  - id: buck-boundary
+    text: '$K$ where the buck example''s detected mode changes from CCM to DCM, worked out from the resistance there.'
+    check: {example: buck-basic, name: K_crit, tol: 0.05}
+  - id: boost-boundary
+    text: 'The same for the boost example.'
+    check: {example: boost-ideal, name: K_crit, tol: 0.05}
+  - id: agree
+    text: 'At both boundaries, the mode the simulated current shows agrees with the critical value the equations give.'
+  - id: dcm-output
+    text: 'The output voltage of the buck at the light load, read in the simulator''s load table.'
+    check: {example: buck-light-load, name: V_dcm, tol: 0.02}
+  - id: boost-peak
+    text: 'The duty ratio at which the boost''s $K_\mathrm{crit}$ is largest, found in the explorer.'

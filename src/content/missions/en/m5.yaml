@@ -1,0 +1,20 @@
+# Acceptance criteria of mission M5 (src/content/docs/en/09-missions/m5-flyback-clamp.mdx).
+# The ids are the same in every language: the progress kept in the browser is shared.
+criteria:
+  - id: switch-voltage
+    text: 'The switch voltage of the CCM flyback example while the switch is off, without leakage.'
+    check: {example: flyback-ccm, name: V_DS, tol: 0.02}
+  - id: diode-voltage
+    text: 'The reverse voltage of its output diode while the switch is on.'
+    check: {example: flyback-ccm, name: V_R, tol: 0.02}
+  - id: reflected
+    text: 'The reflected voltage $V_\mathrm{OR}$ of the clamp examples.'
+    check: {example: clamp-rcd, name: V_OR, tol: 0.01}
+  - id: rcd-switch
+    text: 'The switch voltage with the RCD example''s clamp.'
+    check: {example: clamp-rcd, name: V_DS, tol: 0.01}
+  - id: margin
+    text: 'An RCD resistor that leaves at least a tenth of the rating as margin, and the clamp loss it costs.'
+  - id: ceiling
+    text: 'The output voltage the TVS clamp allows without a load.'
+    check: {example: clamp-tvs, name: V_omax, tol: 0.01}

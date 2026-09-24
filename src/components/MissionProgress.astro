@@ -1,0 +1,109 @@
+---
+/**
+ * <MissionProgress /> -- the missions (the pages directly in 09-missions with `mission` in their
+ * frontmatter), each with what it asks and how many of its criteria are ticked in this browser
+ * (src/lib/missionstore.ts; the same store <Mission /> writes). Built from the docs collection, so
+ * a new mission appears here by itself. Without JavaScript the counts stay blank.
+ */
+import { getCollection, getEntry } from 'astro:content';
+import { ui } from '../i18n/ui';
+import { pageLocale } from '../lib/locale';
+import { pageHref } from '../lib/paths';
+
+const DIR = '09-missions';
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const prefix = (loc: string) => `${loc}/${DIR}/`;
+const direct = (id: string, loc: string) => id.startsWith(prefix(loc)) && !id.slice(prefix(loc).length).includes('/');
+const all = await getCollection('docs', (e) => (direct(e.id, 'en') || direct(e.id, locale)) && e.data.mission !== undefined);
+const own = new Map(all.filter((e) => direct(e.id, locale)).map((e) => [e.id.slice(prefix(locale).length), e]));
+const missions = await Promise.all(
+  all
+    .filter((e) => direct(e.id, 'en'))
+    .map(async (en) => {
+      const slug = en.id.slice(prefix('en').length);
+      const e = own.get(slug) ?? en;
+      const id = e.data.mission!.id;
+      const criteria = (await getEntry('missions', `${own.has(slug) ? locale : 'en'}/${id}`))?.data.criteria;
+      if (!criteria) throw new Error(`mission ${id}: missing src/content/missions/${locale}/${id}.yaml`);
+      return {
+        id,
+        title: e.data.title,
+        description: e.data.description ?? '',
+        href: pageHref(locale, `${DIR}/${slug}`),
+        ids: criteria.map((c) => c.id),
+      };
+    }),
+);
+missions.sort((a, b) => a.id.localeCompare(b.id, 'en', { numeric: true }));
+---
+
+<div class="pe-mprog not-content" data-msg-done={t['mission.done']} data-msg-confirm={t['mission.resetAllConfirm']}>
+  <table>
+    <caption>{t['mission.caption']}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{t['mission.mission']}</th>
+        <th scope="col">{t['mission.what']}</th>
+        <th scope="col">{t['mission.progress']}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        missions.map((m) => (
+          <tr data-mission-row={m.id} data-ids={m.ids.join(' ')}>
+            <th scope="row">
+              <a href={m.href}>{m.title}</a>
+            </th>
+            <td>{m.description}</td>
+            <td class="pe-mprog__cell">
+              <progress max={m.ids.length} value="0" aria-hidden="true" />
+              <span data-count />
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  <p><button type="button" data-reset-all>{t['mission.resetAll']}</button></p>
+  <p class="pe-mission__note"><small>{t['mission.stored']}</small></p>
+</div>
+
+<script>
+  import { STORE_KEY, doneCount, readProgress, type Progress } from '../lib/missionstore';
+
+  function load(): Progress {
+    try {
+      return readProgress(window.localStorage.getItem(STORE_KEY));
+    } catch {
+      return {};
+    }
+  }
+  const fill = (template: string, values: Record<string, string>) => template.replace(/\{(\w+)\}/g, (_, k: string) => values[k] ?? '');
+
+  for (const root of document.querySelectorAll<HTMLElement>('.pe-mprog')) {
+    const rows = [...root.querySelectorAll<HTMLElement>('tr[data-mission-row]')];
+    const show = () => {
+      const p = load();
+      for (const row of rows) {
+        const ids = row.dataset.ids!.split(' ');
+        const done = doneCount(p, row.dataset.missionRow!, ids);
+        row.querySelector('progress')!.value = done;
+        row.querySelector<HTMLElement>('[data-count]')!.textContent = fill(root.dataset.msgDone!, { done: String(done), total: String(ids.length) });
+      }
+    };
+    show();
+    root.querySelector('[data-reset-all]')!.addEventListener('click', () => {
+      if (!window.confirm(root.dataset.msgConfirm!)) return;
+      try {
+        window.localStorage.removeItem(STORE_KEY);
+      } catch {
+        // storage turned off: nothing is kept anyway
+      }
+      show();
+    });
+    window.addEventListener('storage', (e) => {
+      if (e.key === STORE_KEY || e.key === null) show();
+    });
+  }
+</script>

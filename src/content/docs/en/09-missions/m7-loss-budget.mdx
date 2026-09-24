@@ -1,0 +1,96 @@
+---
+title: M7 · A loss budget and a plan to measure it
+description: Build the buck example's loss budget, find which loss dominates at full and at light load, check one by hand, and write a bench plan that says how each loss would be measured and what limits the measurement.
+sidebar:
+  order: 7
+mission:
+  id: m7
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Cite from '../../../../components/Cite.astro';
+import TryTool from '../../../../components/TryTool.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Goal
+
+- Read a converter's losses by kind, across the load and the switching frequency, and say which one limits the efficiency where.
+- Check one loss by hand against the tool.
+- Plan the bench work that would confirm the budget: what to measure for each loss, with which instrument, and what limits the measurement.
+
+## Before you start
+
+- Read the [loss budget](../../design/loss-budget/) and the bench pages on [probes](../../06-bench/probes/), [current sensing](../../06-bench/current-sensing/) and [thermal measurements](../../06-bench/thermal/).
+- The buck example converts <Val example="loss-buck" name="V_g" /> to <Val example="loss-buck" name="V" /> at <Val example="loss-buck" name="P" /> and <Val example="loss-buck" name="f_s" />.
+
+## Steps
+
+### 1. The budget
+
+Open the loss budget with the buck example:
+
+<TryTool tool="loss-budget" example="loss-buck" />
+
+It simulates the converter at each load with the duty ratio adjusted until
+the output is at its set value, and sorts the losses of the simulated period
+by kind.
+
+### 2. One loss by hand
+
+The gate drive does not depend on the load. With a gate charge of
+<Val example="loss-buck" name="Q_g" /> at a drive of <Val example="loss-buck" name="V_GS" />,
+work it out (<EqRef id="loss.gate" label="gate-drive power" />) and compare
+it with the tool's bucket. Enter it below. The driver and the gate
+resistances dissipate it, not the switch.
+
+### 3. Full load and light load
+
+Name the largest loss at full load and at a tenth of the load, and say why
+they differ: which losses follow the square of the current
+(<EqRef id="loss.cond" label="conduction loss" />), and which are set by the
+switching frequency alone.
+
+### 4. The switching frequency
+
+Double $f_s$ and watch each bucket and the efficiency. Say which buckets
+doubled, and what the higher frequency buys in return (a smaller ripple for
+the same inductance, or a smaller inductance for the same ripple).
+
+### 5. What the tool leaves out
+
+The simulated transitions are instantaneous, so the overlap loss of a
+hard-switched transistor is not in the budget
+<Cite key="erickson2020" where="Ch. 4" />, and the core loss is an estimate
+from coefficients measured with sinusoidal excitation
+<Cite key="erickson2020" where="Ch. 10" />. Decide how your plan would see
+both.
+
+### 6. The bench plan
+
+For each loss, write down the quantity you would measure, the instrument,
+and the limit that matters: the probe's rise time against the switching
+edges (<EqRef id="probe.t_rise" label="probe rise time" />), the burden and
+the pad resistance of a shunt, a meter that averages a pulsed current, the
+temperature rise of a part. End with how you would measure the efficiency
+itself.
+
+## Acceptance criteria
+
+<Mission id="m7" />
+
+## Gotchas
+
+- The efficiency at full load hides the light-load picture. Losses that do not fall with the load dominate there, so read the whole curve.
+- A sense chain that clips on the peaks of a pulsed current reads a lower average than a meter across the same shunt ([a current reading below the meter](../../08-gotchas/dmm-true-average/)).
+- A probe with a long ground lead rings with its own capacitance and adds its own edge to the one you measure ([probes](../../06-bench/probes/)).
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch3', 'adi-an1144']} />
+
+## Quiz
+
+<Quiz id="09-missions/m7-loss-budget" />

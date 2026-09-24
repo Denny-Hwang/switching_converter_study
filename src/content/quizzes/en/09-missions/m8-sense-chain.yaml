@@ -1,0 +1,51 @@
+# Quiz for 09-missions/m8-sense-chain. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A 5 mΩ shunt carries 4 A. What sense voltage, and burden, does it give?'
+    options:
+      - '20 mV'
+      - '2 mV'
+      - '200 mV'
+      - '0.8 mV'
+    answer: 0
+    explain: 'Ohm''s law: 4 A times 5 mΩ is 20 mV, which the measured circuit loses across the shunt.'
+  - q: 'An amplifier with an offset of 50 µV reads that shunt. What current does the offset look like?'
+    options:
+      - '1 mA'
+      - '10 mA'
+      - '0.25 mA'
+      - '100 mA'
+    answer: 1
+    explain: 'The offset over the shunt: 50 µV over 5 mΩ is 10 mA, the same at every current.'
+  - q: 'The pads add 0.5 mΩ to that shunt, sensed beyond the pads. By what fraction does the reading run high?'
+    options:
+      - '1 %'
+      - '10 %'
+      - '5 %'
+      - '0.5 %'
+    answer: 1
+    explain: 'The amplifier sees the current through the shunt and the pads: 0.5 over 5 is a tenth, at every current.'
+  - q: 'What removes the pad error?'
+    options:
+      - 'A larger gain'
+      - 'A Kelvin connection: the sense traces meet the shunt''s own terminals, away from the load current''s pads'
+      - 'A lower sampling rate'
+      - 'A larger filter capacitor'
+    answer: 1
+    explain: 'With a four-terminal shunt, or a four-pad layout for a two-terminal one, the pads carry the load current but are no longer in the sense path.'
+  - q: 'Raising the shunt tenfold lowers the offset-equivalent current tenfold. What does it cost?'
+    options:
+      - 'Nothing'
+      - 'Ten times the burden and the dissipation at the same current'
+      - 'A tenth of the bandwidth'
+      - 'A higher offset'
+    answer: 1
+    explain: 'The sense voltage and the shunt''s loss both grow with its resistance; the output may also clip, so the gain must come down.'
+  - q: 'A current-output amplifier''s output reaches 4.5 V at full current, on a 5 V supply whose output swings to about 1 V below it. What happens?'
+    options:
+      - 'Nothing: the gain sets the output'
+      - 'The output clips before full current: lower the gain'
+      - 'The offset doubles'
+      - 'The shunt overheats'
+    answer: 1
+    explain: 'The output cannot exceed its headroom whatever the gain, so the top of the range is lost unless the gain comes down.'
