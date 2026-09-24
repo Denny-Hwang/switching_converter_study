@@ -805,3 +805,89 @@ resources:
     title_match: "A Guide to the Safe Use of Lithium-Ion Secondary Cells"
     urlkind: pdf
     cite: jeita_liion
+
+  # --- energy harvesting (07-harvesting) ------------------------------------
+  - id: zi2015-nature
+    type: paper
+    title: "Standards and figure-of-merits for quantifying the performance of triboelectric nanogenerators"
+    author: "Y. Zi, S. Niu, J. Wang, Z. Wen, W. Tang, Z. L. Wang"
+    url: https://www.nature.com/articles/ncomms9376
+    tags: [harvesting, triboelectric, figure-of-merit]
+    level: advanced
+    language: en
+    retrieved: 2026-09-24
+    why: "Open access: the cycles for maximized energy output, and the figure of merit that compares triboelectric nanogenerators by the energy a cycle delivers per area and per displacement."
+    why_ko: "공개 논문: 최대 에너지 출력 사이클, 그리고 한 사이클이 면적과 변위당 내는 에너지로 마찰전기 나노발전기를 비교하는 성능 지수."
+    title_match: "Standards and figure-of-merits for quantifying the performance of triboelectric nanogenerators"
+    cite: zi2015
+
+  - id: guyomar2005-pubmed
+    type: paper
+    title: "Toward energy harvesting using active materials and conversion improvement by nonlinear processing"
+    author: "D. Guyomar, A. Badel, E. Lefeuvre, C. Richard"
+    url: https://pubmed.ncbi.nlm.nih.gov/16060507/
+    tags: [harvesting, piezoelectric, sshi]
+    level: advanced
+    language: en
+    retrieved: 2026-09-24
+    why: "The paper that introduced synchronized switch harvesting on inductor; the PubMed record carries its abstract."
+    why_ko: "인덕터 동기 스위치 하베스팅(SSHI)을 처음 제안한 논문; PubMed 기록에 초록이 있다."
+    title_match: "Toward energy harvesting using active materials and conversion improvement by nonlinear processing"
+    cite: guyomar2005
+
+  - id: lefeuvre2005-sage
+    type: paper
+    title: "Piezoelectric Energy Harvesting Device Optimization by Synchronous Electric Charge Extraction"
+    author: "E. Lefeuvre, A. Badel, C. Richard, D. Guyomar"
+    url: http://jim.sagepub.com/content/16/10/865.abstract
+    tags: [harvesting, piezoelectric, sece]
+    level: advanced
+    language: en
+    retrieved: 2026-09-24
+    why: "The paper that introduced synchronous electric charge extraction, whose harvested power does not depend on the load."
+    why_ko: "수확 전력이 부하와 무관한 동기 전하 추출(SECE)을 처음 제안한 논문."
+    title_match: "Piezoelectric Energy Harvesting Device Optimization by Synchronous Electric Charge Extraction"
+    cite: lefeuvre2005
+
+  - id: ottman2003-ieee
+    type: paper
+    title: "Optimized piezoelectric energy harvesting circuit using step-down converter in discontinuous conduction mode"
+    author: "G. K. Ottman, H. F. Hofmann, G. A. Lesieutre"
+    url: https://ieeexplore.ieee.org/document/1189621
+    tags: [harvesting, piezoelectric, dcm, matching]
+    level: advanced
+    language: en
+    retrieved: 2026-09-24
+    why: "A step-down converter in DCM between a piezoelectric element and a battery, run at the duty ratio that harvests the most."
+    why_ko: "압전 소자와 배터리 사이에서, 가장 많이 수확하는 듀티비로 동작하는 DCM 강압 컨버터."
+    title_match: "Optimized piezoelectric energy harvesting circuit using step-down converter in discontinuous conduction mode"
+    cite: ottman2003
+
+  - id: esram2007-ieee
+    type: paper
+    title: "Comparison of Photovoltaic Array Maximum Power Point Tracking Techniques"
+    author: "T. Esram, P. L. Chapman"
+    url: https://ieeexplore.ieee.org/document/4207429
+    tags: [harvesting, mppt]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "A survey of maximum power point tracking methods, the fractional open-circuit voltage method among them."
+    why_ko: "개방 전압 비율 방식을 포함한 최대 전력점 추종(MPPT) 방법들의 비교."
+    title_match: "Comparison of Photovoltaic Array Maximum Power Point Tracking Techniques"
+    cite: esram2007
+
+  - id: ti-bq25570
+    type: datasheet
+    title: "bq25570 Nano Power Boost Charger and Buck Converter for Energy Harvester Powered Applications"
+    author: "Texas Instruments"
+    url: https://www.ti.com/lit/ds/symlink/bq25570.pdf
+    tags: [harvesting, mppt, charger]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "A harvesting charger that tracks the maximum power point by sampling a fraction of the source's open-circuit voltage."
+    why_ko: "전원 개방 전압의 일정 비율을 샘플링해 최대 전력점을 추종하는 하베스팅 충전기."
+    title_match: "bq25570 Nano Power Boost Charger and Buck Converter"
+    urlkind: pdf
+    cite: ti_bq25570

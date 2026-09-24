@@ -1,0 +1,123 @@
+---
+title: 정합
+description: 선형 전원의 가용 전력 가운데 저항, 배터리 같은 정전압, 컨버터가 가져가는 비율, 전원과 배터리 사이의 컨버터가 전원을 최적 전압에서 동작하게 하는 이유, 그리고 고정 듀티비의 DCM 컨버터가 무손실 저항인 이유.
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 선형 전원의 가용 전력 가운데 정전압(constant voltage)과 무손실 저항(loss-free resistor)이 가져가는 비율을 구합니다.
+- 전원과 배터리 사이의 컨버터가 왜 전원을 최적 전압에서 동작하게 하는지 알아 둡니다.
+- 고정 듀티비의 DCM 컨버터가 무손실 저항이라는 것과, 전원 진폭이 바뀔 때 그 컨버터가 어떻게 동작하는지 알아 둡니다.
+
+## 이론
+
+### 정전압
+
+선형 전원에 곧바로 연결된 배터리, 또는 고정 전압 $V_c$로 유지되는 버스는 두 전압의
+차이가 $R_s$를 통해 흘리는 전류를 끌어옵니다. 받는 전력은 그 전류에 자신의 전압을 곱한
+값입니다 <Cite key="alexander2017" where="Sec. 4.8 (Maximum Power Transfer)" />.
+
+<Eq id="src.cv_power" />
+
+가용 전력(<EqRef id="src.Pmax" label="선형 전원의 최대 전력" />)에 대한 비율로는
+다음과 같습니다.
+
+<Eq id="src.cv_extraction" />
+
+개방 전압의 절반에서만 전부를 가져갑니다. 배터리 전압은 전원이 아니라 배터리의 충전
+상태가 정하고 하베스터의 진폭은 변하므로, 곧바로 연결하면 둘이 그 점에서 만나는 일은
+드뭅니다.
+
+### 사이의 컨버터
+
+전원과 배터리 사이의 컨버터는 두 전압을 떼어 놓습니다. 컨버터 입력은 전원이 가장 많이
+내는 전압에 있고, 출력은 배터리 전압에 머물 수 있습니다. Ottman 등은 압전 소자와 배터리
+사이에서 DCM 강압 컨버터(step-down converter)를 가장 많은 전력을 내는 듀티비로
+동작시켰고, 이 컨버터가 수확 전력을 '약 325%'(원문 "by approximately 325%") 늘린다고 보고합니다 <Cite key="ottman2003" />.
+
+### 무손실 저항
+
+고정 듀티비의 DCM에서 벅-부스트나 플라이백은 입력 전압에 비례하는 평균 입력 전류를
+끌어옵니다. 즉 입력이 저항, 곧 전력을 소산하지 않고 전달하는
+<EqRef id="lfr.R_in" label="무손실 저항(loss-free resistor)" />으로 보입니다
+<Cite key="singer1990" />
+<Cite key="erickson2020" where="Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)" />.
+선형 전원에 연결되면 이 저항과 전원 저항이 전원 전압을 분압합니다.
+
+<Eq id="lfr.Vg" />
+
+그리고 컨버터는 전원 진폭과 관계없이 가용 전력 가운데 같은 비율을 가져갑니다
+<Cite key="alexander2017" where="Sec. 4.8 (Maximum Power Transfer)" />.
+
+<Eq id="lfr.eta" />
+
+입력 저항이 전원 저항과 같으면 전부를 가져가고, 양쪽으로 벗어나도 비율은 천천히
+줄어듭니다. 따라서 고정 듀티비는 아무것도 측정하지 않고도, 진폭이 바뀌는 선형 전원을
+최대 전력점(maximum power point)에 둡니다. 단, 컨버터가 DCM에 머무는 동안입니다
+([DCM 플라이백](../lfr-dcm-flyback/)).
+
+## 풀이 예제
+
+선형 전원을 배터리에, 그리고 무손실 저항에 연결한 예:
+
+<Worked example="match-basic" />
+
+전원은 최대 <Val example="match-basic" name="P_max" />를 냅니다. 곧바로 연결한
+<Val example="match-basic" name="V_c" /> 배터리는
+<Val example="match-basic" name="P_cv" />, 곧
+<Val example="match-basic" name="eta_ext_cv" />의 비율을 가져갑니다.
+<Val example="match-basic" name="R_in" />의 무손실 저항은 입력을
+<Val example="match-basic" name="V_g" />에 두고
+<Val example="match-basic" name="eta_ext_lfr" />의 비율을 가져가며, 이 비율은 전원
+진폭과 관계없이 유지됩니다.
+
+## 직접 해 보기
+
+<TryIt eq="src.cv_extraction" example="match-basic" sweep="V_c" from={0} to={10} logx={false} />
+
+정전압 부하가 유지하는 전압을 바꿔 보면, 비율은 개방 전압의 절반에서 가장 크고 양
+끝에서 0이 됩니다.
+
+<TryIt eq="lfr.eta" example="match-basic" sweep="R_in" from={2.5} to={250} />
+
+입력 저항을 바꿔 보면, 전원 저항의 두 배나 절반이어도 가용 전력의 9분의 8을
+가져갑니다.
+
+## 벤치 실습
+
+실험용 전원과 직렬 전력 저항으로 선형 전원을 만듭니다. 배터리 대신 정전압 모드의 전자
+부하(electronic load)를 연결하고, 그 전압을 0부터 전원 전압까지 단계적으로 올리며
+단계마다 전류를 기록합니다. 전압에 대한 전력을 그려 최대인 점을 찾고, 전원 전압의
+절반과 비교합니다. 이어서 부하를 듀티비가 DCM에 고정된 컨버터로 바꾸고, 두 전원
+전압에서 입력 전압과 전류를 잽니다. 그 비, 곧 입력 저항은 그대로입니다.
+
+## 주의할 점
+
+- **전원에 곧바로 연결된 배터리는 배터리 전압에서 동작합니다.** 전원의 최적점이
+  아닙니다(<EqRef id="src.cv_extraction" label="정전압 추출 비율" />).
+- **무손실 저항은 DCM에서만 성립합니다**(<EqRef id="lfr.R_in" label="무손실 저항" />).
+  강한 전원은 컨버터를 CCM으로 몰아넣을 수 있습니다([DCM 플라이백](../lfr-dcm-flyback/)).
+- **개방 전압의 절반은 선형 전원에서만 최적점입니다.** 선형이 아닌 전원은 자기
+  최적점이 따로 있습니다([MPPT](../sece-sshi-mppt/#최대-전력점-추종)).
+- **고정 저항은 진폭이 바뀌어도 비율을 유지하지만, 고정 전압은 그렇지 않습니다**
+  (<EqRef id="lfr.eta" label="무손실 저항의 추출 비율" />).
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch15', 'ottman2003-ieee']} />
+
+## 퀴즈
+
+<Quiz id="07-harvesting/matching" />

@@ -1,0 +1,130 @@
+---
+title: 무손실 저항으로 동작하는 DCM 플라이백
+description: 고정 듀티비의 DCM 플라이백이 전원 저항을 보이도록 설계하고, CCM이 버스를 붙잡기 시작하는 전원 진폭을 찾고, 스위치가 차단해야 할 전압과 더 많은 전력의 대가를 봅니다.
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 고정 듀티비의 DCM 플라이백이 전원 저항을 보이도록 설계합니다.
+- 플라이백이 DCM을 벗어나는 전원 진폭을 찾고, 그때 무슨 일이 일어나는지 알아 둡니다.
+- 스위치가 차단하는 전압과, 같은 저항으로 더 많은 전력을 끌어오려면 그 전압이 왜 높아지는지 알아 둡니다.
+
+## 이론
+
+### 무손실 저항의 크기 정하기
+
+고정 듀티비의 DCM 플라이백은 입력에 <EqRef id="lfr.R_in" label="무손실 저항" />을
+보입니다 <Cite key="erickson2020" where="Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)" />.
+이 저항을 자화 인덕턴스(magnetizing inductance)에 대해 풀면 설계에 필요한 인덕턴스가 나옵니다.
+
+<Eq id="lfr.L_M" />
+
+선형 전원에 정합하려면 입력 저항을 전원 저항과 같게 둡니다
+(<EqRef id="lfr.eta" label="무손실 저항의 추출 비율" />). 스위칭 주파수가 낮거나
+듀티비가 클수록 같은 저항에 더 큰 인덕턴스가 필요합니다. 출력 전압은 들어가지
+않습니다. DCM에서 입력 저항은 인덕턴스, 스위칭 주파수, 듀티비만으로 정해집니다.
+
+### DCM이 끝나는 곳
+
+플라이백은 입력 전압이 <EqRef id="flyback.V_crit" label="임계 입력 전압" />보다 낮은
+동안 DCM에 머뭅니다. 임계 입력 전압(critical input voltage)은 출력 전압, 다이오드 강하, 듀티비, 권선비가
+정합니다. 분압 전압(<EqRef id="lfr.Vg" label="무손실 저항의 버스 전압" />)을 그 위로
+올릴 만큼 강한 전원은 플라이백을 CCM으로 몰아넣습니다. 출력이 고정되어 있으면 CCM
+변환비는 임계 전압이라는 하나의 입력 전압만 허용합니다
+<Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />. 버스는 거기에 묶이고,
+플라이백은 정전압 싱크(constant-voltage sink)가 되어, 가용 전력 가운데 가져가는 비율이 전원 진폭에 따라
+달라집니다(<EqRef id="src.cv_extraction" label="정전압 추출 비율" />). 시뮬레이터의 전류
+제한 전원 예제에서 버스가 임계 전압에 자리 잡는 것을 볼 수 있습니다.
+
+### 스위치가 차단하는 전압, 그리고 더 많은 전력
+
+스위치는 입력 전압에, 권선비를 거쳐 반사된 출력 전압을 더한 전압을 차단하며
+(<EqRef id="flyback.Vds_off" label="스위치 전압" />), 누설 인덕턴스의 스파이크가 그
+위에 더해집니다([스너버와 클램프](../../04-magnetics/snubbers-clamps/)). 같은 입력
+저항으로 더 큰 전력을 끌어오려면 입력 전압이 더 높아야 합니다.
+
+<Eq id="lfr.Vg_power" />
+
+따라서 정합된 플라이백에서 더 많은 전력을 끌어오면 스위치 전압이 높아집니다. 이는
+임계 전압까지만 그렇습니다. 거기서는 CCM이 버스를 붙잡고, 플라이백이 스위칭하는 동안에는
+전원이 이후 얼마의 전력을 밀어 넣든 스위치 전압은 <EqRef id="flyback.Vds_clamped" label="CCM 값" />에
+머뭅니다. 플라이백이 저항으로서 끌어오는 가장 큰 전력은 임계 전압에서의
+<EqRef id="dcm.P_in" label="DCM 컨버터가 끌어오는 전력" />입니다.
+
+## 풀이 예제
+
+전원 저항을 보이도록 설계한 플라이백:
+
+<Worked example="lfr-flyback" />
+
+<Val example="lfr-flyback" name="D" />와 <Val example="lfr-flyback" name="f_s" />에서
+<Val example="lfr-flyback" name="L_M" />의 자화 인덕턴스는 전원 저항과 같은
+<Val example="lfr-flyback" name="R_in" />을 보입니다. 그러면 전원의
+<Val example="lfr-flyback" name="V_oc" />는 <Val example="lfr-flyback" name="V_g" />로
+분압되며, 이는 <Val example="lfr-flyback" name="V_gcrit" />의 임계 입력 전압보다
+낮습니다. 플라이백은 가용 전력 <Val example="lfr-flyback" name="P_max" /> 전부를
+가져가고, 스위치는 누설 스파이크 전에 <Val example="lfr-flyback" name="V_DS" />를
+차단합니다.
+
+## 직접 해 보기
+
+<TryIt eq="lfr.L_M" example="lfr-flyback" sweep="D" />
+
+듀티비를 바꿔 보면, 같은 저항을 보이는 인덕턴스가 듀티비의 제곱으로 커집니다.
+
+<TrySim example="flyback-source" topology="flyback" />
+
+같은 종류의 플라이백에 더 강한 전원을 연결하면, 버스는 CCM이 시작될 때까지 오른 뒤
+임계 입력 전압에 자리 잡습니다.
+
+## 벤치 실습
+
+듀티비를 고정한 플라이백의 입력 양단에 버스 커패시터를 두되, 직렬 저항과 함께 펄스형
+입력 전류를 여러 스위칭 주기에 걸쳐 평균할 만큼 크게 하고, 계산한 입력 저항과 같은 직렬
+저항을 거쳐 실험용 전원에 연결합니다. 입력 전압을 재면 전원 전압의 절반이어야 합니다.
+입력 전압이 전원을 더는 따라가지 않을 때까지 전원을 천천히 올립니다. 그 전압이 임계
+입력 전압이며, 식과 비교합니다. 전원은 그 두 배까지 올라가야 하며, 예제의 수치로는
+수백 볼트이고, 버스 커패시터는 도달한 전압을 그대로 붙잡고 있습니다. 회로를 외함에 넣어
+두고, 만지기 전에 저항을 통해 커패시터를 방전하십시오. 권선비 n(N_s/N_p)을 크게 하면
+임계 전압이 낮아져
+(<EqRef id="flyback.V_crit" label="임계 입력 전압" />) 더 안전한 전압에서 실습할 수
+있습니다. 단계마다 그 전압에 맞는 정격의 프로브로 스위치의 드레인 전압을
+캡처하고([프로브](../../06-bench/probes/)), 누설 스파이크 전의 평탄부를 식과
+비교합니다.
+
+## 주의할 점
+
+- **임계 입력 전압보다 높으면 플라이백은 더 이상 정합되지 않습니다.** 거기서는 CCM이
+  버스를 붙잡습니다(<EqRef id="flyback.V_crit" label="임계 입력 전압" />).
+- **스위치 전압에는 반사된 출력이 들어가고,** 누설 스파이크가 그 위에 더해집니다
+  (<EqRef id="flyback.Vds_off" label="스위치 전압" />).
+- **플라이백이 스위칭하지 않는 동안에는 버스가 개방 전압까지 충전됩니다.** 기동할 때,
+  저전압 차단 중이거나 고장 뒤에는 아무것도 전원에서 전력을 끌어가지 않습니다. 그때
+  스위치는 그 전압에 반사된 출력을 더한 전압을 막아야 하므로, 그에 맞춰 정격을 정하거나
+  버스를 클램프하십시오([설계 사례](../synthetic-case/)).
+- **같은 저항으로 더 많은 전력을 끌어오려면 더 높은 전압이 필요합니다**
+  (<EqRef id="lfr.Vg_power" label="주어진 전력을 끌어오는 입력 전압" />).
+- **정합은 너그럽습니다.** 추출 비율은 최댓값 근처에서 평평합니다. 인덕턴스의 작은
+  오차는 입력 저항을 같은 상대 오차만큼 옮기지만, 추출 비율은 그 상대 오차 제곱의
+  4분의 1 정도만 줄어듭니다(<EqRef id="lfr.eta" label="무손실 저항의 추출 비율" />).
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch15', 'erickson-ch5', 'ottman2003-ieee']} />
+
+## 퀴즈
+
+<Quiz id="07-harvesting/lfr-dcm-flyback" />

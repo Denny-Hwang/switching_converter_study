@@ -80,7 +80,7 @@ export function formatReference(e: RefEntry, locale: string): { lead: string; ti
       if (e.year) bits.push(e.year);
       return { lead: who, title: e.title, italicTitle: false, tail: bits.filter(Boolean).join(', ') };
     case 'manual':
-      if (e.kind) bits.push(e.kind);
+      if (e.kind || e.number) bits.push([e.kind, e.number].filter(Boolean).join(' '));
       if (e.year) bits.push(e.year);
       return { lead: who, title: e.title, italicTitle: true, tail: bits.join(', ') };
     default:

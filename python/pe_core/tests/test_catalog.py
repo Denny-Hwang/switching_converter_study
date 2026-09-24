@@ -112,3 +112,14 @@ def test_empty_citation_list_is_rejected(tmp_path: Path) -> None:
     p.write_text(text.replace(first, "cite: []", 1), encoding="utf-8")
     with pytest.raises(EquationError, match="at least one citation"):
         load(p)
+
+
+def test_duplicate_symbol_is_rejected(tmp_path: Path) -> None:
+    # YAML keeps the last of two equal keys silently: a second V_M once replaced the PWM ramp's meaning on the
+    # control pages. The loader refuses it
+    text = (GENERATED_JSON.parent / "equations.yaml").read_text(encoding="utf-8")
+    line = next(ln for ln in text.splitlines() if ln.startswith("  V_M: "))
+    p = tmp_path / "equations.yaml"
+    p.write_text(text.replace(line, line + "\n" + line.replace("PWM ramp amplitude", "another amplitude"), 1), encoding="utf-8")
+    with pytest.raises(EquationError, match="duplicate key 'V_M'"):
+        load(p)

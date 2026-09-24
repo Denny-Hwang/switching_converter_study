@@ -1,0 +1,59 @@
+# Quiz for 07-harvesting/lfr-dcm-flyback. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A flyback at 5 kHz and a duty ratio of 0.1 must present 20 kohm, the source resistance, in DCM. What magnetizing inductance does it need?'
+    options:
+      - '20 mH'
+      - '40 mH'
+      - '2 mH'
+      - '200 mH'
+    answer: 0
+    explain: 'The input resistance times the duty ratio squared over twice the switching frequency: 2e4 times 0.01 over 1e4, which is 0.02 H.'
+  - q: 'The duty ratio is doubled to 0.2 with the same switching frequency and resistance. What inductance is needed now?'
+    options:
+      - '40 mH'
+      - '10 mH'
+      - '80 mH'
+      - '20 mH'
+    answer: 2
+    explain: 'The inductance grows as the square of the duty ratio: four times 20 mH.'
+  - q: 'Where does a DCM flyback matched to a linear source hold its input voltage?'
+    options:
+      - 'At the source''s open-circuit voltage'
+      - 'At the critical input voltage'
+      - 'At the output voltage times the turns ratio'
+      - 'At half the source''s open-circuit voltage'
+    answer: 3
+    explain: 'Its input resistance equals the source resistance, so the two divide the source voltage in half.'
+  - q: 'The source grows until the divider voltage would exceed the critical input voltage. What does the flyback do?'
+    options:
+      - 'It enters CCM, which holds its input at the critical voltage'
+      - 'It stays in DCM and its input keeps rising'
+      - 'It stops switching'
+      - 'Its output voltage rises with the source'
+    answer: 0
+    explain: 'With the output fixed, the CCM conversion ratio allows only the critical input voltage: the bus is held there, and the flyback becomes a constant-voltage sink.'
+  - q: 'A flyback with a 5 V output, a 0.5 V diode, a duty ratio of 0.2 and a turns ratio of 0.1 sits at 75 V. What is its critical input voltage, and is it in DCM?'
+    options:
+      - '55 V, CCM'
+      - '220 V, DCM'
+      - '27.5 V, CCM'
+      - '440 V, DCM'
+    answer: 1
+    explain: '5.5 V times 0.8 over (0.1 times 0.2), which is 220 V; the input is below it, so the flyback is in DCM.'
+  - q: 'What voltage does its switch block, before the leakage spike?'
+    options:
+      - '75 V'
+      - '80.5 V'
+      - '130 V'
+      - '550 V'
+    answer: 2
+    explain: 'The input voltage plus the output and diode voltage reflected through the turns ratio: 75 V plus 5.5 V over 0.1.'
+  - q: 'The magnetizing inductance comes out 10 % low. About how much of the available power does the flyback lose?'
+    options:
+      - '10 %'
+      - '5 %'
+      - '1 %'
+      - 'A quarter of a percent'
+    answer: 3
+    explain: 'The input resistance is 10 % low too, and at the top of the share a fraction off costs about a quarter of its square: 4 times 0.9 over 1.9 squared is 0.997.'

@@ -1,0 +1,23 @@
+synthetic: true
+label: "Loss-free-resistor flyback example"
+label_ko: "무손실 저항 플라이백 예제"
+# A fixed-duty-ratio DCM flyback sized to present the source resistance: R_in = R_s = 10 kOhm at
+# D = 0.2 and f_s = 10 kHz needs L_M = 20 mH. It charges a 5 V output through a 0.5 V diode.
+params:
+  V_oc: 150
+  R_s: 1.0e4
+  D: 0.2
+  f_s: 1.0e4
+  V: 5
+  V_D: 0.5
+  n: 0.1
+steps:
+  - {eq: lfr.L_M, bind: {R_in: R_s}}
+  - lfr.R_in
+  - lfr.Vg
+  - lfr.eta
+  - src.Pmax
+  - flyback.V_crit
+  - flyback.Vds_off
+checks:
+  - {when: "V_g < V_gcrit", then: {en: "DCM: the flyback is a loss-free resistor", ko: "DCM: 플라이백은 무손실 저항"}, else: {en: "CCM: the flyback holds its input at V_g,crit", ko: "CCM: 플라이백이 입력을 V_g,crit에 묶음"}}

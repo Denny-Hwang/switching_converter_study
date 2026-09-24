@@ -1,0 +1,51 @@
+# Quiz for 07-harvesting/synthetic-case. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A source''s open-circuit voltage rises to 500 V behind 1 Mohm. What is the most power it can give at the peak?'
+    options:
+      - '62.5 mW'
+      - '125 mW'
+      - '250 mW'
+      - '31.3 mW'
+    answer: 0
+    explain: '500 V squared over four times 1e6 ohm: 250000 over 4e6, which is 62.5 mW.'
+  - q: 'A matched loss-free resistor stays in DCM over a slow, sinusoidal envelope that peaks there. What average power does it take?'
+    options:
+      - '62.5 mW'
+      - '31.3 mW'
+      - '15.6 mW'
+      - '44.2 mW'
+    answer: 1
+    explain: 'The power follows the square of the envelope, and the square of a sine averages to half its peak''s: half of 62.5 mW.'
+  - q: 'A flyback at 2 kHz and a duty ratio of 0.05 must present 1 Mohm. What magnetizing inductance does it need?'
+    options:
+      - '1.25 H'
+      - '2.5 H'
+      - '0.625 H'
+      - '6.25 H'
+    answer: 2
+    explain: 'The resistance times the duty ratio squared over twice the switching frequency: 1e6 times 0.0025 over 4000.'
+  - q: 'Where should DCM be checked for a source whose amplitude follows an envelope?'
+    options:
+      - 'At the envelope''s average'
+      - 'At the envelope''s start'
+      - 'Anywhere: DCM does not depend on the source'
+      - 'At the envelope''s peak, where the bus is highest'
+    answer: 3
+    explain: 'The critical input voltage is fixed; the bus is highest at the peak, where CCM would first take over.'
+  - q: 'The bus capacitance is 1 uF, and both the source resistance and the flyback''s input resistance are 1 Mohm. What is the bus''s time constant?'
+    options:
+      - '0.5 s'
+      - '1 s'
+      - '2 s'
+      - '0.25 s'
+    answer: 0
+    explain: 'The capacitance times the two resistances in parallel: 1e-6 times 0.5e6 ohm.'
+  - q: 'The flyback stops switching and nothing else loads the bus. Where does the bus settle, behind a 1 kV open-circuit voltage and 1 Mohm?'
+    options:
+      - 'At zero: 1 Mohm lets almost no current through'
+      - 'At half the open-circuit voltage'
+      - 'At the full open-circuit voltage, 1 kV'
+      - 'At the critical input voltage'
+    answer: 2
+    explain: 'With no load, no current flows and no voltage falls across the source resistance: the capacitor reaches the full open-circuit voltage, and holds it.'

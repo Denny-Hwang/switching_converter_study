@@ -1,0 +1,152 @@
+---
+title: SECE, SSHI, MPPT
+description: 같은 진동 압전 소자에서 전파 브리지, 동기 전하 추출(SECE), 병렬 인덕터 동기 스위치 하베스팅(SSHI)이 가져가는 전력, 그 가운데 직류 전압에 따라 달라지는 것, 그리고 개방 전압의 일정 비율로 최대 전력점을 추종하는 방법.
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 같은 진동 압전 소자에서 전파 브리지, SECE, 병렬 SSHI가 가져가는 전력을 비교합니다.
+- 그 가운데 뒤의 직류 전압에 따라 달라지는 것과, 각각이 가장 많이 가져가는 조건을 알아 둡니다.
+- 개방 전압의 일정 비율로 전원의 최대 전력점(maximum power point)을 추종합니다.
+
+## 이론
+
+아래 세 인터페이스는 모두 [전원 모델](../source-models/)의 소자, 곧 클램프 커패시턴스
+$C_0$ 옆의 전류원 $I_p \sin \omega t$에서 전력을 가져가며, 진동 진폭은 수확 때문에
+바뀌지 않는다고 봅니다. 변위의 두 극값 사이, 곧 반주기마다 전원은 같은 전하를
+흘립니다. 브리지가 직류 전압으로 이어지는 두 인터페이스는 브리지가 도통하기 전에 그 가운데 얼마를 소자
+전압을 바꾸는 데 쓰는지가 다르고, SECE는 그 전하 전부로 소자를 충전한 뒤 거기에
+저장된 에너지를 가져갑니다.
+
+### 표준 인터페이스
+
+직류 전압(저장 커패시터나 배터리)에 연결된 전파 브리지, 곧 표준 인터페이스(standard interface)는 소자 전압이 한 레일(rail)에서 다른
+레일까지 바뀐 뒤에야 도통합니다. 반주기마다 이 변화가 전하의 일부를 가져가고,
+나머지가 직류 쪽으로 들어갑니다 <Cite key="guyomar2005" />.
+
+<Eq id="piezo.P_std" />
+
+전력은 직류 전압에 따라 달라집니다. 직류 전압이 0일 때와, 변화가 전하 전부를 가져가는
+개방 전압 진폭에서 0이며, 개방 전압 진폭의 절반에서 가장 큽니다.
+
+<Eq id="piezo.P_std_max" />
+
+### SECE
+
+동기 전하 추출(synchronous electric charge extraction, SECE)은 전압의 극값 사이에서
+소자를 개방해 두었다가, 극값마다 컨버터를 거쳐 전하 전부를 저장 소자로 꺼냅니다
+<Cite key="lefeuvre2005" />. 그 사이에 반주기의 전하 전부가 소자 전압을 0에서 개방 전압
+진폭의 두 배까지 올리고, 컨버터는 그때 $C_0$에 저장된 에너지를 가져가 저장 소자가
+어떤 전압이든 그 전압으로 넘깁니다. 소자는 저장 소자에 직접 연결되지 않으므로 전력은
+저장 소자의 전압과 무관합니다.
+
+<Eq id="piezo.P_sece" />
+
+표준 인터페이스 최댓값의 네 배, 곧 300% 더 많은 값입니다. Lefeuvre 등은 이 방식이 최대
+전력에 맞춘 표준 인터페이스에 비해 수확 전력을 400% 늘린다고(원문 "increases the harvested
+power by 400%") 보고합니다 <Cite key="lefeuvre2005" />. 백분율은 논문에 적힌 그대로
+옮겼습니다.
+컨버터는 추출 순간의 소자 전압, 곧 개방 전압 진폭의 두 배를 견뎌야 합니다.
+
+### 병렬 SSHI
+
+인덕터 동기 스위치 하베스팅(synchronized switch harvesting on inductor, SSHI)의
+병렬형은 브리지를 그대로 두고 소자 양단에 스위치와 인덕터를 더합니다. 변위가 극값일
+때마다 스위치가 잠깐 닫히고, 인덕터가 소자 전압을 반전시킵니다
+<Cite key="guyomar2005" />. 반전은 전압의 일부를 잃습니다. 소자가 직류 전압에서 그
+$\gamma$배의 반대 부호 전압으로 넘어가면, 반대쪽 레일까지의 변화에는 나머지만 듭니다.
+
+<Eq id="piezo.P_sshi" />
+
+<Eq id="piezo.P_sshi_max" />
+
+반전이 좋을수록 더 높은 직류 전압에서 더 많은 전력을 얻습니다. Guyomar 등은 표준
+방식보다 수확 전력을 900% 넘게 늘릴 수 있다고(원문 "may be increased above 900%") 보고하며 <Cite key="guyomar2005" />, 이
+모델에서는 전압의 약 5분의 4를 유지하는 반전에 해당합니다. 아무것도 유지하지 않는
+반전, 곧 소자를 비우기만 하는 스위치도 표준 인터페이스 최댓값의 두 배를 얻습니다.
+
+### 최대 전력점 추종
+
+선형 전원에서 정전압(constant voltage)으로 들어가는 전력은 개방 전압의 절반에서 가장
+크고(<EqRef id="src.cv_extraction" label="정전압 추출 비율" />), 위의 표준 인터페이스도
+소자 개방 전압 진폭의 절반에서 가장 좋습니다. 따라서 입력을 전원 개방 전압의 고정
+비율에 두는 컨버터는 전원 진폭이 바뀌어도 최대 전력점에 머뭅니다. 이것이 개방 전압
+비율 방식(fractional open-circuit voltage method)입니다 <Cite key="esram2007" />. 이런
+컨버터는 개방 전압을 알기 위해 가끔 전력을 끌어오지 않고 그것을 샘플링합니다. 한
+하베스팅 충전기는 주기적으로 스스로를 멈추고 개방 전압의 일정 비율을 샘플링하며, 열전
+발전기(thermoelectric generator)에서는 그 비율이 보통 50%입니다 <Cite key="ti_bq25570" />. 태양전지처럼 선형이 아닌 전원은 최적점이 다른 비율에
+있습니다 <Cite key="esram2007" />.
+
+## 풀이 예제
+
+세 인터페이스 뒤의 같은 소자:
+
+<Worked example="piezo-interfaces" />
+
+<Val example="piezo-interfaces" name="V_DC" />의 브리지 뒤에서 소자는
+<Val example="piezo-interfaces" name="P_std" />를 냅니다. 개방 전압 진폭
+<Val example="piezo-interfaces" name="V_p" />의 절반인 최적 직류 전압에서는
+<Val example="piezo-interfaces" name="P_std_max" />를 낼 것입니다. SECE는 저장 전압과
+관계없이 <Val example="piezo-interfaces" name="P_sece" />를 가져가고,
+<Val example="piezo-interfaces" name="gamma" />의 반전을 쓰는 병렬 SSHI는 최대
+<Val example="piezo-interfaces" name="P_sshi_max" />를 얻습니다.
+
+## 직접 해 보기
+
+<TryIt eq="piezo.P_std" example="piezo-interfaces" sweep="V_DC" from={0} to={2} logx={false} />
+
+브리지 뒤의 직류 전압을 바꿔 보면, 전력은 개방 전압 진폭의 절반에서 가장 크고 진폭에서
+0으로 떨어집니다.
+
+<TryIt eq="piezo.P_sshi_max" example="piezo-interfaces" sweep="gamma" />
+
+반전 계수(inversion coefficient)를 바꿔 보면, 반전이 완전에 가까워질수록 최대 전력이 한없이 커집니다.
+인덕터와 스위치의 손실 때문에 실제로는 그렇게 되지 않습니다.
+
+## 벤치 실습
+
+일정한 진폭의 가진기에서, 소자를 전파 브리지를 거쳐 소스 측정 장치(source-measure
+unit, SMU)가 직류 전압으로 유지하는 저장 커패시터에 연결합니다. SMU는 브리지의 전류,
+마이크로암페어 단위의 전류를 흡수하며 측정합니다. 직류 전압을 0부터 개방 전압 진폭까지
+단계적으로 올리며 SMU가 흡수하는 전류를 기록하고, 전력을 그립니다. 최적 직류 전압을 개방 전압
+진폭의 절반과 비교합니다. 병렬 SSHI는 스위치와 인덕터를 더하고 전압 극값마다 스위치를
+트리거한 뒤, 오실로스코프로 반전 직전과 직후의 소자 전압을 읽습니다. 그 비가 식에
+넣을 반전 계수입니다.
+
+## 주의할 점
+
+- **개방 전압 진폭보다 높으면 브리지는 아무것도 수확하지 못합니다.** 그 위로 충전된
+  저장 소자는 더 충전되지 않습니다(<EqRef id="piezo.P_std" label="표준 인터페이스의 전력" />).
+- **식은 이상적인 브리지를 가정합니다.** 실제 브리지에서는 다이오드 두 개가 직렬로
+  도통하므로 <Cite key="mohan2003" where="Ch. 5 (Line-Frequency Diode Rectifiers)" />,
+  소자 전압이 직류 전압에 순방향 전압 강하(forward voltage drop) 두 개를 더한 값까지 흔들린 뒤에야 브리지가
+  도통합니다. 개방 전압 진폭이 몇 볼트인 소자에서는 흔들림의 큰 부분입니다.
+- **SECE 컨버터는 개방 전압 진폭의 두 배를 봅니다.** 소자 전압이 반주기 내내 0부터
+  오르기 때문입니다(<EqRef id="piezo.P_sece" label="SECE의 전력" />).
+- **SSHI의 이득은 반전의 품질입니다.** 스위치와 인덕터의 손실이 반전 계수를, 그리고
+  전력을 낮춥니다(<EqRef id="piezo.P_sshi_max" label="병렬 SSHI의 최대 전력" />).
+- **개방 전압을 샘플링하는 동안은 수확하지 못합니다.** 샘플링하는 동안 컨버터는 전력을
+  끌어오지 않습니다.
+- **이 결과들은 진동 진폭을 고정으로 봅니다.** 구조물 자신의 손실이 가져가는 에너지에
+  비해 작지 않은 에너지를 가져가는 수확은 진폭을 낮추며, 그때 모델은 모든 인터페이스를
+  과대평가합니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['lefeuvre2005-sage', 'guyomar2005-pubmed', 'esram2007-ieee', 'ti-bq25570']} />
+
+## 퀴즈
+
+<Quiz id="07-harvesting/sece-sshi-mppt" />

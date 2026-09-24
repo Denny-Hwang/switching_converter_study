@@ -39,9 +39,7 @@ operating point in the [simulator](../../simulate/simulator/).
 ### The available power
 
 A linear source delivers its most power into a load equal to its own
-resistance:
-
-<Eq id="src.Pmax" />
+resistance (<EqRef id="src.Pmax" label="maximum power from a linear source" />).
 
 ### The flyback as a resistor
 
@@ -51,15 +49,11 @@ proportional to its input voltage: its input is a resistance, the
 on instead of dissipating it <Cite key="singer1990" />
 <Cite key="erickson2020" where="Ch. 15" />. With
 a linear source, this resistance and the source resistance divide the source
-voltage:
-
-<Eq id="lfr.Vg" />
+voltage (<EqRef id="lfr.Vg" label="bus voltage of a loss-free resistor" />).
 
 The flyback takes the same share of the available power at any source
 amplitude, the whole of it when its resistance matches the source's
-<Cite key="alexander2017" where="Sec. 4.8" />:
-
-<Eq id="lfr.eta" />
+<Cite key="alexander2017" where="Sec. 4.8" /> (<EqRef id="lfr.eta" label="extraction by a loss-free resistor" />).
 
 ### Where CCM takes over
 
@@ -68,9 +62,7 @@ The flyback stays in DCM while its input is below the
 enough to raise the divider voltage above it drives the flyback into CCM,
 and CCM holds the bus at the critical voltage. The flyback then acts as a
 constant-voltage sink, whose share of the available power depends on the
-source amplitude <Cite key="alexander2017" where="Sec. 4.8" />:
-
-<Eq id="src.cv_extraction" />
+source amplitude <Cite key="alexander2017" where="Sec. 4.8" /> (<EqRef id="src.cv_extraction" label="constant-voltage extraction" />).
 
 The tool finds the source amplitude at which this starts by solving the
 divider equation for $V_\mathrm{oc}$. The extraction chart shows both regimes.
@@ -83,9 +75,7 @@ amplitude, and the share first rises to 1.
 ### More power needs a higher switch voltage, up to the critical voltage
 
 Through the same input resistance, a larger power needs a higher bus
-voltage:
-
-<Eq id="lfr.Vg_power" />
+voltage (<EqRef id="lfr.Vg_power" label="input voltage for a given power" />).
 
 The switch blocks the bus voltage plus the reflected output voltage
 (<EqRef id="flyback.Vds_off" label="switch voltage" />). That holds up to the
@@ -116,9 +106,7 @@ envelope period until it repeats itself, and shows the last one. Its bus
 voltage and power are averaged over each switching cycle.
 
 The power drawn is the power the source delivers into the bus at the bus
-voltage <Cite key="alexander2017" where="Sec. 4.8" />:
-
-<Eq id="src.cv_power" />
+voltage <Cite key="alexander2017" where="Sec. 4.8" /> (<EqRef id="src.cv_power" label="power into a constant-voltage sink" />).
 
 It is negative while the bus feeds the source back, when the source
 amplitude falls below the bus voltage. Its sum over the period, divided by

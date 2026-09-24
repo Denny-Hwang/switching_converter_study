@@ -1,0 +1,67 @@
+# Quiz for 07-harvesting/sece-sshi-mppt. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A piezoelectric element has a 2 V open-circuit amplitude. At what DC voltage does a full-wave bridge take the most power from it?'
+    options:
+      - '2 V'
+      - '4 V'
+      - '1 V'
+      - '0.5 V'
+    answer: 2
+    explain: 'The standard interface is best at half the open-circuit amplitude.'
+  - q: 'The storage behind that bridge has charged to 2 V. What power does the bridge deliver now?'
+    options:
+      - 'None: swinging between the rails takes the whole charge'
+      - 'Its largest power'
+      - 'Half its largest power'
+      - 'Twice its largest power'
+    answer: 0
+    explain: 'At the open-circuit amplitude the element''s voltage only just reaches the other rail each half period, and no charge is left for the bridge.'
+  - q: 'How does SECE''s power compare with the standard interface''s largest?'
+    options:
+      - 'The same'
+      - 'Twice'
+      - 'Half'
+      - 'Four times'
+    answer: 3
+    explain: 'SECE takes the element''s whole energy at each extremum: two times I_p squared over pi omega C_0, four times the standard interface''s best.'
+  - q: 'The storage behind a SECE interface charges from 2 V to 4 V. What happens to the harvested power?'
+    options:
+      - 'It stays the same'
+      - 'It halves'
+      - 'It doubles'
+      - 'It falls to zero'
+    answer: 0
+    explain: 'The element never connects to the storage: the converter takes the energy the element holds at each extremum and delivers it at whatever voltage the storage has, so the power does not depend on that voltage.'
+  - q: 'A parallel SSHI inversion keeps half the voltage. How does its largest power compare with the standard interface''s largest?'
+    options:
+      - 'Twice'
+      - 'Four times'
+      - 'Ten times'
+      - 'The same'
+    answer: 1
+    explain: 'Two over one minus the inversion coefficient: 2 over 0.5.'
+  - q: 'At what DC voltage is that SSHI interface best, for the 2 V element?'
+    options:
+      - '1 V'
+      - '2 V'
+      - '8 V'
+      - '4 V'
+    answer: 3
+    explain: 'At the open-circuit amplitude over one minus the inversion coefficient: 2 V over 0.5.'
+  - q: 'A converter tracks a linear source''s maximum power point by holding its input at a fixed fraction of the open-circuit voltage. Which fraction?'
+    options:
+      - '80 %'
+      - '50 %'
+      - '100 %'
+      - '25 %'
+    answer: 1
+    explain: 'A linear source gives the most into a constant voltage at half its open-circuit voltage.'
+  - q: 'What voltage must a SECE converter take from a 2 V element?'
+    options:
+      - '2 V'
+      - '1 V'
+      - '4 V'
+      - '8 V'
+    answer: 2
+    explain: 'Left open from zero, the element''s voltage climbs to twice its open-circuit amplitude before each extraction.'

@@ -1,0 +1,171 @@
+---
+title: SECE, SSHI and MPPT
+description: What a full-wave bridge, synchronous electric charge extraction and parallel synchronized switch harvesting on inductor take from the same vibrating piezoelectric element, which of them depend on the DC voltage, and how a converter tracks the maximum power point by a fraction of the open-circuit voltage.
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Compare what a full-wave bridge, SECE and parallel SSHI take from the same vibrating piezoelectric element.
+- Know which of them depend on the DC voltage behind them, and where each gives the most.
+- Track the maximum power point of a source by a fraction of its open-circuit voltage.
+
+## Theory
+
+All three interfaces below take their power from the element of
+[source models](../source-models/): a current source $I_p \sin \omega t$
+beside its clamped capacitance $C_0$, vibrating at an amplitude that the
+harvest does not change. Each half period, between two extrema of the
+displacement, the source drives the same charge. The two interfaces whose
+bridge feeds the DC voltage differ in how much of it they spend swinging the element's voltage
+before the bridge conducts; SECE lets all of it charge the element and then
+takes the energy stored there.
+
+### The standard interface
+
+A full-wave bridge onto a DC voltage, a storage capacitor or a battery,
+conducts only once the element's voltage has swung from one rail to the
+other. That swing takes part of the charge each half period, and the rest
+enters the DC side <Cite key="guyomar2005" />:
+
+<Eq id="piezo.P_std" />
+
+The power depends on the DC voltage. It is zero at zero volts and at the
+open-circuit amplitude, where the swing takes all of the charge, and it is
+largest at half the open-circuit amplitude:
+
+<Eq id="piezo.P_std_max" />
+
+### SECE
+
+Synchronous electric charge extraction leaves the element open between the
+extrema of its voltage, then takes its whole charge at each extremum through
+a converter into the storage <Cite key="lefeuvre2005" />. In between, the
+whole charge of the half period raises the element's voltage, from zero to
+twice its open-circuit amplitude, and the converter takes the energy then
+stored in $C_0$ and delivers it at whatever voltage the storage has. The
+element never connects to the storage, so the power does not depend on the
+storage's voltage:
+
+<Eq id="piezo.P_sece" />
+
+That is four times the standard interface's best, or 300% more. Lefeuvre et
+al. report that, over a standard interface adapted for the most power, the
+technique "increases the harvested power by 400%" <Cite key="lefeuvre2005" />;
+their percentage is quoted as they state it.
+The converter must take the element's voltage at extraction, twice its
+open-circuit amplitude.
+
+### Parallel SSHI
+
+Synchronized switch harvesting on inductor, in its parallel form, keeps the
+bridge and adds a switch and an inductor across the element. At each extremum
+of the displacement the switch closes briefly, and the inductor inverts the
+element's voltage <Cite key="guyomar2005" />. The inversion loses some of
+it: with the element going from the DC voltage to a fraction $\gamma$ of it
+of the opposite sign, the swing to the other rail costs only the rest:
+
+<Eq id="piezo.P_sshi" />
+
+<Eq id="piezo.P_sshi_max" />
+
+The better the inversion, the more power, at a higher DC voltage. Guyomar et
+al. report that compared with the standard technique the harvested power "may
+be increased above 900%" <Cite key="guyomar2005" />; in this model that is an
+inversion that keeps about four fifths of the voltage. Even an inversion
+that keeps nothing, a switch that only empties the element, doubles the
+standard interface's best.
+
+### Tracking the maximum power point
+
+For a linear source, the power into a constant voltage is largest at half
+the open-circuit voltage (<EqRef id="src.cv_extraction" label="constant-voltage extraction" />),
+and the standard interface above is also best at half the element's
+open-circuit amplitude. A converter that holds its input at a fixed fraction
+of the source's open-circuit voltage therefore stays at the maximum power
+point as the source's amplitude changes: the fractional open-circuit voltage
+method <Cite key="esram2007" />. To learn the open-circuit voltage, such a
+converter stops drawing power now and then and samples it: one harvesting
+charger periodically disables itself and samples a fraction of the
+open-circuit voltage, typically 50 % for thermoelectric generators <Cite key="ti_bq25570" />. A source that is not linear, such as a solar cell,
+has its best point at another fraction <Cite key="esram2007" />.
+
+## Worked example
+
+One element behind the three interfaces:
+
+<Worked example="piezo-interfaces" />
+
+Behind a bridge at <Val example="piezo-interfaces" name="V_DC" />, the
+element gives <Val example="piezo-interfaces" name="P_std" />. At the best DC
+voltage, half its open-circuit amplitude of
+<Val example="piezo-interfaces" name="V_p" />, it would give
+<Val example="piezo-interfaces" name="P_std_max" />. SECE takes
+<Val example="piezo-interfaces" name="P_sece" /> at any storage voltage, and
+parallel SSHI with an inversion of <Val example="piezo-interfaces" name="gamma" />
+gives up to <Val example="piezo-interfaces" name="P_sshi_max" />.
+
+## Try it
+
+<TryIt eq="piezo.P_std" example="piezo-interfaces" sweep="V_DC" from={0} to={2} logx={false} />
+
+Sweep the DC voltage behind the bridge: the power rises to its peak at half
+the open-circuit amplitude and falls to zero at the amplitude.
+
+<TryIt eq="piezo.P_sshi_max" example="piezo-interfaces" sweep="gamma" />
+
+Sweep the inversion coefficient: the best power grows without bound as the
+inversion approaches a perfect one, which the inductor's and switch's losses
+never allow.
+
+## Bench exercise
+
+On a shaker at a steady amplitude, connect the element through a full-wave
+bridge to a storage capacitor held at the DC voltage by a source-measure
+unit, which sinks the bridge's current, microamperes, and measures it. Step
+the DC voltage from zero to the open-circuit amplitude, recording the
+current the unit sinks, and plot the power; compare the best DC voltage
+with half the open-circuit amplitude. For parallel SSHI, add the
+switch and inductor, trigger the switch at each voltage extremum, and read
+the element's voltage just before and just after the inversion on the
+oscilloscope: their ratio is the inversion coefficient to put in the formula.
+
+## Gotchas
+
+- **Above the open-circuit amplitude a bridge harvests nothing.** A storage
+  charged beyond it stops charging (<EqRef id="piezo.P_std" label="power of the standard interface" />).
+- **The equations take an ideal bridge.** In a real one two diodes conduct
+  in series <Cite key="mohan2003" where="Ch. 5 (Line-Frequency Diode Rectifiers)" />,
+  so the element must swing to the DC voltage plus two forward drops before
+  the bridge conducts: for an element whose open-circuit amplitude is a few
+  volts, a large part of the swing.
+- **SECE's converter sees twice the open-circuit amplitude,** since the
+  element's voltage climbs from zero across a whole half period
+  (<EqRef id="piezo.P_sece" label="power of SECE" />).
+- **SSHI's gain is the inversion's quality.** Losses in the switch and the
+  inductor lower the coefficient, and the power with it
+  (<EqRef id="piezo.P_sshi_max" label="largest power of parallel SSHI" />).
+- **Sampling the open-circuit voltage costs harvest time:** the converter
+  takes no power while it samples.
+- **These results keep the vibration's amplitude fixed.** A harvest that
+  takes energy not small against what the structure's own losses take
+  lowers the amplitude, and the model then overstates every interface.
+
+## Go deeper
+
+<GoDeeper ids={['lefeuvre2005-sage', 'guyomar2005-pubmed', 'esram2007-ieee', 'ti-bq25570']} />
+
+## Quiz
+
+<Quiz id="07-harvesting/sece-sshi-mppt" />

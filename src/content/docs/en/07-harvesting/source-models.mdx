@@ -1,0 +1,144 @@
+---
+title: Source models
+description: A harvester as an open-circuit voltage behind a source resistance and the most power it can give; a vibrating piezoelectric element as a current source beside its clamped capacitance, and the resistor that takes the most from it; what a triboelectric generator's figure of merit compares.
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Model a harvester that is linear over its working range as an open-circuit voltage behind a source resistance, and know the most power it can give.
+- Model a vibrating piezoelectric element as a current source beside its clamped capacitance, and find the resistor that takes the most power from it.
+- Know what a triboelectric generator's figure of merit compares.
+
+## Theory
+
+### A linear source
+
+A source that is linear over the range it works in looks, to its load, like
+an open-circuit voltage $V_\mathrm{oc}$ behind a source resistance $R_s$: its
+Thevenin equivalent <Cite key="alexander2017" where="Ch. 4" />.
+It delivers the most power into a load equal to its own resistance
+<Cite key="alexander2017" where="Sec. 4.8 (Maximum Power Transfer)" />:
+
+<Eq id="src.Pmax" />
+
+That is the power available from the source. A converter behind it takes a
+share of it that depends on what its input looks like; the
+[matching](../matching/) module works that share out.
+
+### A vibrating piezoelectric element
+
+A piezoelectric element on a structure that vibrates sinusoidally drives a
+current proportional to the structure's velocity. With its clamped
+capacitance $C_0$ across its terminals, it is a current source
+$I_p \sin \omega t$ in parallel with $C_0$ <Cite key="guyomar2005" />, as
+long as what the electrical side takes does not change the vibration's
+amplitude. With nothing connected, the whole current charges and discharges
+$C_0$, and the voltage swings each way by
+
+<Eq id="piezo.Vp" />
+
+Its internal impedance is a capacitance, not a resistance. A resistor across
+the element shares the current with $C_0$, and takes the most power when it
+equals the capacitance's reactance at the vibration's frequency:
+
+<Eq id="piezo.R_opt" />
+
+<Eq id="piezo.P_R" />
+
+The best resistor depends on the frequency: a resistor sized for one
+vibration is mismatched at another. The energy the load takes comes out of
+the vibration, so the model holds while the energy the harvest takes each
+cycle is small against what the structure's own mechanical losses take, or
+where the motion is imposed. Otherwise the harvest lowers the vibration's
+amplitude, and near a sharp resonance the electrical load can also move the
+resonance itself; the model leaves both out and overstates the power.
+
+A storage element needs a DC voltage, so the element usually works through
+a rectifier. A full-wave bridge onto the best DC voltage gives less than the
+best resistor (<EqRef id="piezo.P_std_max" label="largest power of the standard interface" />);
+SECE and SSHI, two nonlinear interfaces
+([SECE, SSHI and MPPT](../sece-sshi-mppt/)), give more.
+
+### A triboelectric generator
+
+Zi et al. proposed to compare triboelectric nanogenerators by the largest
+energy a cycle of their motion can deliver, their cycles for maximized
+energy output, per area and per displacement. Their performance figure of
+merit is a structural figure of merit, set by the design, times the square
+of the surface charge density, set by the materials <Cite key="zi2015" />.
+It rates the generator by energy per cycle, not by the power a particular
+load happens to take.
+
+## Worked example
+
+A piezoelectric element, open and then across its best resistor:
+
+<Worked example="piezo-source" />
+
+The element drives <Val example="piezo-source" name="I_p" /> at
+<Val example="piezo-source" name="omega" /> beside
+<Val example="piezo-source" name="C_0" />. Open, its voltage swings
+<Val example="piezo-source" name="V_p" /> each way. The best resistor is
+<Val example="piezo-source" name="R" />, and it takes
+<Val example="piezo-source" name="P_R" />.
+
+## Try it
+
+<TryIt eq="piezo.R_opt" example="piezo-source" sweep="omega" />
+
+Sweep the vibration's frequency: the best resistor falls as the frequency
+rises, so a fixed resistor matches only one vibration.
+
+<TryIt eq="src.Pmax" example="match-basic" sweep="R_s" />
+
+Sweep the source resistance of a linear source: halving it doubles the
+available power.
+
+## Bench exercise
+
+Mount the element on a shaker driven at a steady sinusoidal amplitude.
+Measure its open-circuit voltage amplitude with a probe whose input
+resistance is far above the best resistor, and note the probe's input
+capacitance, which adds to $C_0$ ([probes](../../06-bench/probes/)). Then
+load the element with a decade resistance box, record the voltage amplitude
+at each value and compute the power each resistor takes. Find the resistor
+that takes the most, and compare it with the reactance of the element's
+capacitance at the vibration's frequency, measured with an LCR meter at a
+frequency away from the structure's resonance: near it the motion adds to
+the measured capacitance, and away from it, for a weakly coupled element,
+adds little. Repeat
+at a second frequency and see the best resistor move.
+
+## Gotchas
+
+- **A probe loads a high-impedance source.** Its input resistance and
+  capacitance sit in parallel with the source; compare them with the best
+  resistor (<EqRef id="piezo.R_opt" label="best resistor" />) and with
+  $C_0$ before trusting a reading.
+- **The best resistor holds at one frequency.** It is the reactance of $C_0$
+  at the vibration's frequency, and moves with it.
+- **A bridge onto a DC voltage takes less than the best resistor**
+  (<EqRef id="piezo.P_std_max" label="largest power of the standard interface" />).
+- **The model does not damp the vibration.** A load that takes energy not
+  small against what the structure's own losses take lowers the vibration's
+  amplitude, and the model then overstates the power.
+
+## Go deeper
+
+<GoDeeper ids={['zi2015-nature', 'guyomar2005-pubmed']} />
+
+## Quiz
+
+<Quiz id="07-harvesting/source-models" />

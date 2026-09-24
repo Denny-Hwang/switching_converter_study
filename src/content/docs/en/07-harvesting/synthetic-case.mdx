@@ -1,0 +1,135 @@
+---
+title: A design case
+description: One harvesting design followed from the source to the switch with the numbers of an example, a high-voltage source behind a large resistance whose amplitude follows a slow envelope, and a DCM flyback sized as its loss-free resistor.
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Follow one harvesting design from the source to the switch.
+- Estimate the average power a loss-free resistor takes from a source whose amplitude follows a slow envelope.
+- Check the design at the envelope's peak: DCM, and the switch's voltage.
+
+## Theory
+
+### The source
+
+The case's source is linear: an open-circuit voltage behind a large source
+resistance, whose amplitude rises and falls along a slow envelope, the same
+half sine over and over. At each instant it can give at most
+<EqRef id="src.Pmax" label="the maximum power of a linear source" />, a
+quantity that follows the square of the envelope.
+
+### The converter
+
+A fixed-duty-ratio flyback in DCM, sized as a loss-free resistor equal to the
+source resistance (<EqRef id="lfr.L_M" label="magnetizing inductance of the loss-free resistor" />),
+holds its input at half the source's voltage and takes the whole available
+power at every instant (<EqRef id="lfr.eta" label="extraction by a loss-free resistor" />),
+as long as two things hold. It must stay in DCM at the envelope's peak, where
+the bus is highest (<EqRef id="flyback.V_crit" label="critical input voltage" />).
+And the envelope must be slow against the bus's own time constant, the bus
+capacitance times the source resistance in parallel with the input
+resistance, so that the bus follows the envelope
+<Cite key="alexander2017" where="Ch. 7 (First-Order Circuits)" />.
+
+### The average power
+
+Averaged over the envelope, the power is half its value at the peak, since
+the square of a sine averages to half its peak's
+<Cite key="alexander2017" where="Ch. 11" />:
+
+<Eq id="lfr.P_env" />
+
+The [source matcher](../../design/source-matcher/) simulates such an envelope
+cycle by cycle, and shows the bus held at the critical voltage where the
+peak would drive the flyback into CCM.
+
+### The switch
+
+While the flyback switches, the envelope's peak sets the highest voltage
+its switch blocks: the bus plus the reflected output
+(<EqRef id="flyback.Vds_off" label="switch voltage" />), and the leakage
+spike on top ([snubbers and clamps](../../04-magnetics/snubbers-clamps/)). A
+switch rated for the average, or for the envelope's start, fails at its
+peak. While it does not switch, at start-up, in an undervoltage lockout or
+after a fault, nothing loads the bus, which charges to the source's
+open-circuit peak, and switching then starts from there: the bus capacitor
+must take that peak, and the switch that peak plus the reflected output,
+unless a clamp holds the bus lower.
+
+## Worked example
+
+The case, at the envelope's peak and on average:
+
+<Worked example="harvesting-source" />
+
+The source rises to <Val example="harvesting-source" name="V_ocpk" /> behind
+<Val example="harvesting-source" name="R_s" />, along an envelope of
+half-sines that each last <Val example="harvesting-source" name="T_env" />; at the peak it
+can give <Val example="harvesting-source" name="P_max" />. At
+<Val example="harvesting-source" name="f_s" /> and
+<Val example="harvesting-source" name="D" />, a magnetizing inductance of
+<Val example="harvesting-source" name="L_M" /> presents
+<Val example="harvesting-source" name="R_in" />, so the flyback takes the
+whole available power at every instant: <Val example="harvesting-source" name="P_avg" />
+on average. At the peak the bus reaches
+<Val example="harvesting-source" name="V_g" />, below the critical
+<Val example="harvesting-source" name="V_gcrit" sig={4} />, and the switch blocks
+<Val example="harvesting-source" name="V_DS" /> before the leakage spike.
+
+## Try it
+
+<TryIt eq="lfr.P_env" example="harvesting-source" sweep="V_ocpk" />
+
+Sweep the envelope's peak: the average power follows its square.
+
+<TryIt eq="lfr.eta" example="harvesting-source" sweep="R_in" from={1e5} to={1e7} />
+
+Sweep the flyback's input resistance around the source resistance: the share
+stays close to the whole within a factor of two.
+
+## Bench exercise
+
+Do not build the case at its full voltage on an open bench. Scale it down:
+divide the source voltage by a factor and keep the resistances, which divides
+the bus voltage by that factor and the power by its square; the output and
+its reflection through the transformer stay as they are. Emulate the
+source with a programmable supply stepping through the envelope behind a
+resistor equal to the source resistance, and the load with the flyback at
+its fixed duty ratio. Log the input voltage and current at each step,
+compute the power, and compare its average over the envelope with the
+formula, scaled.
+
+## Gotchas
+
+- **An unloaded bus charges to the open-circuit voltage.** Behind a large
+  resistance the source's current is small, but a capacitor across it still
+  reaches the full voltage, and holds it: rate the bus and the switch for
+  it, or clamp the bus.
+- **The average needs a slow envelope.** An envelope comparable to the bus's
+  time constant leaves the bus behind it, and the loss-free resistor's share
+  no longer holds at every instant.
+- **Check DCM at the peak, not at the average**
+  (<EqRef id="flyback.V_crit" label="critical input voltage" />).
+- **Rate the switch for the peak,** and for an unloaded bus
+  (<EqRef id="flyback.Vds_off" label="switch voltage" />).
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch15', 'erickson-ch5']} />
+
+## Quiz
+
+<Quiz id="07-harvesting/synthetic-case" />

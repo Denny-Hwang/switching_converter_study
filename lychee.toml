@@ -50,4 +50,16 @@ exclude = [
   # a browser User-Agent: the urls-online job opens its data sheets instead,
   # matches their titles and finds the cited values in their text.
   '^https://www\.tdk-electronics\.tdk\.com/',
+  # IEEE Xplore answers link checkers on CI runners with HTTP 418. The
+  # urls-online job opens the same pages with a browser User-Agent and, when
+  # the runner is refused, matches the title of each URL's latest Internet
+  # Archive capture instead.
+  '^https://ieeexplore\.ieee\.org/',
+  # SAGE's journal pages answer lychee from CI runners with 403 (the SECE
+  # paper's abstract page on jim.sagepub.com redirects there): the urls-online
+  # job opens it with a browser User-Agent or, when the runner is refused,
+  # matches the title of its latest Internet Archive capture and finds the
+  # quoted sentence.
+  '^https?://jim\.sagepub\.com/',
+  '^https://journals\.sagepub\.com/',
 ]
