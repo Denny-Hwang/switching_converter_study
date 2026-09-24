@@ -453,7 +453,9 @@ describe('outside the model: a diode the model holds off would conduct', () => {
     // a steady period: no start-up cycle to name
     const d3 = r.diodes!.find((d) => d.diode === 'D3')!;
     expect([r.switchFrom, d3.from]).toEqual([undefined, undefined]);
-    expect(d3.v).toBe(maxOf(r.waveforms, 'v_Dr'));
+    // over a steady period the flag reads the exact extreme, at or above the samples'
+    expect(d3.v).toBe(r.max.v_Dr);
+    expect(d3.v).toBeGreaterThanOrEqual(maxOf(r.waveforms, 'v_Dr') - 1e-12 * d3.v);
     expect(d3.v).toBeGreaterThan(10);
     expect(d3.drop).toBe(0);
     expect(r.switchBelowZero).toBe(r.min.v_sw);
@@ -465,7 +467,9 @@ describe('outside the model: a diode the model holds off would conduct', () => {
     // 0.203 V); the buck-boost's bus -3.07 V and output 3.19 V (the model: -5.05 V, 2.81 V). In the model the buck's
     // freewheeling diode sees 8.3 V forward while the switch is on
     const buck = simulate({ topology: 'buck', Vg: 24, D: 0.5, fs, L: 1e-5, Ron: 0.05, VF: 0.5, source: { Voc: 24, Rs: 50, Cbus: 1e-8 }, load: { kind: 'resistive', R: 0.5, C: 1e-5 } });
-    expect(buck.diodes).toEqual([{ diode: 'D', v: maxOf(buck.waveforms, 'v_D'), drop: 0.5 }]);
+    // the exact extreme: 8.28798 V, a peak between two samples above the samples' 8.28796 V
+    expect(buck.diodes).toEqual([{ diode: 'D', v: buck.max.v_D, drop: 0.5 }]);
+    expect(buck.diodes![0]!.v).toBeGreaterThan(maxOf(buck.waveforms, 'v_D'));
     expect(buck.diodes![0]!.v).toBeGreaterThan(8);
     expect(buck.switchBelowZero).toBeUndefined();
     for (const topology of ['buckboost', 'flyback'] as const) {
@@ -474,6 +478,22 @@ describe('outside the model: a diode the model holds off would conduct', () => {
       expect(r.diodes![0]!.v, topology).toBeGreaterThan(2);
       expect(r.switchBelowZero!, topology).toBeLessThan(-2);
     }
+  });
+
+  it('over a steady period, a ring that crosses a threshold and returns between two samples is flagged', () => {
+    // the eighth review's circuits: a flyback whose node capacitance rings about 3.6 sub-steps per period of the ring
+    // takes its switch voltage to -11.17 V between two samples, all of them near zero; a buck-boost's diode reaches
+    // 6.62 V between samples that stay near zero. The exact extremes see both
+    const fly = simulate({ topology: 'flyback', Vg: 0, D: 0.501, fs: 2650, L: 3.3e-5, n: 1.06, Ron: 0.02, RL: 0.0125, Cnode: 3.41e-12, load: { kind: 'fixed', V: 46.4 }, source: { Voc: 32.6, Rs: 0.0202, Cbus: 1.11e-5 } });
+    expect(fly.status).toBe('steady');
+    expect(minOf(fly.waveforms, 'v_sw')).toBeGreaterThan(-1e-6);
+    expect(fly.switchBelowZero!).toBeLessThan(-11);
+    expect(fly.switchBelowZero).toBe(fly.min.v_sw);
+    const bb = simulate({ topology: 'buckboost', Vg: 115, D: 0.709, fs: 5280, L: 2.25e-4, Ron: 0.00829, Cnode: 1.3e-13, load: { kind: 'network', C: 5.45e-9, R: 210 } });
+    expect(bb.status).toBe('steady');
+    expect(maxOf(bb.waveforms, 'v_D')).toBeLessThan(1e-6);
+    expect(bb.diodes).toEqual([{ diode: 'D', v: bb.max.v_D, drop: 0 }]);
+    expect(bb.diodes![0]!.v).toBeGreaterThan(6.6);
   });
 
   it("the forward converter's freewheeling diode D_2 is flagged when the switch's drop exceeds a sagging bus while the switch is on", () => {
@@ -488,12 +508,13 @@ describe('outside the model: a diode the model holds off would conduct', () => {
     expect(maxOf(r.waveforms, 'v_Dr')).toBeLessThanOrEqual(1e-9);
     expect(r.diodes!.map((d) => d.diode)).toEqual(['D2']);
     const d2 = r.diodes![0]!;
-    expect(d2.v).toBe(maxOf(r.waveforms, 'v_D2'));
+    expect(d2.v).toBe(r.max.v_D2);
+    expect(Math.abs(d2.v - maxOf(r.waveforms, 'v_D2'))).toBeLessThan(1e-12 * d2.v);
     expect(d2.v).toBeGreaterThan(5.2);
     expect(d2.v).toBeLessThan(5.4);
     // where it happens: the switch on, the rectifier conducting, the primary's voltage below zero
     const w = r.waveforms;
-    const k = (w.v_D2 as number[]).indexOf(d2.v);
+    const k = (w.v_D2 as number[]).indexOf(maxOf(w, 'v_D2'));
     expect((w.interval as string[])[k]).toBe('on');
     const vPri = (w.v_in as number[])[k]! - (w.v_sw as number[])[k]!;
     expect(d2.v).toBeCloseTo(-p.n! * vPri, 9);

@@ -163,6 +163,115 @@ describe('a peak between two samples of a ring', () => {
   });
 });
 
+describe('a ring riding on a steeper ramp: its slope dips through zero and back within one sub-step', () => {
+  // y = a sin(w t + phi) + beta t with beta = -B a w (B < 1): the slope, a w (cos(w t + phi) - B), is positive only
+  // within acos(B) of the ring's rising zero crossing. At 20 sub-steps per ring and at the 3-per-ring floor, a
+  // sub-step can hold both turns with both ends sloping down; the slope's rate shows the dip, and both turns are
+  // searched
+  const segment = (w: number, h: number, beta: number, phi: number) => {
+    const model = {
+      topology: 'test',
+      stateNames: ['p', 'q', 'r'],
+      Ts: h,
+      D: 0.5,
+      intervals: {
+        only: {
+          name: 'only',
+          gate: true,
+          A: [
+            [0, w, 0],
+            [-w, 0, 0],
+            [0, 0, 0],
+          ],
+          b: [0, 0, beta],
+          guards: [],
+        },
+      },
+      idle: [],
+      turnOn: () => ({ interval: 'only' }),
+      turnOff: () => ({ interval: 'only' }),
+      outputs: (x: number[]) => ({ y: x[0]! + x[2]! }),
+    } as unknown as Model;
+    const run = {
+      samples: [
+        { t: 0, interval: 'only', x: [Math.sin(phi), Math.cos(phi), 0] },
+        { t: h, interval: 'only', x: [Math.sin(phi + w * h), Math.cos(phi + w * h), beta * h] },
+      ],
+    } as unknown as CycleRun;
+    return periodIntegrals(model, run);
+  };
+
+  it('both turns are found, at 20 and at 3 sub-steps per ring', () => {
+    let inside = 0;
+    for (const wh of [(2 * Math.PI) / 20, 2]) {
+      for (const B of [0.9, 0.99, 0.999]) {
+        // sub-steps around the rising zero crossing (theta = 0), and around the crest
+        for (let f = 0; f <= 41; f++) {
+          const h = 1e-6;
+          const w = wh / h;
+          const beta = -B * w;
+          const phi = (f <= 20 ? 0 : Math.PI / 2) - wh * ((f % 21) / 20);
+          const y = (t: number) => Math.sin(w * t + phi) + beta * t;
+          let hi = -Infinity;
+          let lo = Infinity;
+          for (let i = 0; i <= 20000; i++) {
+            const v = y((h * i) / 20000);
+            hi = Math.max(hi, v);
+            lo = Math.min(lo, v);
+          }
+          const ex = segment(w, h, beta, phi);
+          const range = hi - lo;
+          // a peak inside the sub-step above both ends, where both ends slope down: the slope dipped through zero and back
+          if (hi > Math.max(y(0), y(h)) + 1e-9 * range && Math.cos(phi) - B < 0 && Math.cos(phi + wh) - B < 0) inside++;
+          // the dense grid can only fall short of the true extremes, by at most its spacing's second-order error
+          expect(ex.max.y! - hi, `wh ${wh} B ${B} f ${f}`).toBeGreaterThanOrEqual(-1e-12 * range);
+          expect(lo - ex.min.y!, `wh ${wh} B ${B} f ${f}`).toBeGreaterThanOrEqual(-1e-12 * range);
+          expect(ex.max.y! - hi).toBeLessThan(1e-6 * range);
+          expect(lo - ex.min.y!).toBeLessThan(1e-6 * range);
+        }
+      }
+    }
+    // the cases do hold such double turns
+    expect(inside).toBeGreaterThanOrEqual(10);
+  });
+});
+
+describe('an output that an interval does not define', () => {
+  it('is NaN over the period, not zero where it is missing', () => {
+    const model = {
+      topology: 'test',
+      stateNames: ['x'],
+      Ts: 2,
+      D: 0.5,
+      intervals: {
+        a: { name: 'a', gate: true, A: [[-1]], b: [1], guards: [] },
+        b: { name: 'b', gate: false, A: [[-1]], b: [0], guards: [] },
+      },
+      idle: [],
+      turnOn: () => ({ interval: 'a' }),
+      turnOff: () => ({ interval: 'b' }),
+      outputs: (x: number[], iv: string) => (iv === 'a' ? { x: x[0]!, w: 2 * x[0]! } : { x: x[0]! }),
+    } as unknown as Model;
+    const run = {
+      samples: [
+        { t: 0, interval: 'a', x: [0] },
+        { t: 1, interval: 'a', x: [1 - Math.exp(-1)] },
+        { t: 1, interval: 'b', x: [1 - Math.exp(-1)] },
+        { t: 2, interval: 'b', x: [(1 - Math.exp(-1)) * Math.exp(-1)] },
+      ],
+    } as unknown as CycleRun;
+    const ex = periodIntegrals(model, run, [
+      ['x', 'x'],
+      ['x', 'w'],
+    ]);
+    expect(Number.isNaN(ex.lin.w!)).toBe(true);
+    expect(Number.isNaN(ex.quad['x*w']!)).toBe(true);
+    // x itself is defined throughout: ∫ = (1 - e^-1) (1 + (1 - e^-1)) - (1 - e^-1) + ... in closed form
+    const x1 = 1 - Math.exp(-1);
+    expect(rel(ex.lin.x!, 1 - x1 + x1 * (1 - Math.exp(-1)))).toBeLessThan(1e-13);
+  });
+});
+
 describe('exact period integrals of the simulator', () => {
   const fs = 1e5;
   const loads: SimParams['load'][] = [
@@ -252,5 +361,58 @@ describe('exact period integrals of the simulator', () => {
     const ex = periodIntegrals(model, runCycle(model, r.x0, { stepsPerPeriod: stepsFor(p), record: true }), [['v_out', 'i_bat']]);
     expect(rel(ex.quad['v_out*i_bat']! / (1 / fs), 12 * r.avg.i_bat! + 0.5 * r.meanSquare.i_bat!)).toBeLessThan(1e-10);
     expect(rel(r.losses.conduction, 0.1 * r.meanSquare.i_sw! + 0.05 * r.meanSquare.i_L!)).toBeLessThan(1e-12);
+  });
+});
+
+describe("a battery's current whose constant part dwarfs it", () => {
+  // i_b = (v - V_b)/R_b with V_b/R_b about 1e8 times its rms value. Integrated from the deviation of the states, it
+  // keeps its digits (the eighth review: summed from its large terms, <i_b^2> came out 7.3 times too high, 51 times
+  // too high, or negative). The references are 60-digit integrations through the same samples, the battery's
+  // current built exactly from its parameters; recompute them if the engine's samples change
+  const T1: SimParams = { topology: 'boost', Vg: 48, D: 0.1, fs: 1e5, L: 1e-3, Ron: 0.05, RL: 0.05, VF: 0.7, load: { kind: 'network', C: 1e-5, battery: { V: 400, R: 1e-3 } } };
+
+  it('a boost charging a 400 V battery behind 1 mΩ lightly, and a flyback at D = 0.02', () => {
+    const a = simulate(T1);
+    expect(a.status).toBe('steady');
+    expect(rel(a.meanSquare.i_bat!, 9.310875553962e-6)).toBeLessThan(1e-8);
+    // the model's own V_b/(R_b C), rounded, sets <i_b> to about eps V_b / R_b
+    expect(rel(a.avg.i_bat!, 3.26589011422e-4)).toBeLessThan(1e-6);
+    const fly: SimParams = { topology: 'flyback', Vg: 48, D: 0.02, fs: 1e5, L: 1e-3, n: 10, Ron: 0.05, VF: 0.5, load: { kind: 'network', C: 1e-4, battery: { V: 400, R: 0.05 } } };
+    const b = simulate(fly);
+    expect(b.status).toBe('steady');
+    expect(rel(b.meanSquare.i_bat!, 1.721448937579e-10)).toBeLessThan(1e-8);
+    expect(rel(b.avg.i_bat!, 1.150550249108e-5)).toBeLessThan(1e-8);
+  });
+
+  it('a forward converter whose battery holds its rectifier off: no current, and no negative mean square', () => {
+    const p: SimParams = { topology: 'forward', Vg: 24, D: 0.3, fs: 1e5, L: 1e-4, n: 0.5, nr: 1, LM: 1e-3, Ron: 0.1, VF: 0.5, load: { kind: 'network', C: 1e-4, battery: { V: 13, R: 0.05 } } };
+    const r = simulate(p);
+    expect(r.status).toBe('steady');
+    expect(Math.abs(r.avg.i_bat!)).toBeLessThan(1e-15);
+    expect(r.meanSquare.i_bat!).toBeGreaterThanOrEqual(0);
+    expect(r.meanSquare.i_bat!).toBeLessThan(1e-28);
+  });
+
+  it('the mean square does not depend on the sub-steps', () => {
+    const model = buildModel(T1);
+    const r = simulate(T1);
+    const n = stepsFor(T1);
+    const pairs: [string, string][] = [['i_bat', 'i_bat']];
+    const a = periodIntegrals(model, runCycle(model, r.x0, { stepsPerPeriod: n, record: true }), pairs);
+    const b = periodIntegrals(model, runCycle(model, r.x0, { stepsPerPeriod: 3 * n + 7, record: true }), pairs);
+    expect(rel(a.quad['i_bat*i_bat']!, b.quad['i_bat*i_bat']!)).toBeLessThan(1e-8);
+  });
+});
+
+describe('parameters whose equations overflow', () => {
+  it('are refused, not integrated for ever', () => {
+    for (const p of [
+      // a battery of 1e150 V behind 1e-150 ohm: its current's coefficients square to infinity
+      { topology: 'boost', Vg: 12, D: 0.5, fs: 1e5, L: 1e-4, Ron: 0.05, VF: 0.5, load: { kind: 'network', C: 1e-5, battery: { V: 1e150, R: 1e-150 } } },
+      // a source and a battery of 1e308 V: the matrices' column sums overflow
+      { topology: 'boost', Vg: 0, D: 0.5, fs: 1e3, L: 1, Ron: 0.01, VF: 0.5, load: { kind: 'network', C: 1, battery: { V: 1e308, R: 1 } }, source: { Voc: 1e308, Rs: 1, Cbus: 1 } },
+    ] as SimParams[]) {
+      expect(() => simulate(p), JSON.stringify(p)).toThrow(/out of range/);
+    }
   });
 });

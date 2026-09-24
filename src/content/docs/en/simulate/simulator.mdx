@@ -213,14 +213,23 @@ periodic steady state.
   and the conduction losses are the exact integrals of that solution over
   every sub-step, not straight lines through the samples. They are taken
   from the exponential of a larger matrix built from the interval's
-  equations <Cite key="vanloan1978" />. A transient faster than a sub-step,
+  equations <Cite key="vanloan1978" />, in each state's deviation from its
+  value at the start of the period, as the steps are: a quantity whose
+  constant part dwarfs what varies, such as a battery's current behind a
+  small resistance, keeps its digits. A transient faster than a sub-step,
   such as a time constant far shorter than one, is integrated as exactly as
-  a slow one, and the results do not depend on the sub-steps beyond
-  rounding. Each quantity's largest and smallest value also include a peak
-  between two samples, where its slope changes sign within a sub-step; the
-  slope is also checked close to the sub-step's start, where a fast
-  transient decays. The plots draw the samples, so a peak narrower than a
-  sub-step can be in the numbers but not in the plot.
+  a slow one. Through the same samples, the results agree with a 60-digit
+  integration to about two parts in ten million, even where a time constant
+  is a billion times shorter than a sub-step. Between two grids of
+  sub-steps they agree to about one part in ten billion in the tested
+  circuits; with such a time constant the steps themselves can move them
+  by up to about one part in a hundred thousand. Each quantity's largest
+  and smallest value also include a peak between two samples: where its
+  slope changes sign within a sub-step, and where the slope dips through
+  zero and back within one (a ring riding on a steeper ramp). The slope is
+  also checked close to the sub-step's start, where a fast transient
+  decays. The plots draw the samples, so a peak narrower than a sub-step
+  can be in the numbers but not in the plot.
 - **Rounding.** Within a period the simulator follows each state's
   deviation from its value at the start of the period. Its rounding errors
   then scale with how far the state moves, not with its size, so the change
@@ -313,7 +322,7 @@ against the equations:
 - **Outside the model.** The models hold each diode off outside the
   intervals in which it conducts, and take the switch's body diode as
   ideal. Two things are flagged, in the waveforms the page draws (the
-  steady period, or the whole start-up):
+  steady period with its extremes between samples, or the whole start-up):
   - a diode held off but forward-biased beyond its drop: the two-switch
     converters' diode D, or the forward converter's rectifier $D_1$,
     freewheeling diode $D_2$ or reset diode $D_3$. Examples: a buck, a

@@ -179,8 +179,10 @@ describe('batteries: the average charging current against the hand value', () =>
     const r = simulate(p);
     expect(r.mode).toBe('DCM');
     const P = (48 * 48 * 0.3 * 0.3 * Ts) / (2 * L);
-    // (the averages are trapezoids over 2000 sub-steps: exact to about 1e-7 for these curved waveforms)
+    // this test's own averages are trapezoids through the samples, 2000 per period: exact to about 1e-7 for these
+    // curved waveforms. The simulator's exact integrals give the battery's power to rounding
     expect(Math.abs(loadPower(p, r) - P) / P).toBeLessThan(1e-6);
+    expect(Math.abs(12 * r.avg.i_bat! + 0.05 * r.meanSquare.i_bat! - P) / P).toBeLessThan(1e-12);
   });
 
   it('a battery above what the converter can give: it discharges into the resistor, and no current flows back through the diode', () => {

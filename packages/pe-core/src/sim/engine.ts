@@ -73,6 +73,9 @@ export interface Edge {
   loss?: number;
 }
 
+/** The refusal for parameters so small or so large that the circuit's equations overflow. */
+export const OVERFLOW = "a parameter is out of range: the circuit's equations overflow";
+
 export interface Model {
   topology: string;
   stateNames: string[];

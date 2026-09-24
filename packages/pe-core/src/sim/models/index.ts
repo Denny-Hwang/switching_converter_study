@@ -7,7 +7,7 @@
  * and the header describing the states and the idealisations.
  */
 
-import type { Model } from '../engine';
+import { OVERFLOW, type Model } from '../engine';
 import type { SimParams } from './common';
 import { forward } from './forward';
 import { twoSwitch } from './two-switch';
@@ -21,6 +21,6 @@ export function buildModel(p: SimParams): Model {
   // otherwise reach the solver as infinities and come out as NaN
   const finite = (v: number) => Number.isFinite(v);
   const ok = Number.isFinite(m.Ts) && Object.values(m.intervals).every((iv) => iv.A.every((row) => row.every(finite)) && iv.b.every(finite));
-  if (!ok) throw new Error("a parameter is out of range: the circuit's equations overflow");
+  if (!ok) throw new Error(OVERFLOW);
   return m;
 }

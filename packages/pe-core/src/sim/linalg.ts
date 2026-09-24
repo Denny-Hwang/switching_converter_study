@@ -113,6 +113,8 @@ const THETA13 = 5.371920351148152;
 export function expm(a: Mat): Mat {
   const n = a.length;
   const nrm = norm1(a);
+  // an infinite or NaN norm would scale by 2^-Infinity and square for ever
+  if (!Number.isFinite(nrm)) throw new Error('expm: the matrix is not finite');
   const s = nrm > THETA13 ? Math.max(0, Math.ceil(Math.log2(nrm / THETA13))) : 0;
   const A = s > 0 ? scaleMat(a, 2 ** -s) : a;
   const I = identity(n);

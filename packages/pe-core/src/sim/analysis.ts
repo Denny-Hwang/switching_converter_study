@@ -302,7 +302,7 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
   const conduction = (p.Ron ?? 0) * meanSquare.i_sw! + (p.RL ?? 0) * meanSquare.i_L!;
   const diode = (p.VF ?? 0) * avg.i_D!;
   const capacitive = ss.run.edgeLoss / Ts;
-  const outside = outsideModel(p, model, wf);
+  const outside = outsideModel(p, model, wf, false, ex);
   return {
     params: p,
     stateNames: model.stateNames,
@@ -338,12 +338,21 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
  * involved (never less than the circuit's given voltage). A diode's excess
  * over its drop counts from a ten-thousandth of it: what a diode
  * forward-biased by less would take changes the results by about as little,
- * below the four digits the page shows.
+ * below the four digits the page shows. Over a steady period the exact
+ * extremes count too (`ex`): a ring can cross a threshold and return between
+ * two samples.
  */
-function outsideModel(p: SimParams, model: Model, w: Waveforms, startUp = false): Pick<SimResult, 'switchBelowZero' | 'diodes' | 'switchFrom'> {
+function outsideModel(
+  p: SimParams,
+  model: Model,
+  w: Waveforms,
+  startUp = false,
+  ex?: { min: Record<string, number>; max: Record<string, number> },
+): Pick<SimResult, 'switchBelowZero' | 'diodes' | 'switchFrom'> {
   const most = (k: string) => {
     let m = 0;
     for (const v of (w[k] as number[] | undefined) ?? []) m = Math.max(m, Math.abs(v));
+    if (ex && Number.isFinite(ex.min[k]) && Number.isFinite(ex.max[k])) m = Math.max(m, Math.abs(ex.min[k]!), Math.abs(ex.max[k]!));
     return m;
   };
   const V = Math.max(givenVoltage(p), most('v_in'), most('v_out'), most('v_sw'));
@@ -358,7 +367,8 @@ function outsideModel(p: SimParams, model: Model, w: Waveforms, startUp = false)
     if (vsw[k]! < -1e-9 * V && first < 0) first = k;
     lo = Math.min(lo, vsw[k]!);
   }
-  if (first >= 0) {
+  if (ex && ex.min.v_sw! < lo) lo = ex.min.v_sw!;
+  if (first >= 0 || lo < -1e-9 * V) {
     out.switchBelowZero = lo;
     if (startUp) out.switchFrom = cycle(first);
   }
@@ -380,7 +390,8 @@ function outsideModel(p: SimParams, model: Model, w: Waveforms, startUp = false)
       if (vD[k]! > limit && first < 0) first = k;
       hi = Math.max(hi, vD[k]!);
     }
-    if (first >= 0) (out.diodes ??= []).push({ diode, v: hi, drop, ...(startUp ? { from: cycle(first) } : {}) });
+    if (ex && ex.max[key]! > hi) hi = ex.max[key]!;
+    if (first >= 0 || hi > limit) (out.diodes ??= []).push({ diode, v: hi, drop, ...(startUp ? { from: cycle(first) } : {}) });
   }
   return out;
 }
