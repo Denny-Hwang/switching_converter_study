@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { sim } from 'pe-core';
 import { ui } from '../i18n/ui';
-import { compareRows, fromSlider, hashOf, loadRows, nextAnchor, noSteadyText, parseField, sliderAnchors, stateFromHash, toParams, type SimLabels, type SimPreset } from './Simulator';
+import { compareRows, fromSlider, hashOf, loadRows, nextAnchor, noSteadyText, outsideModelText, parseField, sliderAnchors, stateFromHash, toParams, type SimLabels, type SimPreset } from './Simulator';
 
 const buck = { topo: 'buck' as const, load: 'res' as const, source: false };
 const values = { Vg: '24', D: '0.5', fs: '100000', L: '0.0001', R: '10', C: '0.00001' };
@@ -205,6 +205,21 @@ describe('what the simulator says without a steady state', () => {
     const cut = sim.simulate(p, { maxCycles: 1 });
     expect(noSteadyText(cut, labels)).toContain('No periodic steady state within the cycle limit');
     expect(noSteadyText(sim.simulate(p), labels)).toBeNull();
+  });
+
+  it('outside the model: the input bus below zero is named first, else the switch voltage', () => {
+    const out = { ...labels, busBelowZero: t['sim.busBelowZero'], switchBelowZero: t['sim.switchBelowZero'] } as SimLabels;
+    // a buck on a weak source: the bus falls below zero, the switch voltage does not
+    const buck = sim.simulate({ topology: 'buck', Vg: 24, D: 0.5, fs, L: 1e-5, Ron: 0.05, VF: 0.5, source: { Voc: 24, Rs: 50, Cbus: 1e-8 }, load: { kind: 'resistive', R: 0.5, C: 1e-5 } });
+    expect(outsideModelText(buck, out)).toContain('The input bus falls below 0 V within the period (to −8.256 V)');
+    // a buck-boost on a weak source: both, and the bus is named
+    const bb = sim.simulate({ topology: 'buckboost', Vg: 24, D: 0.6, fs, L: 1e-4, Ron: 0.05, source: { Voc: 24, Rs: 20, Cbus: 1e-7 }, load: { kind: 'resistive', R: 5, C: 1e-5 } });
+    expect(bb.switchBelowZero).toBeLessThan(0);
+    expect(outsideModelText(bb, out)).toContain('The input bus falls below 0 V');
+    // the switch voltage alone
+    expect(outsideModelText({ ...bb, busBelowZero: undefined }, out)).toContain('The switch voltage falls below 0 V within the period');
+    // an ordinary circuit: nothing
+    expect(outsideModelText(sim.simulate({ topology: 'buck', Vg: 24, D: 0.3, fs, L: 2e-5, load: { kind: 'resistive', R: 50, C: 22e-6 } }), out)).toBeNull();
   });
 });
 

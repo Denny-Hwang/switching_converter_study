@@ -631,6 +631,9 @@ export function steadyState(model: Model, x0: Vec, opts: SteadyOptions = {}): St
         if (Math.abs(step[j]!) > limit) shrink = Math.min(shrink, limit / Math.abs(step[j]!));
       }
       const delta = step.map((v) => v * shrink);
+      // a step that moves nothing (every state left out of the reduced
+      // system, a pure drift) cannot lower the residual: no trials
+      if (delta.every((v) => v === 0)) return;
       // Line search on the squared residual, each state scaled by how far it
       // moves within the cycle. A trial may move more than the base cycle
       // (a rectifier that starts conducting), so each state takes the larger

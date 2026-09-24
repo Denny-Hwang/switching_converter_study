@@ -132,8 +132,9 @@ start voltage or the battery's) in place of the steady-state period:
   volt-seconds balance whatever the current: every current that starts
   and ends a period at the same value is a steady state, and the simulator
   reports the one it reaches from its starting point. A duty ratio so close
-  to it that the current gains less than a millionth of its ripple per cycle
-  passes the convergence test below, and counts as balanced.
+  to it that the current's change per cycle is less than a millionth of how
+  far it moves within the period passes the convergence test below, and
+  counts as balanced.
 - **A capacitor that charges without bound.** With nothing across it, the
   output capacitor keeps what every cycle delivers. Behind a boost,
   buck-boost or flyback without a capacitance across the switch, every cycle
@@ -149,28 +150,33 @@ A capacitor alone does settle behind the other converters:
   above, because the switch conducts both ways. The search starts there.
 - **Behind a forward converter**, and behind a boost, buck-boost or flyback
   **with a capacitance across the switch**, it stops once no more charge
-  reaches it: for the forward converter at $n V_g$ less the diode drop or
-  above, since its rectifier lets no current back; for the others at the
-  voltage to which the inductance can no longer lift the node capacitance.
-  Every voltage above that one is a steady state too, and which one the
-  capacitor keeps depends on its start-up: an L-C charge can overshoot and
-  keep its peak, the first periods from rest can carry more energy than the
-  periodic ringing, and an input bus that sags and recovers moves the
-  voltage on the way. So the simulator follows the start-up from $V_0$ until
-  the capacitor has stopped (no charge for 50 periods in a row, or for 3
-  with every other state repeating itself) and searches from there: the
-  voltage it reports is the one the start-up stops at. Where the charge per
-  period instead shrinks steadily towards a limit, with every other state
-  repeating itself, it searches for that limit, the lowest voltage that no
-  charge reaches; the start-up, which charges in steps, can stop up to one
-  step above it. It follows at most 4000 periods and two million sub-steps.
-  A start-up that is still charging then is searched from where it got to;
-  if that search fails, the steady state is found from above instead, with
-  the capacitor high enough that no charge reaches it, and the voltage
-  brought down to the lowest one that no charge reaches. Such a start-up
-  can be reported below the voltage it would stop at (a slow L-C charge
-  below its peak). The periods followed count in the number of cycles the
-  result reports.
+  reaches it: for the forward converter at about $n V_g$ less the diode drop
+  (a little below it with $R_\mathrm{on}$) or above, since its rectifier
+  lets no current back; for the others at the voltage to which the
+  inductance can no longer lift the node capacitance. Every voltage above
+  that one is a steady state too, and which one the capacitor keeps depends
+  on its start-up: an L-C charge can overshoot and keep its peak, the first
+  periods from rest can carry more energy than the periodic ringing, and an
+  input bus that sags and recovers moves the voltage on the way. So the
+  simulator follows the start-up from $V_0$ and searches from where the
+  capacitor stops charging: no charge for 50 periods in a row, or for 3 with
+  every other state repeating itself. A start-up that charges again after
+  such a pause ends above the voltage reported. Where the charge per period
+  instead shrinks steadily towards a limit, with every other state repeating
+  itself, it searches for that limit, the lowest voltage that no charge
+  reaches; the start-up, charging in ever smaller steps, stops just above it
+  (by about a hundred-millionth of the voltage in the cases tried). It
+  follows at most 4000 periods and two million sub-steps: with a node
+  capacitance, whose ringing needs more sub-steps, that is 100 to 1000
+  periods, and random trials often reach it. A start-up still charging then
+  is searched from where it got to; if that search fails, or finds a voltage
+  below the one the start-up reached, the steady state is found from above
+  instead, with the capacitor high enough that no charge reaches it, and the
+  voltage brought down to the lowest one that no charge reaches. Such a
+  start-up is reported below the voltage it would stop at, by up to about
+  0.07 % in random trials, and a steady state found from above can lie about
+  a millionth above it. The periods followed count in the number of cycles
+  the result reports.
 
 Without a steady state there is no conduction mode, no comparison with the
 equations and no table of the load or the losses: each of them describes a
@@ -226,7 +232,8 @@ periodic steady state.
   fixed output's, the start voltage) for a voltage, and the current that
   voltage builds in one period in the state's inductance for a current. A
   change or a Newton step within rounding of that size counts as none, and
-  the second test measures a state at rest against that size.
+  the second test measures each state's step against the largest of its
+  value, its movement within the period and that size.
 - **The mode** is DCM when the inductor current stays at zero for part of
   the period, BCM when it only touches zero, and CCM otherwise, also when
   it reverses and flows on through the switch's body diode.
@@ -279,9 +286,13 @@ against the equations:
   output above the input (an L-C overshoot, a battery behind a resistor),
   the buck's current turns negative at once through the switch's body
   diode, and the switch voltage never falls below zero.
-- **Outside the model.** A forward converter beyond its reset limit whose
-  weak source lets its switch voltage fall below zero is flagged; no other
-  converter, load, source or node capacitance is.
+- **Outside the model.** A source too weak for its load lets the input bus
+  fall below zero: a buck, a buck-boost and a flyback with a heavy load on a
+  small bus capacitance, and a forward converter beyond its reset limit. In
+  all of them but the buck the switch voltage falls below zero too. Both are
+  flagged, also when the search does not settle (its last cycle is looked
+  at, besides the start-up's). Every converter, load, source and node
+  capacitance of a sweep of ordinary circuits keeps both at or above zero.
 
 Two further suites check the simulator by other means:
 
@@ -306,7 +317,7 @@ Two further suites check the simulator by other means:
   plus what the SPICE parts add to a quantity that the ideal parts hold at
   zero all period: 5 mV for a voltage, 1 µA for a current <Cite key="ngspice" />.
   Four cases need that allowance: the switch voltage across a conducting
-  body diode, 3.9 mV, and the leakage of a diode held off, 0.2 nA at most <Cite key="ngspice" />. The SPICE
+  body diode, 3.9 mV, and the leakage of a diode held off, 0.5 nA at most <Cite key="ngspice" />. The SPICE
   parts are near-ideal: switches with the case's on-resistance (a milliohm
   when it gives none) that take a nanosecond to switch, and diodes that
   drop a few millivolts more than the case's $V_F$; a battery's current, set
@@ -383,16 +394,17 @@ that current except $R_b$: a small change of $D$ changes it a lot.
   polarization: the internal resistance is the battery's only loss.
 - **A slow start-up.** A capacitor alone behind a forward converter, or
   behind a converter with a capacitance across its switch, is followed for
-  at most 4000 periods and two million sub-steps before the search. A
-  start-up slower than that, such as a slow L-C charge, is searched from
-  where it got to, and can be reported below the peak at which it would
-  stop.
+  at most 4000 periods and two million sub-steps before the search (100 to
+  1000 periods with a node capacitance). A start-up slower than that, such
+  as a slow L-C charge, is searched from where it got to, and is reported
+  below the voltage at which it would stop, by up to about 0.07 % in random
+  trials. With a node capacitance that rings fast, such a circuit can take
+  up to about ten seconds to solve.
 - **An input that stays above zero.** A Thevenin source too weak to hold
-  its bus up can let it swing below zero. The forward converter's model
-  then has its switch voltage fall below zero too (beyond the reset limit,
-  where the magnetizing current is held only by the resistances), where a
-  real switch's body diode would conduct. The model leaves that out, and
-  the simulator says that the results do not hold.
+  its bus up can let it swing below zero, where a real circuit's diodes
+  (the switch's body diode, the freewheeling diode or the rectifier) would
+  conduct. The models leave them out, and the simulator says that the
+  results do not hold.
 
 ## Screenshot
 

@@ -78,7 +78,17 @@ export function forward(p: SimParams): Model {
   const zeroM = assign(c, { iM: 0 });
   const onVL = specs.on!.vL;
   const rising = mul(onVL, -1); // > 0 while the on-interval would drive the inductor current negative
-  specs.on!.guards = [{ c: unit(c, 'i'), d: 0, next: 'onL0', reset: zeroI }];
+  const scales = stateScales(c, p, { i: L, iM: LM });
+  // The rectifier blocks a current that would reverse: a current falling to
+  // zero moves to onL0. A current that starts the on-interval at exactly zero
+  // (turned on with the on-voltage at zero, which then falls as the bus
+  // sags) never is positive for the first guard to see it cross zero; the
+  // second one catches it as it passes a rounding-level fraction of the
+  // current's natural size below zero.
+  specs.on!.guards = [
+    { c: unit(c, 'i'), d: 0, next: 'onL0', reset: zeroI },
+    { c: unit(c, 'i'), d: 1e-12 * scales[0]!, next: 'onL0', reset: zeroI },
+  ];
   specs.onL0!.guards = [{ c: c.names.map((k) => rising[k] ?? 0), d: rising['1'] ?? 0, next: 'on' }];
   specs.off!.guards = [
     { c: unit(c, 'i'), d: 0, next: 'offL0', reset: zeroI },
@@ -101,7 +111,7 @@ export function forward(p: SimParams): Model {
   return {
     topology: 'forward',
     stateNames: c.names,
-    scales: stateScales(c, p, { i: L, iM: LM }),
+    scales,
     Ts: c.Ts,
     D: p.D,
     intervals,

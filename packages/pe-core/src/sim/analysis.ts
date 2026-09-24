@@ -90,11 +90,15 @@ export interface SimResult {
   /** Energy per cycle (J). */
   energy: { input: number; output: number };
   /**
-   * The switch voltage's minimum when it falls below zero within the cycle.
-   * A real switch's body diode would conduct there, which the forward
-   * converter's model leaves out: fed from a weak source beyond its reset
-   * limit, its input bus can collapse below zero. The results do not hold then.
+   * Outside the model: the input bus's minimum when a source lets it fall
+   * below zero within the cycle (a source too weak for the load), and the
+   * switch voltage's minimum when it falls below zero. A real circuit's
+   * diodes (the switch's body diode, the freewheeling diode or rectifier)
+   * would conduct there, which the models leave out, so the results do not
+   * hold then. Without a steady state, the start-up's last cycle and the
+   * search's last cycle are both looked at.
    */
+  busBelowZero?: number;
   switchBelowZero?: number;
 }
 
@@ -284,9 +288,7 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
   const iout = wf.i_out as number[];
   const pin = t.map((_, k) => vin[k]! * iin[k]!);
   const pout = t.map((_, k) => vout[k]! * iout[k]!);
-  // below zero beyond rounding: a clamp the model leaves out would conduct
-  const vswScale = Math.max(Math.abs(max.v_sw!), Math.abs(min.v_sw!), Number.MIN_VALUE);
-  const switchBelowZero = min.v_sw! < -1e-9 * vswScale ? min.v_sw! : undefined;
+  const below = belowZero(p, min, max);
   return {
     params: p,
     stateNames: model.stateNames,
@@ -307,8 +309,41 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
     M: avg.v_out! / avg.v_in!,
     losses: { conduction, diode, capacitive, total: conduction + diode + capacitive },
     energy: { input: average(t, pin, Ts) * Ts, output: average(t, pout, Ts) * Ts },
-    ...(switchBelowZero !== undefined ? { switchBelowZero } : {}),
+    ...below,
   };
+}
+
+/**
+ * The bus (with a source) and the switch voltage when they fall below zero
+ * beyond rounding, where a diode the models leave out would conduct.
+ */
+function belowZero(p: SimParams, min: Record<string, number>, max: Record<string, number>): { busBelowZero?: number; switchBelowZero?: number } {
+  const under = (k: string) => {
+    const scale = Math.max(Math.abs(max[k]!), Math.abs(min[k]!), Number.MIN_VALUE);
+    return min[k]! < -1e-9 * scale ? min[k]! : undefined;
+  };
+  const bus = p.source ? under('v_in') : undefined;
+  const sw = under('v_sw');
+  return { ...(bus !== undefined ? { busBelowZero: bus } : {}), ...(sw !== undefined ? { switchBelowZero: sw } : {}) };
+}
+
+/** The lowest bus and switch voltages over the search's last cycle, merged into a result without a steady state. */
+function withSearchFlags(p: SimParams, model: Model, r: SimResult, x: Vec, steps: number): SimResult {
+  const run = runCycle(model, x, { stepsPerPeriod: steps, record: true });
+  const min: Record<string, number> = { v_in: Infinity, v_sw: Infinity };
+  const max: Record<string, number> = { v_in: -Infinity, v_sw: -Infinity };
+  for (const s of run.samples) {
+    const y = model.outputs(s.x, s.interval);
+    for (const k of ['v_in', 'v_sw']) {
+      min[k] = Math.min(min[k]!, y[k]!);
+      max[k] = Math.max(max[k]!, y[k]!);
+    }
+  }
+  const f = belowZero(p, min, max);
+  const lower = (a?: number, b?: number) => (a === undefined ? b : b === undefined ? a : Math.min(a, b));
+  const bus = lower(r.busBelowZero, f.busBelowZero);
+  const sw = lower(r.switchBelowZero, f.switchBelowZero);
+  return { ...r, ...(bus !== undefined ? { busBelowZero: bus } : {}), ...(sw !== undefined ? { switchBelowZero: sw } : {}) };
 }
 
 /** Most sub-steps per period, and the fewest sub-steps per ring of the node capacitance that still find its events. */
@@ -543,13 +578,19 @@ export function followStartUp(p: SimParams, model: Model, steps: number): { x: V
  * - where it still creeps up, its charge per cycle shrinking to nothing, the
  *   search may step past the edge of the range; it is brought back, by
  *   bisection between the two, to the lowest voltage that no charge reaches.
- *   The start-up, which charges in steps, stops at most its last step above.
- * Where the search fails from there (a start-up still far from its stop),
- * a steady state with the capacitor high enough that no charge reaches it
- * is found from ever higher voltages, and the bisection runs down from it.
+ *   The start-up, charging in ever smaller steps, stops a little above it
+ *   (about 1e-8 of the voltage in the cases tried).
+ * Where the search fails from there, or settles below the voltage the
+ * start-up reached (a start-up still far from its stop), a steady state with
+ * the capacitor high enough that no charge reaches it is found from ever
+ * higher voltages, and the bisection runs down from it; that orbit can lie
+ * about 1e-6 of the voltage above the start-up's own.
  * A start-up that has not stopped within FOLLOW's limits (an L-C charge
- * slower than that) is searched from where it got to, and may be reported
- * below the peak it would still reach.
+ * slower than that; with a node capacitance's finer sub-steps only 100 to
+ * 1000 periods are followed) is searched from where it got to, and is
+ * reported below the voltage it would still reach (by up to about 7e-4 of it
+ * in random trials). A start-up quiet for FOLLOW.quiet periods that later
+ * charges again likewise ends above the voltage reported.
  */
 function capacitorAlone(p: SimParams, model: Model, opts: SteadyOptions, steps: number): SteadyResult {
   const iv = model.stateNames.indexOf('v');
@@ -627,7 +668,7 @@ export function simulate(p: SimParams, opts: SteadyOptions = {}): SimResult {
     : steadyState(model, initialState(p, model), { stopOnDrift: true, ...opts, stepsPerPeriod: steps });
   if (ss.converged) return analyse(p, model, ss);
   const { status, drift } = diagnose(p, model, ss.x0, steps);
-  return withStartUp(p, model, status, drift);
+  return withSearchFlags(p, model, withStartUp(p, model, status, drift), ss.x0, steps);
 }
 
 /** The result without a steady state: the start-up from rest, and the analysis of its last cycle. */
@@ -639,8 +680,13 @@ function withStartUp(p: SimParams, model: Model, status: Status, drift?: Drift):
   const r = analyse(p, model, { x0: su.lastStart, cycles: su.cycles, converged: false, residual: NaN, run: last });
   let d = drift;
   const iv = model.stateNames.indexOf('v');
-  // a capacitor alone: its change over the start-up's last cycle
-  if (chargingLoad(p) && iv >= 0 && (status === 'charging' || d?.state === 'v')) d = { state: 'v', perCycle: su.end[iv]! - su.lastStart[iv]! };
+  // a capacitor alone: its change over the start-up's last cycle, which the
+  // page shows; a start-up that has stopped by then says nothing about a
+  // search that did not settle, and gives no change per cycle
+  if (chargingLoad(p) && iv >= 0 && (status === 'charging' || d?.state === 'v')) {
+    const dv = su.end[iv]! - su.lastStart[iv]!;
+    d = status === 'charging' || Math.abs(dv) > 64 * Number.EPSILON * Math.max(Math.abs(su.end[iv]!), model.scales?.[iv] ?? 0) ? { state: 'v', perCycle: dv } : undefined;
+  }
   return { ...r, status, drift: d, startUp: su };
 }
 

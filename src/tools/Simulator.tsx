@@ -53,6 +53,7 @@ export interface SimLabels {
   settling: string;
   unsettled: string;
   /** '{v}' filled in: the switch voltage's minimum. */
+  busBelowZero: string;
   switchBelowZero: string;
   loadTable: string;
   vout: string;
@@ -485,6 +486,17 @@ export function noSteadyText(r: SimResult, labels: SimLabels): string | null {
   return null;
 }
 
+/**
+ * What the page says when a voltage falls below zero where a diode the model
+ * leaves out would conduct: the bus first (its cause), else the switch.
+ */
+export function outsideModelText(r: SimResult | null | undefined, labels: SimLabels): string | null {
+  if (!r) return null;
+  if (r.busBelowZero !== undefined) return fill(labels.busBelowZero, { v: fmtValue(r.busBelowZero, 'V') });
+  if (r.switchBelowZero !== undefined) return fill(labels.switchBelowZero, { v: fmtValue(r.switchBelowZero, 'V') });
+  return null;
+}
+
 /** The anchor a slider takes when its field is committed: the typed value if it lies outside the slider's range. */
 export function nextAnchor(anchor: number | undefined, raw: string): number | undefined {
   const v = parseField(raw);
@@ -895,7 +907,7 @@ export default function Simulator({ labels, presets, symbols }: Props) {
             {error && <p className="pe-sim__error">{error}</p>}
             {((busy && !result && !error) || slow) && <p>{labels.running}</p>}
             {result && result.status !== 'steady' && <p className="pe-sim__nosteady">{noSteadyText(result, labels)}</p>}
-            {result?.switchBelowZero !== undefined && <p className="pe-sim__nosteady">{fill(labels.switchBelowZero, { v: fmtValue(result.switchBelowZero, 'V') })}</p>}
+            {outsideModelText(result, labels) && <p className="pe-sim__nosteady">{outsideModelText(result, labels)}</p>}
             {result && result.status === 'steady' && (
               <p>
                 {labels.mode}: <strong className={`pe-sim__mode pe-sim__mode--${result.mode}`}>{result.mode}</strong>
