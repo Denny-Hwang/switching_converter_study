@@ -79,44 +79,30 @@ jobs:
           cache: pip
           cache-dependency-path: python/pyproject.toml
       - run: pip install -e "python[dev]"
-      - name: TEMPORARY - candidate pages for Dowell 1966 and Basso 2014 (removed in the next commit)
+      - name: TEMPORARY - what McGraw Hill's page for Basso's second edition names (removed in the next commit)
         run: |
-          for d in 10.1036/9780071823463 10.1036/0071823468 10.1049/piee.1966.0236; do
-            echo "== crossref $d"
-            curl -sS -m 60 -A "switching-converter-study-linkcheck/1.0" "https://api.crossref.org/works/$d" | python -c "import json,sys; m=json.load(sys.stdin)['message']; print(m.get('title'), m.get('type'), m.get('publisher'), m.get('ISBN'), (m.get('resource') or {}).get('primary'))" || true
-            echo "== doi.org $d"
-            curl -sS -m 60 -o /dev/null -D - "https://doi.org/$d" | grep -iE '^(HTTP|location)' || true
-          done
-          echo "== cdx accessengineering prefix, HTTP 200"
-          curl -sS -m 90 "https://web.archive.org/cdx/search/cdx?url=www.accessengineeringlibrary.com/content/book/9780071823463&matchType=prefix&filter=statuscode:200&output=json&fl=timestamp,original&limit=-8" || true
-          echo
-          echo "== cdx mhprofessional product.php for the ISBN"
-          curl -sS -m 90 "https://web.archive.org/cdx/search/cdx?url=mhprofessional.com/product.php&matchType=prefix&filter=original:.*0071823468.*&output=json&fl=timestamp,original,statuscode&limit=-8" || true
-          echo
           python - <<'EOF'
-          import sys
+          import re, sys
           sys.path.insert(0, "scripts")
           import resources_check as rc
-          from concurrent.futures import ThreadPoolExecutor
-          B, D = "Switch-Mode Power Supplies", "Effects of eddy currents in transformer windings"
-          cands = [
-              ("dowell iet old", "https://digital-library.theiet.org/content/journals/10.1049/piee.1966.0236", D),
-              ("dowell doi", "https://doi.org/10.1049/piee.1966.0236", D),
-              ("basso mhp a", "https://www.mheducation.com/highered/mhp/product/switch-mode-power-supplies-second-edition-spice-simulations-practical-designs.html", B),
-              ("basso mhp b", "https://www.mheducation.com/highered/mhp/product/switch-mode-power-supplies-second-edition-spice-simulations-and-practical-designs.html", B),
-              ("basso mhp c", "https://www.mheducation.com/highered/mhp/product/switch-mode-power-supplies-second-edition.html", B),
-              ("basso mhprof php", "http://www.mhprofessional.com/product.php?isbn=0071823468", B),
-              ("basso mhprof a", "https://www.mhprofessional.com/9780071823463-usa-switch-mode-power-supplies-second-edition-spice-simulations-and-practical-designs-group", B),
-              ("basso mhprof b", "https://www.mhprofessional.com/switch-mode-power-supplies-second-edition-spice-simulations-and-practical-designs-9780071823463-usa", B),
-              ("basso doi", "https://doi.org/10.1036/9780071823463", B),
-              ("basso apple", "https://books.apple.com/us/book/switch-mode-power-supplies-second-edition/id853966605", B),
-              ("basso oreilly", "https://www.oreilly.com/library/view/switch-mode-power-supplies/9780071823463/", B),
-              ("basso gbooks", "https://books.google.com/books?vid=ISBN9780071823463", B),
-          ]
-          ts = [{"src": k, "url": u, "expect": e, "kind": "html", "quotes": []} for k, u, e in cands]
-          with ThreadPoolExecutor(max_workers=6) as pool:
-              for t, (s, d) in zip(ts, pool.map(rc.check_online, ts)):
-                  print(f"{s:14s} {t['src']:18s} {t['url']}\n      {d[:700]}", flush=True)
+          url = "https://www.mheducation.com/highered/mhp/product/switch-mode-power-supplies-second-edition.html"
+          f = next((f for f in rc.attempts(url) if f.status == 200), None)
+          if f is None:
+              sys.exit("no HTTP 200 from " + url)
+          body = f.body[: rc.CAP]
+          print(f.how, f.url, len(body), "bytes; title:", repr(rc.page_title(body)))
+          for m in re.finditer(rb"<meta[^>]+>", body):
+              s = m.group(0).decode("utf-8", "replace")
+              if re.search(r"og:|book:|isbn|author|description", s, re.I):
+                  print("meta:", " ".join(s.split())[:400])
+          for m in re.finditer(rb"<script[^>]*ld\+json[^>]*>(.*?)</script>", body, re.S | re.I):
+              print("ld+json:", " ".join(m.group(1).decode("utf-8", "replace").split())[:1500])
+          text = " ".join(rc.html_text(body).split())
+          for w in ("Basso", "9780071823463", "9780071824736", "0071823468", "Second Edition", "SPICE"):
+              hits = [m.start() for m in re.finditer(re.escape(w), text)]
+              print(f"== {w}: {len(hits)} in the page's text")
+              for at in hits[:3]:
+                  print("   ..." + text[max(0, at - 160) : at + 160] + "...")
           EOF
       - run: python scripts/refcheck.py --online
 

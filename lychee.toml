@@ -70,7 +70,6 @@ exclude = [
   '^https://www\.wiley\.com/',
   '^https://www\.sciencedirect\.com/',
   '^https://digital-library\.theiet\.org/',
-  '^https://www\.accessengineeringlibrary\.com/',
   '^https://www\.mheducation\.com/',
   '^https://www\.we-online\.com/',
 ]
