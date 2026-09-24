@@ -52,8 +52,10 @@ result names the equation it comes from.
 
 **Simulate.** A time-domain simulator in the browser: pick a topology, move a
 slider and watch the waveforms, the operating mode and the losses change.
-Every result sits next to the formula's value, and the simulator is
-validated against the formulas to within 2 %.
+Step through the period mode by mode, with the circuit's current paths and
+each element's state. Every result sits next to the formula's value, and the
+simulator is validated against the formulas to within 2 % and against
+ngspice.
 
 <img src="docs/images/simulate-en.png" alt="The simulator: topology and preset buttons, the detected mode, and the parameter fields beside the stacked waveforms">
 

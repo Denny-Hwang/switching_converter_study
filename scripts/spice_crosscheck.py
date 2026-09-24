@@ -282,8 +282,19 @@ def netlist(c: dict) -> tuple[str, dict[str, str]]:
         lines.append(f"meas tran {vec}_end FIND {vec} AT={g(tstop)}")
         for k, tk in enumerate(sample_times(c)):
             lines.append(f"meas tran {vec}_s{k:02d} FIND {vec} AT={g(t0 + tk)}")
+        if name in FALLS:
+            # where the current last falls through 5 % of its average in the period (the end of a diode's
+            # or an inductor's conduction in DCM: a mode boundary); none when it does not. The average,
+            # not the peak: a diode's take-over spike at a node capacitance inflates the peak
+            lines.append(f"let {vec}_thr = {FALL_LEVEL} * {vec}_avg")
+            lines.append(f"meas tran {vec}_fall WHEN {vec}=$&{vec}_thr FALL=LAST from={g(t0)} to={g(tstop)}")
     lines += ["quit", ".endc", ".end", ""]
     return "\n".join(lines), q
+
+
+# The currents whose end of conduction is measured, and the level (a share of the period's average).
+FALLS = ("i_D", "i_L", "i_M")
+FALL_LEVEL = 0.05
 
 
 def sample_times(c: dict) -> list[float]:
@@ -292,12 +303,13 @@ def sample_times(c: dict) -> list[float]:
     return [(k + 0.5) * Ts / SAMPLES for k in range(SAMPLES)]
 
 
-MEAS = re.compile(r"^q_(\w+?)_(avg|max|min|end|s\d\d)\s*=\s*([-+0-9.eE]+)")
+MEAS = re.compile(r"^q_(\w+?)_(avg|max|min|end|fall|s\d\d)\s*=\s*([-+0-9.eE]+)")
 
 
 def run(c: dict) -> dict:
-    """ngspice's measurements of the case's last period: {"values": {q_avg, q_max, q_min, q_end},
-    "samples": {"t": instants, q: values at those instants}}."""
+    """ngspice's measurements of the case's last period: {"values": {q_avg, q_max, q_min, q_end, and
+    q_fall where a current ends within the period (from the period's start)}, "samples": {"t": instants,
+    q: values at those instants}}."""
     text, q = netlist(c)
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "case.cir"
@@ -314,6 +326,8 @@ def run(c: dict) -> dict:
         name, fn, v = names[m.group(1)], m.group(2), float(m.group(3))
         if fn.startswith("s"):
             samples[name][int(fn[1:])] = v
+        elif fn == "fall":
+            values[f"{name}_fall"] = v - (c["cycles"] - 1) / c["fs"]
         else:
             values[f"{name}_{fn}"] = v
     missing = [f"{k}_{fn}" for k in q for fn in ("avg", "max", "min", "end") if f"{k}_{fn}" not in values]

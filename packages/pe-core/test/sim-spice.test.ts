@@ -63,6 +63,30 @@ const SWING_TOL = 0.02;
 const PARTS = { v: 5e-3, i: 1e-6 };
 /** Waveform values within this time of an event are not compared. */
 const EVENT_GAP = 2e-8;
+/**
+ * Where a current's conduction ends (a mode boundary in DCM: a diode or an
+ * inductor current reaching zero, the forward converter's core reset): the
+ * last instant in the period where it falls through FALL_LEVEL of its average
+ * (not its peak, which a diode's take-over spike inflates in ngspice), found
+ * the same way in both. They must agree within FALL_TOL of the period (10 ns
+ * at 100 kHz); ngspice's diode, which drops a few millivolts more, ends a few
+ * nanoseconds early (buck-battery-ring: see scripts/spice_crosscheck.py).
+ */
+const FALL_LEVEL = 0.05;
+const FALL_TOL = 1e-3;
+
+/** The last instant where y falls through `level` times its average `avg` (linear between samples), after `after`. */
+function fallTime(t: number[], y: number[], level: number, avg: number, after: number): number | undefined {
+  const thr = level * avg;
+  let out: number | undefined;
+  for (let k = 1; k < t.length; k++) {
+    if (y[k - 1]! > thr && y[k]! <= thr) {
+      const tk = t[k - 1]! + ((y[k - 1]! - thr) / (y[k - 1]! - y[k]!)) * (t[k]! - t[k - 1]!);
+      if (tk > after) out = tk;
+    }
+  }
+  return out;
+}
 
 /** The simulator's waveform at time t (linear between its samples; at an event, the value after it). */
 function at(t: number[], y: number[], tq: number): number {
@@ -138,7 +162,7 @@ describe(`simulator against ngspice ${fixture.ngspice} (${fixture.cases.length} 
       const iv = w.interval as string[];
       // the simulator's events: where one interval hands over to the next
       const events = [0, ...t.filter((_, k) => k > 0 && iv[k] !== iv[k - 1]), t.at(-1)!];
-      const quantities = [...new Set(Object.keys(spice).map((k) => k.replace(/_(avg|max|min|end)$/, '')))];
+      const quantities = [...new Set(Object.keys(spice).map((k) => k.replace(/_(avg|max|min|end|fall)$/, '')))];
       expect(quantities.length).toBeGreaterThanOrEqual(5);
       let compared = 0;
       for (const q of quantities) {
@@ -173,6 +197,17 @@ describe(`simulator against ngspice ${fixture.ngspice} (${fixture.cases.length} 
       }
       // nearly every instant is away from the events
       expect(compared).toBeGreaterThanOrEqual(0.9 * quantities.length * samples.t!.length);
+      // where each current's conduction ends: the modes' boundaries (not the turn-on edge at the period's start)
+      const Ts = 1 / c.fs;
+      for (const q of ['i_D', 'i_L', 'i_M']) {
+        const sp = spice[`${q}_fall`];
+        const spFall = sp !== undefined && sp > EVENT_GAP ? sp : undefined;
+        const tsFall = w[q] ? fallTime(t, w[q] as number[], FALL_LEVEL, r.avg[q]!, EVENT_GAP) : undefined;
+        expect(tsFall === undefined, `${c.id}: ${q} ends in the period: simulator ${tsFall}, ngspice ${spFall}`).toBe(spFall === undefined);
+        if (tsFall !== undefined && spFall !== undefined) {
+          expect(Math.abs(tsFall - spFall), `${c.id}: ${q} ends at ${(tsFall * 1e6).toFixed(4)} µs, ngspice ${(spFall * 1e6).toFixed(4)} µs`).toBeLessThanOrEqual(FALL_TOL * Ts);
+        }
+      }
     });
   }
 });

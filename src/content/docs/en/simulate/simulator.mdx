@@ -182,6 +182,43 @@ Without a steady state there is no conduction mode, no comparison with the
 equations and no table of the load or the losses: each of them describes a
 periodic steady state.
 
+## Operating modes
+
+Below the charts the steady-state period is split into its modes, the way
+converter papers describe a circuit mode by mode: each mode is a stretch of
+the period in which one linear circuit holds (the switch on, the diode
+conducting, the idle interval of DCM <Cite key="erickson2020" where="Ch. 5" />,
+the node capacitance's rise and ringing, the forward converter's reset).
+Pick a mode with its button, or click on the charts; the charts shade it.
+For the selected mode the view shows:
+
+- **the circuit**, with the branches that carry current in the mode in
+  colour and the others grey, and an arrow on each coloured branch in the
+  direction its current flows (two heads when the current reverses within
+  the mode). The switch is drawn closed while its gate is on; its body
+  diode, across it, is coloured when it carries the current. Next to each
+  element are its name and its state;
+- **what happens**, in a few sentences for each topology and mode;
+- **a table** of every element's state, its current at the start and the
+  end of the mode with its average over it, and its voltage where the
+  simulator has it.
+
+The states are read from the simulated waveforms of the mode, never
+assumed: an inductor stores energy while its current's magnitude grows and
+releases it while it shrinks; a capacitor or a battery charges while its
+current flows into its positive terminal; a source delivers while its
+current leaves its positive terminal; a current that changes sign within
+the mode is reported with the instant it reverses. A current smaller than a
+millionth of the period's largest current counts as none.
+
+The drawing and the table use the same currents, and those come from the
+model's outputs for each element: Kirchhoff's current law holds at every
+node of the drawn circuit at every instant of the period, for every
+topology, load, node capacitance and source (`sim-schematic.test.ts`).
+Where a diode's or an inductor's current ends, the boundary between two
+modes, the simulator agrees with ngspice within 10 ns in every circuit of
+the SPICE comparison below.
+
 ## How it computes
 
 - **Within an interval** the state (inductor current, capacitor voltages)
@@ -421,8 +458,21 @@ Two further suites check the simulator by other means:
   ideal one differ by nanoseconds), and, with a node capacitance, the
   diode's largest current and, for the buck and the flyback, the input
   current's extremes, where ngspice's steep diode overshoots for a few
-  picoseconds as it takes over the current. CI reruns ngspice on every
-  change and compares with the stored results.
+  picoseconds as it takes over the current. Where a current ends within
+  the period (a diode's or an inductor's in DCM, the forward converter's
+  magnetizing current at the end of its reset), the instant it falls
+  through 5 % of its average agrees within 10 ns (3.4 ns at worst). CI
+  reruns ngspice on every change and compares with the stored results.
+- **Operating modes** (`sim-schematic.test.ts`, `sim-sequence.test.ts`,
+  `src/lib/seqlayout.test.ts`). Kirchhoff's current law at every node of the
+  drawn circuit at every sample, for every topology with each load, with and
+  without a node capacitance and a source; the modes cover the period's
+  intervals, and the states match hand-checked cases (a buck in CCM and DCM,
+  a boost in DCM, a flyback whose ringing leaves a negative current for its
+  body diode at turn-on, a forward converter's reset). Every mode, element
+  and state has an English and a Korean text, and the drawing's labels,
+  symbols, wires and arrows do not overlap for any circuit in either
+  language.
 - **Invariants** (`packages/pe-core/test/sim-invariants.test.ts`). For every
   converter with a resistor, a battery, both, a capacitor alone and a fixed
   output, ideal and with losses: in the steady state the inductor's
@@ -504,6 +554,6 @@ that current except $R_b$: a small change of $D$ changes it a lot.
 ## Screenshot
 
 <figure class="pe-shot">
-  <Image src={shot} alt="The simulator opened with the preset of the worked example: the status line reports CCM, the compare panel sets the simulated bus voltage beside V_g,crit, and the plots show one period of the currents, the inductor voltage, the switch voltage, the output voltage and the bus voltage." />
+  <Image src={shot} alt="The simulator opened with the preset of the worked example: the status line reports CCM, the compare panel sets the simulated bus voltage beside V_g,crit, and the plots show one period of the currents, the inductor voltage, the switch voltage, the output voltage and the bus voltage; below them, the operating modes: the circuit of the first mode with its current paths, what happens in it, and every element's state." />
   <figcaption>The simulator opened with the preset of the worked example.</figcaption>
 </figure>
