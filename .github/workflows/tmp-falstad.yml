@@ -1,0 +1,26 @@
+name: TEMPORARY - CircuitJS1's own converter examples and JS interface (removed before the pull request merges)
+on:
+  push:
+    branches: [claude/blissful-einstein-r71bmd]
+permissions:
+  contents: read
+jobs:
+  falstad:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: The example list, and the converters in it
+        run: |
+          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+          curl -sSL -A "$UA" -o setuplist.txt https://www.falstad.com/circuit/circuits/setuplist.txt || true
+          wc -l setuplist.txt; head -5 setuplist.txt
+          grep -n -i -E "buck|boost|flyback|forward|convert|switch|smps|inductor" setuplist.txt | head -60
+          for f in $(grep -i -E "buck|boost|flyback|forward conv|converter" setuplist.txt | awk '{print $1}' | grep -E "\.txt$" | head -12); do
+            echo "===== $f"; curl -sSL -A "$UA" "https://www.falstad.com/circuit/circuits/$f" | head -80
+          done
+      - name: The JavaScript interface page
+        run: |
+          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+          for u in https://www.falstad.com/circuit/jsinterface.html https://www.falstad.com/circuit/circuitjs.html; do
+            echo "===== $u"; curl -sSL -A "$UA" "$u" | sed -e 's/<[^>]*>/ /g' | tr -s ' \t' ' ' | grep -v '^ *$' | head -150
+          done
