@@ -235,6 +235,7 @@
       "intro_ko": "스위칭 컨버터는 직류 입력을 펄스열로 잘게 자르고, 저역통과 필터가 그 평균을 남긴다. 각 회로 방정식을 한 주기에 걸쳐 평균하면 스위칭 회로가 직류 모델이 되며, 인덕터 권선 저항 $R_L$ 같은 손실은 평범한 저항으로 나타난다.",
       "results": [
         "sw.v_avg",
+        "vsb.drift",
         "vsb.v_off",
         "csb.i_off",
         "boost.ccm.M_RL",
@@ -252,6 +253,24 @@
           "text_ko": "두 구간을 계산한다.",
           "latex": "\\langle v_s \\rangle = D V_g",
           "result_for": "sw.v_avg"
+        },
+        {
+          "text": "The inductor obeys $v_L = L \\, di/dt$. Integrated over one period, the current's change is the integral of the voltage over $L$.",
+          "text_ko": "인덕터는 $v_L = L \\, di/dt$를 따른다. 한 주기에 걸쳐 적분하면 전류의 변화는 전압의 적분을 $L$로 나눈 값이다.",
+          "latex": "\\Delta i = \\frac{\\int\\limits_{0}^{T_s} v_L\\, dt}{L}",
+          "result_for": null
+        },
+        {
+          "text": "For a voltage $v_{L,\\mathrm{on}}$ during $D T_s$ and $v_{L,\\mathrm{off}}$ for the rest, the integral is $T_s$ times the average over the period.",
+          "text_ko": "$D T_s$ 동안 $v_{L,\\mathrm{on}}$, 나머지 동안 $v_{L,\\mathrm{off}}$인 전압이라면 적분은 한 주기 평균에 $T_s$를 곱한 값이다.",
+          "latex": "\\langle v_L \\rangle = v_{L,\\mathrm{off}} + v_{L,\\mathrm{on}} D - v_{L,\\mathrm{off}} D",
+          "result_for": null
+        },
+        {
+          "text": "So the change over one period is the average voltage times $T_s$ over $L$; it is zero only when the average is (volt-second balance).",
+          "text_ko": "따라서 한 주기 동안의 변화는 평균 전압에 $T_s$를 곱해 $L$로 나눈 값이며, 평균이 0일 때만 0이다(전압-초 평형).",
+          "latex": "\\Delta i = \\frac{\\langle v_L \\rangle T_s}{L}",
+          "result_for": "vsb.drift"
         },
         {
           "text": "With the small-ripple approximation the inductor voltage (or capacitor current) takes one value $x_\\mathrm{on}$ for $D T_s$ and another value $x_\\mathrm{off}$ for $(1 - D) T_s$; its average must be zero.",

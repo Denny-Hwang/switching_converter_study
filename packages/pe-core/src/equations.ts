@@ -161,6 +161,7 @@ const theory: Readonly<Record<string, Evaluator>> = {
   // --- averaging and balance --------------------------------------------------
   'sw.v_avg': eq(['D', 'V_g'], ({ D, V_g }) => D * V_g),
   'vsb.v_off': eq(['D', 'v_Lon'], ({ D, v_Lon }) => (-D * v_Lon) / (1 - D)),
+  'vsb.drift': eq(['v_L_avg', 'T_s', 'L'], ({ v_L_avg, T_s, L }) => (v_L_avg * T_s) / L),
   'csb.i_off': eq(['D', 'i_Con'], ({ D, i_Con }) => (-D * i_Con) / (1 - D)),
   'buck.dcm.D2': eq(['D', 'M'], ({ D, M }) => (D * (1 - M)) / M),
   'boost.ccm.M_RL': eq(['D', 'R_L', 'R'], ({ D, R_L, R }) => 1 / ((1 - D) * (1 + R_L / (sq(1 - D) * R)))),
@@ -257,6 +258,9 @@ const foundations: Readonly<Record<string, Evaluator>> = {
   'mag.B_H': eq(['mu_r', 'H_mag'], ({ mu_r, H_mag }) => MU_0 * mu_r * H_mag),
   'xfmr.V2': eq(['n', 'V_1'], ({ n, V_1 }) => n * V_1),
   'xfmr.I2': eq(['I_1', 'n'], ({ I_1, n }) => I_1 / n),
+
+  // --- a battery at a converter's output (Rint model) ------------------------------
+  'bat.rint': eq(['V', 'V_b', 'R_b'], ({ V, V_b, R_b }) => (V - V_b) / R_b),
 };
 
 function merge(...groups: Readonly<Record<string, Evaluator>>[]): Readonly<Record<string, Evaluator>> {

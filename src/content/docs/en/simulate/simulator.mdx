@@ -9,23 +9,28 @@ tableOfContents: false
 import { Image } from 'astro:assets';
 import Simulator from '../../../../components/Simulator.astro';
 import Cite from '../../../../components/Cite.astro';
+import Eq from '../../../../components/Eq.astro';
 import EqRef from '../../../../components/EqRef.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TrySim from '../../../../components/TrySim.astro';
 import shot from '../../../../assets/screenshots/simulator-en.png';
 
-Pick a topology or a preset and set the parameters in SI units: type a
-value, or drag its slider, which spans one decade either side of the value
-(0 to 1 for the duty ratio). The simulator computes one period of the
-periodic steady state and shows:
+Pick a topology or a preset, choose the load, and set the parameters in SI
+units: type a value, or drag its slider, which spans one decade either side
+of the value (0 to 1 for the duty ratio). The simulator computes one period
+of the periodic steady state and shows:
 
 - the waveforms: inductor current and voltage, diode current, switch voltage
-  and output voltage;
+  and output voltage, and the battery's current when there is one;
 - the conduction mode it detects, with $K$ and $K_\mathrm{crit}$;
 - the simulated values next to the catalogue's equations at the same
   operating point;
-- the losses and the efficiency computed from the waveforms.
+- the losses and the efficiency computed from the waveforms, and where the
+  load's power goes.
+
+When the circuit has no periodic steady state, it says why and shows the
+start-up from rest instead ([below](#when-there-is-no-steady-state)).
 
 Everything runs in your browser on the `pe-core` engine that the test suite
 validates. The URL holds the whole state, and the "Try it" links on the
@@ -41,12 +46,14 @@ DCM, the idle interval <Cite key="erickson2020" where="Ch. 2" />,
 <Cite key="erickson2020" where="Ch. 5" />.
 
 - **Switches and diodes.** The transistor is an ideal switch with an optional
-  on-resistance and an ideal body diode. The diode is a constant forward drop
-  that blocks ideally, with no reverse recovery. The inductor can have a
-  winding resistance. A current that would reverse through a diode stops
-  instead: the forward converter's rectifier blocks while its output is
-  above $n V_g$ less the diode drop, and a negative inductor current at
-  turn-off flows on through the switch's body diode.
+  on-resistance and an ideal body diode across it. The diode is a constant
+  forward drop that blocks ideally, with no reverse recovery. The inductor
+  can have a winding resistance. A current that would reverse through a
+  diode stops instead: the forward converter's rectifier blocks while its
+  output is above $n V_g$ less the diode drop. A negative current through
+  the switch flows through its body diode, which conducts at zero volts:
+  after turn-off until the current reaches zero, and while the switch is on
+  too, when the diode takes the current from the on-resistance.
 - **Transformers.** They are ideal (1:n with $n$ the secondary turns over
   the primary turns) except for the magnetizing inductance. There is no
   leakage inductance.
@@ -67,21 +74,188 @@ DCM, the idle interval <Cite key="erickson2020" where="Ch. 2" />,
   ratio, this reproduces the constant-voltage sink of the flyback
   (<EqRef id="flyback.V_crit" label="the pinned input voltage" />).
 
+## Loads
+
+The output capacitor $C$ has across it one of:
+
+- a resistor $R$;
+- a battery: its open-circuit voltage $V_b$ behind its internal resistance
+  $R_b$, the Rint model <Cite key="he2011" where="Sec. 2.1" />;
+- a battery and a resistor;
+- nothing, so that the capacitor charges from its start voltage $V_0$.
+
+Or the output is an ideal fixed voltage $V$ (a stiff battery or a regulated
+bus), with no capacitor. The battery's current is
+
+<Eq id="bat.rint" />
+
+It is positive while the battery charges. In a real battery the resistance
+and the open-circuit voltage depend on the state of charge, the state of
+health and the temperature <Cite key="he2011" where="Sec. 2.1" />; the
+simulator holds both constant: a battery at one state of charge. Over the
+periods it computes (a handful to find a steady state, a few hundred at
+most for a start-up) the charge a battery takes is a tiny part of any real
+battery's capacity. The load table below the charts splits the battery's
+power into what its open-circuit voltage takes ($V_b$ times the battery's
+average current) and what its internal resistance dissipates ($R_b$ times
+the mean square of that current).
+
+## When there is no steady state
+
+A periodic steady state needs every state to return to its start at the end
+of the period. For an inductor this is the volt-second balance
+(<EqRef id="vsb.v_off" label="volt-second balance" />), for a capacitor the
+charge balance (<EqRef id="csb.i_off" label="charge balance" />)
+<Cite key="erickson2020" where="Ch. 2" />. Some circuits cannot meet them,
+and the simulator then says which state keeps changing, by how much per
+cycle, and shows the start-up from rest (no current, the capacitor at its
+start voltage or the battery's) in place of the steady-state period:
+
+- **An inductor current that runs away.** A fixed output fed in CCM from a
+  fixed input balances the inductor's volt-seconds at one duty ratio only.
+  Above it, the average voltage the inductance sees over a cycle is
+  positive, and the current grows by the same amount every cycle
+  (<EqRef id="vsb.drift" label="change over one period" />). Below it, the
+  current falls to zero within the cycle instead, and the converter settles
+  in DCM. The message gives the change per cycle, that average voltage, and
+  the duty ratio that would balance with ideal parts: the catalogue's CCM
+  conversion ratio solved for $D$, with the fixed output over the input as
+  the ratio (negative for the buck-boost, whose output is inverted). A
+  flyback into a fixed output, for example, gains in each on-interval the
+  rise that its magnetizing current has from zero in DCM
+  (<EqRef id="flyback.Ipk.dcm" label="the on-interval's rise" />), and loses
+  in the off-interval only what the output voltage, reflected to the
+  primary, takes away in the time left. The forward converter's magnetizing
+  current walks up in the same way above its reset limit
+  (<EqRef id="forward.reset.Dmax" label="maximum duty ratio" />), which the
+  message then names. At exactly the balancing duty ratio, with ideal parts, the
+  volt-seconds balance whatever the current: every current that starts
+  and ends a period at the same value is a steady state, and the simulator
+  reports the one it reaches from its starting point. A duty ratio so close
+  to it that the current's change per cycle is less than a millionth of how
+  far it moves within the period passes the convergence test below, and
+  counts as balanced.
+- **A capacitor that charges without bound.** With nothing across it, the
+  output capacitor keeps what every cycle delivers. Behind a boost,
+  buck-boost or flyback without a capacitance across the switch, every cycle
+  stores energy in the inductance and hands it on whatever the output's
+  voltage, so the capacitor charges without bound. The message gives the
+  voltage reached and the gain per cycle.
+- **Anything else** that has not settled within the cycle limit, such as
+  an undamped L-C ringing.
+
+A capacitor alone does settle behind the other converters:
+
+- **Behind a buck** it settles at the input's voltage, from below or from
+  above, because the switch conducts both ways. The search starts there.
+- **Behind a forward converter**, and behind a boost, buck-boost or flyback
+  **with a capacitance across the switch**, it stops once no more charge
+  reaches it: for the forward converter at about $n V_g$ less the diode drop
+  (a little below it with $R_\mathrm{on}$) or above, since its rectifier
+  lets no current back; for the others at the voltage to which the
+  inductance can no longer lift the node capacitance. Every voltage above
+  that one is a steady state too, and which one the capacitor keeps depends
+  on its start-up: an L-C charge can overshoot and keep its peak, the first
+  periods from rest can carry more energy than the periodic ringing, and an
+  input bus that sags and recovers moves the voltage on the way. So the
+  simulator follows the start-up from $V_0$ and searches from where the
+  capacitor stops charging: no charge for 50 periods in a row, or for 3 with
+  every other state repeating itself. A start-up that charges again after
+  such a pause ends above the voltage reported. Where the charge per period
+  instead shrinks steadily towards a limit, with every other state repeating
+  itself, it searches for that limit, the lowest voltage that no charge
+  reaches; the start-up, charging in ever smaller steps, stops just above it
+  (by about a hundred-millionth of the voltage in the cases tried). It
+  follows at most 4000 periods and two million sub-steps: with a node
+  capacitance, whose ringing needs more sub-steps, that is 100 to 1000
+  periods, and random trials often reach it. A start-up still charging then
+  is searched from where it got to; if that search fails, or finds a voltage
+  below the one the start-up reached, the steady state is found from above
+  instead, with the capacitor high enough that no charge reaches it, and the
+  voltage brought down to the lowest one that no charge reaches. Such a
+  start-up is reported below the voltage it would stop at, by up to about
+  0.07 % in random trials, and a steady state found from above can lie a
+  few millionths above it. The periods followed count in the number of cycles
+  the result reports.
+
+Without a steady state there is no conduction mode, no comparison with the
+equations and no table of the load or the losses: each of them describes a
+periodic steady state.
+
 ## How it computes
 
 - **Within an interval** the state (inductor current, capacitor voltages)
   obeys a linear differential equation. The simulator advances it with the
   exact solution of that equation (a matrix exponential) over sub-steps of
-  one two-thousandth of the switching period, or shorter, so that one ring
-  of the capacitance across the switch spans at least twenty sub-steps, down
-  to one twenty-thousandth of the period. A capacitance that rings so fast
-  that a ring would still span fewer than three sub-steps is refused: the
-  diode could turn on and off again between two sub-steps unseen.
+  one two-thousandth of the switching period, or shorter, so that one
+  period of the circuit's fastest ring spans at least twenty sub-steps, down
+  to one twenty-thousandth of the period. The fastest ring comes from the
+  eigenvalues of every interval's equations: the capacitance across the
+  switch, a small output capacitor with the inductance, the input bus. A
+  circuit that rings so fast that a ring would still span fewer than three
+  sub-steps is refused: a diode could turn on and off again between two
+  sub-steps unseen. A start-up drawn without a steady state follows the
+  same rule. The exponential is computed by scaling and squaring with a
+  Padé approximant <Cite key="higham2005" />, and is formed, and squared,
+  less the identity. Before that, the states are rescaled by powers of two,
+  which is exact, until each state's couplings to the others are of similar
+  size in both directions (balancing <Cite key="parlett1969" />): a
+  tiny bus capacitance behind a source resistance that is not small would
+  otherwise make the matrix far larger than its fastest mode, and the linear
+  solve inside the approximant would then pivot on those large couplings,
+  which costs the slower states their digits. So a time constant far shorter
+  than a sub-step does not cost them.
 - **Events** such as the diode current reaching zero or a clamp starting to
   conduct are located inside a sub-step on the same exact solution, by a
   search that keeps the event bracketed like bisection (regula falsi in its
-  Illinois variant, which needs far fewer steps). The gate edges fall
-  exactly at the start of the period and at the duty ratio.
+  Illinois variant, which needs far fewer steps). When one event ends a
+  sub-step early, the other conditions are checked again at that instant.
+  A condition that was met earlier in the sub-step, but no longer holds at
+  its end, happened first: for example, a node capacitance's rise that
+  passes the diode's turn-on voltage just before its current ends at the
+  peak. The gate edges fall exactly at the start of the period and at the
+  duty ratio.
+- **Averages, powers and extremes.** Within an interval every quantity the
+  page reports is a straight (affine) function of the states, and between
+  two samples the states follow the interval's equations exactly. So the
+  averages, the powers, and the mean squares behind the rms values and the
+  conduction losses are the exact integrals of that solution over every
+  sub-step, not straight lines through the samples. They are taken from the
+  exponential of a larger matrix built from the interval's equations
+  <Cite key="vanloan1978" />, rescaled and formed less the identity like the
+  steps, in each state's deviation from the first state the period visits in
+  that interval, with the rate of change there summed in twice the
+  precision. A quantity whose constant part dwarfs what varies, such as a
+  battery's current behind a small resistance, then keeps the digits its
+  samples give it: a unit in the last place of the battery's voltage over
+  its resistance, a resolution that the current of the capacitor beside it
+  shares. A transient faster than a sub-step, such as a time constant far
+  shorter than one, is integrated as exactly as a slow one. Through the same
+  samples, the results agree with a 60-digit integration to a few parts in a
+  trillion of each quantity's scale in the tested circuits, including ones
+  whose time constant is several hundred billion times shorter than a
+  sub-step, and between two grids of sub-steps to about one part in ten
+  billion. Over hundreds of random circuits, two grids from the same start
+  agree as closely against the circuit's largest current or voltage, down to
+  the battery current's resolution, wherever they see the same events; where
+  the currents are themselves only rounding, as in a capacitor alone that has
+  settled, they agree to that rounding. Where
+  one grid sees a diode conduct briefly inside a sub-step and the other does
+  not, they differ by what that conduction carries (see Outside the model
+  below). Each quantity's largest and smallest value also include a peak
+  between two samples: where its slope changes sign within a sub-step, and
+  where the slope dips through zero and back within one (a ring riding on a
+  steeper ramp). The slope is also checked close to the sub-step's start,
+  where a fast transient decays. A turn within the rounding of the slope
+  itself is not searched; a quantity that barely moves, at the rounding of
+  its own value, is still searched where its slope turns, which makes a few
+  circuits several times slower. Each slope is the rate of change at the
+  sample, summed in twice the precision and carried along the sub-step like
+  the states, so an input bus behind a tiny source resistance and
+  capacitance, whose slope is what is left of terms many orders of magnitude
+  larger, still has its peak placed to rounding. The plots draw the samples,
+  so a peak narrower than a sub-step can be in the numbers but not in the
+  plot.
 - **Rounding.** Within a period the simulator follows each state's
   deviation from its value at the start of the period. Its rounding errors
   then scale with how far the state moves, not with its size, so the change
@@ -101,6 +275,24 @@ DCM, the idle interval <Cite key="erickson2020" where="Ch. 2" />,
     is below one part in a million of the state's size. The change alone
     would not do: a very large capacitor changes little per period even
     while it is still far from its steady state.
+
+  Where the steady state is not a single point, the derivative shows it: a
+  fixed output at exactly its balancing duty ratio, or a capacitor alone
+  that no more charge reaches, has a state that neither moves the others
+  nor is moved by them, and returns to whatever value it starts from. The
+  Newton step leaves that state where it is and solves for the others; the
+  first test alone says whether it still changes.
+
+  A state resting at zero picks up the rounding of the voltages around it
+  (a current of $10^{-20}$ A where the circuit's voltages are tens of volts),
+  and that residue is then its whole movement within the period. So each
+  state has a natural size in the circuit: the largest voltage the circuit
+  is given (the input or the source's open-circuit voltage, a battery's, a
+  fixed output's, the start voltage) for a voltage, and the current that
+  voltage builds in one period in the state's inductance for a current. A
+  change or a Newton step within rounding of that size counts as none, and
+  the second test measures each state's step against the largest of its
+  value, its movement within the period and that size.
 - **The mode** is DCM when the inductor current stays at zero for part of
   the period, BCM when it only touches zero, and CCM otherwise, also when
   it reverses and flows on through the switch's body diode.
@@ -129,6 +321,119 @@ against the equations:
 - **Source-driven flyback.** It pins its input at the critical voltage when
   the source can supply more than the DCM power there, and it settles below
   that voltage in DCM when the source cannot.
+- **No steady state.** A buck fed into a fixed output above its balancing
+  duty ratio reports the current's change per cycle, the average inductor
+  voltage and the balancing duty ratio exactly; below it, and at it, the
+  buck and the boost settle; a billionth above it the buck counts as
+  balanced, a hundred-thousandth above it runs away; the buck-boost's
+  balancing duty ratio comes from its inverted ratio; a forward converter
+  above its reset limit reports its magnetizing current walking up, also
+  into a fixed output or a capacitor alone.
+- **A capacitor alone.** It charges without bound behind a boost. Behind a
+  buck it settles at the input from below and from above, also with a
+  capacitance across the switch, losses and a source. Behind a forward
+  converter it keeps a start voltage above $n V_g$, the peak of an L-C
+  charge that overshoots, and, above the reset limit with the magnetizing
+  current held by the switch's resistance, the voltage its start-up stops
+  at. With a capacitance across the switch, a boost or buck-boost stops
+  where its start-up stops: also while the current left at turn-on still
+  alternates from cycle to cycle, after a start-up that passes a lower
+  voltage at which the periodic ringing would stop too, and while the input
+  bus is still recovering. A search cut short reports that the capacitor
+  has not settled.
+- **The body diode at zero current.** When the diode's current ends with the
+  output above the input (an L-C overshoot, a battery behind a resistor),
+  the buck's current turns negative at once through the switch's body
+  diode, and the switch voltage never falls below zero.
+- **Outside the model.** The models hold each diode off outside the
+  intervals in which it conducts, and take the switch's body diode as
+  ideal. Two things are flagged, in the waveforms the page draws (the
+  steady period with its extremes between samples, or the whole start-up):
+  - a diode held off but forward-biased beyond its drop: the two-switch
+    converters' diode D, or the forward converter's rectifier $D_1$,
+    freewheeling diode $D_2$ or reset diode $D_3$. Examples: a buck, a
+    buck-boost or a flyback with a heavy load on a source too weak for it;
+    a forward converter beyond its reset limit on one; a forward converter
+    whose switch drop, $R_\mathrm{on}$ times its current, exceeds a sagging
+    bus while the switch is on, which forward-biases $D_2$ (and $D_3$ once
+    the drop exceeds $(1 + 1/n_r)$ times the bus); a boost whose output
+    falls below its input (held there by a fixed output or a battery, or
+    pulled there by a load too heavy for it), whose current through
+    $R_\mathrm{on}$ lifts the switch node above the output while the switch
+    is on;
+  - the switch voltage falling below zero, where the ideal body diode would
+    conduct. Without a capacitance across the switch, the switch voltage
+    follows the input bus in the idle interval of DCM, so a bus below zero
+    there is flagged this way. With one, the model's clamp interval conducts
+    through the body diode instead.
+
+  A diode with the model's drop would conduct there, which the model leaves
+  out, so the page says that the results may not hold. How much they change
+  grows with the excess and with the current that diode would carry.
+  Elsewhere a bus below zero turns on no diode: two buck-boosts and a boost
+  whose buses sag below zero, with every diode still off, are not flagged,
+  and ngspice with every diode in place agrees with them within the SPICE
+  comparison's tolerance. In the tests' sweep of ordinary circuits, over
+  every converter, load, source and node capacitance, nothing is flagged.
+  Among random circuits, most flags are the cases above: a weak source
+  whose bus falls below zero, or a boost whose output falls below its input.
+  The rest come from a capacitance across the switch whose ring
+  forward-biases a diode, or takes the switch below zero, within a sub-step
+  and turns back before its end: a turn-on that the event search, which
+  checks the conditions at each sub-step's end, does not see. A diode's
+  excess over its drop counts from a ten-thousandth of the circuit's
+  largest voltage, and so does the switch voltage's dip below zero: what a
+  diode forward-biased by less would take changes the results by about as
+  little, below the four digits the page shows.
+
+Two further suites check the simulator by other means:
+
+- **Against SPICE** (`packages/pe-core/test/sim-spice.test.ts`). Thirty-four
+  circuits are written again as netlists from their schematics and run from
+  rest in ngspice <Cite key="ngspice" />, an independent solver with its own
+  integrator (`scripts/spice_crosscheck.py`). They cover every topology in
+  CCM and DCM; every interval of the forward converter, with reset windings
+  of the primary's turns and of half of them, and a battery that holds its
+  rectifier off; the node capacitance's ringing, also with a battery; a
+  Thevenin source; batteries with and without a resistor, and one above the
+  input, whose current flows back through the switch's body diode; an
+  output that an L-C overshoot lifts above the input, where the current
+  turns back through the body diode as the diode's current ends; a fixed
+  output; a runaway start-up; capacitors charging from empty, also behind a
+  boost with a node capacitance; and capacitors alone that stop charging
+  behind a boost and a buck-boost with a node capacitance, one of them
+  after a start-up that passes a lower voltage where the periodic ringing
+  would also stop. In the last period, each quantity's average, largest,
+  smallest and end value, and its value at 40 instants across the period,
+  agree within 0.5 % of the quantity's largest magnitude in these cases,
+  plus what the SPICE parts add to a quantity that the ideal parts hold at
+  zero all period: 5 mV for a voltage, 1 µA for a current <Cite key="ngspice" />.
+  Four cases need that allowance: the switch voltage across a conducting
+  body diode, 3.9 mV, and the leakage of a diode held off, 0.5 nA at most <Cite key="ngspice" />. The SPICE
+  parts are near-ideal: switches with the case's on-resistance (a milliohm
+  when it gives none) that take a nanosecond to switch, and diodes that
+  drop a few millivolts more than the case's $V_F$; a battery's current, set
+  by a small $R_b$, is the most sensitive to those millivolts. The forward
+  converter's netlist also has a small RC snubber across its freewheeling
+  diode, which the simulator does not, to keep ngspice's integrator stable
+  when that diode turns off. Two things are left out of the comparison:
+  the values within 20 ns of the simulator's events (a real edge and an
+  ideal one differ by nanoseconds), and, with a node capacitance, the
+  diode's largest current and, for the buck and the flyback, the input
+  current's extremes, where ngspice's steep diode overshoots for a few
+  picoseconds as it takes over the current. CI reruns ngspice on every
+  change and compares with the stored results.
+- **Invariants** (`packages/pe-core/test/sim-invariants.test.ts`). For every
+  converter with a resistor, a battery, both, a capacitor alone and a fixed
+  output, ideal and with losses: in the steady state the inductor's
+  volt-seconds and the output capacitor's charge balance, the capacitor's
+  current is $C$ times the slope of the simulated output voltage, and the
+  source's power equals what the resistor, the battery's open-circuit
+  voltage and its internal resistance, or the fixed output take, plus the
+  losses. Over a start-up from rest the source's energy equals the energy
+  stored in the inductors and capacitors plus what the load took and the
+  losses. The first two hold by construction in a periodic steady state, so
+  they check the bookkeeping; the energy balances check the model.
 
 ## Worked example: a flyback that pins its source
 
@@ -148,23 +453,53 @@ with the equation (the [screenshot](#screenshot) below shows the result):
 
 <TrySim example="flyback-source" topology="flyback" />
 
+## Worked example: a buck charging a battery
+
+A buck with a fixed duty ratio charges a battery. In CCM the switch node
+averages $D V_g$, and so does the output: the inductor's average voltage is
+zero. The battery's average current then follows from the Rint model:
+
+<Worked example="sim-buck-battery" show={['V_g', 'D', 'V_b', 'R_b', 'M', 'V', 'I_b']} />
+
+The simulator gives the same average battery current, and its load table
+shows the <Val example="sim-buck-battery" name="I_b" /> split into the
+power stored and the power lost in $R_b$. Nothing in the converter limits
+that current except $R_b$: a small change of $D$ changes it a lot.
+
+<TrySim example="sim-buck-battery" topology="buck" />
+
 ## Limitations
 
 - **No transition shapes.** There is no leakage inductance, reverse
   recovery or switching transition, so the simulator shows no turn-off
   spikes and no overlap loss.
 - **Fixed duty ratio.** There is no control loop and no core loss.
-- **A periodic steady state must exist.** Some circuits have none without
-  resistance: a fixed output fed from a fixed input in CCM, a buck whose
-  output is held above its input (its current flows backwards through the
-  body diode), and a forward converter above its reset limit
-  (<EqRef id="forward.reset.Dmax" label="maximum duty ratio" />), whose
-  magnetizing current walks up from one period to the next. Their current
-  grows without bound, and the status line reports that no steady state was
-  reached. With a resistance in the path of the growing current they do
-  settle, at a current that only that resistance limits and that can be very
-  large. For the forward converter's magnetizing current that is only the
+- **No steady state, no tables.** When the circuit has no periodic steady
+  state ([above](#when-there-is-no-steady-state)), the simulator shows the
+  start-up and its explanation only. With a resistance in the path of a
+  growing current such circuits do settle, at a current that only that
+  resistance limits and that can be very large. For
+  the forward converter's magnetizing current that is only the
   on-resistance: the winding resistance belongs to the output inductor.
+- **A battery at one state of charge.** The simulator holds the battery's
+  open-circuit voltage and resistance constant, and the Rint model has no
+  polarization: the internal resistance is the battery's only loss.
+- **A slow start-up.** A capacitor alone behind a forward converter, or
+  behind a converter with a capacitance across its switch, is followed for
+  at most 4000 periods and two million sub-steps before the search (100 to
+  1000 periods with a node capacitance). A start-up slower than that, such
+  as a slow L-C charge, is searched from where it got to. It is reported
+  below the voltage at which it would stop, by up to about 0.07 % in random
+  trials. A steady state found from above can instead lie a few millionths
+  above that voltage. With a node capacitance that rings fast, such a
+  circuit can take tens of seconds to solve. It can take about a minute
+  when the search then does not settle.
+- **Diodes only where they are expected.** Each diode, the switch's body
+  diode among them, is part of the model only in the intervals in which it
+  conducts. A weak source can let the bus sag, or a large current through
+  $R_\mathrm{on}$ can lift a switch node or exceed the bus, until a diode
+  the model holds off is forward-biased. The simulator then says that the
+  results may not hold.
 
 ## Screenshot
 

@@ -48,6 +48,35 @@ def derive() -> Derivation:
     )
     d.result("sw.v_avg", sp.simplify(avg), "Evaluate the two pieces.", "두 구간을 계산한다.", S("v_s_avg"))
 
+    # ------------------------------------------------ change over one period
+    L = S("L")
+    vL = d.local("v_L", "v_L", real=True)
+    v_on = d.local("v_on", r"v_{L,\mathrm{on}}", real=True)
+    v_off = d.local("v_off", r"v_{L,\mathrm{off}}", real=True)
+    d.step(
+        "The inductor obeys $v_L = L \\, di/dt$. Integrated over one period, the current's change is the "
+        "integral of the voltage over $L$.",
+        "인덕터는 $v_L = L \\, di/dt$를 따른다. 한 주기에 걸쳐 적분하면 전류의 변화는 전압의 적분을 $L$로 나눈 값이다.",
+        sp.Eq(S("Delta_i"), sp.Integral(vL, (t, 0, Ts)) / L),
+    )
+    # any piecewise voltage will do; two intervals show the average appearing
+    area = sp.integrate(v_on, (t, 0, D * Ts)) + sp.integrate(v_off, (t, D * Ts, Ts))
+    v_avg = area / Ts
+    d.step(
+        "For a voltage $v_{L,\\mathrm{on}}$ during $D T_s$ and $v_{L,\\mathrm{off}}$ for the rest, the integral is "
+        "$T_s$ times the average over the period.",
+        "$D T_s$ 동안 $v_{L,\\mathrm{on}}$, 나머지 동안 $v_{L,\\mathrm{off}}$인 전압이라면 적분은 한 주기 평균에 $T_s$를 곱한 값이다.",
+        sp.Eq(S("v_L_avg"), sp.simplify(v_avg)),
+    )
+    d.result(
+        "vsb.drift",
+        S("v_L_avg") * sp.simplify((area / L) / v_avg),
+        "So the change over one period is the average voltage times $T_s$ over $L$; it is zero only when the "
+        "average is (volt-second balance).",
+        "따라서 한 주기 동안의 변화는 평균 전압에 $T_s$를 곱해 $L$로 나눈 값이며, 평균이 0일 때만 0이다(전압-초 평형).",
+        S("Delta_i"),
+    )
+
     # ------------------------------------------------ two-interval balance
     bal = sp.Eq(D * x_on + (1 - D) * x_off, 0)
     d.step(

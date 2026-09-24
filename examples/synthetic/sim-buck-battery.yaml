@@ -1,0 +1,19 @@
+synthetic: true
+label: "Example buck charging a battery at a fixed duty ratio"
+label_ko: "고정 듀티비로 배터리를 충전하는 벅 예제"
+# The battery is its open-circuit voltage V_b behind its internal resistance
+# R_b (Rint model). In CCM the switch node averages D V_g, so the battery
+# takes (D V_g - V_b)/R_b on average.
+params:
+  V_g: 24
+  D: 0.6
+  f_s: 1.0e5
+  L: 1.0e-4
+  C: 2.2e-5
+  V_b: 12
+  R_b: 0.5
+steps:
+  - def.Ts
+  - buck.ccm.M
+  - def.V
+  - bat.rint

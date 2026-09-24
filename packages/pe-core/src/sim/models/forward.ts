@@ -9,6 +9,7 @@ import {
   loadAndBus,
   mul,
   outputsFrom,
+  stateScales,
   system,
   unit,
   type IntervalSpec,
@@ -77,7 +78,17 @@ export function forward(p: SimParams): Model {
   const zeroM = assign(c, { iM: 0 });
   const onVL = specs.on!.vL;
   const rising = mul(onVL, -1); // > 0 while the on-interval would drive the inductor current negative
-  specs.on!.guards = [{ c: unit(c, 'i'), d: 0, next: 'onL0', reset: zeroI }];
+  const scales = stateScales(c, p, { i: L, iM: LM });
+  // The rectifier blocks a current that would reverse: a current falling to
+  // zero moves to onL0. A current that starts the on-interval at exactly zero
+  // (turned on with the on-voltage at zero, which then falls as the bus
+  // sags) never is positive for the first guard to see it cross zero; the
+  // second one catches it as it passes a rounding-level fraction of the
+  // current's natural size below zero.
+  specs.on!.guards = [
+    { c: unit(c, 'i'), d: 0, next: 'onL0', reset: zeroI },
+    { c: unit(c, 'i'), d: 1e-12 * scales[0]!, next: 'onL0', reset: zeroI },
+  ];
   specs.onL0!.guards = [{ c: c.names.map((k) => rising[k] ?? 0), d: rising['1'] ?? 0, next: 'on' }];
   specs.off!.guards = [
     { c: unit(c, 'i'), d: 0, next: 'offL0', reset: zeroI },
@@ -100,6 +111,7 @@ export function forward(p: SimParams): Model {
   return {
     topology: 'forward',
     stateNames: c.names,
+    scales,
     Ts: c.Ts,
     D: p.D,
     intervals,
@@ -114,6 +126,16 @@ export function forward(p: SimParams): Model {
       const iv = i && m ? 'off' : i ? 'offM0' : m ? 'offL0' : 'idle';
       return { interval: iv, set: [...(i ? [] : zeroI), ...(m ? [] : zeroM)] };
     },
-    outputs: (x, iv) => ({ ...outputs(x, iv), i_M: x[c.idx('iM')]! }),
+    outputs: (x, iv) => {
+      const o = outputs(x, iv);
+      // the diodes' voltages, anode to cathode. The primary winding holds v_in - v_sw. The rectifier D_1 runs from
+      // the secondary (n times that) to the diodes' common cathode, the freewheeling D_2 from ground to it; the
+      // cathode sits at the output plus the output inductor's whole voltage (V_F below the conducting diode's
+      // anode, or at the output when neither conducts). The reset winding (its dot at ground) holds -n_r times
+      // the primary's voltage at the reset diode's anode; its cathode is at the input.
+      const vPri = o.v_in! - o.v_sw!;
+      const cathode = o.v_out! + o.v_L!;
+      return { ...o, i_M: x[c.idx('iM')]!, v_D1: n * vPri - cathode, v_D2: -cathode, v_Dr: -nr * vPri - o.v_in! };
+    },
   };
 }

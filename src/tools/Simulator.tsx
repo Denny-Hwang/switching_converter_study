@@ -9,8 +9,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { evaluate, sim } from 'pe-core';
 import { isToolHash } from '../lib/hash';
+import { fmtValue } from '../lib/format';
 import { PLOT_CONFIG, axis, baseLayout, coloredTitle, sub, usePlotTheme } from '../lib/plot';
 import { useStateHash } from '../lib/useStateHash';
+import { LOADS, loadChoiceOf, type LoadChoice } from '../lib/simload';
 import type { SimReply } from './simulator.worker';
 import { Choices, FieldLabel, Rich, Sym } from './ToolUi';
 
@@ -25,16 +27,52 @@ export interface SimLabels {
   presets: string;
   parameters: string;
   load: string;
-  loadResistive: string;
-  loadFixed: string;
+  loads: Record<LoadChoice, string>;
   source: string;
   sourceHint: string;
   nonideal: string;
   status: string;
   mode: string;
   converged: string;
-  notConverged: string;
   cycles: string;
+  /** No steady state: '{what}', '{dir}', '{d}', '{v}' filled in. */
+  runaway: string;
+  inductorCurrent: string;
+  magnetizingCurrent: string;
+  rises: string;
+  falls: string;
+  /** '{D}' filled in. */
+  balance: string;
+  /** '{Dmax}' filled in. */
+  noReset: string;
+  /** '{n}' filled in. */
+  startUp: string;
+  /** '{n}', '{v}', '{dv}' filled in. */
+  charging: string;
+  /** '{n}', '{v}', '{dv}' filled in. */
+  settling: string;
+  unsettled: string;
+  /** '{v}' filled in: the switch voltage's minimum; '{where}' and '{holds}' (outsidePeriod or outsideStartUp, outsideResults or outsideStartUpFrom). */
+  switchBelowZero: string;
+  /** '{diode}' (diodeD, diodeD1 or diodeD2), '{v}' and '{vf}' filled in: the diode's largest voltage and its forward voltage; '{where}', '{holds}'. */
+  diodeForward: string;
+  /** The diodes by name: the two-switch converters' diode D, the forward converter's rectifier D1 and freewheeling diode D2. */
+  diodeD: string;
+  diodeD1: string;
+  diodeD2: string;
+  /** '{v}' filled in: the forward converter's reset diode's largest voltage; '{where}', '{holds}'. */
+  resetDiodeForward: string;
+  outsidePeriod: string;
+  /** '{k}' filled in: the start-up's first cycle that leaves the model. */
+  outsideStartUp: string;
+  outsideResults: string;
+  outsideStartUpFrom: string;
+  loadTable: string;
+  vout: string;
+  iR: string;
+  ibat: string;
+  pbat: string;
+  pRb: string;
   compare: string;
   compareNote: string;
   quantity: string;
@@ -48,6 +86,8 @@ export interface SimLabels {
   efficiency: string;
   invalid: string;
   nodeNeedsRon: string;
+  /** The engine's refusal of a circuit whose fastest ring its sub-steps cannot follow. */
+  ringsTooFast: string;
   share: string;
   time: string;
   running: string;
@@ -73,9 +113,18 @@ interface Props {
 
 const TOPOLOGIES: Topology[] = ['buck', 'boost', 'buckboost', 'flyback', 'forward'];
 
+/**
+ * The load across the output capacitor C: a resistor (res), a battery (bat),
+ * both (batr), nothing (cap: C charges from V_0), or an ideal fixed voltage
+ * without a capacitor (fixed).
+ */
+export type { LoadChoice };
+const hasR = (l: LoadChoice) => l === 'res' || l === 'batr';
+const hasBattery = (l: LoadChoice) => l === 'bat' || l === 'batr';
+
 interface FieldState {
   topo: Topology;
-  load: 'res' | 'fixed';
+  load: LoadChoice;
   source: boolean;
 }
 
@@ -125,16 +174,19 @@ export const FIELDS: Field[] = [
     key: 'R',
     label: () => 'R',
     unit: 'Ω',
-    show: (s) => s.load === 'res',
+    show: (s) => hasR(s.load),
     group: 'main',
   },
   {
     key: 'C',
     label: () => 'C',
     unit: 'F',
-    show: (s) => s.load === 'res',
+    show: (s) => s.load !== 'fixed',
     group: 'main',
   },
+  { key: 'Vb', label: () => 'V_b', unit: 'V', show: (s) => hasBattery(s.load), group: 'main' },
+  { key: 'Rb', label: () => 'R_b', unit: 'Ω', show: (s) => hasBattery(s.load), group: 'main' },
+  { key: 'V0', label: () => 'V_0', unit: 'V', show: (s) => s.load === 'cap', group: 'main' },
   {
     key: 'V',
     label: () => 'V',
@@ -222,7 +274,8 @@ export function toParams(fs: FieldState, values: Record<string, string>): SimPar
     const optional = f.group === 'nonideal';
     const v = parseField(values[f.key]);
     if (!(Number.isFinite(v) || (optional && (values[f.key] ?? '').trim() === ''))) return { error: 'invalid' };
-    if (!optional && f.key !== 'Vg' && !(v > 0)) return { error: 'invalid' };
+    // the capacitor may start empty
+    if (f.key === 'V0' ? !(v >= 0) : !optional && f.key !== 'Vg' && !(v > 0)) return { error: 'invalid' };
     if (optional && v < 0) return { error: 'invalid' };
   }
   const D = num('D');
@@ -240,7 +293,7 @@ export function toParams(fs: FieldState, values: Record<string, string>): SimPar
     RL: num('RL', 0),
     VF: num('VF', 0),
     Cnode,
-    load: fs.load === 'res' ? { kind: 'resistive', R: num('R'), C: num('C') } : { kind: 'fixed', V: num('V') },
+    load: loadOf(fs.load, num),
   };
   if (isolated(fs)) p.n = num('n');
   if (fs.topo === 'forward') {
@@ -250,6 +303,19 @@ export function toParams(fs: FieldState, values: Record<string, string>): SimPar
   if (fs.source) p.source = { Voc: num('Voc'), Rs: num('Rs'), Cbus: num('Cbus') };
   if (!fs.source && !(p.Vg > 0)) return { error: 'invalid' };
   return p;
+}
+
+/** The simulator's load for a load choice and the form's values. */
+function loadOf(l: LoadChoice, num: (k: string) => number): SimParams['load'] {
+  if (l === 'res') return { kind: 'resistive', R: num('R'), C: num('C') };
+  if (l === 'fixed') return { kind: 'fixed', V: num('V') };
+  return {
+    kind: 'network',
+    C: num('C'),
+    ...(hasR(l) ? { R: num('R') } : {}),
+    ...(hasBattery(l) ? { battery: { V: num('Vb'), R: num('Rb') } } : {}),
+    ...(l === 'cap' ? { V0: num('V0') } : {}),
+  };
 }
 
 function fmt(x: number | undefined): string {
@@ -283,7 +349,8 @@ export function compareRows(r: SimResult): CompareRow[] {
   const Vin = r.avg.v_in!;
   const V = r.avg.v_out!;
   const n = p.n ?? 1;
-  if (p.load.kind === 'resistive') {
+  const Rload = sim.loadResistance(p);
+  if (Number.isFinite(Rload)) {
     const RL = p.RL ?? 0;
     if (p.topology === 'boost' && r.mode === 'CCM' && RL > 0 && !p.Ron && !p.VF) {
       // the winding resistance is the only loss: the catalogue has the boost's ratio with it
@@ -291,7 +358,7 @@ export function compareRows(r: SimResult): CompareRow[] {
         label: '|M|',
         unit: '',
         sim: Math.abs(r.M),
-        formula: evaluate('boost.ccm.M_RL', { D: p.D, R: p.load.R, R_L: RL }),
+        formula: evaluate('boost.ccm.M_RL', { D: p.D, R: Rload, R_L: RL }),
         eq: 'boost.ccm.M_RL',
       });
     } else {
@@ -308,10 +375,13 @@ export function compareRows(r: SimResult): CompareRow[] {
         label: 'I_L',
         unit: 'A',
         sim: r.avg.i_L!,
-        formula: evaluate(eq, p.topology === 'buck' ? { V, R: p.load.R } : { V, D: p.D, R: p.load.R }),
+        formula: evaluate(eq, p.topology === 'buck' ? { V, R: Rload } : { V, D: p.D, R: Rload }),
         eq,
       });
     }
+  } else if (p.load.kind === 'network' && p.load.battery && r.mode === 'CCM') {
+    // in CCM the ratio does not depend on the load
+    rows.push({ label: '|M|', unit: '', sim: Math.abs(r.M), formula: Math.abs(sim.analyticM(p, Infinity, 0)) });
   }
   // the rise of the inductor current while the switch is on (from the start of
   // the period to the last sample of the gate-on intervals): the peak-to-peak
@@ -378,6 +448,72 @@ export function compareRows(r: SimResult): CompareRow[] {
   return rows;
 }
 
+/** The load's averages over the steady-state period: output voltage, resistor and battery currents, the power the battery stores and the loss in its internal resistance. */
+export function loadRows(r: SimResult): { label: string; unit: string; value: number }[] {
+  const l = r.params.load;
+  if (l.kind !== 'network') return [];
+  const rows = [{ label: 'vout', unit: 'V', value: r.avg.v_out! }];
+  if (l.R !== undefined) rows.push({ label: 'iR', unit: 'A', value: r.avg.i_R! });
+  if (l.battery) {
+    rows.push({ label: 'ibat', unit: 'A', value: r.avg.i_bat! });
+    rows.push({ label: 'pbat', unit: 'W', value: l.battery.V * r.avg.i_bat! });
+    rows.push({ label: 'pRb', unit: 'W', value: l.battery.R * r.meanSquare.i_bat! });
+  }
+  return rows;
+}
+
+/** Fill '{key}' placeholders. */
+const fill = (text: string, values: Record<string, string>) => text.replace(/\{(\w+)\}/g, (m, k: string) => values[k] ?? m);
+
+/** What the status line says when there is no steady state (runaway, charging, unsettled), or null. */
+export function noSteadyText(r: SimResult, labels: SimLabels): string | null {
+  const su = r.startUp;
+  const n = String(su?.cycles ?? 0);
+  if (r.status === 'runaway' && r.drift) {
+    const d = r.drift;
+    let text = fill(labels.runaway, {
+      what: d.state === 'iM' ? labels.magnetizingCurrent : labels.inductorCurrent,
+      dir: d.perCycle > 0 ? labels.rises : labels.falls,
+      d: fmtValue(Math.abs(d.perCycle), 'A'),
+      v: fmtValue(d.vLavg ?? NaN, 'V'),
+    });
+    // the forward converter's core that does not reset; else the duty ratio that would balance a fixed output
+    if (d.state === 'iM' && d.Dmax !== undefined) text += ` ${fill(labels.noReset, { Dmax: fmt(d.Dmax) })}`;
+    else if (d.Dbalance !== undefined) text += ` ${fill(labels.balance, { D: fmt(d.Dbalance) })}`;
+    return `${text} ${fill(labels.startUp, { n })}`;
+  }
+  // a capacitor alone: charging without bound, or not settled yet
+  if ((r.status === 'charging' || r.status === 'unsettled') && su && r.drift?.state === 'v') {
+    const v = su.waveforms.v_out as number[];
+    const values = { n, v: fmtValue(v[v.length - 1]!, 'V'), dv: fmtValue(r.drift.perCycle, 'V') };
+    return fill(r.status === 'charging' ? labels.charging : labels.settling, values);
+  }
+  if (r.status === 'unsettled') return fill(labels.unsettled, { n });
+  return null;
+}
+
+/**
+ * What the page says when the drawn waveforms leave the model: each diode it
+ * holds off forward-biased beyond its drop, and the switch voltage below
+ * zero (its body diode, ideal in the models), each where a diode with the
+ * model's drop would conduct.
+ */
+export function outsideModelText(r: SimResult | null | undefined, labels: SimLabels): string | null {
+  if (!r) return null;
+  // in a steady period the results may not hold; in a start-up, the start-up from the first cycle that leaves the model
+  const place = (from?: number) =>
+    from === undefined ? { where: labels.outsidePeriod, holds: labels.outsideResults } : { where: fill(labels.outsideStartUp, { k: String(from) }), holds: labels.outsideStartUpFrom };
+  const names = { D: labels.diodeD, D1: labels.diodeD1, D2: labels.diodeD2 };
+  const out: string[] = [];
+  for (const d of r.diodes ?? []) {
+    const v = fmtValue(d.v, 'V');
+    const at = place(d.from);
+    out.push(d.diode === 'D3' ? fill(labels.resetDiodeForward, { v, ...at }) : fill(labels.diodeForward, { diode: names[d.diode], v, vf: fmtValue(d.drop, 'V'), ...at }));
+  }
+  if (r.switchBelowZero !== undefined) out.push(fill(labels.switchBelowZero, { v: fmtValue(r.switchBelowZero, 'V'), ...place(r.switchFrom) }));
+  return out.length ? out.join(' ') : null;
+}
+
 /** The anchor a slider takes when its field is committed: the typed value if it lies outside the slider's range. */
 export function nextAnchor(anchor: number | undefined, raw: string): number | undefined {
   const v = parseField(raw);
@@ -399,7 +535,7 @@ export function stateFromHash(h: URLSearchParams, presets: SimPreset[]): { fs: F
   return {
     fs: {
       topo,
-      load: h.get('load') === 'fixed' ? 'fixed' : 'res',
+      load: (LOADS as string[]).includes(h.get('load') ?? '') ? (h.get('load') as LoadChoice) : base ? loadChoiceOf(base.values) : 'res',
       source: h.get('src') === '1',
     },
     values,
@@ -524,7 +660,7 @@ export default function Simulator({ labels, presets, symbols }: Props) {
           setError(null);
         } else {
           setResult(null);
-          setError(`${labels.invalid} (${err})`);
+          setError(err && /rings too fast/.test(err) ? labels.ringsTooFast : `${labels.invalid} (${err})`);
         }
       });
     }, 150);
@@ -562,8 +698,11 @@ export default function Simulator({ labels, presets, symbols }: Props) {
       return;
     }
     let cancelled = false;
-    const w = result.waveforms;
-    const t = (w.t as number[]).map((x) => x * 1e6);
+    // no steady state: the start-up from rest
+    const w = result.status === 'steady' || !result.startUp ? result.waveforms : result.startUp.waveforms;
+    const tEnd = (w.t as number[])[(w.t as number[]).length - 1] ?? 0;
+    const ms = tEnd > 2e-3;
+    const t = (w.t as number[]).map((x) => x * (ms ? 1e3 : 1e6));
     const src = !!result.params.source;
     const [cL, cD, cV, cS, cO, cB, cM] = theme.colors;
     const trace = (y: unknown, name: string, color: string, yaxis: string, unit: string, dash?: string) => ({
@@ -576,10 +715,14 @@ export default function Simulator({ labels, presets, symbols }: Props) {
       yaxis,
       hovertemplate: `%{y:.4~g} ${unit}`,
     });
+    const battery = result.params.load.kind === 'network' && !!result.params.load.battery;
+    // the forward converter's i_M has the last colour
+    const cBat = result.params.topology === 'forward' ? cB : cM;
     const currents = [
       { name: 'i_L', color: cL! },
       { name: 'i_D', color: cD! },
       ...(result.params.topology === 'forward' ? [{ name: 'i_M', color: cM! }] : []),
+      ...(battery ? [{ name: 'i_b', color: cBat! }] : []),
     ];
     const traces: Record<string, unknown>[] = [
       trace(w.i_L, 'i_L', cL!, 'y', 'A'),
@@ -590,6 +733,7 @@ export default function Simulator({ labels, presets, symbols }: Props) {
     ];
     if (src) traces.push(trace(w.v_in, 'v_bus', cB!, 'y5', 'V'));
     if (result.params.topology === 'forward') traces.push(trace(w.i_M, 'i_M', cM!, 'y', 'A', 'dash'));
+    if (battery) traces.push(trace(w.i_bat, 'i_b', cBat!, 'y', 'A', 'dashdot'));
     const rows = src ? 5 : 4;
     const yTitle = (name: string, color: string) => coloredTitle([{ name, color }], 'V');
     import('plotly.js-dist-min').then((mod) => {
@@ -611,7 +755,7 @@ export default function Simulator({ labels, presets, symbols }: Props) {
             roworder: 'top to bottom',
             ygap: 0.12,
           },
-          xaxis: axis(theme, `${labels.time} [µs]`, {
+          xaxis: axis(theme, `${labels.time} [${ms ? 'ms' : 'µs'}]`, {
             showspikes: true,
             spikemode: 'across',
             spikethickness: 1,
@@ -637,7 +781,7 @@ export default function Simulator({ labels, presets, symbols }: Props) {
     for (const k of KEYS) next[k] = p.values[k] !== undefined ? String(p.values[k]) : '';
     setFstate({
       topo: p.topology,
-      load: p.values.V !== undefined && p.values.R === undefined ? 'fixed' : 'res',
+      load: loadChoiceOf(p.values),
       source: p.values.Voc !== undefined,
     });
     setValues(next);
@@ -749,18 +893,12 @@ export default function Simulator({ labels, presets, symbols }: Props) {
             <legend>{labels.parameters}</legend>
             <div className="pe-row pe-row--full">
               <label htmlFor="sim-load">{labels.load}</label>
-              <select
-                id="sim-load"
-                value={fstate.load}
-                onChange={(e) =>
-                  setFstate({
-                    ...fstate,
-                    load: e.target.value === 'fixed' ? 'fixed' : 'res',
-                  })
-                }
-              >
-                <option value="res">{labels.loadResistive}</option>
-                <option value="fixed">{labels.loadFixed}</option>
+              <select id="sim-load" value={fstate.load} onChange={(e) => setFstate({ ...fstate, load: e.target.value as LoadChoice })}>
+                {LOADS.map((l) => (
+                  <option key={l} value={l}>
+                    {labels.loads[l]}
+                  </option>
+                ))}
               </select>
             </div>
             <label className="pe-check" htmlFor="sim-src">
@@ -785,7 +923,13 @@ export default function Simulator({ labels, presets, symbols }: Props) {
           <section className="pe-sim__status" aria-live="polite">
             {error && <p className="pe-sim__error">{error}</p>}
             {((busy && !result && !error) || slow) && <p>{labels.running}</p>}
-            {result && (
+            {result && result.status !== 'steady' && <p className="pe-sim__nosteady">{noSteadyText(result, labels)}</p>}
+            {outsideModelText(result, labels) && (
+              <p className="pe-sim__nosteady">
+                <Rich text={outsideModelText(result, labels)!} />
+              </p>
+            )}
+            {result && result.status === 'steady' && (
               <p>
                 {labels.mode}: <strong className={`pe-sim__mode pe-sim__mode--${result.mode}`}>{result.mode}</strong>
                 {Number.isFinite(result.K) && (
@@ -794,7 +938,7 @@ export default function Simulator({ labels, presets, symbols }: Props) {
                     · <Sym text="K" /> = {fmt(result.K)}, <Sym text="K_crit" /> = {fmt(result.Kcrit)}
                   </>
                 )}{' '}
-                · {result.converged ? labels.converged : labels.notConverged} ({labels.cycles}: {result.cycles})
+                · {labels.converged} ({labels.cycles}: {result.cycles})
               </p>
             )}
           </section>
@@ -841,6 +985,23 @@ export default function Simulator({ labels, presets, symbols }: Props) {
           <p className="pe-tool__hint">
             <Rich text={labels.compareNote} />
           </p>
+          {loadRows(result).length > 0 && (
+            <div className="pe-scroll">
+              <table className="pe-sim__table">
+                <caption>{labels.loadTable}</caption>
+                <tbody>
+                  {loadRows(result).map((row) => (
+                    <tr key={row.label}>
+                      <th scope="row">
+                        <Rich text={labels[row.label as 'vout' | 'iR' | 'ibat' | 'pbat' | 'pRb']} />
+                      </th>
+                      <td>{fmtValue(row.value, row.unit)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
           <div className="pe-scroll">
             <table className="pe-sim__table">
               <caption>{labels.losses}</caption>

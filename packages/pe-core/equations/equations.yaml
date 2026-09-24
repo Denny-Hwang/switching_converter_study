@@ -94,6 +94,9 @@ symbol_table:
   r_d: {latex: "r_d", unit: "Ω", desc: "diode dynamic (slope) resistance", meaning: "diode dynamic resistance", meaning_ko: "다이오드 동저항(dynamic resistance)", range: [0.001, 1], scale: log}
   R_s: {latex: "R_s", unit: "Ω", desc: "source (Thevenin) resistance", meaning: "source resistance", meaning_ko: "전원 내부 저항(source resistance)", range: [1, 1.0e7], scale: log}
   C_bus: {latex: "C_\\mathrm{bus}", unit: "F", desc: "input bus capacitor that the source charges and the converter draws from", meaning: "input bus capacitor", meaning_ko: "입력 버스 커패시터"}
+  V_b: {latex: "V_b", unit: "V", desc: "open-circuit voltage of a battery (Rint model)", meaning: "battery open-circuit voltage", meaning_ko: "배터리 개방 전압(open-circuit voltage)", range: [1, 100], scale: log}
+  R_b: {latex: "R_b", unit: "Ω", desc: "internal resistance of a battery (Rint model)", meaning: "battery internal resistance", meaning_ko: "배터리 내부 저항(internal resistance)", range: [0.001, 10], scale: log}
+  I_b: {latex: "I_b", unit: "A", desc: "battery current, positive when it charges the battery", meaning: "battery current (charging positive)", meaning_ko: "배터리 전류(충전 방향이 양)"}
   R_SENSE: {latex: "R_\\mathrm{SENSE}", unit: "Ω", desc: "current-sense (shunt) resistor", meaning: "sense (shunt) resistor", meaning_ko: "센스 저항(shunt)", range: [1.0e-4, 1], scale: log}
   R_IN: {latex: "R_\\mathrm{IN}", unit: "Ω", desc: "gain-setting input resistor of a current-output sense amplifier", meaning: "gain-setting input resistor", meaning_ko: "이득 설정 입력 저항", range: [10, 1.0e4], scale: log}
   R_OUT: {latex: "R_\\mathrm{OUT}", unit: "Ω", desc: "output resistor of a current-output sense amplifier", meaning: "output resistor", meaning_ko: "출력 저항", range: [1.0e3, 1.0e6], scale: log}
@@ -121,6 +124,7 @@ symbol_table:
   v_s_avg: {latex: "\\langle v_s \\rangle", unit: "V", desc: "average (dc component) of the switch-node voltage", meaning: "average switch-node voltage", meaning_ko: "스위치 노드 평균 전압"}
   v_Lon: {latex: "v_{L,\\mathrm{on}}", unit: "V", desc: "inductor voltage during the on-interval", meaning: "inductor voltage, switch on", meaning_ko: "인덕터 전압(스위치 온)", range: [0.1, 400], scale: log}
   v_Loff: {latex: "v_{L,\\mathrm{off}}", unit: "V", desc: "inductor voltage during the off-interval", meaning: "inductor voltage, switch off", meaning_ko: "인덕터 전압(스위치 오프)"}
+  v_L_avg: {latex: "\\langle v_L \\rangle", unit: "V", desc: "average of the inductor voltage over one switching period", meaning: "average inductor voltage over a period", meaning_ko: "한 주기 동안의 인덕터 전압 평균", range: [0.01, 100], scale: log}
   i_Con: {latex: "i_{C,\\mathrm{on}}", unit: "A", desc: "capacitor current during the on-interval", meaning: "capacitor current, switch on", meaning_ko: "커패시터 전류(스위치 온)", range: [0.001, 100], scale: log}
   i_Coff: {latex: "i_{C,\\mathrm{off}}", unit: "A", desc: "capacitor current during the off-interval", meaning: "capacitor current, switch off", meaning_ko: "커패시터 전류(스위치 오프)"}
   D_2: {latex: "D_2", unit: "1", desc: "diode-conduction interval as a fraction of T_s (DCM)", meaning: "diode-conduction fraction (DCM)", meaning_ko: "다이오드 도통 구간 비율(DCM)"}
@@ -223,6 +227,7 @@ assumption_labels:
   diode_drop: {en: "output diode modelled as a constant forward drop V_D", ko: "출력 다이오드를 일정한 순방향 전압 V_D로 모델링"}
   definition: {en: "definition", ko: "정의"}
   linear_source: {en: "linear (Thevenin) source V_oc behind R_s", ko: "선형(테브난) 전원: R_s 뒤의 V_oc"}
+  rint_battery: {en: "battery modelled as its open-circuit voltage behind an internal resistance (Rint model)", ko: "배터리를 내부 저항 뒤의 개방 전압으로 모델링(Rint 모델)"}
   lossless_converter: {en: "lossless converter (input power equals output power)", ko: "무손실 컨버터(입력 전력 = 출력 전력)"}
   no_fringing: {en: "no fringing flux at the gap", ko: "공극의 프린징(fringing) 자속 무시"}
   linear_magnetics: {en: "linear (unsaturated) magnetic material", ko: "선형(비포화) 자성 재료"}
@@ -1472,6 +1477,20 @@ equations:
     tests:
       - {inputs: {D: 0.25, v_Lon: 12.0}, expect: -4.0}
 
+  - id: vsb.drift
+    title: "Change of the inductor current over one period"
+    title_ko: "한 주기 동안의 인덕터 전류 변화"
+    lhs: Delta_i
+    expr: "v_L_avg*T_s/L"
+    symbols: {v_L_avg: "average inductor voltage over the period", T_s: "switching period", L: "inductance"}
+    assumptions: [linear_magnetics]
+    notes: "zero in a periodic steady state (volt-second balance); while the average is not zero, the current changes from one period to the next, as in a start-up or after a load step"
+    notes_ko: "주기적 정상상태에서는 0이다(전압-초 평형); 평균이 0이 아닌 동안에는 기동이나 부하 변화 직후처럼 전류가 주기마다 변한다"
+    cite: {key: erickson2020, where: "Ch. 2 (Principles of Steady-State Converter Analysis); derived here"}
+    derived_by: python/pe_core/derive/averaging.py
+    tests:
+      - {inputs: {v_L_avg: 7.2, T_s: 1.0e-5, L: 1.0e-4}, expect: 0.72}
+
   - id: csb.i_off
     title: "Charge balance: capacitor current during the off-interval"
     title_ko: "전하 평형: 오프 구간의 커패시터 전류"
@@ -2204,3 +2223,17 @@ equations:
     derived_by: python/pe_core/derive/foundations.py
     tests:
       - {inputs: {I_1: 1.0, n: 0.5}, expect: 2.0}
+
+  - id: bat.rint
+    title: "Battery current in the Rint model"
+    title_ko: "Rint 모델의 배터리 전류"
+    lhs: I_b
+    expr: "(V - V_b)/R_b"
+    symbols: {V: "voltage across the battery's terminals", V_b: "open-circuit voltage", R_b: "internal resistance"}
+    assumptions: [rint_battery]
+    notes: "the battery charges when its terminals are above its open-circuit voltage and discharges below it; the open-circuit voltage and the resistance depend on the state of charge, the state of health and the temperature, which the simulator holds constant over the periods it computes"
+    notes_ko: "단자 전압이 개방 전압보다 높으면 배터리가 충전되고 낮으면 방전된다; 개방 전압과 저항은 충전 상태, 건강 상태, 온도에 따라 달라지며, 시뮬레이터는 계산하는 주기 동안 이를 상수로 둔다"
+    cite: {key: he2011, where: "Sec. 2.1 (The Rint Model)"}
+    tests:
+      - {inputs: {V: 14.4, V_b: 12.0, R_b: 0.5}, expect: 4.8}
+      - {inputs: {V: 11.0, V_b: 12.0, R_b: 0.5}, expect: -2.0}

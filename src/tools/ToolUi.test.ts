@@ -7,6 +7,7 @@ import { FIELDS as LOSS } from './LossBudget';
 import { FIELDS as SENSE } from './SenseChain';
 import { FIELDS as SIM } from './Simulator';
 import { FIELDS as SOURCE } from './SourceMatcher';
+import { LOADS } from '../lib/simload';
 
 const TOPOLOGIES = ['buck', 'boost', 'buckboost', 'flyback', 'forward'] as const;
 
@@ -17,7 +18,7 @@ function labels(): Set<string> {
   for (const t of TOPOLOGIES) {
     for (const f of DESIGN) out.add(f.label(t));
     for (const f of LOSS) out.add(f.label(t));
-    for (const load of ['res', 'fixed'] as const) {
+    for (const load of LOADS) {
       for (const source of [false, true]) for (const f of SIM) out.add(f.label({ topo: t, load, source }));
     }
   }

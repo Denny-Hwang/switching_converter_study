@@ -46,6 +46,22 @@ the first:
 The positive volt-seconds applied while the switch is on must be cancelled by
 negative volt-seconds while it is off.
 
+### When the average is not zero
+
+Over one period, the inductor current changes by the average inductor
+voltage times the period, over the inductance:
+
+<Eq id="vsb.drift" />
+
+During a transient (a start-up, a load or line step) this change carries
+the converter towards its new steady state, period by period. A circuit in
+which the average cannot reach zero has no steady state at all: a fixed
+output fed in CCM above the duty ratio that balances it gains the same
+current every period, without bound <Cite key="erickson2020" where="Ch. 2" />.
+Below that duty ratio the current falls to zero within the period instead,
+and the converter settles in DCM, where the idle interval makes the average
+zero <Cite key="erickson2020" where="Ch. 5" />.
+
 ### Charge balance
 
 The same argument applies to a capacitor: its voltage ends each period where
@@ -114,6 +130,12 @@ same duty ratio:
 Sweep $D$ towards 1 and watch the ideal boost ratio grow without bound.
 The [averaged-models page](../averaged-models/) shows why a real boost
 cannot follow this curve.
+
+A buck fed into a fixed output at a duty ratio that cannot balance has no
+steady state: the simulator shows its current running away, the average
+inductor voltage behind it, and the duty ratio that would balance.
+
+<TrySim example="sim-buck-fixed" topology="buck" />
 
 ## Bench exercise
 

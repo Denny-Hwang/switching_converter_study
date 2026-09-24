@@ -112,8 +112,14 @@ describe('no periodic steady state', () => {
   it('a fixed output fed in CCM from a fixed input: the inductor current grows every cycle', () => {
     const r = simulate({ topology: 'buck', Vg: 24, D: 0.8, fs, L: 1e-4, load: { kind: 'fixed', V: 12 } });
     expect(r.converged).toBe(false);
-    expect(r.cycles).toBeGreaterThanOrEqual(2000);
-    expect(r.residual).toBeGreaterThan(0.1);
+    expect(r.status).toBe('runaway');
+    // (V_g - V) D T_s up, V (1 - D) T_s down: 9.6 V T_s net, 0.96 A per cycle
+    const Ts = 1 / fs;
+    const perCycle = ((24 - 12) * 0.8 - 12 * 0.2) * Ts / 1e-4;
+    expect(r.drift!.state).toBe('i');
+    expect(r.drift!.perCycle).toBeCloseTo(perCycle, 9);
+    expect(r.drift!.vLavg).toBeCloseTo((24 - 12) * 0.8 - 12 * 0.2, 9);
+    expect(r.drift!.Dbalance).toBeCloseTo(0.5, 9);
   });
 
   it('a forward converter above its reset limit: the magnetizing current walks up', () => {
@@ -130,6 +136,9 @@ describe('no periodic steady state', () => {
       load: { kind: 'resistive', R: 2, C: 5e-4 },
     });
     expect(r.converged).toBe(false);
+    expect(r.status).toBe('runaway');
+    expect(r.drift!.state).toBe('iM');
+    expect(r.drift!.perCycle).toBeGreaterThan(0);
   });
 
   it('the same forward converter below the limit converges', () => {
@@ -446,6 +455,19 @@ describe('third review (fast ringing, slow states, the Newton line search, still
     const vbus = (5 * 0.002 + 30 * 3.8) / (0.002 + 3.8);
     expect(rel(r.x0[1]!, vbus)).toBeLessThan(1e-9);
     expect(rel(r.x0[0]!, (vbus - 30) / 0.002)).toBeLessThan(1e-6);
+  });
+
+  it('a state resting at zero with a subnormal rounding residue is at its fixed point, not still changing', () => {
+    // the buck's output at its input with no current: a node capacitance left at -2.5e-321 V moves by
+    // 2.6e-322 V a cycle, 5 % of its own movement, but nothing a physical quantity can resolve
+    const p: SimParams = { topology: 'buck', Vg: 54.8, D: 0.676, fs: 1e5, L: 1.34e-5, Ron: 0.125, RL: 0.0574, VF: 0.292, Cnode: 1e-10, load: { kind: 'network', C: 1.11e-6, V0: 0 } };
+    const model = buildModel(p);
+    const x0 = [0, 54.8, -2.485e-321];
+    const run = runCycle(model, x0, { stepsPerPeriod: stepsFor(p) });
+    expect(run.dx[2]).not.toBe(0);
+    const ss = steadyState(model, x0, { stepsPerPeriod: stepsFor(p), stopOnDrift: true });
+    expect(ss.converged).toBe(true);
+    expect(ss.cycles).toBe(1);
   });
 });
 
