@@ -41,6 +41,11 @@ exclude = [
   # MDPI answers automated clients with a bot check; the urls-online job
   # opens its PDFs with a browser User-Agent, or their archive captures.
   '^https://www\.mdpi\.com/',
+  # littelfuse.com answers lychee from CI runners with 403 (the fuseology
+  # guide the protection page cites): the urls-online job opens it with a
+  # browser User-Agent or, when the runner is refused, its latest Internet
+  # Archive capture, matches its title and finds the cited sentence in it.
+  '^https://www\.littelfuse\.com/',
   # tdk-electronics.tdk.com answers lychee from CI runners with 403 but serves
   # a browser User-Agent: the urls-online job opens its data sheets instead,
   # matches their titles and finds the cited values in their text.

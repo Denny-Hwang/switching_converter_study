@@ -45,9 +45,9 @@ that matters, $I_\mathrm{min}$.
 ### Sense voltage and burden
 
 By Ohm's law the shunt turns the current into the sense voltage
-<Cite key="alexander2017" where="Ch. 2" />:
-
-<Eq id="sense.burden" />
+<Cite key="alexander2017" where="Ch. 2" />
+(<EqRef id="sense.burden" label="sense voltage" />, on the
+[current sensing](../../06-bench/current-sensing/) page).
 
 This voltage is the amplifier's signal, and also the burden: the voltage the
 shunt takes from the circuit it measures. A larger shunt gives a larger
@@ -95,9 +95,9 @@ becomes a substantial part of the sense element's resistance, and adds to
 the measurement error <Cite key="osullivan2012" />. If the sense
 connections sit beyond the pads, the amplifier sees the load current through
 the shunt and the pads together, $R_\mathrm{SENSE} + R_\mathrm{pad}$. So the
-reading is high by the same fraction at every current:
-
-<Eq id="sense.pad_error" />
+reading is high by the same fraction at every current
+(<EqRef id="sense.pad_error" label="pad error" />, see
+[current sensing](../../06-bench/current-sensing/)).
 
 A Kelvin connection takes the pads out of the sense path: a four-terminal
 shunt, or a two-terminal one on a four-pad (split-pad) layout

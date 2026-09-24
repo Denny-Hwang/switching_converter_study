@@ -1,0 +1,15 @@
+synthetic: true
+label: "Gate-drive example"
+label_ko: "게이트 구동 예제"
+# A 10 V driver through 5 ohm in all, into a switch whose gate-charge curve
+# plateaus at 4.5 V with 10 nC of gate-drain charge.
+params:
+  V_GS: 10.0
+  V_pl: 4.5
+  R_G: 5.0
+  Q_GD: 1.0e-8
+steps:
+  - {eq: gate.I_on, as: I_G_on}
+  - {eq: gate.t_pl, bind: {I_G: I_G_on}, as: t_pl_on}
+  - {eq: gate.I_off, as: I_G_off}
+  - {eq: gate.t_pl, bind: {I_G: I_G_off}, as: t_pl_off}

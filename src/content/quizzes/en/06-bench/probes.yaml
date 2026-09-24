@@ -1,0 +1,51 @@
+# Quiz for 06-bench/probes. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'What does the loop of a probe''s long ground lead do to a measured switching edge?'
+    options:
+      - 'It adds inductance that makes the transients look larger than they are'
+      - 'It filters the edge, so the transients look smaller'
+      - 'Nothing: the ground lead carries no current'
+      - 'It shifts the edge in time only'
+    answer: 0
+    explain: 'The leads form a loop whose inductance exaggerates the transients and, with the probe''s capacitance, rings at every edge.'
+  - q: 'A ground lead of 50 nH rings with a probe capacitance of 20 pF. Where does the ringing move if the lead is made four times shorter (a quarter of the inductance)?'
+    options:
+      - 'Up by a factor of four'
+      - 'Up by a factor of two'
+      - 'Down by a factor of two'
+      - 'Nowhere: the capacitance sets it'
+    answer: 1
+    explain: 'The resonant frequency goes with one over the square root of the inductance: a quarter of the inductance doubles it.'
+  - q: 'A single-pole measurement system has a bandwidth of 350 MHz. How fast does it show an ideal step rising?'
+    options:
+      - 'About 0.35 ns'
+      - 'About 3.5 ns'
+      - 'Instantly'
+      - 'About 1 ns'
+    answer: 3
+    explain: 'The rise time is about 0.35 over the bandwidth: 0.35 over 350 MHz.'
+  - q: 'Why can two oscilloscopes of the same bandwidth show different rise times for the same edge?'
+    options:
+      - 'The constant between bandwidth and rise time depends on the shape of each one''s frequency response'
+      - 'Their probes have different colours'
+      - 'Rise time does not depend on the oscilloscope'
+      - 'One of them must be broken'
+    answer: 0
+    explain: 'A flat response and a Gaussian one of equal bandwidth measure rise times differently.'
+  - q: 'How should an output ripple be measured?'
+    options:
+      - 'With the longest ground lead available, to reach far'
+      - 'Across the inductor'
+      - 'At the output capacitor, with the tip-and-barrel method or a very short ground'
+      - 'With the probe set to measure current'
+    answer: 2
+    explain: 'A short ground keeps the probe''s loop, and the transients it exaggerates, small.'
+  - q: 'A channel''s bandwidth limit is set close to the ripple''s frequency. What happens?'
+    options:
+      - 'The ripple reads higher'
+      - 'It attenuates the ripple itself, which reads low'
+      - 'Nothing: the limit only removes noise'
+      - 'The oscilloscope stops triggering'
+    answer: 1
+    explain: 'A low-pass filter attenuates everything near and above its corner, the ripple included.'

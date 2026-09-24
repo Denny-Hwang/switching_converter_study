@@ -1,0 +1,115 @@
+---
+title: Current sensing
+description: A shunt's sense voltage and burden, placing it on the low side or the high side, and the pads and solder that a Kelvin connection keeps out of the reading.
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Turn a current into a voltage with a shunt, and know what it costs the circuit.
+- Choose between the low side and the high side for the shunt.
+- Keep the pads and the solder out of the reading with a Kelvin connection.
+
+## Theory
+
+### The shunt
+
+By Ohm's law a shunt turns the current into a sense voltage
+<Cite key="alexander2017" where="Ch. 2" />:
+
+<Eq id="sense.burden" />
+
+That voltage is the amplifier's signal, and also the burden: the voltage
+the shunt takes from the circuit it measures. A larger shunt gives a larger
+signal and a smaller share of error from the amplifier's offset
+<Cite key="ti_ina181" />, at the price of more burden and more dissipation
+(<EqRef id="loss.cond" label="conduction loss" />).
+
+### Low side or high side
+
+On the **low side** the shunt sits in the ground return, so the load's
+ground rises above the supply's by the sense voltage. Low-side sensing suits
+cost-sensitive designs that can tolerate that ground disturbance, and
+high-side sensing is preferable when it cannot be tolerated
+<Cite key="ti_sszta51" />. On the **high side** both of the shunt's
+terminals sit near the supply voltage, so the amplifier must accept that
+voltage at its inputs: current-sense amplifiers are specified for low-side
+use, high-side use or both <Cite key="ti_ina181" /> <Cite key="adi_ltc6101" />.
+
+### Pads, solder and the Kelvin connection
+
+With a shunt of a few milliohms or less, the resistance of the solder
+becomes a substantial part of the sense element's resistance, and adds to
+the measurement error <Cite key="osullivan2012" />. If the sense connections
+sit beyond the pads, the amplifier sees the current through the shunt and
+the pads together, and the reading is high by the same fraction at every
+current:
+
+<Eq id="sense.pad_error" />
+
+A Kelvin connection takes the pads out of the sense path: a four-terminal
+shunt, or a two-terminal one on a four-pad (split-pad) layout
+<Cite key="osullivan2012" />. The LTC6101 data sheet recommends Kelvin
+connections to the sense resistor in all but the lowest-power applications
+<Cite key="adi_ltc6101" where="Applications Information" />.
+
+The amplifier, its offset, the output's range and the filter before an ADC
+are worked through in the [sense chain](../../design/sense-chain/) tool.
+
+## Worked example
+
+A small shunt without a Kelvin connection:
+
+<Worked example="bench-sense" />
+
+At the full current the shunt gives only
+<Val example="bench-sense" name="V_SENSE" />, and pads and solder of
+<Val example="bench-sense" name="R_pad" /> in its sense path make the
+reading <Val example="bench-sense" name="eps_pad" /> high.
+
+## Try it
+
+<TryIt eq="sense.pad_error" example="bench-sense" sweep="R_SENSE" />
+
+Sweep the shunt's value: the same pads cost a larger share of a smaller
+shunt. A Kelvin connection sets $R_\mathrm{pad}$ to zero at any value.
+
+## Bench exercise
+
+Pass a known current through a low-value shunt on a board. Measure the
+voltage across it twice: once at the ends of its pads, once at the shunt's
+own terminals (or its Kelvin pads). Compare each with the current times the
+shunt's rated value, and estimate the pads' resistance from the difference.
+Then move the shunt from the ground return to the supply side and watch the
+load's ground: it no longer moves with the current.
+
+## Gotchas
+
+- **A low-side shunt lifts the load's ground** by its sense voltage
+  <Cite key="ti_sszta51" />: a signal the load sends to a ground-referenced
+  circuit moves with the current.
+- **Sensing beyond the pads** adds their resistance to the shunt's, a fixed
+  fraction of every reading <Cite key="osullivan2012" />
+  (<EqRef id="sense.pad_error" label="pad error" />).
+- **A high-side shunt** puts the supply's voltage on the amplifier's
+  inputs: use an amplifier specified for high-side sensing
+  <Cite key="ti_ina181" />.
+
+## Go deeper
+
+<GoDeeper ids={['ti-sszta51', 'adi-osullivan2012']} />
+
+## Quiz
+
+<Quiz id="06-bench/current-sensing" />

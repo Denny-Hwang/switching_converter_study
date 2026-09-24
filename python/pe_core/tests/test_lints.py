@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import sys
+import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -155,6 +159,88 @@ def test_resources_check_confirms_quotes_in_the_pdf_text() -> None:
     verdict, detail = judge("absorbs less than the leakage energy")
     assert verdict == "fail"
     assert "4 of its words in a row occur in" in detail and "absorbs more than the leakage energy" in detail
+
+
+def test_resources_check_online_checks_urls_at_once_and_reports_in_order(monkeypatch, capsys) -> None:
+    rc = _script("resources_check")
+    targets = [{"src": f"bib:k{i}", "url": f"https://example.org/{i}", "expect": "x", "kind": "html", "quotes": []}
+               for i in range(12)]
+    monkeypatch.setattr(rc, "collect", lambda: (targets, []))
+    lock, active, peak = threading.Lock(), [0], [0]
+
+    def check(t: dict) -> tuple[str, str]:
+        with lock:
+            active[0] += 1
+            peak[0] = max(peak[0], active[0])
+        time.sleep(0.01 * (12 - int(t["url"].rsplit("/", 1)[1])))  # the later URLs answer first
+        with lock:
+            active[0] -= 1
+        return ("FAIL", "HTTP 404 (gone)") if t["src"] == "bib:k3" else ("OK", "fine")
+
+    monkeypatch.setattr(rc, "check_online", check)
+    monkeypatch.setattr(sys, "argv", ["resources_check.py", "--online"])
+    assert rc.main() == 1
+    out, err = capsys.readouterr()
+    assert [line.split()[1] for line in out.splitlines() if line.startswith("  ")] == [t["src"] for t in targets]
+    assert peak[0] > 1
+    assert "bib:k3: HTTP 404 (gone) (https://example.org/3)" in err
+
+
+def test_resources_check_takes_a_pdf_from_the_archive_before_a_later_web_page(monkeypatch) -> None:
+    rc = _script("resources_check")
+    asked: list[str] = []
+
+    def cdx(rows: list[list[str]]) -> bytes:
+        return json.dumps([["timestamp", "original"], *rows]).encode()
+
+    def slow_get(url: str, how: str, tries: int = 3):
+        asked.append(url)
+        if "mimetype" in url:  # the PDF captures: an older one
+            return rc.Fetch(how, 200, url, "application/json", cdx([["20230101000000", "https://example.org/a.pdf"]]))
+        return rc.Fetch(how, 200, url, "application/json", cdx([["20241125000000", "https://example.org/a.pdf"]]))
+
+    monkeypatch.setattr(rc, "_slow_get", slow_get)
+    # a PDF: the latest capture stored as a PDF, although a later capture (a web page) exists
+    assert rc.latest_capture("https://example.org/a.pdf", pdf=True) == ("20230101000000", "https://example.org/a.pdf")
+    assert "mimetype%3Aapplication%2Fpdf" in asked[0] and "statuscode%3A200" in asked[0]
+    # a web page: the latest capture, whatever its type
+    asked.clear()
+    assert rc.latest_capture("https://example.org/a.html") == ("20241125000000", "https://example.org/a.pdf")
+    assert len(asked) == 1 and "mimetype" not in asked[0]
+
+    # no PDF capture at all: the latest capture, which the PDF check then judges
+    def no_pdf(url: str, how: str, tries: int = 3):
+        asked.append(url)
+        rows = [] if "mimetype" in url else [["20241125000000", "https://example.org/b.pdf"]]
+        return rc.Fetch(how, 200, url, "application/json", cdx(rows))
+
+    monkeypatch.setattr(rc, "_slow_get", no_pdf)
+    asked.clear()
+    assert rc.latest_capture("https://example.org/b.pdf", pdf=True) == ("20241125000000", "https://example.org/b.pdf")
+    assert len(asked) == 2 and "mimetype" in asked[0] and "mimetype" not in asked[1]
+
+
+def test_resources_check_confirms_quotes_in_an_html_page_text() -> None:
+    rc = _script("resources_check")
+    page = (
+        b"<html><head><title>AN-0: Layout Notes | Example</title><script>var s = 'a ground layer in a script';</script>"
+        b"<style>.x{content:'a ground layer in a style'}</style></head><body><!-- a ground layer in a comment -->"
+        b"<p>It is important to always have a <b>ground&nbsp;layer</b> next to the power stage layer.</p></body></html>"
+    )
+    fetch = rc.Fetch("test", 200, "https://example.org/an-0.html", "text/html", page)
+
+    def judge(*quotes: str) -> tuple[str, str]:
+        return rc.judge({"src": "bib:t", "url": fetch.url, "expect": "Layout Notes", "kind": "html", "quotes": list(quotes)}, fetch)
+
+    # the page's visible text, across its inline markup and entities
+    verdict, detail = judge("always have a ground layer next to the power stage layer")
+    assert verdict == "ok" and "1 quotes found" in detail
+    # text only in a script, a style or a comment is not on the page
+    assert rc.loose(rc.html_text(page)).count("ground layer") == 1
+    verdict, detail = judge("a ground layer in a script")
+    assert verdict == "fail" and "not in the page's text" in detail
+    # without quotes, the title alone decides
+    assert judge()[0] == "ok"
 
 
 def test_resources_check_requires_a_title_for_pdf_references() -> None:

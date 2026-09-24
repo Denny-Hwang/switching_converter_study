@@ -227,6 +227,42 @@
     "snubber_charging_edge": {
       "en": "the edge that charges the snubber capacitor, once per switching period: the node steps by V_snub while the parasitic inductance carries I_ring; the node's own capacitance is left out (AN11160)",
       "ko": "스위칭 주기마다 한 번 스너버 커패시터를 충전하는 에지: 기생 인덕턴스에 I_ring이 흐르는 동안 노드 전압이 V_snub만큼 바뀜; 노드 자체의 커패시턴스는 무시함(AN11160)"
+    },
+    "linear_edge": {
+      "en": "the current changes linearly over the edge",
+      "ko": "에지 동안 전류가 직선적으로 변함"
+    },
+    "bootstrap_no_recharge": {
+      "en": "the bootstrap capacitor alone supplies the charge while the high-side switch is on; it recharges only while the low side conducts",
+      "ko": "하이사이드 스위치가 켜져 있는 동안 부트스트랩 커패시터만 전하를 공급하고, 로우사이드가 도통할 때만 재충전됨"
+    },
+    "first_order_response": {
+      "en": "single-pole (first-order) response to a step",
+      "ko": "계단 입력에 대한 단일 극점(1차) 응답"
+    },
+    "rc_step": {
+      "en": "an empty capacitor charged from a voltage step through a constant series resistance; the wiring's inductance negligible (its time constant, L over the series resistance, far shorter than the R-C one)",
+      "ko": "빈 커패시터가 일정한 직렬 저항을 통해 전압 계단으로 충전됨. 배선 인덕턴스는 무시함(그 시정수, 곧 L을 직렬 저항으로 나눈 값이 R-C 시정수보다 훨씬 짧음)"
+    },
+    "linear_ramp": {
+      "en": "an empty capacitor whose voltage is ramped linearly from zero to its final value",
+      "ko": "빈 커패시터의 전압을 0에서 최종값까지 선형으로 올림"
+    },
+    "series_ramp": {
+      "en": "the ramp is set by an element in series with a fixed supply V_g (a load switch or a hot-swap switch)",
+      "ko": "고정 전원 V_g와 직렬인 소자(부하 스위치, 핫스왑 스위치)가 램프를 만듦"
+    },
+    "gate_plateau": {
+      "en": "the gate voltage stays at the plateau voltage while the drain voltage makes its transition; the driver switches between V_GS and 0 behind the gate-loop resistance",
+      "ko": "드레인 전압이 전이하는 동안 게이트 전압이 플래토 전압에 머묾; 드라이버는 게이트 루프 저항 뒤에서 V_GS와 0 사이를 스위칭함"
+    },
+    "series_heat_path": {
+      "en": "steady state; all of the device's power flows through each part of the path in turn: junction to case, case to heat sink, heat sink to ambient",
+      "ko": "정상상태; 소자의 전력 전부가 경로의 각 부분(접합→케이스, 케이스→방열판, 방열판→주위)을 차례로 지나감"
+    },
+    "characterization_parameter": {
+      "en": "the device is mounted and cooled as it was characterized (on a board, without a heat sink on the package); the parameter is not a thermal resistance: only part of the power flows through the package top",
+      "ko": "소자가 특성화할 때와 같이 실장·냉각됨(기판 위, 패키지에 방열판 없음). 이 파라미터는 열저항이 아님: 전력의 일부만 패키지 윗면을 지남"
     }
   },
   "symbols": {
@@ -274,6 +310,18 @@
       "meaning_ko": "자속 밀도(flux density)",
       "range": null,
       "scale": "linear"
+    },
+    "BW": {
+      "latex": "f_\\mathrm{BW}",
+      "unit": "Hz",
+      "desc": "-3 dB bandwidth of a measurement system (probe and oscilloscope)",
+      "meaning": "-3 dB bandwidth",
+      "meaning_ko": "-3 dB 대역폭(bandwidth)",
+      "range": [
+        1000000.0,
+        10000000000.0
+      ],
+      "scale": "log"
     },
     "B_ac": {
       "latex": "B_\\mathrm{ac}",
@@ -332,6 +380,15 @@
       ],
       "scale": "log"
     },
+    "C_boot": {
+      "latex": "C_\\mathrm{boot}",
+      "unit": "F",
+      "desc": "bootstrap capacitance",
+      "meaning": "bootstrap capacitance",
+      "meaning_ko": "부트스트랩 커패시턴스",
+      "range": null,
+      "scale": "linear"
+    },
     "C_bus": {
       "latex": "C_\\mathrm{bus}",
       "unit": "F",
@@ -350,6 +407,18 @@
       "range": [
         1e-12,
         0.001
+      ],
+      "scale": "log"
+    },
+    "C_in": {
+      "latex": "C_\\mathrm{in}",
+      "unit": "F",
+      "desc": "input capacitance charged when the supply is switched on",
+      "meaning": "input capacitance",
+      "meaning_ko": "입력 커패시턴스",
+      "range": [
+        1e-07,
+        0.01
       ],
       "scale": "log"
     },
@@ -386,6 +455,18 @@
       "range": [
         1e-12,
         1e-08
+      ],
+      "scale": "log"
+    },
+    "C_probe": {
+      "latex": "C_\\mathrm{probe}",
+      "unit": "F",
+      "desc": "a probe's input capacitance at its tip",
+      "meaning": "probe input capacitance",
+      "meaning_ko": "프로브 입력 커패시턴스",
+      "range": [
+        1e-12,
+        1e-10
       ],
       "scale": "log"
     },
@@ -439,6 +520,30 @@
       "meaning_ko": "자속 밀도 변화폭, 피크-피크",
       "range": null,
       "scale": "linear"
+    },
+    "Delta_I": {
+      "latex": "\\Delta I",
+      "unit": "A",
+      "desc": "change of the current in the loop over a switching edge",
+      "meaning": "current change over the edge",
+      "meaning_ko": "에지 동안의 전류 변화",
+      "range": [
+        0.1,
+        100.0
+      ],
+      "scale": "log"
+    },
+    "Delta_V_boot": {
+      "latex": "\\Delta V_\\mathrm{boot}",
+      "unit": "V",
+      "desc": "droop allowed across the bootstrap capacitor while it supplies that charge",
+      "meaning": "allowed bootstrap droop",
+      "meaning_ko": "허용하는 부트스트랩 전압 강하",
+      "range": [
+        0.05,
+        2.0
+      ],
+      "scale": "log"
     },
     "Delta_i": {
       "latex": "\\Delta i",
@@ -626,6 +731,15 @@
       ],
       "scale": "log"
     },
+    "I2t": {
+      "latex": "I^2 t",
+      "unit": "A²s",
+      "desc": "joule integral of a current pulse: the integral of the current squared over the pulse",
+      "meaning": "joule integral of the pulse",
+      "meaning_ko": "펄스의 줄 적분(I²t)",
+      "range": null,
+      "scale": "linear"
+    },
     "I_1": {
       "latex": "I_1",
       "unit": "A",
@@ -656,6 +770,18 @@
       "range": [
         0.001,
         100.0
+      ],
+      "scale": "log"
+    },
+    "I_G": {
+      "latex": "I_G",
+      "unit": "A",
+      "desc": "gate current while the gate voltage sits on the plateau",
+      "meaning": "gate current on the plateau",
+      "meaning_ko": "플래토 동안의 게이트 전류",
+      "range": [
+        0.01,
+        10.0
       ],
       "scale": "log"
     },
@@ -734,6 +860,18 @@
       "desc": "battery current, positive when it charges the battery",
       "meaning": "battery current (charging positive)",
       "meaning_ko": "배터리 전류(충전 방향이 양)",
+      "range": [
+        -10.0,
+        10.0
+      ],
+      "scale": "linear"
+    },
+    "I_inrush": {
+      "latex": "I_\\mathrm{inrush}",
+      "unit": "A",
+      "desc": "peak of the inrush current",
+      "meaning": "peak inrush current",
+      "meaning_ko": "돌입 전류(inrush) 최댓값",
       "range": null,
       "scale": "linear"
     },
@@ -766,6 +904,15 @@
         100.0
       ],
       "scale": "log"
+    },
+    "I_ramp": {
+      "latex": "I_\\mathrm{ramp}",
+      "unit": "A",
+      "desc": "current into a capacitor whose voltage is ramped linearly",
+      "meaning": "current of a controlled ramp",
+      "meaning_ko": "램프 제어 시 전류",
+      "range": null,
+      "scale": "linear"
     },
     "I_ring": {
       "latex": "I_\\mathrm{ring}",
@@ -923,6 +1070,18 @@
       "range": null,
       "scale": "linear"
     },
+    "L_gnd": {
+      "latex": "L_\\mathrm{gnd}",
+      "unit": "H",
+      "desc": "inductance of the loop a probe's tip and ground lead form",
+      "meaning": "probe ground-loop inductance",
+      "meaning_ko": "프로브 접지 루프 인덕턴스",
+      "range": [
+        1e-09,
+        1e-06
+      ],
+      "scale": "log"
+    },
     "L_l1": {
       "latex": "L_{\\ell 1}",
       "unit": "H",
@@ -956,6 +1115,18 @@
       "range": [
         1e-08,
         0.0001
+      ],
+      "scale": "log"
+    },
+    "L_loop": {
+      "latex": "L_\\mathrm{loop}",
+      "unit": "H",
+      "desc": "inductance of the loop a switched current flows around (traces, vias, component leads)",
+      "meaning": "loop inductance",
+      "meaning_ko": "루프 인덕턴스(loop inductance)",
+      "range": [
+        1e-10,
+        1e-07
       ],
       "scale": "log"
     },
@@ -1049,6 +1220,18 @@
       ],
       "scale": "log"
     },
+    "P_D": {
+      "latex": "P_D",
+      "unit": "W",
+      "desc": "power the device dissipates",
+      "meaning": "dissipated power",
+      "meaning_ko": "소산 전력",
+      "range": [
+        0.01,
+        100.0
+      ],
+      "scale": "log"
+    },
     "P_Rsnub": {
       "latex": "P_{R,\\mathrm{snub}}",
       "unit": "W",
@@ -1106,6 +1289,18 @@
       ],
       "scale": "log"
     },
+    "Psi_JT": {
+      "latex": "\\Psi_\\mathrm{JT}",
+      "unit": "K/W",
+      "desc": "junction-to-top characterization parameter: the junction's rise above the package top per watt of the device's power",
+      "meaning": "junction-to-top characterization parameter",
+      "meaning_ko": "접합-윗면 특성 파라미터",
+      "range": [
+        0.1,
+        20.0
+      ],
+      "scale": "log"
+    },
     "Q": {
       "latex": "Q",
       "unit": "1",
@@ -1114,6 +1309,30 @@
       "meaning_ko": "Q 계수(quality factor)",
       "range": null,
       "scale": "linear"
+    },
+    "Q_GD": {
+      "latex": "Q_\\mathrm{GD}",
+      "unit": "C",
+      "desc": "gate-drain charge: the charge the gate takes along the plateau of the gate-charge curve",
+      "meaning": "gate-drain (Miller) charge",
+      "meaning_ko": "게이트-드레인(밀러) 전하",
+      "range": [
+        1e-10,
+        1e-07
+      ],
+      "scale": "log"
+    },
+    "Q_boot": {
+      "latex": "Q_\\mathrm{boot}",
+      "unit": "C",
+      "desc": "charge the bootstrap capacitor supplies while the high-side switch is on: the gate charge, and the leakage and quiescent currents times the on-time",
+      "meaning": "charge drawn from the bootstrap capacitor",
+      "meaning_ko": "부트스트랩 커패시터에서 빠져나가는 전하",
+      "range": [
+        1e-09,
+        1e-06
+      ],
+      "scale": "log"
     },
     "Q_g": {
       "latex": "Q_g",
@@ -1148,6 +1367,18 @@
       "range": [
         0.001,
         100.0
+      ],
+      "scale": "log"
+    },
+    "R_G": {
+      "latex": "R_G",
+      "unit": "Ω",
+      "desc": "total resistance of the gate loop: the driver's output, the external resistor and the device's internal gate resistance",
+      "meaning": "gate-loop resistance",
+      "meaning_ko": "게이트 루프 저항",
+      "range": [
+        0.5,
+        50.0
       ],
       "scale": "log"
     },
@@ -1313,6 +1544,18 @@
       ],
       "scale": "log"
     },
+    "R_ser": {
+      "latex": "R_\\mathrm{ser}",
+      "unit": "Ω",
+      "desc": "total resistance in series with a charging capacitor: the source's, the wiring's and the capacitor's ESR",
+      "meaning": "series resistance of the charging path",
+      "meaning_ko": "충전 경로의 직렬 저항",
+      "range": [
+        0.001,
+        100.0
+      ],
+      "scale": "log"
+    },
     "R_snub": {
       "latex": "R_\\mathrm{snub}",
       "unit": "Ω",
@@ -1341,6 +1584,39 @@
       "meaning": "share of a disturbance that remains",
       "meaning_ko": "남는 외란(disturbance) 비율",
       "range": null,
+      "scale": "linear"
+    },
+    "T_A": {
+      "latex": "T_A",
+      "unit": "°C",
+      "desc": "ambient temperature",
+      "meaning": "ambient temperature",
+      "meaning_ko": "주위 온도(ambient temperature)",
+      "range": [
+        -40.0,
+        85.0
+      ],
+      "scale": "linear"
+    },
+    "T_J": {
+      "latex": "T_J",
+      "unit": "°C",
+      "desc": "junction temperature of a semiconductor",
+      "meaning": "junction temperature",
+      "meaning_ko": "접합 온도(junction temperature)",
+      "range": null,
+      "scale": "linear"
+    },
+    "T_T": {
+      "latex": "T_T",
+      "unit": "°C",
+      "desc": "temperature measured at the top of the package",
+      "meaning": "package-top temperature",
+      "meaning_ko": "패키지 윗면 온도",
+      "range": [
+        -40.0,
+        150.0
+      ],
       "scale": "linear"
     },
     "T_loop": {
@@ -1742,6 +2018,18 @@
       ],
       "scale": "log"
     },
+    "V_pl": {
+      "latex": "V_\\mathrm{pl}",
+      "unit": "V",
+      "desc": "gate-source voltage on the Miller plateau, read from the gate-charge curve at the operating drain current",
+      "meaning": "Miller plateau voltage",
+      "meaning_ko": "밀러 플래토(Miller plateau) 전압",
+      "range": [
+        2.0,
+        8.0
+      ],
+      "scale": "linear"
+    },
     "V_rating": {
       "latex": "V_\\mathrm{DS,rated}",
       "unit": "V",
@@ -1780,6 +2068,15 @@
         1000.0
       ],
       "scale": "log"
+    },
+    "V_spike": {
+      "latex": "V_\\mathrm{spike}",
+      "unit": "V",
+      "desc": "voltage the loop inductance develops during the edge",
+      "meaning": "voltage across the loop inductance",
+      "meaning_ko": "루프 인덕턴스에 걸리는 전압",
+      "range": null,
+      "scale": "linear"
     },
     "V_sw": {
       "latex": "V_\\mathrm{sw}",
@@ -2005,6 +2302,15 @@
         10000000.0
       ],
       "scale": "log"
+    },
+    "f_probe": {
+      "latex": "f_\\mathrm{probe}",
+      "unit": "Hz",
+      "desc": "ringing frequency of a probe's ground loop with its input capacitance",
+      "meaning": "probe ringing frequency",
+      "meaning_ko": "프로브 링잉 주파수",
+      "range": null,
+      "scale": "linear"
     },
     "f_r0": {
       "latex": "f_{r0}",
@@ -2357,6 +2663,18 @@
       ],
       "scale": "log"
     },
+    "t_edge": {
+      "latex": "t_\\mathrm{edge}",
+      "unit": "s",
+      "desc": "duration of the current's switching edge (its rise or fall)",
+      "meaning": "edge duration",
+      "meaning_ko": "에지 지속 시간",
+      "range": [
+        1e-09,
+        1e-06
+      ],
+      "scale": "log"
+    },
     "t_on": {
       "latex": "t_\\mathrm{on}",
       "unit": "s",
@@ -2369,6 +2687,15 @@
       ],
       "scale": "log"
     },
+    "t_pl": {
+      "latex": "t_\\mathrm{pl}",
+      "unit": "s",
+      "desc": "time the gate spends on the plateau, while the drain voltage makes its transition",
+      "meaning": "time on the plateau",
+      "meaning_ko": "플래토에 머무는 시간",
+      "range": null,
+      "scale": "linear"
+    },
     "t_r": {
       "latex": "t_r",
       "unit": "s",
@@ -2377,6 +2704,63 @@
       "meaning_ko": "누설 전류가 0이 되는 시간",
       "range": null,
       "scale": "linear"
+    },
+    "t_ramp": {
+      "latex": "t_\\mathrm{ramp}",
+      "unit": "s",
+      "desc": "time a controlled voltage takes to ramp linearly from zero to its final value",
+      "meaning": "ramp time",
+      "meaning_ko": "램프 시간(ramp time)",
+      "range": [
+        1e-05,
+        0.1
+      ],
+      "scale": "log"
+    },
+    "t_rise": {
+      "latex": "t_\\mathrm{rise}",
+      "unit": "s",
+      "desc": "10-90 % rise time of a step response",
+      "meaning": "10-90 % rise time",
+      "meaning_ko": "10-90 % 상승 시간(rise time)",
+      "range": null,
+      "scale": "linear"
+    },
+    "theta_CS": {
+      "latex": "\\theta_\\mathrm{CS}",
+      "unit": "K/W",
+      "desc": "case-to-heat-sink thermal resistance (the interface: pad, grease, insulator)",
+      "meaning": "case-to-sink thermal resistance",
+      "meaning_ko": "케이스-방열판 열저항",
+      "range": [
+        0.05,
+        5.0
+      ],
+      "scale": "log"
+    },
+    "theta_JC": {
+      "latex": "\\theta_\\mathrm{JC}",
+      "unit": "K/W",
+      "desc": "junction-to-case thermal resistance",
+      "meaning": "junction-to-case thermal resistance",
+      "meaning_ko": "접합-케이스 열저항",
+      "range": [
+        0.1,
+        10.0
+      ],
+      "scale": "log"
+    },
+    "theta_SA": {
+      "latex": "\\theta_\\mathrm{SA}",
+      "unit": "K/W",
+      "desc": "heat-sink-to-ambient thermal resistance",
+      "meaning": "sink-to-ambient thermal resistance",
+      "meaning_ko": "방열판-주위 열저항",
+      "range": [
+        0.5,
+        100.0
+      ],
+      "scale": "log"
     },
     "v_L_avg": {
       "latex": "\\langle v_L \\rangle",
@@ -2473,7 +2857,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 305
+      "yaml_line": 346
     },
     "boost.ccm.M": {
       "id": "boost.ccm.M",
@@ -2508,7 +2892,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 320
+      "yaml_line": 361
     },
     "buckboost.ccm.M": {
       "id": "buckboost.ccm.M",
@@ -2543,7 +2927,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 335
+      "yaml_line": 376
     },
     "flyback.ccm.M": {
       "id": "flyback.ccm.M",
@@ -2580,7 +2964,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 350
+      "yaml_line": 391
     },
     "forward.ccm.M": {
       "id": "forward.ccm.M",
@@ -2617,7 +3001,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 365
+      "yaml_line": 406
     },
     "forward.reset.Dmax": {
       "id": "forward.reset.Dmax",
@@ -2650,7 +3034,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 380
+      "yaml_line": 421
     },
     "buck.ripple.iL": {
       "id": "buck.ripple.iL",
@@ -2693,7 +3077,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 398
+      "yaml_line": 439
     },
     "buck.ripple.iL_pp": {
       "id": "buck.ripple.iL_pp",
@@ -2736,7 +3120,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 412
+      "yaml_line": 453
     },
     "K.def": {
       "id": "K.def",
@@ -2772,7 +3156,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 429
+      "yaml_line": 470
     },
     "Kcrit.buck": {
       "id": "Kcrit.buck",
@@ -2808,7 +3192,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 442
+      "yaml_line": 483
     },
     "Kcrit.boost": {
       "id": "Kcrit.boost",
@@ -2844,7 +3228,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 455
+      "yaml_line": 496
     },
     "Kcrit.buckboost": {
       "id": "Kcrit.buckboost",
@@ -2880,7 +3264,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 470
+      "yaml_line": 511
     },
     "Kcrit.flyback": {
       "id": "Kcrit.flyback",
@@ -2918,7 +3302,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 483
+      "yaml_line": 524
     },
     "L.crit": {
       "id": "L.crit",
@@ -2958,7 +3342,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 498
+      "yaml_line": 539
     },
     "buck.dcm.M": {
       "id": "buck.dcm.M",
@@ -2996,7 +3380,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 516
+      "yaml_line": 557
     },
     "boost.dcm.M": {
       "id": "boost.dcm.M",
@@ -3034,7 +3418,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 531
+      "yaml_line": 572
     },
     "buckboost.dcm.M": {
       "id": "buckboost.dcm.M",
@@ -3072,7 +3456,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 546
+      "yaml_line": 587
     },
     "flyback.dcm.M": {
       "id": "flyback.dcm.M",
@@ -3110,7 +3494,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 561
+      "yaml_line": 602
     },
     "dcm.P_in": {
       "id": "dcm.P_in",
@@ -3154,7 +3538,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 581
+      "yaml_line": 622
     },
     "lfr.R_in": {
       "id": "lfr.R_in",
@@ -3196,7 +3580,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 597
+      "yaml_line": 638
     },
     "flyback.V_crit": {
       "id": "flyback.V_crit",
@@ -3238,7 +3622,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 613
+      "yaml_line": 654
     },
     "flyback.Vds_off": {
       "id": "flyback.Vds_off",
@@ -3278,7 +3662,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 627
+      "yaml_line": 668
     },
     "flyback.Vds_clamped": {
       "id": "flyback.Vds_clamped",
@@ -3320,7 +3704,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 641
+      "yaml_line": 682
     },
     "flyback.diode.VR": {
       "id": "flyback.diode.VR",
@@ -3357,7 +3741,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 655
+      "yaml_line": 696
     },
     "flyback.IM": {
       "id": "flyback.IM",
@@ -3399,7 +3783,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 667
+      "yaml_line": 708
     },
     "flyback.ripple.iM": {
       "id": "flyback.ripple.iM",
@@ -3439,7 +3823,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 683
+      "yaml_line": 724
     },
     "flyback.ripple.v": {
       "id": "flyback.ripple.v",
@@ -3483,7 +3867,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 697
+      "yaml_line": 738
     },
     "flyback.Ipk.dcm": {
       "id": "flyback.Ipk.dcm",
@@ -3523,7 +3907,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 713
+      "yaml_line": 754
     },
     "flyback.leak.E": {
       "id": "flyback.leak.E",
@@ -3557,7 +3941,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 730
+      "yaml_line": 771
     },
     "flyback.leak.P": {
       "id": "flyback.leak.P",
@@ -3592,7 +3976,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 744
+      "yaml_line": 785
     },
     "flyback.V_OR": {
       "id": "flyback.V_OR",
@@ -3629,7 +4013,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 758
+      "yaml_line": 799
     },
     "clamp.Vds": {
       "id": "clamp.Vds",
@@ -3663,7 +4047,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 772
+      "yaml_line": 813
     },
     "clamp.t_reset": {
       "id": "clamp.t_reset",
@@ -3701,7 +4085,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 786
+      "yaml_line": 827
     },
     "clamp.P": {
       "id": "clamp.P",
@@ -3742,7 +4126,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 801
+      "yaml_line": 842
     },
     "clamp.rcd.V": {
       "id": "clamp.rcd.V",
@@ -3784,7 +4168,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 816
+      "yaml_line": 857
     },
     "tvs.R_D": {
       "id": "tvs.R_D",
@@ -3820,7 +4204,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 830
+      "yaml_line": 871
     },
     "tvs.V_clamp": {
       "id": "tvs.V_clamp",
@@ -3856,7 +4240,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 844
+      "yaml_line": 885
     },
     "flyback.V_ceiling": {
       "id": "flyback.V_ceiling",
@@ -3895,7 +4279,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 857
+      "yaml_line": 898
     },
     "snub.C_par": {
       "id": "snub.C_par",
@@ -3932,7 +4316,7 @@
       ],
       "derived_by": "python/pe_core/derive/snubbers.py",
       "n_tests": 8,
-      "yaml_line": 871
+      "yaml_line": 912
     },
     "snub.L_par": {
       "id": "snub.L_par",
@@ -3966,7 +4350,7 @@
       ],
       "derived_by": "python/pe_core/derive/snubbers.py",
       "n_tests": 8,
-      "yaml_line": 888
+      "yaml_line": 929
     },
     "snub.R": {
       "id": "snub.R",
@@ -4002,7 +4386,7 @@
       ],
       "derived_by": "python/pe_core/derive/snubbers.py",
       "n_tests": 8,
-      "yaml_line": 902
+      "yaml_line": 943
     },
     "snub.P": {
       "id": "snub.P",
@@ -4042,7 +4426,7 @@
       ],
       "derived_by": "python/pe_core/derive/snubbers.py",
       "n_tests": 7,
-      "yaml_line": 917
+      "yaml_line": 958
     },
     "snub.P_R": {
       "id": "snub.P_R",
@@ -4082,7 +4466,7 @@
       ],
       "derived_by": "python/pe_core/derive/snubbers.py",
       "n_tests": 8,
-      "yaml_line": 933
+      "yaml_line": 974
     },
     "dcm.ring.f": {
       "id": "dcm.ring.f",
@@ -4116,7 +4500,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 949
+      "yaml_line": 990
     },
     "loss.cond": {
       "id": "loss.cond",
@@ -4150,7 +4534,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 963
+      "yaml_line": 1004
     },
     "loss.sw.cap": {
       "id": "loss.sw.cap",
@@ -4188,7 +4572,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 975
+      "yaml_line": 1016
     },
     "loss.gate": {
       "id": "loss.gate",
@@ -4224,7 +4608,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 987
+      "yaml_line": 1028
     },
     "loss.diode": {
       "id": "loss.diode",
@@ -4262,7 +4646,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 1001
+      "yaml_line": 1042
     },
     "loss.steinmetz": {
       "id": "loss.steinmetz",
@@ -4306,7 +4690,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1013
+      "yaml_line": 1054
     },
     "loss.core": {
       "id": "loss.core",
@@ -4340,7 +4724,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1031
+      "yaml_line": 1072
     },
     "mag.L_from_AL": {
       "id": "mag.L_from_AL",
@@ -4378,7 +4762,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 1047
+      "yaml_line": 1088
     },
     "mag.AL_gap": {
       "id": "mag.AL_gap",
@@ -4425,7 +4809,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 8,
-      "yaml_line": 1061
+      "yaml_line": 1102
     },
     "mag.B_pk": {
       "id": "mag.B_pk",
@@ -4468,7 +4852,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 1079
+      "yaml_line": 1120
     },
     "mag.B_ac": {
       "id": "mag.B_ac",
@@ -4507,7 +4891,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 1093
+      "yaml_line": 1134
     },
     "mag.dB_faraday": {
       "id": "mag.dB_faraday",
@@ -4549,7 +4933,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 1109
+      "yaml_line": 1150
     },
     "mag.N_Bmax": {
       "id": "mag.N_Bmax",
@@ -4588,7 +4972,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 1125
+      "yaml_line": 1166
     },
     "mag.gap_length": {
       "id": "mag.gap_length",
@@ -4633,7 +5017,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 1139
+      "yaml_line": 1180
     },
     "mag.Kg_req": {
       "id": "mag.Kg_req",
@@ -4677,7 +5061,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 8,
-      "yaml_line": 1154
+      "yaml_line": 1195
     },
     "mag.Kg_core": {
       "id": "mag.Kg_core",
@@ -4713,7 +5097,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1170
+      "yaml_line": 1211
     },
     "wind.fill": {
       "id": "wind.fill",
@@ -4749,7 +5133,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1184
+      "yaml_line": 1225
     },
     "wind.dcr": {
       "id": "wind.dcr",
@@ -4787,7 +5171,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 7,
-      "yaml_line": 1197
+      "yaml_line": 1238
     },
     "wind.skin_depth": {
       "id": "wind.skin_depth",
@@ -4824,7 +5208,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 8,
-      "yaml_line": 1211
+      "yaml_line": 1252
     },
     "wind.dowell": {
       "id": "wind.dowell",
@@ -4862,7 +5246,7 @@
       ],
       "derived_by": null,
       "n_tests": 9,
-      "yaml_line": 1226
+      "yaml_line": 1267
     },
     "wind.phi_foil": {
       "id": "wind.phi_foil",
@@ -4896,7 +5280,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1243
+      "yaml_line": 1284
     },
     "wind.dowell_low": {
       "id": "wind.dowell_low",
@@ -4935,7 +5319,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 8,
-      "yaml_line": 1256
+      "yaml_line": 1297
     },
     "wind.loss_rel": {
       "id": "wind.loss_rel",
@@ -4974,7 +5358,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 8,
-      "yaml_line": 1274
+      "yaml_line": 1315
     },
     "wind.phi_opt": {
       "id": "wind.phi_opt",
@@ -5012,7 +5396,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 8,
-      "yaml_line": 1292
+      "yaml_line": 1333
     },
     "xfmr.leakage.ps": {
       "id": "xfmr.leakage.ps",
@@ -5057,7 +5441,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 7,
-      "yaml_line": 1310
+      "yaml_line": 1351
     },
     "xfmr.leakage.psp": {
       "id": "xfmr.leakage.psp",
@@ -5102,7 +5486,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 7,
-      "yaml_line": 1324
+      "yaml_line": 1365
     },
     "xfmr.k": {
       "id": "xfmr.k",
@@ -5142,7 +5526,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1338
+      "yaml_line": 1379
     },
     "xfmr.L_sc": {
       "id": "xfmr.L_sc",
@@ -5180,7 +5564,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 8,
-      "yaml_line": 1353
+      "yaml_line": 1394
     },
     "xfmr.L_sc_T": {
       "id": "xfmr.L_sc_T",
@@ -5217,7 +5601,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 7,
-      "yaml_line": 1370
+      "yaml_line": 1411
     },
     "xfmr.V_oc": {
       "id": "xfmr.V_oc",
@@ -5254,7 +5638,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 8,
-      "yaml_line": 1384
+      "yaml_line": 1425
     },
     "wind.rho_T": {
       "id": "wind.rho_T",
@@ -5290,7 +5674,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1399
+      "yaml_line": 1440
     },
     "wind.round_area": {
       "id": "wind.round_area",
@@ -5324,7 +5708,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1413
+      "yaml_line": 1454
     },
     "wind.porosity": {
       "id": "wind.porosity",
@@ -5366,7 +5750,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1427
+      "yaml_line": 1468
     },
     "wind.phi_round": {
       "id": "wind.phi_round",
@@ -5406,7 +5790,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1443
+      "yaml_line": 1484
     },
     "src.Pmax": {
       "id": "src.Pmax",
@@ -5440,7 +5824,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 1462
+      "yaml_line": 1503
     },
     "src.cv_power": {
       "id": "src.cv_power",
@@ -5476,7 +5860,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1476
+      "yaml_line": 1517
     },
     "src.cv_extraction": {
       "id": "src.cv_extraction",
@@ -5510,7 +5894,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1491
+      "yaml_line": 1532
     },
     "lfr.Vg": {
       "id": "lfr.Vg",
@@ -5548,7 +5932,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1507
+      "yaml_line": 1548
     },
     "lfr.eta": {
       "id": "lfr.eta",
@@ -5584,7 +5968,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1522
+      "yaml_line": 1563
     },
     "lfr.Vg_power": {
       "id": "lfr.Vg_power",
@@ -5624,7 +6008,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 1537
+      "yaml_line": 1578
     },
     "sense.current_out_monitor": {
       "id": "sense.current_out_monitor",
@@ -5662,7 +6046,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1553
+      "yaml_line": 1594
     },
     "sense.burden": {
       "id": "sense.burden",
@@ -5696,7 +6080,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1567
+      "yaml_line": 1608
     },
     "sense.voltage_out_monitor": {
       "id": "sense.voltage_out_monitor",
@@ -5734,7 +6118,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 8,
-      "yaml_line": 1581
+      "yaml_line": 1622
     },
     "sense.offset_current": {
       "id": "sense.offset_current",
@@ -5772,7 +6156,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1596
+      "yaml_line": 1637
     },
     "sense.pad_error": {
       "id": "sense.pad_error",
@@ -5810,7 +6194,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1612
+      "yaml_line": 1653
     },
     "sense.reading": {
       "id": "sense.reading",
@@ -5852,7 +6236,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 9,
-      "yaml_line": 1628
+      "yaml_line": 1669
     },
     "sense.rel_error": {
       "id": "sense.rel_error",
@@ -5894,7 +6278,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 8,
-      "yaml_line": 1646
+      "yaml_line": 1687
     },
     "sense.filter_R": {
       "id": "sense.filter_R",
@@ -5929,7 +6313,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 8,
-      "yaml_line": 1663
+      "yaml_line": 1704
     },
     "adc.nyquist": {
       "id": "adc.nyquist",
@@ -5962,7 +6346,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1678
+      "yaml_line": 1719
     },
     "def.Ts": {
       "id": "def.Ts",
@@ -5994,7 +6378,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1694
+      "yaml_line": 1735
     },
     "def.V": {
       "id": "def.V",
@@ -6028,7 +6412,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1705
+      "yaml_line": 1746
     },
     "sw.v_avg": {
       "id": "sw.v_avg",
@@ -6063,7 +6447,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1720
+      "yaml_line": 1761
     },
     "vsb.v_off": {
       "id": "vsb.v_off",
@@ -6098,7 +6482,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1734
+      "yaml_line": 1775
     },
     "vsb.drift": {
       "id": "vsb.drift",
@@ -6134,7 +6518,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1748
+      "yaml_line": 1789
     },
     "csb.i_off": {
       "id": "csb.i_off",
@@ -6169,7 +6553,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1762
+      "yaml_line": 1803
     },
     "buck.dcm.D2": {
       "id": "buck.dcm.D2",
@@ -6206,7 +6590,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 7,
-      "yaml_line": 1776
+      "yaml_line": 1817
     },
     "boost.ccm.M_RL": {
       "id": "boost.ccm.M_RL",
@@ -6246,7 +6630,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1792
+      "yaml_line": 1833
     },
     "boost.ccm.eta_RL": {
       "id": "boost.ccm.eta_RL",
@@ -6286,7 +6670,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1806
+      "yaml_line": 1847
     },
     "buck.ss.Gd0": {
       "id": "buck.ss.Gd0",
@@ -6321,7 +6705,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1821
+      "yaml_line": 1862
     },
     "buck.ss.w0": {
       "id": "buck.ss.w0",
@@ -6358,7 +6742,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1835
+      "yaml_line": 1876
     },
     "buck.ss.Q": {
       "id": "buck.ss.Q",
@@ -6397,7 +6781,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1847
+      "yaml_line": 1888
     },
     "boost.ss.Gd0": {
       "id": "boost.ss.Gd0",
@@ -6434,7 +6818,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1859
+      "yaml_line": 1900
     },
     "boost.ss.w0": {
       "id": "boost.ss.w0",
@@ -6473,7 +6857,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1873
+      "yaml_line": 1914
     },
     "boost.ss.Q": {
       "id": "boost.ss.Q",
@@ -6514,7 +6898,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1885
+      "yaml_line": 1926
     },
     "boost.ss.wz": {
       "id": "boost.ss.wz",
@@ -6553,7 +6937,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1897
+      "yaml_line": 1938
     },
     "buckboost.ss.Gd0": {
       "id": "buckboost.ss.Gd0",
@@ -6590,7 +6974,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1911
+      "yaml_line": 1952
     },
     "buckboost.ss.w0": {
       "id": "buckboost.ss.w0",
@@ -6629,7 +7013,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1925
+      "yaml_line": 1966
     },
     "buckboost.ss.Q": {
       "id": "buckboost.ss.Q",
@@ -6670,7 +7054,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1937
+      "yaml_line": 1978
     },
     "buckboost.ss.wz": {
       "id": "buckboost.ss.wz",
@@ -6709,7 +7093,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 1949
+      "yaml_line": 1990
     },
     "pwm.d": {
       "id": "pwm.d",
@@ -6743,7 +7127,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1964
+      "yaml_line": 2005
     },
     "loop.T": {
       "id": "loop.T",
@@ -6781,7 +7165,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1979
+      "yaml_line": 2020
     },
     "loop.suppression": {
       "id": "loop.suppression",
@@ -6814,7 +7198,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 1993
+      "yaml_line": 2034
     },
     "buck.IL": {
       "id": "buck.IL",
@@ -6852,7 +7236,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2010
+      "yaml_line": 2051
     },
     "ripple.Ipk": {
       "id": "ripple.Ipk",
@@ -6887,7 +7271,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 2024
+      "yaml_line": 2065
     },
     "buck.ripple.v": {
       "id": "buck.ripple.v",
@@ -6926,7 +7310,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2037
+      "yaml_line": 2078
     },
     "boost.IL": {
       "id": "boost.IL",
@@ -6966,7 +7350,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2053
+      "yaml_line": 2094
     },
     "boost.ripple.iL": {
       "id": "boost.ripple.iL",
@@ -7007,7 +7391,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2067
+      "yaml_line": 2108
     },
     "boost.ripple.v": {
       "id": "boost.ripple.v",
@@ -7051,7 +7435,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2079
+      "yaml_line": 2120
     },
     "buckboost.V": {
       "id": "buckboost.V",
@@ -7088,7 +7472,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2093
+      "yaml_line": 2134
     },
     "buckboost.IL": {
       "id": "buckboost.IL",
@@ -7128,7 +7512,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2107
+      "yaml_line": 2148
     },
     "buckboost.ripple.iL": {
       "id": "buckboost.ripple.iL",
@@ -7169,7 +7553,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2121
+      "yaml_line": 2162
     },
     "buckboost.ripple.v": {
       "id": "buckboost.ripple.v",
@@ -7213,7 +7597,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2133
+      "yaml_line": 2174
     },
     "buck.Vds": {
       "id": "buck.Vds",
@@ -7247,7 +7631,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2147
+      "yaml_line": 2188
     },
     "boost.Vds": {
       "id": "boost.Vds",
@@ -7282,7 +7666,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2159
+      "yaml_line": 2200
     },
     "buckboost.Vds": {
       "id": "buckboost.Vds",
@@ -7319,7 +7703,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2171
+      "yaml_line": 2212
     },
     "forward.Vds": {
       "id": "forward.Vds",
@@ -7354,7 +7738,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2183
+      "yaml_line": 2224
     },
     "forward.ripple.iL": {
       "id": "forward.ripple.iL",
@@ -7399,7 +7783,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2197
+      "yaml_line": 2238
     },
     "util.buck": {
       "id": "util.buck",
@@ -7434,7 +7818,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2212
+      "yaml_line": 2253
     },
     "util.boost": {
       "id": "util.boost",
@@ -7469,7 +7853,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2226
+      "yaml_line": 2267
     },
     "util.buckboost": {
       "id": "util.buckboost",
@@ -7504,7 +7888,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2240
+      "yaml_line": 2281
     },
     "util.forward": {
       "id": "util.forward",
@@ -7541,7 +7925,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2254
+      "yaml_line": 2295
     },
     "ind.di": {
       "id": "ind.di",
@@ -7578,7 +7962,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2271
+      "yaml_line": 2312
     },
     "cap.dv": {
       "id": "cap.dv",
@@ -7615,7 +7999,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2285
+      "yaml_line": 2326
     },
     "ind.E": {
       "id": "ind.E",
@@ -7650,7 +8034,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2299
+      "yaml_line": 2340
     },
     "cap.E": {
       "id": "cap.E",
@@ -7684,7 +8068,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2311
+      "yaml_line": 2352
     },
     "imp.ZL": {
       "id": "imp.ZL",
@@ -7719,7 +8103,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2323
+      "yaml_line": 2364
     },
     "imp.ZC": {
       "id": "imp.ZC",
@@ -7754,7 +8138,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2337
+      "yaml_line": 2378
     },
     "rc.fc": {
       "id": "rc.fc",
@@ -7788,7 +8172,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2351
+      "yaml_line": 2392
     },
     "rc.gain": {
       "id": "rc.gain",
@@ -7823,7 +8207,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 8,
-      "yaml_line": 2365
+      "yaml_line": 2406
     },
     "fourier.pulse.harm": {
       "id": "fourier.pulse.harm",
@@ -7860,7 +8244,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 8,
-      "yaml_line": 2380
+      "yaml_line": 2421
     },
     "fourier.pulse.rms": {
       "id": "fourier.pulse.rms",
@@ -7894,7 +8278,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2395
+      "yaml_line": 2436
     },
     "passive.f_srf": {
       "id": "passive.f_srf",
@@ -7928,7 +8312,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2407
+      "yaml_line": 2448
     },
     "meas.L_app": {
       "id": "meas.L_app",
@@ -7965,7 +8349,7 @@
       ],
       "derived_by": "python/pe_core/derive/measurement.py",
       "n_tests": 8,
-      "yaml_line": 2421
+      "yaml_line": 2462
     },
     "cap.esr.ripple": {
       "id": "cap.esr.ripple",
@@ -7999,7 +8383,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2438
+      "yaml_line": 2479
     },
     "mag.H_ampere": {
       "id": "mag.H_ampere",
@@ -8035,7 +8419,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2453
+      "yaml_line": 2494
     },
     "mag.B_H": {
       "id": "mag.B_H",
@@ -8072,7 +8456,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 2465
+      "yaml_line": 2506
     },
     "xfmr.V2": {
       "id": "xfmr.V2",
@@ -8110,7 +8494,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2478
+      "yaml_line": 2519
     },
     "xfmr.I2": {
       "id": "xfmr.I2",
@@ -8148,7 +8532,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2494
+      "yaml_line": 2535
     },
     "bat.rint": {
       "id": "bat.rint",
@@ -8184,7 +8568,512 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 2512
+      "yaml_line": 2553
+    },
+    "layout.v_spike": {
+      "id": "layout.v_spike",
+      "title": "Voltage across a loop's inductance during a switching edge",
+      "title_ko": "스위칭 에지 동안 루프 인덕턴스에 걸리는 전압",
+      "latex": "V_\\mathrm{spike} = \\frac{L_\\mathrm{loop} \\Delta I}{t_\\mathrm{edge}}",
+      "lhs": "V_spike",
+      "expr": "L_loop*Delta_I/t_edge",
+      "relation": "eq",
+      "variables": [
+        "Delta_I",
+        "L_loop",
+        "t_edge"
+      ],
+      "constants": [],
+      "symbols": {
+        "Delta_I": "current change over the edge",
+        "L_loop": "loop inductance",
+        "t_edge": "edge duration"
+      },
+      "assumptions": [
+        "linear_edge"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "for the same edge the voltage is proportional to the loop's inductance, and a faster edge raises it in proportion: 10 nH carrying 10 A that stops in 10 ns develops 10 V",
+      "notes_ko": "같은 에지라면 전압은 루프 인덕턴스에 비례하고, 에지가 빨라지면 그만큼 커진다. 10 A가 흐르던 10 nH 루프에서 전류가 10 ns 만에 멈추면 10 V가 생긴다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 6 (Capacitors and Inductors); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/bench.py",
+      "n_tests": 8,
+      "yaml_line": 2568
+    },
+    "layout.L_ring": {
+      "id": "layout.L_ring",
+      "title": "Loop inductance from the ring after a switching edge",
+      "title_ko": "스위칭 에지 뒤 링잉으로 구한 루프 인덕턴스",
+      "latex": "L_\\mathrm{loop} = \\frac{1}{4 \\pi^{2} f_\\mathrm{ring}^{2} C_\\mathrm{node}}",
+      "lhs": "L_loop",
+      "expr": "1/(4*pi**2*f_ring**2*C_node)",
+      "relation": "eq",
+      "variables": [
+        "C_node",
+        "f_ring"
+      ],
+      "constants": [],
+      "symbols": {
+        "C_node": "capacitance at the switch node: the switch's and the diode's output capacitances, the probe's and the board's",
+        "f_ring": "frequency of the ring after the turn-off edge"
+      },
+      "assumptions": [
+        "lossless_lc"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "after the turn-off edge the loop's inductance rings with the switch node's capacitance; the ring's frequency, read on an oscilloscope, gives the inductance without a current probe in the loop. The ring counts every capacitance at the node, the probe's included: leaving one out overstates the inductance",
+      "notes_ko": "턴오프 에지 뒤에 루프 인덕턴스는 스위치 노드 커패시턴스와 링잉한다. 오실로스코프로 읽은 링잉 주파수로 루프에 전류 프로브를 넣지 않고 인덕턴스를 구한다. 링잉에는 프로브를 포함해 노드의 모든 커패시턴스가 들어가므로, 하나라도 빼면 인덕턴스를 크게 어림한다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 14 (Frequency Response: series resonance); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/bench.py",
+      "n_tests": 7,
+      "yaml_line": 2583
+    },
+    "boot.C": {
+      "id": "boot.C",
+      "title": "Bootstrap capacitance for an allowed droop",
+      "title_ko": "허용 전압 강하에 맞춘 부트스트랩 커패시턴스",
+      "latex": "C_\\mathrm{boot} = \\frac{Q_\\mathrm{boot}}{\\Delta V_\\mathrm{boot}}",
+      "lhs": "C_boot",
+      "expr": "Q_boot/Delta_V_boot",
+      "relation": "eq",
+      "variables": [
+        "Delta_V_boot",
+        "Q_boot"
+      ],
+      "constants": [],
+      "symbols": {
+        "Delta_V_boot": "allowed droop",
+        "Q_boot": "charge drawn while the high side is on"
+      },
+      "assumptions": [
+        "bootstrap_no_recharge"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the capacitor's voltage falls by the charge it supplies divided by its capacitance; halving the allowed droop doubles the capacitance needed",
+      "notes_ko": "커패시터 전압은 공급한 전하를 커패시턴스로 나눈 만큼 떨어진다. 허용 강하를 절반으로 줄이면 필요한 커패시턴스는 두 배가 된다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 6 (Capacitors and Inductors); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/bench.py",
+      "n_tests": 7,
+      "yaml_line": 2598
+    },
+    "probe.t_rise": {
+      "id": "probe.t_rise",
+      "title": "Rise time of a single-pole system",
+      "title_ko": "단일 극점 시스템의 상승 시간",
+      "latex": "t_\\mathrm{rise} = \\frac{\\ln{\\left(9 \\right)}}{2 \\pi f_\\mathrm{BW}}",
+      "lhs": "t_rise",
+      "expr": "log(9)/(2*pi*BW)",
+      "relation": "eq",
+      "variables": [
+        "BW"
+      ],
+      "constants": [],
+      "symbols": {
+        "BW": "-3 dB bandwidth"
+      },
+      "assumptions": [
+        "first_order_response"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "ln 9/(2π) = 0.350, so a 100 MHz single-pole system shows an ideal step rising in 3.5 ns; a response of another shape has another constant",
+      "notes_ko": "ln 9/(2π) = 0.350이므로, 100 MHz 단일 극점 시스템은 이상적인 계단이 3.5 ns에 걸쳐 오르는 것으로 보여 준다. 응답의 모양이 다르면 상수도 달라진다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 7 (First-Order Circuits) and Ch. 14 (Frequency Response); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/bench.py",
+      "n_tests": 7,
+      "yaml_line": 2612
+    },
+    "probe.f_ring": {
+      "id": "probe.f_ring",
+      "title": "Ringing frequency of a probe's ground loop",
+      "title_ko": "프로브 접지 루프의 링잉 주파수",
+      "latex": "f_\\mathrm{probe} = \\frac{1}{2 \\pi \\sqrt{L_\\mathrm{gnd} C_\\mathrm{probe}}}",
+      "lhs": "f_probe",
+      "expr": "1/(2*pi*sqrt(L_gnd*C_probe))",
+      "relation": "eq",
+      "variables": [
+        "C_probe",
+        "L_gnd"
+      ],
+      "constants": [],
+      "symbols": {
+        "C_probe": "probe input capacitance",
+        "L_gnd": "inductance of the tip-and-ground loop"
+      },
+      "assumptions": [
+        "lossless_lc"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the loop's inductance and the probe's input capacitance form a series L-C that every fast edge excites: a ringing of the probe, not of the circuit. A shorter ground makes the inductance smaller and the ring faster",
+      "notes_ko": "루프 인덕턴스와 프로브 입력 커패시턴스가 직렬 L-C를 이루어, 빠른 에지마다 여기된다. 회로가 아니라 프로브의 링잉이다. 접지를 짧게 하면 인덕턴스가 작아져 링잉 주파수가 높아진다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 14 (Frequency Response: series resonance); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/bench.py",
+      "n_tests": 7,
+      "yaml_line": 2626
+    },
+    "inrush.I_pk": {
+      "id": "inrush.I_pk",
+      "title": "Peak inrush current into an empty capacitor",
+      "title_ko": "빈 커패시터로 흐르는 돌입 전류의 최댓값",
+      "latex": "I_\\mathrm{inrush} = \\frac{V_g}{R_\\mathrm{ser}}",
+      "lhs": "I_inrush",
+      "expr": "V_g/R_ser",
+      "relation": "eq",
+      "variables": [
+        "R_ser",
+        "V_g"
+      ],
+      "constants": [],
+      "symbols": {
+        "R_ser": "series resistance of the charging path",
+        "V_g": "voltage switched on"
+      },
+      "assumptions": [
+        "rc_step"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "at the step the empty capacitor has no voltage across it, so the whole step falls across the series resistance, and the current then decays with the time constant $R_\\mathrm{ser} C_\\mathrm{in}$. In this R-C model the capacitance does not limit the peak; inductance in the leads slows the rise, lowers the peak (which then depends on the capacitance too) and, with little resistance, makes the capacitor's voltage overshoot the supply",
+      "notes_ko": "계단이 인가되는 순간 빈 커패시터 양단 전압은 0이므로 계단 전압 전체가 직렬 저항에 걸리고, 이후 전류는 시정수 $R_\\mathrm{ser} C_\\mathrm{in}$으로 감소한다. 이 R-C 모델에서는 커패시턴스가 최댓값을 제한하지 않는다. 리드의 인덕턴스는 상승을 늦추고 최댓값을 낮추며(그때는 커패시턴스도 최댓값에 영향을 준다), 저항이 작으면 커패시터 전압이 전원 전압을 넘어 오버슈트하게 만든다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 7 (First-Order Circuits); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/bench.py",
+      "n_tests": 7,
+      "yaml_line": 2640
+    },
+    "inrush.I2t": {
+      "id": "inrush.I2t",
+      "title": "Joule integral of the inrush pulse",
+      "title_ko": "돌입 전류 펄스의 줄 적분",
+      "latex": "I^2 t = \\frac{V_g^{2} C_\\mathrm{in}}{2 R_\\mathrm{ser}}",
+      "lhs": "I2t",
+      "expr": "V_g**2*C_in/(2*R_ser)",
+      "relation": "eq",
+      "variables": [
+        "C_in",
+        "R_ser",
+        "V_g"
+      ],
+      "constants": [],
+      "symbols": {
+        "C_in": "input capacitance",
+        "R_ser": "series resistance of the charging path",
+        "V_g": "voltage switched on"
+      },
+      "assumptions": [
+        "rc_step"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the integral of the decaying current squared; times $R_\\mathrm{ser}$ it is the energy the resistance dissipates while the capacitor charges, $C_\\mathrm{in} V_g^2/2$, as much as the capacitor stores whatever the resistance. Inductance in the leads does not change it: the source still delivers $C_\\mathrm{in} V_g^2$ and the capacitor keeps half",
+      "notes_ko": "감소하는 전류의 제곱을 적분한 값이다. 여기에 $R_\\mathrm{ser}$를 곱하면 커패시터가 충전되는 동안 저항이 소산하는 에너지 $C_\\mathrm{in} V_g^2/2$가 되며, 저항값과 관계없이 커패시터에 저장되는 에너지와 같다. 리드의 인덕턴스는 이 값을 바꾸지 않는다. 전원은 여전히 $C_\\mathrm{in} V_g^2$를 내보내고 커패시터는 그 절반을 저장한다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 7 (First-Order Circuits); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/bench.py",
+      "n_tests": 7,
+      "yaml_line": 2654
+    },
+    "inrush.I_ramp": {
+      "id": "inrush.I_ramp",
+      "title": "Inrush current with a controlled voltage ramp",
+      "title_ko": "전압 상승을 제어할 때의 돌입 전류",
+      "latex": "I_\\mathrm{ramp} = \\frac{C_\\mathrm{in} V_g}{t_\\mathrm{ramp}}",
+      "lhs": "I_ramp",
+      "expr": "C_in*V_g/t_ramp",
+      "relation": "eq",
+      "variables": [
+        "C_in",
+        "V_g",
+        "t_ramp"
+      ],
+      "constants": [],
+      "symbols": {
+        "C_in": "input capacitance",
+        "V_g": "final voltage",
+        "t_ramp": "ramp time"
+      },
+      "assumptions": [
+        "linear_ramp",
+        "series_ramp"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "a capacitor's current is $C \\, dv/dt$, so a constant slope draws a constant current, inversely proportional to the ramp time. With no other resistance in the path, the element that sets the ramp in series with the supply drops $V_g - v_C$ while carrying it and dissipates $C_\\mathrm{in} V_g^2/2$ over the ramp, as much as a series resistance would from a step: the ramp lowers the current and spreads the energy over time, but does not remove it. A source that ramps its own output (a converter's soft start) has no such element: its path loses only the resistance's share, $2 R_\\mathrm{ser} C_\\mathrm{in}/t_\\mathrm{ramp}$ of the stored energy",
+      "notes_ko": "커패시터 전류는 $C \\, dv/dt$이므로, 기울기가 일정하면 전류도 일정하고 램프 시간에 반비례한다. 경로에 다른 저항이 없으면, 전원과 직렬로 램프를 만드는 소자는 이 전류를 흘리는 동안 $V_g - v_C$를 떠안아 램프 동안 $C_\\mathrm{in} V_g^2/2$를 소산한다. 계단 입력 때 직렬 저항이 소산하는 양과 같다. 램프는 전류를 낮추고 에너지를 시간에 걸쳐 나눌 뿐, 에너지를 없애지는 않는다. 컨버터의 소프트 스타트처럼 전원 자신이 출력을 램프로 올리면 그런 소자가 없으며, 경로는 저항의 몫, 곧 저장 에너지의 $2 R_\\mathrm{ser} C_\\mathrm{in}/t_\\mathrm{ramp}$만 잃는다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 6 (Capacitors and Inductors); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/bench.py",
+      "n_tests": 7,
+      "yaml_line": 2668
+    },
+    "gate.I_on": {
+      "id": "gate.I_on",
+      "title": "Gate current on the Miller plateau at turn-on",
+      "title_ko": "턴온 때 밀러 플래토의 게이트 전류",
+      "latex": "I_G = \\frac{V_\\mathrm{GS} - V_\\mathrm{pl}}{R_G}",
+      "lhs": "I_G",
+      "expr": "(V_GS - V_pl)/R_G",
+      "relation": "eq",
+      "variables": [
+        "R_G",
+        "V_GS",
+        "V_pl"
+      ],
+      "constants": [],
+      "symbols": {
+        "R_G": "gate-loop resistance",
+        "V_GS": "driver's on voltage",
+        "V_pl": "plateau voltage"
+      },
+      "assumptions": [
+        "gate_plateau"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "with the gate held at the plateau, what the driver's voltage exceeds it by drives the current through the gate loop's resistance; a plateau close to the drive voltage leaves little current, and a slow turn-on",
+      "notes_ko": "게이트가 플래토에 묶여 있는 동안에는 드라이버 전압이 플래토 전압을 넘는 만큼이 게이트 루프 저항에 전류를 흘린다. 플래토가 구동 전압에 가까우면 전류가 작아 턴온이 느리다",
+      "cites": [
+        {
+          "key": "balogh2018",
+          "where": "MOSFET turn-on (the Miller plateau)"
+        },
+        {
+          "key": "alexander2017",
+          "where": "Ch. 2 (Basic Laws: Ohm's law); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/bench.py",
+      "n_tests": 7,
+      "yaml_line": 2682
+    },
+    "gate.I_off": {
+      "id": "gate.I_off",
+      "title": "Gate current on the Miller plateau at turn-off",
+      "title_ko": "턴오프 때 밀러 플래토의 게이트 전류",
+      "latex": "I_G = \\frac{V_\\mathrm{pl}}{R_G}",
+      "lhs": "I_G",
+      "expr": "V_pl/R_G",
+      "relation": "eq",
+      "variables": [
+        "R_G",
+        "V_pl"
+      ],
+      "constants": [],
+      "symbols": {
+        "R_G": "gate-loop resistance",
+        "V_pl": "plateau voltage"
+      },
+      "assumptions": [
+        "gate_plateau"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the driver pulls the gate to zero, so the plateau voltage itself drives the current out; with the same gate-loop resistance at both edges and a plateau below half the drive voltage, turn-off draws less current than turn-on and takes longer (a driver that sinks more strongly than it sources, or a turn-off diode across the gate resistor, changes that)",
+      "notes_ko": "드라이버가 게이트를 0으로 끌어내리므로 플래토 전압 자체가 전류를 빼낸다. 두 에지에서 게이트 루프 저항이 같고 플래토가 구동 전압의 절반보다 낮으면 턴오프 전류가 턴온보다 작아 더 오래 걸린다(끌어내리는 능력이 공급 능력보다 강한 드라이버나 게이트 저항에 병렬로 넣은 턴오프 다이오드는 이를 바꾼다)",
+      "cites": [
+        {
+          "key": "balogh2018",
+          "where": "MOSFET turn-off (the Miller plateau)"
+        },
+        {
+          "key": "alexander2017",
+          "where": "Ch. 2 (Basic Laws: Ohm's law); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/bench.py",
+      "n_tests": 7,
+      "yaml_line": 2699
+    },
+    "gate.t_pl": {
+      "id": "gate.t_pl",
+      "title": "Time on the Miller plateau",
+      "title_ko": "밀러 플래토에 머무는 시간",
+      "latex": "t_\\mathrm{pl} = \\frac{Q_\\mathrm{GD}}{I_G}",
+      "lhs": "t_pl",
+      "expr": "Q_GD/I_G",
+      "relation": "eq",
+      "variables": [
+        "I_G",
+        "Q_GD"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_G": "gate current on the plateau",
+        "Q_GD": "gate-drain charge"
+      },
+      "assumptions": [
+        "gate_plateau"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "the plateau lasts while the gate delivers the gate-drain charge at a constant current, and the drain voltage makes its transition meanwhile; a larger gate current shortens it in proportion",
+      "notes_ko": "플래토는 게이트가 일정한 전류로 게이트-드레인 전하를 전달하는 동안 지속되며, 그동안 드레인 전압이 전이한다. 게이트 전류가 커지면 그에 비례해 짧아진다",
+      "cites": [
+        {
+          "key": "vishay_an608a",
+          "where": "Q_GD, the charge taken on the Miller plateau"
+        },
+        {
+          "key": "alexander2017",
+          "where": "Ch. 1 (Basic Concepts: charge and current); derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/bench.py",
+      "n_tests": 7,
+      "yaml_line": 2715
+    },
+    "therm.Tj": {
+      "id": "therm.Tj",
+      "title": "Junction temperature through a series thermal path",
+      "title_ko": "직렬 열 경로를 통한 접합 온도",
+      "latex": "T_J = T_A + P_D \\left(\\theta_\\mathrm{JC} + \\theta_\\mathrm{CS} + \\theta_\\mathrm{SA}\\right)",
+      "lhs": "T_J",
+      "expr": "T_A + P_D*(theta_JC + theta_CS + theta_SA)",
+      "relation": "eq",
+      "variables": [
+        "P_D",
+        "T_A",
+        "theta_CS",
+        "theta_JC",
+        "theta_SA"
+      ],
+      "constants": [],
+      "symbols": {
+        "P_D": "dissipated power",
+        "T_A": "ambient temperature",
+        "theta_CS": "case-to-sink",
+        "theta_JC": "junction-to-case",
+        "theta_SA": "sink-to-ambient"
+      },
+      "assumptions": [
+        "series_heat_path"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "each part of the path raises the temperature by its thermal resistance times the power through it, and the rises add; the largest resistance in the chain takes the largest share of the junction's rise, so lowering it helps most",
+      "notes_ko": "경로의 각 부분은 그 열저항과 지나가는 전력의 곱만큼 온도를 올리고, 이 상승분이 더해진다. 사슬에서 가장 큰 열저항이 접합 온도 상승에서 가장 큰 몫을 차지하므로, 그것을 낮추는 것이 가장 효과적이다",
+      "cites": [
+        {
+          "key": "ti_spra953",
+          "where": "thermal resistance as a temperature difference per watt; derived here"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/bench.py",
+      "n_tests": 7,
+      "yaml_line": 2731
+    },
+    "therm.psi": {
+      "id": "therm.psi",
+      "title": "Junction temperature from the package-top temperature",
+      "title_ko": "패키지 윗면 온도로 구한 접합 온도",
+      "latex": "T_J = T_T + \\Psi_\\mathrm{JT} P_D",
+      "lhs": "T_J",
+      "expr": "T_T + Psi_JT*P_D",
+      "relation": "eq",
+      "variables": [
+        "P_D",
+        "Psi_JT",
+        "T_T"
+      ],
+      "constants": [],
+      "symbols": {
+        "P_D": "dissipated power",
+        "Psi_JT": "junction-to-top characterization parameter",
+        "T_T": "package-top temperature"
+      },
+      "assumptions": [
+        "characterization_parameter"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "only part of the power flows through the package top, so the parameter is not a true thermal resistance and is not added into a series path; it relates the measured top to the junction for the device's whole power, in the conditions it was characterized in: with a heat sink on the package it no longer applies",
+      "notes_ko": "전력의 일부만 패키지 윗면을 지나므로 이 파라미터는 진정한 열저항이 아니며 직렬 경로에 더하지 않는다. 측정한 윗면 온도와 접합 온도를 소자 전체 전력에 대해, 특성화한 조건에서만 이어 준다. 패키지에 방열판을 붙이면 더 이상 맞지 않는다",
+      "cites": [
+        {
+          "key": "ti_spra953",
+          "where": "Psi_JT, the junction-to-top characterization parameter"
+        }
+      ],
+      "derived_by": null,
+      "n_tests": 7,
+      "yaml_line": 2745
+    },
+    "bat.v_term": {
+      "id": "bat.v_term",
+      "title": "Terminal voltage of a battery in the Rint model",
+      "title_ko": "Rint 모델에서 배터리의 단자 전압",
+      "latex": "V = V_b + I_b R_b",
+      "lhs": "V",
+      "expr": "V_b + I_b*R_b",
+      "relation": "eq",
+      "variables": [
+        "I_b",
+        "R_b",
+        "V_b"
+      ],
+      "constants": [],
+      "symbols": {
+        "I_b": "battery current, charging positive",
+        "R_b": "internal resistance",
+        "V_b": "open-circuit voltage"
+      },
+      "assumptions": [
+        "rint_battery"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "charging lifts the terminals above the open-circuit voltage by the current times the internal resistance, and discharging pulls them below; a charger that holds the terminals at a voltage limit delivers less current when the resistance is higher",
+      "notes_ko": "충전하면 단자 전압이 개방 전압보다 전류와 내부 저항의 곱만큼 높아지고, 방전하면 그만큼 낮아진다. 단자를 전압 한계에 묶어 두는 충전기는 저항이 클수록 전류를 적게 흘린다",
+      "cites": [
+        {
+          "key": "he2011",
+          "where": "Sec. 2.1 (The Rint Model)"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/bench.py",
+      "n_tests": 8,
+      "yaml_line": 2758
     }
   }
 }

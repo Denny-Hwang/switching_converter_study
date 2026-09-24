@@ -125,8 +125,9 @@
   number      = {SLUA618A},
   year        = {2018},
   url         = {https://www.ti.com/lit/pdf/slua618},
-  note        = {verified 2026-09-23 (ti.com/lit/pdf/slua618; SLUA618A, March 2017, revised October 2018; gate-drive power V_DRV Q_G f_DRV)},
+  note        = {verified 2026-09-23 (ti.com/lit/pdf/slua618; SLUA618A, March 2017, revised October 2018; gate-drive power V_DRV Q_G f_DRV); rechecked 2026-09-24 by two independent web-search rounds for the Miller plateau: at turn-on, while the drain voltage falls, the gate-source voltage stays constant and all the gate current available from the driver discharges C_GD; at turn-off the plateau's gate current charges C_GD (that wording was seen only in search summaries, and CI checks it in the PDF). CI, 2026-09-24, reading the PDF: "While the drain voltage falls across the device, the gate-to-source voltage stays steady"; the earlier quote's "stays constant" is not the PDF's wording, and the quote is now its own},
   urltitle    = {Fundamentals of MOSFET and IGBT Gate Driver Circuits},
+  urlquotes   = {While the drain voltage falls across the device, the gate-to-source voltage stays steady | all the gate current available from the driver is diverted to discharge | is strictly the charging current of the},
   urlkind     = {pdf}
 }
 
@@ -426,6 +427,217 @@
   year    = {2005},
   doi     = {10.1137/04061101X},
   note    = {verified 2026-09-24 (round 1: web search; the University of Manchester research record and the author's eprint give the title, SIAM J. Matrix Anal. Appl. 26(4), pp. 1179-1193, 2005, and this DOI; CI checks the DOI's record in Crossref). Cited for: the matrix exponential by scaling and squaring with a Pade approximant of degree up to 13, the matrix scaled by a power of two to a small norm and the approximant squared back}
+}
+
+% --- 06-bench (Phase 4b): two independent web-search rounds on 2026-09-24, reconciled; the CI resource check
+% opens each URL, matches its title and finds each urlquotes entry in the document's text (PDF or web page).
+
+@manual{adi_an136,
+  title        = {{AN-136}: {PCB} Layout Considerations for Non-Isolated Switching Power Supplies},
+  organization = {Analog Devices (Linear Technology)},
+  note         = {verified 2026-09-24 (two independent web-search rounds: the analog.com application-note page "AN-136: PCB Layout Considerations for Non-Isolated Switching Power Supplies", Linear Technology, June 2012; the author's name appeared only in search summaries and is not given; cited for: a ground layer next to the outside power-stage layer; the switch-node copper area as a trade-off, small for the switch node's high dv/dt but not too small to carry the current and cool the switches)},
+  url          = {https://www.analog.com/en/resources/app-notes/an-136.html},
+  urltitle     = {PCB Layout Considerations for Non-Isolated Switching Power Supplies},
+  urlquotes    = {always have a ground layer next to the outside power stage layer | the SW node PCB area cannot be too small},
+  urlkind      = {html}
+}
+
+@techreport{ti_slyt614,
+  author      = {{Texas Instruments}},
+  title       = {Five steps to a great {PCB} layout for a step-down converter},
+  institution = {Texas Instruments},
+  type        = {Analog Applications Journal},
+  number      = {SLYT614},
+  year        = {2015},
+  url         = {https://www.ti.com/lit/pdf/slyt614},
+  note        = {verified 2026-09-24 (two independent web-search rounds: ti.com/lit/pdf/slyt614, "Five steps to a great PCB layout for a step-down converter", Analog Applications Journal 1Q 2015; the author's name appeared only in search summaries and is not given; cited for: the input capacitor as the most important component of a step-down converter's layout)},
+  urltitle    = {Five steps to a great PCB layout for a step-down converter},
+  urlquotes   = {the single-most important component for reliable operation of any step-down converter},
+  urlkind     = {pdf}
+}
+
+@techreport{ti_snva021,
+  author      = {{Texas Instruments}},
+  title       = {{AN-1149} Layout Guidelines for Switching Power Supplies},
+  institution = {Texas Instruments (National Semiconductor)},
+  type        = {Application Report},
+  number      = {SNVA021C},
+  year        = {2013},
+  url         = {https://www.ti.com/lit/pdf/snva021},
+  note        = {verified 2026-09-24 (two independent web-search rounds: ti.com/lit/pdf/snva021, "AN-1149 Layout Guidelines for Switching Power Supplies", SNVA021C, October 1999, revised April 2013; cited for: routing the feedback trace away from the inductor and the noisy power traces)},
+  urltitle    = {Layout Guidelines for Switching Power Supplies},
+  urlquotes   = {as far from the inductor and noisy power traces as possible},
+  urlkind     = {pdf}
+}
+
+@manual{vishay_an608a,
+  title        = {Power {MOSFET} Basics: Understanding Gate Charge and Using it to Assess Switching Performance},
+  organization = {Vishay Siliconix},
+  note         = {verified 2026-09-24 (two independent web-search rounds: vishay.com/docs/73217/an608a.pdf, application note AN608A, document 73217; its revision date and author appeared only in search summaries and are not given; cited for: the gate-drain charge Q_GD as the charge the gate takes while the device is on the Miller plateau)},
+  url          = {https://www.vishay.com/docs/73217/an608a.pdf},
+  urltitle     = {Understanding Gate Charge},
+  urlquotes    = {the charge injected into the gate during the time the device is in the Miller Plateau},
+  urlkind      = {pdf}
+}
+
+@techreport{ti_slua887,
+  author      = {{Texas Instruments}},
+  title       = {Bootstrap Circuitry Selection for Half-Bridge Configurations},
+  institution = {Texas Instruments},
+  type        = {Application Report},
+  number      = {SLUA887A},
+  year        = {2023},
+  url         = {https://www.ti.com/lit/an/slua887a/slua887a.pdf},
+  note        = {verified 2026-09-24 (two independent web-search rounds: ti.com/lit/an/slua887a/slua887a.pdf, "Bootstrap Circuitry Selection for Half-Bridge Configurations", SLUA887A, August 2018, revised September 2023; the author's name appeared only in search summaries and is not given; cited for: a bootstrap capacitor below the minimum value can let the driver's undervoltage lockout turn the high-side switch off)},
+  urltitle    = {Bootstrap Circuitry Selection for Half-Bridge Configurations},
+  urlquotes   = {Values below the minimum required bootstrap capacitor value could lead to activation},
+  urlkind     = {pdf}
+}
+
+@manual{epc_wp008,
+  title        = {{eGaN} {FET} Drivers and Layout Considerations},
+  organization = {Efficient Power Conversion (EPC)},
+  note         = {verified 2026-09-24 (two independent web-search rounds: the epc-co.com PDF of white paper WP008, "eGaN FET Drivers and Layout Considerations"; its date was not seen and search summaries disagreed on the voltages, so no number is taken from it; cited for: the maximum allowable gate-source voltage of an eGaN FET is low compared with silicon MOSFETs)},
+  url          = {https://epc-co.com/epc/portals/0/epc/documents/papers/eGaN%20FET%20Drivers%20and%20Layout%20Considerations.pdf},
+  urltitle     = {eGaN FET Drivers and Layout Considerations},
+  urlquotes    = {The maximum allowable gate-source voltage for an eGaN FET | is low in comparison with traditional silicon},
+  urlkind      = {pdf}
+}
+
+@manual{ti_sszta51,
+  title        = {System Trade-offs for High- and Low-side Current Measurements},
+  organization = {Texas Instruments},
+  note         = {verified 2026-09-24 (two independent web-search rounds: ti.com/lit/pdf/sszta51, technical article SSZTA51; its author and date were not seen; cited for: low-side sensing puts the shunt in the ground return, which disturbs the load's ground, and is preferred where that can be tolerated at low cost; high-side sensing where it cannot)},
+  url          = {https://www.ti.com/lit/pdf/sszta51},
+  urltitle     = {High- and Low-side Current Measurements},
+  urlquotes    = {High-side sensing is preferable when ground disturbances cannot be tolerated | Low-side sensing is preferable for cost-sensitive applications that can tolerate ground disturbances},
+  urlkind      = {pdf}
+}
+
+@manual{adi_an1144,
+  title        = {{AN-1144}: Measuring Output Ripple and Switching Transients in Switching Regulators},
+  organization = {Analog Devices},
+  note         = {verified 2026-09-24 (two independent web-search rounds: the analog.com application-note page "AN-1144: Measuring Output Ripple and Switching Transients in Switching Regulators" (an ADI note, not a TI one); its author and date appeared only in search summaries and are not given; cited for: the loop that a probe's signal and ground leads form adds inductance that makes switching transients look larger than they are; the tip-and-barrel method, the probe's long ground lead removed and its barrel connected to the ground reference; that method's name was seen only in search summaries, and CI checks it on the page). CI, 2026-09-24, reading the page's latest archive capture: "the oscilloscope probe signal and ground leads introduce parasitic inductance. This inaccurately increases the amplitude of switching transients that are associated with the fast switching transitions"; the earlier quote joined the two sentences with "which", and the quotes are now the page's own},
+  url          = {https://www.analog.com/en/resources/app-notes/an-1144.html},
+  urltitle     = {Measuring Output Ripple and Switching Transients},
+  urlquotes    = {oscilloscope probe signal and ground leads introduce parasitic inductance | This inaccurately increases the amplitude of switching transients | tip and barrel method},
+  urlkind      = {html}
+}
+
+@manual{keysight_5988_8008,
+  title        = {Understanding Oscilloscope Frequency Response and Its Effect on Rise-Time Accuracy},
+  organization = {Keysight Technologies (Agilent Technologies)},
+  note         = {verified 2026-09-24 (two independent web-search rounds: keysight.com asset 7018-01129, application note 5988-8008; the asset page is titled "Effect of Oscilloscope Frequency Response on Rise-Time Accuracy", so the title check uses the words both titles share; cited for: the relation between an oscilloscope's bandwidth and the rise time it can measure depends on the shape of its frequency response, flat or Gaussian)},
+  url          = {https://www.keysight.com/us/en/assets/7018-01129/application-notes/5988-8008.pdf},
+  urltitle     = {Oscilloscope Frequency Response},
+  urlquotes    = {A flat-response oscilloscope gives more accurate rise-time measurements than a Gaussian-response oscilloscope of equal bandwidth},
+  urlkind      = {pdf}
+}
+
+@manual{tek_bw_risetime,
+  title        = {How is bandwidth related to rise time for oscilloscopes?},
+  organization = {Tektronix},
+  note         = {verified 2026-09-24 (two independent web-search rounds: the tek.com support FAQ "How is bandwidth related to rise time for oscilloscopes?"; cited for: an oscilloscope's rise time follows approximately 0.35 over its bandwidth, a rule of the response's shape)},
+  url          = {https://www.tek.com/en/support/faqs/how-bandwidth-related-rise-time-oscilloscopes},
+  urltitle     = {How is bandwidth related to rise time},
+  urlquotes    = {oscilloscope frequency response tended to approximately follow the rule},
+  urlkind      = {html}
+}
+
+@techreport{ti_spra953,
+  author      = {{Texas Instruments}},
+  title       = {Semiconductor and {IC} Package Thermal Metrics},
+  institution = {Texas Instruments},
+  type        = {Application Report},
+  number      = {SPRA953},
+  year        = {2003},
+  url         = {https://www.ti.com/lit/pdf/spra953},
+  note        = {verified 2026-09-24 (two independent web-search rounds: ti.com/lit/pdf/spra953, "Semiconductor and IC Package Thermal Metrics", first published December 2003 and revised since; cited for: the thermal metrics of a package, theta_JA, theta_JC and the characterization parameter Psi_JT, each a temperature difference per watt of the device's power; theta_JA is the most commonly reported metric and is often misused; Psi_JT is not a true thermal resistance, since only part of the power flows through the package top; that wording was seen only in search summaries, and CI checks it in the PDF)},
+  urltitle    = {Semiconductor and IC Package Thermal Metrics},
+  urlquotes   = {the most commonly reported thermal metric | is not a true thermal resistance},
+  urlkind     = {pdf}
+}
+
+@techreport{microchip_apt0403,
+  author      = {{Advanced Power Technology}},
+  title       = {Power {MOSFET} Tutorial},
+  institution = {Advanced Power Technology (Microchip Technology)},
+  type        = {Application Note},
+  number      = {APT-0403 Rev B},
+  year        = {2006},
+  url         = {https://ww1.microchip.com/downloads/aemDocuments/documents/PSDS/ApplicationNotes/ApplicationNotes/APT0403.pdf},
+  note        = {verified 2026-09-24 (two independent web-search rounds: the microchip.com PDF "Application Note APT-0403 Rev B March 2, 2006 Power MOSFET Tutorial"; its author's name appeared only in search summaries and is not given; the sentence's temperatures were seen only in search summaries, and CI checks them in the PDF; cited for: in this tutorial, a silicon power MOSFET's on-resistance roughly doubles from 25 C to 125 C; a part's own factor is on its data sheet)},
+  urltitle    = {Power MOSFET Tutorial},
+  urlquotes   = {On resistance approximately doubles from 25},
+  urlkind     = {pdf}
+}
+
+@techreport{ti_slva670,
+  author      = {{Texas Instruments}},
+  title       = {Managing Inrush Current},
+  institution = {Texas Instruments},
+  type        = {Application Report},
+  number      = {SLVA670A},
+  year        = {2015},
+  url         = {https://www.ti.com/lit/pdf/slva670},
+  note        = {verified 2026-09-24 (two independent web-search rounds: ti.com/lit/pdf/slva670, "Managing Inrush Current", SLVA670A, August 2014, revised May 2015; its authors appeared only in search summaries and are not given; cited for: a slower rise of the voltage across the load's capacitance reduces the inrush current). CI, 2026-09-24, reading the PDF: "All three of these solutions center around increasing the voltage rise time which, as shown in Equation 1, leads to reduced inrush current"; the earlier quote left out the clause in the middle},
+  urltitle    = {Managing Inrush Current},
+  urlquotes   = {center around increasing the voltage rise time which, as shown in Equation 1, leads to reduced inrush current},
+  urlkind     = {pdf}
+}
+
+@techreport{ti_slva139,
+  author      = {{Texas Instruments}},
+  title       = {Reverse Current/Battery Protection Circuits},
+  institution = {Texas Instruments},
+  type        = {Application Report},
+  number      = {SLVA139},
+  year        = {2003},
+  url         = {https://www.ti.com/lit/pdf/slva139},
+  note        = {verified 2026-09-24 (two independent web-search rounds: ti.com/lit/pdf/slva139, "Reverse Current/Battery Protection Circuits", SLVA139, June 2003; cited for: a diode in series with the battery as protection against a reversed battery)},
+  urltitle    = {Reverse Current/Battery Protection Circuits},
+  urlquotes   = {a diode in series with the battery},
+  urlkind     = {pdf}
+}
+
+@manual{littelfuse_fuseology,
+  title        = {Fuseology: Fuse Facts and Fuse Selection Guide},
+  organization = {Littelfuse},
+  note         = {verified 2026-09-24 (two independent web-search rounds: the littelfuse.com asset "Fuseology Fuse Facts and Fuse Selection Guide"; Littelfuse publishes several versions of its fuseology guide under other asset links; cited for: the higher the ambient temperature, the hotter a fuse operates and the shorter its life)},
+  url          = {https://www.littelfuse.com/assetdocs/fuseology-fuse-facts-and-fuse-selection-guide?assetguid=be92b28c-1f63-4f48-a505-55c582b7c1ae},
+  urltitle     = {Fuse Selection Guide},
+  urlquotes    = {The higher the ambient temperature, the hotter the fuse will operate, and the shorter its life will be},
+  urlkind      = {pdf}
+}
+
+@manual{adi_ceramic_caps,
+  title        = {Temperature and Voltage Variation of Ceramic Capacitors, or Why Your 4.7 {µF} Capacitor Becomes a 0.33 {µF} Capacitor},
+  organization = {Analog Devices (Maxim Integrated)},
+  note         = {verified 2026-09-24 (two independent web-search rounds: the analog.com technical article "Temperature and Voltage Variation of Ceramic Capacitors, or Why Your 4.7µF Capacitor Becomes a 0.33µF Capacitor"; its author and date were not confirmed; cited for: class-2 codes such as X7R say nothing about a capacitor's change with its dc voltage; and the title's example, a 4.7 µF, 6.3 V, 0603 Y5V capacitor that at 5 V bias and room temperature keeps 0.33 µF, "92.9% below nominal", the dc voltage alone (with the bias it kept slightly more at +85 C than at room temperature). Corrected in Phase 4d after a round-2 review read the example in three search summaries (analog.com, EDN, Maxim tutorial 5527): the note had said that temperature and dc voltage together gave that loss)},
+  url          = {https://www.analog.com/en/resources/technical-articles/temperature-and-voltage-variation-ceramic-capacitor.html},
+  urltitle     = {Temperature and Voltage Variation of Ceramic Capacitors},
+  urlquotes    = {imply nothing about voltage coefficients | 92.9% below nominal},
+  urlkind      = {html}
+}
+
+@manual{cde_ae_guide,
+  title        = {Aluminum Electrolytic Capacitor Application Guide},
+  organization = {Cornell Dubilier Electronics},
+  note         = {verified 2026-09-24 (two independent web-search rounds: the cde.com technical paper KNO_CD_AEappGuide_R2.pdf, "Aluminum Electrolytic Capacitor Application Guide"; its author, revision date and the reference temperature of its impedance ratios were not confirmed; the quoted wording was seen in search summaries, and CI checks it in the PDF; cited for: an aluminum electrolytic capacitor's ESR can increase more than tenfold at its low-temperature limit). CI, 2026-09-24, reading the PDF (knowlescapacitors.com | cde.com, no revision or date printed): "The low-temperature limit is set largely by the cold resistivity of the electrolyte, directly related to the viscosity. The higher cold resistivity often increases the capacitor's ESR at the lowest rated temperature by a factor of 10 to 100 of the room-temperature ESR. Colder temperatures also reduce the capacitance"; the earlier quote, "increases more than 10 fold at the low-temperature limit", came from search summaries and is not in this PDF. Cited for: the cold electrolyte's resistivity often takes the ESR at the lowest rated temperature to 10 to 100 times the room-temperature ESR, and the cold lowers the capacitance},
+  url          = {https://www.cde.com/resources/technical-papers/KNO_CD_AEappGuide_R2.pdf},
+  urltitle     = {Aluminum Electrolytic Capacitor Application Guide},
+  urlquotes    = {The higher cold resistivity often increases | ESR at the lowest rated temperature by a factor of 10 to 100 of the room-temperature ESR | Colder temperatures also reduce the capacitance},
+  urlkind      = {pdf}
+}
+
+@manual{jeita_liion,
+  title        = {A Guide to the Safe Use of Lithium-Ion Secondary Cells in Notebook-type Personal Computers and Tablet Terminals},
+  organization = {Japan Electronics and Information Technology Industries Association (JEITA)},
+  note         = {verified 2026-09-24 (two independent web-search rounds: the English PDF on home.jeita.or.jp, "A Guide to the Safe Use of Lithium-Ion Secondary Cells in Notebook-type Personal Computers and Tablet Terminals"; the Japanese original is dated 1 February 2021; the quoted wording was seen in search summaries, and CI checks it in the PDF; cited for: at low temperature the anode's receptivity of lithium ions worsens and metallic lithium deposits form more easily on the negative electrode, so a cell below its lower charging temperature must not be charged). CI, 2026-09-24, reading the PDF (dated February 1, 2021): "In the lower temperature range, the rate of material migration decreases and the lithium-ion receptivity of the active anode material (carbon) worsens. This makes it easier for metallic lithium to form on the surface of the carbon. Under these conditions, the thermal stability of the battery decreases", and "If the surface of a cell falls below T1 prior to or during charging, the battery must not be charged with any sort of current"; the earlier quote "metallic lithium deposits" is not its wording (and a page break falls between "metallic" and "lithium", so the quotes stop and start there). Cited for: those statements},
+  url          = {https://home.jeita.or.jp/upload_file/20210407112651_JbDgUSWGiB.pdf},
+  urltitle     = {A Guide to the Safe Use of Lithium-Ion Secondary Cells},
+  urlquotes    = {receptivity of the active anode material (carbon) worsens | This makes it easier for metallic | lithium to form on the surface of the carbon | the thermal stability of the battery decreases | prior to or during charging | must not be charged with any sort of current},
+  urlkind      = {pdf}
 }
 
 @misc{benyaakov_youtube,

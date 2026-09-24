@@ -1,0 +1,51 @@
+# Quiz for 06-bench/current-sensing. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A 2 milliohm shunt carries 5 A. What is its sense voltage?'
+    options:
+      - '2.5 mV'
+      - '10 mV'
+      - '100 mV'
+      - '0.4 mV'
+    answer: 1
+    explain: 'Ohm''s law: 5 A times 2 milliohm.'
+  - q: 'What is the burden of a shunt?'
+    options:
+      - 'Its power rating'
+      - 'The amplifier''s offset'
+      - 'The voltage it takes from the circuit it measures, its sense voltage'
+      - 'The error of the ADC'
+    answer: 2
+    explain: 'The sense voltage is the signal and also the voltage the measured circuit loses across the shunt.'
+  - q: 'What does a low-side shunt do to the load?'
+    options:
+      - 'It raises the load''s supply voltage'
+      - 'Nothing: the shunt is in the ground return'
+      - 'It isolates the load from ground'
+      - 'It lifts the load''s ground above the supply''s by the sense voltage'
+    answer: 3
+    explain: 'The ground return passes through the shunt, so the load''s ground moves with the current.'
+  - q: 'When is high-side sensing preferable?'
+    options:
+      - 'When the lowest cost matters most'
+      - 'When the current is very small'
+      - 'When the load''s ground must not move'
+      - 'Never: low-side sensing is always better'
+    answer: 2
+    explain: 'High-side sensing keeps the shunt out of the ground return, at the price of an amplifier that works at the supply''s voltage.'
+  - q: 'A 1 milliohm shunt is sensed beyond its pads, which add 0.05 milliohm. How far off is the reading?'
+    options:
+      - '5 % low'
+      - '5 % high, at every current'
+      - '0.05 % high'
+      - 'It depends on the current'
+    answer: 1
+    explain: 'The pads'' resistance over the shunt''s, the same fraction at every current.'
+  - q: 'What does a Kelvin connection do?'
+    options:
+      - 'It lowers the shunt''s resistance'
+      - 'It cancels the amplifier''s offset'
+      - 'It filters the switching noise'
+      - 'It senses the voltage at the shunt''s own terminals, so the pads and solder stay out of the reading'
+    answer: 3
+    explain: 'Separate sense connections carry almost no current, so the pads'' resistance drops no voltage in the reading.'

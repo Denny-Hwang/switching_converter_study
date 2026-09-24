@@ -22,7 +22,7 @@ def symbol_names(catalog: Catalog) -> dict[sp.Symbol, str]:
 
 
 def rhs_latex(catalog: Catalog, eq: Equation) -> str:
-    return sp.latex(catalog.display_expr(eq), symbol_names=symbol_names(catalog), order="none")
+    return sp.latex(catalog.display_expr(eq), symbol_names=symbol_names(catalog), order="none", ln_notation=True)
 
 
 def equation_latex(catalog: Catalog, eq: Equation) -> str:

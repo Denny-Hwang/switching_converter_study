@@ -1,0 +1,12 @@
+synthetic: true
+label: "Shunt example"
+label_ko: "션트 예제"
+# 10 A through a 1 milliohm shunt whose sense connections take in 0.1
+# milliohm of pads and solder (no Kelvin connection).
+params:
+  I_SENSE: 10.0
+  R_SENSE: 1.0e-3
+  R_pad: 1.0e-4
+steps:
+  - sense.burden
+  - sense.pad_error

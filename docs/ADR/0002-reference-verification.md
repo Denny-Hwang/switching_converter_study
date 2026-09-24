@@ -42,9 +42,10 @@ Verification has three layers.
    words, as whole words and ignoring case and punctuation (pypdf reads the
    file). A PDF that only mentions the document further down, in a list of
    related documents say, does not pass. The statements a page cites a PDF
-   for are listed in the bib entry's `urlquotes`, and each must occur in
-   the PDF's text: the claim is then checked in the document itself, not
-   only in search results.
+   or a web page for are listed in the bib entry's `urlquotes`, and each
+   must occur in the PDF's text, or in the web page's visible text (its
+   markup, scripts, styles and comments removed): the claim is then checked
+   in the document itself, not only in search results.
    lychee opens every URL rendered on the built site. It skips `doi.org`
    links (publishers answer bots with 403; the Crossref check is stronger)
    and `www.analog.com` and `www.st.com` (they reject lychee's HTTP/2
@@ -55,10 +56,13 @@ Verification has three layers.
    tool User-Agent and a browser User-Agent over HTTP/2 and HTTP/1.1. A 404
    or a real page with another title fails at once. Only when every attempt
    is inconclusive does it fall back to the most recent Internet Archive
-   capture of the *exact* URL (Wayback CDX API), which must pass the same
-   title check. Such URLs are reported as `OK (archived
-   YYYY-MM-DD)` in the CI log, so a live check and an archive check are
-   never confused.
+   capture of the *exact* URL (Wayback CDX API; for a PDF, the most recent
+   capture the archive stored as a PDF, since a later capture can be the
+   site's web page), which must pass the same title check. Such URLs are
+   reported as `OK (archived YYYY-MM-DD)` in the CI log, so a live check
+   and an archive check are never confused. Each blocked host costs minutes
+   of retries and archive lookups, so six URLs are checked at a time; the
+   log keeps their order.
 
 An identifier seen only in search-result summaries, but never in a result
 URL or title, keeps its `VERIFY` flag until layer 3 confirms it. In Phase 1

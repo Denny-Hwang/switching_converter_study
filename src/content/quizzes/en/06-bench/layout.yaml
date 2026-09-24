@@ -1,0 +1,59 @@
+# Quiz for 06-bench/layout. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'In a buck converter, which loop''s current switches at every edge?'
+    options:
+      - 'The inductor and the output capacitor'
+      - 'The output capacitor and the load'
+      - 'The input capacitor, the switch and the diode (or second switch)'
+      - 'The feedback divider'
+    answer: 2
+    explain: 'At every edge the currents of the switch, the diode and the input capacitor step by the inductor''s current, while the inductor''s current flows on: the loop of those three is the one whose current switches.'
+  - q: 'A current of 10 A falls to zero in 10 ns in a loop of 5 nH. What voltage does the loop develop?'
+    options:
+      - '5 V'
+      - '0.5 V'
+      - '50 V'
+      - '500 mV per nanosecond, whatever the loop'
+    answer: 0
+    explain: 'The loop inductance times the change of current over the edge time: 5 nH times 10 A over 10 ns.'
+  - q: 'The switch becomes twice as fast. What happens to the voltage across the same loop?'
+    options:
+      - 'It halves'
+      - 'It stays the same'
+      - 'It quadruples'
+      - 'It doubles'
+    answer: 3
+    explain: 'The voltage is the loop inductance times the current step over the edge time; halving the edge time doubles it.'
+  - q: 'Where does the voltage across the loop inductance appear at turn-off?'
+    options:
+      - 'Across the load only'
+      - 'Across the switch, added to the input voltage'
+      - 'Across the output capacitor'
+      - 'Nowhere: an inductance stores energy but develops no voltage'
+    answer: 1
+    explain: 'Kirchhoff''s voltage law around the loop: while the current falls, the inductance''s voltage adds to the input voltage across the switch.'
+  - q: 'Which component must sit closest to the switches of a step-down converter?'
+    options:
+      - 'The output capacitor'
+      - 'The feedback divider'
+      - 'The input capacitor'
+      - 'The output connector'
+    answer: 2
+    explain: 'It closes the loop whose current switches; the shorter that loop, the smaller its inductance and the voltage each edge develops across it.'
+  - q: 'Why is the switch node''s copper area a compromise?'
+    options:
+      - 'It carries current and cools the switches, but its voltage swing couples into its neighbours'
+      - 'Copper is expensive'
+      - 'A larger area lowers the switching frequency'
+      - 'The switch node carries no current'
+    answer: 0
+    explain: 'The node needs copper for current and heat, and its swing drives current through its stray capacitance to nearby traces.'
+  - q: 'How should the feedback trace be routed?'
+    options:
+      - 'Next to the switch node, to keep it short'
+      - 'As far as possible from the inductor and the noisy power traces'
+      - 'Under the inductor'
+      - 'It does not matter: the controller filters it'
+    answer: 1
+    explain: 'The controller regulates what the trace brings it; what the trace picks up on the way ends up in the output.'

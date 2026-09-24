@@ -1,0 +1,145 @@
+---
+title: Gate drive
+description: The Miller plateau on a switch's gate-charge curve, the gate current and the time the drain voltage takes to switch, the bootstrap capacitor of a high-side driver, and the gate margin of GaN switches.
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Read the Miller plateau and its charge from a switch's gate-charge curve.
+- Estimate the gate current and the time the drain voltage takes to switch from the driver's voltage and the gate loop's resistance.
+- Size a bootstrap capacitor for a high-side driver.
+
+## Theory
+
+### The Miller plateau
+
+A MOSFET's gate charges through its gate loop: the driver's output, an
+external resistor and the device's internal gate resistance, together
+$R_G$. At turn-on there is a stretch where the gate does not rise: while
+the drain voltage falls, the gate-source voltage stays constant, on the
+Miller plateau, and all the gate current available from the driver is
+diverted to discharge the gate-drain capacitance <Cite key="balogh2018" />.
+The charge the gate takes meanwhile is the gate-drain charge
+$Q_\mathrm{GD}$ of the data sheet's gate-charge curve
+<Cite key="vishay_an608a" />. The gate itself sits at the plateau voltage
+$V_\mathrm{pl}$, so the driver's on voltage $V_\mathrm{GS}$ (the drive
+voltage, as in the gate-drive loss) less the plateau drives the gate
+current:
+
+<Eq id="gate.I_on" />
+
+At turn-off the driver pulls the gate to zero. On the plateau the drain
+voltage now rises, and the gate current is the current that charges the
+gate-drain capacitance <Cite key="balogh2018" where="MOSFET turn-off" />;
+the plateau voltage itself drives it:
+
+<Eq id="gate.I_off" />
+
+The plateau lasts as long as the gate current takes to deliver
+$Q_\mathrm{GD}$, and the drain voltage makes its transition meanwhile:
+
+<Eq id="gate.t_pl" />
+
+With the same gate-loop resistance at both edges, a plateau below half the
+drive voltage leaves less current at turn-off than at turn-on, so the switch
+turns off more slowly than it turns on; a smaller resistance at turn-off
+(a driver that sinks more strongly than it sources) raises the turn-off
+current in the same equation. Each cycle the driver delivers the whole gate
+charge, and the gate loop's resistances (the driver's output, the external
+resistor and the internal gate resistance) dissipate the gate-drive power
+between them (<EqRef id="loss.gate" label="gate-drive loss" />).
+
+### The bootstrap capacitor
+
+A high-side switch's gate is driven from a supply that floats on the switch
+node. A bootstrap capacitor, charged while the switch node is low, is that
+supply <Cite key="ti_slua887" />: while the high side is on, it alone
+supplies the gate charge and whatever the driver draws, and its voltage
+droops by that charge over its capacitance. For an allowed droop:
+
+<Eq id="boot.C" />
+
+A capacitor below the minimum value can let the driver's undervoltage
+lockout turn the high-side switch off <Cite key="ti_slua887" />.
+
+### GaN switches
+
+The maximum gate-source voltage of an eGaN FET (EPC's enhancement-mode GaN
+switch) is low compared with silicon MOSFETs <Cite key="epc_wp008" />. The
+gate loop is a loop too: its inductance develops a voltage over every edge
+of the gate current (<EqRef id="layout.v_spike" label="loop voltage" />),
+and it rings with the gate's capacitance, so the gate's voltage can
+overshoot the drive voltage toward that lower limit.
+
+## Worked example
+
+A driver, a gate loop and a switch's gate-charge curve:
+
+<Worked example="bench-gate" />
+
+The gate draws <Val example="bench-gate" name="I_G_on" /> on the plateau at
+turn-on, and the drain voltage switches in
+<Val example="bench-gate" name="t_pl_on" />. At turn-off the plateau drives
+only <Val example="bench-gate" name="I_G_off" />, and the transition takes
+<Val example="bench-gate" name="t_pl_off" />.
+
+A bootstrap capacitor for that switch's driver:
+
+<Worked example="bench-boot" />
+
+## Try it
+
+<TryIt eq="gate.t_pl" example="bench-gate" sweep="I_G" bind={{ I_G: 'I_G_on' }} />
+
+Sweep the gate current: the transition's time falls in inverse proportion.
+A smaller gate resistor raises the current, and a driver with a higher
+voltage does too, as long as the gate stays within its rating.
+
+## Bench exercise
+
+With a voltage probe on the gate and another on the drain of a low-side
+switch, both referred to its source at circuit ground, find the plateau
+during turn-on: the gate's rise stops while the drain voltage falls. A
+switch whose source is not at ground needs differential probes: a probe's
+ground lead is tied to the oscilloscope's earth. Measure the plateau's
+voltage and length. The probe sees the gate pin, outside the internal gate
+resistance, so the plateau it shows sits above the die's at turn-on and
+below it at turn-off, by the gate current times that resistance. Compare
+the plateau's length with the gate-drain charge over the gate current the
+equations give; the data sheet gives that charge at its own test drain
+voltage, and a larger swing takes more. Repeat at turn-off, and with a
+larger gate resistor.
+
+## Gotchas
+
+- **A plateau close to the drive voltage** leaves little voltage across the
+  gate loop, so little current and a slow transition
+  (<EqRef id="gate.I_on" label="gate current at turn-on" />).
+- **Turn-off slower than turn-on:** with the same gate-loop resistance at
+  both edges and the plateau below half the drive voltage, the gate's
+  current at turn-off is the smaller of the two
+  (<EqRef id="gate.I_off" label="gate current at turn-off" />).
+- **A bootstrap capacitor that is too small** droops until the driver's
+  undervoltage lockout turns the high side off <Cite key="ti_slua887" />.
+- **An eGaN gate's lower voltage limit** <Cite key="epc_wp008" /> leaves
+  less room for the ringing the gate loop's own inductance adds.
+
+## Go deeper
+
+<GoDeeper ids={['ti-slua618', 'vishay-an608a', 'ti-slua887']} />
+
+## Quiz
+
+<Quiz id="06-bench/gate-drive" />

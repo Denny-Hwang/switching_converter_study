@@ -1,0 +1,12 @@
+synthetic: true
+label: "Probe example"
+label_ko: "프로브 예제"
+# A 100 MHz measurement system, and a probe whose 10 pF rings with the 100 nH
+# of the loop its tip and long ground lead form.
+params:
+  BW: 1.0e8
+  L_gnd: 1.0e-7
+  C_probe: 1.0e-11
+steps:
+  - probe.t_rise
+  - probe.f_ring

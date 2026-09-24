@@ -19,7 +19,7 @@ from .gen_latex import rhs_latex, symbol_names
 
 def _latex(expr: Any, names: dict[sp.Symbol, str]) -> str:
     # "old" term order reads naturally for balance equations: D (V_g - V) - V (1 - D)
-    return sp.latex(expr, symbol_names=names, order="old")
+    return sp.latex(expr, symbol_names=names, order="old", ln_notation=True)
 
 
 def _step_latex(catalog: Catalog, st: Any, names: dict[sp.Symbol, str]) -> str | None:

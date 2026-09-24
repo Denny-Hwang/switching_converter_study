@@ -15,18 +15,21 @@ resources.yaml (when present), then:
       signature, and its own title (document info or XMP) or the top of its
       first page must contain the expected text, as whole words, ignoring
       case and punctuation (pypdf reads the file). A bib entry's `urlquotes`
-      ("a | b") must each occur in the PDF's text: the statements the site
-      cites it for, confirmed in the document itself.
+      ("a | b") must each occur in the PDF's text, or in an HTML page's
+      visible text (its markup, scripts and styles removed): the statements
+      the site cites it for, confirmed in the document itself.
       Each URL is tried with an honest tool User-Agent and with a browser
       User-Agent, over HTTP/2 and HTTP/1.1 (curl), then urllib: some hosts
       reject one client and accept another.
+      Six URLs are checked at a time; the results print in order.
 
       A 404/410, or a real page or PDF whose title does not match, fails.
       When the live host never answers with content -- timeouts,
       403/429/5xx, or a bot wall/consent page without the page title (hosts
       that block cloud runners) -- the check falls back to the most recent
-      Internet Archive capture of the exact URL (Wayback CDX API), which
-      must pass the same title check. Such URLs are reported as "OK
+      Internet Archive capture of the exact URL (Wayback CDX API; for a PDF,
+      the most recent one the archive stored as a PDF), which must pass the
+      same title check. Such URLs are reported as "OK
       (archived YYYY-MM-DD)", never silently as live.
 
 This complements lychee (which checks every link on the built site): some
@@ -58,6 +61,7 @@ import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -73,6 +77,7 @@ CAP = 6_000_000  # bytes of a page searched for its title; some pages carry mega
 PDF_CAP = 60_000_000  # bytes kept per response: a PDF is read whole (its cross-reference table is at the end)
 PAGE1_TOP = 600  # characters (normalised) at the top of page 1 where a document shows its title
 MAX_PAGES = 150  # pages read when a bib entry has urlquotes
+WORKERS = 6  # URLs checked at once: a host that turns the runner away costs minutes of retries and archive lookups
 BROWSER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 # Titles of interstitial pages served instead of content (consent walls, bot
 # checks). Seeing one is inconclusive, not a mismatch.
@@ -154,8 +159,8 @@ def collect() -> tuple[list[dict], list[str]]:
             errors.append(f"{where}: verified URL needs urltitle = {{...}} (text expected in {what})")
         if kind == "pdf" and (problem := pdf_expect_error(expect)):
             errors.append(f"{where}: urltitle {problem}")
-        if quotes and kind != "pdf":
-            errors.append(f"{where}: urlquotes are checked in PDFs only")
+        if quotes and kind == "login":
+            errors.append(f"{where}: urlquotes cannot be checked behind a login")
         for q in quotes:
             if len(loose(q).split()) < 2:
                 errors.append(f"{where}: urlquotes entry {q!r} needs at least two words")
@@ -258,6 +263,16 @@ def page_title(body: bytes) -> str:
             if m.group(1).strip():
                 return _text(m.group(1))
     return ""
+
+
+def html_text(body: bytes) -> str:
+    """The visible text of an HTML page: its markup, scripts, styles and
+    comments removed, entities decoded."""
+    s = body[:CAP].decode("utf-8", "replace")
+    s = re.sub(r"(?s)<!--.*?-->", " ", s)
+    s = re.sub(r"(?is)<(script|style|noscript|template)\b.*?</\1\s*>", " ", s)
+    s = re.sub(r"(?s)<[^>]+>", " ", s)
+    return html.unescape(s)
 
 
 def title_candidates(body: bytes) -> list[str]:
@@ -376,7 +391,15 @@ def judge(t: dict, f: Fetch) -> tuple[str, str]:
         return "ok", title
     for cand in title_candidates(f.body):
         if t["expect"] and norm(t["expect"]) in norm(cand):
-            return "ok", cand
+            quotes = t.get("quotes") or []
+            if not quotes:
+                return "ok", cand
+            text = html_text(f.body)
+            missing = [q for q in quotes if not title_in(q, text)]
+            if missing:
+                where = "; ".join(f"{q!r}: {near(q, text)}" for q in missing)
+                return "fail", f"{f.how}: page title {cand!r}; not in the page's text: {where}"
+            return "ok", f"(html, {len(quotes)} quotes found) {cand}"
     if not title or any(w in norm(title) for w in INTERSTITIAL):
         snippet = re.sub(rb"\s+", b" ", f.body[:160]).decode("utf-8", "replace")
         return "inconclusive", f"{f.how}: no page title (title {title!r}, final URL {f.url}, body starts {snippet!r})"
@@ -394,18 +417,23 @@ def _slow_get(url: str, how: str, tries: int = 3) -> Fetch:
     return f
 
 
-def latest_capture(url: str) -> tuple[str, str] | None:
-    """(timestamp, original URL) of the most recent HTTP-200 capture, or None."""
-    q = urllib.parse.urlencode({"url": url, "output": "json", "fl": "timestamp,original",
-                                "filter": "statuscode:200", "limit": "-1"})
-    cdx = _slow_get("https://web.archive.org/cdx/search/cdx?" + q, "wayback cdx")
-    if cdx.status == 200:
-        try:
-            rows = json.loads(cdx.body.decode("utf-8") or "[]")
-        except ValueError:
-            rows = []
-        if len(rows) >= 2:
-            return rows[-1][0], rows[-1][1]
+def latest_capture(url: str, pdf: bool = False) -> tuple[str, str] | None:
+    """(timestamp, original URL) of the most recent HTTP-200 capture, or None.
+
+    For a PDF, the most recent capture the archive stored as a PDF comes
+    first: a later capture of the same URL can be a web page (a site's
+    download page or bot wall)."""
+    for mime in (["mimetype:application/pdf"], []) if pdf else ([],):
+        q = urllib.parse.urlencode([("url", url), ("output", "json"), ("fl", "timestamp,original"),
+                                    ("filter", "statuscode:200"), *[("filter", m) for m in mime], ("limit", "-1")])
+        cdx = _slow_get("https://web.archive.org/cdx/search/cdx?" + q, "wayback cdx")
+        if cdx.status == 200:
+            try:
+                rows = json.loads(cdx.body.decode("utf-8") or "[]")
+            except ValueError:
+                rows = []
+            if len(rows) >= 2:
+                return rows[-1][0], rows[-1][1]
     avail = _slow_get("https://archive.org/wayback/available?" + urllib.parse.urlencode({"url": url}), "wayback available")
     if avail.status == 200:
         try:
@@ -418,8 +446,8 @@ def latest_capture(url: str) -> tuple[str, str] | None:
 
 
 def archived(t: dict) -> tuple[str, str]:
-    """Check the latest Internet Archive capture (HTTP 200) of the exact URL."""
-    found = latest_capture(t["url"])
+    """Check the latest Internet Archive capture (HTTP 200) of the exact URL (for a PDF, its latest PDF capture)."""
+    found = latest_capture(t["url"], pdf=t["kind"] == "pdf")
     if not found:
         return "fail", "no Internet Archive capture found (or the archive did not answer)"
     stamp, original = found
@@ -464,7 +492,7 @@ def dump(key: str, targets: list[dict]) -> bool:
     fetches = list(attempts(t["url"]))
     if not any(f.status == 200 and b"%PDF" in f.body[:1024] for f in fetches):
         # the host does not answer this runner: its latest Internet Archive capture, as the check falls back to
-        if found := latest_capture(t["url"]):
+        if found := latest_capture(t["url"], pdf=True):
             stamp, original = found
             fetches.append(_slow_get(f"https://web.archive.org/web/{stamp}id_/{original}", f"wayback capture {stamp[:8]}"))
     for f in fetches:
@@ -490,14 +518,14 @@ def main() -> int:
         return 0 if all([dump(k, targets) for k in args.dump]) else 1
     archived_ok = []
     if args.online:
-        for t in targets:
-            status, detail = check_online(t)
-            print(f"  {status:14s} {t['src']:32s} {t['url']}  {detail[:200]}", flush=True)
-            if status == "FAIL":
-                errors.append(f"{t['src']}: {detail} ({t['url']})")
-            elif status != "OK":
-                archived_ok.append(t["src"])
-            time.sleep(0.5)
+        # several URLs at a time (each still tries its clients one after another); the results print in order
+        with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+            for t, (status, detail) in zip(targets, pool.map(check_online, targets)):
+                print(f"  {status:14s} {t['src']:32s} {t['url']}  {detail[:200]}", flush=True)
+                if status == "FAIL":
+                    errors.append(f"{t['src']}: {detail} ({t['url']})")
+                elif status != "OK":
+                    archived_ok.append(t["src"])
         if archived_ok:
             print(f"resources_check: {len(archived_ok)} URL(s) unreachable from this runner, confirmed from their "
                   f"latest Internet Archive capture: {', '.join(archived_ok)}")

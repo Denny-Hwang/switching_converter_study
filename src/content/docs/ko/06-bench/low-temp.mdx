@@ -1,0 +1,109 @@
+---
+title: 저온
+description: 추위가 알루미늄 전해 커패시터의 ESR과 그 양단 리플에 주는 영향, 세라믹 커패시터의 온도 코드가 직류 전압에 대해 알려 주지 않는 것, 추위 속 배터리의 단자 전압과 충전.
+sidebar:
+  order: 7
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 추위 속에서 알루미늄 전해 커패시터의 ESR이 만드는 리플을 어림합니다.
+- 세라믹 커패시터의 온도 코드가 알려 주지 않는 것을 알아 둡니다.
+- Rint 모델로 배터리의 단자 전압을 읽고, 리튬이온 셀을 추위 속에서 충전하지 않는 이유를 알아 둡니다.
+
+## 이론
+
+### 알루미늄 전해 커패시터
+
+전해액의 저항률은 추위에 커지고, 그 때문에 알루미늄 전해 커패시터의 ESR은 정격 최저
+온도에서 상온 ESR의 10~100배가 되는 경우가 많습니다. 추위는 커패시턴스도 줄입니다
+<Cite key="cde_ae_guide" />. 부품마다의 저온 값은 그 부품의 데이터시트에 나와 있습니다. ESR 양단의 리플 전압도
+같은 비율로 커집니다(<EqRef id="cap.esr.ripple" label="ESR 양단 리플 전압" />).
+상온에서 출력 리플 한계를 지키는 컨버터가 추위 속에서는 그 한계를 넘을 수 있습니다.
+
+### 세라믹 커패시터
+
+X7R 같은 2종(class-2) 세라믹 커패시터의 코드는 커패시턴스가 온도에 따라 변하는
+방식을 나타낼 뿐, 전압 계수(voltage coefficient)에 대해서는 아무것도 말하지 않습니다
+<Cite key="adi_ceramic_caps" />. 양단의 직류 전압이 빼앗는 커패시턴스는 코드에 들어
+있지 않습니다. 직류 전압만으로도 공칭 커패시턴스의 작은 일부만 남을 수 있습니다. 출처가 직접 든 예는 정격 6.3 V인 4.7 µF Y5V 커패시터에 상온에서 5 V를 걸면 0.33 µF만 남는 경우입니다 <Cite key="adi_ceramic_caps" />.
+온도는 이를 다시 바꿉니다. 커패시터가 동작하는 직류 전압에서, 그리고
+겪게 될 온도 범위에 걸쳐 커패시턴스를 확인합니다.
+
+### 배터리
+
+Rint 모델에서 배터리는 내부 저항 뒤의 개방 전압(open-circuit voltage)이며, 둘 다
+충전 상태(state of charge, SoC), 건강 상태(state of health, SoH), 온도의 함수입니다
+<Cite key="he2011" where="Sec. 2.1" />. 충전 전류는 단자 전압을 개방 전압보다
+높입니다.
+
+<Eq id="bat.v_term" />
+
+따라서 단자를 전압 한계에 묶어 두는 충전기는 저항이 큰 배터리에 전류를 덜
+흘립니다. 저항은 배터리가 동작하는 온도에서의 값을 씁니다.
+
+저온에서는 리튬이온 셀의 탄소 음극(carbon anode)이 리튬 이온을 덜 받아들이므로 탄소
+표면에 금속 리튬이 석출되기 쉬워지고, 배터리의 열 안정성이 떨어집니다. 셀에 대해
+지정된 충전 하한 온도보다 낮으면 어떤 전류로도 충전해서는 안 됩니다
+<Cite key="jeita_liion" />.
+
+## 풀이 예제
+
+충전 중인 셀, 그리고 출력 커패시터의 ESR 리플을 상온과 저온 한계에서 본 예:
+
+<Worked example="bench-cold" />
+
+<Val example="bench-cold" name="R_b" />을 거쳐 <Val example="bench-cold" name="I_b" />로
+충전하면 셀의 단자 전압은 개방 전압 <Val example="bench-cold" name="V_b" />보다 높은
+<Val example="bench-cold" name="V" />가 됩니다. 커패시터의 ESR은 상온에서
+<Val example="bench-cold" name="Delta_v_esr" />의 피크-피크 리플을 만들고, ESR이
+10배가 되면 <Val example="bench-cold" name="Delta_v_esr_cold" />의 리플을 만듭니다.
+
+## 직접 해 보기
+
+<TryIt eq="cap.esr.ripple" example="bench-cold" sweep="R_esr" />
+
+ESR을 10배 범위에서 바꿔 보면 리플이 그대로 따라갑니다.
+
+<TryIt eq="bat.v_term" example="bench-cold" sweep="R_b" />
+
+내부 저항을 바꿔 보면, 같은 충전 전류에서 단자 전압이 함께 오릅니다.
+
+## 벤치 실습
+
+컨버터의 출력 리플을 상온에서 재고, 출력 커패시터를 식힌 상태(저온 챔버, 또는
+커패시터에만 뿌리는 냉각 스프레이)에서 다시 잽니다. 프로브의 접지 연결은 짧게
+합니다([프로브](../probes/)). 리플에서 ESR 성분이 지배적이면, 리플을 커패시터로
+들어가는 피크-피크 리플 전류로 나눠 ESR을 어림하고 두 온도에서 비교합니다.
+커패시터가 다시 데워질 때 맺히는 이슬에 주의합니다. 배터리는 일정한 전류로
+방전하는 동안 두 온도에서 단자 전압과 전류를 기록하고, 각 온도에서 전류를 계단으로
+바꿔 저항을 어림합니다.
+
+## 주의할 점
+
+- **전해 커패시터의 ESR**은 정격 최저 온도에서 상온 ESR의 10~100배가 되는 경우가
+  많습니다 <Cite key="cde_ae_guide" />.
+- **세라믹 커패시터의 코드는 직류 전압에 대해 아무것도 말하지 않습니다**
+  <Cite key="adi_ceramic_caps" />.
+- **충전 하한 온도보다 낮은 리튬이온 셀**은 충전해서는 안 됩니다
+  <Cite key="jeita_liion" />.
+- **전압 한계에 도달한 충전기**는 저항이 큰 배터리에 전류를 덜 흘립니다
+  (<EqRef id="bat.v_term" label="단자 전압" />).
+
+## 더 알아보기
+
+<GoDeeper ids={['cde-ae-guide', 'adi-ceramic-caps', 'jeita-liion']} />
+
+## 퀴즈
+
+<Quiz id="06-bench/low-temp" />

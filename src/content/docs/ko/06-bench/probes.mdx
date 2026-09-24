@@ -1,0 +1,106 @@
+---
+title: 프로브와 측정 대역폭
+description: 프로브의 접지선이 스위칭 에지에 더하는 것, 측정 시스템의 대역폭이 보여 줄 수 있는 상승 시간을 제한하는 방식, 그리고 컨버터의 출력 리플을 재는 법.
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 프로브의 접지선이 빠른 에지의 측정에 무엇을 더하는지 알아봅니다.
+- 측정 시스템의 대역폭과, 그 시스템이 보여 줄 수 있는 가장 빠른 상승을 연결합니다.
+- 짧은 접지 연결로 컨버터의 출력 리플을 잽니다.
+
+## 이론
+
+### 접지선
+
+프로브는 팁과 접지 연결 사이의 전압을 재며, 그 둘에 이르는 리드는 루프를 이룹니다.
+이 루프는 기생 인덕턴스를 만들어 스위칭 과도(switching transient)의 진폭을 실제보다
+크게 보이게 합니다 <Cite key="adi_an1144" />. 이 인덕턴스는 프로브의 입력
+커패시턴스와 직렬 L-C를 이루어, 빠른 에지마다 여기되어 그 공진 주파수로 링잉합니다.
+회로가 아니라 프로브의 링잉입니다.
+
+<Eq id="probe.f_ring" />
+
+접지를 짧게 하면 루프가 작아집니다. 팁-배럴 방법(tip-and-barrel method)은 긴
+접지선을 떼고 프로브의 배럴을 접지 기준에 직접 댑니다 <Cite key="adi_an1144" />.
+
+### 대역폭과 상승 시간
+
+프로브와 오실로스코프는 함께, 그 대역폭이 허락하는 것보다 빠르게 계단에 응답하지
+못합니다. 단일 극점 응답이라면 10-90 % 상승 시간(rise time)은 대역폭에서 나옵니다.
+
+<Eq id="probe.t_rise" />
+
+예전부터 오실로스코프의 응답은 대략 이 규칙을 따르는 경향이 있었습니다
+<Cite key="tek_bw_risetime" />. 상수는 응답의 모양에 따라 달라지며, 대역폭이 같다면
+평탄 응답 오실로스코프가 가우시안 응답 오실로스코프보다 상승 시간을 더 정확히
+잽니다 <Cite key="keysight_5988_8008" />. 무한히 빠른 이상적인 계단도 시스템 자신의
+상승 시간에 걸쳐 오르는 것으로 보입니다. 에지 자신의 상승 시간을 보려면 시스템의 상승
+시간이 그보다 충분히 짧아야 합니다.
+
+### 출력 리플
+
+컨버터의 출력 리플은 출력 전압에 비해 작고, 그 위에 얹힌 스위칭 과도는 빠릅니다.
+긴 접지선의 루프는 이 과도를 과장하여 <Cite key="adi_an1144" />, 리플처럼 보이게
+합니다. 출력 커패시터에서 팁-배럴 방법으로 잽니다 <Cite key="adi_an1144" />.
+오실로스코프 채널의 대역폭 제한(bandwidth limit)은 그보다 높은 성분을 감쇠시킵니다
+(<EqRef id="rc.gain" label="1차 저역 통과" />). 리플 자신의 주파수보다 충분히 높게
+두지 않으면 리플까지 감쇠시킵니다.
+
+## 풀이 예제
+
+측정 시스템, 그리고 긴 접지선을 단 프로브:
+
+<Worked example="bench-probe" />
+
+시스템은 이상적인 계단을 <Val example="bench-probe" name="t_rise" />에 걸쳐 오르는
+것으로 보여 주고, 접지 루프의 <Val example="bench-probe" name="L_gnd" />는 프로브의
+<Val example="bench-probe" name="C_probe" />와 함께 <Val example="bench-probe" name="f_probe" />로
+링잉합니다.
+
+## 직접 해 보기
+
+<TryIt eq="probe.t_rise" example="bench-probe" sweep="BW" />
+
+대역폭을 바꿔 보면 상승 시간이 반비례해 줄어듭니다.
+
+<TryIt eq="probe.f_ring" example="bench-probe" sweep="L_gnd" />
+
+접지 루프의 인덕턴스를 바꿔 보면, 접지가 짧을수록 링잉이 빨라져 재려는 에지보다
+더 높은 주파수로 올라갑니다.
+
+## 벤치 실습
+
+같은 스위칭 에지를 두 번 잽니다. 한 번은 프로브의 긴 접지선으로, 한 번은 접지
+스프링이나 팁-배럴 방법으로 잽니다. 오버슈트와 링잉 주파수를 비교하고, 그 주파수와
+데이터시트의 프로브 입력 커패시턴스로 접지선의 인덕턴스를 어림합니다. 이어서 출력
+리플을 두 방식으로, 채널의 대역폭 제한을 켜고 끄면서 잽니다.
+
+## 주의할 점
+
+- **접지선에 따라 달라지는 링잉**은 회로가 아니라 프로브의 것입니다. 접지를 줄이면
+  달라집니다 <Cite key="adi_an1144" />.
+- **시스템보다 훨씬 빠른 에지**는 대략 시스템의 상승 시간으로 보입니다
+  (<EqRef id="probe.t_rise" label="상승 시간" />).
+- **리플 주파수 가까이에 둔 대역폭 제한**은 리플 자체를 감쇠시킵니다
+  (<EqRef id="rc.gain" label="1차 저역 통과" />).
+
+## 더 알아보기
+
+<GoDeeper ids={['adi-an1144', 'keysight-5988-8008', 'tek-bw-risetime']} />
+
+## 퀴즈
+
+<Quiz id="06-bench/probes" />

@@ -1,0 +1,59 @@
+# Quiz for 06-bench/protection. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A 24 V supply is switched onto an empty 470 uF capacitor through 0.05 ohm in all, with negligible wiring inductance. What is the peak current?'
+    options:
+      - '24 A'
+      - '11.3 A'
+      - '480 A'
+      - '0.2 A'
+    answer: 2
+    explain: 'The whole step falls across the series resistance: 24 V over 0.05 ohm.'
+  - q: 'The capacitor is replaced by one of half the capacitance with the same ESR. What happens to the peak?'
+    options:
+      - 'It stays the same'
+      - 'It halves'
+      - 'It doubles'
+      - 'It falls to zero'
+    answer: 0
+    explain: 'In the R-C model, at the step the capacitor has no voltage across it, whatever its size: only the series resistance limits the peak. The pulse is shorter, since the time constant halves.'
+  - q: 'What is the joule integral of the first pulse (24 V, 470 uF, 0.05 ohm)?'
+    options:
+      - '5.41 A^2 s'
+      - '1.35 A^2 s'
+      - '2.71 A^2 s'
+      - '0.14 A^2 s'
+    answer: 2
+    explain: 'V^2 C / (2 R) = 576 times 470e-6 over 0.1, which is 2.71 A^2 s.'
+  - q: 'The same 470 uF capacitor is brought up to 24 V by a linear ramp. How long must the ramp be for a 2 A inrush?'
+    options:
+      - '2.82 ms'
+      - '11.3 ms'
+      - '0.564 ms'
+      - '5.64 ms'
+    answer: 3
+    explain: 'The current is C V over the ramp time, so the ramp time is C V over the current: 470e-6 times 24 over 2.'
+  - q: 'A load switch in series with the fixed 24 V supply sets that ramp. Compared with the step, how much energy does the path dissipate while the capacitor charges?'
+    options:
+      - 'None: a slow ramp is lossless'
+      - 'The same, as much as the capacitor stores, now mostly in the load switch'
+      - 'Half as much'
+      - 'Twice as much'
+    answer: 1
+    explain: 'The supply delivers C V^2 and the capacitor keeps C V^2/2 either way; the ramp lowers the current and spreads the loss over time.'
+  - q: 'What does a higher ambient temperature do to a fuse?'
+    options:
+      - 'Nothing, a fuse depends only on its current'
+      - 'It opens at a higher current'
+      - 'It lasts longer'
+      - 'It operates hotter and its life is shorter'
+    answer: 3
+    explain: 'The higher the ambient temperature, the hotter the fuse operates and the shorter its life.'
+  - q: 'A diode in series with a 12 V battery protects its load against reversal. The load draws 2 A on average and the diode drops 0.7 V. Ignoring its resistance, what does the diode cost?'
+    options:
+      - 'Nothing: it acts only when the battery is reversed'
+      - '1.4 W, for as long as the circuit runs'
+      - '24 W'
+      - '0.35 W'
+    answer: 1
+    explain: 'It carries the whole load current whenever the battery is the right way round: 0.7 V times 2 A.'

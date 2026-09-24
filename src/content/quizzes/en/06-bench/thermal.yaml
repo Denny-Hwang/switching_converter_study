@@ -1,0 +1,51 @@
+# Quiz for 06-bench/thermal. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A device dissipates 3 W in 25 C air through 2, 1 and 12 K/W in series (junction-case, case-sink, sink-air). What is its junction temperature?'
+    options:
+      - '45 C'
+      - '61 C'
+      - '100 C'
+      - '70 C'
+    answer: 3
+    explain: 'The rises add: 3 W times 15 K/W is 45 K, so the junction sits 45 K above 25 C.'
+  - q: 'Which change lowers that junction temperature most?'
+    options:
+      - 'A heat sink of half the resistance'
+      - 'An interface of half the resistance'
+      - 'A device with half the junction-to-case resistance'
+      - 'All three the same'
+    answer: 0
+    explain: 'The heat sink''s is the largest resistance and takes the largest share of the rise: halving it saves 18 K, the others 1.5 K and 3 K.'
+  - q: 'What does a data sheet''s junction-to-ambient resistance describe?'
+    options:
+      - 'The junction-to-ambient path on any board'
+      - 'Only the package itself'
+      - 'The whole path to the air as the device was measured, board and airflow included'
+      - 'The heat sink it needs'
+    answer: 2
+    explain: 'It is the most commonly reported metric and often misused: it belongs to the conditions it was measured in.'
+  - q: 'A device without a heat sink dissipates 1.5 W, its package top reads 70 C, and the data sheet gives a junction-to-top parameter of 4 K/W. What is the junction temperature?'
+    options:
+      - '70 C'
+      - '64 C'
+      - '100 C'
+      - '76 C'
+    answer: 3
+    explain: 'The top temperature plus the parameter times the whole power: 70 C plus 6 K.'
+  - q: 'Why is the junction-to-top parameter not added into a series thermal path?'
+    options:
+      - 'It is not a true thermal resistance: only part of the power flows through the package top'
+      - 'It is always zero'
+      - 'It is measured in another unit'
+      - 'It already includes the heat sink'
+    answer: 0
+    explain: 'It relates two temperatures to the whole power, most of which leaves by other paths.'
+  - q: 'Why estimate a switch''s conduction loss at its hot junction temperature?'
+    options:
+      - 'The current falls when it is hot'
+      - 'Its on-resistance rises with temperature, by the factor the data sheet''s normalized curve gives'
+      - 'Conduction loss does not depend on temperature'
+      - 'The gate charge rises'
+    answer: 1
+    explain: 'A loss estimated at room temperature is too low, and the extra loss heats the junction further.'

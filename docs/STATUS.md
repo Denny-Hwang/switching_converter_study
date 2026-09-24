@@ -15,11 +15,12 @@
 | Design-tool additions (Phase 3e) | ✅ 13 equations: `mag.N_Bmax`, `mag.gap_length`, `mag.B_ac` (fewest turns for a flux-density limit, gap without fringing, ac flux amplitude from the ripple), `wind.round_area`, `wind.fill`, `wind.rho_T`, `wind.dcr` (copper, window utilization, dc resistance at temperature), `wind.skin_depth`, `wind.porosity`, `wind.phi_round`, `wind.dowell` (ac resistance factor, Dowell), `xfmr.leakage.ps`, `xfmr.leakage.psp` (leakage by winding arrangement) |
 | Simulator review additions | ✅ 2 equations: `vsb.drift` (the inductor current's change over one period, zero in a steady state), `bat.rint` (a battery's current in the Rint model) |
 | Magnetics additions (Phase 4a) | ✅ 16 equations: `mag.Kg_req`, `mag.Kg_core` (the core geometrical constant an inductor needs, and a core's), `wind.phi_foil`, `wind.dowell_low`, `wind.loss_rel`, `wind.phi_opt` (a foil layer's thickness in skin depths, Dowell's series for thin layers, the loss against a one-skin-depth layer, the thickness of least loss), `xfmr.k`, `xfmr.L_sc`, `xfmr.L_sc_T`, `xfmr.V_oc` (coupling and the short-circuit inductance, also from the T model, and the open-circuit voltage ratio, just below the turns ratio), `snub.C_par`, `snub.L_par`, `snub.R`, `snub.P`, `snub.P_R` (a ringing node's capacitance and inductance from two ringing frequencies, the RC snubber, the loss it adds and what its resistor dissipates), `meas.L_app` (an impedance meter's reading below self-resonance) |
-| Derivations reproduce the YAML (`pytest`) | ✅ 132 of 152 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk`, `mag.B_H`, `loss.core`, `adc.nyquist`, `wind.round_area`, `wind.fill`, `mag.Kg_core`, `wind.phi_foil` and `xfmr.k` are definitions, `loss.steinmetz` is an empirical law, `wind.rho_T` is copper's linear temperature coefficient (`nbs_hb100`), `tvs.R_D` and `tvs.V_clamp` are the TVS model of `st_an316`, `wind.porosity`, `wind.phi_round` and `wind.dowell` are Dowell's layer model (`dowell1966`), `bat.rint` is the Rint battery model (`he2011`)) |
-| Symbol meanings: every symbol of `symbol_table` says in a few words what it is (`meaning`, `meaning_ko`, required by the loader) | ✅ 201 of 201; shown next to every tool input, under every `<Eq>` and in every worked example |
+| Bench additions (Phase 4b) | ✅ 14 equations: `layout.v_spike`, `layout.L_ring` (the voltage a loop's inductance develops over an edge, and the loop inductance from a ring), `gate.I_on`, `gate.I_off`, `gate.t_pl`, `boot.C` (the gate currents and the time on the Miller plateau, the bootstrap capacitance for an allowed droop), `probe.t_rise`, `probe.f_ring` (a single-pole system's rise time, a probe's ground-lead ring), `therm.Tj`, `therm.psi` (the junction temperature through a series thermal path, and from the package top), `inrush.I_pk`, `inrush.I2t`, `inrush.I_ramp` (the inrush into an empty capacitor, and through a ramp), `bat.v_term` (a battery's terminal voltage in the Rint model) |
+| Derivations reproduce the YAML (`pytest`) | ✅ 145 of 166 (`K.def`, `def.Ts`, `def.V`, `ripple.Ipk`, `mag.B_H`, `loss.core`, `adc.nyquist`, `wind.round_area`, `wind.fill`, `mag.Kg_core`, `wind.phi_foil` and `xfmr.k` are definitions, `loss.steinmetz` is an empirical law, `wind.rho_T` is copper's linear temperature coefficient (`nbs_hb100`), `tvs.R_D` and `tvs.V_clamp` are the TVS model of `st_an316`, `wind.porosity`, `wind.phi_round` and `wind.dowell` are Dowell's layer model (`dowell1966`), `bat.rint` is the Rint battery model (`he2011`), `therm.psi` is the data sheet's characterization parameter (`ti_spra953`)) |
+| Symbol meanings: every symbol of `symbol_table` says in a few words what it is (`meaning`, `meaning_ko`, required by the loader) | ✅ 232 of 232; shown next to every tool input, under every `<Eq>` and in every worked example |
 | TS/Python parity (`vitest`, 1e-9 rel) | ✅ all shared vectors |
 | Strict KaTeX on every generated formula and derivation step (`vitest`) | ✅ |
-| `references.bib` verified (two web-search rounds + CI Crossref + URL title check; PDFs: title and `urlquotes` read from the file) | ✅ 41 of 41 verified (`steinmetz1984` DOI confirmed by the CI Crossref job; `ti_slva630` and `ti_snoa930` added in Phase 2c; `ti_ssztcv6` and `st_an316` added in Phase 3c; `ti_ina181`, `osullivan2012` and `kester_mt002` added in Phase 3d; `tdk_e25`, `tdk_etd29` and `nbs_hb100` added in Phase 3e, every value the core table and the copper constants take from them found by the CI check in the PDFs; `he2011` added with the simulator's battery load, `vanloan1978`, `parlett1969` and `higham2005` with its exact steps; `keysight_5950_3000`, `keithley_llmh7`, `hurley2000` and `nexperia_an11160` added in Phase 4a) |
+| `references.bib` verified (two web-search rounds + CI Crossref + URL title check; PDFs: title and `urlquotes` read from the file) | ✅ 59 of 59 verified (`steinmetz1984` DOI confirmed by the CI Crossref job; `ti_slva630` and `ti_snoa930` added in Phase 2c; `ti_ssztcv6` and `st_an316` added in Phase 3c; `ti_ina181`, `osullivan2012` and `kester_mt002` added in Phase 3d; `tdk_e25`, `tdk_etd29` and `nbs_hb100` added in Phase 3e, every value the core table and the copper constants take from them found by the CI check in the PDFs; `he2011` added with the simulator's battery load, `vanloan1978`, `parlett1969` and `higham2005` with its exact steps; `keysight_5950_3000`, `keithley_llmh7`, `hurley2000` and `nexperia_an11160` added in Phase 4a; `adi_an1144`, `adi_an136`, `adi_ceramic_caps`, `cde_ae_guide`, `epc_wp008`, `jeita_liion`, `keysight_5988_8008`, `littelfuse_fuseology`, `microchip_apt0403`, `tek_bw_risetime`, `ti_slua887`, `ti_slva139`, `ti_slva670`, `ti_slyt614`, `ti_snva021`, `ti_spra953`, `ti_sszta51` and `vishay_an608a` in Phase 4b) |
 
 ## Simulator and tools (Phase 3)
 
@@ -52,15 +53,15 @@
 | Item | State |
 | --- | --- |
 | Symbols explained where they appear: under every `<Eq>` (`<dl>` of symbol and meaning) and next to every symbol of a worked example | ✅ every page, EN and KO |
-| Example numbers: each worked example, preset and quiz example is labelled an example; every page's footer states once that example numbers are synthetic (`PRIVACY_RULES.md`, checked by `privacy_scan.py`) | ✅ 50 examples, EN and KO |
-| Wording: filler and repeated statements removed; Korean pages give the English term in parentheses at the first use of a technical term (BUILD_SPEC §8) | ✅ all 84 pages (42 EN, 42 KO) |
+| Example numbers: each worked example, preset and quiz example is labelled an example; every page's footer states once that example numbers are synthetic (`PRIVACY_RULES.md`, checked by `privacy_scan.py`) | ✅ 58 examples, EN and KO |
+| Wording: filler and repeated statements removed; Korean pages give the English term in parentheses at the first use of a technical term (BUILD_SPEC §8) | ✅ all 98 pages (49 EN, 49 KO) |
 | Figures drawn from code (`scripts/gen_figures.py`): schematics in schemdraw, idealized waveforms in matplotlib, in the site's symbols; inlined in the theme's text colour, with a caption and a text alternative in EN and KO and the source each follows (`src/lib/figures.ts`, tested); CI redraws them and fails on a difference | ✅ 8 figures: buck, boost, buck-boost, flyback and forward schematics; the buck's switch-node voltage, volt-second balance, inductor current in CCM, at the boundary and in DCM |
 
 Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); theory uses only `<Eq>` embeds and each Eq has ≥ 1 test vector; "Try it" links a tool preset; "Go deeper" has ≥ 2 verified resources with retrieval dates; a gotchas subsection exists; quiz with ≥ 5 explained questions; build, tests and all lints green.
 
 Legend: ✅ done · 🟡 partial · ⬜ not started · ➖ not applicable. "Phase" is the build phase that delivers the module (docs/BUILD_SPEC.md §7); "later" = not scheduled in phases 0–5. 00-foundations and 01-physics are compact refreshers (Phase 2 scope).
 
-_Last updated: Phase 4a (04-magnetics). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
+_Last updated: Phase 4b (06-bench). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
 
 "Try it" links open the [equation explorer](../src/content/docs/en/design/explorer.mdx) with a synthetic preset. Pages whose example is a whole converter also open the [simulator](../src/content/docs/en/simulate/simulator.mdx) with it (`<TrySim>`, Phase 3a); design-tool presets come with the design tools.
 
@@ -139,13 +140,13 @@ _Last updated: Phase 4a (04-magnetics). `python scripts/modulelint.py` checks ev
 
 | Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| layout | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| gate-drive | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| current-sensing | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| probes | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| thermal | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| protection | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| low-temp | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| layout | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `layout.v_spike`, `layout.L_ring` |
+| gate-drive | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `gate.I_on`, `gate.I_off`, `gate.t_pl`, `boot.C` |
+| current-sensing | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `sense.burden`, `sense.pad_error` (moved from design/sense-chain, which links to them) |
+| probes | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `probe.t_rise`, `probe.f_ring` |
+| thermal | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `therm.Tj`, `therm.psi` |
+| protection | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `inrush.I_pk`, `inrush.I2t`, `inrush.I_ramp` |
+| low-temp | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `bat.v_term` |
 
 ## 07-harvesting
 
@@ -195,5 +196,5 @@ _Last updated: Phase 4a (04-magnetics). `python scripts/modulelint.py` checks ev
 | design/loss-budget | ✅ | ✅ | Phase 3b; state in the URL hash; screenshot and keyboard check |
 | design/clamp-check | ✅ | ✅ | Phase 3c; homes the eight clamp equations (`flyback.V_OR`, `clamp.*`, `tvs.*`, `flyback.V_ceiling`); state in the URL hash; screenshot and keyboard check |
 | design/source-matcher | ✅ | ✅ | Phase 3c; homes `src.Pmax`, `src.cv_power`, `src.cv_extraction`, `lfr.Vg`, `lfr.eta`, `lfr.Vg_power` until the harvesting pages (Phase 4); state in the URL hash; screenshot and keyboard check |
-| design/sense-chain | ✅ | ✅ | Phase 3d; homes the eight `sense.*` equations and `adc.nyquist` until the current-sensing bench page (Phase 4); state in the URL hash; screenshot and keyboard check |
+| design/sense-chain | ✅ | ✅ | Phase 3d; homes six `sense.*` equations and `adc.nyquist`; `sense.burden` and `sense.pad_error` moved to the current-sensing bench page (Phase 4b); state in the URL hash; screenshot and keyboard check |
 | 10-resources/bibliography | ✅ | ✅ | Phase 1: generated from `references.bib` (verified entries only) |
