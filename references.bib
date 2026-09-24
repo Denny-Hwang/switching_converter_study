@@ -286,6 +286,19 @@
   urlkind      = {pdf}
 }
 
+@manual{kester_mt027,
+  author       = {Kester, Walt and Bryant, James},
+  title        = {{ADC} Architectures {VIII}: Integrating {ADC}s},
+  organization = {Analog Devices},
+  type         = {Tutorial},
+  number       = {MT-027},
+  note         = {verified 2026-09-24, round 1 (two web searches; analog.com could not be opened from the sandbox, and the CI URL check opens it and matches urltitle and urlquotes in the PDF): Analog Devices tutorial MT-027, "ADC Architectures VIII: Integrating ADCs", by Walt Kester and James Bryant (the revision and year are not given here); cited for: in an integrating converter "the accumulated charge on the integrating capacitor is proportional to the average value of the input over the interval T", and the integration rejects inputs whose periods equal the integration time or a sub-multiple of it, so that a proper choice of it rejects the 50 Hz and 60 Hz line ripple},
+  url          = {https://www.analog.com/media/en/training-seminars/tutorials/MT-027.pdf},
+  urltitle     = {ADC Architectures VIII: Integrating ADCs},
+  urlquotes    = {proportional to the average value of the input over the interval},
+  urlkind      = {pdf}
+}
+
 @article{singer1990,
   author  = {Singer, Sigmond},
   title   = {Realization of loss-free resistive elements},
@@ -432,11 +445,11 @@
   title   = {{TPL5110} Nano-Power System Timer for Power Gating},
   organization = {Texas Instruments},
   type    = {Data sheet},
-  number  = {SNAS650},
-  note    = {verified 2026-09-24, round 1 (web search: ti.com/lit/ds/symlink/tpl5110.pdf and ti.com/lit/gpn/TPL5110, "TPL5110 Nano-Power System Timer for Power Gating", literature number SNAS650, first issued January 2015 and revised since; the data sheet says that the EN/ONE_SHOT pin selects timer or one-shot mode and should be tied to GND or VDD with short traces and never left floating, that the TPL5110 recognizes a valid DONE signal as a low to high transition, that the minimum DONE signal pulse length is 100 ns, and that the timer turns the powered system off when it receives DONE). Cited for those statements},
+  number  = {SNAS650A},
+  note    = {verified 2026-09-24, round 1 (web search: ti.com/lit/ds/symlink/tpl5110.pdf and ti.com/lit/gpn/TPL5110, "TPL5110 Nano-Power System Timer for Power Gating", literature number SNAS650, first issued January 2015 and revised since; the data sheet says that the EN/ONE_SHOT pin selects timer or one-shot mode, that it needs to be tied to GND or VDD with short traces, that the TPL5110 recognizes a valid DONE signal as a low to high transition, that the minimum DONE signal pulse length is 100 ns, and that the timer turns the powered system off when it receives DONE). Round 2, 2026-09-24 (an independent review and two further web searches): the current revision is SNAS650A (January 2015, revised September 2018); "should never be left floating" belongs to the TPL5111 data sheet's EN/ONE_SHOT sentence, and was not confirmed for the TPL5110, so it is no longer cited. Cited for the statements of round 1},
   url     = {https://www.ti.com/lit/ds/symlink/tpl5110.pdf},
   urltitle = {Nano-Power System Timer for Power Gating},
-  urlquotes = {recognizes a valid DONE signal as a low to high transition | never be left floating},
+  urlquotes = {recognizes a valid DONE signal as a low to high transition | tied to GND or VDD with short traces},
   urlkind = {pdf}
 }
 
@@ -690,10 +703,10 @@
 @manual{adi_ceramic_caps,
   title        = {Temperature and Voltage Variation of Ceramic Capacitors, or Why Your 4.7 {µF} Capacitor Becomes a 0.33 {µF} Capacitor},
   organization = {Analog Devices (Maxim Integrated)},
-  note         = {verified 2026-09-24 (two independent web-search rounds: the analog.com technical article "Temperature and Voltage Variation of Ceramic Capacitors, or Why Your 4.7µF Capacitor Becomes a 0.33µF Capacitor"; its author and date were not confirmed; cited for: class-2 codes such as X7R say nothing about a capacitor's change with its dc voltage; and the title's example, a 4.7 µF, 6.3 V, 0603 Y5V capacitor that at 5 V bias and room temperature keeps 0.33 µF, "92.9% below nominal", the dc voltage alone (with the bias it kept slightly more at +85 C than at room temperature). Corrected in Phase 4d after a round-2 review read the example in three search summaries (analog.com, EDN, Maxim tutorial 5527): the note had said that temperature and dc voltage together gave that loss). Phase 4d, round 1, 2026-09-24 (web search: "Engineers must check the data to know, really know, how a specific capacitor will perform under voltage"; a vendor can call a capacitor X7R as long as it meets the temperature-coefficient specification, however large its voltage coefficient); cited also for: the data of the specific part must be checked},
+  note         = {verified 2026-09-24 (two independent web-search rounds: the analog.com technical article "Temperature and Voltage Variation of Ceramic Capacitors, or Why Your 4.7µF Capacitor Becomes a 0.33µF Capacitor"; its author and date were not confirmed; cited for: class-2 codes such as X7R say nothing about a capacitor's change with its dc voltage; and the title's example, a 4.7 µF, 6.3 V, 0603 Y5V capacitor that at 5 V bias and room temperature keeps 0.33 µF, "92.9% below nominal", the dc voltage alone (with the bias it kept slightly more at +85 C than at room temperature). Corrected in Phase 4d after a round-2 review read the example in three search summaries (analog.com, EDN, Maxim tutorial 5527): the note had said that temperature and dc voltage together gave that loss). Phase 4d, round 1, 2026-09-24 (web search: "Engineers must check the data to know, really know, how a specific capacitor will perform under voltage"; a vendor can call a capacitor X7R as long as it meets the temperature-coefficient specification, however large its voltage coefficient); cited also for: the data of the specific part must be checked. Phase 4d, round 2 fix, 2026-09-24 (two web searches: larger cases lost capacitance under voltage more slowly than smaller ones, and "Within a package size and ceramic type, the voltage rating of the capacitors seems often to have no effect"); cited also for: in the article's data a larger case lost less, and within one case size and dielectric the voltage rating often made no difference},
   url          = {https://www.analog.com/en/resources/technical-articles/temperature-and-voltage-variation-ceramic-capacitor.html},
   urltitle     = {Temperature and Voltage Variation of Ceramic Capacitors},
-  urlquotes    = {imply nothing about voltage coefficients | 92.9% below nominal | how a specific capacitor will perform under voltage},
+  urlquotes    = {imply nothing about voltage coefficients | 92.9% below nominal | how a specific capacitor will perform under voltage | seems often to have no effect},
   urlkind      = {html}
 }
 

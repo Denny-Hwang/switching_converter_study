@@ -60,7 +60,10 @@ above the highest input voltage the source can drive
 (<EqRef id="lfr.Vg" label="bus voltage of a loss-free resistor" />), then
 rate the switch for the voltage that follows
 (<EqRef id="flyback.Vds_off" label="switch voltage" />). A smaller turns
-ratio raises the critical voltage.
+ratio raises the critical voltage. A different duty ratio also changes the
+input resistance (<EqRef id="lfr.R_in" label="input resistance" />), so
+re-size the magnetizing inductance with it
+(<EqRef id="lfr.L_M" label="magnetizing inductance for a match" />).
 
 ## References
 

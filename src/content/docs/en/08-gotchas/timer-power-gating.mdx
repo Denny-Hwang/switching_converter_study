@@ -25,9 +25,9 @@ Two of such a timer's inputs are easy to leave undefined. The TPL5110 is
 the example here <Cite key="ti_tpl5110" />:
 
 - Its EN/ONE_SHOT pin selects between periodic operation and a single
-  cycle, and it must be tied to GND or VDD with short traces, never left
-  floating <Cite key="ti_tpl5110" />. A floating pin's level is undefined,
-  and so is the mode.
+  cycle, and it must be tied to GND or VDD with short traces
+  <Cite key="ti_tpl5110" />. A floating pin's level is undefined, and so is
+  the mode.
 - Its DONE input is the load's signal that it has finished. The timer takes
   a low-to-high transition as a valid DONE and switches the load off, and a
   pulse as short as 100 ns is enough <Cite key="ti_tpl5110" />. A stray
@@ -46,11 +46,12 @@ GND or VDD.
 ## Fix
 
 Tie the mode pin to GND or VDD with a short trace <Cite key="ti_tpl5110" />.
-Hold DONE low with a pull-down resistor, so that it stays low while nothing
+Since a rising edge on DONE ends the cycle <Cite key="ti_tpl5110" />, hold
+DONE low with a pull-down resistor, so that it stays low while nothing
 drives it, and have the firmware raise it only when the work is done. Then
 repeat the check above.
 
 ## References
 
-- <Cite key="ti_tpl5110" />: the mode pin, which must not float, and the
+- <Cite key="ti_tpl5110" />: the mode pin, tied to GND or VDD, and the
   DONE input: a low-to-high transition, and the shortest valid pulse.

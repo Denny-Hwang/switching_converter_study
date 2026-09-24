@@ -42,7 +42,10 @@ Each one except the index:
     and its References section cites at least one source (<Cite>);
   * has a Korean mirror with the same tags and components (as for modules),
     or docs/STATUS.md marks its KO pending; STATUS lists every gotcha.
-The index embeds <GotchaIndex />, which lists the pages by their tags.
+The gotcha pages sit directly in 08-gotchas/, each with a one-line
+description and no tag twice. The index embeds <GotchaIndex part="list" />,
+then under an h2 of its own <GotchaIndex part="tags" />, which lists the
+pages by their tags.
 
 A page is a tool page when it embeds a tool island (<Explorer />,
 <Simulator />, ...). Each tool page has a "Screenshot" section (KO: 스크린샷)
@@ -185,21 +188,36 @@ def status_rows() -> dict[tuple[str, str], dict[str, str]]:
     return rows
 
 
+def check_gotcha_index(where: str, body: str) -> list[str]:
+    """The gotcha index: the list of pages, then, under an h2 of its own, the pages by tag."""
+    listed = re.search(r'<GotchaIndex\s+part="list"\s*/>', body)
+    by_tag = re.search(r'<GotchaIndex\s+part="tags"\s*/>', body)
+    if not listed or not by_tag:
+        return [f'{where}: the gotcha index must embed <GotchaIndex part="list" /> and, under an h2 of its own, <GotchaIndex part="tags" />']
+    if by_tag.start() < listed.start() or not re.search(r"^## \S", body[listed.end():by_tag.start()], re.M):
+        return [f'{where}: put an h2 (the table of contents shows it) between <GotchaIndex part="list" /> and <GotchaIndex part="tags" />']
+    return []
+
+
 def check_gotchas(status: dict[tuple[str, str], dict[str, str]]) -> tuple[list[str], int]:
     """The gotcha pages (08-gotchas): template, tags, Korean mirror, STATUS."""
     errors: list[str] = []
     pages: dict[tuple[str, str], tuple[list[str], list[tuple[str, dict[str, str]]]]] = {}
     for locale in SECTIONS:
         folder = DOCS / locale / GOTCHAS_DIR
-        for path in sorted(folder.glob("*.mdx")) if folder.exists() else []:
+        for path in sorted(folder.rglob("*.mdx")) if folder.exists() else []:
             where = str(path.relative_to(ROOT))
+            if path.parent != folder:
+                errors.append(f"{where}: a gotcha page sits directly in {GOTCHAS_DIR}/, not in a subfolder (the index lists only those)")
+                continue
             meta, body = frontmatter(strip_code(path.read_text(encoding="utf-8")))
             if meta.get("module"):
                 errors.append(f"{where}: a gotcha page is not a module page (remove `module: true`)")
             if path.stem == "index":
-                if not re.search(r"<GotchaIndex\s*/>", body):
-                    errors.append(f"{where}: the gotcha index must embed <GotchaIndex />")
+                errors += check_gotcha_index(where, body)
                 continue
+            if not str(meta.get("description") or "").strip():
+                errors.append(f"{where}: frontmatter needs a one-line `description` (the index shows it)")
             tags = (meta.get("gotcha") or {}).get("tags") if isinstance(meta.get("gotcha"), dict) else None
             if not isinstance(tags, list) or not tags:
                 errors.append(f"{where}: frontmatter needs `gotcha: {{tags: [...]}}` with at least one tag")
@@ -207,6 +225,10 @@ def check_gotchas(status: dict[tuple[str, str], dict[str, str]]) -> tuple[list[s
             for tag in tags:
                 if tag not in GOTCHA_TAGS:
                     errors.append(f"{where}: unknown gotcha tag {tag!r} (src/lib/gotchas.json)")
+            if len({str(x) for x in tags}) != len(tags):
+                errors.append(f"{where}: a gotcha tag is listed twice")
+            # recorded before the section checks, so that a page with a wrong section still counts as a page
+            pages[(locale, path.stem)] = (sorted(str(x) for x in tags), components(body))
             found = sections(body)
             heads = [h for h, _ in found]
             if heads != GOTCHA_SECTIONS[locale]:
@@ -218,7 +240,6 @@ def check_gotchas(status: dict[tuple[str, str], dict[str, str]]) -> tuple[list[s
             refs = dict(found)[GOTCHA_SECTIONS[locale][-1]]
             if not any(c == "Cite" for c, _ in components(refs)):
                 errors.append(f"{where}: the {GOTCHA_SECTIONS[locale][-1]} section cites no source (<Cite>)")
-            pages[(locale, path.stem)] = (sorted(str(x) for x in tags), components(body))
 
     for (locale, slug), (tags, comps) in pages.items():
         if locale != "en":

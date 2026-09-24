@@ -20,9 +20,12 @@ const index = pageHref(locale, GOTCHAS_DIR);
   <span>{t['gotcha.tags']}:</span>
   {
     tags.map((tag) => (
-      <a class="pe-tag" href={`${index}#${tagAnchor(tag)}`}>
-        {tagLabel(tag, locale)}
-      </a>
+      <Fragment>
+        {' '}
+        <a class="pe-tag" href={`${index}#${tagAnchor(tag)}`}>
+          {tagLabel(tag, locale)}
+        </a>
+      </Fragment>
     ))
   }
 </p>

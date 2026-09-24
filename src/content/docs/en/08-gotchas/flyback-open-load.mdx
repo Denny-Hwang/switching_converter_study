@@ -30,31 +30,46 @@ only when the output's voltage, reflected to the primary, reaches the
 clamp's voltage: from then on the clamp takes the energy instead
 (<EqRef id="flyback.V_ceiling" label="open-load output voltage" />)
 <Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />. The clamp
-then dissipates all of the input power. An RCD clamp's voltage rises with
-the power it takes, so with one the output rises higher still.
+then dissipates all of the input power. Take a TVS's clamping voltage at
+the peak primary current, and at the temperature that power gives it: its
+breakdown voltage rises with temperature, and the ceiling with it
+<Cite key="st_an316" />. An RCD clamp sets no fixed ceiling. Its voltage
+settles where its resistor dissipates the power it takes
+(<EqRef id="clamp.rcd.V" label="RCD clamp voltage" />)
+<Cite key="ti_ssztcv6" />, so without a load the clamp's, the output's and
+the switch's voltages all rise far above their loaded values.
 
 In the clamp tool's example, the output of
 <Val example="clamp-tvs" name="V" /> rises to
-<Val example="clamp-tvs" name="V_omax" /> without its load.
+<Val example="clamp-tvs" name="V_omax" /> without its load, before the TVS
+warms.
 
 ## How to confirm
 
 Compute the ceiling from the clamp's voltage, the turns ratio and the
 diode's drop (<EqRef id="flyback.V_ceiling" label="open-load output voltage" />),
-and compare it with the ratings of every part on the output side. To see it
-on the bench, remove the load with the input current limited and reduced,
-and watch the output rise towards the ceiling.
+and compare it with the ratings of every part on the output side. Remove the
+load on the bench only if every one of those parts is rated above the
+ceiling and the primary clamp is a TVS or a Zener rated for the whole input
+power; then watch the output rise towards the ceiling. A lower input
+voltage lowers the power the clamp takes, not the ceiling.
 
 ## Fix
 
 Keep the output from being left without a load: regulate it with feedback,
 keep a minimum load the converter cannot lose, or clamp the output below
 the ratings of what it feeds. If the primary clamp must survive an open
-load, rate it for the whole input power.
+load, rate it for the whole input power; an RCD clamp needs a fixed-voltage
+clamp beside it, or an input power limited at no load, as the
+[clamp check](../../design/clamp-check/) warns.
 
 ## References
 
 - <Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />: the
   flyback and its transformer model, from which the ceiling follows.
+- <Cite key="st_an316" />: a TVS's clamping voltage at the actual current,
+  and its breakdown voltage rising with temperature.
+- <Cite key="ti_ssztcv6" />: the primary clamp, and an RCD clamp's voltage
+  against its losses.
 - [Snubbers and clamps](../../04-magnetics/snubbers-clamps/) and the
   [clamp check](../../design/clamp-check/), which gives the ceiling.

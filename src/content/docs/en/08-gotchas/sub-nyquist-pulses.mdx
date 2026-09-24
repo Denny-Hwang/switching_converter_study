@@ -1,6 +1,6 @@
 ---
 title: Sampling at ten times the switching frequency that misses the pulses
-description: An ADC sampling a pulsed current at a multiple of the switching frequency catches a pulse only when a sample happens to fall inside one; the pulses' harmonics alias.
+description: An ADC sampling a pulsed current at ten times the switching frequency still misreads its average; the pulses' harmonics alias, and those at multiples of the sampling rate fold onto dc, the average itself.
 sidebar:
   order: 13
 gotcha:
@@ -31,7 +31,10 @@ fall only in inverse proportion to their order
 (<EqRef id="fourier.pulse.harm" label="pulse-train harmonics" />): the
 narrower the pulses, the more of them stay large. Sampling at ten times the
 switching frequency puts the Nyquist frequency at five times it: every
-harmonic above the fifth aliases.
+harmonic above the fifth aliases. The tenth, the twentieth and every other
+harmonic at a multiple of the sampling rate fold onto dc, the average
+itself, and a harmonic near such a multiple folds to a slow beat: the
+average drifts.
 
 Seen in time: when the samples lie further apart than a pulse is wide, a
 sample falls inside a pulse only by chance. With the sampling rate an exact
@@ -47,13 +50,15 @@ sampling, such as a DMM across the shunt
 
 ## Fix
 
-Filter before the ADC: an anti-aliasing filter removes the components above
-the Nyquist frequency <Cite key="kester_mt002" />, and for the average
+Filter before the ADC: an anti-aliasing filter attenuates the components
+above the Nyquist frequency <Cite key="kester_mt002" />, and for the average
 current its corner belongs well below the switching frequency. The
 [sense chain](../../design/sense-chain/) tool checks the corner against the
 Nyquist frequency and gives the filter's gain at the switching frequency.
-Alternatively, sample fast enough that several samples fall inside the
-narrowest pulse.
+Alternatively, sample asynchronously to the switching and average over many
+periods, or take many samples inside the narrowest pulse: at a rate locked
+to the switching frequency, n samples per pulse still misread its area by
+up to one n-th.
 
 ## References
 

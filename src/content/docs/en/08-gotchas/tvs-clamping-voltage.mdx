@@ -46,8 +46,12 @@ In the clamp tool's example, a TVS that breaks down at
 ## How to confirm
 
 Capture the drain voltage at turn-off, with a probe rated for it and a short
-ground connection ([probes](../../06-bench/probes/)): while the clamp
-conducts, the drain sits at the input voltage plus the clamp's voltage.
+ground connection ([probes](../../06-bench/probes/)). Where the primary's
+ground is not the oscilloscope's earth, as in an off-line converter, use a
+differential probe rated for the voltage: a probe's ground lead is tied to
+the oscilloscope's earth ([gate drive](../../06-bench/gate-drive/)). While
+the clamp conducts, the drain sits at the input voltage plus the clamp's
+voltage.
 Compare that plateau with the clamping voltage at the actual peak current,
 and its peak with the switch's rating.
 

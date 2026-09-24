@@ -23,7 +23,7 @@ import TrySim from '../../../../components/TrySim.astro';
 
 ## 원인
 
-DCM에서 고정 듀티비 플라이백은 입력에서 저항으로 보입니다
+DCM에서 고정 듀티비 플라이백은 입력에서 저항, 곧 무손실 저항(loss-free resistor)으로 보입니다
 (<EqRef id="lfr.R_in" label="무손실 저항" />)
 <Cite key="erickson2020" where="Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)" />.
 DCM은 <EqRef id="flyback.V_crit" label="임계 입력 전압" />보다 낮은 입력에서만
@@ -54,7 +54,9 @@ DCM은 <EqRef id="flyback.V_crit" label="임계 입력 전압" />보다 낮은 �
 (<EqRef id="lfr.Vg" label="무손실 저항의 버스 전압" />)보다 임계 전압이 높도록 듀티비와
 권선비를 고르고, 그에 따라 정해지는 전압에 맞춰 스위치의 정격을 정하십시오
 (<EqRef id="flyback.Vds_off" label="스위치 전압" />). 권선비를 작게 하면 임계 전압이
-높아집니다.
+높아집니다. 듀티비를 바꾸면 입력 저항도 바뀌므로
+(<EqRef id="lfr.R_in" label="입력 저항" />), 자화 인덕턴스를 그에 맞춰 다시 정하십시오
+(<EqRef id="lfr.L_M" label="정합을 위한 자화 인덕턴스" />).
 
 ## 참고 자료
 

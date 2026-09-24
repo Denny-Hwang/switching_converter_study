@@ -24,10 +24,14 @@ narrower and taller for the same average.
 
 The shunt's voltage follows the current at every instant
 (<EqRef id="sense.burden" label="sense voltage" />). A DMM's integrating
-converter passes dc and low-frequency signals and attenuates noise at
-specific frequencies <Cite key="keithley_llmh7" />, so across the shunt it
-reads the dc component of the voltage: its average. For a train of pulses
-that is the pulses' height times their duty ratio
+converter accumulates a charge proportional to the average of its input over
+its integration time <Cite key="kester_mt027" />, and it passes dc and
+low-frequency signals while it attenuates noise at specific frequencies
+<Cite key="keithley_llmh7" />. Across the shunt it therefore reads the dc
+component of the voltage, its average, provided that it integrates over
+many switching periods, as a slow reading rate does, and that its input
+does not overload on the pulses' peaks. For a train of pulses that average
+is the pulses' height times their duty ratio
 (<EqRef id="fourier.pulse.harm" label="pulse-train harmonics" />).
 
 The sense chain reads only up to its limits: the amplifier's largest output
@@ -42,8 +46,10 @@ Look at the amplifier's output with an oscilloscope: flat tops at the same
 voltage in every pulse are clipping. Then pass a steady dc current, within
 the chain's range, and compare the chain's reading with the DMM's: if they
 agree there, the chain is calibrated, and the gap with the pulsed current
-comes from its limits. Repeat the DMM reading on its next range up: the
-same reading shows that the meter itself is not the one clipping.
+comes from its limits or from its sampling
+([sampling that misses the pulses](../sub-nyquist-pulses/)). Repeat the DMM reading on
+its next range up: the same reading shows that the meter itself is not the
+one clipping.
 
 ## Fix
 
@@ -54,9 +60,11 @@ and flags a reading that can clip.
 
 ## References
 
+- <Cite key="kester_mt027" />: an integrating converter's charge is
+  proportional to its input's average over the integration time.
 - <Cite key="keithley_llmh7" />: an integrating converter passes dc and
   attenuates noise at specific frequencies.
 - [Sense chain](../../design/sense-chain/): the amplifier's and the ADC's
   limits.
-- [Fourier series](../../00-foundations/fourier/): the dc component of a
+- [Fourier series of switched waveforms](../../00-foundations/fourier/): the dc component of a
   pulse train.

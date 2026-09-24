@@ -24,16 +24,16 @@ import Val from '../../../../components/Val.astro';
 알루미늄 전해 커패시터의 ESR(등가 직렬 저항)은 저온 한계에서 10배 넘게 커질 수
 있습니다 <Cite key="cde_ae_guide" />. 커패시터를 흐르는 리플 전류는 ESR 양단에
 비례하는 리플 전압을 만들고, 이것이 용량성 리플에 더해집니다
-(<EqRef id="cap.esr.ripple" label="ESR 리플" />). 저온 예제에서
+(<EqRef id="cap.esr.ripple" label="ESR 리플" />). 저온 예제에서 피크-피크
 <Val example="bench-cold" name="Delta_i_pp" />의 리플 전류를 받는
-<Val example="bench-cold" name="R_esr" />의 ESR은
+<Val example="bench-cold" name="R_esr" />의 ESR은 피크-피크
 <Val example="bench-cold" name="Delta_v_esr" />를 만들고, 그 열 배인
 <Val example="bench-cold" name="R_esr_cold" />는
 <Val example="bench-cold" name="Delta_v_esr_cold" />를 만듭니다.
 
 ## 확인 방법
 
-항온항습 챔버에서 커패시터를 사양의 최저 온도에 둔 채 출력 리플이나 스위칭
+저온 챔버에서 커패시터를 사양의 최저 온도에 둔 채 출력 리플이나 스위칭
 주파수에서의 커패시터 ESR을 재고, 상온에서의 값과 비교하십시오.
 
 ## 해결

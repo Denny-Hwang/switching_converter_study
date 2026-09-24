@@ -312,6 +312,21 @@
       "kind": "Tutorial",
       "url": "https://www.analog.com/media/en/training-seminars/tutorials/MT-002.pdf"
     },
+    "kester_mt027": {
+      "key": "kester_mt027",
+      "type": "manual",
+      "label": "Kester & Bryant, ADC Architectures VIII",
+      "authors": [
+        "Walt Kester",
+        "James Bryant"
+      ],
+      "title": "ADC Architectures VIII: Integrating ADCs",
+      "verified": true,
+      "organization": "Analog Devices",
+      "number": "MT-027",
+      "kind": "Tutorial",
+      "url": "https://www.analog.com/media/en/training-seminars/tutorials/MT-027.pdf"
+    },
     "singer1990": {
       "key": "singer1990",
       "type": "article",
@@ -517,7 +532,7 @@
       "title": "TPL5110 Nano-Power System Timer for Power Gating",
       "verified": true,
       "organization": "Texas Instruments",
-      "number": "SNAS650",
+      "number": "SNAS650A",
       "kind": "Data sheet",
       "url": "https://www.ti.com/lit/ds/symlink/tpl5110.pdf"
     },

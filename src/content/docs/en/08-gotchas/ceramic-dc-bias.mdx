@@ -16,7 +16,7 @@ import Val from '../../../../components/Val.astro';
 
 ## Symptom
 
-A converter's output ripple is several times the value the design predicts,
+A converter's output ripple is a few times the value the design predicts,
 or a filter's corner sits well away from its calculation, although an LCR
 meter reads the ceramic capacitor close to its rated value on the bench.
 
@@ -25,10 +25,13 @@ meter reads the ceramic capacitor close to its rated value on the bench.
 A class-2 code such as X7R or X5R states how much the capacitance may
 change over a temperature range. It implies nothing about the change with
 the dc voltage across the capacitor, so the data for the specific part must
-be checked <Cite key="adi_ceramic_caps" />. Temperature and dc voltage
-together can leave a small fraction of the rated capacitance: the source's
-own example is a 4.7 µF capacitor that works as 0.33 µF <Cite key="adi_ceramic_caps" />.
-An LCR meter's small test signal with no dc voltage does not show the loss.
+be checked <Cite key="adi_ceramic_caps" />. The dc voltage alone can leave a
+small fraction of the rated capacitance: the source's own example, a 4.7 µF Y5V capacitor rated 6.3 V, keeps 0.33 µF at 5 V at room temperature <Cite key="adi_ceramic_caps" />.
+How much an X7R or X5R part loses depends on the part: in the article's
+data a larger case lost less, and within one case size and dielectric the
+voltage rating often made no difference <Cite key="adi_ceramic_caps" />.
+Temperature changes the value again. An LCR meter's small test signal with
+no dc voltage does not show the loss.
 
 The ripple follows the capacitance that is actually there
 (<EqRef id="buck.ripple.v" label="output voltage ripple" />). An example
@@ -56,9 +59,9 @@ capacitors in parallel until the remaining capacitance meets the ripple.
 ## References
 
 - <Cite key="adi_ceramic_caps" />: class-2 codes say nothing about the
-  change with dc voltage; temperature and voltage together can leave a small
-  fraction of the rated value.
-- [Real passives](../../00-foundations/passives-real/): series resistance,
+  change with dc voltage; the dc voltage alone can leave a small fraction of
+  the rated value, and a larger case loses less.
+- [Real passive components](../../00-foundations/passives-real/): series resistance,
   self-resonance and output ripple.
 - [Low temperature](../../06-bench/low-temp/): what the cold changes on the
   bench.

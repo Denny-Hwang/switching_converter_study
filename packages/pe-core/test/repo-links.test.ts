@@ -29,7 +29,8 @@ function mdxFiles(dir: string): string[] {
     d.isDirectory() ? mdxFiles(join(dir, d.name)) : d.name.endsWith('.mdx') ? [join(dir, d.name)] : [],
   );
 }
-const BLOB = /https:\/\/github\.com\/Denny-Hwang\/switching_converter_study\/(?:blob|tree)\/main\/([^\s)"'#>]+)/g;
+// a file's view (blob), a folder's (tree) or its editor (edit), up to a query (?plain=1) or an anchor (#L12)
+const BLOB = /https:\/\/github\.com\/Denny-Hwang\/switching_converter_study\/(?:blob|tree|edit)\/main\/([^\s)"'#>?]+)/g;
 const pageLinks = mdxFiles(resolve(root, 'src/content/docs')).flatMap((f) =>
   [...readFileSync(f, 'utf8').matchAll(BLOB)].map((m) => [f.slice(root.length + 1), m[1]!] as const),
 );
@@ -37,6 +38,13 @@ const pageLinks = mdxFiles(resolve(root, 'src/content/docs')).flatMap((f) =>
 describe('repository links in the pages', () => {
   it('finds the links it checks', () => {
     expect(pageLinks.length).toBeGreaterThan(0);
+  });
+  it('reads the path alone, before a query or an anchor, of any view', () => {
+    const base = 'https://github.com/Denny-Hwang/switching_converter_study';
+    const paths = [`${base}/blob/main/docs/A.md?plain=1`, `${base}/edit/main/docs/B.md`, `${base}/blob/main/docs/C.md#L3`].map(
+      (u) => [...u.matchAll(BLOB)].map((m) => m[1]),
+    );
+    expect(paths).toEqual([['docs/A.md'], ['docs/B.md'], ['docs/C.md']]);
   });
   it.each(pageLinks)('%s links %s, which exists', (_page, target) => {
     expect(existsSync(resolve(root, target))).toBe(true);

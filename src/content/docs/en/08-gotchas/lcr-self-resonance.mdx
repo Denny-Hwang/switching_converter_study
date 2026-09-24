@@ -29,8 +29,10 @@ between the turns sits in parallel with the inductance and resonates with it
 (<EqRef id="passive.f_srf" label="self-resonant frequency" />). Below that
 resonance the pair behaves as a larger inductance, and the reading rises
 steeply as the test frequency approaches it
-(<EqRef id="meas.L_app" label="apparent inductance" />). Many turns bring
-much inductance and much capacitance together, so their resonance sits low.
+(<EqRef id="meas.L_app" label="apparent inductance" />). Many turns bring a
+large inductance, which grows with the square of the turns
+(<EqRef id="mag.L_from_AL" label="inductance from the inductance factor" />),
+together with the capacitance between them, so their resonance sits low.
 
 For example, a winding of <Val example="lcr-srf" name="L" /> with
 <Val example="lcr-srf" name="C_p" /> across it resonates at
@@ -43,15 +45,19 @@ For example, a winding of <Val example="lcr-srf" name="L" /> with
 ## How to confirm
 
 Read the winding at two or more of the meter's test frequencies. A reading
-that rises with the frequency comes from the resonance; the inductance
-itself does not depend on the test frequency. To find the resonance, sweep
+that climbs steeply as the frequency rises comes from the resonance: near
+it the apparent inductance grows without bound
+(<EqRef id="meas.L_app" label="apparent inductance" />), far more than a
+core's own change with frequency. To find the resonance, sweep
 the winding's impedance with an impedance analyzer: above the resonance the
 part is capacitive (<EqRef id="passive.f_srf" label="self-resonant frequency" />).
 
 ## Fix
 
-Measure at a test frequency well below the self-resonance: at a tenth of it
-the reading is 1 % high (<EqRef id="meas.L_app" label="apparent inductance" />).
+Measure at a test frequency well below the self-resonance: the reading is
+then high by about the square of the ratio of the two frequencies, a
+hundredth at a tenth of the resonance
+(<EqRef id="meas.L_app" label="apparent inductance" />).
 If the meter's test frequencies all sit too close, find the self-resonance
 with a sweep and correct the reading with the same equation.
 
@@ -59,5 +65,5 @@ with a sweep and correct the reading with the same equation.
 
 - <Cite key="keysight_5950_3000" />: an impedance meter reads the effective
   value at its test frequency, parasitics included.
-- [Magnetics measurement](../../04-magnetics/measurement/): the apparent
+- [Measuring magnetics](../../04-magnetics/measurement/): the apparent
   inductance, worked through, and a bench exercise.

@@ -39,9 +39,11 @@ SKIP_FILES = {"package-lock.json"}
 
 EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 EMAIL_OK = re.compile(r"(^|[._-])no-?reply@|@users\.noreply\.github\.com$", re.I)
-# e.g. "12 V", "3.3µH", "100 kHz", "10 mΩ", "1 MΩ", "25 °C", "-40 °C", "1e5 Hz"
+# e.g. "12 V", "3.3µH", "100 kHz", "10 mΩ", "1 MΩ", "25 °C", "-40 °C", "1e5 Hz", and in Korean prose "5 V에",
+# "0.33 µF로", "25 °C에서": the boundaries are ASCII word characters, since Python's \w takes Hangul as a letter and a
+# particle follows a unit directly
 NUM_UNIT = re.compile(
-    r"(?<![\w.])[-+−]?\d+(?:[.,]\d+)?(?:[eE][-+−]?\d+)?\s?(?:[kMGmµunp]?(?:V|A|W|Ω|Hz|H|F|J|C)|°C|ohms?)(?![\w])"
+    r"(?<![A-Za-z0-9_.])[-+−]?\d+(?:[.,]\d+)?(?:[eE][-+−]?\d+)?\s?(?:[kMGmµunp]?(?:V|A|W|Ω|Hz|H|F|J|C)|°C|ohms?)(?![A-Za-z0-9_])"
 )
 
 
