@@ -109,6 +109,14 @@ CASES: list[dict] = [
     # a battery with a node capacitance (the flyback's magnetizing current is negative at turn-on: the body diode first)
     {"id": "buck-battery-ring", "topology": "buck", "Vg": 24, "D": 0.3, "fs": 1e5, "L": 2e-5, "Ron": 0.05, "Cnode": 1e-10, "load": {"kind": "network", "C": 4.7e-6, "battery": {"V": 12, "R": 0.5}}, "cycles": 500, "spice": {**RING, "diode": "D(Is=1e-12 N=0.001)"}},
     {"id": "flyback-battery-ring", "topology": "flyback", "Vg": 48, "D": 0.3, "fs": 1e5, "L": 2e-5, "n": 0.25, "VF": 0.5, "Ron": 0.1, "Cnode": 1e-10, "load": {"kind": "network", "C": 4.7e-6, "battery": {"V": 12, "R": 0.2}}, "cycles": 500, "spice": RING},
+    # an L-C overshoot lifts the output above the input: when the diode's current ends, the body diode conducts at once
+    {"id": "buck-overshoot", "topology": "buck", "Vg": 24, "D": 0.2, "fs": 1e5, "L": 1e-5, "load": {"kind": "resistive", "R": 200, "C": 1e-7}, "cycles": 300},
+    {"id": "buck-overshoot-battery", "topology": "buck", "Vg": 24, "D": 0.2, "fs": 1e5, "L": 1e-5, "load": {"kind": "network", "C": 1e-7, "R": 100, "battery": {"V": 20, "R": 100}}, "cycles": 600},
+    # a capacitor alone behind a node capacitance stops where the ringing no longer lifts the node above it:
+    # while the current left at turn-on still alternates from cycle to cycle, and after a start-up that
+    # passes a lower voltage at which the periodic ringing would also stop
+    {"id": "boost-cnode-stop", "topology": "boost", "Vg": 12, "D": 0.6, "fs": 1e5, "L": 1e-4, "Ron": 0.05, "Cnode": 1e-9, "load": {"kind": "network", "C": 1e-9, "V0": 0}, "cycles": 400, "spice": RING},
+    {"id": "buckboost-cnode-stop", "topology": "buckboost", "Vg": 8, "D": 0.8, "fs": 1e5, "L": 4e-4, "Ron": 0.025, "RL": 1, "VF": 0.5, "Cnode": 1e-9, "load": {"kind": "network", "C": 1e-8, "V0": 0}, "cycles": 400, "spice": RING},
 ]
 # fmt: on
 for _c in CASES:

@@ -113,12 +113,17 @@ describe(`simulator against ngspice ${fixture.ngspice} (${fixture.cases.length} 
 
   it("every interval of every converter's model runs in some case", () => {
     const seen: Record<string, Set<string>> = { twoSwitch: new Set(), forward: new Set() };
+    const handovers = new Set<string>();
     for (const { case: c } of fixture.cases) {
       const r = lastPeriod(c);
-      for (const iv of r.waveforms.interval as string[]) seen[c.topology === 'forward' ? 'forward' : 'twoSwitch']!.add(iv);
+      const ivs = r.waveforms.interval as string[];
+      for (const iv of ivs) seen[c.topology === 'forward' ? 'forward' : 'twoSwitch']!.add(iv);
+      for (let k = 1; k < ivs.length; k++) if (ivs[k] !== ivs[k - 1]) handovers.add(`${c.topology}:${ivs[k - 1]}>${ivs[k]}`);
     }
     expect([...seen.twoSwitch!].sort()).toEqual(['clamp', 'idle', 'off', 'on', 'onRev', 'rev', 'ring', 'rise']);
     expect([...seen.forward!].sort()).toEqual(['idle', 'off', 'offL0', 'offM0', 'on', 'onL0']);
+    // the body diode taking over as the diode's current ends with the output above the input
+    expect(handovers).toContain('buck:off>rev');
   });
 
   for (const { case: c, spice, samples } of fixture.cases) {

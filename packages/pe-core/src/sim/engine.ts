@@ -76,6 +76,13 @@ export interface Edge {
 export interface Model {
   topology: string;
   stateNames: string[];
+  /**
+   * Each state's natural size in the circuit (a voltage it is given; the
+   * current that voltage builds in a period). A change or a Newton step
+   * within a few units in the last place of it is rounding, and a state at
+   * rest is measured against it. Zero when absent.
+   */
+  scales?: Vec;
   Ts: number;
   D: number;
   intervals: Record<string, Interval>;
@@ -479,18 +486,40 @@ const ROUNDING = 1e-12;
 const ULPS = 8 * Number.EPSILON;
 
 /**
+ * A change or a step below this is no change at all: far below any physical
+ * quantity in SI units, and above the subnormal rounding a state resting at
+ * zero may carry (a node capacitance's voltage of -2e-321 V, whose tiny
+ * variation would otherwise make a change of 3e-322 V look large).
+ */
+const TINY = 1e-250;
+
+/**
+ * A change or a step within this many units in the last place of a state's
+ * natural size (Model.scales) is rounding: a state resting at zero picks up
+ * the rounding of the voltages that drive it (a current of 1e-20 A, a
+ * voltage of 1e-16 V, where the circuit's voltages are tens of volts).
+ */
+const NOISE = 64 * Number.EPSILON;
+
+/** The floor under which a state's change or Newton step is no change: TINY, or rounding of its natural size. */
+function floorOf(model: Model, j: number): number {
+  return Math.max(TINY, NOISE * (model.scales?.[j] ?? 0));
+}
+
+/**
  * Convergence measure (the spec's criterion): the largest change of a state
  * over one cycle, relative to that state's total variation within the cycle.
  * A state that grows by the same amount every cycle never passes: its change
  * is its whole variation, however large it has grown. A change within a few
- * units in the last place of the state's magnitude is ignored: a state that
- * does not move within the cycle has only rounding as its variation.
+ * units in the last place of the state's magnitude, or of its natural size,
+ * is ignored: a state that does not move within the cycle has only rounding
+ * as its variation.
  */
-function relativeChange(r: CycleRun): number {
+function relativeChange(model: Model, r: CycleRun): number {
   let worst = 0;
   for (let j = 0; j < r.dx.length; j++) {
     const change = Math.abs(r.dx[j]!);
-    if (change <= ULPS * r.maxAbs[j]!) continue;
+    if (change <= Math.max(ULPS * r.maxAbs[j]!, floorOf(model, j))) continue;
     const v = r.variation[j]!;
     worst = Math.max(worst, v > 0 ? change / v : Infinity);
   }
@@ -502,43 +531,44 @@ function relativeChange(r: CycleRun): number {
  * 1e-9), by at least a thousandth of its movement within the cycle: the map
  * only shifts it, and no steady state exists.
  */
-function drifting(r: CycleRun, prevDx: Vec): boolean {
+function drifting(model: Model, r: CycleRun, prevDx: Vec): boolean {
   for (let j = 0; j < r.dx.length; j++) {
     const d = r.dx[j]!;
-    if (d === 0 || Math.abs(d) < 1e-3 * r.variation[j]!) continue;
+    if (Math.abs(d) <= floorOf(model, j) || Math.abs(d) < 1e-3 * r.variation[j]!) continue;
     if (Math.abs(d - prevDx[j]!) <= 1e-9 * Math.abs(d)) return true;
   }
   return false;
 }
 
-/** A change within this many units in the last place of a state's scale is rounding. */
-const PERIODIC_ULPS = 64 * Number.EPSILON;
-
 /**
- * A cycle that returns every state to itself, to rounding, relative to how
- * far it moves within the cycle or its size. Where the Newton step is
- * undefined (J - I singular) that makes it a fixed point that is not
- * isolated: a fixed output at exactly the duty ratio that balances its
- * volt-seconds (every inductor current is then periodic), or a capacitor
- * alone that no more charge reaches (every voltage above its last one is).
- * Where the step is defined, it alone decides: a very slow state may not
- * move within a cycle to rounding and still be far from its fixed point.
+ * The Newton step to the fixed point of the cycle map, from a run with its
+ * Jacobian: (J - I) delta = -(F(x) - x).
+ *
+ * A state whose row and column of J - I are zero (to rounding) neither moves
+ * the others nor is moved by them, and any value of it comes back to itself:
+ * a capacitor alone that no more charge reaches, or the inductor current of a
+ * fixed output at exactly the duty ratio that balances it. Its fixed points
+ * form a range, so it takes no step, and the others' step is solved without
+ * it. Whether it changes at all is for the first convergence test to say.
  */
-function periodic(r: CycleRun): boolean {
-  for (let j = 0; j < r.dx.length; j++) {
-    if (Math.abs(r.dx[j]!) > PERIODIC_ULPS * Math.max(r.variation[j]!, r.maxAbs[j]!)) return false;
-  }
-  return true;
-}
-
-/** The Newton step to the fixed point of the cycle map, from a run with its Jacobian: (J - I) delta = -(F(x) - x). */
 function newtonStep(r: CycleRun): Vec | null {
+  const A = r.jacMinusI!;
+  const n = A.length;
+  let scale = 0;
+  for (const row of A) for (const v of row) scale = Math.max(scale, Math.abs(v));
+  const zero = (v: number) => Math.abs(v) <= 64 * Number.EPSILON * scale;
+  const keep: number[] = [];
+  for (let j = 0; j < n; j++) if (!A[j]!.every(zero) || !A.every((row) => zero(row[j]!))) keep.push(j);
+  const step = new Array<number>(n).fill(0);
+  if (keep.length === 0) return step;
   try {
     const delta = solveVec(
-      r.jacMinusI!,
-      r.dx.map((v) => -v),
+      keep.map((i) => keep.map((j) => A[i]![j]!)),
+      keep.map((i) => -r.dx[i]!),
     );
-    return delta.every((v) => Number.isFinite(v)) ? delta : null;
+    if (!delta.every((v) => Number.isFinite(v))) return null;
+    keep.forEach((i, k) => (step[i] = delta[k]!));
+    return step;
   } catch {
     return null;
   }
@@ -546,18 +576,20 @@ function newtonStep(r: CycleRun): Vec | null {
 
 /**
  * Second convergence measure: the distance to the fixed point that the
- * Newton step estimates, relative to each state's size. A slow state (a very
- * large capacitor) changes by little per cycle even when it is still far
- * from its steady state, so the first measure can pass early; the Newton
- * step, which divides that change by the state's decay per cycle, does not.
+ * Newton step estimates, relative to each state's size (at least its
+ * natural size in the circuit: a state at rest has no size of its own). A
+ * slow state (a very large capacitor) changes by little per cycle even when
+ * it is still far from its steady state, so the first measure can pass
+ * early; the Newton step, which divides that change by the state's decay
+ * per cycle, does not.
  */
-function distance(delta: Vec | null, r: CycleRun): number {
+function distance(model: Model, delta: Vec | null, r: CycleRun): number {
   if (!delta) return Infinity;
   let worst = 0;
   for (let j = 0; j < delta.length; j++) {
     const d = Math.abs(delta[j]!);
-    if (d === 0) continue;
-    const size = Math.max(r.maxAbs[j]!, r.variation[j]!);
+    if (d <= floorOf(model, j)) continue;
+    const size = Math.max(r.maxAbs[j]!, r.variation[j]!, model.scales?.[j] ?? 0);
     worst = Math.max(worst, size > 0 ? d / size : Infinity);
   }
   return worst;
@@ -566,9 +598,7 @@ function distance(delta: Vec | null, r: CycleRun): number {
 /**
  * Periodic steady state from an initial guess: Newton shooting with the
  * exact Jacobian, and plain cycles when Newton stalls. Converged when both
- * measures are below tol, or when the first is, the Newton step is undefined
- * and the cycle returns every state to itself to rounding (a fixed point
- * that is not isolated).
+ * measures are below tol.
  */
 export function steadyState(model: Model, x0: Vec, opts: SteadyOptions = {}): SteadyResult {
   const tol = opts.tol ?? 1e-6;
@@ -582,14 +612,13 @@ export function steadyState(model: Model, x0: Vec, opts: SteadyOptions = {}): St
   const n = x0.length;
   let x = x0.slice();
   let r = map(x, true);
-  let res = relativeChange(r);
+  let res = relativeChange(model, r);
   let step = newtonStep(r);
-  let dist = distance(step, r);
-  let neutral = step === null && periodic(r);
-  const done = () => res < tol && (dist < tol || neutral);
+  let dist = distance(model, step, r);
+  const done = () => res < tol && dist < tol;
   // Scale of a state for the line search: how far it moves within a cycle
   // (or, if it barely moves, the rounding level of its magnitude).
-  const scaleOf = (run: CycleRun, j: number) => Math.max(run.variation[j]!, ROUNDING * run.maxAbs[j]!, Number.MIN_VALUE);
+  const scaleOf = (run: CycleRun, j: number) => Math.max(run.variation[j]!, ROUNDING * run.maxAbs[j]!, ROUNDING * (model.scales?.[j] ?? 0), Number.MIN_VALUE);
   const newton = () => {
     for (let it = 0; it < 40 && !done() && step && cycles < maxCycles; it++) {
       const f = r.dx;
@@ -622,17 +651,15 @@ export function steadyState(model: Model, x0: Vec, opts: SteadyOptions = {}): St
           m0 += (f[j]! / s) ** 2;
           mt += (rt.dx[j]! / s) ** 2;
         }
-        const resT = relativeChange(rt);
+        const resT = relativeChange(model, rt);
         const stepT = newtonStep(rt);
-        const distT = distance(stepT, rt);
-        const neutralT = stepT === null && periodic(rt);
-        if (mt < (1 - 1e-4 * lambda * shrink) * m0 || (resT < tol && (distT < tol || neutralT))) {
+        const distT = distance(model, stepT, rt);
+        if (mt < (1 - 1e-4 * lambda * shrink) * m0 || (resT < tol && distT < tol)) {
           x = xt;
           r = rt;
           res = resT;
           step = stepT;
           dist = distT;
-          neutral = neutralT;
           accepted = true;
           break;
         }
@@ -651,23 +678,19 @@ export function steadyState(model: Model, x0: Vec, opts: SteadyOptions = {}): St
     const xn = r.x;
     r = map(xn);
     x = xn;
-    res = relativeChange(r);
+    res = relativeChange(model, r);
     dist = NaN; // not evaluated
-    neutral = false;
-    if (opts.stopOnDrift && prevDx && drifting(r, prevDx)) break;
+    if (opts.stopOnDrift && prevDx && drifting(model, r, prevDx)) break;
     prevDx = r.dx;
     if ((res < tol || ++plain % 50 === 0) && cycles < maxCycles) {
       r = map(x, true);
       step = newtonStep(r);
-      dist = distance(step, r);
-      neutral = step === null && periodic(r);
+      dist = distance(model, step, r);
       newton();
     }
   }
   const run = runCycle(model, x, { ...runOpts, record: true });
-  // the Newton distance says nothing at a fixed point that is not isolated
-  const residual = Number.isNaN(dist) || (neutral && !(dist < tol)) ? res : Math.max(res, dist);
-  return { x0: x, cycles, converged: done(), residual, run };
+  return { x0: x, cycles, converged: done(), residual: Number.isNaN(dist) ? res : Math.max(res, dist), run };
 }
 
 export interface TransientResult {

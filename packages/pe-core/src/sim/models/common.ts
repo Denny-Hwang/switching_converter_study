@@ -175,6 +175,24 @@ export function common(p: SimParams, extraStates: string[]): Common {
   };
 }
 
+/**
+ * Each state's natural size in this circuit, against which the steady-state
+ * search measures a state at rest: the largest voltage the circuit is given
+ * (the input or the source's open-circuit voltage, a battery's, a fixed
+ * output's, the start voltage) for a voltage, and the current that voltage
+ * builds in one period in the state's inductance for a current.
+ */
+export function stateScales(c: Common, p: SimParams, inductances: Record<string, number>): Vec {
+  const l = p.load;
+  const V = Math.max(
+    Math.abs(p.Vg),
+    Math.abs(p.source?.Voc ?? 0),
+    l.kind === 'fixed' ? Math.abs(l.V) : 0,
+    l.kind === 'network' ? Math.max(Math.abs(l.battery?.V ?? 0), Math.abs(l.V0 ?? 0)) : 0,
+  );
+  return c.names.map((k) => (inductances[k] !== undefined ? (V * c.Ts) / inductances[k]! : V));
+}
+
 /** Current the load draws from the output capacitor's node besides the capacitor: the resistor's and the battery's (charging positive). */
 export function loadCurrent(c: Common): Lin {
   let out = lin();

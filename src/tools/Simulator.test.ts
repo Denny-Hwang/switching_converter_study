@@ -194,7 +194,8 @@ describe('what the simulator says without a steady state', () => {
   it('a capacitor that charges without bound, and one that has not settled yet', () => {
     const charging = sim.simulate({ topology: 'boost', Vg: 12, D: 0.3, fs, L: 1e-4, load: { kind: 'network', C: 1e-5, V0: 0 } });
     expect(noSteadyText(charging, labels)).toContain('still gains');
-    const settling = sim.simulate({ topology: 'buck', Vg: 24, D: 0.5, fs, L: 1e-4, load: { kind: 'network', C: 1e-2, V0: 0 } }, { maxCycles: 1 });
+    // a forward converter's large capacitor creeping up to n V_g, and one cycle of search after its start-up
+    const settling = sim.simulate({ topology: 'forward', Vg: 48, D: 0.4, fs, L: 1e-4, n: 0.5, nr: 1, LM: 1e-3, load: { kind: 'network', C: 1e-2, V0: 0 } }, { maxCycles: 1 });
     expect(settling.status).toBe('unsettled');
     expect(noSteadyText(settling, labels)).toContain('has not settled');
   });

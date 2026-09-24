@@ -131,7 +131,9 @@ start voltage or the battery's) in place of the steady-state period:
   message then names. At exactly the balancing duty ratio, with ideal parts, the
   volt-seconds balance whatever the current: every current that starts
   and ends a period at the same value is a steady state, and the simulator
-  reports the one it reaches from its starting point.
+  reports the one it reaches from its starting point. A duty ratio so close
+  to it that the current gains less than a millionth of its ripple per cycle
+  passes the convergence test below, and counts as balanced.
 - **A capacitor that charges without bound.** With nothing across it, the
   output capacitor keeps what every cycle delivers. Behind a boost,
   buck-boost or flyback without a capacitance across the switch, every cycle
@@ -141,18 +143,34 @@ start voltage or the battery's) in place of the steady-state period:
 - **Anything else** that has not settled within the cycle limit, such as
   an undamped L-C ringing.
 
-A capacitor alone does settle behind the other converters, and its steady
-state then depends on where it started. Behind a buck it settles at the
-input's voltage, because the switch conducts both ways. Behind a forward
-converter it stops once no more charge reaches it, at $n V_g$ less the diode
-drop or above: an L-C charge can overshoot that voltage on its way up and
-keep the peak, since the rectifier lets no current back. With a capacitance
-across the switch, a boost, buck-boost or flyback stops too, at the voltage
-to which its inductance can no longer lift that capacitance. The simulator
-follows the start-up from $V_0$ and reports the voltage at which it stops:
-for the forward converter it runs the start-up until the capacitor stops
-changing, and a search that ends above the voltage a start-up creeps up to
-is brought back to it.
+A capacitor alone does settle behind the other converters:
+
+- **Behind a buck** it settles at the input's voltage, from below or from
+  above, because the switch conducts both ways. The search starts there.
+- **Behind a forward converter**, and behind a boost, buck-boost or flyback
+  **with a capacitance across the switch**, it stops once no more charge
+  reaches it: for the forward converter at $n V_g$ less the diode drop or
+  above, since its rectifier lets no current back; for the others at the
+  voltage to which the inductance can no longer lift the node capacitance.
+  Every voltage above that one is a steady state too, and which one the
+  capacitor keeps depends on its start-up: an L-C charge can overshoot and
+  keep its peak, the first periods from rest can carry more energy than the
+  periodic ringing, and an input bus that sags and recovers moves the
+  voltage on the way. So the simulator follows the start-up from $V_0$ until
+  the capacitor has stopped (no charge for 50 periods in a row, or for 3
+  with every other state repeating itself) and searches from there: the
+  voltage it reports is the one the start-up stops at. Where the charge per
+  period instead shrinks steadily towards a limit, with every other state
+  repeating itself, it searches for that limit, the lowest voltage that no
+  charge reaches; the start-up, which charges in steps, can stop up to one
+  step above it. It follows at most 4000 periods and two million sub-steps.
+  A start-up that is still charging then is searched from where it got to;
+  if that search fails, the steady state is found from above instead, with
+  the capacitor high enough that no charge reaches it, and the voltage
+  brought down to the lowest one that no charge reaches. Such a start-up
+  can be reported below the voltage it would stop at (a slow L-C charge
+  below its peak). The periods followed count in the number of cycles the
+  result reports.
 
 Without a steady state there is no conduction mode, no comparison with the
 equations and no table of the load or the losses: each of them describes a
@@ -193,10 +211,22 @@ periodic steady state.
     would not do: a very large capacitor changes little per period even
     while it is still far from its steady state.
 
-  Where the steady state is not a single point, the Newton step has no
-  answer: a fixed output at exactly its balancing duty ratio, or a
-  capacitor alone that no more charge reaches. There a period that returns
-  every state to itself, to rounding, takes the place of the second test.
+  Where the steady state is not a single point, the derivative shows it: a
+  fixed output at exactly its balancing duty ratio, or a capacitor alone
+  that no more charge reaches, has a state that neither moves the others
+  nor is moved by them, and returns to whatever value it starts from. The
+  Newton step leaves that state where it is and solves for the others; the
+  first test alone says whether it still changes.
+
+  A state resting at zero picks up the rounding of the voltages around it
+  (a current of $10^{-20}$ A where the circuit's voltages are tens of volts),
+  and that residue is then its whole movement within the period. So each
+  state has a natural size in the circuit: the largest voltage the circuit
+  is given (the input or the source's open-circuit voltage, a battery's, a
+  fixed output's, the start voltage) for a voltage, and the current that
+  voltage builds in one period in the state's inductance for a current. A
+  change or a Newton step within rounding of that size counts as none, and
+  the second test measures a state at rest against that size.
 - **The mode** is DCM when the inductor current stays at zero for part of
   the period, BCM when it only touches zero, and CCM otherwise, also when
   it reverses and flows on through the switch's body diode.
@@ -228,20 +258,34 @@ against the equations:
 - **No steady state.** A buck fed into a fixed output above its balancing
   duty ratio reports the current's change per cycle, the average inductor
   voltage and the balancing duty ratio exactly; below it, and at it, the
-  buck and the boost settle; the buck-boost's balancing duty ratio comes
-  from its inverted ratio; a forward converter above its reset limit reports
-  its magnetizing current walking up, also into a fixed output or a
-  capacitor alone.
-- **A capacitor alone.** It charges without bound behind a boost; behind a
-  buck it settles at the input from below and from above; behind a forward
-  converter it keeps a start voltage above $n V_g$, and the peak of an L-C
-  charge that overshoots; with a capacitance across the switch a boost
-  stops where its start-up stops. A search cut short reports that the
-  capacitor has not settled.
+  buck and the boost settle; a billionth above it the buck counts as
+  balanced, a hundred-thousandth above it runs away; the buck-boost's
+  balancing duty ratio comes from its inverted ratio; a forward converter
+  above its reset limit reports its magnetizing current walking up, also
+  into a fixed output or a capacitor alone.
+- **A capacitor alone.** It charges without bound behind a boost. Behind a
+  buck it settles at the input from below and from above, also with a
+  capacitance across the switch, losses and a source. Behind a forward
+  converter it keeps a start voltage above $n V_g$, the peak of an L-C
+  charge that overshoots, and, above the reset limit with the magnetizing
+  current held by the switch's resistance, the voltage its start-up stops
+  at. With a capacitance across the switch, a boost or buck-boost stops
+  where its start-up stops: also while the current left at turn-on still
+  alternates from cycle to cycle, after a start-up that passes a lower
+  voltage at which the periodic ringing would stop too, and while the input
+  bus is still recovering. A search cut short reports that the capacitor
+  has not settled.
+- **The body diode at zero current.** When the diode's current ends with the
+  output above the input (an L-C overshoot, a battery behind a resistor),
+  the buck's current turns negative at once through the switch's body
+  diode, and the switch voltage never falls below zero.
+- **Outside the model.** A forward converter beyond its reset limit whose
+  weak source lets its switch voltage fall below zero is flagged; no other
+  converter, load, source or node capacitance is.
 
 Two further suites check the simulator by other means:
 
-- **Against SPICE** (`packages/pe-core/test/sim-spice.test.ts`). Thirty
+- **Against SPICE** (`packages/pe-core/test/sim-spice.test.ts`). Thirty-four
   circuits are written again as netlists from their schematics and run from
   rest in ngspice <Cite key="ngspice" />, an independent solver with its own
   integrator (`scripts/spice_crosscheck.py`). They cover every topology in
@@ -249,24 +293,33 @@ Two further suites check the simulator by other means:
   of the primary's turns and of half of them, and a battery that holds its
   rectifier off; the node capacitance's ringing, also with a battery; a
   Thevenin source; batteries with and without a resistor, and one above the
-  input, whose current flows back through the switch's body diode; a fixed
-  output; a runaway start-up; and capacitors charging from empty, also
-  behind a boost with a node capacitance. In the last period, each
-  quantity's average, largest, smallest and end value, and its value at 40
-  instants across the period, agree within 0.5 % of the quantity's largest
-  magnitude in these cases. The SPICE parts are near-ideal: switches with
-  the case's on-resistance (a milliohm when it gives none), and diodes that
+  input, whose current flows back through the switch's body diode; an
+  output that an L-C overshoot lifts above the input, where the current
+  turns back through the body diode as the diode's current ends; a fixed
+  output; a runaway start-up; capacitors charging from empty, also behind a
+  boost with a node capacitance; and capacitors alone that stop charging
+  behind a boost and a buck-boost with a node capacitance, one of them
+  after a start-up that passes a lower voltage where the periodic ringing
+  would also stop. In the last period, each quantity's average, largest,
+  smallest and end value, and its value at 40 instants across the period,
+  agree within 0.5 % of the quantity's largest magnitude in these cases,
+  plus what the SPICE parts add to a quantity that the ideal parts hold at
+  zero all period: 5 mV for a voltage, 1 µA for a current <Cite key="ngspice" />.
+  Four cases need that allowance: the switch voltage across a conducting
+  body diode, 3.9 mV, and the leakage of a diode held off, 0.2 nA at most <Cite key="ngspice" />. The SPICE
+  parts are near-ideal: switches with the case's on-resistance (a milliohm
+  when it gives none) that take a nanosecond to switch, and diodes that
   drop a few millivolts more than the case's $V_F$; a battery's current, set
   by a small $R_b$, is the most sensitive to those millivolts. The forward
   converter's netlist also has a small RC snubber across its freewheeling
   diode, which the simulator does not, to keep ngspice's integrator stable
-  when that diode turns off. Two things are left out of
-  the comparison: the values within 20 ns of the simulator's events (a real
-  edge and an ideal one differ by nanoseconds), and, with a node
-  capacitance, the diode's largest current and the input current's
-  extremes, where ngspice's steep diode overshoots for a few picoseconds as
-  it takes over the current. CI reruns ngspice on every change and compares
-  with the stored results.
+  when that diode turns off. Two things are left out of the comparison:
+  the values within 20 ns of the simulator's events (a real edge and an
+  ideal one differ by nanoseconds), and, with a node capacitance, the
+  diode's largest current and, for the buck and the flyback, the input
+  current's extremes, where ngspice's steep diode overshoots for a few
+  picoseconds as it takes over the current. CI reruns ngspice on every
+  change and compares with the stored results.
 - **Invariants** (`packages/pe-core/test/sim-invariants.test.ts`). For every
   converter with a resistor, a battery, both, a capacitor alone and a fixed
   output, ideal and with losses: in the steady state the inductor's
@@ -328,10 +381,18 @@ that current except $R_b$: a small change of $D$ changes it a lot.
 - **A battery at one state of charge.** The simulator holds the battery's
   open-circuit voltage and resistance constant, and the Rint model has no
   polarization: the internal resistance is the battery's only loss.
-- **A slow L-C charge.** A forward converter's capacitor alone is followed
-  for at most 4000 periods before the search. An L-C charge slower than
-  that ends at $n V_g$ less the diode drop, below the peak at which an
-  overshooting start-up would stop.
+- **A slow start-up.** A capacitor alone behind a forward converter, or
+  behind a converter with a capacitance across its switch, is followed for
+  at most 4000 periods and two million sub-steps before the search. A
+  start-up slower than that, such as a slow L-C charge, is searched from
+  where it got to, and can be reported below the peak at which it would
+  stop.
+- **An input that stays above zero.** A Thevenin source too weak to hold
+  its bus up can let it swing below zero. The forward converter's model
+  then has its switch voltage fall below zero too (beyond the reset limit,
+  where the magnetizing current is held only by the resistances), where a
+  real switch's body diode would conduct. The model leaves that out, and
+  the simulator says that the results do not hold.
 
 ## Screenshot
 

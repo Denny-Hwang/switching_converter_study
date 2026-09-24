@@ -9,6 +9,7 @@ import {
   loadAndBus,
   mul,
   outputsFrom,
+  stateScales,
   system,
   unit,
   type IntervalSpec,
@@ -100,6 +101,7 @@ export function forward(p: SimParams): Model {
   return {
     topology: 'forward',
     stateNames: c.names,
+    scales: stateScales(c, p, { i: L, iM: LM }),
     Ts: c.Ts,
     D: p.D,
     intervals,

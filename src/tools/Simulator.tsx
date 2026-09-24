@@ -52,6 +52,8 @@ export interface SimLabels {
   /** '{n}', '{v}', '{dv}' filled in. */
   settling: string;
   unsettled: string;
+  /** '{v}' filled in: the switch voltage's minimum. */
+  switchBelowZero: string;
   loadTable: string;
   vout: string;
   iR: string;
@@ -893,6 +895,7 @@ export default function Simulator({ labels, presets, symbols }: Props) {
             {error && <p className="pe-sim__error">{error}</p>}
             {((busy && !result && !error) || slow) && <p>{labels.running}</p>}
             {result && result.status !== 'steady' && <p className="pe-sim__nosteady">{noSteadyText(result, labels)}</p>}
+            {result?.switchBelowZero !== undefined && <p className="pe-sim__nosteady">{fill(labels.switchBelowZero, { v: fmtValue(result.switchBelowZero, 'V') })}</p>}
             {result && result.status === 'steady' && (
               <p>
                 {labels.mode}: <strong className={`pe-sim__mode pe-sim__mode--${result.mode}`}>{result.mode}</strong>

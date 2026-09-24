@@ -89,6 +89,13 @@ export interface SimResult {
   losses: { conduction: number; diode: number; capacitive: number; total: number };
   /** Energy per cycle (J). */
   energy: { input: number; output: number };
+  /**
+   * The switch voltage's minimum when it falls below zero within the cycle.
+   * A real switch's body diode would conduct there, which the forward
+   * converter's model leaves out: fed from a weak source beyond its reset
+   * limit, its input bus can collapse below zero. The results do not hold then.
+   */
+  switchBelowZero?: number;
 }
 
 const SERIES = ['i_L', 'v_L', 'v_sw', 'i_sw', 'i_D', 'i_out', 'i_in', 'v_in', 'v_out', 'i_R', 'i_bat', 'i_C'] as const;
@@ -277,6 +284,9 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
   const iout = wf.i_out as number[];
   const pin = t.map((_, k) => vin[k]! * iin[k]!);
   const pout = t.map((_, k) => vout[k]! * iout[k]!);
+  // below zero beyond rounding: a clamp the model leaves out would conduct
+  const vswScale = Math.max(Math.abs(max.v_sw!), Math.abs(min.v_sw!), Number.MIN_VALUE);
+  const switchBelowZero = min.v_sw! < -1e-9 * vswScale ? min.v_sw! : undefined;
   return {
     params: p,
     stateNames: model.stateNames,
@@ -297,6 +307,7 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
     M: avg.v_out! / avg.v_in!,
     losses: { conduction, diode, capacitive, total: conduction + diode + capacitive },
     energy: { input: average(t, pin, Ts) * Ts, output: average(t, pout, Ts) * Ts },
+    ...(switchBelowZero !== undefined ? { switchBelowZero } : {}),
   };
 }
 
@@ -455,51 +466,148 @@ export function unboundedCharging(p: SimParams): boolean {
   return chargingLoad(p) && (p.topology === 'boost' || p.topology === 'buckboost' || p.topology === 'flyback') && !p.Cnode;
 }
 
-/** A forward converter's capacitor alone is followed from rest for up to this many cycles before the search. */
-export const FOLLOW_CYCLES = 4000;
+/**
+ * How far a capacitor alone's start-up is followed before the search: at
+ * most `cycles` cycles and `work` sub-steps. It ends once the capacitor has
+ * taken no charge for `quiet` cycles in a row, or for `still` cycles in a
+ * row with the other states settled (each back where it started the cycle
+ * to `settled` of its movement within it); or once its charge per cycle has
+ * shrunk for `creep` cycles in a row with the other states settled, a creep
+ * towards a voltage that the search then finds directly. A state still
+ * drifting, however slowly (an input bus recovering), is not settled: the
+ * voltage the capacitor creeps towards moves with it.
+ */
+export const FOLLOW = { cycles: 4000, work: 2e6, quiet: 50, still: 3, creep: 10, settled: 1e-9 } as const;
 
 /**
- * The steady state a capacitor alone reaches from V_0. Its steady states
- * may form a range: every voltage that no more charge reaches (a forward
- * converter's output at or above n V_g less the diode drop; with a node
- * capacitance, a boost's, buck-boost's or flyback's output above the voltage
- * to which its inductance can no longer lift the node). The start-up decides
- * which one it keeps:
- * - it creeps up to the lowest of them (the charge per cycle shrinking to
- *   nothing), so a search that ends in the range moves back, by bisection
- *   towards where it started, to the range's edge (a Newton step may
- *   overshoot it);
- * - a forward converter's L-C charge may overshoot n V_g on its first peak
- *   and stop there, so its start-up is followed first, until the capacitor
- *   stops changing (at most FOLLOW_CYCLES cycles).
- * A buck's output has one steady state, the input (its switch conducts
- * both ways), which the same search finds.
+ * Sub-steps per cycle for following a start-up: the search's own where a
+ * node capacitance rings (a diode that turns on near the top of a ring is
+ * found only on the same grid), otherwise enough for twenty per period of
+ * the output L-C (a current that falls through zero within one sub-step is
+ * still found), and at least 100.
+ */
+function followSteps(p: SimParams, steps: number): number {
+  if (p.Cnode && p.topology !== 'forward') return steps;
+  const C = p.load.kind === 'fixed' ? Infinity : p.load.C;
+  const ring = 2 * Math.PI * Math.sqrt(p.L * C);
+  return Math.min(steps, Math.max(100, Math.ceil(20 / (p.fs * ring))));
+}
+
+/** The start-up of a capacitor alone from rest, followed as FOLLOW says: where it ends, and after how many cycles. */
+export function followStartUp(p: SimParams, model: Model, steps: number): { x: Vec; cycles: number } {
+  const iv = model.stateNames.indexOf('v');
+  const perCycle = followSteps(p, steps);
+  const max = Math.max(1, Math.min(FOLLOW.cycles, Math.floor(FOLLOW.work / perCycle)));
+  let x = restState(p, model);
+  let quiet = 0;
+  let still = 0;
+  let creep = 0;
+  let prev = Infinity;
+  let k = 0;
+  while (k < max) {
+    const r = runCycle(model, x, { stepsPerPeriod: perCycle });
+    k++;
+    x = r.x;
+    const dv = r.dx[iv]!;
+    const settled = r.dx.every((d, j) => j === iv || Math.abs(d) <= FOLLOW.settled * r.variation[j]!);
+    if (dv === 0) {
+      creep = 0;
+      prev = Infinity;
+      quiet++;
+      still = settled ? still + 1 : 0;
+      if (quiet >= FOLLOW.quiet || still >= FOLLOW.still) break;
+      continue;
+    }
+    quiet = 0;
+    still = 0;
+    creep = settled && Math.abs(dv) < Math.abs(prev) ? creep + 1 : 0;
+    prev = dv;
+    if (creep >= FOLLOW.creep) break;
+  }
+  return { x, cycles: k };
+}
+
+/**
+ * The steady state a capacitor alone reaches from V_0.
+ *
+ * Behind a buck there is one: the input (the switch conducts both ways),
+ * where the search starts. Behind the others the steady states form a
+ * range, every voltage that no more charge reaches (a forward converter's
+ * output at or above n V_g less the diode drop; with a node capacitance, a
+ * boost's, buck-boost's or flyback's output above the voltage to which its
+ * inductance can still lift the node), and the start-up decides which one
+ * it keeps. It is followed from rest first (followStartUp), and the search
+ * starts where it ends; the voltage reported is never below one it reached:
+ * - where the start-up stopped, the search keeps its voltage (the capacitor
+ *   takes no step, see steadyState) and finds the other states' cycle;
+ * - where it still creeps up, its charge per cycle shrinking to nothing, the
+ *   search may step past the edge of the range; it is brought back, by
+ *   bisection between the two, to the lowest voltage that no charge reaches.
+ *   The start-up, which charges in steps, stops at most its last step above.
+ * Where the search fails from there (a start-up still far from its stop),
+ * a steady state with the capacitor high enough that no charge reaches it
+ * is found from ever higher voltages, and the bisection runs down from it.
+ * A start-up that has not stopped within FOLLOW's limits (an L-C charge
+ * slower than that) is searched from where it got to, and may be reported
+ * below the peak it would still reach.
  */
 function capacitorAlone(p: SimParams, model: Model, opts: SteadyOptions, steps: number): SteadyResult {
   const iv = model.stateNames.indexOf('v');
-  let start = restState(p, model);
-  if (p.topology === 'forward') {
-    for (let k = 0; k < FOLLOW_CYCLES; k++) {
-      const r = runCycle(model, start, { stepsPerPeriod: 100 });
-      start = r.x;
-      if (k > 0 && r.dx[iv] === 0) break;
+  const search = (x: Vec, more: SteadyOptions = {}) => steadyState(model, x, { stopOnDrift: true, ...opts, stepsPerPeriod: steps, ...more });
+  if (p.topology === 'buck') {
+    const x = restState(p, model);
+    x[iv] = p.source ? p.source.Voc : p.Vg;
+    return search(x);
+  }
+  const f = followStartUp(p, model, steps);
+  const a = f.x[iv]!;
+  const ss = search(f.x);
+  let cycles = f.cycles + ss.cycles;
+  const withV = (x: Vec, v: number) => x.map((y, j) => (j === iv ? v : y));
+  // no charge reaches the capacitor at v in one cycle from the other states of x
+  const stoppedAt = (x: Vec, v: number) => {
+    cycles++;
+    return runCycle(model, withV(x, v), { stepsPerPeriod: steps }).dx[iv] === 0;
+  };
+  // the lowest voltage that no charge reaches with the other states of the steady state x, never below a
+  const edge = (x: Vec): number | null => {
+    if (stoppedAt(x, a)) return a;
+    let lo = a;
+    let hi = x[iv]!;
+    if (!(hi > lo)) return null;
+    for (let k = 0; k < 80 && hi - lo > 1e-12 * Math.abs(hi); k++) {
+      const m = 0.5 * (lo + hi);
+      if (stoppedAt(x, m)) hi = m;
+      else lo = m;
     }
+    return hi;
+  };
+  let orbit: Vec | null = null;
+  if (ss.converged) {
+    const b = ss.x0[iv]!;
+    // the start-up stopped where the search kept it, or a steady state whose charge per cycle is below the tolerance
+    if (b === a || !stoppedAt(ss.x0, b)) return { ...ss, cycles };
+    orbit = ss.x0;
   }
-  const ss = steadyState(model, start, { stopOnDrift: true, ...opts, stepsPerPeriod: steps });
-  if (!ss.converged) return ss;
-  // the capacitor's voltage at which one cycle from the steady state's other states brings it no charge
-  const at = (v: number) => ss.x0.map((x, j) => (j === iv ? v : x));
-  const stopped = (v: number) => runCycle(model, at(v), { stepsPerPeriod: steps }).dx[iv] === 0;
-  let a = start[iv]!;
-  let b = ss.x0[iv]!;
-  if (!stopped(b) || stopped(a)) return ss;
-  for (let k = 0; k < 80 && Math.abs(b - a) > 1e-12 * Math.abs(b); k++) {
-    const m = 0.5 * (a + b);
-    if (stopped(m)) b = m;
-    else a = m;
+  let v = orbit ? edge(orbit) : null;
+  if (v === null) {
+    // the search failed, or ended below a voltage the start-up reached: a steady state with the capacitor
+    // high enough that no charge reaches it, from ever higher voltages, gives the other states
+    // (within what is left of the search's cycle limit)
+    orbit = null;
+    let left = (opts.maxCycles ?? 2000) - ss.cycles;
+    let high = Math.max(2 * Math.abs(a), a + (model.scales?.[iv] ?? 0), Number.MIN_VALUE);
+    for (let k = 0; k < 12 && !orbit && left > 0; k++, high *= 2) {
+      const s = search(withV(f.x, high), { maxCycles: Math.min(left, 200) });
+      cycles += s.cycles;
+      left -= s.cycles;
+      if (s.converged && s.x0[iv]! > a && stoppedAt(s.x0, s.x0[iv]!)) orbit = s.x0;
+    }
+    v = orbit ? edge(orbit) : null;
+    if (v === null) return { ...ss, cycles, converged: false };
   }
-  const x0 = at(b);
-  return { ...ss, x0, run: runCycle(model, x0, { stepsPerPeriod: steps, record: true }) };
+  const fin = steadyState(model, withV(orbit!, v), { ...opts, stepsPerPeriod: steps });
+  return { ...fin, cycles: cycles + fin.cycles };
 }
 
 /**

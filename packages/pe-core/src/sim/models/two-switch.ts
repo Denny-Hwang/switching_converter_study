@@ -10,6 +10,7 @@ import {
   makeInterval,
   mul,
   outputsFrom,
+  stateScales,
   type IntervalSpec,
   type Lin,
   type SimParams,
@@ -19,8 +20,9 @@ import {
 // Buck, boost, buck-boost and flyback share one structure: an on-interval,
 // an off-interval with the diode conducting, and an idle interval once the
 // inductor current reaches zero. A negative current (a buck whose output is
-// held above its input) flows through the switch's body diode, an ideal
-// diode across the switch: after turn-off ("rev") until it reaches zero, and
+// above its input) flows through the switch's body diode, an ideal diode
+// across the switch: after turn-off ("rev") until it reaches zero, from the
+// moment the current reaches zero with the output above the input, and
 // while the switch is on ("onRev"), where the diode, with no voltage across
 // it, takes the current from the switch's resistance.
 //
@@ -132,6 +134,15 @@ export function twoSwitch(p: SimParams): Model {
 
   const onVL = add(vin, lin([-(Ron + RL), 'i']), mul(ringW, -1));
   const toIdle = hasVc ? 'ring' : 'idle';
+  // Without C_node, a current that reaches zero leaves the switch voltage at
+  // its idle value; a buck whose output is then above its input has that
+  // voltage negative, and its body diode conducts at once ("rev"): the
+  // current turns negative instead of resting at zero.
+  const bodyDiodeAtZero = (x: Vec) => !hasVc && p.topology === 'buck' && evalLin(idleVsw, c.names, x) < 0;
+  const reachesZero: Guard[] = [
+    until(iL, 'idle', { reset: assign(c, { i: 0 }), when: (x) => !bodyDiodeAtZero(x) }),
+    until(iL, 'rev', { reset: assign(c, { i: 0 }), when: bodyDiodeAtZero }),
+  ];
   const specs: Record<string, IntervalSpec> = {
     // a current reaching zero from above while the switch is on moves to the body diode
     on: { gate: true, vL: onVL, iOut: onOut, iIn: iL, vSw: lin([Ron, 'i']), iSw: iL, iD: zero, guards: [until(iL, 'onRev', { reset: assign(c, { i: 0 }) })] },
@@ -145,8 +156,9 @@ export function twoSwitch(p: SimParams): Model {
       iD: offD,
       qc: iCn,
       // The diode turns off when its current reaches zero. Without C_node
-      // that is the inductor current, set to exactly zero for the idle interval.
-      guards: [hasVc ? until(offD, 'ring') : until(iL, 'idle', { reset: assign(c, { i: 0 }) })],
+      // that is the inductor current, set to exactly zero for the idle
+      // interval (or the body diode's, above).
+      guards: hasVc ? [until(offD, 'ring')] : reachesZero,
     },
   };
   // The switch's body diode conducts a negative inductor current: the switch
@@ -222,6 +234,7 @@ export function twoSwitch(p: SimParams): Model {
   return {
     topology: p.topology,
     stateNames: c.names,
+    scales: stateScales(c, p, { i: L }),
     Ts: c.Ts,
     D: p.D,
     intervals,
@@ -245,7 +258,7 @@ export function twoSwitch(p: SimParams): Model {
         // first charges the node capacitance.
         return { interval: evalLin(toDiode, c.names, x) <= 0 && evalLin(offD, c.names, x) > 0 ? 'off' : 'rise' };
       }
-      if (i < 0) return { interval: 'rev' };
+      if (i < 0 || bodyDiodeAtZero(x)) return { interval: 'rev' };
       return { interval: toIdle };
     },
     outputs: outputsFrom(c, L, specs),
