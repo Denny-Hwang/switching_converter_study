@@ -511,6 +511,26 @@ function drifting(r: CycleRun, prevDx: Vec): boolean {
   return false;
 }
 
+/** A change within this many units in the last place of a state's scale is rounding. */
+const PERIODIC_ULPS = 64 * Number.EPSILON;
+
+/**
+ * A cycle that returns every state to itself, to rounding, relative to how
+ * far it moves within the cycle or its size. Where the Newton step is
+ * undefined (J - I singular) that makes it a fixed point that is not
+ * isolated: a fixed output at exactly the duty ratio that balances its
+ * volt-seconds (every inductor current is then periodic), or a capacitor
+ * alone that no more charge reaches (every voltage above its last one is).
+ * Where the step is defined, it alone decides: a very slow state may not
+ * move within a cycle to rounding and still be far from its fixed point.
+ */
+function periodic(r: CycleRun): boolean {
+  for (let j = 0; j < r.dx.length; j++) {
+    if (Math.abs(r.dx[j]!) > PERIODIC_ULPS * Math.max(r.variation[j]!, r.maxAbs[j]!)) return false;
+  }
+  return true;
+}
+
 /** The Newton step to the fixed point of the cycle map, from a run with its Jacobian: (J - I) delta = -(F(x) - x). */
 function newtonStep(r: CycleRun): Vec | null {
   try {
@@ -546,7 +566,9 @@ function distance(delta: Vec | null, r: CycleRun): number {
 /**
  * Periodic steady state from an initial guess: Newton shooting with the
  * exact Jacobian, and plain cycles when Newton stalls. Converged when both
- * measures are below tol.
+ * measures are below tol, or when the first is, the Newton step is undefined
+ * and the cycle returns every state to itself to rounding (a fixed point
+ * that is not isolated).
  */
 export function steadyState(model: Model, x0: Vec, opts: SteadyOptions = {}): SteadyResult {
   const tol = opts.tol ?? 1e-6;
@@ -563,7 +585,8 @@ export function steadyState(model: Model, x0: Vec, opts: SteadyOptions = {}): St
   let res = relativeChange(r);
   let step = newtonStep(r);
   let dist = distance(step, r);
-  const done = () => res < tol && dist < tol;
+  let neutral = step === null && periodic(r);
+  const done = () => res < tol && (dist < tol || neutral);
   // Scale of a state for the line search: how far it moves within a cycle
   // (or, if it barely moves, the rounding level of its magnitude).
   const scaleOf = (run: CycleRun, j: number) => Math.max(run.variation[j]!, ROUNDING * run.maxAbs[j]!, Number.MIN_VALUE);
@@ -602,12 +625,14 @@ export function steadyState(model: Model, x0: Vec, opts: SteadyOptions = {}): St
         const resT = relativeChange(rt);
         const stepT = newtonStep(rt);
         const distT = distance(stepT, rt);
-        if (mt < (1 - 1e-4 * lambda * shrink) * m0 || (resT < tol && distT < tol)) {
+        const neutralT = stepT === null && periodic(rt);
+        if (mt < (1 - 1e-4 * lambda * shrink) * m0 || (resT < tol && (distT < tol || neutralT))) {
           x = xt;
           r = rt;
           res = resT;
           step = stepT;
           dist = distT;
+          neutral = neutralT;
           accepted = true;
           break;
         }
@@ -628,17 +653,21 @@ export function steadyState(model: Model, x0: Vec, opts: SteadyOptions = {}): St
     x = xn;
     res = relativeChange(r);
     dist = NaN; // not evaluated
+    neutral = false;
     if (opts.stopOnDrift && prevDx && drifting(r, prevDx)) break;
     prevDx = r.dx;
     if ((res < tol || ++plain % 50 === 0) && cycles < maxCycles) {
       r = map(x, true);
       step = newtonStep(r);
       dist = distance(step, r);
+      neutral = step === null && periodic(r);
       newton();
     }
   }
   const run = runCycle(model, x, { ...runOpts, record: true });
-  return { x0: x, cycles, converged: done(), residual: Number.isNaN(dist) ? res : Math.max(res, dist), run };
+  // the Newton distance says nothing at a fixed point that is not isolated
+  const residual = Number.isNaN(dist) || (neutral && !(dist < tol)) ? res : Math.max(res, dist);
+  return { x0: x, cycles, converged: done(), residual, run };
 }
 
 export interface TransientResult {

@@ -18,9 +18,11 @@ import {
 // ---------------------------------------------------------------------------
 // Buck, boost, buck-boost and flyback share one structure: an on-interval,
 // an off-interval with the diode conducting, and an idle interval once the
-// inductor current reaches zero. A current that is negative at turn-off (a
-// buck whose output is held above its input) flows on through the switch's
-// body diode ("rev") instead of vanishing.
+// inductor current reaches zero. A negative current (a buck whose output is
+// held above its input) flows through the switch's body diode, an ideal
+// diode across the switch: after turn-off ("rev") until it reaches zero, and
+// while the switch is on ("onRev"), where the diode, with no voltage across
+// it, takes the current from the switch's resistance.
 //
 // With a node capacitance C_node across the switch, the inductor current
 // first charges it after turn-off ("rise") until the diode takes over. While
@@ -125,11 +127,14 @@ export function twoSwitch(p: SimParams): Model {
     iCn = mul(num, c.Cn / (1 + c.Cn * q));
   }
   const offD = add(offOut, mul(iCn, -kD));
+  // how far the node capacitance is from the diode's turn-on voltage
+  const toDiode = add(offVsw, mul(vc, -1));
 
   const onVL = add(vin, lin([-(Ron + RL), 'i']), mul(ringW, -1));
   const toIdle = hasVc ? 'ring' : 'idle';
   const specs: Record<string, IntervalSpec> = {
-    on: { gate: true, vL: onVL, iOut: onOut, iIn: iL, vSw: lin([Ron, 'i']), iSw: iL, iD: zero, guards: [] },
+    // a current reaching zero from above while the switch is on moves to the body diode
+    on: { gate: true, vL: onVL, iOut: onOut, iIn: iL, vSw: lin([Ron, 'i']), iSw: iL, iD: zero, guards: [until(iL, 'onRev', { reset: assign(c, { i: 0 }) })] },
     off: {
       gate: false,
       vL: offVL,
@@ -157,9 +162,18 @@ export function twoSwitch(p: SimParams): Model {
     qc: zero,
     guards: [until(mul(iL, -1), next, { reset: assign(c, { i: 0 }) })],
   });
+  // The switch is on and its current negative: the body diode across it conducts at zero voltage,
+  // so the switch's resistance carries nothing; once the current reaches zero the switch takes it.
+  specs.onRev = { ...bodyDiode('on'), gate: true };
   if (!hasVc) {
     const guards: Interval['guards'] = [];
     specs.rev = bodyDiode('idle');
+    if (p.topology === 'buck' && (c.hasV || c.src)) {
+      // The output has risen above the input (a battery above it, or a
+      // sagging bus): the switch voltage would turn negative, and the body
+      // diode conducts.
+      guards.push(until(idleVsw, 'rev'));
+    }
     if (p.topology === 'boost' && (c.hasV || c.src)) {
       // The output has fallen below the input (or the bus has risen above
       // the output): the diode conducts again.
@@ -180,7 +194,7 @@ export function twoSwitch(p: SimParams): Model {
     const ringVL = add(vin, mul(vc, -1), mul(ringW, -1), lin([-RL, 'i']));
     // The diode turns on when the switch voltage reaches its conducting
     // value, if it would then carry a forward current.
-    const diodeOn = until(add(offVsw, mul(vc, -1)), 'off', { when: (x: Vec) => evalLin(offD, c.names, x) > 0 });
+    const diodeOn = until(toDiode, 'off', { when: (x: Vec) => evalLin(offD, c.names, x) > 0 });
     const nodeSpec = (guards: Interval['guards']): IntervalSpec => ({
       gate: false,
       vL: ringVL,
@@ -213,14 +227,24 @@ export function twoSwitch(p: SimParams): Model {
     intervals,
     idle: hasVc ? ['ring', 'clamp'] : ['idle'],
     turnOn(x: Vec): Edge {
-      // The switch discharges the node capacitance, and its energy is lost.
-      // vc holds the switch voltage in every interval but the on-interval.
-      if (!hasVc) return { interval: 'on' };
-      return { interval: 'on', set: assign(c, { vc: 0 }), loss: 0.5 * c.Cn * x[jc]! ** 2 };
+      // A negative current flows on through the body diode. The switch
+      // discharges the node capacitance, and its energy is lost; vc holds the
+      // switch voltage in every interval but the on-interval.
+      const i = x[0]!;
+      const interval = i < 0 || (i === 0 && evalLin(onVL, c.names, x) < 0) ? 'onRev' : 'on';
+      if (!hasVc) return { interval };
+      return { interval, set: assign(c, { vc: 0 }), loss: 0.5 * c.Cn * x[jc]! ** 2 };
     },
     turnOff(x: Vec): Edge {
       const i = x[0]!;
-      if (i > 0) return { interval: hasVc ? 'rise' : 'off' };
+      if (i > 0) {
+        if (!hasVc) return { interval: 'off' };
+        // The diode takes the current at once if it is already forward-biased
+        // at turn-off (an output at zero volts and no forward drop: the switch
+        // voltage it needs is the node capacitance's zero); else the current
+        // first charges the node capacitance.
+        return { interval: evalLin(toDiode, c.names, x) <= 0 && evalLin(offD, c.names, x) > 0 ? 'off' : 'rise' };
+      }
       if (i < 0) return { interval: 'rev' };
       return { interval: toIdle };
     },
