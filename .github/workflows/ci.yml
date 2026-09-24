@@ -94,8 +94,6 @@ jobs:
           cache: pip
           cache-dependency-path: python/pyproject.toml
       - run: pip install -e "python[dev]"
-      - name: TEMPORARY - print two PDFs' text to read their wording (removed in the next commit)
-        run: python scripts/resources_check.py --dump cde_ae_guide --dump jeita_liion || true
       - run: python scripts/resources_check.py --online
 
   site:

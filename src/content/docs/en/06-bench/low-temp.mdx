@@ -25,9 +25,11 @@ import Quiz from '../../../../components/Quiz.astro';
 
 ### Aluminum electrolytic capacitors
 
-An aluminum electrolytic capacitor's ESR can increase more than tenfold at
-its low-temperature limit <Cite key="cde_ae_guide" />; the part's data sheet
-gives its own low-temperature figures. The ripple voltage across the ESR
+The electrolyte's resistivity rises in the cold, and it often takes an
+aluminum electrolytic capacitor's ESR at its lowest rated temperature to 10 to
+100 times its room-temperature ESR; the cold also lowers the capacitance
+<Cite key="cde_ae_guide" />. The part's data sheet gives its own
+low-temperature figures. The ripple voltage across the ESR
 rises in proportion
 (<EqRef id="cap.esr.ripple" label="ripple voltage across the ESR" />): a
 converter whose output ripple meets its limit at room temperature can
@@ -57,9 +59,10 @@ less current into a battery whose resistance is higher: take the resistance
 at the temperature the battery runs at.
 
 At low temperature, a lithium-ion cell's carbon anode receives lithium ions
-less readily, and metallic lithium deposits form more easily on its negative
-electrode. Below the lower charging temperature specified for the cell, it
-must not be charged <Cite key="jeita_liion" />.
+less readily, which makes it easier for metallic lithium to form on the
+carbon's surface, and the battery's thermal stability decreases. Below the
+lower charging temperature specified for the cell, it must not be charged
+with any current <Cite key="jeita_liion" />.
 
 ## Worked example
 
@@ -101,8 +104,8 @@ in the current at each.
 
 ## Gotchas
 
-- **An electrolytic's ESR** can increase more than tenfold at its
-  low-temperature limit <Cite key="cde_ae_guide" />.
+- **An electrolytic's ESR** at its lowest rated temperature is often 10 to
+  100 times its room-temperature ESR <Cite key="cde_ae_guide" />.
 - **A ceramic's code says nothing about its dc voltage**
   <Cite key="adi_ceramic_caps" />.
 - **A lithium-ion cell below its lower charging temperature** must not be

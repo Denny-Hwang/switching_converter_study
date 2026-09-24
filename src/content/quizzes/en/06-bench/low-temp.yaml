@@ -53,7 +53,7 @@ questions:
     options:
       - 'Its open-circuit voltage becomes zero'
       - 'The charger''s voltage limit no longer applies'
-      - 'Its carbon anode receives lithium ions less readily, and metallic lithium deposits more easily on its negative electrode'
+      - 'Its carbon anode receives lithium ions less readily, and metallic lithium forms more easily on the carbon''s surface'
       - 'Its internal resistance becomes zero'
     answer: 2
-    explain: 'The cold slows the anode''s uptake of lithium ions, and the lithium that is not taken up can deposit as metal.'
+    explain: 'In the cold the carbon anode takes up lithium ions less readily, which makes it easier for metallic lithium to form on its surface, and the battery''s thermal stability decreases.'
