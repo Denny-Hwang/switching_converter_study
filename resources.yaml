@@ -167,7 +167,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "Designing a transformer when core loss, rather than saturation, limits the ac flux density, with copper and core loss traded against each other."
-    why_ko: "포화가 아니라 코어 손실이 교류 자속 밀도를 제한할 때의 변압기 설계. 구리 손실과 코어 손실을 서로 맞바꾼다."
+    why_ko: "포화가 아니라 코어 손실이 교류 자속 밀도를 제한할 때의 변압기 설계와, 구리 손실과 코어 손실의 맞교환."
     title_match: "Transformer Design"
     cite: erickson2020
 
@@ -414,7 +414,7 @@ resources:
     language: en
     retrieved: 2026-09-23
     why: "Written for inductive sensing; its explanation of the capacitance between turns, the self-resonant frequency and how to measure it applies to any wound inductor."
-    why_ko: "유도형 센싱을 위한 문서이지만, 턴 사이 커패시턴스, 자기 공진 주파수, 그 측정 방법에 대한 설명은 모든 권선 인덕터에 적용된다."
+    why_ko: "유도형 센싱을 위한 문서. 턴 사이 커패시턴스, 자기 공진 주파수, 그 측정 방법에 대한 설명은 모든 권선 인덕터에 해당."
     title_match: "Sensor Design for Inductive Sensing Applications Using LDC"
     urlkind: pdf
     cite: ti_snoa930
@@ -515,7 +515,7 @@ resources:
     title: "Sam Ben-Yaakov — power electronics videos"
     author: "S. Ben-Yaakov"
     url: https://www.youtube.com/user/sambenyaakov
-    tags: [intuition, dcm, flyback, magnetics]
+    tags: [intuition, ccm-dcm, flyback, magnetics]
     level: intro
     language: en
     retrieved: 2026-09-23
@@ -831,7 +831,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "The paper that introduced synchronized switch harvesting on inductor; the PubMed record carries its abstract."
-    why_ko: "인덕터 동기 스위치 하베스팅(SSHI)을 처음 제안한 논문; PubMed 기록에 초록이 있다."
+    why_ko: "인덕터 동기 스위치 하베스팅(SSHI)을 처음 제안한 논문. PubMed 기록에 초록이 실림."
     title_match: "Toward energy harvesting using active materials and conversion improvement by nonlinear processing"
     cite: guyomar2005
 
@@ -853,8 +853,8 @@ resources:
     type: paper
     title: "Optimized piezoelectric energy harvesting circuit using step-down converter in discontinuous conduction mode"
     author: "G. K. Ottman, H. F. Hofmann, G. A. Lesieutre"
-    url: https://ieeexplore.ieee.org/document/1189621
-    tags: [harvesting, piezoelectric, dcm, matching]
+    url: https://ieeexplore.ieee.org/document/1189621/
+    tags: [harvesting, piezoelectric, ccm-dcm, matching]
     level: advanced
     language: en
     retrieved: 2026-09-24
@@ -867,7 +867,7 @@ resources:
     type: paper
     title: "Comparison of Photovoltaic Array Maximum Power Point Tracking Techniques"
     author: "T. Esram, P. L. Chapman"
-    url: https://ieeexplore.ieee.org/document/4207429
+    url: https://ieeexplore.ieee.org/document/4207429/
     tags: [harvesting, mppt]
     level: intermediate
     language: en
@@ -975,7 +975,7 @@ resources:
     retrieved: 2026-09-24
     why: "The course series around the textbook, from converter circuits to control and magnetics; its courses are listed one by one as well."
     why_ko: "교과서를 따라가는 강좌 시리즈: 컨버터 회로부터 제어와 자성 부품까지. 개별 강좌도 따로 실림."
-    title_match: "Power Electronics"
+    title_match: "Power Electronics | Coursera"
     cite: cuboulder_pe_coursera
 
   - id: coursera-mcpe-specialization
@@ -1058,8 +1058,8 @@ resources:
     level: intro
     language: en
     retrieved: 2026-09-24
-    why: "A circuit simulator in the browser that animates the currents, Falstad's applet as ported to the browser by Iain Sharp; good for a first look at a converter."
-    why_ko: "전류를 움직임으로 보여 주는 브라우저 회로 시뮬레이터로, Falstad의 애플릿을 Iain Sharp가 브라우저로 옮긴 것. 컨버터를 처음 살펴보기에 좋음."
+    why: "A circuit simulator in the browser that animates the currents; good for a first look at a converter."
+    why_ko: "전류를 움직임으로 보여 주는 브라우저 회로 시뮬레이터. 컨버터를 처음 살펴보기에 좋음."
     title_match: "Circuit Simulator"
     cite: falstad_circuitjs
 

@@ -502,17 +502,25 @@ def test_modulelint_resource_page_rules(tmp_path: Path) -> None:
     got = errors("mirror", {"en/10-resources/books.mdx": books, "ko/10-resources/extra.mdx": books}, {("10-resources", "books"): row}, ok)
     assert any("books.mdx: no Korean page" in e for e in got), got
     assert any("extra.mdx: no English page of that name" in e for e in got), got
-    # two tables on one page
-    two = books + "\n<ResourceTable types={['paper']} />\n"
+    # two tables on one page: that error alone, none after it
+    two = books + "\n<ResourceTable types={['book']} />\n"
     got = errors("two", {"en/10-resources/books.mdx": two, "ko/10-resources/books.mdx": two}, {("10-resources", "books"): row}, ok)
-    assert any("exactly one <ResourceTable />, found 2" in e for e in got), got
+    assert got and all("exactly one <ResourceTable />, found 2" in e for e in got), got
+    # a table that lists no type, or a type no resource has
+    empty = "---\ntitle: Books\n---\n\n<ResourceTable types={[]} />\n"
+    got = errors("empty", {"en/10-resources/books.mdx": empty, "ko/10-resources/books.mdx": empty}, {("10-resources", "books"): row}, ok)
+    assert any("lists no type" in e for e in got), got
+    papers = books.replace("['book']", "['book', 'paper']")
+    got = errors("unused", {"en/10-resources/books.mdx": papers, "ko/10-resources/books.mdx": papers}, {("10-resources", "books"): row}, ok)
+    assert any("lists type 'paper', which no entry of resources.yaml has" in e for e in got), got
     # a STATUS row without a page
     got = errors("stale", {"en/10-resources/books.mdx": books, "ko/10-resources/books.mdx": books},
                  {("10-resources", "books"): row, ("10-resources", "old"): row}, ok)
     assert any("resources row 'old' has no page" in e for e in got), got
-    # a Markdown page is checked like an MDX page
+    # a Markdown page cannot embed the table, and the errors name the file as it is
     got = errors("md", {"en/10-resources/books.md": books}, {("10-resources", "books"): row}, ok)
-    assert any("books.mdx: no Korean page" in e for e in got), got
+    assert any("books.md: a resource page is MDX" in e for e in got), got
+    assert any("books.md: no Korean page" in e for e in got), got
 
 
 def test_resources_check_validates_level_tags_and_korean_line(tmp_path: Path) -> None:
@@ -531,3 +539,5 @@ def test_resources_check_validates_level_tags_and_korean_line(tmp_path: Path) ->
     assert any("level must be one of" in e for e in errors(level="beginner"))
     assert any("missing why_ko" in e for e in errors(why_ko=""))
     assert any("a tag is listed twice" in e for e in errors(tags=["a", "a"]))
+    assert any("tags must be a list of names" in e for e in errors(tags="a, b"))
+    assert any("tags must be a list of names" in e for e in errors(tags=["a", ""]))

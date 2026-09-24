@@ -907,9 +907,10 @@
     "falstad_circuitjs": {
       "key": "falstad_circuitjs",
       "type": "misc",
-      "label": "Falstad, CircuitJS1 browser circuit simulator",
+      "label": "Falstad & Sharp, CircuitJS1 browser circuit simulator",
       "authors": [
-        "Paul Falstad"
+        "Paul Falstad",
+        "Iain Sharp"
       ],
       "title": "CircuitJS1 browser circuit simulator",
       "verified": true,

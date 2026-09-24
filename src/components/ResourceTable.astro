@@ -3,7 +3,7 @@
  * <ResourceTable types={['book', 'chapter']} /> -- the resources of
  * resources.yaml (all of them without `types`) as a table: title with its
  * author and why, type, level, tags and retrieval date, in the order of the
- * types and, within a type, of resources.yaml (which is in reading order).
+ * types and, within a type, of resources.yaml.
  * Every row is in the HTML; a small script adds a text search and filters
  * by type, level and tag (without JavaScript the form stays hidden and the
  * whole table shows).
@@ -32,8 +32,9 @@ const allEnglish = rows.every((r) => r.language === 'en');
 const languageName = { en: { en: 'English', ko: '영어' }, ko: { en: 'Korean', ko: '한국어' } } as const;
 // an English title on a Korean page is marked as English for screen readers and hyphenation
 const lang = (l: 'en' | 'ko') => (l === locale ? undefined : l);
-// the search ignores case and accents ("maksimovic" finds "Maksimović", "wurth" finds "Würth")
-const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+// the search ignores case and accents ("maksimovic" finds "Maksimović", "wurth" finds "Würth"); NFC puts the
+// decomposed Hangul syllables back together, so that "변화" does not find "변환"
+const fold = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').normalize('NFC').toLowerCase();
 const id = `pe-res-${(types ?? ['all']).join('-')}`;
 ---
 
@@ -73,15 +74,19 @@ const id = `pe-res-${(types ?? ['all']).join('-')}`;
       {t['res.tag']}
       <select data-f="tag">
         <option value="">{t['res.all']}</option>
-        {tags.map((tag) => <option value={tag}>{tag}</option>)}
+        {tags.map((tag) => (
+          <option value={tag} lang={lang('en')}>
+            {tag}
+          </option>
+        ))}
       </select>
     </label>
-    <output data-count data-template={t['res.count']}></output>
+    <output data-count data-template={t['res.count']} aria-live="off"></output>
   </form>
   {allEnglish && <p class="pe-res__lang">{t['res.allEnglish']}</p>}
-  <div class="pe-res__scroll" tabindex="0" role="region" aria-label={t['res.caption']}>
+  <div class="pe-res__scroll" tabindex="0" role="region" aria-labelledby={`${id}-caption`}>
     <table class="pe-res__table">
-      <caption class="sr-only">{t['res.caption']}</caption>
+      <caption class="sr-only" id={`${id}-caption`}>{allEnglish ? t['res.caption'] : t['res.captionLang']}</caption>
       <thead>
         <tr>
           <th scope="col">{t['res.resource']}</th>
@@ -114,7 +119,9 @@ const id = `pe-res-${(types ?? ['all']).join('-')}`;
               </td>
               <td>{typeLabel(r.type, locale)}</td>
               <td>{RESOURCE_LEVELS[r.level][locale]}</td>
-              <td class="pe-res__tags">{r.tags.join(', ')}</td>
+              <td class="pe-res__tags" lang={lang('en')}>
+                {r.tags.join(', ')}
+              </td>
               {!allEnglish && <td>{languageName[r.language][locale]}</td>}
               <td class="pe-res__date">{r.retrieved}</td>
             </tr>
@@ -127,7 +134,7 @@ const id = `pe-res-${(types ?? ['all']).join('-')}`;
 </div>
 
 <script>
-  const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const fold = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').normalize('NFC').toLowerCase();
   function setup(root: HTMLElement): void {
     const form = root.querySelector<HTMLFormElement>('[data-filters]');
     const rows = [...root.querySelectorAll<HTMLTableRowElement>('tbody tr')];
@@ -155,13 +162,13 @@ const id = `pe-res-${(types ?? ['all']).join('-')}`;
       none.hidden = shown > 0;
     };
     const changed = () => {
-      // announced from the first change on, not at page load
+      // an <output> is a polite live region by itself: silent at page load, announced from the first change on
       count.setAttribute('aria-live', 'polite');
       apply();
     };
     form.hidden = false;
+    // a select fires input and change alike: listening to input alone applies each change once
     form.addEventListener('input', changed);
-    form.addEventListener('change', changed);
     apply();
   }
   document.querySelectorAll<HTMLElement>('[data-pe-res]').forEach(setup);
