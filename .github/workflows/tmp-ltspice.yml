@@ -33,29 +33,38 @@ jobs:
           echo "== 8-bit strings"; strings "$X" | grep -n -i -E "usagedata|telemetr|anonym|consent" | head -40
       - name: Netlist and simulate every schematic with LTspice
         run: |
+          sudo apt-get install -y -qq fluxbox imagemagick >/dev/null 2>&1 || true
           export WINEDEBUG=-all DISPLAY=:99
           pgrep Xvfb >/dev/null || (Xvfb :99 -screen 0 1280x1024x24 >/dev/null 2>&1 &) ; sleep 1
+          (fluxbox >/dev/null 2>&1 &) ; sleep 2
           EXE="$HOME/.wine/drive_c/Program Files/ADI/LTspice/LTspice.exe"
-          # LTspice asks once whether to share usage data. There is no window manager, so give the
-          # dialog the input focus itself, then decline: Escape, else Alt+N
+          SHOTS="$GITHUB_WORKSPACE/shots"; mkdir -p "$SHOTS"
+          # LTspice asks once whether to share usage data: decline it with the window manager's focus,
+          # trying the message box's own keys (N for No), then Escape and Alt+N
           ( n=0; while true; do
               for w in $(xdotool search --name "Share LTspice Usage" 2>/dev/null); do
                 n=$((n+1))
                 echo "dialog $w (try $n): $(xdotool getwindowgeometry $w 2>/dev/null | tr '\n' ' ')"
-                [ $n -eq 1 ] && (import -window root "$GITHUB_WORKSPACE/first-dialog.png" 2>/dev/null || true)
-                xdotool windowfocus --sync $w 2>/dev/null || true
-                if [ $n -le 2 ]; then xdotool key --clearmodifiers Escape; else xdotool key --clearmodifiers alt+n; fi
+                [ $n -le 3 ] && import -window root "$SHOTS/dialog-$n.png" 2>/dev/null
+                xdotool windowactivate --sync $w 2>/dev/null || xdotool windowfocus --sync $w 2>/dev/null || true
+                case $((n % 4)) in
+                  1) xdotool key --clearmodifiers n ;;
+                  2) xdotool key --clearmodifiers Escape ;;
+                  3) xdotool key --clearmodifiers alt+n ;;
+                  0) xdotool key --clearmodifiers Tab Tab space ;;
+                esac
               done
               sleep 2
             done ) &
           mkdir -p work && cp sim/ltspice/*/*.asc work/
           cd work
           for f in *.asc; do
-            # an uncompressed waveform file for the comparison (not in the committed schematic)
             printf 'TEXT -32 2000 Left 2 !.options plotwinsize=0\n' >> "$f"
-            timeout 180 wine "$EXE" -netlist "$f" || echo "netlist $f: exit $?"
-            timeout 900 wine "$EXE" -b "$f" || echo "batch $f: exit $?"
+            timeout 120 wine "$EXE" -netlist "$f" || echo "netlist $f: exit $?"
+            ls "${f%.asc}.net" 2>/dev/null || { echo "no netlist for $f: stopping"; break; }
+            timeout 600 wine "$EXE" -b "$f" || echo "batch $f: exit $?"
           done
+          import -window root "$SHOTS/end.png" 2>/dev/null || true
           ls -la
           for f in *.net; do echo "===== $f"; tr -d '\r' < "$f"; done
           for f in *.log; do echo "===== $f"; tr -d '\r\000' < "$f" | head -40; done
@@ -63,8 +72,8 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ltspice-dialog
-          path: first-dialog.png
+          name: ltspice-shots
+          path: shots/
           if-no-files-found: ignore
       - name: Compare LTspice with the ngspice netlists and results.json
         run: |
