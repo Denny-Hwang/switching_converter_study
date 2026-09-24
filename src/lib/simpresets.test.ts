@@ -21,6 +21,8 @@ describe('simulator presets', () => {
     for (const p of PRESETS) {
       const { result } = run(p.id);
       expect(result.status, p.id).toBe(expected[p.id] ?? 'steady');
+      // and none leaves the model: no diode held off beyond its drop, no switch voltage below zero
+      expect([result.diodes, result.switchBelowZero], p.id).toEqual([undefined, undefined]);
     }
   });
 

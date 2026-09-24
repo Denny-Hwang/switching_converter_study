@@ -15,7 +15,7 @@
 import { evaluate } from '../equations';
 import { invert } from '../invert';
 import { runCycle, steadyState, type CycleRun, type Model, type SteadyOptions, type SteadyResult } from './engine';
-import type { Vec } from './linalg';
+import { eigenvalues, type Vec } from './linalg';
 import { buildModel, givenVoltage, type SimParams } from './models';
 
 export type Mode = 'CCM' | 'DCM' | 'BCM';
@@ -92,20 +92,33 @@ export interface SimResult {
   /**
    * Outside the model, in the waveforms the page draws (the steady period,
    * or the whole start-up without a steady state): the switch voltage's
-   * minimum when it falls below zero, where the switch's body diode would
-   * conduct; and the largest voltage across a diode the model holds off
-   * (the diode of the two-switch converters, the forward converter's reset
-   * diode D_3) when it exceeds the diode's drop, where that diode would
-   * conduct. A real circuit's diode would conduct there, which the models
-   * leave out, so the results do not hold then. A source too weak for the
-   * load can bring either about (its bus sagging below zero), but a bus
-   * below zero alone turns on no diode.
+   * minimum when it falls below zero, where the switch's body diode (ideal
+   * in the models) would conduct; and each diode the model holds off whose
+   * voltage exceeds its drop, where a diode with that drop would conduct
+   * (DiodeFlag). The models leave that conduction out, so the results may
+   * not hold then. A source too weak for the load can bring either about:
+   * its bus sagging below zero puts the switch voltage below zero where the
+   * switch node follows the bus (DCM's idle interval), and can forward-bias
+   * a diode; a bus below zero elsewhere turns on no diode by itself.
    */
   switchBelowZero?: number;
-  diodeForward?: number;
-  /** In a start-up, the first cycle (from 1) in which each of them happens: the start-up does not hold from there on. */
+  diodes?: DiodeFlag[];
+  /** In a start-up, the first cycle (from 1) in which the switch voltage falls below zero. */
   switchFrom?: number;
-  diodeFrom?: number;
+}
+
+/**
+ * A diode the model holds off, forward-biased beyond its drop: D (the
+ * two-switch converters' diode), or the forward converter's rectifier D1,
+ * freewheeling diode D2 and reset diode D3; its largest voltage (anode to
+ * cathode), its drop, and in a start-up the first cycle (from 1) in which it
+ * exceeds the drop.
+ */
+export interface DiodeFlag {
+  diode: 'D' | 'D1' | 'D2' | 'D3';
+  v: number;
+  drop: number;
+  from?: number;
 }
 
 const SERIES = ['i_L', 'v_L', 'v_sw', 'i_sw', 'i_D', 'i_out', 'i_in', 'v_in', 'v_out', 'i_R', 'i_bat', 'i_C'] as const;
@@ -320,18 +333,18 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
 }
 
 /**
- * Where drawn waveforms leave the model: the switch voltage below zero (its
- * body diode would conduct), and the voltage across the diode the model
- * holds off above its drop (the two-switch converters' diode, with V_F; the
- * forward converter's reset diode, ideal): a real circuit's diode would
- * conduct there. Rounding is not: the switch voltage is measured against a
- * billionth of the largest voltage involved (never less than the circuit's
- * given voltage). A diode's excess over its drop counts from a
- * ten-thousandth of it: what a diode forward-biased by less would take
- * changes the results by about as little, below the four digits the page
- * shows.
+ * Where drawn waveforms leave the model: the switch voltage below zero (the
+ * switch's body diode, ideal in the models, would conduct), and each diode
+ * the model holds off above its drop (the two-switch converters' diode D
+ * and the forward converter's D1 and D2, with V_F; its reset diode D3,
+ * ideal): a diode with that drop would conduct there. Rounding is not: the
+ * switch voltage is measured against a billionth of the largest voltage
+ * involved (never less than the circuit's given voltage). A diode's excess
+ * over its drop counts from a ten-thousandth of it: what a diode
+ * forward-biased by less would take changes the results by about as little,
+ * below the four digits the page shows.
  */
-function outsideModel(p: SimParams, model: Model, w: Waveforms, startUp = false): Pick<SimResult, 'switchBelowZero' | 'diodeForward' | 'switchFrom' | 'diodeFrom'> {
+function outsideModel(p: SimParams, model: Model, w: Waveforms, startUp = false): Pick<SimResult, 'switchBelowZero' | 'diodes' | 'switchFrom'> {
   const most = (k: string) => {
     let m = 0;
     for (const v of (w[k] as number[] | undefined) ?? []) m = Math.max(m, Math.abs(v));
@@ -339,8 +352,9 @@ function outsideModel(p: SimParams, model: Model, w: Waveforms, startUp = false)
   };
   const V = Math.max(givenVoltage(p), most('v_in'), most('v_out'), most('v_sw'));
   const t = w.t as number[];
-  const cycle = (k: number) => Math.floor(t[k]! / model.Ts + 1e-9) + 1;
-  const out: Pick<SimResult, 'switchBelowZero' | 'diodeForward' | 'switchFrom' | 'diodeFrom'> = {};
+  // the cycle (from 1) a sample belongs to: a cycle's end sample, at k T_s, is its own
+  const cycle = (k: number) => Math.max(1, Math.ceil(t[k]! / model.Ts - 1e-9));
+  const out: Pick<SimResult, 'switchBelowZero' | 'diodes' | 'switchFrom'> = {};
   const vsw = w.v_sw as number[];
   let lo = Infinity;
   let first = -1;
@@ -352,47 +366,68 @@ function outsideModel(p: SimParams, model: Model, w: Waveforms, startUp = false)
     out.switchBelowZero = lo;
     if (startUp) out.switchFrom = cycle(first);
   }
-  const key = model.topology === 'forward' ? 'v_Dr' : 'v_D';
-  const drop = model.topology === 'forward' ? 0 : (p.VF ?? 0);
-  const vD = (w[key] as number[] | undefined) ?? [];
-  const limit = drop + 1e-4 * Math.max(V, most(key));
-  let hi = -Infinity;
-  first = -1;
-  for (let k = 0; k < vD.length; k++) {
-    if (vD[k]! > limit && first < 0) first = k;
-    hi = Math.max(hi, vD[k]!);
-  }
-  if (first >= 0) {
-    out.diodeForward = hi;
-    if (startUp) out.diodeFrom = cycle(first);
+  const VF = p.VF ?? 0;
+  const held: [DiodeFlag['diode'], string, number][] =
+    model.topology === 'forward'
+      ? [
+          ['D1', 'v_D1', VF],
+          ['D2', 'v_D2', VF],
+          ['D3', 'v_Dr', 0],
+        ]
+      : [['D', 'v_D', VF]];
+  for (const [diode, key, drop] of held) {
+    const vD = (w[key] as number[] | undefined) ?? [];
+    const limit = drop + 1e-4 * Math.max(V, most(key));
+    let hi = -Infinity;
+    first = -1;
+    for (let k = 0; k < vD.length; k++) {
+      if (vD[k]! > limit && first < 0) first = k;
+      hi = Math.max(hi, vD[k]!);
+    }
+    if (first >= 0) (out.diodes ??= []).push({ diode, v: hi, drop, ...(startUp ? { from: cycle(first) } : {}) });
   }
   return out;
 }
 
-/** Most sub-steps per period, and the fewest sub-steps per ring of the node capacitance that still find its events. */
+/** Most sub-steps per period, and the fewest sub-steps per ring that still find the events inside the ringing. */
 export const MAX_STEPS = 20000;
 export const MIN_STEPS_PER_RING = 3;
+/** Sub-steps per ring the simulator aims for. */
+export const STEPS_PER_RING = 20;
 
 /**
- * Sub-steps per period: 2000 (docs/BUILD_SPEC.md section 4), more when a node
- * capacitance rings so fast that a ring period would span fewer than twenty
- * sub-steps (at most MAX_STEPS), so that events inside the ringing are found.
- * A node capacitance whose ring would span fewer than MIN_STEPS_PER_RING
- * sub-steps even then is refused: the diode's turn-on during the ringing
- * could fall between two sub-steps and be missed.
+ * How many periods of the circuit's fastest ring fit in a switching period:
+ * the largest imaginary part of the eigenvalues of any interval's matrix,
+ * times T_s / 2π. Any inductance and capacitance can ring: the node
+ * capacitance, the output capacitor with the inductance (a small capacitor
+ * alone), the input bus.
  */
-export function stepsFor(p: SimParams): number {
-  if (!p.Cnode || p.topology === 'forward') return 2000;
-  const ringPeriod = 2 * Math.PI * Math.sqrt(p.L * p.Cnode);
-  const perRing = (MAX_STEPS * ringPeriod) * p.fs;
+export function ringsPerPeriod(model: Model): number {
+  let w = 0;
+  for (const iv of Object.values(model.intervals)) for (const e of eigenvalues(iv.A)) w = Math.max(w, Math.abs(e.im));
+  return (w * model.Ts) / (2 * Math.PI);
+}
+
+/**
+ * Sub-steps per period: 2000 (docs/BUILD_SPEC.md section 4), more when the
+ * circuit rings so fast that a ring period would span fewer than
+ * STEPS_PER_RING sub-steps (at most MAX_STEPS). Events are found where a
+ * guard changes sign between two sub-steps: a current that rings through
+ * zero and back within one sub-step would be missed. A circuit whose ring
+ * would span fewer than MIN_STEPS_PER_RING sub-steps even at MAX_STEPS is
+ * refused.
+ */
+export function stepsFor(p: SimParams, model: Model = buildModel(p)): number {
+  const rings = ringsPerPeriod(model);
+  const perRing = MAX_STEPS / rings;
   if (perRing < MIN_STEPS_PER_RING) {
     throw new Error(
-      `the node capacitance rings too fast to simulate: its ring period (${ringPeriod.toExponential(2)} s) would span ` +
+      `the circuit rings too fast to simulate: its fastest ring (period ${(model.Ts / rings).toExponential(2)} s) would span ` +
         `${perRing.toFixed(1)} of the ${MAX_STEPS} sub-steps per switching period, fewer than ${MIN_STEPS_PER_RING}; ` +
-        'use a larger node capacitance or a lower switching frequency',
+        'use a larger capacitance or a lower switching frequency',
     );
   }
-  return Math.min(MAX_STEPS, Math.max(2000, Math.ceil(20 / (p.fs * ringPeriod))));
+  return Math.min(MAX_STEPS, Math.max(2000, Math.ceil(STEPS_PER_RING * rings)));
 }
 
 /** The state at rest: no current, the output capacitor at its start voltage (a battery's open-circuit voltage), the input bus at V_oc. */
@@ -410,13 +445,16 @@ export function restState(p: SimParams, model: Model): Vec {
 export const STARTUP_SAMPLES = 40000;
 
 /**
- * The first cycles from rest, every cycle recorded at `steps` sub-steps (the
- * solution is exact at every sub-step and event, so a coarse grid only thins
- * the drawing), or at the node capacitance's own minimum. Fewer cycles when
- * the record would exceed STARTUP_SAMPLES.
+ * The first cycles from rest, every cycle recorded at `steps` sub-steps, or
+ * more: the solution is exact at every sub-step and event, but an event is
+ * found only where its guard changes sign between two sub-steps, so the
+ * grid must resolve the circuit's fastest ring (STEPS_PER_RING sub-steps per
+ * ring; with a node capacitance, the search's own sub-steps). Fewer cycles
+ * when the record would exceed STARTUP_SAMPLES.
  */
 export function startUp(p: SimParams, model: Model, cycles: number, steps: number): StartUp {
-  const perCycle = p.Cnode && p.topology !== 'forward' ? Math.max(steps, stepsFor(p)) : steps;
+  const ring = p.Cnode && p.topology !== 'forward' ? stepsFor(p, model) : Math.min(MAX_STEPS, Math.ceil(STEPS_PER_RING * ringsPerPeriod(model)));
+  const perCycle = Math.max(steps, ring);
   const n = Math.max(1, Math.min(cycles, Math.floor(STARTUP_SAMPLES / perCycle)));
   const out: Waveforms = { t: [], interval: [] };
   let x = restState(p, model);
@@ -607,7 +645,7 @@ export function followStartUp(p: SimParams, model: Model, steps: number): { x: V
  * start-up reached (a start-up still far from its stop), a steady state with
  * the capacitor high enough that no charge reaches it is found from ever
  * higher voltages, and the bisection runs down from it; that orbit can lie
- * about 1e-6 of the voltage above the start-up's own.
+ * a few millionths of the voltage above the start-up's own.
  * A start-up that has not stopped within FOLLOW's limits (an L-C charge
  * slower than that; with a node capacitance's finer sub-steps only 100 to
  * 1000 periods are followed) is searched from where it got to, and is
@@ -711,7 +749,7 @@ function withStartUp(p: SimParams, model: Model, status: Status, drift?: Drift):
     d = status === 'charging' || Math.abs(dv) > 64 * Number.EPSILON * Math.max(Math.abs(su.end[iv]!), model.scales?.[iv] ?? 0) ? { state: 'v', perCycle: dv } : undefined;
   }
   // what the page draws is the start-up: whether it leaves the model is read from all of it
-  const { switchBelowZero: _s, diodeForward: _d, ...rest } = r;
+  const { switchBelowZero: _s, diodes: _d, ...rest } = r;
   return { ...rest, ...outsideModel(p, model, su.waveforms, true), status, drift: d, startUp: su };
 }
 

@@ -187,11 +187,15 @@ periodic steady state.
 - **Within an interval** the state (inductor current, capacitor voltages)
   obeys a linear differential equation. The simulator advances it with the
   exact solution of that equation (a matrix exponential) over sub-steps of
-  one two-thousandth of the switching period, or shorter, so that one ring
-  of the capacitance across the switch spans at least twenty sub-steps, down
-  to one twenty-thousandth of the period. A capacitance that rings so fast
-  that a ring would still span fewer than three sub-steps is refused: the
-  diode could turn on and off again between two sub-steps unseen.
+  one two-thousandth of the switching period, or shorter, so that one
+  period of the circuit's fastest ring spans at least twenty sub-steps, down
+  to one twenty-thousandth of the period. The fastest ring comes from the
+  eigenvalues of every interval's equations: the capacitance across the
+  switch, a small output capacitor with the inductance, the input bus. A
+  circuit that rings so fast that a ring would still span fewer than three
+  sub-steps is refused: a diode could turn on and off again between two
+  sub-steps unseen. A start-up drawn without a steady state uses the same
+  rule, so that its events are found too.
 - **Events** such as the diode current reaching zero or a clamp starting to
   conduct are located inside a sub-step on the same exact solution, by a
   search that keeps the event bracketed like bisection (regula falsi in its
@@ -292,19 +296,28 @@ against the equations:
   the buck's current turns negative at once through the switch's body
   diode, and the switch voltage never falls below zero.
 - **Outside the model.** The models hold each diode off outside the
-  intervals in which it conducts. Two things are flagged, in the waveforms
-  the page draws (the steady period, or the whole start-up):
-  - a diode held off but forward-biased beyond its drop. Examples: a buck,
-    a buck-boost or a flyback with a heavy load on a source too weak for
-    it; a forward converter beyond its reset limit on one; a boost into a
+  intervals in which it conducts, and take the switch's body diode as
+  ideal. Two things are flagged, in the waveforms the page draws (the
+  steady period, or the whole start-up):
+  - a diode held off but forward-biased beyond its drop: the two-switch
+    converters' diode D, or the forward converter's rectifier $D_1$,
+    freewheeling diode $D_2$ or reset diode $D_3$. Examples: a buck, a
+    buck-boost or a flyback with a heavy load on a source too weak for it;
+    a forward converter beyond its reset limit on one; a forward converter
+    whose switch drop, $R_\mathrm{on}$ times its current, exceeds a sagging
+    bus while the switch is on, which forward-biases $D_2$; a boost into a
     fixed output below its input, whose current through $R_\mathrm{on}$
     lifts the switch node above the output;
-  - the switch voltage falling below zero, where the body diode would
-    conduct.
+  - the switch voltage falling below zero, where the ideal body diode would
+    conduct. In the idle interval of DCM the switch voltage follows the
+    input bus, so a bus below zero there is flagged this way.
 
-  A bus below zero alone turns on no diode. Two buck-boosts and a boost
-  whose buses sag below zero, with every diode still off, are not flagged.
-  ngspice with every diode in place agrees with them within the SPICE
+  A diode with the model's drop would conduct there, which the model leaves
+  out, so the page says that the results may not hold. How much they change
+  grows with the excess and with the current that diode would carry.
+  Elsewhere a bus below zero turns on no diode: two buck-boosts and a boost
+  whose buses sag below zero, with every diode still off, are not flagged,
+  and ngspice with every diode in place agrees with them within the SPICE
   comparison's tolerance. No converter, load, source or node capacitance in
   a sweep of ordinary circuits is flagged. A diode's excess over its drop
   counts from a ten-thousandth of the circuit's largest voltage: what a
@@ -422,9 +435,9 @@ that current except $R_b$: a small change of $D$ changes it a lot.
 - **Diodes only where they are expected.** Each diode, the switch's body
   diode among them, is part of the model only in the intervals in which it
   conducts. A weak source can let the bus sag, or a large current through
-  $R_\mathrm{on}$ can lift a switch node, until a diode the model holds off
-  is forward-biased. The simulator then says that the results do not
-  hold.
+  $R_\mathrm{on}$ can lift a switch node or exceed the bus, until a diode
+  the model holds off is forward-biased. The simulator then says that the
+  results may not hold.
 
 ## Screenshot
 

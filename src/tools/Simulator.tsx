@@ -54,8 +54,12 @@ export interface SimLabels {
   unsettled: string;
   /** '{v}' filled in: the switch voltage's minimum; '{where}' and '{holds}' (outsidePeriod or outsideStartUp, outsideResults or outsideStartUpFrom). */
   switchBelowZero: string;
-  /** '{v}' and '{vf}' filled in: the diode's largest voltage and its forward voltage (the two-switch converters); '{where}', '{holds}'. */
+  /** '{diode}' (diodeD, diodeD1 or diodeD2), '{v}' and '{vf}' filled in: the diode's largest voltage and its forward voltage; '{where}', '{holds}'. */
   diodeForward: string;
+  /** The diodes by name: the two-switch converters' diode D, the forward converter's rectifier D1 and freewheeling diode D2. */
+  diodeD: string;
+  diodeD1: string;
+  diodeD2: string;
   /** '{v}' filled in: the forward converter's reset diode's largest voltage; '{where}', '{holds}'. */
   resetDiodeForward: string;
   outsidePeriod: string;
@@ -495,20 +499,22 @@ export function noSteadyText(r: SimResult, labels: SimLabels): string | null {
 }
 
 /**
- * What the page says when the drawn waveforms leave the model: a diode it
+ * What the page says when the drawn waveforms leave the model: each diode it
  * holds off forward-biased beyond its drop, and the switch voltage below
- * zero (its body diode), each where a real circuit's diode would conduct.
+ * zero (its body diode, ideal in the models), each where a diode with the
+ * model's drop would conduct.
  */
 export function outsideModelText(r: SimResult | null | undefined, labels: SimLabels): string | null {
   if (!r) return null;
-  // in a steady period the results do not hold; in a start-up, the start-up from the first cycle that leaves the model
+  // in a steady period the results may not hold; in a start-up, the start-up from the first cycle that leaves the model
   const place = (from?: number) =>
     from === undefined ? { where: labels.outsidePeriod, holds: labels.outsideResults } : { where: fill(labels.outsideStartUp, { k: String(from) }), holds: labels.outsideStartUpFrom };
+  const names = { D: labels.diodeD, D1: labels.diodeD1, D2: labels.diodeD2 };
   const out: string[] = [];
-  if (r.diodeForward !== undefined) {
-    const v = fmtValue(r.diodeForward, 'V');
-    const at = place(r.diodeFrom);
-    out.push(r.params.topology === 'forward' ? fill(labels.resetDiodeForward, { v, ...at }) : fill(labels.diodeForward, { v, vf: fmtValue(r.params.VF ?? 0, 'V'), ...at }));
+  for (const d of r.diodes ?? []) {
+    const v = fmtValue(d.v, 'V');
+    const at = place(d.from);
+    out.push(d.diode === 'D3' ? fill(labels.resetDiodeForward, { v, ...at }) : fill(labels.diodeForward, { diode: names[d.diode], v, vf: fmtValue(d.drop, 'V'), ...at }));
   }
   if (r.switchBelowZero !== undefined) out.push(fill(labels.switchBelowZero, { v: fmtValue(r.switchBelowZero, 'V'), ...place(r.switchFrom) }));
   return out.length ? out.join(' ') : null;

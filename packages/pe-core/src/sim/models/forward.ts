@@ -128,9 +128,14 @@ export function forward(p: SimParams): Model {
     },
     outputs: (x, iv) => {
       const o = outputs(x, iv);
-      // the reset diode's voltage, anode to cathode: the reset winding (its dot at ground) holds -n_r times the
-      // primary's voltage, v_in - v_sw, at its anode; its cathode is at the input
-      return { ...o, i_M: x[c.idx('iM')]!, v_Dr: -nr * (o.v_in! - o.v_sw!) - o.v_in! };
+      // the diodes' voltages, anode to cathode. The primary winding holds v_in - v_sw. The rectifier D_1 runs from
+      // the secondary (n times that) to the diodes' common cathode, the freewheeling D_2 from ground to it; the
+      // cathode sits at the output plus the output inductor's whole voltage (V_F below the conducting diode's
+      // anode, or at the output when neither conducts). The reset winding (its dot at ground) holds -n_r times
+      // the primary's voltage at the reset diode's anode; its cathode is at the input.
+      const vPri = o.v_in! - o.v_sw!;
+      const cathode = o.v_out! + o.v_L!;
+      return { ...o, i_M: x[c.idx('iM')]!, v_D1: n * vPri - cathode, v_D2: -cathode, v_Dr: -nr * vPri - o.v_in! };
     },
   };
 }
