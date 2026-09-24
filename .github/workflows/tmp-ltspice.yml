@@ -25,33 +25,48 @@ jobs:
           Xvfb :99 -screen 0 1280x1024x24 >/dev/null 2>&1 &
           sleep 2
           DISPLAY=:99 wine msiexec /i lt.msi /qn; echo "msiexec exit $?"
+      - name: Where LTspice keeps its answer to the usage-data question
+        run: |
+          sudo apt-get install -y -qq msitools binutils >/dev/null
+          mkdir -p lt && (cd lt && msiextract ../lt.msi >/dev/null)
+          X="lt/APPDIR:./LTspice.exe"
+          echo "== 16-bit strings"; strings -e l "$X" | grep -n -i -E "usage|telemetr|anonym|consent|analytic" | head -40
+          echo "== 8-bit strings"; strings "$X" | grep -n -i -E "usagedata|telemetr|anonym|consent" | head -40
       - name: Netlist and simulate every schematic with LTspice
         run: |
           export WINEDEBUG=-all DISPLAY=:99
           pgrep Xvfb >/dev/null || (Xvfb :99 -screen 0 1280x1024x24 >/dev/null 2>&1 &) ; sleep 1
           EXE="$HOME/.wine/drive_c/Program Files/ADI/LTspice/LTspice.exe"
-          # LTspice asks once whether to share usage data: decline (Escape), or the window's No (Alt+N)
-          ( while true; do
+          # LTspice asks once whether to share usage data. There is no window manager, so give the
+          # dialog the input focus itself, then decline: Escape, else Alt+N
+          ( n=0; while true; do
               for w in $(xdotool search --name "Share LTspice Usage" 2>/dev/null); do
-                echo "dialog: $(xdotool getwindowname $w 2>/dev/null)"
-                xdotool windowactivate --sync $w key --clearmodifiers Escape 2>/dev/null || true
-                sleep 1
-                xdotool search --name "Share LTspice Usage" >/dev/null 2>&1 && xdotool windowactivate --sync $w key --clearmodifiers alt+n 2>/dev/null || true
+                n=$((n+1))
+                echo "dialog $w (try $n): $(xdotool getwindowgeometry $w 2>/dev/null | tr '\n' ' ')"
+                [ $n -eq 1 ] && (import -window root "$GITHUB_WORKSPACE/first-dialog.png" 2>/dev/null || true)
+                xdotool windowfocus --sync $w 2>/dev/null || true
+                if [ $n -le 2 ]; then xdotool key --clearmodifiers Escape; else xdotool key --clearmodifiers alt+n; fi
               done
-              sleep 1
+              sleep 2
             done ) &
           mkdir -p work && cp sim/ltspice/*/*.asc work/
           cd work
           for f in *.asc; do
             # an uncompressed waveform file for the comparison (not in the committed schematic)
             printf 'TEXT -32 2000 Left 2 !.options plotwinsize=0\n' >> "$f"
-            timeout 180 wine "$EXE" -netlist "$f"; echo "netlist $f: exit $?"
-            timeout 900 wine "$EXE" -b "$f"; echo "batch $f: exit $?"
+            timeout 180 wine "$EXE" -netlist "$f" || echo "netlist $f: exit $?"
+            timeout 900 wine "$EXE" -b "$f" || echo "batch $f: exit $?"
           done
           ls -la
           for f in *.net; do echo "===== $f"; tr -d '\r' < "$f"; done
           for f in *.log; do echo "===== $f"; tr -d '\r\000' < "$f" | head -40; done
-          for f in $(find "$HOME/.wine/drive_c/users" -iname "LTspice*.ini" 2>/dev/null | head -2); do echo "===== $f"; tr -d '\r' < "$f" | head -80; done
+          for f in $(find "$HOME/.wine/drive_c/users" -iname "*.ini" 2>/dev/null | head -4); do echo "===== $f"; tr -d '\r' < "$f" | head -80; done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ltspice-dialog
+          path: first-dialog.png
+          if-no-files-found: ignore
       - name: Compare LTspice with the ngspice netlists and results.json
         run: |
           python - <<'PY'

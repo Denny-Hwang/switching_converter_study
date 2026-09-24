@@ -6,7 +6,7 @@ Each file carries the numbers of a synthetic example (not from any design), the 
 
 | File | Example | Mode | Preset |
 | --- | --- | --- | --- |
-| [boost-ccm.asc](boost-ccm.asc) | Ideal boost example (`boost-ideal`): V_g = 12 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 20 Ω | CCM | boost |
+| [boost-ccm.asc](boost-ccm.asc) | Ideal boost example (`boost-ideal`): V_g = 12 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 20 Ω | CCM | Boost |
 
 ## Run
 
@@ -40,7 +40,7 @@ Plot: `V(sw)` (switch voltage), `I(L1)` (inductor current), `V(out)` (output vol
 
 | 파일 | 예제 | 모드 | 프리셋 |
 | --- | --- | --- | --- |
-| [boost-ccm.asc](boost-ccm.asc) | 이상적인 부스트 예제 (`boost-ideal`): V_g = 12 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 20 Ω | CCM | boost |
+| [boost-ccm.asc](boost-ccm.asc) | 이상적인 부스트 예제 (`boost-ideal`): V_g = 12 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 20 Ω | CCM | 부스트 |
 
 #### 실행
 

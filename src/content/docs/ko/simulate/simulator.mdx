@@ -505,6 +505,25 @@ ngspice와 3 ns 이내(최악 2.1 ns)로 일치합니다.
   정상상태에서 정의상 성립하므로 계산의 일관성을 확인하고, 에너지 평형은 모델
   자체를 확인합니다.
 
+## LTspice와 ngspice의 같은 회로
+
+아래 프리셋은 저장소의 [SPICE 라이브러리](https://github.com/Denny-Hwang/switching_converter_study/tree/main/sim)에 같은
+값의 LTspice 회로도(schematic)와 ngspice 넷리스트(netlist)로도 있습니다.
+각 폴더의 README에 무엇을 그릴지와 ngspice가 계산한 파형이 있습니다. 거기에
+적힌 모든 평균값과 최댓값·최솟값에서 이 시뮬레이터와 ngspice는 1 % 안에서
+일치하고(`packages/pe-core/test/sim-library.test.ts`), ngspice는 식과 1 %
+안에서 일치합니다(`scripts/sim_library.py`).
+
+| 프리셋 | LTspice | ngspice |
+| --- | --- | --- |
+| 벅, CCM | [buck-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buck/buck-ccm.asc) | [buck-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buck/buck-ccm.cir) |
+| 벅, 경부하(DCM) | [buck-dcm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buck/buck-dcm.asc) | [buck-dcm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buck/buck-dcm.cir) |
+| 부스트 | [boost-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/boost/boost-ccm.asc) | [boost-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/boost/boost-ccm.cir) |
+| 벅-부스트 | [buckboost-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buckboost/buckboost-ccm.asc) | [buckboost-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buckboost/buckboost-ccm.cir) |
+| 플라이백, CCM | [flyback-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/flyback/flyback-ccm.asc) | [flyback-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/flyback/flyback-ccm.cir) |
+| 플라이백, DCM | [flyback-dcm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/flyback/flyback-dcm.asc) | [flyback-dcm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/flyback/flyback-dcm.cir) |
+| 포워드 | [forward-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/forward/forward-ccm.asc) | [forward-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/forward/forward-ccm.cir) |
+
 ## 풀이 예제: 전원을 한 값에 묶어 두는 플라이백
 
 고정 듀티비의 플라이백이 전류 제한 전원으로부터 고정 출력을 충전합니다.

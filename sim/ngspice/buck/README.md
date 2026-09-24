@@ -6,8 +6,8 @@ Each file carries the numbers of a synthetic example (not from any design), the 
 
 | File | Example | Mode | Preset |
 | --- | --- | --- | --- |
-| [buck-ccm.cir](buck-ccm.cir) | Buck example (`buck-basic`): V_g = 24 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 10 Ω | CCM | buck |
-| [buck-dcm.cir](buck-dcm.cir) | Buck example at light load (`buck-light-load`): V_g = 24 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 100 Ω | DCM | buck-light |
+| [buck-ccm.cir](buck-ccm.cir) | Buck example (`buck-basic`): V_g = 24 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 10 Ω | CCM | Buck, CCM |
+| [buck-dcm.cir](buck-dcm.cir) | Buck example at light load (`buck-light-load`): V_g = 24 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 100 Ω | DCM | Buck, light load (DCM) |
 
 ## Run
 
@@ -57,8 +57,8 @@ Plot: `v(sw)` (switch node), `i(l1)` (inductor current), `v(out)` (output voltag
 
 | 파일 | 예제 | 모드 | 프리셋 |
 | --- | --- | --- | --- |
-| [buck-ccm.cir](buck-ccm.cir) | 벅 예제 (`buck-basic`): V_g = 24 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 10 Ω | CCM | buck |
-| [buck-dcm.cir](buck-dcm.cir) | 경부하 벅 예제 (`buck-light-load`): V_g = 24 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 100 Ω | DCM | buck-light |
+| [buck-ccm.cir](buck-ccm.cir) | 벅 예제 (`buck-basic`): V_g = 24 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 10 Ω | CCM | 벅, CCM |
+| [buck-dcm.cir](buck-dcm.cir) | 경부하 벅 예제 (`buck-light-load`): V_g = 24 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 100 Ω | DCM | 벅, 경부하(DCM) |
 
 #### 실행
 

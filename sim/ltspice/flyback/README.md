@@ -6,8 +6,8 @@ Each file carries the numbers of a synthetic example (not from any design), the 
 
 | File | Example | Mode | Preset |
 | --- | --- | --- | --- |
-| [flyback-ccm.asc](flyback-ccm.asc) | Flyback example in CCM, ideal diode (`flyback-ccm`): V_g = 48 V, D = 0.4, f_s = 100 kHz, L_M = 200 µH, n = 0.25, C = 100 µF, R = 5 Ω | CCM | flyback-ccm |
-| [flyback-dcm.asc](flyback-dcm.asc) | Flyback example in DCM, ideal diode (`flyback-dcm`): V_g = 48 V, D = 0.3, f_s = 100 kHz, L_M = 50 µH, n = 0.25, C = 100 µF, R = 20 Ω | DCM | flyback-dcm |
+| [flyback-ccm.asc](flyback-ccm.asc) | Flyback example in CCM, ideal diode (`flyback-ccm`): V_g = 48 V, D = 0.4, f_s = 100 kHz, L_M = 200 µH, n = 0.25, C = 100 µF, R = 5 Ω | CCM | Flyback, CCM |
+| [flyback-dcm.asc](flyback-dcm.asc) | Flyback example in DCM, ideal diode (`flyback-dcm`): V_g = 48 V, D = 0.3, f_s = 100 kHz, L_M = 50 µH, n = 0.25, C = 100 µF, R = 20 Ω | DCM | Flyback, DCM |
 
 ## Run
 
@@ -54,8 +54,8 @@ Plot: `V(d)` (switch voltage), `I(Lp)` (primary current), `0.25*I(Ls)` (secondar
 
 | 파일 | 예제 | 모드 | 프리셋 |
 | --- | --- | --- | --- |
-| [flyback-ccm.asc](flyback-ccm.asc) | CCM 플라이백 예제, 이상적 다이오드 (`flyback-ccm`): V_g = 48 V, D = 0.4, f_s = 100 kHz, L_M = 200 µH, n = 0.25, C = 100 µF, R = 5 Ω | CCM | flyback-ccm |
-| [flyback-dcm.asc](flyback-dcm.asc) | DCM 플라이백 예제, 이상적 다이오드 (`flyback-dcm`): V_g = 48 V, D = 0.3, f_s = 100 kHz, L_M = 50 µH, n = 0.25, C = 100 µF, R = 20 Ω | DCM | flyback-dcm |
+| [flyback-ccm.asc](flyback-ccm.asc) | CCM 플라이백 예제, 이상적 다이오드 (`flyback-ccm`): V_g = 48 V, D = 0.4, f_s = 100 kHz, L_M = 200 µH, n = 0.25, C = 100 µF, R = 5 Ω | CCM | 플라이백, CCM |
+| [flyback-dcm.asc](flyback-dcm.asc) | DCM 플라이백 예제, 이상적 다이오드 (`flyback-dcm`): V_g = 48 V, D = 0.3, f_s = 100 kHz, L_M = 50 µH, n = 0.25, C = 100 µF, R = 20 Ω | DCM | 플라이백, DCM |
 
 #### 실행
 

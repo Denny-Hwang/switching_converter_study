@@ -6,7 +6,7 @@ Each file carries the numbers of a synthetic example (not from any design), the 
 
 | File | Example | Mode | Preset |
 | --- | --- | --- | --- |
-| [buckboost-ccm.cir](buckboost-ccm.cir) | Buck-boost example (`buckboost-basic`): V_g = 12 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 10 Ω | CCM | buckboost |
+| [buckboost-ccm.cir](buckboost-ccm.cir) | Buck-boost example (`buckboost-basic`): V_g = 12 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 10 Ω | CCM | Buck-boost |
 
 ## Run
 
@@ -43,7 +43,7 @@ Plot: `v(sw)` (switch node), `i(l1)` (inductor current), `v(out)` (output voltag
 
 | 파일 | 예제 | 모드 | 프리셋 |
 | --- | --- | --- | --- |
-| [buckboost-ccm.cir](buckboost-ccm.cir) | 벅-부스트 예제 (`buckboost-basic`): V_g = 12 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 10 Ω | CCM | buckboost |
+| [buckboost-ccm.cir](buckboost-ccm.cir) | 벅-부스트 예제 (`buckboost-basic`): V_g = 12 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 10 Ω | CCM | 벅-부스트 |
 
 #### 실행
 
