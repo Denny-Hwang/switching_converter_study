@@ -10,40 +10,51 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
-      - name: Download LTspice's installer
+      - name: Download and extract LTspice
         run: |
-          curl -sSL --retry 3 -A "Mozilla/5.0 (X11; Linux x86_64)" -o lt.msi https://ltspice.analog.com/software/LTspice64.msi || true
-          ls -la lt.msi; file lt.msi; sha256sum lt.msi
-      - name: Extract it and print the symbols a converter schematic uses
+          curl -sSL --retry 3 -A "Mozilla/5.0 (X11; Linux x86_64)" -o lt.msi https://ltspice.analog.com/software/LTspice64.msi
+          sha256sum lt.msi
+          sudo apt-get update -qq && sudo apt-get install -y -qq msitools unzip html2text >/dev/null
+          mkdir -p lt && (cd lt && msiextract ../lt.msi >/dev/null)
+          mkdir -p unz/lib unz/examples && unzip -q -o "lt/APPDIR:./lib.zip" -d unz/lib && unzip -q -o "lt/APPDIR:./examples.zip" -d unz/examples
+      - name: What LTspice's help says about coupled inductors and the phase dot
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq msitools unzip >/dev/null
-          mkdir -p lt && (cd lt && msiextract ../lt.msi | sed -n '1,60p')
-          echo "== zip files"; find lt -iname "*.zip" | head -20
-          for z in $(find lt -iname "*.zip"); do mkdir -p "unz/$(basename "$z" .zip)"; unzip -q -o "$z" -d "unz/$(basename "$z" .zip)" || true; done
-          echo "== asy count"; find lt unz -iname "*.asy" 2>/dev/null | wc -l
-          for s in res cap ind ind2 diode schottky voltage current sw nmos; do
-            f=$(find lt unz -ipath "*/sym/$s.asy" 2>/dev/null | head -1)
-            echo "===== $s: $f"
-            [ -n "$f" ] && tr -d '\r' < "$f"
-          done
-          for e in Vswitch.asc; do
-            f=$(find lt unz -iname "$e" 2>/dev/null | head -1)
-            echo "===== $e: $f"
-            [ -n "$f" ] && tr -d '\r' < "$f"
-          done
-      - name: Try LTspice in batch mode under wine
+          cd "lt/APPDIR:./LTspiceHelp"
+          grep -il "mutual induct" *.htm | head
+          for f in $(grep -il "mutual induct" *.htm | head -3); do echo "===== $f"; html2text "$f" | grep -i -B3 -A12 "dot\|polarity\|first node\|mutual" | head -80; done
+      - name: Example schematics with coupled inductors
+        run: |
+          grep -ril "^SYMBOL ind2" unz/examples | head -20
+          for f in $(grep -ril "^SYMBOL ind2" unz/examples | grep -i "flyback\|forward\|transformer" | head -2); do echo "===== $f"; tr -d '\r' < "$f"; done
+      - name: LTspice under wine, headless
         continue-on-error: true
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update -qq
-          sudo apt-get install -y -qq wine64 wine xvfb >/dev/null 2>&1 || sudo apt-get install -y -qq wine xvfb
-          wine --version || true
+          sudo apt-get install -y -qq wine64 wine xvfb xdotool >/dev/null 2>&1 || sudo apt-get install -y -qq wine xvfb xdotool
           export WINEDEBUG=-all
-          xvfb-run -a wine msiexec /i lt.msi /qn; echo "msiexec exit $?"
-          find "$HOME/.wine" -iname "LTspice*.exe" 2>/dev/null | head
-          EXE=$(find "$HOME/.wine" -iname "LTspice.exe" 2>/dev/null | head -1)
-          [ -z "$EXE" ] && EXE=$(find lt -iname "LTspice.exe" | head -1)
-          echo "exe: $EXE"
+          Xvfb :99 -screen 0 1280x1024x24 >/dev/null 2>&1 &
+          export DISPLAY=:99
+          sleep 2
+          wine msiexec /i lt.msi /qn; echo "msiexec exit $?"
+          EXE="$HOME/.wine/drive_c/Program Files/ADI/LTspice/LTspice.exe"
+          LAD="$HOME/.wine/drive_c/users/$USER/AppData/Local/LTspice"
+          ls -la "$LAD" || true
+          mkdir -p "$LAD" && cp -r unz/lib/lib "$LAD/" && ls "$LAD" | head
+          cp "unz/examples/examples/Educational/Vswitch.asc" work.asc
           printf '* divider\nV1 in 0 10\nR1 in out 1k\nR2 out 0 1k\n.op\n.end\n' > div.cir
-          timeout 300 xvfb-run -a wine "$EXE" -b div.cir; echo "batch exit $?"
-          ls -la div.*; tr -d '\r\000' < div.log 2>/dev/null | head -40
+          for args in "-netlist work.asc" "-b div.cir"; do
+            echo "===== LTspice $args"
+            (timeout 150 wine "$EXE" $args; echo "exit $?") &
+            pid=$!
+            for i in $(seq 1 15); do
+              sleep 10
+              echo "-- after ${i}0 s: windows: $(xdotool search --name . getwindowname %@ 2>/dev/null | sort -u | tr '\n' '|' | head -c 400)"
+              ls work.net div.log div.raw 2>/dev/null
+              if ! kill -0 $pid 2>/dev/null; then break; fi
+            done
+            wait $pid || true
+          done
+          echo "===== work.net"; tr -d '\r' < work.net 2>/dev/null || true
+          echo "===== div.log"; tr -d '\r\000' < div.log 2>/dev/null | head -30 || true
+          find "$HOME/.wine/drive_c/users" -iname "*.ini" 2>/dev/null | head; for f in $(find "$HOME/.wine/drive_c/users" -iname "LTspice*.ini" 2>/dev/null | head -1); do tr -d '\r' < "$f" | head -60; done
