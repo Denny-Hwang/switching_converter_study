@@ -27,8 +27,10 @@ All three interfaces below take their power from the element of
 [source models](../source-models/): a current source $I_p \sin \omega t$
 beside its clamped capacitance $C_0$, vibrating at an amplitude that the
 harvest does not change. Each half period, between two extrema of the
-displacement, the source drives the same charge; the interfaces differ in
-how much of it they spend swinging the element's voltage.
+displacement, the source drives the same charge. The two interfaces with a
+bridge differ in how much of it they spend swinging the element's voltage
+before the bridge conducts; SECE lets all of it charge the element and then
+takes the energy stored there.
 
 ### The standard interface
 
@@ -49,16 +51,20 @@ largest at half the open-circuit amplitude:
 
 Synchronous electric charge extraction leaves the element open between the
 extrema of its voltage, then takes its whole charge at each extremum through
-a converter into the storage <Cite key="lefeuvre2005" />. No charge is spent
-against a DC voltage, so the power does not depend on the storage's voltage:
+a converter into the storage <Cite key="lefeuvre2005" />. In between, the
+whole charge of the half period raises the element's voltage, from zero to
+twice its open-circuit amplitude, and the converter takes the energy then
+stored in $C_0$ and delivers it at whatever voltage the storage has. The
+element never connects to the storage, so the power does not depend on the
+storage's voltage:
 
 <Eq id="piezo.P_sece" />
 
 That is four times the standard interface's best. Lefeuvre et al. report
-that the technique "increases the harvested power by 400%" over a standard
-interface adapted for the most power <Cite key="lefeuvre2005" />. The
-element's voltage climbs to twice its open-circuit amplitude before each
-extraction, and the converter must take that voltage.
+that, over a standard interface adapted for the most power, the technique
+"increases the harvested power by 400%" <Cite key="lefeuvre2005" />, that is, to four times.
+The converter must take the element's voltage at extraction, twice its
+open-circuit amplitude.
 
 ### Parallel SSHI
 
@@ -91,8 +97,7 @@ point as the source's amplitude changes: the fractional open-circuit voltage
 method <Cite key="esram2007" />. To learn the open-circuit voltage, such a
 converter stops drawing power now and then and samples it: one harvesting
 charger periodically disables itself and samples a fraction of the
-open-circuit voltage, typically 50 % for thermoelectric generators
-<Cite key="ti_bq25570" />. A source that is not linear, such as a solar cell,
+open-circuit voltage, typically 50 % for thermoelectric generators <Cite key="ti_bq25570" />. A source that is not linear, such as a solar cell,
 has its best point at another fraction <Cite key="esram2007" />.
 
 ## Worked example
@@ -104,15 +109,15 @@ One element behind the three interfaces:
 Behind a bridge at <Val example="piezo-interfaces" name="V_DC" />, the
 element gives <Val example="piezo-interfaces" name="P_std" />. At the best DC
 voltage, half its open-circuit amplitude of
-<Val example="piezo-interfaces" name="V_M" />, it would give
-<Val example="piezo-interfaces" name="P_max_std" />. SECE takes
+<Val example="piezo-interfaces" name="V_p" />, it would give
+<Val example="piezo-interfaces" name="P_std_max" />. SECE takes
 <Val example="piezo-interfaces" name="P_sece" /> at any storage voltage, and
 parallel SSHI with an inversion of <Val example="piezo-interfaces" name="gamma" />
-gives up to <Val example="piezo-interfaces" name="P_max_sshi" />.
+gives up to <Val example="piezo-interfaces" name="P_sshi_max" />.
 
 ## Try it
 
-<TryIt eq="piezo.P_std" example="piezo-interfaces" sweep="V_DC" />
+<TryIt eq="piezo.P_std" example="piezo-interfaces" sweep="V_DC" from={0} to={2} logx={false} />
 
 Sweep the DC voltage behind the bridge: the power rises to its peak at half
 the open-circuit amplitude and falls to zero at the amplitude.
@@ -126,10 +131,11 @@ never allow.
 ## Bench exercise
 
 On a shaker at a steady amplitude, connect the element through a full-wave
-bridge to a storage capacitor held by an electronic load in constant-voltage
-mode. Step the DC voltage from zero to the open-circuit amplitude, recording
-the current into the capacitor, and plot the power; compare the best DC
-voltage with half the open-circuit amplitude. For parallel SSHI, add the
+bridge to a storage capacitor held at the DC voltage by a source-measure
+unit, which sinks the bridge's current, microamperes, and measures it. Step
+the DC voltage from zero to the open-circuit amplitude, recording the
+current the unit sinks, and plot the power; compare the best DC voltage
+with half the open-circuit amplitude. For parallel SSHI, add the
 switch and inductor, trigger the switch at each voltage extremum, and read
 the element's voltage just before and just after the inversion on the
 oscilloscope: their ratio is the inversion coefficient to put in the formula.
@@ -138,6 +144,11 @@ oscilloscope: their ratio is the inversion coefficient to put in the formula.
 
 - **Above the open-circuit amplitude a bridge harvests nothing.** A storage
   charged beyond it stops charging (<EqRef id="piezo.P_std" label="power of the standard interface" />).
+- **The equations take an ideal bridge.** In a real one two diodes conduct
+  in series <Cite key="mohan2003" where="Ch. 5 (Line-Frequency Diode Rectifiers)" />,
+  so the element must swing to the DC voltage plus two forward drops before
+  the bridge conducts: for an element whose open-circuit amplitude is a few
+  volts, a large part of the swing.
 - **SECE's converter sees twice the open-circuit amplitude,** since the
   element's voltage climbs from zero across a whole half period
   (<EqRef id="piezo.P_sece" label="power of SECE" />).
@@ -146,9 +157,9 @@ oscilloscope: their ratio is the inversion coefficient to put in the formula.
   (<EqRef id="piezo.P_sshi_max" label="largest power of parallel SSHI" />).
 - **Sampling the open-circuit voltage costs harvest time:** the converter
   takes no power while it samples.
-- **These results keep the vibration's amplitude fixed.** A harvest large
-  against the structure's energy damps the vibration, and the model then
-  overstates every interface.
+- **These results keep the vibration's amplitude fixed.** A harvest whose
+  damping is not small against the structure's own losses lowers the
+  amplitude, and the model then overstates every interface.
 
 ## Go deeper
 

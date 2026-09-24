@@ -275,12 +275,14 @@ symbol_table:
   I_p: {latex: "I_p", unit: "A", desc: "amplitude of the current a vibrating piezoelectric element drives: its force factor times the velocity amplitude", meaning: "piezoelectric current amplitude", meaning_ko: "압전 전류 진폭", range: [1.0e-6, 1.0e-2], scale: log}
   C_0: {latex: "C_0", unit: "F", desc: "clamped capacitance of a piezoelectric element", meaning: "clamped capacitance", meaning_ko: "클램프 커패시턴스(clamped capacitance)", range: [1.0e-10, 1.0e-6], scale: log}
   omega: {latex: "\\omega", unit: "rad/s", desc: "angular frequency of a sinusoidal vibration", meaning: "vibration angular frequency", meaning_ko: "진동 각주파수", range: [10, 1.0e4], scale: log}
-  V_M: {latex: "V_M", unit: "V", desc: "open-circuit voltage amplitude of a vibrating piezoelectric element", meaning: "open-circuit voltage amplitude", meaning_ko: "개방 전압 진폭", range: [0.1, 1000], scale: log}
+  V_p: {latex: "V_p", unit: "V", desc: "open-circuit voltage amplitude of a vibrating piezoelectric element: I_p/(omega C_0)", meaning: "open-circuit voltage amplitude", meaning_ko: "개방 전압 진폭", range: [0.1, 1000], scale: log}
   V_DC: {latex: "V_\\mathrm{DC}", unit: "V", desc: "DC voltage behind a full-wave bridge rectifier", meaning: "rectified DC voltage", meaning_ko: "정류된 직류 전압", range: [0.1, 1000], scale: log}
   gamma: {latex: "\\gamma", unit: "1", desc: "fraction of its voltage a synchronized-switch inversion keeps: the element goes from V to -gamma V", meaning: "inversion coefficient", meaning_ko: "반전 계수(inversion coefficient)", range: [0, 0.95]}
   V_ocpk: {latex: "\\hat{V}_\\mathrm{oc}", unit: "V", desc: "peak of a source's open-circuit voltage envelope", meaning: "peak open-circuit voltage", meaning_ko: "개방 전압의 최댓값", range: [1, 1000], scale: log}
-  T_env: {latex: "T_\\mathrm{env}", unit: "s", desc: "period of a source's open-circuit voltage envelope", meaning: "envelope period", meaning_ko: "포락선 주기"}
+  T_env: {latex: "T_\\mathrm{env}", unit: "s", desc: "duration of one half-wave of a source's open-circuit voltage envelope: the period of the rectified sine it repeats", meaning: "envelope half-wave", meaning_ko: "포락선 반파의 길이"}
   P_avg: {latex: "\\bar{P}", unit: "W", desc: "power averaged over a period of the source's envelope", meaning: "power averaged over the envelope", meaning_ko: "포락선 주기에 걸친 평균 전력", range: [1.0e-6, 100], scale: log}
+  P_std_max: {latex: "P_\\mathrm{std,max}", unit: "W", desc: "largest power a full-wave bridge onto a DC voltage takes from a vibrating piezoelectric element, at the best DC voltage", meaning: "largest power of the standard interface", meaning_ko: "표준 인터페이스의 최대 전력"}
+  P_sshi_max: {latex: "P_\\mathrm{SSHI,max}", unit: "W", desc: "largest power parallel SSHI takes from a vibrating piezoelectric element, at the best DC voltage", meaning: "largest power of parallel SSHI", meaning_ko: "병렬 SSHI의 최대 전력"}
 
 # Human-readable labels for the `assumptions` tags (shown in the <Eq> expander).
 assumption_labels:
@@ -1631,16 +1633,16 @@ equations:
     ranges: {eta_ext: [0.05, 1.0]}
     notes: "the power $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$ follows the square of the envelope, and the square of a sine (or of a rectified sine) averages to half its peak's"
     notes_ko: "전력 $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$는 포락선의 제곱을 따르며, 사인(또는 정류된 사인)의 제곱은 평균이 최댓값 제곱의 절반이다"
-    cite: {key: alexander2017, where: "Sec. 4.8 (Maximum Power Transfer); derived here"}
+    cite: {key: alexander2017, where: "Sec. 4.8 (Maximum Power Transfer) and Ch. 11 (AC Power Analysis); derived here"}
     derived_by: python/pe_core/derive/harvesting.py
     tests:
       - {inputs: {eta_ext: 1.0, V_ocpk: 1000.0, R_s: 1.0e6}, expect: 0.125}
       - {inputs: {eta_ext: 0.75, V_ocpk: 100.0, R_s: 1.0e4}, expect: 0.09375}
 
-  - id: piezo.VM
+  - id: piezo.Vp
     title: "Open-circuit voltage amplitude of a vibrating piezoelectric element"
     title_ko: "진동하는 압전 소자의 개방 전압 진폭"
-    lhs: V_M
+    lhs: V_p
     expr: "I_p/(omega*C_0)"
     symbols: {I_p: "current amplitude", omega: "vibration angular frequency", C_0: "clamped capacitance"}
     assumptions: [piezo_source]
@@ -1672,8 +1674,8 @@ equations:
     expr: "I_p**2/(4*omega*C_0)"
     symbols: {I_p: "current amplitude", omega: "vibration angular frequency", C_0: "clamped capacitance"}
     assumptions: [piezo_source]
-    notes: "a resistor $1/(\\omega C_0)$ across the element takes $I_p^2 R/(2(1 + (\\omega R C_0)^2))$, largest at that value"
-    notes_ko: "소자 양단의 저항 $1/(\\omega C_0)$는 $I_p^2 R/(2(1 + (\\omega R C_0)^2))$를 받으며, 그 값에서 최대이다"
+    notes: "a resistor $R$ across the element takes $I_p^2 R/(2(1 + (\\omega R C_0)^2))$, largest at $R = 1/(\\omega C_0)$"
+    notes_ko: "소자 양단의 저항 $R$은 $I_p^2 R/(2(1 + (\\omega R C_0)^2))$를 받으며, $R = 1/(\\omega C_0)$에서 최대이다"
     cite: {key: guyomar2005, where: "the element's electromechanical model; derived here"}
     derived_by: python/pe_core/derive/piezo.py
     tests:
@@ -1687,8 +1689,8 @@ equations:
     symbols: {V_DC: "rectified DC voltage", I_p: "current amplitude", omega: "vibration angular frequency", C_0: "clamped capacitance"}
     assumptions: [piezo_source, ideal_bridge]
     constraints: ["V_DC < I_p/(omega*C_0)"]
-    notes: "each half period the element's voltage swings from $-V_\\mathrm{DC}$ to $V_\\mathrm{DC}$ before the bridge conducts, which takes $2 C_0 V_\\mathrm{DC}$ of the $2 I_p/\\omega$ the source drives; from $V_\\mathrm{DC} = V_M$ on the bridge never conducts"
-    notes_ko: "반주기마다 소자 전압이 $-V_\\mathrm{DC}$에서 $V_\\mathrm{DC}$까지 바뀐 뒤에야 브리지가 도통하며, 이 변화가 전원이 흘리는 $2 I_p/\\omega$ 가운데 $2 C_0 V_\\mathrm{DC}$를 가져간다; $V_\\mathrm{DC} = V_M$부터는 브리지가 도통하지 않는다"
+    notes: "each half period the element's voltage swings from $-V_\\mathrm{DC}$ to $V_\\mathrm{DC}$ before the bridge conducts, which takes $2 C_0 V_\\mathrm{DC}$ of the $2 I_p/\\omega$ the source drives; from $V_\\mathrm{DC} = V_p$ on the bridge never conducts"
+    notes_ko: "반주기마다 소자 전압이 $-V_\\mathrm{DC}$에서 $V_\\mathrm{DC}$까지 바뀐 뒤에야 브리지가 도통하며, 이 변화가 전원이 흘리는 $2 I_p/\\omega$ 가운데 $2 C_0 V_\\mathrm{DC}$를 가져간다; $V_\\mathrm{DC} = V_p$부터는 브리지가 도통하지 않는다"
     cite:
       - {key: guyomar2005, where: "the standard technique; derived here"}
       - {key: lefeuvre2006}
@@ -1699,12 +1701,12 @@ equations:
   - id: piezo.P_std_max
     title: "Largest power of the standard interface"
     title_ko: "표준 인터페이스의 최대 전력"
-    lhs: P_max
+    lhs: P_std_max
     expr: "I_p**2/(2*pi*omega*C_0)"
     symbols: {I_p: "current amplitude", omega: "vibration angular frequency", C_0: "clamped capacitance"}
     assumptions: [piezo_source, ideal_bridge]
-    notes: "at $V_\\mathrm{DC} = V_M/2$, half the open-circuit amplitude"
-    notes_ko: "$V_\\mathrm{DC} = V_M/2$, 즉 개방 전압 진폭의 절반에서"
+    notes: "at $V_\\mathrm{DC} = V_p/2$, half the open-circuit amplitude"
+    notes_ko: "$V_\\mathrm{DC} = V_p/2$, 즉 개방 전압 진폭의 절반에서"
     cite:
       - {key: guyomar2005, where: "the standard technique; derived here"}
       - {key: lefeuvre2006}
@@ -1718,9 +1720,9 @@ equations:
     lhs: P
     expr: "2*I_p**2/(pi*omega*C_0)"
     symbols: {I_p: "current amplitude", omega: "vibration angular frequency", C_0: "clamped capacitance"}
-    assumptions: [piezo_source]
-    notes: "the element is left open and its whole charge is taken at each extremum of its voltage, $\\tfrac12 C_0 (2 V_M)^2$ twice a period whatever the load: four times the standard interface's largest power"
-    notes_ko: "소자를 개방해 두고 전압이 극값일 때마다 전하 전부를 꺼내므로, 부하와 관계없이 한 주기에 두 번 $\\tfrac12 C_0 (2 V_M)^2$를 얻는다: 표준 인터페이스 최대 전력의 네 배"
+    assumptions: [piezo_source, ideal]
+    notes: "the element is left open and its whole charge is taken at each extremum of its voltage, $\\tfrac12 C_0 (2 V_p)^2$ twice a period whatever the load: four times the standard interface's largest power"
+    notes_ko: "소자를 개방해 두고 전압이 극값일 때마다 전하 전부를 꺼내므로, 부하와 관계없이 한 주기에 두 번 $\\tfrac12 C_0 (2 V_p)^2$를 얻는다: 표준 인터페이스 최대 전력의 네 배"
     cite:
       - {key: lefeuvre2005, where: "derived here"}
       - {key: lefeuvre2006}
@@ -1748,12 +1750,12 @@ equations:
   - id: piezo.P_sshi_max
     title: "Largest power of parallel SSHI"
     title_ko: "병렬 SSHI의 최대 전력"
-    lhs: P_max
+    lhs: P_sshi_max
     expr: "I_p**2/(pi*omega*C_0*(1 - gamma))"
     symbols: {I_p: "current amplitude", omega: "vibration angular frequency", C_0: "clamped capacitance", gamma: "inversion coefficient"}
     assumptions: [piezo_source, ideal_bridge]
-    notes: "at $V_\\mathrm{DC} = V_M/(1 - \\gamma)$: $2/(1 - \\gamma)$ times the standard interface's largest power"
-    notes_ko: "$V_\\mathrm{DC} = V_M/(1 - \\gamma)$에서: 표준 인터페이스 최대 전력의 $2/(1 - \\gamma)$배"
+    notes: "at $V_\\mathrm{DC} = V_p/(1 - \\gamma)$: $2/(1 - \\gamma)$ times the standard interface's largest power"
+    notes_ko: "$V_\\mathrm{DC} = V_p/(1 - \\gamma)$에서: 표준 인터페이스 최대 전력의 $2/(1 - \\gamma)$배"
     cite:
       - {key: guyomar2005, where: "derived here"}
       - {key: lefeuvre2006}

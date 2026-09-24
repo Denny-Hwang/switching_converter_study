@@ -152,7 +152,7 @@ _Last updated: Phase 4b (06-bench). `python scripts/modulelint.py` checks every 
 
 | Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| source-models | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `src.Pmax` (moved from design/source-matcher), `piezo.VM`, `piezo.R_opt`, `piezo.P_R` |
+| source-models | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `src.Pmax` (moved from design/source-matcher), `piezo.Vp`, `piezo.R_opt`, `piezo.P_R` |
 | matching | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `src.cv_power`, `src.cv_extraction`, `lfr.Vg`, `lfr.eta` (moved from design/source-matcher) |
 | lfr-dcm-flyback | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `lfr.L_M`, `lfr.Vg_power` (moved from design/source-matcher); links the simulator's current-limited source |
 | sece-sshi-mppt | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `piezo.P_std`, `piezo.P_std_max`, `piezo.P_sece`, `piezo.P_sshi`, `piezo.P_sshi_max` |

@@ -104,11 +104,17 @@ begins and settles at the critical input voltage.
 
 ## Bench exercise
 
-Build the flyback with its duty ratio fixed, and feed it from a bench
-supply through a series resistor equal to its computed input resistance.
-Measure the input voltage: it should sit at half the supply's voltage. Raise
-the supply slowly until the input voltage stops following it; that is the
-critical input voltage, to compare with the formula. At each step, capture
+Build the flyback with its duty ratio fixed and a bus capacitor across its
+input, large enough that with the series resistor it averages the pulsed
+input current over many switching periods, and feed it from a bench supply
+through a series resistor equal to its computed input resistance. Measure
+the input voltage: it should sit at half the supply's voltage. Raise the
+supply slowly until the input voltage stops following it; that is the
+critical input voltage, to compare with the formula. The supply must reach
+twice that voltage, several hundred volts with the example's numbers; a
+larger turns ratio lowers the critical voltage
+(<EqRef id="flyback.V_crit" label="critical input voltage" />) and keeps
+the exercise at a safer voltage. At each step, capture
 the switch's drain voltage with a probe rated for it
 ([probes](../../06-bench/probes/)), and read the plateau before the leakage
 spike against the formula.

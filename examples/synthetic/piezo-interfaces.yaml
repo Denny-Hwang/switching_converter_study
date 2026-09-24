@@ -10,10 +10,10 @@ params:
   V_DC: 1.5
   gamma: 0.8
 steps:
-  - piezo.VM
+  - piezo.Vp
   - {eq: piezo.P_std, as: P_std}
-  - {eq: piezo.P_std_max, as: P_max_std}
+  - piezo.P_std_max
   - {eq: piezo.P_sece, as: P_sece}
-  - {eq: piezo.P_sshi_max, as: P_max_sshi}
+  - piezo.P_sshi_max
 checks:
-  - {when: "V_DC < V_M", then: {en: "the bridge conducts", ko: "브리지가 도통함"}, else: {en: "the bridge never conducts", ko: "브리지가 도통하지 않음"}}
+  - {when: "V_DC < V_p", then: {en: "the bridge conducts", ko: "브리지가 도통함"}, else: {en: "the bridge never conducts", ko: "브리지가 도통하지 않음"}}

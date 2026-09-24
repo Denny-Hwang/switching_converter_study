@@ -157,7 +157,7 @@ const base: Readonly<Record<string, Evaluator>> = {
   'lfr.P_env': eq(['eta_ext', 'V_ocpk', 'R_s'], ({ eta_ext, V_ocpk, R_s }) => (eta_ext * sq(V_ocpk)) / (8 * R_s)),
 
   // --- piezoelectric source: a current source I_p sin(wt) in parallel with C_0 --------------
-  'piezo.VM': eq(['I_p', 'omega', 'C_0'], ({ I_p, omega, C_0 }) => I_p / (omega * C_0)),
+  'piezo.Vp': eq(['I_p', 'omega', 'C_0'], ({ I_p, omega, C_0 }) => I_p / (omega * C_0)),
   'piezo.R_opt': eq(['omega', 'C_0'], ({ omega, C_0 }) => 1 / (omega * C_0)),
   'piezo.P_R': eq(['I_p', 'omega', 'C_0'], ({ I_p, omega, C_0 }) => sq(I_p) / (4 * omega * C_0)),
   // per half period: V_DC times the charge 2 I_p / omega less the swing 2 C_0 V_DC; pi / omega per half period

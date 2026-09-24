@@ -17,7 +17,7 @@ import Quiz from '../../../../components/Quiz.astro';
 
 ## 목표
 
-- 선형 전원의 가용 전력 가운데 정전압과 무손실 저항(loss-free resistor)이 가져가는 비율을 구합니다.
+- 선형 전원의 가용 전력 가운데 정전압(constant voltage)과 무손실 저항(loss-free resistor)이 가져가는 비율을 구합니다.
 - 전원과 배터리 사이의 컨버터가 왜 전원을 최적 전압에서 동작하게 하는지 알아 둡니다.
 - 고정 듀티비의 DCM 컨버터가 무손실 저항이라는 것과, 전원 진폭이 바뀔 때 그 컨버터가 어떻게 동작하는지 알아 둡니다.
 
@@ -45,8 +45,7 @@ import Quiz from '../../../../components/Quiz.astro';
 전원과 배터리 사이의 컨버터는 두 전압을 떼어 놓습니다. 컨버터 입력은 전원이 가장 많이
 내는 전압에 있고, 출력은 배터리 전압에 머물 수 있습니다. Ottman 등은 압전 소자와 배터리
 사이에서 DCM 강압 컨버터(step-down converter)를 가장 많은 전력을 내는 듀티비로
-동작시켰고, 컨버터 없이 소자를 쓸 때보다 배터리로 들어가는 전력이 400% 늘었다고
-보고합니다 <Cite key="ottman2003" />.
+동작시켰고, 이 컨버터가 수확 전력을 '약 325%'(원문 "by approximately 325%") 늘린다고 보고합니다 <Cite key="ottman2003" />.
 
 ### 무손실 저항
 
@@ -66,7 +65,7 @@ import Quiz from '../../../../components/Quiz.astro';
 
 입력 저항이 전원 저항과 같으면 전부를 가져가고, 양쪽으로 벗어나도 비율은 천천히
 줄어듭니다. 따라서 고정 듀티비는 아무것도 측정하지 않고도, 진폭이 바뀌는 선형 전원을
-최대 전력점에 둡니다. 단, 컨버터가 DCM에 머무는 동안입니다
+최대 전력점(maximum power point)에 둡니다. 단, 컨버터가 DCM에 머무는 동안입니다
 ([DCM 플라이백](../lfr-dcm-flyback/)).
 
 ## 풀이 예제
@@ -86,12 +85,12 @@ import Quiz from '../../../../components/Quiz.astro';
 
 ## 직접 해 보기
 
-<TryIt eq="src.cv_extraction" example="match-basic" sweep="V_c" />
+<TryIt eq="src.cv_extraction" example="match-basic" sweep="V_c" from={0} to={10} logx={false} />
 
 정전압 부하가 유지하는 전압을 바꿔 보면, 비율은 개방 전압의 절반에서 가장 크고 양
 끝에서 0이 됩니다.
 
-<TryIt eq="lfr.eta" example="match-basic" sweep="R_in" />
+<TryIt eq="lfr.eta" example="match-basic" sweep="R_in" from={2.5} to={250} />
 
 입력 저항을 바꿔 보면, 전원 저항의 두 배나 절반이어도 가용 전력의 9분의 8을
 가져갑니다.

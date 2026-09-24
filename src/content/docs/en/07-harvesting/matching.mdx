@@ -47,8 +47,8 @@ A converter between the source and the battery separates their voltages:
 its input can sit where the source gives the most while its output stays at
 the battery's voltage. Ottman et al. ran a step-down converter in DCM
 between a piezoelectric element and a battery at the duty ratio that gives
-the most power, and report that it raised the power into the battery "by
-400%" over the element used without it <Cite key="ottman2003" />.
+the most power, and report that the converter increases the harvested power
+"by approximately 325%" <Cite key="ottman2003" />.
 
 ### The loss-free resistor
 
@@ -90,12 +90,12 @@ any source amplitude.
 
 ## Try it
 
-<TryIt eq="src.cv_extraction" example="match-basic" sweep="V_c" />
+<TryIt eq="src.cv_extraction" example="match-basic" sweep="V_c" from={0} to={10} logx={false} />
 
 Sweep the voltage a constant-voltage load holds: the share peaks at half the
 open-circuit voltage and falls to zero at both ends.
 
-<TryIt eq="lfr.eta" example="match-basic" sweep="R_in" />
+<TryIt eq="lfr.eta" example="match-basic" sweep="R_in" from={2.5} to={250} />
 
 Sweep the input resistance: a factor of two either side of the source
 resistance still takes eight ninths of the available power.

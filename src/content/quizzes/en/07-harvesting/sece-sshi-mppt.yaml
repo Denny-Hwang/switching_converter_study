@@ -32,7 +32,7 @@ questions:
       - 'It doubles'
       - 'It falls to zero'
     answer: 0
-    explain: 'SECE spends no charge against the storage''s voltage, so its power does not depend on it.'
+    explain: 'The element never connects to the storage: the converter takes the energy the element holds at each extremum and delivers it at whatever voltage the storage has, so the power does not depend on that voltage.'
   - q: 'A parallel SSHI inversion keeps half the voltage. How does its largest power compare with the standard interface''s largest?'
     options:
       - 'Twice'

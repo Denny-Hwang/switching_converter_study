@@ -58,11 +58,16 @@ peak would drive the flyback into CCM.
 
 ### The switch
 
-At the envelope's peak the switch blocks the highest voltage it will see: the
-bus plus the reflected output (<EqRef id="flyback.Vds_off" label="switch voltage" />),
-and the leakage spike on top
-([snubbers and clamps](../../04-magnetics/snubbers-clamps/)). A switch rated
-for the average, or for the envelope's start, fails at its peak.
+While the flyback switches, the envelope's peak sets the highest voltage
+its switch blocks: the bus plus the reflected output
+(<EqRef id="flyback.Vds_off" label="switch voltage" />), and the leakage
+spike on top ([snubbers and clamps](../../04-magnetics/snubbers-clamps/)). A
+switch rated for the average, or for the envelope's start, fails at its
+peak. While it does not switch, at start-up, in an undervoltage lockout or
+after a fault, nothing loads the bus, which charges to the source's
+open-circuit peak, and switching then starts from there: the bus capacitor
+must take that peak, and the switch that peak plus the reflected output,
+unless a clamp holds the bus lower.
 
 ## Worked example
 
@@ -71,8 +76,8 @@ The case, at the envelope's peak and on average:
 <Worked example="harvesting-source" />
 
 The source rises to <Val example="harvesting-source" name="V_ocpk" /> behind
-<Val example="harvesting-source" name="R_s" />, along an envelope whose
-period is <Val example="harvesting-source" name="T_env" />; at the peak it
+<Val example="harvesting-source" name="R_s" />, along an envelope of
+half-sines that each last <Val example="harvesting-source" name="T_env" />; at the peak it
 can give <Val example="harvesting-source" name="P_max" />. At
 <Val example="harvesting-source" name="f_s" /> and
 <Val example="harvesting-source" name="D" />, a magnetizing inductance of
@@ -81,7 +86,7 @@ can give <Val example="harvesting-source" name="P_max" />. At
 whole available power at every instant: <Val example="harvesting-source" name="P_avg" />
 on average. At the peak the bus reaches
 <Val example="harvesting-source" name="V_g" />, below the critical
-<Val example="harvesting-source" name="V_gcrit" />, and the switch blocks
+<Val example="harvesting-source" name="V_gcrit" sig={4} />, and the switch blocks
 <Val example="harvesting-source" name="V_DS" /> before the leakage spike.
 
 ## Try it
@@ -90,7 +95,7 @@ on average. At the peak the bus reaches
 
 Sweep the envelope's peak: the average power follows its square.
 
-<TryIt eq="lfr.eta" example="harvesting-source" sweep="R_in" />
+<TryIt eq="lfr.eta" example="harvesting-source" sweep="R_in" from={1e5} to={1e7} />
 
 Sweep the flyback's input resistance around the source resistance: the share
 stays close to the whole within a factor of two.
@@ -111,17 +116,19 @@ formula, scaled.
 
 - **An unloaded bus charges to the open-circuit voltage.** Behind a large
   resistance the source's current is small, but a capacitor across it still
-  reaches the full voltage, and holds it.
+  reaches the full voltage, and holds it: rate the bus and the switch for
+  it, or clamp the bus.
 - **The average needs a slow envelope.** An envelope comparable to the bus's
   time constant leaves the bus behind it, and the loss-free resistor's share
   no longer holds at every instant.
 - **Check DCM at the peak, not at the average**
   (<EqRef id="flyback.V_crit" label="critical input voltage" />).
-- **Rate the switch for the peak** (<EqRef id="flyback.Vds_off" label="switch voltage" />).
+- **Rate the switch for the peak,** and for an unloaded bus
+  (<EqRef id="flyback.Vds_off" label="switch voltage" />).
 
 ## Go deeper
 
-<GoDeeper ids={['erickson-ch15', 'zi2015-nature']} />
+<GoDeeper ids={['erickson-ch15', 'erickson-ch5']} />
 
 ## Quiz
 

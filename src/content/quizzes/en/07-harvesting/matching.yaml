@@ -40,7 +40,7 @@ questions:
       - '0.5'
       - '0.25'
     answer: 1
-    explain: 'Four times 5 times 15 over 20 squared: 300 over 400. A fixed voltage keeps its share only while it is half the source''s voltage.'
+    explain: 'Four times 5 times 15 over 20 squared: 300 over 400. The share depends on the battery''s voltage against the source''s, so with the battery fixed it changes whenever the source''s amplitude does.'
   - q: 'Which converter input is a loss-free resistor?'
     options:
       - 'A buck in CCM'

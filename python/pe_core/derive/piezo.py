@@ -52,7 +52,7 @@ def derive() -> Derivation:
         sp.Eq(d.local("v", "v"), v_open),
     )
     VM = sp.simplify(-v_open.coeff(sp.cos(w * t)))
-    d.result("piezo.VM", VM, "Its amplitude.", "그 진폭.", S("V_M"))
+    d.result("piezo.Vp", VM, "Its amplitude.", "그 진폭.", S("V_p"))
 
     # --- resistive load -------------------------------------------------------------------------
     Z = R / (1 + sp.I * w * R * C0)
@@ -94,7 +94,7 @@ def derive() -> Derivation:
     vopt = _single(sp.solve(sp.Eq(sp.diff(Pstd, Vdc), 0), Vdc), "stationary voltage")
     d.step("$dP/dV_\\mathrm{DC} = 0$: half the open-circuit amplitude.", "$dP/dV_\\mathrm{DC} = 0$: 개방 전압 진폭의 절반.",
            sp.Eq(Vdc, vopt))
-    d.result("piezo.P_std_max", sp.simplify(Pstd.subs(Vdc, vopt)), "Substitute it.", "이를 대입한다.", S("P_max"))
+    d.result("piezo.P_std_max", sp.simplify(Pstd.subs(Vdc, vopt)), "Substitute it.", "이를 대입한다.", S("P_std_max"))
 
     # --- SECE -----------------------------------------------------------------------------------
     V_end = q_half / C0
@@ -120,6 +120,9 @@ def derive() -> Derivation:
     Psshi = sp.simplify(E_sshi / half)
     d.result("piezo.P_sshi", sp.expand(Psshi), "Per unit time.", "단위 시간당.", S("P"))
     vopt2 = _single(sp.solve(sp.Eq(sp.diff(Psshi, Vdc), 0), Vdc), "stationary voltage")
-    d.step("$dP/dV_\\mathrm{DC} = 0$.", "$dP/dV_\\mathrm{DC} = 0$.", sp.Eq(Vdc, vopt2))
-    d.result("piezo.P_sshi_max", sp.simplify(Psshi.subs(Vdc, vopt2)), "Substitute it.", "이를 대입한다.", S("P_max"))
+    # shown as I_p/(omega C_0 (1 - gamma)); solve gives -I_p/(C_0 omega (gamma - 1))
+    shown = Ip / (w * C0 * (1 - g))
+    assert sp.simplify(vopt2 - shown) == 0
+    d.step("$dP/dV_\\mathrm{DC} = 0$.", "$dP/dV_\\mathrm{DC} = 0$.", sp.Eq(Vdc, shown))
+    d.result("piezo.P_sshi_max", sp.simplify(Psshi.subs(Vdc, vopt2)), "Substitute it.", "이를 대입한다.", S("P_sshi_max"))
     return d

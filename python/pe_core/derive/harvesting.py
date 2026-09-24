@@ -112,14 +112,14 @@ def derive() -> Derivation:
         LM,
     )
 
-    Vpk, eta, t, Te = S("V_ocpk"), S("eta_ext"), d.local("t", "t", positive=True), d.local("T_e", "T_e", positive=True)
+    Vpk, eta, t, Te = S("V_ocpk"), S("eta_ext"), d.local("t", "t", positive=True), S("T_env")
     Voc_t = Vpk * sp.sin(sp.pi * t / Te)
     d.step(
         "Under an envelope slow against the bus, the loss-free resistor takes $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$ "
-        "at every instant; take $V_\\mathrm{oc}(t) = \\hat{V}_\\mathrm{oc} \\sin(\\pi t / T_e)$, one half-wave of the "
+        "at every instant; take $V_\\mathrm{oc}(t) = \\hat{V}_\\mathrm{oc} \\sin(\\pi t / T_\\mathrm{env})$, one half-wave of the "
         "envelope (a rectified sine repeats it).",
         "포락선이 버스보다 충분히 느리면 무손실 저항은 매 순간 $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$를 받는다. "
-        "$V_\\mathrm{oc}(t) = \\hat{V}_\\mathrm{oc} \\sin(\\pi t / T_e)$, 즉 포락선의 반파 하나를 잡는다(정류된 사인은 이를 반복한다).",
+        "$V_\\mathrm{oc}(t) = \\hat{V}_\\mathrm{oc} \\sin(\\pi t / T_\\mathrm{env})$, 즉 포락선의 반파 하나를 잡는다(정류된 사인은 이를 반복한다).",
         sp.Eq(S("P"), eta * Voc_t**2 / (4 * Rs)),
     )
     avg = sp.simplify(sp.integrate(eta * Voc_t**2 / (4 * Rs), (t, 0, Te)) / Te)

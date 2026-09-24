@@ -1944,9 +1944,9 @@
           "result_for": "lfr.L_M"
         },
         {
-          "text": "Under an envelope slow against the bus, the loss-free resistor takes $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$ at every instant; take $V_\\mathrm{oc}(t) = \\hat{V}_\\mathrm{oc} \\sin(\\pi t / T_e)$, one half-wave of the envelope (a rectified sine repeats it).",
-          "text_ko": "포락선이 버스보다 충분히 느리면 무손실 저항은 매 순간 $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$를 받는다. $V_\\mathrm{oc}(t) = \\hat{V}_\\mathrm{oc} \\sin(\\pi t / T_e)$, 즉 포락선의 반파 하나를 잡는다(정류된 사인은 이를 반복한다).",
-          "latex": "P = \\frac{\\eta_\\mathrm{ext} \\hat{V}_\\mathrm{oc}^{2} \\sin^{2}{\\left(\\frac{\\pi t}{T_e} \\right)}}{4 R_s}",
+          "text": "Under an envelope slow against the bus, the loss-free resistor takes $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$ at every instant; take $V_\\mathrm{oc}(t) = \\hat{V}_\\mathrm{oc} \\sin(\\pi t / T_\\mathrm{env})$, one half-wave of the envelope (a rectified sine repeats it).",
+          "text_ko": "포락선이 버스보다 충분히 느리면 무손실 저항은 매 순간 $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$를 받는다. $V_\\mathrm{oc}(t) = \\hat{V}_\\mathrm{oc} \\sin(\\pi t / T_\\mathrm{env})$, 즉 포락선의 반파 하나를 잡는다(정류된 사인은 이를 반복한다).",
+          "latex": "P = \\frac{\\eta_\\mathrm{ext} \\hat{V}_\\mathrm{oc}^{2} \\sin^{2}{\\left(\\frac{\\pi t}{T_\\mathrm{env}} \\right)}}{4 R_s}",
           "result_for": null
         },
         {
@@ -1965,7 +1965,7 @@
       "intro": "Under a steady sinusoidal vibration of constant amplitude, a piezoelectric element is a current source $I_p \\sin \\omega t$ in parallel with its clamped capacitance $C_0$. What a load or an interface takes follows from where that current's charge goes in each half period.",
       "intro_ko": "진폭이 일정한 정현파 진동을 받는 압전 소자는 클램프 커패시턴스 $C_0$와 병렬인 전류원 $I_p \\sin \\omega t$이다. 부하나 인터페이스가 얼마를 받는지는 반주기마다 그 전류의 전하가 어디로 가는지에서 나온다.",
       "results": [
-        "piezo.VM",
+        "piezo.Vp",
         "piezo.R_opt",
         "piezo.P_R",
         "piezo.P_std",
@@ -1984,8 +1984,8 @@
         {
           "text": "Its amplitude.",
           "text_ko": "그 진폭.",
-          "latex": "V_M = \\frac{I_p}{\\omega C_0}",
-          "result_for": "piezo.VM"
+          "latex": "V_p = \\frac{I_p}{\\omega C_0}",
+          "result_for": "piezo.Vp"
         },
         {
           "text": "A resistor $R$ across the element shares the current with $C_0$: its voltage amplitude is $I_p |R \\parallel 1/(j\\omega C_0)|$, and it takes half the square of that over $R$.",
@@ -2032,7 +2032,7 @@
         {
           "text": "Substitute it.",
           "text_ko": "이를 대입한다.",
-          "latex": "P_\\mathrm{max} = \\frac{I_p^{2}}{2 \\pi \\omega C_0}",
+          "latex": "P_\\mathrm{std,max} = \\frac{I_p^{2}}{2 \\pi \\omega C_0}",
           "result_for": "piezo.P_std_max"
         },
         {
@@ -2062,13 +2062,13 @@
         {
           "text": "$dP/dV_\\mathrm{DC} = 0$.",
           "text_ko": "$dP/dV_\\mathrm{DC} = 0$.",
-          "latex": "V_\\mathrm{DC} = - \\frac{I_p}{C_0 \\omega \\left(-1 + \\gamma\\right)}",
+          "latex": "V_\\mathrm{DC} = \\frac{I_p}{C_0 \\omega \\left(1 - \\gamma\\right)}",
           "result_for": null
         },
         {
           "text": "Substitute it.",
           "text_ko": "이를 대입한다.",
-          "latex": "P_\\mathrm{max} = - \\frac{I_p^{2}}{\\pi C_0 \\omega \\left(-1 + \\gamma\\right)} = \\frac{I_p^{2}}{\\pi \\omega C_0 \\left(1 - \\gamma\\right)}",
+          "latex": "P_\\mathrm{SSHI,max} = - \\frac{I_p^{2}}{\\pi C_0 \\omega \\left(-1 + \\gamma\\right)} = \\frac{I_p^{2}}{\\pi \\omega C_0 \\left(1 - \\gamma\\right)}",
           "result_for": "piezo.P_sshi_max"
         }
       ]

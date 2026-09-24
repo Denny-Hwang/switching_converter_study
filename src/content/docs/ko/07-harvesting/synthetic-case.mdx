@@ -32,12 +32,11 @@ import Quiz from '../../../../components/Quiz.astro';
 
 ### 컨버터
 
-전원 저항과 같은 무손실 저항으로 설계한 고정 듀티비 DCM 플라이백은
-(<EqRef id="lfr.L_M" label="무손실 저항의 자화 인덕턴스" />) 입력을 전원 전압의 절반에
-두고, 두 가지가 성립하는 동안 매 순간 가용 전력 전부를 가져갑니다
+전원 저항과 같은 무손실 저항으로 설계한(<EqRef id="lfr.L_M" label="무손실 저항의 자화 인덕턴스" />)
+고정 듀티비 DCM 플라이백은 입력을 전원 전압의 절반에 두고, 두 가지가 성립하는 동안 매 순간 가용 전력 전부를 가져갑니다
 (<EqRef id="lfr.eta" label="무손실 저항의 추출 비율" />). 버스가 가장 높은 포락선
 최댓값에서도 DCM에 머물러야 하고(<EqRef id="flyback.V_crit" label="임계 입력 전압" />),
-버스가 포락선을 따라가도록 포락선이 버스 자신의 시정수, 곧 버스 커패시턴스에 전원
+버스가 포락선을 따라가도록 포락선이 버스 자신의 시정수(time constant), 곧 버스 커패시턴스에 전원
 저항과 입력 저항의 병렬 저항을 곱한 값보다 충분히 느려야 합니다
 <Cite key="alexander2017" where="Ch. 7 (First-Order Circuits)" />.
 
@@ -48,16 +47,20 @@ import Quiz from '../../../../components/Quiz.astro';
 
 <Eq id="lfr.P_env" />
 
-[소스 매처](../../design/source-matcher/)는 이런 포락선을 스위칭 사이클 단위로
+[전원 정합 도구](../../design/source-matcher/)는 이런 포락선을 스위칭 사이클 단위로
 시뮬레이션하며, 최댓값이 플라이백을 CCM으로 몰아넣는 곳에서 버스가 임계 전압에 묶이는
 것을 보여 줍니다.
 
 ### 스위치
 
-포락선 최댓값에서 스위치는 가장 높은 전압, 곧 버스에 반사된 출력을 더한 전압을
-차단하며(<EqRef id="flyback.Vds_off" label="스위치 전압" />), 누설 스파이크가 그 위에
-더해집니다([스너버와 클램프](../../04-magnetics/snubbers-clamps/)). 평균이나 포락선의
-시작에 맞춰 정격을 고른 스위치는 최댓값에서 고장 납니다.
+플라이백이 스위칭하는 동안에는 포락선 최댓값이 스위치가 차단하는 가장 높은 전압, 곧
+버스에 반사된 출력을 더한 전압을 정하며(<EqRef id="flyback.Vds_off" label="스위치 전압" />),
+누설 스파이크가 그 위에 더해집니다([스너버와 클램프](../../04-magnetics/snubbers-clamps/)).
+평균이나 포락선의 시작에 맞춰 정격을 고른 스위치는 최댓값에서 고장 납니다. 기동 중,
+저전압 차단(undervoltage lockout) 중, 고장 뒤처럼 스위칭하지 않는 동안에는 버스에 부하가
+없어 버스가 전원의 개방 전압 최댓값까지 충전되고, 스위칭은 그 전압에서 시작합니다.
+클램프로 버스를 더 낮게 붙잡지 않는 한, 버스 커패시터는 그 최댓값을, 스위치는 그
+최댓값에 반사된 출력을 더한 전압을 견뎌야 합니다.
 
 ## 풀이 예제
 
@@ -65,16 +68,16 @@ import Quiz from '../../../../components/Quiz.astro';
 
 <Worked example="harvesting-source" />
 
-전원은 <Val example="harvesting-source" name="R_s" /> 뒤에서, 주기가
+전원은 <Val example="harvesting-source" name="R_s" /> 뒤에서, 반파 하나가
 <Val example="harvesting-source" name="T_env" />인 포락선을 따라
 <Val example="harvesting-source" name="V_ocpk" />까지 오르며, 최댓값에서
 <Val example="harvesting-source" name="P_max" />를 낼 수 있습니다.
 <Val example="harvesting-source" name="f_s" />와
 <Val example="harvesting-source" name="D" />에서
-<Val example="harvesting-source" name="L_M" />의 자화 인덕턴스는
+<Val example="harvesting-source" name="L_M" />의 자화 인덕턴스(magnetizing inductance)는
 <Val example="harvesting-source" name="R_in" />을 보이므로, 플라이백은 매 순간 가용
 전력 전부, 평균 <Val example="harvesting-source" name="P_avg" />를 가져갑니다.
-최댓값에서 버스는 임계 전압 <Val example="harvesting-source" name="V_gcrit" />보다
+최댓값에서 버스는 임계 전압 <Val example="harvesting-source" name="V_gcrit" sig={4} />보다
 낮은 <Val example="harvesting-source" name="V_g" />에 이르고, 스위치는 누설 스파이크
 전에 <Val example="harvesting-source" name="V_DS" />를 차단합니다.
 
@@ -84,7 +87,7 @@ import Quiz from '../../../../components/Quiz.astro';
 
 포락선 최댓값을 바꿔 보면 평균 전력이 그 제곱을 따릅니다.
 
-<TryIt eq="lfr.eta" example="harvesting-source" sweep="R_in" />
+<TryIt eq="lfr.eta" example="harvesting-source" sweep="R_in" from={1e5} to={1e7} />
 
 플라이백의 입력 저항을 전원 저항 주변에서 바꿔 보면, 두 배 안쪽에서는 비율이 거의
 1에 머뭅니다.
@@ -101,16 +104,18 @@ import Quiz from '../../../../components/Quiz.astro';
 ## 주의할 점
 
 - **부하가 없는 버스는 개방 전압까지 충전됩니다.** 큰 저항 뒤의 전원 전류는 작지만,
-  그 양단의 커패시터는 결국 전체 전압에 이르고, 그 전압을 유지합니다.
+  그 양단의 커패시터는 결국 전체 전압에 이르고, 그 전압을 유지합니다. 버스와 스위치의
+  정격을 그 전압에 맞추거나 버스를 클램프합니다.
 - **평균에는 느린 포락선이 필요합니다.** 버스 시정수에 견줄 만한 포락선에서는 버스가
   뒤처지고, 무손실 저항의 비율이 매 순간 성립하지 않습니다.
 - **DCM은 평균이 아니라 최댓값에서 확인합니다**
   (<EqRef id="flyback.V_crit" label="임계 입력 전압" />).
-- **스위치 정격은 최댓값에 맞춥니다**(<EqRef id="flyback.Vds_off" label="스위치 전압" />).
+- **스위치 정격은 최댓값과 부하 없는 버스에 맞춥니다**
+  (<EqRef id="flyback.Vds_off" label="스위치 전압" />).
 
 ## 더 알아보기
 
-<GoDeeper ids={['erickson-ch15', 'zi2015-nature']} />
+<GoDeeper ids={['erickson-ch15', 'erickson-ch5']} />
 
 ## 퀴즈
 

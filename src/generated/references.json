@@ -488,6 +488,8 @@
       "title": "bq25570 Nano Power Boost Charger and Buck Converter for Energy Harvester Powered Applications",
       "verified": true,
       "organization": "Texas Instruments",
+      "number": "SLUSBH2",
+      "kind": "Data sheet",
       "url": "https://www.ti.com/lit/ds/symlink/bq25570.pdf"
     },
     "zi2015": {
