@@ -165,4 +165,13 @@ describe('sub-steps from the fastest ring', () => {
     expect(rings).toBeGreaterThan(5.2);
     expect(() => simulate(p)).not.toThrow();
   });
+
+  it('a parameter so small that the equations overflow is refused, not simulated into NaN', () => {
+    const p: SimParams = { topology: 'buck', Vg: 12, D: 0.5, fs: 1e5, L: 1e-320, load: { kind: 'resistive', R: 10, C: 1e-5 } };
+    expect(() => buildModel(p)).toThrow(/out of range/);
+    expect(() => simulate(p)).toThrow(/out of range/);
+    expect(() => simulate({ ...p, L: 1e-4, fs: 1e-320 })).toThrow(/out of range/);
+    // a source resistance as small: 1/R_s overflows the bus's equation
+    expect(() => simulate({ ...p, L: 1e-4, source: { Voc: 12, Rs: 1e-320, Cbus: 1e-6 } })).toThrow(/out of range/);
+  });
 });

@@ -418,6 +418,22 @@
       "doi": "10.3390/en4040582",
       "url": "https://www.mdpi.com/1996-1073/4/4/582/pdf"
     },
+    "vanloan1978": {
+      "key": "vanloan1978",
+      "type": "article",
+      "label": "Van Loan 1978",
+      "authors": [
+        "Charles F. Van Loan"
+      ],
+      "title": "Computing integrals involving the matrix exponential",
+      "verified": true,
+      "journal": "IEEE Transactions on Automatic Control",
+      "number": "3",
+      "volume": "23",
+      "pages": "395–404",
+      "year": "1978",
+      "doi": "10.1109/TAC.1978.1101743"
+    },
     "benyaakov_youtube": {
       "key": "benyaakov_youtube",
       "type": "misc",

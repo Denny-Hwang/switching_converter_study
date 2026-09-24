@@ -104,19 +104,9 @@ export interface LossBudget {
 export const LOAD_FRACTIONS: readonly number[] = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
 export const FREQ_FACTORS: readonly number[] = Array.from({ length: 9 }, (_, k) => 3 ** ((k - 4) / 4));
 
-/** rms and average of a sampled piecewise-linear waveform over one period (exact for straight segments). */
-function stats(t: number[], y: number[], Ts: number): { avg: number; rms: number } {
-  let s1 = 0;
-  let s2 = 0;
-  for (let k = 1; k < t.length; k++) {
-    const h = t[k]! - t[k - 1]!;
-    if (h <= 0) continue;
-    const a = y[k - 1]!;
-    const b = y[k]!;
-    s1 += (h * (a + b)) / 2;
-    s2 += (h * (a * a + a * b + b * b)) / 3;
-  }
-  return { avg: s1 / Ts, rms: Math.sqrt(Math.max(0, s2 / Ts)) };
+/** Average and rms value of a current over the simulated period: the simulator's exact integrals of the solution. */
+function stats(r: SimResult, key: 'i_sw' | 'i_L' | 'i_D'): { avg: number; rms: number } {
+  return { avg: r.avg[key]!, rms: Math.sqrt(Math.max(0, r.meanSquare[key]!)) };
 }
 
 function kcrit(topology: Topology, D: number, n: number): number {
@@ -239,11 +229,9 @@ export function lossPoint(s: LossSpec, load: number, fs: number): LossPoint {
   const regulated = Math.abs(V - s.V) <= 1e-3 * s.V;
 
   const w = r.waveforms;
-  const t = w.t as number[];
-  const Ts = 1 / fs;
-  const sw = stats(t, w.i_sw as number[], Ts);
-  const iL = stats(t, w.i_L as number[], Ts);
-  const iD = stats(t, w.i_D as number[], Ts);
+  const sw = stats(r, 'i_sw');
+  const iL = stats(r, 'i_L');
+  const iD = stats(r, 'i_D');
   const vsw = w.v_sw as number[];
   const Vsw_on = vsw[vsw.length - 1]!;
   const Ipk = r.max.i_L!;
@@ -274,7 +262,7 @@ export function lossPoint(s: LossSpec, load: number, fs: number): LossPoint {
   // the power the load takes, <v_out^2>/R: the output energy of the simulated
   // period (the capacitor's energy returns to its start value in steady state),
   // not <v_out>^2/R, which the output ripple would make too small
-  const Pout = r.energy.output / Ts;
+  const Pout = r.energy.output * fs;
   return {
     load,
     fs,

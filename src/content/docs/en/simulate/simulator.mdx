@@ -206,15 +206,21 @@ periodic steady state.
   passes the diode's turn-on voltage just before its current ends at the
   peak. The gate edges fall exactly at the start of the period and at the
   duty ratio.
-- **Averages.** The states at every sub-step and event are exact, but the
-  averages, losses and powers come from the samples, with straight lines
-  between them. A transient faster than a sub-step, such as a time constant
-  shorter than one, falls between two samples. So the steady period is
-  recorded again at half the sub-steps. If no average the page shows moves
-  by more than a ten-thousandth of its size, the result stands. Otherwise
-  the period is recorded at twice the sub-steps, and again, until two grids
-  agree, down to a twenty-thousandth of the period. When the averages still
-  move there, the page says so, and by how much.
+- **Averages, powers and extremes.** Within an interval every quantity
+  the page reports is a straight (affine) function of the states, and
+  between two samples the states follow the interval's equations exactly.
+  So the averages, the powers, and the mean squares behind the rms values
+  and the conduction losses are the exact integrals of that solution over
+  every sub-step, not straight lines through the samples. They are taken
+  from the exponential of a larger matrix built from the interval's
+  equations <Cite key="vanloan1978" />. A transient faster than a sub-step,
+  such as a time constant far shorter than one, is integrated as exactly as
+  a slow one, and the results do not depend on the sub-steps beyond
+  rounding. Each quantity's largest and smallest value also include a peak
+  between two samples, where its slope changes sign within a sub-step; the
+  slope is also checked close to the sub-step's start, where a fast
+  transient decays. The plots draw the samples, so a peak narrower than a
+  sub-step can be in the numbers but not in the plot.
 - **Rounding.** Within a period the simulator follows each state's
   deviation from its value at the start of the period. Its rounding errors
   then scale with how far the state moves, not with its size, so the change

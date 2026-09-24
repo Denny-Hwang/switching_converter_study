@@ -16,5 +16,11 @@ export type { Battery, Load, SimParams, Source, Topology } from './common';
 export { givenVoltage } from './common';
 
 export function buildModel(p: SimParams): Model {
-  return p.topology === 'forward' ? forward(p) : twoSwitch(p);
+  const m = p.topology === 'forward' ? forward(p) : twoSwitch(p);
+  // a value so small or so large that the circuit's equations overflow (1/L for an inductance of 1e-320 H) would
+  // otherwise reach the solver as infinities and come out as NaN
+  const finite = (v: number) => Number.isFinite(v);
+  const ok = Number.isFinite(m.Ts) && Object.values(m.intervals).every((iv) => iv.A.every((row) => row.every(finite)) && iv.b.every(finite));
+  if (!ok) throw new Error("a parameter is out of range: the circuit's equations overflow");
+  return m;
 }

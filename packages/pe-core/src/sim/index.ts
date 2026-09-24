@@ -4,5 +4,7 @@ export { runCycle, runTransient, steadyState } from './engine';
 export type { CycleRun, Edge, Guard, Interval, Model, Sample, SteadyOptions, SteadyResult, TransientResult } from './engine';
 export { buildModel } from './models';
 export type { Battery, Load, SimParams, Source, Topology } from './models';
-export { analyse, analyticM, analyticRipplePP, balanceDuty, chargingLoad, diagnose, FOLLOW, followStartUp, initialState, loadResistance, resetLimit, resolvePeriod, RESOLVE_TOL, restState, ringsPerPeriod, simulate, startUp, STARTUP, stepsFor, STEPS_PER_RING, unboundedCharging, waveforms } from './analysis';
+export { analyse, analyticM, analyticRipplePP, balanceDuty, chargingLoad, diagnose, FOLLOW, followStartUp, initialState, loadResistance, resetLimit, restState, ringsPerPeriod, simulate, startUp, STARTUP, stepsFor, STEPS_PER_RING, unboundedCharging, waveforms } from './analysis';
 export type { DiodeFlag, Drift, Mode, SimResult, StartUp, Status, Waveforms } from './analysis';
+export { linearIntegral, outputForms, periodIntegrals, quadraticIntegral } from './integrals';
+export type { PeriodIntegrals } from './integrals';

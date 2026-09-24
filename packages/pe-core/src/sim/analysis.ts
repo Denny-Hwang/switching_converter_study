@@ -16,6 +16,7 @@ import { evaluate } from '../equations';
 import { invert } from '../invert';
 import { runCycle, steadyState, type CycleRun, type Model, type SteadyOptions, type SteadyResult } from './engine';
 import { eigenvalues, type Vec } from './linalg';
+import { periodIntegrals } from './integrals';
 import { buildModel, givenVoltage, type SimParams } from './models';
 
 export type Mode = 'CCM' | 'DCM' | 'BCM';
@@ -85,6 +86,8 @@ export interface SimResult {
   pp: Record<string, number>;
   /** Average output voltage divided by the average input voltage. */
   M: number;
+  /** Mean squares over the period (A²): the switch, inductor, diode and battery currents (their rms values squared). */
+  meanSquare: Record<string, number>;
   /** Losses (W). */
   losses: { conduction: number; diode: number; capacitive: number; total: number };
   /** Energy per cycle (J). */
@@ -106,12 +109,6 @@ export interface SimResult {
   diodes?: DiodeFlag[];
   /** In a start-up, the first cycle (from 1) in which the switch voltage falls below zero. */
   switchFrom?: number;
-  /**
-   * A steady period whose averages are not resolved to RESOLVE_TOL even at
-   * MAX_STEPS sub-steps (resolvePeriod): the largest change of an average,
-   * relative to its scale, between half as many sub-steps and MAX_STEPS.
-   */
-  unresolved?: number;
 }
 
 /**
@@ -144,13 +141,6 @@ export function waveforms(model: Model, run: CycleRun): Waveforms {
     for (const k of names) (out[k] as number[]).push(y[k] ?? NaN);
   });
   return out;
-}
-
-/** Time average of a series over the recorded cycle (trapezoids; samples at events have zero width). */
-function average(t: number[], y: number[], Ts: number, f: (v: number) => number = (v) => v): number {
-  let s = 0;
-  for (let k = 1; k < t.length; k++) s += 0.5 * (f(y[k - 1]!) + f(y[k]!)) * (t[k]! - t[k - 1]!);
-  return s / Ts;
 }
 
 function kCrit(p: SimParams): number {
@@ -261,29 +251,38 @@ export function initialState(p: SimParams, model: Model): Vec {
   return x;
 }
 
-export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steadyState>, recorded?: Waveforms): SimResult {
+/** The squared currents whose averages the results give (conduction and diode losses, a battery's resistance), and the input and output power. */
+const PAIRS = [
+  ['i_sw', 'i_sw'],
+  ['i_L', 'i_L'],
+  ['i_D', 'i_D'],
+  ['i_bat', 'i_bat'],
+  ['v_in', 'i_in'],
+  ['v_out', 'i_out'],
+] as const;
+
+/**
+ * The recorded period's results. Its averages, mean squares, powers and
+ * extremes are exact integrals and extremes of the solution between the
+ * samples (periodIntegrals), not trapezoids through them: they do not
+ * depend on the sub-steps. The waveforms are the samples the page draws.
+ */
+export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steadyState>): SimResult {
   const Ts = model.Ts;
-  const wf = recorded ?? waveforms(model, ss.run);
-  const t = wf.t as number[];
+  const wf = waveforms(model, ss.run);
+  const ex = periodIntegrals(model, ss.run, PAIRS);
   const avg: Record<string, number> = {};
   const min: Record<string, number> = {};
   const max: Record<string, number> = {};
   const pp: Record<string, number> = {};
-  for (const k of Object.keys(wf)) {
-    if (k === 't' || k === 'interval') continue;
-    const y = wf[k] as number[];
-    avg[k] = average(t, y, Ts);
-    // loops, not Math.min(...y): the spread fails on very long waveforms
-    let lo = Infinity;
-    let hi = -Infinity;
-    for (const v of y) {
-      if (v < lo) lo = v;
-      if (v > hi) hi = v;
-    }
-    min[k] = lo;
-    max[k] = hi;
-    pp[k] = hi - lo;
+  for (const k of Object.keys(ex.lin)) {
+    avg[k] = ex.lin[k]! / Ts;
+    min[k] = ex.min[k]!;
+    max[k] = ex.max[k]!;
+    pp[k] = max[k]! - min[k]!;
   }
+  const meanSquare: Record<string, number> = {};
+  for (const [a, b] of PAIRS) if (a === b && ex.quad[`${a}*${b}`] !== undefined) meanSquare[a] = ex.quad[`${a}*${b}`]! / Ts;
   const idleTime = model.idle.reduce((s, iv) => s + (ss.run.durations[iv] ?? 0), 0);
   const idleFraction = idleTime / Ts;
   // DCM: the inductor current rests at zero for part of the period. BCM: it
@@ -300,18 +299,9 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
     K = (2 * p.L) / (Rload * Ts);
     Kc = kCrit(p);
   }
-  const iL = wf.i_L as number[];
-  const isw = wf.i_sw as number[];
-  const iD = wf.i_D as number[];
-  const conduction = (p.Ron ?? 0) * average(t, isw, Ts, (v) => v * v) + (p.RL ?? 0) * average(t, iL, Ts, (v) => v * v);
-  const diode = (p.VF ?? 0) * average(t, iD, Ts);
+  const conduction = (p.Ron ?? 0) * meanSquare.i_sw! + (p.RL ?? 0) * meanSquare.i_L!;
+  const diode = (p.VF ?? 0) * avg.i_D!;
   const capacitive = ss.run.edgeLoss / Ts;
-  const vin = wf.v_in as number[];
-  const iin = wf.i_in as number[];
-  const vout = wf.v_out as number[];
-  const iout = wf.i_out as number[];
-  const pin = t.map((_, k) => vin[k]! * iin[k]!);
-  const pout = t.map((_, k) => vout[k]! * iout[k]!);
   const outside = outsideModel(p, model, wf);
   return {
     params: p,
@@ -330,9 +320,10 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
     min,
     max,
     pp,
+    meanSquare,
     M: avg.v_out! / avg.v_in!,
     losses: { conduction, diode, capacitive, total: conduction + diode + capacitive },
-    energy: { input: average(t, pin, Ts) * Ts, output: average(t, pout, Ts) * Ts },
+    energy: { input: ex.quad['v_in*i_in']!, output: ex.quad['v_out*i_out']! },
     ...outside,
   };
 }
@@ -394,112 +385,6 @@ function outsideModel(p: SimParams, model: Model, w: Waveforms, startUp = false)
   return out;
 }
 
-/** How far an average may move, relative to its scale, when the period is recorded again at twice the sub-steps (the page shows four digits). */
-export const RESOLVE_TOL = 1e-4;
-
-/**
- * The averages the page shows from a recorded period, each with its scale:
- * the voltages and currents in the tables (v_out, v_in, the inductor, input,
- * output, switch, diode, resistor and battery currents), the squared
- * currents that give the conduction losses (and a battery's resistance
- * loss), and the input and output power. An average is judged against
- * itself, or against a thousandth of its series' peak when it is smaller
- * (one near zero, whose digits the ripple swamps). An average smaller than
- * a billionth of the circuit's largest current (or voltage, or power) is
- * left out: rounding, not a quantity the page shows.
- */
-const SHOWN_V = ['v_out', 'v_in'] as const;
-const SHOWN_I = ['i_L', 'i_in', 'i_out', 'i_sw', 'i_D', 'i_R', 'i_bat'] as const;
-function periodSummary(model: Model, w: Waveforms, squares: readonly string[]): { values: number[]; scales: number[] } {
-  const t = w.t as number[];
-  const Ts = model.Ts;
-  const peakOf = (y: number[], f: (v: number) => number) => y.reduce((m, v) => Math.max(m, Math.abs(f(v))), 0);
-  const series = (k: string) => w[k] as number[] | undefined;
-  const id = (v: number) => v;
-  const sq = (v: number) => v * v;
-  const Vmax = Math.max(0, ...SHOWN_V.map((k) => (series(k) ? peakOf(series(k)!, id) : 0)));
-  const Imax = Math.max(0, ...SHOWN_I.map((k) => (series(k) ? peakOf(series(k)!, id) : 0)));
-  const values: number[] = [];
-  const scales: number[] = [];
-  const add = (y: number[] | undefined, f: (v: number) => number, size: number) => {
-    if (!y) return;
-    const a = average(t, y, Ts, f);
-    const scale = Math.max(Math.abs(a), 1e-3 * peakOf(y, f));
-    if (!(scale > 1e-9 * size)) return;
-    values.push(a);
-    scales.push(scale);
-  };
-  for (const k of SHOWN_V) add(series(k), id, Vmax);
-  for (const k of SHOWN_I) add(series(k), id, Imax);
-  for (const k of squares) add(series(k), sq, Imax * Imax);
-  const product = (a: string, b: string) => {
-    const x = series(a);
-    const y = series(b);
-    return x && y ? x.map((v, k) => v * y[k]!) : undefined;
-  };
-  add(product('v_in', 'i_in'), id, Vmax * Imax);
-  add(product('v_out', 'i_out'), id, Vmax * Imax);
-  return { values, scales };
-}
-
-/** The largest change between two summaries of the same period, each relative to its scale (quantities that are zero throughout are left out). */
-function summaryChange(a: { values: number[]; scales: number[] }, b: { values: number[]; scales: number[] }): number {
-  let worst = 0;
-  for (let j = 0; j < a.values.length; j++) {
-    const scale = Math.max(a.scales[j]!, b.scales[j] ?? 0);
-    const d = Math.abs(a.values[j]! - b.values[j]!);
-    if (scale > 0 && Number.isFinite(d)) worst = Math.max(worst, d / scale);
-  }
-  return worst;
-}
-
-/**
- * The steady period, recorded finely enough for its averages. The states at
- * every sub-step and event are exact, but the averages, losses and powers
- * come from the samples (trapezoids between them): a transient faster than
- * a sub-step (a time constant shorter than one, which no ring shows) is
- * integrated wrongly. The period is first recorded again at half the
- * sub-steps: if no average moves by more than RESOLVE_TOL of its scale, the
- * grid holds (its own error is smaller still) and the result is unchanged.
- * Otherwise it is recorded at twice the sub-steps, and again, until two
- * grids agree, keeping the coarser of the two; at MAX_STEPS what still moves
- * is reported.
- */
-export function resolvePeriod(
-  model: Model,
-  x0: Vec,
-  run: CycleRun,
-  steps: number,
-  squares: readonly string[] = ['i_sw', 'i_L'],
-): { run: CycleRun; wf: Waveforms; steps: number; unresolved?: number } {
-  const summary = (w: Waveforms) => periodSummary(model, w, squares);
-  const record = (n: number) => {
-    const r = runCycle(model, x0, { stepsPerPeriod: n, record: true });
-    return { r, wf: waveforms(model, r) };
-  };
-  let cur = { r: run, wf: waveforms(model, run) };
-  let a = summary(cur.wf);
-  const half = Math.floor(steps / 2);
-  if (half >= 1 && summaryChange(summary(record(half).wf), a) <= RESOLVE_TOL) return { run, wf: cur.wf, steps };
-  let s = steps;
-  for (;;) {
-    if (s >= MAX_STEPS) {
-      // nothing finer: what moved between half of MAX_STEPS and it
-      const change = summaryChange(summary(record(MAX_STEPS / 2).wf), a);
-      return { run: cur.r, wf: cur.wf, steps: s, ...(change > RESOLVE_TOL ? { unresolved: change } : {}) };
-    }
-    const next = Math.min(MAX_STEPS, 2 * s);
-    const fine = record(next);
-    const b = summary(fine.wf);
-    const change = summaryChange(a, b);
-    if (change <= RESOLVE_TOL) return { run: cur.r, wf: cur.wf, steps: s };
-    if (next >= MAX_STEPS) return { run: fine.r, wf: fine.wf, steps: next, unresolved: change };
-    cur = fine;
-    s = next;
-    a = b;
-  }
-}
-
 /** Most sub-steps per period, and the fewest sub-steps per ring that still find the events inside the ringing. */
 export const MAX_STEPS = 20000;
 export const MIN_STEPS_PER_RING = 3;
@@ -518,9 +403,11 @@ export function ringsPerPeriod(model: Model): number {
   for (const iv of Object.values(model.intervals)) {
     try {
       for (const e of eigenvalues(iv.A)) w = Math.max(w, Math.abs(e.im));
-    } catch {
+    } catch (e) {
       // the QR iteration did not converge (two nearly identical lossless rings coupled by almost nothing): every
-      // eigenvalue's size is at most the matrix's Frobenius norm, a bound that can only ask for more sub-steps
+      // eigenvalue's size is at most the matrix's Frobenius norm, a bound that can only ask for more sub-steps.
+      // Any other failure is not one a bound can stand in for
+      if (!(e instanceof Error && /did not converge/.test(e.message))) throw e;
       w = Math.max(w, Math.sqrt(iv.A.reduce((s, row) => s + row.reduce((r, v) => r + v * v, 0), 0)));
     }
   }
@@ -844,13 +731,7 @@ export function simulate(p: SimParams, opts: SteadyOptions = {}): SimResult {
   const ss = chargingLoad(p)
     ? capacitorAlone(p, model, opts, steps)
     : steadyState(model, initialState(p, model), { stopOnDrift: true, ...opts, stepsPerPeriod: steps });
-  if (ss.converged) {
-    // the squared currents behind the losses the page shows: conduction, and a battery's resistance
-    const squares = ['i_sw', 'i_L', ...(p.load.kind === 'network' && p.load.battery ? ['i_bat'] : [])];
-    const period = resolvePeriod(model, ss.x0, ss.run, steps, squares);
-    const r = analyse(p, model, { ...ss, run: period.run }, period.wf);
-    return period.unresolved === undefined ? r : { ...r, unresolved: period.unresolved };
-  }
+  if (ss.converged) return analyse(p, model, ss);
   const { status, drift } = diagnose(p, model, ss.x0, steps);
   return withStartUp(p, model, status, drift);
 }

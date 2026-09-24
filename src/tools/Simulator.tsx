@@ -88,8 +88,6 @@ export interface SimLabels {
   nodeNeedsRon: string;
   /** The engine's refusal of a circuit whose fastest ring its sub-steps cannot follow. */
   ringsTooFast: string;
-  /** '{x}' filled in: how much the averages still change at the finest sub-steps (resolvePeriod). */
-  unresolved: string;
   share: string;
   time: string;
   running: string;
@@ -450,13 +448,6 @@ export function compareRows(r: SimResult): CompareRow[] {
   return rows;
 }
 
-/** Time average of y² over a recorded cycle (trapezoids). */
-function meanSquare(t: number[], y: number[]): number {
-  let acc = 0;
-  for (let k = 1; k < t.length; k++) acc += 0.5 * (y[k - 1]! ** 2 + y[k]! ** 2) * (t[k]! - t[k - 1]!);
-  return acc / (t[t.length - 1]! - t[0]!);
-}
-
 /** The load's averages over the steady-state period: output voltage, resistor and battery currents, the power the battery stores and the loss in its internal resistance. */
 export function loadRows(r: SimResult): { label: string; unit: string; value: number }[] {
   const l = r.params.load;
@@ -464,10 +455,9 @@ export function loadRows(r: SimResult): { label: string; unit: string; value: nu
   const rows = [{ label: 'vout', unit: 'V', value: r.avg.v_out! }];
   if (l.R !== undefined) rows.push({ label: 'iR', unit: 'A', value: r.avg.i_R! });
   if (l.battery) {
-    const t = r.waveforms.t as number[];
     rows.push({ label: 'ibat', unit: 'A', value: r.avg.i_bat! });
     rows.push({ label: 'pbat', unit: 'W', value: l.battery.V * r.avg.i_bat! });
-    rows.push({ label: 'pRb', unit: 'W', value: l.battery.R * meanSquare(t, r.waveforms.i_bat as number[]) });
+    rows.push({ label: 'pRb', unit: 'W', value: l.battery.R * r.meanSquare.i_bat! });
   }
   return rows;
 }
@@ -522,12 +512,6 @@ export function outsideModelText(r: SimResult | null | undefined, labels: SimLab
   }
   if (r.switchBelowZero !== undefined) out.push(fill(labels.switchBelowZero, { v: fmtValue(r.switchBelowZero, 'V'), ...place(r.switchFrom) }));
   return out.length ? out.join(' ') : null;
-}
-
-/** What the page says when a steady period's averages are not resolved even at the finest sub-steps. */
-export function resolutionText(r: SimResult | null | undefined, labels: SimLabels): string | null {
-  if (!r || r.unresolved === undefined) return null;
-  return fill(labels.unresolved, { x: `${(100 * r.unresolved).toPrecision(2)} %` });
 }
 
 /** The anchor a slider takes when its field is committed: the typed value if it lies outside the slider's range. */
@@ -943,11 +927,6 @@ export default function Simulator({ labels, presets, symbols }: Props) {
             {outsideModelText(result, labels) && (
               <p className="pe-sim__nosteady">
                 <Rich text={outsideModelText(result, labels)!} />
-              </p>
-            )}
-            {resolutionText(result, labels) && (
-              <p className="pe-sim__nosteady">
-                <Rich text={resolutionText(result, labels)!} />
               </p>
             )}
             {result && result.status === 'steady' && (
