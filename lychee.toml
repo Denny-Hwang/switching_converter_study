@@ -55,4 +55,9 @@ exclude = [
   # the runner is refused, matches the title of each URL's latest Internet
   # Archive capture instead.
   '^https://ieeexplore\.ieee\.org/',
+  # journals.sagepub.com answers lychee from CI runners with 403 (the SECE
+  # paper's page): the urls-online job opens it with a browser User-Agent or,
+  # when the runner is refused, matches the title of its latest Internet
+  # Archive capture and finds the quoted sentence.
+  '^https://journals\.sagepub\.com/',
 ]

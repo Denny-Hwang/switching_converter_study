@@ -79,6 +79,19 @@ jobs:
           cache: pip
           cache-dependency-path: python/pyproject.toml
       - run: pip install -e "python[dev]"
+      - name: TEMPORARY - archive captures of the SECE paper's URL forms (removed in the next commit)
+        run: |
+          for u in journals.sagepub.com/doi/10.1177/1045389X05056859 journals.sagepub.com/doi/abs/10.1177/1045389X05056859 \
+                   journals.sagepub.com/doi/pdf/10.1177/1045389X05056859 journals.sagepub.com/doi/10.1177/1045389x05056859 \
+                   journals.sagepub.com/doi/abs/10.1177/1045389x05056859 jim.sagepub.com/content/16/10/865 \
+                   jim.sagepub.com/content/16/10/865.abstract doi.org/10.1177/1045389X05056859; do
+            echo "== $u"
+            curl -sS -m 90 "https://web.archive.org/cdx/search/cdx?url=$u&output=json&fl=timestamp,original,statuscode,mimetype&limit=-5" || true
+            echo
+            sleep 3
+          done
+          curl -sS -m 60 "https://api.crossref.org/works/10.1177/1045389X05056859" \
+            | python3 -c "import json,sys; d=json.load(sys.stdin)['message']; print('crossref abstract:', (d.get('abstract') or 'none')[:900])" || true
       - run: python scripts/refcheck.py --online
 
   urls-online:
