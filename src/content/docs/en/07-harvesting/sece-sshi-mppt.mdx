@@ -27,8 +27,8 @@ All three interfaces below take their power from the element of
 [source models](../source-models/): a current source $I_p \sin \omega t$
 beside its clamped capacitance $C_0$, vibrating at an amplitude that the
 harvest does not change. Each half period, between two extrema of the
-displacement, the source drives the same charge. The two interfaces with a
-bridge differ in how much of it they spend swinging the element's voltage
+displacement, the source drives the same charge. The two interfaces whose
+bridge feeds the DC voltage differ in how much of it they spend swinging the element's voltage
 before the bridge conducts; SECE lets all of it charge the element and then
 takes the energy stored there.
 
@@ -157,9 +157,9 @@ oscilloscope: their ratio is the inversion coefficient to put in the formula.
   (<EqRef id="piezo.P_sshi_max" label="largest power of parallel SSHI" />).
 - **Sampling the open-circuit voltage costs harvest time:** the converter
   takes no power while it samples.
-- **These results keep the vibration's amplitude fixed.** A harvest whose
-  damping is not small against the structure's own losses lowers the
-  amplitude, and the model then overstates every interface.
+- **These results keep the vibration's amplitude fixed.** A harvest that
+  takes energy not small against what the structure's own losses take
+  lowers the amplitude, and the model then overstates every interface.
 
 ## Go deeper
 

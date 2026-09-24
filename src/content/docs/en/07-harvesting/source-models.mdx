@@ -59,10 +59,11 @@ equals the capacitance's reactance at the vibration's frequency:
 
 The best resistor depends on the frequency: a resistor sized for one
 vibration is mismatched at another. The energy the load takes comes out of
-the vibration, so the model holds while the damping the harvest adds is
-small against the structure's own, the energy its mechanical losses take
-each cycle, or where the motion is imposed. Otherwise the harvest lowers the
-vibration's amplitude and the model overstates the power.
+the vibration, so the model holds while the energy the harvest takes each
+cycle is small against what the structure's own mechanical losses take, or
+where the motion is imposed. Otherwise the harvest lowers the vibration's
+amplitude, and near a sharp resonance the electrical load can also move the
+resonance itself; the model leaves both out and overstates the power.
 
 A storage element needs a DC voltage, so the element usually works through
 a rectifier. A full-wave bridge onto the best DC voltage gives less than the
@@ -130,8 +131,8 @@ at a second frequency and see the best resistor move.
   at the vibration's frequency, and moves with it.
 - **A bridge onto a DC voltage takes less than the best resistor**
   (<EqRef id="piezo.P_std_max" label="largest power of the standard interface" />).
-- **The model does not damp the vibration.** A load whose damping is not
-  small against the structure's own losses lowers the vibration's
+- **The model does not damp the vibration.** A load that takes energy not
+  small against what the structure's own losses take lowers the vibration's
   amplitude, and the model then overstates the power.
 
 ## Go deeper

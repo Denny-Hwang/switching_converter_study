@@ -2068,7 +2068,7 @@
         {
           "text": "Substitute it.",
           "text_ko": "이를 대입한다.",
-          "latex": "P_\\mathrm{SSHI,max} = - \\frac{I_p^{2}}{\\pi C_0 \\omega \\left(-1 + \\gamma\\right)} = \\frac{I_p^{2}}{\\pi \\omega C_0 \\left(1 - \\gamma\\right)}",
+          "latex": "P_\\mathrm{SSHI,max} = \\frac{I_p^{2}}{\\pi \\omega C_0 \\left(1 - \\gamma\\right)}",
           "result_for": "piezo.P_sshi_max"
         }
       ]

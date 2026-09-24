@@ -2,7 +2,7 @@ synthetic: true
 label: "Source matching example"
 label_ko: "전원 정합 예제"
 # A linear source (10 V behind 25 Ohm) into a battery held at 3 V, and into a loss-free resistor of
-# 75 Ohm. P_max = 1 W; the battery takes 0.84 W, the loss-free resistor 0.75 W.
+# 50 Ohm (twice R_s). P_max = 1 W; the battery takes 0.84 W, the loss-free resistor 8/9 W (0.889 W).
 params:
   V_oc: 10
   R_s: 25

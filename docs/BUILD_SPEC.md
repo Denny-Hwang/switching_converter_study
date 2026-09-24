@@ -308,7 +308,7 @@ keep it out of the published site).
 | paper | Singer, "Realization of loss-free resistive elements," *IEEE Trans. Circuits Syst.*, 1990 | DOI to confirm | VERIFY |
 | paper | Steinmetz, "On the law of hysteresis" (1892; *Proc. IEEE* reprint 1984) | DOI to confirm | VERIFY |
 | paper | Dowell, "Effects of eddy currents in transformer windings," *Proc. IEE*, 1966 | DOI to confirm | VERIFY |
-| paper | Ottman et al., adaptive piezoelectric energy-harvesting circuit (DCM step-down), *IEEE TPEL* 2002 | DOI to confirm | VERIFY |
+| paper | Ottman et al., adaptive piezoelectric energy-harvesting circuit, *IEEE TPEL* 2002 (their DCM step-down converter is the 2003 *IEEE TPEL* paper) | DOI to confirm | VERIFY |
 | paper | Guyomar, Badel, Lefeuvre, Richard — SSHI, *IEEE TUFFC* 2005 | DOI to confirm | VERIFY |
 | paper | Lefeuvre et al. — SECE comparison, *Sens. Actuators A* 2006 | DOI to confirm | VERIFY |
 | tool | LTspice (Analog Devices) | analog.com | VERIFY |

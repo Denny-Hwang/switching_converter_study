@@ -2,7 +2,7 @@ synthetic: true
 label: "Harvesting source example"
 label_ko: "하베스팅 전원 예제"
 # The synthetic case of docs/BUILD_SPEC.md (Phase 4): a source whose open-circuit voltage follows a
-# sinusoidal envelope of 10 s up to 1 kV, behind 1 MOhm, and a fixed-D DCM flyback at 1 kHz sized
+# sinusoidal envelope, half-sines of 10 s each, up to 1 kV, behind 1 MOhm, and a fixed-D DCM flyback at 1 kHz sized
 # as a loss-free resistor equal to R_s, charging a 5 V output through a 0.5 V diode.
 params:
   V_ocpk: 1000

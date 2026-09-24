@@ -68,8 +68,8 @@ same input resistance, a larger power needs a higher input voltage:
 <Eq id="lfr.Vg_power" />
 
 so drawing more power through a matched flyback raises its switch's voltage.
-That holds up to the critical voltage. There CCM holds the bus, and the
-switch voltage stays at <EqRef id="flyback.Vds_clamped" label="its CCM value" />
+That holds up to the critical voltage. There CCM holds the bus, and while
+the flyback switches, the switch voltage stays at <EqRef id="flyback.Vds_clamped" label="its CCM value" />
 whatever power the source then pushes in; the largest power the flyback
 draws as a resistor is <EqRef id="dcm.P_in" label="the power a DCM converter draws" />
 at the critical voltage.
@@ -111,8 +111,10 @@ through a series resistor equal to its computed input resistance. Measure
 the input voltage: it should sit at half the supply's voltage. Raise the
 supply slowly until the input voltage stops following it; that is the
 critical input voltage, to compare with the formula. The supply must reach
-twice that voltage, several hundred volts with the example's numbers; a
-larger turns ratio lowers the critical voltage
+twice that voltage, several hundred volts with the example's numbers, and
+the bus capacitor holds what it reaches: keep the circuit enclosed, and
+discharge the capacitor through a resistor before touching it. A larger
+turns ratio n (N_s/N_p) lowers the critical voltage
 (<EqRef id="flyback.V_crit" label="critical input voltage" />) and keeps
 the exercise at a safer voltage. At each step, capture
 the switch's drain voltage with a probe rated for it
@@ -125,6 +127,11 @@ spike against the formula.
   CCM holds the bus there (<EqRef id="flyback.V_crit" label="critical input voltage" />).
 - **The switch voltage includes the reflected output,** and the leakage
   spike adds to it (<EqRef id="flyback.Vds_off" label="switch voltage" />).
+- **While the flyback does not switch, the bus charges to the open-circuit
+  voltage:** at start-up, in an undervoltage lockout or after a fault,
+  nothing draws on the source. The switch then blocks that voltage plus the
+  reflected output: rate it for that, or clamp the bus
+  ([the design case](../synthetic-case/)).
 - **More power through the same resistance needs a higher voltage**
   (<EqRef id="lfr.Vg_power" label="input voltage for a given power" />).
 - **The match is forgiving.** The share is flat at its top: a small error

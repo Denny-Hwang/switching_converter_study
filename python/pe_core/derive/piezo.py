@@ -124,5 +124,8 @@ def derive() -> Derivation:
     shown = Ip / (w * C0 * (1 - g))
     assert sp.simplify(vopt2 - shown) == 0
     d.step("$dP/dV_\\mathrm{DC} = 0$.", "$dP/dV_\\mathrm{DC} = 0$.", sp.Eq(Vdc, shown))
-    d.result("piezo.P_sshi_max", sp.simplify(Psshi.subs(Vdc, vopt2)), "Substitute it.", "이를 대입한다.", S("P_sshi_max"))
+    # shown as I_p^2/(pi omega C_0 (1 - gamma)); simplify gives the same with the signs of (gamma - 1)
+    shown_max = Ip**2 / (sp.pi * w * C0 * (1 - g))
+    assert sp.simplify(Psshi.subs(Vdc, vopt2) - shown_max) == 0
+    d.result("piezo.P_sshi_max", shown_max, "Substitute it.", "이를 대입한다.", S("P_sshi_max"))
     return d
