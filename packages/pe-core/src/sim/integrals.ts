@@ -40,12 +40,16 @@
  * is noise and is not searched, and neither is one so small that the output
  * moves by less than a trillionth of its range, or by less than the rounding
  * of its own value at the sample (the stored state's rounding starts a fast
- * mode's transient no larger than that). The slope's rounding is a few units
- * in the last place of the terms the slope is summed from: at a segment's
- * start, the terms of c·(A x + b) at the sample's own state, whose digits a
- * fast mode amplifies; inside the segment and at its end (the start
- * propagated by e^{F h}, so that all its checkpoints lie on one solution),
- * the terms of c·F z at the deviation, which is where that slope is computed.
+ * mode's transient no larger than that). The slopes are c·ż, with ż the rate
+ * of change A x + b at the sample, summed in twice the precision and carried
+ * to each checkpoint by the same exponentials as the state. Computed as
+ * c·F z, a slope of a few volts per second would be what is left of the
+ * deviation's large terms (a stiff bus's 1/(R_s C_bus) times its deviation,
+ * 1e13 V/s and more), with only its first digits. The slope's rounding is a
+ * few units in the last place of the terms it is summed from, |c|·|ż|; at a
+ * segment's start also the terms of c·(A x + b) at the sample's own state,
+ * whose digits a fast mode amplifies. The checkpoints, the segment's end
+ * included (the start propagated by e^{F h}), lie on one solution.
  */
 
 import { OVERFLOW, type CycleRun, type Model } from './engine';
@@ -210,17 +214,19 @@ const TAYLOR_TERMS = 22;
 
 /**
  * F^k z0 for k = 0 … TAYLOR_TERMS + 3: z(τ) = Σ τ^k/k! F^k z0, for a stretch
- * of length h. F^k z0 = [A^{k−1} (A x0 + b); 0] for k ≥ 1, so where the
- * fastest mode of A turns by at most a radian in h the terms fall like 1/k!.
+ * of length h. F^k z0 = [A^{k−1} (A x0 + b); 0] for k ≥ 1, taken from the
+ * rate of change zd0 = F z0 given (summed without the cancellation of the
+ * state's large terms), so where the fastest mode of A turns by at most a
+ * radian in h the terms fall like 1/k!.
  * Null unless the last terms of every state's series, of its rate of change
  * and of that rate's rate of change are below rounding against their
  * largest term (a badly conditioned A can hold them up): the exponentials
  * then stand in.
  */
-function taylorVectors(F: Mat, z0: Vec, h: number): Vec[] | null {
+function taylorVectors(F: Mat, z0: Vec, zd0: Vec, h: number): Vec[] | null {
   const L = TAYLOR_TERMS + 3;
-  const vs = [z0];
-  for (let k = 1; k <= L; k++) vs.push(matvec(F, vs[k - 1]!));
+  const vs = [z0, zd0];
+  for (let k = 2; k <= L; k++) vs.push(matvec(F, vs[k - 1]!));
   for (let i = 0; i + 1 < z0.length; i++) {
     // the value's series, Σ h^k/k! v_k, the slope's, Σ h^k/k! v_{k+1}, and the slope's rate's, Σ h^k/k! v_{k+2}
     for (const shift of [0, 1, 2]) {
@@ -261,9 +267,10 @@ function bracketRoot(at: (tau: number) => [number, number], lo: number, hi: numb
 
 /**
  * An output and its derivatives along a stretch from z0: the k-th derivative
- * of y = c·z is c·F^k z(τ). Where the stretch is short against the dynamics,
- * from the Taylor vectors of its start (y(τ) = Σ a_k τ^k/k!, a_k = c·F^k z0,
- * by Horner's rule, no exponential per step); else from e^{F τ} z0.
+ * of y = c·z is c·F^k z(τ) = c·F^{k−1} ż(τ), ż the rate of change. Where the
+ * stretch is short against the dynamics, from the Taylor vectors of its start
+ * (y(τ) = Σ a_k τ^k/k!, a_k = c·F^k z0, by Horner's rule, no exponential per
+ * step); else from e^{F τ} z0 and e^{F τ} ż0.
  */
 interface Along {
   /** The k-th derivative of the output at τ (k = 0, 1, 2, 3). */
@@ -280,8 +287,8 @@ function taylorAlong(c: Vec, vs: Vec[]): Along {
     },
   };
 }
-function expAlong(F: Mat, c: Vec, z0: Vec): Along {
-  // rows c F^k, and the last τ's state (a root and its value are asked for at the same τ)
+function expAlong(F: Mat, c: Vec, z0: Vec, zd0: Vec): Along {
+  // rows c F^k, and the last τ's exponential (a root and its value are asked for at the same τ)
   const rows: Vec[] = [c];
   const row = (k: number) => {
     while (rows.length <= k) {
@@ -290,11 +297,12 @@ function expAlong(F: Mat, c: Vec, z0: Vec): Along {
     }
     return rows[k]!;
   };
-  let last: { tau: number; z: Vec } | null = null;
+  let last: { tau: number; E: Mat } | null = null;
   return {
     at(k, tau) {
-      if (!last || last.tau !== tau) last = { tau, z: propagate(expmMinusI(F.map((r) => r.map((v) => v * tau))), z0) };
-      return dotv(row(k), last.z);
+      if (!last || last.tau !== tau) last = { tau, E: expmMinusI(F.map((r) => r.map((v) => v * tau))) };
+      // the value from the state, its derivatives from the rate of change, both carried by e^{F τ}
+      return k === 0 ? dotv(c, propagate(last.E, z0)) : dotv(row(k - 1), propagate(last.E, zd0));
     },
   };
 }
@@ -346,10 +354,11 @@ function propagate(E: Mat, z0: Vec): Vec {
 
 /**
  * An interval's outputs as rows, in its deviation coordinates: their indices
- * among all outputs, their coefficients c, c·F for their slopes and c·F² for
- * the slopes' rates, and |c|·|F| and |c|·|F|² that bound the rounding of
- * those products; and the sums of |c_i A_ij| and of |c_i b_i| that bound the
- * slope's rounding at a sample.
+ * among all outputs; their coefficients c, whose products with the rate of
+ * change ż are the slopes; c·F for the slopes' rates, c·F ż, and c·F², whose
+ * terms at a sample bound that rate's rounding there; |c| and |c|·|F|, which
+ * bound the rounding of the products with ż; and the sums of |c_i A_ij| and
+ * of |c_i b_i| that bound the slope's rounding at a sample.
  */
 interface Rows {
   /** The interval's reference state, the first the period visits in it: z = [x − x_r; 1]. */
@@ -362,8 +371,8 @@ interface Rows {
   c0: number[];
   CF: Vec[];
   CF2: Vec[];
+  absC: Vec[];
   absCF: Vec[];
-  absCF2: Vec[];
   absCA: Vec[];
   absCb: number[];
   /** For each requested pair, the rows of its two outputs, or null where the interval lacks one. */
@@ -478,8 +487,8 @@ export function periodIntegrals(
     const CF = C.map((c) => rowTimes(c, F));
     const CF2 = CF.map((c) => rowTimes(c, F));
     const absF = F.map((row) => row.map(Math.abs));
-    const absCF = C.map((c) => rowTimes(c.map(Math.abs), absF));
-    const absCF2 = absCF.map((c) => rowTimes(c, absF));
+    const absC = C.map((c) => c.map(Math.abs));
+    const absCF = absC.map((c) => rowTimes(c, absF));
     const absCA = ks.map((k) => {
       const c = forms[name]![k]!;
       return iv.A[0] ? iv.A[0].map((_, j) => iv.A.reduce((acc, row, i) => acc + Math.abs(c[i]! * row[j]!), 0)) : [];
@@ -498,7 +507,7 @@ export function periodIntegrals(
       return qa >= 0 && qb >= 0 ? [qa, qb] : null;
     });
     const c0 = ks.map((k) => forms[name]![k]![n]!);
-    rows[name] = { xr, F, speed: modeSpeed(iv.A), out: ks.map((k) => index.get(k)!), C, c0, CF, CF2, absCF, absCF2, absCA, absCb, pairRows };
+    rows[name] = { xr, F, speed: modeSpeed(iv.A), out: ks.map((k) => index.get(k)!), C, c0, CF, CF2, absC, absCF, absCA, absCb, pairRows };
   }
   const lo = new Array<number>(N).fill(Infinity);
   const hi = new Array<number>(N).fill(-Infinity);
@@ -571,7 +580,7 @@ export function periodIntegrals(
       }
       quadSum[p]! += dotv(z0, mv(W, z0));
     }
-    // extremes inside the segment: the slope c·F z changes sign between two checkpoints, or dips through zero and back
+    // extremes inside the segment: the slope c·ż changes sign between two checkpoints, or dips through zero and back
     let cps = cpCache.get(key);
     if (!cps) {
       cps = checkpoints(F, r.speed, h);
@@ -588,30 +597,37 @@ export function periodIntegrals(
     }
     // the values at the checkpoints inside the segment are on the solution too
     for (let j = 1; j < nc; j++) see(r, zs[j]!);
-    const slopes: number[][] = zs.map((z) => mv(r.CF, z));
-    const rates: number[][] = zs.map((z) => mv(r.CF2, z));
-    // the terms of a product with the deviation: |c|·|F|^k |z|, which bounds the rounding of c·F^k z computed as
-    // (c·F^k)·z, the row's own rounding included
-    const terms = (row: Vec, z: Vec) => {
-      let sum = row[n]!;
-      for (let i = 0; i < n; i++) sum += row[i]! * Math.abs(z[i]!);
+    // the rate of change at the sample, A x0 + b summed in twice the precision, carried to the checkpoints by the same
+    // exponentials: a slope c·ż is then free of the cancellation that c·F z has between the deviation's large terms
+    // in a stiff circuit (the bus's 1/(R_s C_bus) times its deviation, against a slope of a few volts per second)
+    const x0 = s0.x;
+    const ivm = model.intervals[iv]!;
+    const zd0 = ivm.A.map((row, i) => rateAt(row, x0, ivm.b[i]!));
+    zd0.push(0);
+    const zds: Vec[] = [zd0];
+    for (let j = 0; j < nc; j++) zds.push(propagate(cps[j]!.E, zd0));
+    const slopes: number[][] = zds.map((zd) => mv(r.C, zd));
+    const rates: number[][] = zds.map((zd) => mv(r.CF, zd));
+    // the rounding of a row's product with the rate, |row|·(|ż| + |ż0|), the carried rate's own rounding included
+    const terms = (row: Vec, j: number) => {
+      const zd = zds[j]!;
+      let sum = 0;
+      for (let i = 0; i < n; i++) sum += row[i]! * (Math.abs(zd[i]!) + Math.abs(zd0[i]!));
       return sum;
     };
-    // the slope's rounding at a checkpoint. At the start, its terms at the sample's own state as well: a fast mode
-    // amplifies that state's rounding, which then decays or rings within the segment. Elsewhere, the terms of
-    // c·F z at the deviation, from which the slope is computed
-    const x0 = s0.x;
+    // the slope's rounding at a checkpoint. At the start, also the terms of c·(A x + b) at the sample's own state: a
+    // fast mode amplifies that state's rounding into a transient that decays or rings within the segment
     const level = (q: number, j: number) => {
-      const dev = terms(r.absCF[q]!, zs[j]!);
+      const dev = terms(r.absC[q]!, j);
       if (j > 0) return dev;
       const a = r.absCA[q]!;
       let sum = r.absCb[q]!;
       for (let i = 0; i < n; i++) sum += a[i]! * Math.abs(x0[i]!);
       return Math.max(dev, sum);
     };
-    // the rounding of a slope's rate, c·F² z, likewise: at the start, also its terms at the state itself
+    // the rounding of a slope's rate, c·F ż, likewise
     const rateLevel = (q: number, j: number) => {
-      const dev = terms(r.absCF2[q]!, zs[j]!);
+      const dev = terms(r.absCF[q]!, j);
       if (j > 0) return dev;
       const c = r.CF2[q]!;
       let sum = Math.abs(c[n]!);
@@ -622,9 +638,9 @@ export function periodIntegrals(
     const along = (q: number, j: number, len: number): Along => {
       if (opts.stats) opts.stats.searches++;
       // a stretch short against the dynamics: the Taylor series, shared by every output; else exponentials
-      if (r.speed * len <= 1 && taylor[j] === undefined) taylor[j] = taylorVectors(F, zs[j]!, len);
+      if (r.speed * len <= 1 && taylor[j] === undefined) taylor[j] = taylorVectors(F, zs[j]!, zds[j]!, len);
       const vs = r.speed * len <= 1 ? taylor[j] : null;
-      return vs ? taylorAlong(r.C[q]!, vs) : expAlong(F, r.C[q]!, zs[j]!);
+      return vs ? taylorAlong(r.C[q]!, vs) : expAlong(F, r.C[q]!, zs[j]!, zds[j]!);
     };
     const note = (out: number, y: number) => {
       if (y < lo[out]!) lo[out] = y;

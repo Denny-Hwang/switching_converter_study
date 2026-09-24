@@ -450,6 +450,20 @@ describe('a stiff input bus: the exponentials less the identity', () => {
     // the samples alone miss it by 2.3 µV
     expect(Math.max(...(r.waveforms.v_in as number[]))).toBeLessThan(100.0015014);
   });
+
+  it('a crest whose slope, summed from the deviation, kept two digits, is found from the rate of change', () => {
+    // a random circuit of the stiff sweep: a buck whose bus, R_s C_bus = 2.7e-16 s, crests between two samples.
+    // Computed as c·F z, the slope summed terms of 7e13 V/s (the bus's 1/(R_s C_bus) times its deviation from the
+    // interval's first sample) and came out in steps of 0.03 V/s, a few steps off near the crest, where the slope
+    // changes by 1.3e7 V/s²: the root landed 1e-8 s away and the crest 6.7e-10 V low. The crest of that segment
+    // from its start sample is 37.609368036266259574 V, by a 60-digit integration and by 80-digit eigenvectors
+    const p: SimParams = { topology: 'buck', Vg: 0, D: 0.541, fs: 3240, L: 4.1e-4, Ron: 0.0477, VF: 0.318, source: { Voc: 37.6, Rs: 0.0067, Cbus: 4e-14 }, load: { kind: 'resistive', R: 1160, C: 1.84e-6 } };
+    const r = simulate(p);
+    expect(r.status).toBe('steady');
+    expect(Math.abs(r.max.v_in! - 37.609368036266259574)).toBeLessThan(1e-12);
+    // the samples alone miss it by 28 nV
+    expect(Math.max(...(r.waveforms.v_in as number[]))).toBeLessThan(37.60936801);
+  });
 });
 
 describe('a diode current that flows for femtoseconds', () => {

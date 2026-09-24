@@ -232,8 +232,12 @@ periodic steady state.
   slope changes sign within a sub-step, and where the slope dips through
   zero and back within one (a ring riding on a steeper ramp). The slope is
   also checked close to the sub-step's start, where a fast transient
-  decays. The plots draw the samples, so a peak narrower than a sub-step
-  can be in the numbers but not in the plot.
+  decays. Each slope is the rate of change at the sample, summed in twice
+  the precision and carried along the sub-step like the states, so an
+  input bus behind a tiny source resistance and capacitance, whose slope
+  is what is left of terms many orders of magnitude larger, still has its
+  peak placed to rounding. The plots draw the samples, so a peak narrower
+  than a sub-step can be in the numbers but not in the plot.
 - **Rounding.** Within a period the simulator follows each state's
   deviation from its value at the start of the period. Its rounding errors
   then scale with how far the state moves, not with its size, so the change
