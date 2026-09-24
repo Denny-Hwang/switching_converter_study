@@ -1,6 +1,8 @@
 name: TEMPORARY - LTspice on the library's schematics (removed before the pull request merges)
 on:
-  workflow_dispatch:
+  push:
+    branches: [claude/blissful-einstein-r71bmd]
+    paths: ['.github/workflows/tmp-ltspice.yml']
 permissions:
   contents: read
 jobs:

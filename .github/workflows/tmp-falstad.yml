@@ -2,6 +2,7 @@ name: TEMPORARY - CircuitJS1's own converter examples and JS interface (removed 
 on:
   push:
     branches: [claude/blissful-einstein-r71bmd]
+    paths: ['.github/workflows/tmp-falstad.yml']
 permissions:
   contents: read
 jobs:
