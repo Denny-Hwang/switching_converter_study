@@ -259,7 +259,9 @@ describe('what the simulator says without a steady state', () => {
     // and the switch voltage, in its own words
     const outKoSwitch = { ...outKo, switchBelowZero: ko['sim.switchBelowZero'] } as SimLabels;
     const bbSwitchKo = ko['sim.switchBelowZero']!.replace('{v}', fmtValue(bb.switchBelowZero, 'V')).replace('{where}', ko['sim.outside.period']!).replace('{holds}', ko['sim.outside.results']!);
-    expect(bbSwitchKo).toMatch(/스위치 전압이 0 V보다 낮은 −[0-9.]+ m?V까지 내려갑니다\. 스위치의 바디 다이오드/);
+    // the whole message, placeholders filled: a misspelled one would stay in braces
+    expect(bbSwitchKo).toMatch(/^주기 안에서\(그려진 표본 사이의 해까지 포함해\) 스위치 전압이 0 V보다 낮은 −[0-9.]+ m?V까지 내려갑니다\. 스위치의 바디 다이오드\(모델에서는 이상적인 다이오드\)라면 여기서 도통하는데, 이 모델은 그것을 넣지 않으므로 이 결과는 성립하지 않을 수 있습니다\.$/);
+    expect(bbSwitchKo).not.toMatch(/[{}]/);
     expect(outsideModelText({ ...bb, diodes: undefined }, outKoSwitch)).toBe(bbSwitchKo);
     // an ordinary circuit: nothing
     expect(outsideModelText(sim.simulate({ topology: 'buck', Vg: 24, D: 0.3, fs, L: 2e-5, load: { kind: 'resistive', R: 50, C: 22e-6 } }), out)).toBeNull();

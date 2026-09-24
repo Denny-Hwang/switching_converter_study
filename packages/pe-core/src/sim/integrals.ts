@@ -21,9 +21,10 @@
  * the quadratic integral's doublings included, so that a matrix whose large
  * entries sit off its diagonal (a stiff bus's 1/C_bus behind a source
  * resistance that is not small) asks for no more squarings than its dynamics
- * need. For the steps that kept the slow states' digits (linalg.ts); the
- * quadratic integral came out as accurate either way in the tested circuits,
- * and balanced it takes fewer doublings.
+ * need. In the steps, balancing is what kept the slow states' digits (by the
+ * pivots of the Padé solve, linalg.ts); the quadratic integral came out as
+ * accurate either way in the tested circuits, and balanced it takes fewer
+ * doublings.
  *
  * In each interval z holds the deviation from the first state the period
  * visits in it, [x − x_r; 1]: an output whose constant part dwarfs what

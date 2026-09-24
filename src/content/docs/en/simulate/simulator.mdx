@@ -201,9 +201,10 @@ periodic steady state.
   which is exact, until each state's couplings to the others are of similar
   size in both directions (balancing <Cite key="parlett1969" />): a
   tiny bus capacitance behind a source resistance that is not small would
-  otherwise make the matrix far larger than its fastest mode. So a time
-  constant far shorter than a sub-step does not cost the slower states their
-  digits.
+  otherwise make the matrix far larger than its fastest mode, and the linear
+  solve inside the approximant would then pivot on those large couplings,
+  which costs the slower states their digits. So a time constant far shorter
+  than a sub-step does not cost them.
 - **Events** such as the diode current reaching zero or a clamp starting to
   conduct are located inside a sub-step on the same exact solution, by a
   search that keeps the event bracketed like bisection (regula falsi in its

@@ -153,11 +153,16 @@ export function expm(a: Mat): Mat {
  * 1/C_bus beside its 1/(R_s C_bus) behind a source resistance that is not
  * small, has a norm far above its eigenvalues. Scaling by powers of two
  * commutes exactly with the Padé products, with elimination in a fixed pivot
- * order and with the doublings, so what balancing changes is what the norm
- * decides: the number of squarings, and the pivots of the solve. That is
- * what the slow states' digits depended on: unbalanced, the full step of such
- * a bus (stepMatrices) came out 6.8e-5 off in its tested matrix; balanced, it
- * is exact to rounding.
+ * order and with the doublings, so balancing changes two things only: the
+ * number of squarings, which the norm decides, and the pivots of the Padé
+ * solve, which the columns' largest entries decide. The pivots are what cost
+ * the slow states their digits: unbalanced, partial pivoting took the bus's
+ * row (its 1/C_bus entry) as the pivot of the inductor's column, and the full
+ * step of such a bus (stepMatrices) came out 6.7e-5 off in Φ's large entries
+ * and 2.6e-2 in W b in its tested matrix. Given the balanced pivots, the
+ * unbalanced matrix gave the step exact to rounding despite its extra
+ * squarings; given the balanced number of squarings, with its own pivots, it
+ * did not. Balanced, the step is exact to rounding.
  */
 export function balancing(a: Mat): Vec | null {
   const m = a.length;

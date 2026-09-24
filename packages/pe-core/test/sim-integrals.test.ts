@@ -496,19 +496,23 @@ describe('a stiff input bus: the exponentials less the identity', () => {
 describe('a stiff bus behind a source resistance that is not small: balanced exponentials', () => {
   // the tenth review's circuit A#147, a flyback whose 1.36 aF bus sits behind 26.8 Ω. Beside the bus's own rate,
   // 1/(R_s C_bus), its coupling to the inductor, 1/C_bus, is R_s times larger: the on-interval's matrix is far larger
-  // than its fastest mode. Its exponential then took more squarings than the dynamics need, and their products cost
-  // the slow states their digits: the step came out 6.7e-5 off at 10 Ω and 2.1e-4 at 30 Ω, <v_out> 1.2e-3 off, and
+  // than its fastest mode. Unbalanced, the Padé solve's partial pivoting took the bus's row (its 1/C_bus entry) as the
+  // pivot of the inductor's column, and that cost the slow states their digits (the extra squarings the larger norm
+  // asked for only amplified it): the step came out 6.7e-5 off at 10 Ω and 2.1e-4 at 30 Ω, <v_out> 1.2e-3 off, and
   // two grids of sub-steps 1.3e-3 apart. Balanced by powers of two first, it keeps them
   const A147: SimParams = { topology: 'flyback', Vg: 0, D: 0.271, fs: 5750, L: 4.84e-4, Ron: 0.00115, RL: 0.00169, VF: 0.923, n: 6.86, source: { Voc: 217, Rs: 26.8, Cbus: 1.36e-18 }, load: { kind: 'resistive', R: 900, C: 8.55e-4 } };
 
   it('the step of the on-interval against a 90-digit exponential', () => {
-    // with R_s C_bus = 1e-18 s; the references are 90-digit exponentials of the same matrices. The engine's full
-    // sub-steps take stepMatrices (Φ and W, the input's integral, applied to b); the first and last sub-steps of an
-    // interval take affineStep. Unbalanced, stepMatrices put Φ[2][0] 6.8e-5 and 2.1e-4 off and W b 2.6e-2 and
-    // 2.0e-2 off on its first state, while affineStep, with the input inside its matrix, stayed within 2e-15
+    // with R_s C_bus = 1e-18 s; the references are exponentials of the same matrices (their exact doubles), to more
+    // than 90 digits and two ways: the block matrix's exponential, and the closed form by the two eigenvalues. The
+    // engine's full sub-steps take stepMatrices (Φ, and W, the input's integral, applied to A x_0 + b); its partial
+    // sub-steps and its steps to events take affineStep, or stepMatrices in a cycle that builds the Newton search's
+    // Jacobian. Unbalanced, stepMatrices put Φ[0][0] and Φ[2][0] 6.7e-5 and 2.1e-4 off, W's first column 3.4e-5 and
+    // 1.1e-4, and W b 2.6e-2 and 2.0e-2 on its first state, while affineStep, with the input inside its matrix,
+    // stayed within 2e-15
     for (const [Rs, ref] of [
-      [10, { phi00: 0.99820448128513775973, phi20: -9.9820448128515838965, phi02: 2.0624059530685090057e-15, phi22: -2.0624059530685516295e-14, g0: 0.038951693831462351474, g2: 216.61048306168985191 }],
-      [30, { phi00: 0.99462412472422471935, phi20: -29.838723741728590269, phi02: 2.0550085221576166201e-15, phi22: -6.1650255664732318208e-14, g0: 0.03888181701609696377, g2: 215.83354548953046093 }],
+      [10, { phi00: 0.99820448128513775973, phi20: -9.9820448128515838965, phi02: 2.0624059530685090057e-15, phi22: -2.0624059530685516295e-14, g0: 0.038951693831462351474, g2: 216.61048306168985191, w00: 8.6878432325550180042e-8, w20: -8.687843232455197556e-7 }],
+      [30, { phi00: 0.99462412472422471922, phi20: -29.838723741728591005, phi02: 2.0550085221576166774e-15, phi22: -6.1650255664732321455e-14, g0: 0.03888181701609696436, g2: 215.83354548953046419, w00: 8.6722578046114125347e-8, w20: -2.6016773413535850145e-6 }],
     ] as const) {
       const p: SimParams = { ...A147, source: { Voc: 217, Rs, Cbus: 1e-18 / Rs } };
       const model = buildModel(p);
@@ -528,11 +532,19 @@ describe('a stiff bus behind a source resistance that is not small: balanced exp
           [Phi[1]![1]!, 0.99999988699607949848],
           [Gamma[0]!, ref.g0],
           [Gamma[2]!, ref.g2],
-        ]) {
+        ] as [number, number][]) {
           expect(rel(got, want), `${kind}, R_s ${Rs}`).toBeLessThan(2e-14);
         }
         // the bus's own decay, e^{-h/(R_s C_bus)}, is long gone: what is left of it is kept to rounding against Φ's norm
         expect(Math.abs(Phi[2]![2]! - ref.phi22), kind).toBeLessThan(1e-15 * Math.abs(ref.phi20));
+      }
+      // W b checks only W's last column (b drives the bus alone); the engine applies W to A x_0 + b, every column
+      for (const [got, want] of [
+        [full.W[0]![0]!, ref.w00],
+        [full.W[2]![0]!, ref.w20],
+        [full.W[1]![1]!, 8.6956516825916410369e-8],
+      ] as [number, number][]) {
+        expect(rel(got, want), `W, R_s ${Rs}`).toBeLessThan(2e-14);
       }
     }
   });
@@ -554,8 +566,8 @@ describe('a diode current that flows for femtoseconds', () => {
     // diode's formula of the off interval, evaluated there, is -2.4 A, and taken from that state, <i_D^2> came out
     // -1.1e-28 A². The 60-digit references through the same samples: a current of 1e-17 A on average, which the
     // rounding of the steps decides (balancing them moved it by 13 %, every step still exact to 5e-14 of the
-    // states' scale). The references pin the samples: the test detects a change in them, not an error; recompute
-    // the references if the engine's samples change
+    // states' scale). The references pin the samples: a failure may be a change in the samples rather than an
+    // error; recompute the references if the engine's samples change
     const p: SimParams = { topology: 'flyback', Vg: 34.4, D: 0.723, fs: 274000, L: 1.18e-5, n: 0.998, Ron: 0.0085, VF: 0.751, Cnode: 4.5e-12, load: { kind: 'network', C: 3.92e-8, V0: 0 } };
     const r = simulate(p);
     const model = buildModel(p);
