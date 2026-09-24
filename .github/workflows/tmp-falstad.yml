@@ -22,7 +22,7 @@ jobs:
             code=$(curl -sSL -A "$UA" -o list.txt -w "%{http_code}" "$u"); echo "$code $u"; if [ "$code" = 200 ]; then cp list.txt setuplist.txt; fi
           done
           wc -l setuplist.txt || true
-          grep -n -i -E "buck|boost|flyback|forward|convert|smps|switched-mode|power supp" setuplist.txt | head -60 || true
+          grep -n -i -E "buck|boost|flyback|forward|convert|smps|switch|regul|step|dc-dc|chopper|induct|transformer|mosfet|pwm|supply" setuplist.txt | head -80 || true
       - run: npm ci
       - run: npx playwright install --with-deps chromium >/dev/null
       - name: CircuitJS1 in headless Chromium - its interface and the converter examples as it exports them
@@ -31,7 +31,7 @@ jobs:
           import { chromium } from 'playwright';
           import { readFileSync, existsSync } from 'node:fs';
           const list = existsSync('setuplist.txt') ? readFileSync('setuplist.txt', 'utf8') : '';
-          const files = [...new Set(list.split('\n').filter((l) => /buck|boost|flyback|forward|convert/i.test(l)).map((l) => l.trim().split(/\s+/)[0]).filter((f) => f.endsWith('.txt')))].slice(0, 8);
+          const files = [...new Set(list.split('\n').filter((l) => /buck|boost|flyback|forward|step-?down|step-?up|switching|smps|regulator|dc-dc|chopper|transformer/i.test(l)).map((l) => l.trim().split(/\s+/)[0]).filter((f) => f.endsWith('.txt')))].slice(0, 12);
           console.log('files:', files);
           const browser = await chromium.launch();
           const page = await browser.newPage();
