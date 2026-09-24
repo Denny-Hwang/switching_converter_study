@@ -276,9 +276,12 @@ def netlist(case: dict) -> str:
         "",
         f"* {cyc} periods from rest; the last one is measured",
         f".tran {{Ts/{STEPS}}} {{{cyc}*Ts}} 0 {{Ts/{STEPS}}} uic",
-        # Gear's integration, and a relative tolerance of 1e-4 (ngspice's default is 1e-3): with the
-        # default the diode's current can overshoot through zero within a step as its conduction
-        # ends in DCM, and the winding voltage jumps for that instant
+        # Gear's integration and a relative tolerance of 1e-4. With ngspice's defaults (the
+        # trapezoidal rule, 1e-3), the DCM flyback's secondary current rings through zero from step
+        # to step once the diode stops conducting, and the drain swings to about -1 kV; with Gear's
+        # method at 1e-3, the diode's current still overshoots through zero as its conduction ends,
+        # and the drain dips to about -28 V for that instant. LTspice 26.1.1 at its defaults dips
+        # to about -29 V; the schematics carry the same line (directives()).
         ".options method=gear reltol=1e-4",
     ]
     for name, (vec, _lt, _unit, _label) in quantities(case, p).items():
@@ -914,7 +917,7 @@ def readme(topology: str, tool: str, results: dict) -> str:
                 out += [
                     f"{head}실행",
                     "",
-                    "LTspice에서 파일을 열고 Run을 누릅니다. `.param`, `.model`, `.tran` 줄이 회로도에 있습니다. "
+                    "LTspice에서 파일을 열고 Run을 누릅니다. `.param`, `.model`, `.tran`, `.options` 줄이 회로도에 있습니다. "
                     "정지 상태에서 시작해 수백 주기를 계산하므로, 마지막 주기들이 정상상태(steady state)입니다. "
                     "노드를 누르면 전압을, 부품을 누르면 전류를 그립니다. 노드 이름은 ngspice 넷리스트와 같습니다.",
                 ]
@@ -922,7 +925,7 @@ def readme(topology: str, tool: str, results: dict) -> str:
                 out += [
                     f"{head}Run",
                     "",
-                    "Open the file in LTspice and press Run: the schematic carries its `.param`, `.model` and `.tran` lines. "
+                    "Open the file in LTspice and press Run: the schematic carries its `.param`, `.model`, `.tran` and `.options` lines. "
                     "The run starts from rest and lasts several hundred periods, so the last ones are the steady state. "
                     "Click a node for its voltage and a part for its current; the node names are the ngspice netlist's.",
                 ]
@@ -972,9 +975,16 @@ def readme(topology: str, tool: str, results: dict) -> str:
                 "`scripts/sim_library.py --check`가 CI에서 이를 확인합니다.",
                 "- 변압기는 결합 계수 1인 결합 인덕터입니다. 1차 인덕턴스가 자화 인덕턴스(1차 기준)이고, 권선비는 1:n, n = N_s/N_p입니다. "
                 "SPICE는 각 인덕터의 첫 노드를 점(dot)으로 봅니다. LTspice는 모든 권선에서 점을 다른 끝에 그리므로, 상대 극성은 같습니다.",
+                "- `.options` 줄은 기어(Gear) 적분법과 상대 허용오차(relative tolerance) 1e-4를 지정합니다. 이 줄이 없으면 기본 설정의 "
+                "ngspice 42와 LTspice 26.1.1 모두 DCM 플라이백의 드레인 전압에, 회로에는 없는, 0보다 훨씬 낮은 스파이크를 그립니다.",
             ]
             if tool == "ltspice":
                 out.append("- LTspice는 결합되지 않은 인덕터에 1 mΩ 직렬 저항을 기본으로 넣습니다(도움말의 Inductor Models). 결과에 주는 영향은 0.1 %보다 작습니다.")
+                out.append(
+                    "- LTspice는 다이오드의 방출 계수(emission coefficient) N = 0.05가 너무 작아 수치 문제가 생길 수 있다고 경고합니다. "
+                    "1 A에서 약 30 mV가 떨어지게 하는 것이 이 N입니다. wine에서 LTspice 26.1.1로 한 번 확인했습니다. "
+                    "이 회로도에서 LTspice가 만든 넷리스트는 `.cir`와 부품이 같고, 결과는 각 양의 최대 크기 대비 0.3 % 안에서 ngspice와 맞습니다."
+                )
             if topology == "forward":
                 out.append(
                     "- 스위치 양단의 1 pF(Cd)는 계산을 위한 것입니다. 세 권선이 계수 1로 결합되면, 턴오프 때 전류가 1차에서 리셋 권선으로 옮겨 갈 수 있도록 "
@@ -990,9 +1000,16 @@ def readme(topology: str, tool: str, results: dict) -> str:
                 "- A transformer is coupled inductors with a coupling of 1: the primary's inductance is the magnetizing inductance (referred to the primary), "
                 "the turns ratio 1:n with n = N_s/N_p. SPICE takes each inductor's first node as its dotted end; LTspice draws the dot at the other end of every winding, "
                 "so the relative polarity is the same.",
+                "- The `.options` line asks for Gear's integration and a relative tolerance of 1e-4. Without it, at their default settings, "
+                "ngspice 42 and LTspice 26.1.1 both draw spikes far below zero on the DCM flyback's drain voltage, which the circuit does not have.",
             ]
             if tool == "ltspice":
                 out.append("- LTspice puts 1 mΩ in series with an inductor that is not coupled (its help, Inductor Models): less than 0.1 % on these results.")
+                out.append(
+                    "- LTspice warns that the diodes' emission coefficient, N = 0.05, is too small and might lead to numerical problems. "
+                    "That N is what makes the drop about 30 mV at an ampere. Checked once with LTspice 26.1.1 under wine: the netlists it writes "
+                    "from these schematics have the `.cir`'s parts, and its results agree with ngspice's within 0.3 % of each quantity's largest magnitude."
+                )
             if topology == "forward":
                 out.append(
                     "- The 1 pF across the switch (Cd) is for the solver: with three windings coupled with 1, SPICE needs a capacitance at the drain "
@@ -1005,10 +1022,12 @@ def readme(topology: str, tool: str, results: dict) -> str:
 
 
 def sim_readme() -> str:
-    rows = []
+    rows, rows_ko = [], []
     for c in CASES:
         t = c["topology"]
-        rows.append(f"| {title(c)} | [{c['id']}.asc](ltspice/{t}/{c['id']}.asc) | [{c['id']}.cir](ngspice/{t}/{c['id']}.cir) | [svg](waveforms/{c['id']}.svg) |")
+        files = f"[{c['id']}.asc](ltspice/{t}/{c['id']}.asc) | [{c['id']}.cir](ngspice/{t}/{c['id']}.cir) | [svg](waveforms/{c['id']}.svg)"
+        rows.append(f"| {title(c)} | {files} |")
+        rows_ko.append(f"| {TITLES[t][1]}, {'CCM' if c['id'].endswith('-ccm') else 'DCM'} | {files} |")
     return "\n".join(
         [
             "# SPICE library",
@@ -1026,14 +1045,24 @@ def sim_readme() -> str:
             "CI reads each schematic back into a netlist and compares them part by part, reruns ngspice and compares its numbers with "
             "`results.json` and with the ideal equations of `packages/pe-core/equations/equations.yaml` (within 1 %), and redraws the waveforms.",
             "",
+            "LTspice itself does not run in CI. It ran once, LTspice 26.1.1 under wine: the netlist it writes from each schematic has the "
+            "`.cir`'s parts, and its results agree with ngspice's within 0.3 % of each quantity's largest magnitude.",
+            "",
             "## 한국어",
             "",
             "토폴로지 페이지의 다섯 컨버터를 LTspice 회로도와 ngspice 넷리스트로 제공합니다. 값은 브라우저 "
             f"[시뮬레이터]({SITE}/ko/simulate/simulator/)가 여는 합성 예제의 값입니다. 각 폴더의 README에 무엇을 그리고 무엇을 기대할지 적혀 있습니다.",
             "",
+            "| 컨버터 | LTspice | ngspice | 파형 |",
+            "| --- | --- | --- | --- |",
+            *rows_ko,
+            "",
             "모든 파일은 `scripts/sim_library.py`가 하나의 부품 목록에서 만듭니다. 그래서 회로도와 넷리스트는 같은 회로입니다. "
             "CI는 각 회로도를 넷리스트로 다시 읽어 부품별로 비교하고, ngspice를 다시 돌려 `results.json`과 "
             "`packages/pe-core/equations/equations.yaml`의 이상적인 식(1 % 이내)과 비교하며, 파형을 다시 그립니다.",
+            "",
+            "LTspice 자체는 CI에서 돌리지 않습니다. wine에서 LTspice 26.1.1로 한 번 돌렸습니다. 각 회로도에서 LTspice가 만든 넷리스트는 "
+            "`.cir`와 부품이 같고, 결과는 각 양의 최대 크기 대비 0.3 % 안에서 ngspice와 맞습니다.",
             "",
         ]
     )
