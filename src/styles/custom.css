@@ -554,6 +554,85 @@ html:lang(ko) body {
   font-weight: 600;
 }
 
+/* ---- simulator: operating modes (SequenceView) ---------------------------- */
+.pe-seq {
+  margin-top: 1rem;
+}
+/* the period's modes, each as wide as it lasts (with a minimum) */
+.pe-seq__strip {
+  display: flex;
+  gap: 0.25rem;
+  margin: 0.5rem 0;
+}
+.pe-seq__mode {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.25rem;
+  min-height: 3.25rem;
+  margin: 0;
+  padding: 0.3rem 0.25rem;
+  border: 1px solid var(--sl-color-gray-4);
+  border-radius: 0.4rem;
+  background: var(--sl-color-gray-7, transparent);
+  color: var(--sl-color-text);
+  font: inherit;
+  font-size: var(--sl-text-xs);
+  line-height: 1.25;
+  text-align: center;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.pe-seq__mode strong {
+  font-size: var(--sl-text-sm);
+}
+.pe-seq__mode:hover {
+  border-color: var(--sl-color-accent);
+}
+.pe-seq__mode[aria-pressed='true'] {
+  background: var(--sl-color-accent);
+  border-color: var(--sl-color-accent);
+  color: var(--sl-color-black);
+}
+.pe-seq__mode:focus-visible {
+  outline: 2px solid var(--sl-color-accent-high);
+  outline-offset: 2px;
+}
+.pe-seq__dt {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+/* the circuit and what happens in the mode: side by side in a wide tool */
+.pe-seq__body {
+  display: grid;
+  gap: 0.5rem 1.25rem;
+  align-items: start;
+}
+@container pe-tool (min-width: 52rem) {
+  .pe-seq__body {
+    grid-template-columns: minmax(0, 3fr) minmax(14rem, 2fr);
+  }
+}
+.pe-seq__circuit {
+  min-width: 0;
+  overflow-x: auto;
+}
+.pe-seq__svg {
+  display: block;
+  height: auto;
+}
+.pe-seq__text h4 {
+  margin: 0.25rem 0;
+  color: var(--sl-color-white);
+  font-size: var(--sl-text-base);
+}
+.pe-seq__table tr.pe-seq__idle {
+  color: var(--sl-color-gray-3);
+}
+
 /* ---- converter designer --------------------------------------------------- */
 .pe-design__warnings {
   margin: 0.5rem 0;

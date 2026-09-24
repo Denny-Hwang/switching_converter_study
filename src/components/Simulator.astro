@@ -10,6 +10,7 @@ import { toolSymbols } from '../i18n/symbols';
 import { ui } from '../i18n/ui';
 import { pageLocale } from '../lib/locale';
 import { PRESETS, presetValues } from '../lib/simpresets';
+import { SEQ_TEXT } from '../i18n/sequence';
 
 const locale = pageLocale(Astro);
 const t = ui[locale];
@@ -96,5 +97,5 @@ const presets = PRESETS.map((p) => ({
 ---
 
 <div class="pe-wide">
-  <SimulatorIsland client:only="react" locale={locale} labels={labels} presets={presets} symbols={toolSymbols(locale)} />
+  <SimulatorIsland client:only="react" locale={locale} labels={labels} presets={presets} symbols={toolSymbols(locale)} seqText={SEQ_TEXT[locale]} />
 </div>

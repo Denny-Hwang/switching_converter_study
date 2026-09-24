@@ -14,6 +14,7 @@ import { PLOT_CONFIG, axis, baseLayout, coloredTitle, sub, usePlotTheme } from '
 import { useStateHash } from '../lib/useStateHash';
 import { LOADS, loadChoiceOf, type LoadChoice } from '../lib/simload';
 import type { SimReply } from './simulator.worker';
+import SequenceView, { type SeqText } from './SequenceView';
 import { Choices, FieldLabel, Rich, Sym } from './ToolUi';
 
 type Topology = sim.Topology;
@@ -109,6 +110,8 @@ interface Props {
   presets: SimPreset[];
   /** What each symbol means (i18n/symbols.ts). */
   symbols: Record<string, string>;
+  /** The operating-mode view's text (i18n/sequence.ts). */
+  seqText: SeqText;
 }
 
 const TOPOLOGIES: Topology[] = ['buck', 'boost', 'buckboost', 'flyback', 'forward'];
@@ -619,7 +622,7 @@ function useSimRunner(): {
   return useMemo(() => ({ run, cancel }), [run, cancel]);
 }
 
-export default function Simulator({ labels, presets, symbols }: Props) {
+export default function Simulator({ labels, presets, symbols, seqText }: Props) {
   const init = useMemo(() => initialState(presets), [presets]);
   const [fstate, setFstate] = useState<FieldState>(init.fs);
   const [values, setValues] = useState<Record<string, string>>(init.values);
@@ -631,6 +634,10 @@ export default function Simulator({ labels, presets, symbols }: Props) {
   const plotRef = useRef<HTMLDivElement>(null);
   const runner = useSimRunner();
   const theme = usePlotTheme();
+  // the operating modes of a steady period, and the one shown (kept while the parameters change)
+  const [modeSel, setModeSel] = useState(0);
+  const modes = useMemo(() => (result?.converged ? sim.modes(result) : []), [result]);
+  const sel = Math.min(modeSel, Math.max(modes.length - 1, 0));
 
   const params = useMemo(() => toParams(fstate, values), [fstate, values]);
 
@@ -736,6 +743,53 @@ export default function Simulator({ labels, presets, symbols }: Props) {
     if (battery) traces.push(trace(w.i_bat, 'i_b', cBat!, 'y', 'A', 'dashdot'));
     const rows = src ? 5 : 4;
     const yTitle = (name: string, color: string) => coloredTitle([{ name, color }], 'V');
+    // the operating modes: the selected one shaded, the boundaries dotted, each labelled where it has room
+    const f = ms ? 1e3 : 1e6;
+    const Ts = 1 / result.params.fs;
+    const m = modes[sel];
+    const shapes: Record<string, unknown>[] = [];
+    const annotations: Record<string, unknown>[] = [];
+    if (m) {
+      shapes.push({
+        type: 'rect',
+        xref: 'x',
+        yref: 'paper',
+        x0: m.t0 * f,
+        x1: m.t1 * f,
+        y0: 0,
+        y1: 1,
+        fillcolor: theme.muted,
+        opacity: 0.16,
+        line: { width: 0 },
+        layer: 'below',
+      });
+      for (const b of modes.slice(1)) {
+        shapes.push({
+          type: 'line',
+          xref: 'x',
+          yref: 'paper',
+          x0: b.t0 * f,
+          x1: b.t0 * f,
+          y0: 0,
+          y1: 1,
+          line: { color: theme.line, width: 1, dash: 'dot' },
+          layer: 'below',
+        });
+      }
+      for (const b of modes) {
+        if ((b.t1 - b.t0) / Ts < 0.04 && b !== m) continue;
+        annotations.push({
+          xref: 'x',
+          yref: 'paper',
+          x: ((b.t0 + b.t1) / 2) * f,
+          y: 1,
+          yanchor: 'bottom',
+          showarrow: false,
+          text: fill(seqText.modeShort!, { k: String(b.index) }),
+          font: { size: 11, color: b === m ? theme.text : theme.muted },
+        });
+      }
+    }
     import('plotly.js-dist-min').then((mod) => {
       if (cancelled) return;
       const Plotly = mod.default ?? mod;
@@ -767,14 +821,31 @@ export default function Simulator({ labels, presets, symbols }: Props) {
           yaxis3: axis(theme, yTitle('v_DS', cS!)),
           yaxis4: axis(theme, yTitle('v_out', cO!)),
           ...(src ? { yaxis5: axis(theme, yTitle('v_bus', cB!)) } : {}),
+          shapes,
+          annotations,
+          ...(annotations.length ? { margin: { t: 26, r: 12, b: 12, l: 12, pad: 0 } } : {}),
         },
         PLOT_CONFIG,
       );
+      // a click on the charts picks the mode at that instant
+      const gd = el as HTMLDivElement & {
+        on?: (ev: string, fn: (e: { points?: { x?: number }[] }) => void) => void;
+        removeAllListeners?: (ev: string) => void;
+      };
+      gd.removeAllListeners?.('plotly_click');
+      if (modes.length) {
+        gd.on?.('plotly_click', (e) => {
+          const x = e.points?.[0]?.x;
+          if (typeof x !== 'number') return;
+          const j = modes.findIndex((b) => x / f >= b.t0 && x / f <= b.t1);
+          if (j >= 0) setModeSel(j);
+        });
+      }
     });
     return () => {
       cancelled = true;
     };
-  }, [result, labels, theme]);
+  }, [result, labels, theme, modes, sel, seqText]);
 
   function applyPreset(p: SimPreset) {
     const next: Record<string, string> = {};
@@ -952,6 +1023,7 @@ export default function Simulator({ labels, presets, symbols }: Props) {
           {result && <p className="pe-tool__hint">{labels.plotHint}</p>}
         </div>
       </div>
+      {result?.converged && modes.length > 0 && <SequenceView result={result} modes={modes} text={seqText} selected={sel} onSelect={setModeSel} theme={theme} />}
       {result?.converged && (
         <>
           <h3>{labels.status}</h3>
