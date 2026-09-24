@@ -16,7 +16,7 @@ import { evaluate } from '../equations';
 import { invert } from '../invert';
 import { runCycle, steadyState, type CycleRun, type Model, type SteadyOptions, type SteadyResult } from './engine';
 import { eigenvalues, type Vec } from './linalg';
-import { periodIntegrals } from './integrals';
+import { checkRange, periodIntegrals } from './integrals';
 import { buildModel, givenVoltage, type SimParams } from './models';
 
 export type Mode = 'CCM' | 'DCM' | 'BCM';
@@ -277,8 +277,14 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
   const pp: Record<string, number> = {};
   for (const k of Object.keys(ex.lin)) {
     avg[k] = ex.lin[k]! / Ts;
+    // the extremes between the samples, and the samples themselves as the model evaluates them (the integrals
+    // evaluate them from the deviation, which can round the other way)
     min[k] = ex.min[k]!;
     max[k] = ex.max[k]!;
+    for (const v of (wf[k] as number[] | undefined) ?? []) {
+      if (v < min[k]!) min[k] = v;
+      if (v > max[k]!) max[k] = v;
+    }
     pp[k] = max[k]! - min[k]!;
   }
   const meanSquare: Record<string, number> = {};
@@ -302,7 +308,7 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
   const conduction = (p.Ron ?? 0) * meanSquare.i_sw! + (p.RL ?? 0) * meanSquare.i_L!;
   const diode = (p.VF ?? 0) * avg.i_D!;
   const capacitive = ss.run.edgeLoss / Ts;
-  const outside = outsideModel(p, model, wf, false, ex);
+  const outside = outsideModel(p, model, wf, false, { min, max });
   return {
     params: p,
     stateNames: model.stateNames,
@@ -360,15 +366,18 @@ function outsideModel(
   // the cycle (from 1) a sample belongs to: a cycle's end sample, at k T_s, is its own
   const cycle = (k: number) => Math.max(1, Math.ceil(t[k]! / model.Ts - 1e-9));
   const out: Pick<SimResult, 'switchBelowZero' | 'diodes' | 'switchFrom'> = {};
+  // the switch's body diode, ideal in the models, forward-biased beyond a ten-thousandth of the circuit's largest
+  // voltage, as the diodes below are beyond their drop
+  const floor = -1e-4 * V;
   const vsw = w.v_sw as number[];
   let lo = Infinity;
   let first = -1;
   for (let k = 0; k < vsw.length; k++) {
-    if (vsw[k]! < -1e-9 * V && first < 0) first = k;
+    if (vsw[k]! < floor && first < 0) first = k;
     lo = Math.min(lo, vsw[k]!);
   }
   if (ex && ex.min.v_sw! < lo) lo = ex.min.v_sw!;
-  if (first >= 0 || lo < -1e-9 * V) {
+  if (first >= 0 || lo < floor) {
     out.switchBelowZero = lo;
     if (startUp) out.switchFrom = cycle(first);
   }
@@ -737,6 +746,8 @@ function capacitorAlone(p: SimParams, model: Model, opts: SteadyOptions, steps: 
  */
 export function simulate(p: SimParams, opts: SteadyOptions = {}): SimResult {
   const model = buildModel(p);
+  // parameters whose equations overflow are refused before the search, not after it
+  checkRange(model);
   const steps = opts.stepsPerPeriod ?? stepsFor(p);
   if (unboundedCharging(p)) return withStartUp(p, model, 'charging');
   const ss = chargingLoad(p)

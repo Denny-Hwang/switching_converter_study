@@ -226,7 +226,7 @@ describe('what the simulator says without a steady state', () => {
     expect(buck.diodes![0]!.v).toBeGreaterThan(8.28);
     expect(buck.diodes![0]!.v).toBeLessThan(8.29);
     expect(outsideModelText(buck, out)).toBe(
-      t['sim.diodeForward']!.replace('{diode}', 'the diode D').replace('{v}', '8.288 V').replace('{vf}', '500 mV').replace('{where}', 'within the period').replace('{holds}', 'so these results may not hold'),
+      t['sim.diodeForward']!.replace('{diode}', 'the diode D').replace('{v}', '8.288 V').replace('{vf}', '500 mV').replace('{where}', 'within the period (counting the solution between the drawn samples)').replace('{holds}', 'so these results may not hold'),
     );
     // a buck-boost on a weak source: both, the diode first
     const bb = sim.simulate({ topology: 'buckboost', Vg: 24, D: 0.6, fs, L: 1e-4, Ron: 0.05, source: { Voc: 24, Rs: 20, Cbus: 1e-7 }, load: { kind: 'resistive', R: 5, C: 1e-5 } });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildModel, linearIntegral, periodIntegrals, quadraticIntegral, runCycle, simulate, stepsFor, type CycleRun, type Model, type SimParams, type Topology } from '../src/sim';
+import { buildModel, checkRange, linearIntegral, periodIntegrals, quadraticIntegral, runCycle, simulate, stepsFor, type CycleRun, type Model, type SimParams, type Topology } from '../src/sim';
 
 const rel = (a: number, b: number) => Math.abs(a - b) / Math.abs(b);
 
@@ -365,23 +365,24 @@ describe('exact period integrals of the simulator', () => {
 });
 
 describe("a battery's current whose constant part dwarfs it", () => {
-  // i_b = (v - V_b)/R_b with V_b/R_b about 1e8 times its rms value. Integrated from the deviation of the states, it
-  // keeps its digits (the eighth review: summed from its large terms, <i_b^2> came out 7.3 times too high, 51 times
-  // too high, or negative). The references are 60-digit integrations through the same samples, the battery's
-  // current built exactly from its parameters; recompute them if the engine's samples change
+  // i_b = (v - V_b)/R_b with V_b/R_b about 1e8 times its rms value. Integrated from the deviation of the states, with
+  // the rate of change at the reference state summed in twice the precision, it keeps its digits (the eighth review:
+  // summed from its large terms, <i_b^2> came out 7.3 times too high, 51 times too high, or negative; the ninth: the
+  // rate summed plainly left 5e-10). The references are 60-digit integrations of the model's own equations (its
+  // coefficients as the doubles they are) through the same samples, the battery's current built exactly from its
+  // parameters; recompute them if the engine's samples change
   const T1: SimParams = { topology: 'boost', Vg: 48, D: 0.1, fs: 1e5, L: 1e-3, Ron: 0.05, RL: 0.05, VF: 0.7, load: { kind: 'network', C: 1e-5, battery: { V: 400, R: 1e-3 } } };
 
   it('a boost charging a 400 V battery behind 1 mΩ lightly, and a flyback at D = 0.02', () => {
     const a = simulate(T1);
     expect(a.status).toBe('steady');
-    expect(rel(a.meanSquare.i_bat!, 9.310875553962e-6)).toBeLessThan(1e-8);
-    // the model's own V_b/(R_b C), rounded, sets <i_b> to about eps V_b / R_b
-    expect(rel(a.avg.i_bat!, 3.26589011422e-4)).toBeLessThan(1e-6);
+    expect(rel(a.meanSquare.i_bat!, 9.310875559980458e-6)).toBeLessThan(1e-12);
+    expect(rel(a.avg.i_bat!, 3.2658902064834465e-4)).toBeLessThan(1e-12);
     const fly: SimParams = { topology: 'flyback', Vg: 48, D: 0.02, fs: 1e5, L: 1e-3, n: 10, Ron: 0.05, VF: 0.5, load: { kind: 'network', C: 1e-4, battery: { V: 400, R: 0.05 } } };
     const b = simulate(fly);
     expect(b.status).toBe('steady');
-    expect(rel(b.meanSquare.i_bat!, 1.721448937579e-10)).toBeLessThan(1e-8);
-    expect(rel(b.avg.i_bat!, 1.150550249108e-5)).toBeLessThan(1e-8);
+    expect(rel(b.meanSquare.i_bat!, 1.7214489375789962e-10)).toBeLessThan(1e-12);
+    expect(rel(b.avg.i_bat!, 1.1505502491084284e-5)).toBeLessThan(1e-12);
   });
 
   it('a forward converter whose battery holds its rectifier off: no current, and no negative mean square', () => {
@@ -404,7 +405,96 @@ describe("a battery's current whose constant part dwarfs it", () => {
   });
 });
 
+describe('a stiff input bus: the exponentials less the identity', () => {
+  // the ninth review's circuits: a 1 mΩ source behind 1 pF, and behind 1 fF, R_s C_bus of 1e-15 s and of 1e-18 s
+  // against a sub-step of 5e-7 s. Squared as e^{A τ}, the exponentials carried a slow mode's small change as 1 plus
+  // a small number and multiplied its rounding by 2^s: the integrals came out up to 5e-5 off, and the steps moved
+  // the results by up to 1e-3 between two grids. The references are 60-digit integrations through the same samples
+  const B: SimParams = { topology: 'flyback', Vg: 0, D: 0.4, fs: 1000, L: 1e-3, n: 1, Ron: 0.05, VF: 0.5, source: { Voc: 400, Rs: 1e-3, Cbus: 1e-12 }, load: { kind: 'resistive', R: 100, C: 1e-4 } };
+  const B18: SimParams = { ...B, source: { Voc: 400, Rs: 1e-3, Cbus: 1e-15 } };
+  const C: SimParams = { topology: 'boost', Vg: 0, D: 0.5, fs: 1000, L: 1e-3, Ron: 0.05, RL: 0.05, VF: 0.5, source: { Voc: 400, Rs: 1e-3, Cbus: 1e-12 }, load: { kind: 'resistive', R: 100, C: 1e-4 } };
+
+  it('the integrals agree with a 60-digit integration through the same samples', () => {
+    for (const [p, ref] of [
+      [B, { i_sw: 3361.602905260443, i_L: 4553.773166534377, i_D: 1192.1702612739339, v_out: 1119.290933580093 }],
+      [B18, { i_sw: 3361.602905260449, i_L: 4553.773166534387, i_D: 1192.1702612739384, v_out: 1119.2909335800944 }],
+      [C, { i_sw: 6420.011506816528, i_L: 8507.990961927495, i_D: 2087.9794551109676, v_out: 1588.8374972959648 }],
+    ] as [SimParams, Record<string, number>][]) {
+      const r = simulate(p);
+      expect(r.status).toBe('steady');
+      for (const k of ['i_sw', 'i_L', 'i_D']) expect(rel(r.meanSquare[k]!, ref[k]!), `${p.topology} ${k}`).toBeLessThan(1e-12);
+      expect(rel(r.avg.v_out!, ref.v_out!)).toBeLessThan(1e-12);
+    }
+  });
+
+  it('a bus a thousand times stiffer changes nothing, and neither do the sub-steps', () => {
+    const a = simulate(B);
+    const b = simulate(B18);
+    for (const k of ['i_sw', 'i_L', 'i_D']) expect(rel(b.meanSquare[k]!, a.meanSquare[k]!), k).toBeLessThan(1e-12);
+    const model = buildModel(B18);
+    const n = stepsFor(B18);
+    const pairs: [string, string][] = [['i_L', 'i_L']];
+    const u = periodIntegrals(model, runCycle(model, b.x0, { stepsPerPeriod: n, record: true }), pairs);
+    const w = periodIntegrals(model, runCycle(model, b.x0, { stepsPerPeriod: 3 * n + 7, record: true }), pairs);
+    expect(rel(u.quad['i_L*i_L']!, w.quad['i_L*i_L']!)).toBeLessThan(1e-12);
+    expect(rel(u.lin.v_out!, w.lin.v_out!)).toBeLessThan(1e-12);
+  });
+
+  it("a crest of the bus between two samples, whose slopes the old rounding rule dismissed, is found", () => {
+    // v_in turns inside a sub-step, between checkpoints at h/4 and h/2, with slopes of about 100 V/s against the
+    // 2e17 V/s of the bus's terms; the 60-digit crest of that segment from its start sample is 100.00150370464143 V
+    const p: SimParams = { topology: 'flyback', Vg: 0, D: 0.3, fs: 10000, L: 1e-4, n: 1, Ron: 0.05, VF: 0.5, Cnode: 1e-9, source: { Voc: 100, Rs: 1e-3, Cbus: 1e-12 }, load: { kind: 'resistive', R: 500, C: 1e-5 } };
+    const r = simulate(p);
+    expect(r.status).toBe('steady');
+    expect(Math.abs(r.max.v_in! - 100.00150370464143)).toBeLessThan(1e-12);
+    // the samples alone miss it by 2.3 µV
+    expect(Math.max(...(r.waveforms.v_in as number[]))).toBeLessThan(100.0015014);
+  });
+});
+
+describe('a diode current that flows for femtoseconds', () => {
+  it('keeps its mean square: from a reference in its own interval, not one whose formula makes it -2.4 A', () => {
+    // the ninth review's circuit: the period starts in the reverse interval with the inductor at -2.4 A; the
+    // diode's formula of the off interval, evaluated there, is -2.4 A, and taken from that state, <i_D^2> came out
+    // -1.1e-28 A². The 60-digit references through the same samples
+    const p: SimParams = { topology: 'flyback', Vg: 34.4, D: 0.723, fs: 274000, L: 1.18e-5, n: 0.998, Ron: 0.0085, VF: 0.751, Cnode: 4.5e-12, load: { kind: 'network', C: 3.92e-8, V0: 0 } };
+    const r = simulate(p);
+    const model = buildModel(p);
+    const run = runCycle(model, r.x0, { stepsPerPeriod: stepsFor(p), record: true });
+    const ex = periodIntegrals(model, run, [['i_D', 'i_D'], ['v_out', 'i_out']]);
+    expect(ex.quad['i_D*i_D']!).toBeGreaterThan(0);
+    expect(rel(ex.quad['i_D*i_D']! * p.fs, 8.569997407903061e-24)).toBeLessThan(1e-9);
+    expect(rel(ex.quad['v_out*i_out']! * p.fs, 2.687218888048309e-13)).toBeLessThan(1e-9);
+    expect(rel(ex.lin.i_D! * p.fs, 3.146720628202002e-17)).toBeLessThan(1e-9);
+  });
+});
+
+describe('slopes within their own rounding', () => {
+  it('start no root searches', () => {
+    // the eighth review's circuits whose samples' rounding, amplified by a fast mode, turns the slopes at every
+    // sub-step's start: searched, they cost 8092 and 1263 root searches; dismissed as rounding, none and 6
+    for (const p of [
+      { topology: 'forward', Vg: 25.7, D: 0.513, fs: 24100, L: 2.7e-5, n: 0.588, nr: 0.642, LM: 3.97e-4, Ron: 0.136, RL: 0.00781, VF: 0.632, load: { kind: 'network', C: 1.06e-9, R: 65.4, battery: { V: 317, R: 0.0428 } } },
+      { topology: 'boost', Vg: 73.6, D: 0.12, fs: 112000, L: 2.31e-4, Ron: 0.578, RL: 0.00319, VF: 0.972, load: { kind: 'network', C: 3.98e-10, R: 42, battery: { V: 66.2, R: 0.00438 } } },
+    ] as SimParams[]) {
+      const r = simulate(p);
+      expect(r.status).toBe('steady');
+      const model = buildModel(p);
+      const stats = { searches: 0 };
+      periodIntegrals(model, runCycle(model, r.x0, { stepsPerPeriod: stepsFor(p), record: true }), [], { stats });
+      expect(stats.searches, p.topology).toBeLessThan(40);
+    }
+  });
+});
+
 describe('parameters whose equations overflow', () => {
+  it('are refused before the search, not after it', () => {
+    // a switch of 1e300 ohm: its slopes' rates overflow. Refused after the search, it took 17 s
+    const p: SimParams = { topology: 'boost', Vg: 12, D: 0.5, fs: 1e5, L: 1e-4, Ron: 1e300, load: { kind: 'resistive', R: 10, C: 1e-4 } };
+    expect(() => checkRange(buildModel(p))).toThrow(/out of range/);
+    expect(() => simulate(p)).toThrow(/out of range/);
+  });
+
   it('are refused, not integrated for ever', () => {
     for (const p of [
       // a battery of 1e150 V behind 1e-150 ohm: its current's coefficients square to infinity

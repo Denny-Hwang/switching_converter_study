@@ -6,5 +6,5 @@ export { buildModel } from './models';
 export type { Battery, Load, SimParams, Source, Topology } from './models';
 export { analyse, analyticM, analyticRipplePP, balanceDuty, chargingLoad, diagnose, FOLLOW, followStartUp, initialState, loadResistance, resetLimit, restState, ringsPerPeriod, simulate, startUp, STARTUP, stepsFor, STEPS_PER_RING, unboundedCharging, waveforms } from './analysis';
 export type { DiodeFlag, Drift, Mode, SimResult, StartUp, Status, Waveforms } from './analysis';
-export { linearIntegral, outputForms, periodIntegrals, quadraticIntegral } from './integrals';
+export { checkRange, linearIntegral, outputForms, periodIntegrals, quadraticIntegral, type IntegralOptions } from './integrals';
 export type { PeriodIntegrals } from './integrals';

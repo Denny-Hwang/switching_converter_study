@@ -11,17 +11,22 @@
  *
  * and y has an extreme inside the segment where its slope, c·F z(t), changes
  * sign. Averages, powers, mean squares and extremes computed this way do not
- * depend on the sub-steps: a transient faster than a sub-step (a time
- * constant far shorter than one) is integrated as exactly as a slow one. The
- * samples remain what the page draws.
+ * depend on the sub-steps: a transient faster than a sub-step is integrated,
+ * not sampled. The samples remain what the page draws. The exponentials are
+ * kept apart from the identity (e^{F τ} − I, linalg.ts expmMinusI), so that
+ * a slow mode's small change keeps its digits however many squarings a fast
+ * mode asks for; what rounding remains grows only with the number of
+ * squarings, the logarithm of the ratio of a sub-step to the fastest time
+ * constant.
  *
- * As in the engine, z holds the deviation from the period's first state,
- * [x − x_r; 1]: an output whose constant part dwarfs what varies (a battery's
- * current, (v − V_b)/R_b, with V_b/R_b a million times its rms value) then
- * keeps its digits, since c·z is its value at x_r plus the change. Each
- * interval's matrix is also balanced by powers of two (a similarity, exact
- * in binary), so that the states' units (a volt against an ampere through a
- * picofarad) do not spread its entries over many decades.
+ * In each interval z holds the deviation from the first state the period
+ * visits in it, [x − x_r; 1]: an output whose constant part dwarfs what
+ * varies (a battery's current, (v − V_b)/R_b, with V_b/R_b a million times
+ * its rms value) then keeps the digits the samples give it, since c·z is its
+ * value at x_r, evaluated directly, plus the change; and x_r is a state of
+ * that interval, so the constant part is one of the output's own values
+ * there. The rate of change at x_r, A x_r + b, is summed in twice the
+ * precision: its terms can be ten orders of magnitude larger than it.
  *
  * Every mode of the circuit decays or rings, and the sub-steps resolve every
  * ring (analysis.ts, stepsFor). Near the start of a segment a mode much
@@ -32,13 +37,19 @@
  * a sub-step); where the slope's own derivative shows it turning towards
  * zero, its turning point is found, and both turns are searched when the
  * slope changes sign there. A sign change of a slope within its own rounding
- * (a few units in the last place of the terms it is summed from, at the
- * sample's own state) is noise and is not searched, and neither is one so
- * small that the output moves by less than a trillionth of its range.
+ * is noise and is not searched, and neither is one so small that the output
+ * moves by less than a trillionth of its range, or by less than the rounding
+ * of its own value at the sample (the stored state's rounding starts a fast
+ * mode's transient no larger than that). The slope's rounding is a few units
+ * in the last place of the terms the slope is summed from: at a segment's
+ * start, the terms of c·(A x + b) at the sample's own state, whose digits a
+ * fast mode amplifies; inside the segment and at its end (the start
+ * propagated by e^{F h}, so that all its checkpoints lie on one solution),
+ * the terms of c·F z at the deviation, which is where that slope is computed.
  */
 
 import { OVERFLOW, type CycleRun, type Model } from './engine';
-import { eigenvalues, expm, matmul, matvec, norm1, zeros, type Mat, type Vec } from './linalg';
+import { eigenvalues, expmMinusI, matmul, matvec, norm1, zeros, type Mat, type Vec } from './linalg';
 
 export interface PeriodIntegrals {
   /** ∫ y dt over the recorded period, for every output. */
@@ -62,6 +73,39 @@ function augmented(A: Mat, b: Vec): Mat {
 }
 
 const dot = (a: Vec, b: Vec) => a.reduce((s, v, i) => s + v * b[i]!, 0);
+
+/**
+ * a·x + b, rounded as if summed in twice the precision (Ogita, Rump and
+ * Oishi's Dot2, with Dekker's product and Knuth's sum): an interval's rate of
+ * change at a state, whose terms can be ten orders of magnitude larger than
+ * it (a battery's V_b/(R_b C) against the net current into its capacitor).
+ * The plain sum where a term is too large to split.
+ */
+function rateAt(a: Vec, x: Vec, b: number): number {
+  let s = b;
+  let err = 0;
+  for (let j = 0; j < a.length; j++) {
+    const u = a[j]!;
+    const v = x[j]!;
+    const p = u * v;
+    // Dekker's split of each factor into halves whose products are exact
+    const cu = 134217729 * u;
+    const uh = cu - (cu - u);
+    const ul = u - uh;
+    const cv = 134217729 * v;
+    const vh = cv - (cv - v);
+    const vl = v - vh;
+    const pe = ul * vl - (((p - uh * vh) - ul * vh) - uh * vl);
+    // Knuth's sum
+    const t = s + p;
+    const bb = t - s;
+    const te = s - (t - bb) + (p - bb);
+    s = t;
+    err += pe + te;
+  }
+  const out = s + err;
+  return Number.isFinite(out) ? out : dot(a, x) + b;
+}
 
 /**
  * Each output of each interval as c·[x; 1]: its coefficients from the
@@ -102,7 +146,11 @@ export function outputForms(model: Model): Record<string, Record<string, Vec>> {
   return forms;
 }
 
-/** Φ = e^{F h} and ∫_0^h e^{F s} ds, from the exponential of [[F, I], [0, 0]] h. */
+/**
+ * Φ = e^{F h} and ∫_0^h e^{F s} ds, from the exponential of [[F, I], [0, 0]] h
+ * less the identity (the integral is its off-diagonal block, which the
+ * identity does not touch).
+ */
 export function linearIntegral(F: Mat, h: number): { Phi: Mat; Int: Mat } {
   const m = F.length;
   const M = zeros(2 * m);
@@ -110,8 +158,8 @@ export function linearIntegral(F: Mat, h: number): { Phi: Mat; Int: Mat } {
     for (let j = 0; j < m; j++) M[i]![j] = F[i]![j]! * h;
     M[i]![m + i] = h;
   }
-  const E = expm(M);
-  return { Phi: E.slice(0, m).map((r) => r.slice(0, m)), Int: E.slice(0, m).map((r) => r.slice(m)) };
+  const E = expmMinusI(M);
+  return { Phi: E.slice(0, m).map((r, i) => r.slice(0, m).map((v, j) => (i === j ? v + 1 : v))), Int: E.slice(0, m).map((r) => r.slice(m)) };
 }
 
 /**
@@ -119,7 +167,9 @@ export function linearIntegral(F: Mat, h: number): { Phi: Mat; Int: Mat } {
  * exp([[-Fᵀ, Q], [0, F]] τ) = [[·, E12], [0, E22]] with W(τ) = E22ᵀ E12,
  * holds e^{-Fᵀ τ}, which grows without bound for a stiff F; so it is taken
  * over τ = h/2^k, short enough that it stays near one, and doubled k times:
- * W(2τ) = W(τ) + Φ(τ)ᵀ W(τ) Φ(τ), Φ(2τ) = Φ(τ)².
+ * W(2τ) = W(τ) + Φ(τ)ᵀ W(τ) Φ(τ), Φ(2τ) = Φ(τ)². The doubling carries
+ * D = Φ − I rather than Φ, W(2τ) = 2W + DᵀW + W D + DᵀW D and
+ * D(2τ) = 2D + D², for the reason expmMinusI does.
  */
 export function quadraticIntegral(F: Mat, Q: Mat, h: number): Mat {
   const m = F.length;
@@ -136,15 +186,21 @@ export function quadraticIntegral(F: Mat, Q: Mat, h: number): Mat {
       M[m + i]![m + j] = F[i]![j]! * tau;
     }
   }
-  const E = expm(M);
-  let Phi = E.slice(m).map((r) => r.slice(m));
+  const E = expmMinusI(M);
+  let D = E.slice(m).map((r) => r.slice(m));
   const E12 = E.slice(0, m).map((r) => r.slice(m));
   const transpose = (X: Mat) => X[0]!.map((_, j) => X.map((r) => r[j]!));
-  let W = matmul(transpose(Phi), E12);
+  // W(τ) = e^{Fᵀ τ} E12 = E12 + Dᵀ E12
+  const DtE = matmul(transpose(D), E12);
+  let W = E12.map((row, i) => row.map((v, j) => v + DtE[i]![j]!));
   for (let r = 0; r < k; r++) {
-    const PtWP = matmul(transpose(Phi), matmul(W, Phi));
-    W = W.map((row, i) => row.map((v, j) => v + PtWP[i]![j]!));
-    Phi = matmul(Phi, Phi);
+    const Dt = transpose(D);
+    const WD = matmul(W, D);
+    const DtW = matmul(Dt, W);
+    const DtWD = matmul(Dt, WD);
+    W = W.map((row, i) => row.map((v, j) => 2 * v + DtW[i]![j]! + WD[i]![j]! + DtWD[i]![j]!));
+    const DD = matmul(D, D);
+    D = D.map((row, i) => row.map((v, j) => 2 * v + DD[i]![j]!));
   }
   return W;
 }
@@ -237,7 +293,7 @@ function expAlong(F: Mat, c: Vec, z0: Vec): Along {
   let last: { tau: number; z: Vec } | null = null;
   return {
     at(k, tau) {
-      if (!last || last.tau !== tau) last = { tau, z: matvec(expm(F.map((r) => r.map((v) => v * tau))), z0) };
+      if (!last || last.tau !== tau) last = { tau, z: propagate(expmMinusI(F.map((r) => r.map((v) => v * tau))), z0) };
       return dotv(row(k), last.z);
     },
   };
@@ -267,78 +323,47 @@ function modeSpeed(A: Mat): number {
 /**
  * The instants at which a segment's slopes are checked, from its start: h
  * alone, or h/2^k, …, h/4, h/2, h when a mode much faster than h (speed
- * times h above one) could turn the slope near the start; and e^{F τ} at
+ * times h above one) could turn the slope near the start; and e^{F τ} − I at
  * each.
  */
-function checkpoints(F: Mat, speed: number, h: number): { tau: number; Phi: Mat }[] {
+function checkpoints(F: Mat, speed: number, h: number): { tau: number; E: Mat }[] {
   const size = speed * h;
   const k = size > 1 ? Math.min(60, Math.ceil(Math.log2(size))) : 0;
-  const out: { tau: number; Phi: Mat }[] = [];
+  const out: { tau: number; E: Mat }[] = [];
   for (let j = k; j >= 0; j--) {
     const tau = h / 2 ** j;
-    out.push({ tau, Phi: expm(F.map((r) => r.map((v) => v * tau))) });
+    out.push({ tau, E: expmMinusI(F.map((r) => r.map((v) => v * tau))) });
   }
   return out;
 }
 
-/**
- * Powers of two d that balance an augmented matrix's rows against its
- * columns (Parlett and Reinsch): D⁻¹ F D, exact in binary, has the same
- * dynamics in the states x_j / d_j. The constant slot (the last) keeps its
- * scale.
- */
-function balancing(F: Mat): Vec {
-  const m = F.length;
-  const d = new Array<number>(m).fill(1);
-  const B = F.map((r) => r.slice());
-  for (let sweep = 0; sweep < 100; sweep++) {
-    let done = true;
-    for (let i = 0; i + 1 < m; i++) {
-      let c = 0;
-      let r = 0;
-      for (let j = 0; j < m; j++) {
-        if (j === i) continue;
-        c += Math.abs(B[j]![i]!);
-        r += Math.abs(B[i]![j]!);
-      }
-      if (!(c > 0 && r > 0) || !Number.isFinite(c + r)) continue;
-      const sum = c + r;
-      let f = 1;
-      while (c < r / 2 && f < 2 ** 300) {
-        f *= 2;
-        c *= 4;
-      }
-      while (c > r * 2 && f > 2 ** -300) {
-        f /= 2;
-        c /= 4;
-      }
-      if ((c + r) / f < 0.95 * sum) {
-        done = false;
-        d[i]! *= f;
-        for (let j = 0; j < m; j++) B[i]![j]! /= f;
-        for (let j = 0; j < m; j++) B[j]![i]! *= f;
-      }
-    }
-    if (done) break;
-  }
-  return d;
+/** z(τ) = z0 + (e^{F τ} − I) z0. */
+function propagate(E: Mat, z0: Vec): Vec {
+  const dz = mv(E, z0);
+  for (let i = 0; i < dz.length; i++) dz[i]! += z0[i]!;
+  return dz;
 }
 
 /**
- * An interval's outputs as rows, in its balanced deviation coordinates: their
- * indices among all outputs, their coefficients c, c·F for their slopes and
- * c·F² for the slopes' rates; and, in the original coordinates, the sums of
- * |c_i A_ij| and of |c_i b_i| that bound the slope's rounding.
+ * An interval's outputs as rows, in its deviation coordinates: their indices
+ * among all outputs, their coefficients c, c·F for their slopes and c·F² for
+ * the slopes' rates, and |c|·|F| and |c|·|F|² that bound the rounding of
+ * those products; and the sums of |c_i A_ij| and of |c_i b_i| that bound the
+ * slope's rounding at a sample.
  */
 interface Rows {
+  /** The interval's reference state, the first the period visits in it: z = [x − x_r; 1]. */
+  xr: Vec;
   F: Mat;
-  /** The balancing: z_j = (x_j − x_r,j) / d_j. */
-  d: Vec;
   speed: number;
   out: number[];
   C: Vec[];
+  /** Each output's constant term in the original coordinates, c_0 = y(0): with c·x, the terms of its value. */
+  c0: number[];
   CF: Vec[];
   CF2: Vec[];
+  absCF: Vec[];
+  absCF2: Vec[];
   absCA: Vec[];
   absCb: number[];
   /** For each requested pair, the rows of its two outputs, or null where the interval lacks one. */
@@ -369,8 +394,32 @@ function rowTimes(r: Vec, F: Mat): Vec {
   return out;
 }
 
-/** A slope within this many units in the last place of the terms it sums (at the sample's own state) is noise. */
+/** A slope within this many units in the last place of the terms it is summed from is noise. */
 const SLOPE_ROUNDING = 64 * Number.EPSILON;
+
+/**
+ * The refusal periodIntegrals would give any recorded period of the model,
+ * given before the steady-state search spends its periods on it: outputs
+ * whose forms, or whose slopes' rates c A², overflow (a resistance of 1e300
+ * ohm). These parts of c·F and c·F² do not depend on the reference state.
+ */
+export function checkRange(model: Model): void {
+  const forms = outputForms(model);
+  const n = model.stateNames.length;
+  for (const [name, iv] of Object.entries(model.intervals)) {
+    if (!Number.isFinite(norm1(iv.A))) throw new Error(OVERFLOW);
+    for (const c of Object.values(forms[name]!)) {
+      const cA = rowTimes(c.slice(0, n), iv.A);
+      if (!cA.every(Number.isFinite) || !rowTimes(cA, iv.A).every(Number.isFinite)) throw new Error(OVERFLOW);
+    }
+  }
+}
+
+/** Options of periodIntegrals. */
+export interface IntegralOptions {
+  /** Counts the root searches for extremes inside segments (the tests check that rounding does not start them). */
+  stats?: { searches: number };
+}
 
 /**
  * ∫ y dt for every output, ∫ y_a y_b dt for the given pairs, and every
@@ -382,13 +431,22 @@ const SLOPE_ROUNDING = 64 * Number.EPSILON;
  * interval visited in the period does not define is NaN, as are the pairs
  * that involve it.
  */
-export function periodIntegrals(model: Model, run: CycleRun, pairs: readonly (readonly [string, string])[] = []): PeriodIntegrals {
+export function periodIntegrals(
+  model: Model,
+  run: CycleRun,
+  pairs: readonly (readonly [string, string])[] = [],
+  opts: IntegralOptions = {},
+): PeriodIntegrals {
   const forms = outputForms(model);
   const n = model.stateNames.length;
   const m = n + 1;
   const samples = run.samples;
-  // the deviation from the period's first state, as the engine integrates (engine.ts, Shifted)
-  const xr = samples.length > 0 ? samples[0]!.x.slice() : new Array<number>(n).fill(0);
+  // each interval's reference, the first state the period visits in it: a state that interval holds, so an output's
+  // value there is one of its own (engine.ts integrates from the period's first state, which another interval's
+  // formula can turn into a large value that its own values then cancel)
+  const xrOf = new Map<string, Vec>();
+  for (const smp of samples) if (!xrOf.has(smp.interval)) xrOf.set(smp.interval, smp.x.slice());
+  const fallback = samples.length > 0 ? samples[0]!.x : new Array<number>(n).fill(0);
   const names: string[] = [];
   const index = new Map<string, number>();
   for (const f of Object.values(forms)) {
@@ -402,30 +460,26 @@ export function periodIntegrals(model: Model, run: CycleRun, pairs: readonly (re
   const N = names.length;
   const rows: Record<string, Rows> = {};
   for (const [name, iv] of Object.entries(model.intervals)) {
+    const xr = xrOf.get(name) ?? fallback.slice();
     // dz/dt = F z with z = [x − x_r; 1]: the input is A x_r + b, the rate of change at x_r
-    const F0 = augmented(
+    const F = augmented(
       iv.A,
-      iv.A.map((row, i) => row.reduce((acc, v, j) => acc + v * xr[j]!, iv.b[i]!)),
+      iv.A.map((row, i) => rateAt(row, xr, iv.b[i]!)),
     );
-    let d = balancing(F0);
-    const scaled = (dd: Vec) => F0.map((row, i) => row.map((v, j) => (v * dd[j]!) / dd[i]!));
-    let F = scaled(d);
-    if (!F.every((row) => row.every(Number.isFinite))) {
-      d = new Array<number>(m).fill(1);
-      F = F0;
-    }
     const ks = Object.keys(forms[name]!);
     // each output at x_r directly (a battery's current as (v − V_b)/R_b, not as a sum of its large terms), and its
-    // coefficients on the balanced deviation
+    // coefficients on the deviation
     const yr = model.outputs(xr, name);
     const C = ks.map((k) => {
-      const c = forms[name]![k]!;
-      const out = c.map((v, j) => v * d[j]!);
+      const out = forms[name]![k]!.slice();
       out[n] = yr[k]!;
       return out;
     });
     const CF = C.map((c) => rowTimes(c, F));
     const CF2 = CF.map((c) => rowTimes(c, F));
+    const absF = F.map((row) => row.map(Math.abs));
+    const absCF = C.map((c) => rowTimes(c.map(Math.abs), absF));
+    const absCF2 = absCF.map((c) => rowTimes(c, absF));
     const absCA = ks.map((k) => {
       const c = forms[name]![k]!;
       return iv.A[0] ? iv.A[0].map((_, j) => iv.A.reduce((acc, row, i) => acc + Math.abs(c[i]! * row[j]!), 0)) : [];
@@ -434,8 +488,8 @@ export function periodIntegrals(model: Model, run: CycleRun, pairs: readonly (re
       const c = forms[name]![k]!;
       return iv.b.reduce((acc, v, i) => acc + Math.abs(c[i]! * v), 0);
     });
-    // a circuit whose matrices or outputs overflow once shifted and scaled is out of range: its norms would ask the
-    // exponentials for infinitely many squarings
+    // a circuit whose matrices or outputs overflow once shifted is out of range: its norms would ask the exponentials
+    // for infinitely many squarings
     const big = C.reduce((mx, c) => c.reduce((m2, v) => Math.max(m2, Math.abs(v)), mx), 0);
     if (!Number.isFinite(norm1(F)) || !(big * big < Infinity) || !CF2.every((r) => r.every(Number.isFinite))) throw new Error(OVERFLOW);
     const pairRows = pairs.map(([pa, pb]): [number, number] | null => {
@@ -443,7 +497,8 @@ export function periodIntegrals(model: Model, run: CycleRun, pairs: readonly (re
       const qb = ks.indexOf(pb);
       return qa >= 0 && qb >= 0 ? [qa, qb] : null;
     });
-    rows[name] = { F, d, speed: modeSpeed(iv.A), out: ks.map((k) => index.get(k)!), C, CF, CF2, absCA, absCb, pairRows };
+    const c0 = ks.map((k) => forms[name]![k]![n]!);
+    rows[name] = { xr, F, speed: modeSpeed(iv.A), out: ks.map((k) => index.get(k)!), C, c0, CF, CF2, absCF, absCF2, absCA, absCb, pairRows };
   }
   const lo = new Array<number>(N).fill(Infinity);
   const hi = new Array<number>(N).fill(-Infinity);
@@ -456,8 +511,8 @@ export function periodIntegrals(model: Model, run: CycleRun, pairs: readonly (re
     }
   };
   const zOf = samples.map((smp) => {
-    const d = rows[smp.interval]!.d;
-    const z = smp.x.map((v, j) => (v - xr[j]!) / d[j]!);
+    const r = rows[smp.interval]!;
+    const z = smp.x.map((v, j) => v - r.xr[j]!);
     z.push(1);
     return z;
   });
@@ -479,9 +534,7 @@ export function periodIntegrals(model: Model, run: CycleRun, pairs: readonly (re
   const missing = new Set<string>();
   const linCache = new Map<string, Mat>();
   const quadCache = new Map<string, Mat>();
-  const cpCache = new Map<string, { tau: number; Phi: Mat }[]>();
-  // the slopes and their rates at a sample, kept for the segment that starts there
-  let kept: { at: number; slopes: number[]; rates: number[] } | null = null;
+  const cpCache = new Map<string, { tau: number; E: Mat }[]>();
   for (let k = 0; k + 1 < samples.length; k++) {
     const s0 = samples[k]!;
     const s1 = samples[k + 1]!;
@@ -492,7 +545,6 @@ export function periodIntegrals(model: Model, run: CycleRun, pairs: readonly (re
     const r = rows[iv]!;
     const F = r.F;
     const z0 = zOf[k]!;
-    const z1 = zOf[k + 1]!;
     const key = `${iv}|${h}`;
     let Int = linCache.get(key);
     if (!Int) {
@@ -526,37 +578,49 @@ export function periodIntegrals(model: Model, run: CycleRun, pairs: readonly (re
       cpCache.set(key, cps);
     }
     const nc = cps.length;
+    // the checkpoints, the end included, on the solution from the start (the next sample is that end, up to the
+    // engine's rounding)
     const zs: Vec[] = [z0];
     const taus = [0];
     for (let j = 0; j < nc; j++) {
-      zs.push(j === nc - 1 ? z1 : mv(cps[j]!.Phi, z0));
+      zs.push(propagate(cps[j]!.E, z0));
       taus.push(cps[j]!.tau);
     }
     // the values at the checkpoints inside the segment are on the solution too
     for (let j = 1; j < nc; j++) see(r, zs[j]!);
-    const prev: { at: number; slopes: number[]; rates: number[] } | null = kept;
-    const reuse: boolean = prev !== null && prev.at === k;
-    const slopes: number[][] = zs.map((z, j) => (j === 0 && reuse ? prev!.slopes : mv(r.CF, z)));
-    const rates: number[][] = zs.map((z, j) => (j === 0 && reuse ? prev!.rates : mv(r.CF2, z)));
-    kept = { at: k + 1, slopes: slopes[nc]!, rates: rates[nc]! };
-    // the slope's rounding at a checkpoint: its terms, at the state itself (the deviation's digits are the sample's)
-    const level = (q: number, j: number) => {
-      const z = zs[j]!;
-      const a = r.absCA[q]!;
-      let sum = r.absCb[q]!;
-      for (let i = 0; i < n; i++) sum += a[i]! * Math.abs(xr[i]! + r.d[i]! * z[i]!);
+    const slopes: number[][] = zs.map((z) => mv(r.CF, z));
+    const rates: number[][] = zs.map((z) => mv(r.CF2, z));
+    // the terms of a product with the deviation: |c|·|F|^k |z|, which bounds the rounding of c·F^k z computed as
+    // (c·F^k)·z, the row's own rounding included
+    const terms = (row: Vec, z: Vec) => {
+      let sum = row[n]!;
+      for (let i = 0; i < n; i++) sum += row[i]! * Math.abs(z[i]!);
       return sum;
     };
-    // the rounding of a slope's rate, c·F² z, at a checkpoint: its terms, at the deviation and at the state itself
+    // the slope's rounding at a checkpoint. At the start, its terms at the sample's own state as well: a fast mode
+    // amplifies that state's rounding, which then decays or rings within the segment. Elsewhere, the terms of
+    // c·F z at the deviation, from which the slope is computed
+    const x0 = s0.x;
+    const level = (q: number, j: number) => {
+      const dev = terms(r.absCF[q]!, zs[j]!);
+      if (j > 0) return dev;
+      const a = r.absCA[q]!;
+      let sum = r.absCb[q]!;
+      for (let i = 0; i < n; i++) sum += a[i]! * Math.abs(x0[i]!);
+      return Math.max(dev, sum);
+    };
+    // the rounding of a slope's rate, c·F² z, likewise: at the start, also its terms at the state itself
     const rateLevel = (q: number, j: number) => {
-      const z = zs[j]!;
+      const dev = terms(r.absCF2[q]!, zs[j]!);
+      if (j > 0) return dev;
       const c = r.CF2[q]!;
       let sum = Math.abs(c[n]!);
-      for (let i = 0; i < n; i++) sum += Math.abs(c[i]!) * (Math.abs(z[i]!) + Math.abs(xr[i]! / r.d[i]! + z[i]!));
-      return sum;
+      for (let i = 0; i < n; i++) sum += Math.abs(c[i]!) * (Math.abs(zs[0]![i]!) + Math.abs(x0[i]!));
+      return Math.max(dev, sum);
     };
     const taylor: (Vec[] | null | undefined)[] = [];
     const along = (q: number, j: number, len: number): Along => {
+      if (opts.stats) opts.stats.searches++;
       // a stretch short against the dynamics: the Taylor series, shared by every output; else exponentials
       if (r.speed * len <= 1 && taylor[j] === undefined) taylor[j] = taylorVectors(F, zs[j]!, len);
       const vs = r.speed * len <= 1 ? taylor[j] : null;
@@ -566,9 +630,19 @@ export function periodIntegrals(model: Model, run: CycleRun, pairs: readonly (re
       if (y < lo[out]!) lo[out] = y;
       if (y > hi[out]!) hi[out] = y;
     };
-    // a slope that moves the output by less than a trillionth of its range over the stretch, or within its rounding
+    // the rounding of the output's own value at the sample, the terms of c·x + c_0: the stored state's rounding
+    // starts a fast mode's transient whose wiggle is no larger (a battery's current, resolved to eps V_b / R_b)
+    const valueLevel = (q: number) => {
+      const c = r.C[q]!;
+      let sum = Math.abs(r.c0[q]!);
+      for (let i = 0; i < n; i++) sum += Math.abs(c[i]! * x0[i]!);
+      return sum;
+    };
+    // a slope that moves the output by less than a trillionth of its range over the stretch, or by less than the
+    // rounding of its value, or that lies within its own rounding
     const noise = (q: number, j: number, len: number, s: number) =>
-      Math.abs(s) * len <= 1e-12 * range[r.out[q]!]! || Math.abs(s) <= SLOPE_ROUNDING * Math.max(level(q, j), level(q, j + 1));
+      Math.abs(s) * len <= Math.max(1e-12 * range[r.out[q]!]!, SLOPE_ROUNDING * valueLevel(q)) ||
+      Math.abs(s) <= SLOPE_ROUNDING * Math.max(level(q, j), level(q, j + 1));
     for (let q = 0; q < r.out.length; q++) {
       const out = r.out[q]!;
       for (let j = 0; j < nc; j++) {
@@ -588,7 +662,10 @@ export function periodIntegrals(model: Model, run: CycleRun, pairs: readonly (re
         const ra = rates[j]![q]!;
         const rb = rates[j + 1]![q]!;
         if (!(Math.sign(ra) === -Math.sign(a) && Math.sign(rb) === Math.sign(a))) continue;
-        if (Math.abs(a) + Math.abs(b) > 4 * Math.max(Math.abs(ra), Math.abs(rb)) * len) continue;
+        // how far the slope can move within the stretch, at the rate it changes: too little to reach zero, or so
+        // little that the output would move by no more than its rounding while the slope is past zero
+        const reach = Math.max(Math.abs(ra), Math.abs(rb)) * len;
+        if (Math.abs(a) + Math.abs(b) > 4 * reach || noise(q, j, len, reach)) continue;
         if (Math.abs(ra) <= SLOPE_ROUNDING * rateLevel(q, j) || Math.abs(rb) <= SLOPE_ROUNDING * rateLevel(q, j + 1)) continue;
         const y = along(q, j, len);
         const turn = rootAlong(y, 2, 0, len, ra, len);

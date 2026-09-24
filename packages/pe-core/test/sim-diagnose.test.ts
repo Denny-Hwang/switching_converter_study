@@ -496,6 +496,23 @@ describe('outside the model: a diode the model holds off would conduct', () => {
     expect(bb.diodes![0]!.v).toBeGreaterThan(6.6);
   });
 
+  it('a dip below zero within a ten-thousandth of the largest voltage is not flagged; a ring that forward-biases a diode within a sub-step is', () => {
+    // the ninth review's circuits. A buck-boost whose 1215 V ring dips 11 mV below zero between samples: the ideal
+    // body diode would take as little as a diode forward-biased that far beyond its drop, which is not flagged either
+    const bb = simulate({ topology: 'buckboost', Vg: 0, D: 0.489, fs: 888000, L: 1.58e-6, Ron: 0.00175, RL: 0.00432, Cnode: 4.1e-13, load: { kind: 'network', C: 1.42e-7, R: 231 }, source: { Voc: 227, Rs: 0.198, Cbus: 3.88e-8 } });
+    expect(bb.status).toBe('steady');
+    expect(bb.min.v_sw!).toBeLessThan(-0.011);
+    expect(bb.min.v_sw!).toBeGreaterThan(-1e-4 * bb.max.v_sw!);
+    expect([bb.switchBelowZero, bb.diodes]).toEqual([undefined, undefined]);
+    // a flyback whose node ring takes the diode 73 mV beyond its drop within a sub-step, at 33 sub-steps per ring:
+    // the event search, which checks the conditions at each sub-step's end, does not see the turn-on, and the flag says so
+    const fly = simulate({ topology: 'flyback', Vg: 0, D: 0.286, fs: 26500, L: 1.3e-5, n: 1.59, Ron: 0.0631, RL: 0.0236, VF: 0.567, Cnode: 7.56e-10, load: { kind: 'resistive', R: 6.33, C: 8.95e-5 }, source: { Voc: 56.7, Rs: 0.128, Cbus: 2.51e-4 } });
+    expect(fly.status).toBe('steady');
+    expect(maxOf(fly.waveforms, 'v_D')).toBeLessThan(0.567 + 1e-9);
+    expect(fly.diodes).toEqual([{ diode: 'D', v: fly.max.v_D, drop: 0.567 }]);
+    expect(fly.diodes![0]!.v).toBeGreaterThan(0.639);
+  });
+
   it("the forward converter's freewheeling diode D_2 is flagged when the switch's drop exceeds a sagging bus while the switch is on", () => {
     // the fifth review's circuits: while the switch is on, R_on's drop exceeds the bus, the primary voltage turns
     // negative, and the model keeps the rectifier D_1 conducting; D_2 is then forward-biased by -n v_pri beyond V_F.

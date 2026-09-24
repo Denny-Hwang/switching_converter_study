@@ -5,7 +5,9 @@
  * switch on, the switch off with the diode conducting, the idle interval of
  * DCM, and so on. Within an interval the state is advanced by the exact
  * solution over fixed sub-steps (Phi = expm(A dt), precomputed per interval,
- * dt = T_s / 2000 by default). Gate edges fall at t = 0 and t = D T_s;
+ * dt = T_s / 2000 by default; formed and squared less the identity,
+ * linalg.ts expmMinusI, so that a time constant far shorter than dt costs the
+ * slow states no digits). Gate edges fall at t = 0 and t = D T_s;
  * other events (a diode current reaching zero, a clamp starting to conduct)
  * are guards, linear functions of the state, located on the exact solution
  * inside the sub-step where they change sign. State changes at edges and
@@ -387,7 +389,9 @@ function integrate(sh: Shifted, cur: Cursor, t1: number, dt: number, tr: Tracker
       first = earlier;
     }
     if (first) {
-      if (++guardEvents > 1000) throw new Error(`${model.topology}: too many events in one cycle (chattering)`);
+      // a diode that clamps a ring at every crest turns on and off once per ring, and the sub-steps resolve every
+      // ring: twice the sub-steps bound the events a cycle can have; more is a guard that toggles without end
+      if (++guardEvents > 1000 + 2 * Math.round(model.Ts / dt)) throw new Error(`${model.topology}: too many events in one cycle (chattering)`);
       const toEvent = sh.step(cur.iv, first.tau, !!cur.N);
       const ye = advance(toEvent, cur.y);
       run.durations[cur.iv] = (run.durations[cur.iv] ?? 0) + first.tau;

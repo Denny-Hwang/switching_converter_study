@@ -109,8 +109,8 @@ const B13 = [
 ];
 const THETA13 = 5.371920351148152;
 
-/** Matrix exponential by scaling and squaring with a degree-13 Padé approximant. */
-export function expm(a: Mat): Mat {
+/** The degree-13 Padé approximant's odd and even parts, U and V, of a scaled by 2^-s so that its norm is at most θ13. */
+function pade13(a: Mat): { U: Mat; V: Mat; s: number } {
   const n = a.length;
   const nrm = norm1(a);
   // an infinite or NaN norm would scale by 2^-Infinity and square for ever
@@ -134,14 +134,41 @@ export function expm(a: Mat): Mat {
     matmul(A6, lin([[b[12]!, A6], [b[10]!, A4], [b[8]!, A2]])),
     lin([[b[6]!, A6], [b[4]!, A4], [b[2]!, A2], [b[0]!, I]]),
   );
+  return { U, V, s };
+}
+
+/** Matrix exponential by scaling and squaring with a degree-13 Padé approximant. */
+export function expm(a: Mat): Mat {
+  const { U, V, s } = pade13(a);
   let R = solve(addScaled(V, U, -1), addScaled(V, U, 1));
   for (let k = 0; k < s; k++) R = matmul(R, R);
   return R;
 }
 
 /**
+ * e^a − I, kept apart from the identity throughout: the approximant less
+ * the identity, (V − U)⁻¹(V + U) − I, is (V − U)⁻¹ 2U, and each squaring is
+ * E ← 2E + E². A slow mode's small change then keeps its digits however many
+ * squarings a fast mode asks for; squaring e^a itself carries it as 1 plus a
+ * small number and multiplies that number's rounding by 2^s.
+ */
+export function expmMinusI(a: Mat): Mat {
+  const { U, V, s } = pade13(a);
+  let E = solve(addScaled(V, U, -1), scaleMat(U, 2));
+  for (let k = 0; k < s; k++) E = addScaled(matmul(E, E), E, 2);
+  return E;
+}
+
+/** The identity plus the top-left n-by-n block of E. */
+function identityPlusBlock(E: Mat, n: number): Mat {
+  return E.slice(0, n).map((r, i) => r.slice(0, n).map((v, j) => (i === j ? v + 1 : v)));
+}
+
+/**
  * Exact step of dx/dt = A x + b over a time h: x(h) = Phi x(0) + Gamma, from
- * the exponential of the augmented matrix [[A, b], [0, 0]].
+ * the exponential of the augmented matrix [[A, b], [0, 0]], less the identity
+ * (expmMinusI): a time constant far shorter than h then does not cost the
+ * slow states their digits.
  */
 export function affineStep(A: Mat, b: Vec, h: number): { Phi: Mat; Gamma: Vec } {
   const n = A.length;
@@ -150,15 +177,16 @@ export function affineStep(A: Mat, b: Vec, h: number): { Phi: Mat; Gamma: Vec } 
     for (let j = 0; j < n; j++) M[i]![j] = A[i]![j]! * h;
     M[i]![n] = b[i]! * h;
   }
-  const E = expm(M);
-  return { Phi: E.slice(0, n).map((r) => r.slice(0, n)), Gamma: E.slice(0, n).map((r) => r[n]!) };
+  const E = expmMinusI(M);
+  return { Phi: identityPlusBlock(E, n), Gamma: E.slice(0, n).map((r) => r[n]!) };
 }
 
 /**
  * The matrices of an exact step over a time h for any input b:
  * x(h) = Phi x(0) + W b, with W = integral of expm(A s) over [0, h], from the
- * exponential of the augmented matrix [[A, I], [0, 0]]. W is computed
- * directly, without the cancellation of (Phi - I) A^-1 for slow states.
+ * exponential of the augmented matrix [[A, I], [0, 0]], less the identity
+ * (expmMinusI). W is computed directly, without the cancellation of
+ * (Phi - I) A^-1 for slow states.
  */
 export function stepMatrices(A: Mat, h: number): { Phi: Mat; W: Mat } {
   const n = A.length;
@@ -167,8 +195,8 @@ export function stepMatrices(A: Mat, h: number): { Phi: Mat; W: Mat } {
     for (let j = 0; j < n; j++) M[i]![j] = A[i]![j]! * h;
     M[i]![n + i] = h;
   }
-  const E = expm(M);
-  return { Phi: E.slice(0, n).map((r) => r.slice(0, n)), W: E.slice(0, n).map((r) => r.slice(n)) };
+  const E = expmMinusI(M);
+  return { Phi: identityPlusBlock(E, n), W: E.slice(0, n).map((r) => r.slice(n)) };
 }
 
 /**
