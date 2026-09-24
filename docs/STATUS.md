@@ -60,7 +60,7 @@ Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); th
 
 Legend: ✅ done · 🟡 partial · ⬜ not started · ➖ not applicable. "Phase" is the build phase that delivers the module (docs/BUILD_SPEC.md §7); "later" = not scheduled in phases 0–5. 00-foundations and 01-physics are compact refreshers (Phase 2 scope).
 
-_Last updated: Phase 3e (magnetics designer). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
+_Last updated: Phase 4a (04-magnetics). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
 
 "Try it" links open the [equation explorer](../src/content/docs/en/design/explorer.mdx) with a synthetic preset. Pages whose example is a whole converter also open the [simulator](../src/content/docs/en/simulate/simulator.mdx) with it (`<TrySim>`, Phase 3a); design-tool presets come with the design tools.
 
@@ -191,7 +191,7 @@ _Last updated: Phase 3e (magnetics designer). `python scripts/modulelint.py` che
 | design/explorer | ✅ | ✅ | Phase 2a: evaluate and sweep any catalogue equation; state in the URL hash ("Try it" target); screenshot and keyboard check (Phase 3a) |
 | simulate/simulator | ✅ | ✅ | Phase 3a: the pe-core simulator; state in the URL hash (`<TrySim>` target); screenshot and keyboard check |
 | design/converter-designer | ✅ | ✅ | Phase 3b; state in the URL hash; screenshot and keyboard check |
-| design/magnetics-designer | ✅ | ✅ | Phase 3e; homes the thirteen magnetics and winding equations (`mag.N_Bmax`, `mag.gap_length`, `mag.B_ac`, `wind.*`, `xfmr.leakage.*`) until the 04-magnetics pages (Phase 4); state in the URL hash; screenshot and keyboard check |
+| design/magnetics-designer | ✅ | ✅ | Phase 3e; homes the thirteen magnetics and winding equations (`mag.N_Bmax`, `mag.gap_length`, `mag.B_ac`, `wind.round_area`, `wind.fill`, `wind.rho_T`, `wind.dcr`, `wind.skin_depth`, `wind.porosity`, `wind.phi_round`, `wind.dowell`, `xfmr.leakage.ps`, `xfmr.leakage.psp`); the 04-magnetics pages refer to them; state in the URL hash; screenshot and keyboard check |
 | design/loss-budget | ✅ | ✅ | Phase 3b; state in the URL hash; screenshot and keyboard check |
 | design/clamp-check | ✅ | ✅ | Phase 3c; homes the eight clamp equations (`flyback.V_OR`, `clamp.*`, `tvs.*`, `flyback.V_ceiling`); state in the URL hash; screenshot and keyboard check |
 | design/source-matcher | ✅ | ✅ | Phase 3c; homes `src.Pmax`, `src.cv_power`, `src.cv_extraction`, `lfr.Vg`, `lfr.eta`, `lfr.Vg_power` until the harvesting pages (Phase 4); state in the URL hash; screenshot and keyboard check |

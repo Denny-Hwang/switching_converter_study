@@ -2764,11 +2764,11 @@
       "id": "snub.C_par",
       "source": "yaml",
       "inputs": {
-        "C_add": 3.2e-09,
-        "f_r0": 31250000.0,
-        "f_r1": 22200000.0
+        "C_add": 1e-09,
+        "f_r0": 91740000.0,
+        "f_r1": 61300000.0
       },
-      "value": 3.2603155734951343e-09
+      "value": 8.066243792901876e-10
     },
     {
       "id": "snub.C_par",
@@ -2841,6 +2841,15 @@
     },
     {
       "id": "snub.L_par",
+      "source": "yaml",
+      "inputs": {
+        "C_par": 8.07e-10,
+        "f_r0": 91740000.0
+      },
+      "value": 3.729488368105348e-09
+    },
+    {
+      "id": "snub.L_par",
       "source": "random",
       "inputs": {
         "C_par": 7.09798e-11,
@@ -2897,64 +2906,81 @@
       "id": "snub.R",
       "source": "yaml",
       "inputs": {
-        "C_par": 5e-11,
-        "L_par": 1.2665147955292222e-06
+        "C_snub": 1e-10,
+        "L_par": 1.2665147955292222e-06,
+        "zeta": 0.75
       },
-      "value": 159.15494309189535
+      "value": 168.80930927945738
+    },
+    {
+      "id": "snub.R",
+      "source": "yaml",
+      "inputs": {
+        "C_snub": 1e-09,
+        "L_par": 1e-08,
+        "zeta": 0.5
+      },
+      "value": 3.162277660168379
     },
     {
       "id": "snub.R",
       "source": "random",
       "inputs": {
-        "C_par": 5.43471e-11,
-        "L_par": 3.72317e-07
+        "C_snub": 1.47561e-10,
+        "L_par": 3.72317e-07,
+        "zeta": 0.653981
       },
-      "value": 82.76910248200709
+      "value": 65.70005983887361
     },
     {
       "id": "snub.R",
       "source": "random",
       "inputs": {
-        "C_par": 1.46648e-11,
-        "L_par": 1.22536e-07
+        "C_snub": 1.22536e-10,
+        "L_par": 2.42106e-09,
+        "zeta": 0.301436
       },
-      "value": 91.41001442403831
+      "value": 2.679760864685974
     },
     {
       "id": "snub.R",
       "source": "random",
       "inputs": {
-        "C_par": 2.02864e-12,
-        "L_par": 3.38918e-09
+        "C_snub": 2.87472e-08,
+        "L_par": 1.57848e-07,
+        "zeta": 0.304515
       },
-      "value": 40.87378208573646
+      "value": 1.4271198685234876
     },
     {
       "id": "snub.R",
       "source": "random",
       "inputs": {
-        "C_par": 3.68873e-09,
-        "L_par": 1.57848e-07
+        "C_snub": 4.41437e-10,
+        "L_par": 1.26584e-06,
+        "zeta": 0.480899
       },
-      "value": 6.541556667167132
+      "value": 51.50375712378754
     },
     {
       "id": "snub.R",
       "source": "random",
       "inputs": {
-        "C_par": 2.69499e-12,
-        "L_par": 4.41437e-07
+        "C_snub": 2.0263e-11,
+        "L_par": 5.04375e-06,
+        "zeta": 1.04305
       },
-      "value": 404.72104412656876
+      "value": 1040.7826093435804
     },
     {
       "id": "snub.R",
       "source": "random",
       "inputs": {
-        "C_par": 3.03321e-10,
-        "L_par": 1.00546e-08
+        "C_snub": 9.88553e-08,
+        "L_par": 1.39329e-07,
+        "zeta": 1.41586
       },
-      "value": 5.757463048803572
+      "value": 3.3617939324004884
     },
     {
       "id": "snub.P",

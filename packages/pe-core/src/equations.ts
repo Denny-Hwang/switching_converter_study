@@ -87,7 +87,7 @@ const base: Readonly<Record<string, Evaluator>> = {
   // --- RC snubber: parasitics from two ringing frequencies, damping, loss ------
   'snub.C_par': eq(['C_add', 'f_r0', 'f_r1'], ({ C_add, f_r0, f_r1 }) => C_add / (sq(f_r0 / f_r1) - 1)),
   'snub.L_par': eq(['f_r0', 'C_par'], ({ f_r0, C_par }) => 1 / (4 * sq(Math.PI) * sq(f_r0) * C_par)),
-  'snub.R': eq(['L_par', 'C_par'], ({ L_par, C_par }) => Math.sqrt(L_par / C_par)),
+  'snub.R': eq(['zeta', 'L_par', 'C_snub'], ({ zeta, L_par, C_snub }) => 2 * zeta * Math.sqrt(L_par / C_snub)),
   'snub.P': eq(['C_snub', 'V_snub', 'f_s'], ({ C_snub, V_snub, f_s }) => C_snub * sq(V_snub) * f_s),
 
   'dcm.ring.f': eq(['L_M', 'C_node'], ({ L_M, C_node }) => 1 / (2 * Math.PI * Math.sqrt(L_M * C_node))),

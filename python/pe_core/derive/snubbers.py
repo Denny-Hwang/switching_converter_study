@@ -1,11 +1,12 @@
 """Snubbers: the parasitic capacitance and inductance of a ringing node from
-two measured ringing frequencies, the RC snubber's resistance (the ring's
-characteristic impedance) and its loss.
+two measured ringing frequencies, the RC snubber's resistance for a damping
+factor, and the loss the snubber adds.
 
 References: Nexperia AN11160 "Designing RC snubbers" (the measurement with an
-added capacitor, the resistor equal to the characteristic impedance, the
-power in the snubber resistor); Erickson & Maksimović (2020), Ch. 4 (energy
-lost charging a capacitance).
+added capacitor, Sec. 3; the damping factor of the parasitic inductance, the
+resistor and the snubber capacitor in series, and the snubber's average power
+loss, Sec. 2); Erickson & Maksimović (2020), Ch. 4 (energy lost charging a
+capacitance).
 """
 
 from __future__ import annotations
@@ -63,30 +64,32 @@ def derive() -> Derivation:
         "그러면 첫 번째 공진에서 인덕턴스가 나온다.",
         Lpar,
     )
-    w = d.local("omega_r", r"\omega_r", positive=True)
-    Z0 = d.local("Z_0", "Z_0", positive=True)
+    Cs, Vs, fs, P = S("C_snub"), S("V_snub"), S("f_s"), S("P")
+    R, zeta = S("R_snub"), S("zeta")
+    s_ = d.local("s", "s")
     d.step(
-        "At the ringing frequency $\\omega_r = 1/\\sqrt{L_\\mathrm{par} C_\\mathrm{par}}$ the two reactances are equal; "
-        "their common value is the characteristic impedance:",
-        "링잉 주파수 $\\omega_r = 1/\\sqrt{L_\\mathrm{par} C_\\mathrm{par}}$에서 두 리액턴스는 같고, 그 값이 특성 임피던스이다.",
-        sp.Eq(Z0, sp.simplify((w * Lpar).subs(w, 1 / sp.sqrt(Lpar * Cpar)))),
+        "AN11160 takes the damping factor of the parasitic inductance, the snubber resistor and the snubber capacitor "
+        "in series, leaving the node's own capacitance out. That loop's natural frequencies solve",
+        "AN11160은 기생 인덕턴스, 스너버 저항, 스너버 커패시터를 직렬로 본 루프의 감쇠 계수를 쓰며, 노드 자체의 "
+        "커패시턴스는 넣지 않는다. 이 루프의 고유 주파수는 다음 식을 만족한다.",
+        sp.Eq(s_**2 * Lpar * Cs + s_ * R * Cs + 1, 0),
     )
-    Q = d.local("Q", "Q", positive=True)
-    R = S("R_snub")
+    w0 = 1 / sp.sqrt(Lpar * Cs)
+    zeta_of_R = sp.simplify(R / Lpar / (2 * w0))
     d.step(
-        "A resistance $R$ across the ring, through a capacitor that is nearly a short at $\\omega_r$, sets its quality "
-        "factor (parallel resonance):",
-        "$\\omega_r$에서 거의 단락처럼 보이는 커패시터를 거쳐 링잉 노드에 연결한 저항 $R$은 링잉의 품질 계수를 정한다(병렬 공진).",
-        sp.Eq(Q, R / Z0),
+        "Divided by $L_\\mathrm{par} C_\\mathrm{snub}$ and written as $s^2 + 2\\zeta\\omega_0 s + \\omega_0^2 = 0$, "
+        "with $\\omega_0 = 1/\\sqrt{L_\\mathrm{par} C_\\mathrm{snub}}$, its damping factor is",
+        "$L_\\mathrm{par} C_\\mathrm{snub}$로 나누어 $\\omega_0 = 1/\\sqrt{L_\\mathrm{par} C_\\mathrm{snub}}$인 "
+        "$s^2 + 2\\zeta\\omega_0 s + \\omega_0^2 = 0$ 꼴로 쓰면, 감쇠 계수는 다음과 같다.",
+        sp.Eq(zeta, zeta_of_R),
     )
     d.result(
         "snub.R",
-        positive_root(sp.solve(sp.Eq(1, R / sp.sqrt(Lpar / Cpar)), R), {Lpar: 1e-6, Cpar: 1e-10}),
-        "Choosing $Q = 1$ damps the ring within about one period:",
-        "$Q = 1$로 고르면 링잉은 약 한 주기 안에 감쇠한다.",
+        positive_root(sp.solve(sp.Eq(zeta, zeta_of_R), R), {zeta: 0.75, Lpar: 1e-6, Cs: 1e-10}),
+        "Solved for the resistance:",
+        "저항에 대해 풀면:",
         R,
     )
-    Cs, Vs, fs, P = S("C_snub"), S("V_snub"), S("f_s"), S("P")
     t = d.local("t", "t", positive=True)
     Rr = d.local("R", "R", positive=True)
     i = (Vs / Rr) * sp.exp(-t / (Rr * Cs))
@@ -100,9 +103,10 @@ def derive() -> Derivation:
         sp.Eq(E, lost),
     )
     d.step(
-        "The opposite edge discharges the capacitor through the resistor and loses the same energy again, so each "
-        "period loses",
-        "반대쪽 에지는 저항을 통해 커패시터를 방전시키며 같은 에너지를 다시 잃으므로, 한 주기에 잃는 에너지는 다음과 같다.",
+        "The next edge discharges the capacitor, through the resistor and the switch that turns on, and loses its "
+        "stored energy, as much again, so each period loses",
+        "다음 에지에서는 커패시터가 저항과 켜지는 스위치를 통해 방전하며 저장된 에너지, 즉 같은 양을 다시 잃는다. 따라서 한 "
+        "주기에 잃는 에너지는 다음과 같다.",
         sp.Eq(2 * E, 2 * lost),
     )
     d.result(

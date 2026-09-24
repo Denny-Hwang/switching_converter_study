@@ -231,6 +231,7 @@ symbol_table:
   L_par: {latex: "L_\\mathrm{par}", unit: "H", desc: "parasitic inductance that rings with C_par (leakage, wiring)", meaning: "parasitic (ringing) inductance", meaning_ko: "기생(링잉) 인덕턴스", range: [1.0e-9, 1.0e-4], scale: log}
   R_snub: {latex: "R_\\mathrm{snub}", unit: "Ω", desc: "resistance of an RC snubber", meaning: "snubber resistance", meaning_ko: "스너버 저항"}
   C_snub: {latex: "C_\\mathrm{snub}", unit: "F", desc: "capacitance of an RC snubber", meaning: "snubber capacitance", meaning_ko: "스너버 커패시턴스", range: [1.0e-12, 1.0e-7], scale: log}
+  zeta: {latex: "\\zeta", unit: "1", desc: "damping factor of the parasitic inductance, the snubber resistor and the snubber capacitor in series (AN11160's definition)", meaning: "damping factor", meaning_ko: "감쇠 계수(damping factor)", range: [0.1, 2]}
   V_snub: {latex: "V_\\mathrm{snub}", unit: "V", desc: "voltage the snubbed node swings through at each switching edge", meaning: "voltage swing at each edge", meaning_ko: "스위칭 에지마다의 전압 변화폭", range: [1, 1000], scale: log}
   L_app: {latex: "L_\\mathrm{app}", unit: "H", desc: "inductance an impedance meter reads (the reactance over ω)", meaning: "inductance the meter reads", meaning_ko: "측정기가 읽는 인덕턴스"}
 
@@ -872,11 +873,12 @@ equations:
     constraints: ["f_r0 > f_r1"]
     notes: "an added capacitance comparable to $C_\\mathrm{par}$ lowers the frequency clearly (adding three times $C_\\mathrm{par}$ halves it); a much smaller one changes it too little to measure"
     notes_ko: "$C_\\mathrm{par}$와 비슷한 크기의 커패시턴스를 더하면 주파수가 분명히 내려간다($C_\\mathrm{par}$의 세 배를 더하면 절반). 훨씬 작은 값은 측정할 수 있을 만큼 바꾸지 못한다"
-    cite: {key: nexperia_an11160, where: "the ringing frequency before and after a known capacitor is added; derived here"}
+    cite: {key: nexperia_an11160, where: "Sec. 3 (Determining C_LK and L_LK): the ringing frequency before and after a known capacitor is added; derived here"}
     derived_by: python/pe_core/derive/snubbers.py
     tests:
       - {inputs: {C_add: 1.5e-10, f_r0: 2.0e7, f_r1: 1.0e7}, expect: 5.0e-11}
-      - {inputs: {C_add: 3.2e-9, f_r0: 3.125e7, f_r1: 2.22e7}, expect: 3.260315573495134e-09}
+      # AN11160's own example (Sec. 3): 1 nF added, 91.74 MHz and 61.3 MHz, which it rounds to 807 pF
+      - {inputs: {C_add: 1.0e-9, f_r0: 9.174e7, f_r1: 6.13e7}, expect: 8.066243792901876e-10}
 
   - id: snub.L_par
     title: "Parasitic inductance of a ringing node"
@@ -885,36 +887,39 @@ equations:
     expr: "1/(4*pi**2*f_r0**2*C_par)"
     symbols: {f_r0: "ringing frequency", C_par: "parasitic capacitance of the node"}
     assumptions: [lossless_lc]
-    cite: {key: nexperia_an11160, where: "the inductance from the ringing frequency and the capacitance; derived here"}
+    cite: {key: nexperia_an11160, where: "Sec. 3 (Determining C_LK and L_LK): the inductance from the ringing frequency and the capacitance; derived here"}
     derived_by: python/pe_core/derive/snubbers.py
     tests:
       - {inputs: {f_r0: 2.0e7, C_par: 5.0e-11}, expect: 1.2665147955292222e-06}
+      # AN11160's own example (Sec. 3): 91.74 MHz and 807 pF give 3.73 nH
+      - {inputs: {f_r0: 9.174e7, C_par: 8.07e-10}, expect: 3.729488368105348e-09}
 
   - id: snub.R
-    title: "RC snubber resistance: the ringing's characteristic impedance"
-    title_ko: "RC 스너버 저항: 링잉의 특성 임피던스"
+    title: "RC snubber resistance for a damping factor"
+    title_ko: "감쇠 계수로 정한 RC 스너버 저항"
     lhs: R_snub
-    expr: "sqrt(L_par/C_par)"
-    symbols: {L_par: "parasitic (ringing) inductance", C_par: "parasitic capacitance of the node"}
+    expr: "2*zeta*sqrt(L_par/C_snub)"
+    symbols: {zeta: "damping factor", L_par: "parasitic (ringing) inductance", C_snub: "snubber capacitance"}
     assumptions: [lossless_lc]
-    notes: "across the ringing node, in series with a capacitor large compared with $C_\\mathrm{par}$, it gives the ring a quality factor of about 1: it dies out within about one period"
-    notes_ko: "링잉 노드에 $C_\\mathrm{par}$보다 충분히 큰 커패시터와 직렬로 달면 링잉의 품질 계수가 약 1이 되어, 약 한 주기 안에 사라진다"
-    cite: {key: nexperia_an11160, where: "the snubber resistor chosen equal to the characteristic impedance; derived here"}
+    notes: "AN11160 takes the damping factor of the parasitic inductance, the resistor and the snubber capacitor in series, and sets it between 0.5 and 1 for the least peak voltage: the resistor lies between $\\sqrt{L_\\mathrm{par}/C_\\mathrm{snub}}$ and twice that, and the best value in that range is found by trials. The node's own capacitance is left out of this damping factor"
+    notes_ko: "AN11160은 기생 인덕턴스, 저항, 스너버 커패시터를 직렬로 본 감쇠 계수를 쓰며, 피크 전압이 가장 낮도록 이를 0.5에서 1 사이로 잡는다. 저항은 $\\sqrt{L_\\mathrm{par}/C_\\mathrm{snub}}$와 그 두 배 사이에 있고, 그 범위에서 가장 좋은 값은 몇 번 시험해 찾는다. 노드 자체의 커패시턴스는 이 감쇠 계수에 들어가지 않는다"
+    cite: {key: nexperia_an11160, where: "Sec. 2 (Designing the snubber - theory): the damping factor and the range of the snubber resistor; Sec. 4: the best value by trials"}
     derived_by: python/pe_core/derive/snubbers.py
     tests:
-      - {inputs: {L_par: 1.2665147955292222e-06, C_par: 5.0e-11}, expect: 159.15494309189535}
+      - {inputs: {zeta: 0.75, L_par: 1.2665147955292222e-06, C_snub: 1.0e-10}, expect: 168.80930927945738}
+      - {inputs: {zeta: 0.5, L_par: 1.0e-8, C_snub: 1.0e-9}, expect: 3.1622776601683795}
 
   - id: snub.P
-    title: "Loss of an RC snubber"
-    title_ko: "RC 스너버의 손실"
+    title: "Loss an RC snubber adds"
+    title_ko: "RC 스너버가 더하는 손실"
     lhs: P
     expr: "C_snub*V_snub**2*f_s"
     symbols: {C_snub: "snubber capacitance", V_snub: "voltage the node swings through at each edge", f_s: "switching frequency"}
     assumptions: [snubber_full_swing]
-    notes: "charging a capacitor through a resistor loses as much energy as it stores, ½ C V², and the discharge loses the stored energy: C V² per period, whatever the resistance. A larger snubber capacitor damps better and loses more"
-    notes_ko: "저항을 통해 커패시터를 충전하면 저장되는 만큼(½ C V²)의 에너지를 잃고, 방전할 때는 저장된 에너지를 잃는다. 저항값과 무관하게 한 주기에 C V²이다. 스너버 커패시터가 클수록 감쇠는 잘 되지만 손실도 커진다"
+    notes: "charging the snubber capacitor through its resistor loses as much energy as it stores, ½ C V², and the next edge discharges it, through the resistor and the switch that turns on, losing the stored energy: C V² per period, whatever the resistance. The parasitic inductance's energy is lost with or without a snubber. A larger snubber capacitor lowers the peak voltage the best resistor can reach, and loses more"
+    notes_ko: "저항을 통해 스너버 커패시터를 충전하면 저장되는 만큼(½ C V²)의 에너지를 잃고, 다음 에지에서 저항과 켜지는 스위치를 통해 방전하면서 저장된 에너지를 잃는다. 저항값과 무관하게 한 주기에 C V²이다. 기생 인덕턴스의 에너지는 스너버가 있든 없든 잃는다. 스너버 커패시터가 클수록 가장 좋은 저항으로 얻을 수 있는 피크 전압은 낮아지지만 손실은 커진다"
     cite:
-      - {key: nexperia_an11160, where: "the power dissipated in the snubber resistor; derived here"}
+      - {key: nexperia_an11160, where: "Sec. 2 (Designing the snubber - theory): the average power loss due to the snubber; derived here"}
       - {key: erickson2020, where: "Ch. 4 (Switch Realization: the energy of a capacitance charged at each switching edge is dissipated)"}
     derived_by: python/pe_core/derive/snubbers.py
     tests:
@@ -1238,7 +1243,7 @@ equations:
     notes: "the first terms of Dowell's factor in powers of $\\varphi$: the excess loss grows as $\\varphi^4$ and, through the proximity effect, as $M_\\ell^2$. For $\\varphi \\le 1$ it lies above the exact factor by at most about 4 %"
     notes_ko: "Dowell 계수를 $\\varphi$의 거듭제곱으로 전개한 첫 항들이다. 초과 손실은 $\\varphi^4$에 비례하고, 근접 효과 때문에 $M_\\ell^2$에 비례해 커진다. $\\varphi \\le 1$에서는 정확한 계수보다 최대 약 4 % 크다"
     cite:
-      - {key: dowell1966}
+      - {key: dowell1966, where: "the one-dimensional model of foil layers whose factor this series expands"}
       - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: eddy currents in winding conductors); derived here as the series of Dowell's factor"}
     derived_by: python/pe_core/derive/windings.py
     tests:
@@ -1331,8 +1336,8 @@ equations:
     expr: "L_11*(1 - k_c**2)"
     symbols: {L_11: "inductance of winding 1 with winding 2 open", k_c: "coupling coefficient"}
     assumptions: [coupled_windings]
-    notes: "the short makes the second winding's current cancel the flux the two windings share, so only the flux they do not share is left: 1 − k² is small for a well-coupled transformer"
-    notes_ko: "단락하면 둘째 권선의 전류가 두 권선이 공유하는 자속을 상쇄하므로, 공유하지 않는 자속만 남는다. 결합이 좋은 변압기에서는 1 − k²가 작다"
+    notes: "the short holds the second winding's voltage, the rate of change of its flux linkage, at zero, so its current cancels most of the flux the two windings share; what is left is mainly the two windings' leakage (`xfmr.L_sc_T`): 1 − k² is small for a well-coupled transformer"
+    notes_ko: "단락하면 둘째 권선의 전압, 즉 쇄교 자속의 변화율이 0으로 묶이므로 그 전류가 두 권선이 공유하는 자속의 대부분을 상쇄한다. 남는 것은 주로 두 권선의 누설이다(`xfmr.L_sc_T`). 결합이 좋은 변압기에서는 1 − k²가 작다"
     cite:
       - {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: the transformer model; coupled inductors); derived here"}
       - {key: alexander2017, where: "Ch. 13 (Magnetically Coupled Circuits)"}

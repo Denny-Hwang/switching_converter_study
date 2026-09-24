@@ -893,21 +893,21 @@
           "result_for": "snub.L_par"
         },
         {
-          "text": "At the ringing frequency $\\omega_r = 1/\\sqrt{L_\\mathrm{par} C_\\mathrm{par}}$ the two reactances are equal; their common value is the characteristic impedance:",
-          "text_ko": "링잉 주파수 $\\omega_r = 1/\\sqrt{L_\\mathrm{par} C_\\mathrm{par}}$에서 두 리액턴스는 같고, 그 값이 특성 임피던스이다.",
-          "latex": "Z_0 = \\frac{\\sqrt{L_\\mathrm{par}}}{\\sqrt{C_\\mathrm{par}}}",
+          "text": "AN11160 takes the damping factor of the parasitic inductance, the snubber resistor and the snubber capacitor in series, leaving the node's own capacitance out. That loop's natural frequencies solve",
+          "text_ko": "AN11160은 기생 인덕턴스, 스너버 저항, 스너버 커패시터를 직렬로 본 루프의 감쇠 계수를 쓰며, 노드 자체의 커패시턴스는 넣지 않는다. 이 루프의 고유 주파수는 다음 식을 만족한다.",
+          "latex": "1 + s C_\\mathrm{snub} R_\\mathrm{snub} + C_\\mathrm{snub} L_\\mathrm{par} s^{2} = 0",
           "result_for": null
         },
         {
-          "text": "A resistance $R$ across the ring, through a capacitor that is nearly a short at $\\omega_r$, sets its quality factor (parallel resonance):",
-          "text_ko": "$\\omega_r$에서 거의 단락처럼 보이는 커패시터를 거쳐 링잉 노드에 연결한 저항 $R$은 링잉의 품질 계수를 정한다(병렬 공진).",
-          "latex": "Q = \\frac{R_\\mathrm{snub}}{Z_0}",
+          "text": "Divided by $L_\\mathrm{par} C_\\mathrm{snub}$ and written as $s^2 + 2\\zeta\\omega_0 s + \\omega_0^2 = 0$, with $\\omega_0 = 1/\\sqrt{L_\\mathrm{par} C_\\mathrm{snub}}$, its damping factor is",
+          "text_ko": "$L_\\mathrm{par} C_\\mathrm{snub}$로 나누어 $\\omega_0 = 1/\\sqrt{L_\\mathrm{par} C_\\mathrm{snub}}$인 $s^2 + 2\\zeta\\omega_0 s + \\omega_0^2 = 0$ 꼴로 쓰면, 감쇠 계수는 다음과 같다.",
+          "latex": "\\zeta = \\frac{R_\\mathrm{snub} \\sqrt{C_\\mathrm{snub}}}{2 \\sqrt{L_\\mathrm{par}}}",
           "result_for": null
         },
         {
-          "text": "Choosing $Q = 1$ damps the ring within about one period:",
-          "text_ko": "$Q = 1$로 고르면 링잉은 약 한 주기 안에 감쇠한다.",
-          "latex": "R_\\mathrm{snub} = \\sqrt{\\frac{L_\\mathrm{par}}{C_\\mathrm{par}}}",
+          "text": "Solved for the resistance:",
+          "text_ko": "저항에 대해 풀면:",
+          "latex": "R_\\mathrm{snub} = 2 \\zeta \\sqrt{\\frac{L_\\mathrm{par}}{C_\\mathrm{snub}}}",
           "result_for": "snub.R"
         },
         {
@@ -917,8 +917,8 @@
           "result_for": null
         },
         {
-          "text": "The opposite edge discharges the capacitor through the resistor and loses the same energy again, so each period loses",
-          "text_ko": "반대쪽 에지는 저항을 통해 커패시터를 방전시키며 같은 에너지를 다시 잃으므로, 한 주기에 잃는 에너지는 다음과 같다.",
+          "text": "The next edge discharges the capacitor, through the resistor and the switch that turns on, and loses its stored energy, as much again, so each period loses",
+          "text_ko": "다음 에지에서는 커패시터가 저항과 켜지는 스위치를 통해 방전하며 저장된 에너지, 즉 같은 양을 다시 잃는다. 따라서 한 주기에 잃는 에너지는 다음과 같다.",
           "latex": "2 E_R = C_\\mathrm{snub} V_\\mathrm{snub}^{2}",
           "result_for": null
         },

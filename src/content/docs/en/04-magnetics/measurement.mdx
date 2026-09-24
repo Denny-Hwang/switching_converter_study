@@ -57,19 +57,21 @@ the open-circuit voltages at a low test frequency gives the turns ratio
 
 An impedance meter's small signal and zero dc current do not show
 saturation. A voltage step across the winding makes its current ramp at the
-voltage over the inductance (<EqRef id="ind.di" label="inductor current" />);
-when the core saturates, the inductance collapses and the ramp steepens
-<Cite key="erickson2020" where="Ch. 10" />. The current where the slope
-starts to rise is the saturation current.
+voltage over the inductance (<EqRef id="ind.di" label="inductor current" />).
+Past the saturation flux density the core's permeability collapses and the
+inductance falls sharply <Cite key="erickson2020" where="Ch. 10" /> (see
+[magnetic materials and the B-H curve](../../01-physics/ferrites-bh/)), so the ramp
+steepens: the current where the slope starts to rise is the saturation
+current.
 
 ### The B-H loop
 
-With two windings, the primary's current gives the field intensity
-(<EqRef id="mag.H_ampere" label="Ampère's law" />) and the integral of the
-open secondary's voltage the flux density
-(<EqRef id="mag.dB_faraday" label="Faraday's law" />)
-<Cite key="erickson2020" where="Ch. 10" />: plotted against each other, they
-trace the core's B-H loop.
+With two windings, Ampère's law gives the field intensity from the
+primary's current (<EqRef id="mag.H_ampere" label="Ampère's law" />), and
+Faraday's law the flux density from the integral of the open secondary's
+voltage (<EqRef id="mag.dB_faraday" label="Faraday's law" />)
+<Cite key="erickson2020" where="Ch. 10" />. Plotted against each other, the
+two trace the core's B-H loop.
 
 ## Worked example
 
@@ -105,8 +107,10 @@ leads and their contacts.
 ## Gotchas
 
 - **Test frequency against self-resonance.** A winding with many turns
-  resonates low; a reading at a high test frequency overstates its
-  inductance <Cite key="keysight_5950_3000" />.
+  resonates low. The meter reads the effective value at its test frequency,
+  parasitics included <Cite key="keysight_5950_3000" />: close to the
+  self-resonance, that is well above the inductance
+  (<EqRef id="meas.L_app" label="apparent inductance" />).
 - **Two-wire resistance includes the leads.** Use four wires for a winding's
   dc resistance <Cite key="keithley_llmh7" />.
 - **No dc current, no saturation.** A meter's reading holds at the peak

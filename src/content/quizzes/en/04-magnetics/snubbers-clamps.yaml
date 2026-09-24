@@ -9,22 +9,22 @@ questions:
       - '$37.5\,\mathrm{pF}$'
     answer: 0
     explain: 'Halving the frequency needs four times the capacitance, so the added 150 pF is three times the node''s own.'
-  - q: 'What resistance should an RC snubber have?'
+  - q: 'How does AN11160 choose an RC snubber''s resistor?'
     options:
-      - 'The ring''s characteristic impedance: the square root of its inductance over its capacitance'
+      - 'For a damping factor between 0.5 and 1 of the parasitic inductance, the resistor and the snubber capacitor in series, then by trying a few values'
       - 'As small as possible'
       - 'As large as possible'
-      - 'The load resistance'
+      - 'Equal to the load resistance'
     answer: 0
-    explain: 'That value gives the ring a quality factor of about 1, so it dies out within about a period.'
-  - q: 'An RC snubber of $220\,\mathrm{pF}$ sees a 100 V swing at each edge, at 100 kHz. What does it dissipate?'
+    explain: 'A damping factor between 0.5 and 1 gives the least peak voltage; the best value in that range is found by trials.'
+  - q: 'An RC snubber of $220\,\mathrm{pF}$ sees a 100 V swing at each edge, at 100 kHz. What loss does it add?'
     options:
       - '$0.22\,\mathrm{W}$'
       - '$0.11\,\mathrm{W}$'
       - '$22\,\mathrm{mW}$'
       - '$2.2\,\mathrm{W}$'
     answer: 0
-    explain: 'Charging and discharging each lose half of C V squared: C V squared per period, times the frequency.'
+    explain: 'Charging and discharging the snubber capacitor each lose half of C V squared: C V squared per period, times the frequency.'
   - q: 'How does the snubber resistor''s value change the snubber''s loss?'
     options:
       - 'It does not: the capacitor, the voltage swing and the frequency set it'
@@ -32,15 +32,15 @@ questions:
       - 'A smaller resistor lowers it'
       - 'The loss is in the capacitor, not the resistor'
     answer: 0
-    explain: 'Charging a capacitor through a resistor loses the same energy whatever the resistance.'
-  - q: 'Why must the snubber capacitor be several times the node''s own capacitance?'
+    explain: 'Charging a capacitor through a resistor loses half of C V squared whatever the resistance, and the next edge loses the stored half.'
+  - q: 'What snubber capacitor does AN11160 take as a starting point?'
     options:
-      - 'So that it passes the ringing to the resistor, which then damps it'
-      - 'To lower the snubber''s loss'
-      - 'To raise the ringing frequency'
-      - 'To protect the resistor from the voltage'
+      - 'One to two times the node''s own capacitance'
+      - 'A tenth of the node''s own capacitance'
+      - 'A hundred times the node''s own capacitance'
+      - 'As large as the output capacitor'
     answer: 0
-    explain: 'A small snubber capacitor leaves the resistor out of the ring; at three times the node''s capacitance or more, the damping ratio is about 0.5.'
+    explain: 'A compromise: a larger capacitor lowers the peak voltage the best resistor can reach, but the loss grows with it.'
   - q: 'In the TVS model, a TVS with a 150 V breakdown voltage and a dynamic resistance of $0.5\,\Omega$ carries 10 A. What does it clamp at?'
     options:
       - '$155\,\mathrm{V}$'

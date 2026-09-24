@@ -54,17 +54,19 @@ LCR 미터(LCR meter)는 측정 주파수(test frequency)에서 작은 정현파
 
 임피던스 측정기(impedance meter)의 작은 신호와 0인 직류 전류로는 포화가 드러나지
 않습니다. 권선 양단에 계단 전압(voltage step)을 걸면 전류는 전압을 인덕턴스로 나눈
-기울기로 직선적으로 증가합니다(<EqRef id="ind.di" label="인덕터 전류" />). 코어가
-포화되면 인덕턴스가 급락하고 기울기가 가팔라집니다
-<Cite key="erickson2020" where="Ch. 10" />. 기울기가 커지기 시작하는 전류가 포화
+기울기로 직선적으로 증가합니다(<EqRef id="ind.di" label="인덕터 전류" />). 포화 자속
+밀도를 넘으면 코어의 투자율이 급락하고 인덕턴스가 크게 떨어집니다
+<Cite key="erickson2020" where="Ch. 10" />([자성 재료와 B-H 곡선](../../01-physics/ferrites-bh/)
+참고). 그래서 기울기가 가팔라지며, 기울기가 커지기 시작하는 전류가 포화
 전류(saturation current)입니다.
 
 ### B-H 루프
 
-권선이 두 개이면 1차 전류는 자계 세기(field intensity)를 주고(<EqRef id="mag.H_ampere" label="앙페르 법칙" />),
-개방된 2차 권선 전압의 적분은 자속 밀도(flux density)를 줍니다(<EqRef id="mag.dB_faraday" label="패러데이 법칙" />)
-<Cite key="erickson2020" where="Ch. 10" />. 둘을 서로에 대해 그리면 코어의
-B-H 루프(B-H loop)가 그려집니다.
+권선이 두 개이면 앙페르 법칙은 1차 전류로부터 자계 세기(field intensity)를
+주고(<EqRef id="mag.H_ampere" label="앙페르 법칙" />), 패러데이 법칙은 개방된 2차 권선
+전압의 적분으로부터 자속 밀도(flux density)를 줍니다(<EqRef id="mag.dB_faraday" label="패러데이 법칙" />)
+<Cite key="erickson2020" where="Ch. 10" />. 둘을 서로에 대해 그리면 코어의 B-H
+루프(B-H loop)가 그려집니다.
 
 ## 풀이 예제
 
@@ -99,8 +101,9 @@ $f_\mathrm{srf}$를 높이고 비교하십시오.
 ## 주의할 점
 
 - **측정 주파수를 자기 공진과 견주어 보십시오.** 턴 수가 많은 권선은 낮은 주파수에서
-  공진합니다. 높은 측정 주파수에서 읽은 값은 인덕턴스를 과대평가합니다
-  <Cite key="keysight_5950_3000" />.
+  공진합니다. 측정기는 기생 성분을 포함한 측정 주파수에서의 실효값을 읽으므로
+  <Cite key="keysight_5950_3000" />, 자기 공진에 가까우면 그 값은 인덕턴스보다 훨씬
+  큽니다(<EqRef id="meas.L_app" label="겉보기 인덕턴스" />).
 - **2선식으로 잰 저항에는 리드가 포함됩니다.** 권선의 직류 저항은 4선식으로
   측정하십시오 <Cite key="keithley_llmh7" />.
 - **직류 전류가 없으면 포화도 없습니다.** 측정기의 측정값은 코어가 피크 전류에서

@@ -458,8 +458,8 @@ resources:
     level: intermediate
     language: en
     retrieved: 2026-09-24
-    why: "How to find a ringing node's parasitic capacitance and inductance with an added capacitor, and choose the RC snubber's resistor and capacitor, trading damping against loss."
-    why_ko: "커패시터를 더해 링잉 노드의 기생 커패시턴스와 인덕턴스를 구하고, 감쇠와 손실을 맞바꾸며 RC 스너버의 저항과 커패시터를 고르는 방법."
+    why: "How to find a ringing node's parasitic capacitance and inductance with an added capacitor, then choose the RC snubber's capacitor and its resistor from a damping factor, trading peak voltage against loss."
+    why_ko: "커패시터를 더해 링잉 노드의 기생 커패시턴스와 인덕턴스를 구한 뒤, 피크 전압과 손실을 맞바꾸며 RC 스너버의 커패시터와 감쇠 계수로 정하는 저항을 고르는 방법."
     title_match: "Designing RC snubbers"
     urlkind: pdf
     cite: nexperia_an11160

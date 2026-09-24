@@ -54,22 +54,29 @@ measured twice: as built, and with a known capacitor added across the node
 
 ### The RC snubber
 
-A resistor across the node, in series with a capacitor, damps the ring. Its
-value is the ring's characteristic impedance <Cite key="nexperia_an11160" />:
+A resistor in series with a capacitor, across the node, damps the ring.
+AN11160 sizes the two in turn <Cite key="nexperia_an11160" />:
+
+- **The capacitor.** One to two times $C_\mathrm{par}$ is a good starting
+  point, a compromise between the loss and the peak voltage. It must also be
+  large enough to take up the parasitic inductance's energy, and small
+  enough to discharge within the on-time.
+- **The resistor.** From the damping factor of the parasitic inductance, the
+  resistor and the snubber capacitor in series. A damping factor between 0.5
+  and 1 gives the least peak voltage; the best value in that range is found
+  by trying a few.
 
 <Eq id="snub.R" />
 
-The snubber capacitor must pass the ringing to the resistor, so it has to be
-larger than $C_\mathrm{par}$. With it at three times $C_\mathrm{par}$ or more,
-the ring's damping ratio is about 0.5 and it falls to a few per cent of its
-amplitude within one period; with it equal to $C_\mathrm{par}$, the damping
-ratio is only 0.16. Every edge charges or discharges the snubber capacitor
-through the resistor, which dissipates the same energy whatever its value:
+Every edge charges or discharges the snubber capacitor. The loss this adds
+does not depend on the resistor; the parasitic inductance's energy is lost
+with or without a snubber <Cite key="nexperia_an11160" />:
 
 <Eq id="snub.P" />
 
-A larger capacitor damps better and dissipates more: a snubber is a
-compromise between damping and loss <Cite key="nexperia_an11160" />.
+A larger capacitor lowers the peak voltage the best resistor can reach, and
+loses more: a snubber is a compromise between damping and loss
+<Cite key="nexperia_an11160" />.
 
 ## Worked example
 
@@ -81,12 +88,12 @@ The ring falls from <Val example="rc-snubber" name="f_r0" /> to
 <Val example="rc-snubber" name="f_r1" /> with
 <Val example="rc-snubber" name="C_add" /> added, so the node's own
 capacitance is <Val example="rc-snubber" name="C_par" /> and its inductance
-<Val example="rc-snubber" name="L_par" />. The snubber resistor is
-<Val example="rc-snubber" name="R_snub" />. A snubber capacitor of
-<Val example="rc-snubber" name="C_snub" />, more than three times
-$C_\mathrm{par}$, on a node that swings through
-<Val example="rc-snubber" name="V_snub" /> at
-<Val example="rc-snubber" name="f_s" />, dissipates
+<Val example="rc-snubber" name="L_par" />. A snubber capacitor of
+<Val example="rc-snubber" name="C_snub" />, twice $C_\mathrm{par}$, and a
+damping factor of <Val example="rc-snubber" name="zeta" />, the middle of the
+range, give a resistor of <Val example="rc-snubber" name="R_snub" />. On a
+node that swings through <Val example="rc-snubber" name="V_snub" /> at
+<Val example="rc-snubber" name="f_s" />, the snubber adds a loss of
 <Val example="rc-snubber" name="P" />.
 
 ## Try it
@@ -105,9 +112,10 @@ clamp from its leakage inductance and peak current.
 Probe the switch node with a short ground spring and read the ringing
 frequency after the switching edge. Add a C0G capacitor of a few times the
 expected parasitic capacitance, close to the device, and read the frequency
-again. Compute $C_\mathrm{par}$, $L_\mathrm{par}$ and the snubber resistor;
-build the snubber with a resistor rated for its dissipation, and check the
-damping and the resistor's temperature.
+again. Compute $C_\mathrm{par}$ and $L_\mathrm{par}$, choose the snubber
+capacitor and the resistor for a damping factor in the range, and try a few
+resistors around it. Build the snubber with a resistor rated for its
+dissipation, and check the peak voltage and the resistor's temperature.
 
 ## Gotchas
 
@@ -117,7 +125,8 @@ damping and the resistor's temperature.
 - **A clamp voltage close to the reflected voltage wastes power.** The clamp
   then takes much more than the leakage energy <Cite key="ti_ssztcv6" />.
 - **The snubber's loss does not depend on its resistor.** It is set by the
-  capacitor, the voltage swing and the switching frequency.
+  capacitor, the voltage swing and the switching frequency
+  <Cite key="nexperia_an11160" />.
 
 ## Go deeper
 

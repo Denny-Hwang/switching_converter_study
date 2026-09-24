@@ -6,7 +6,7 @@ equations, checked against the exact models they approximate.
   optimum of Dowell's factor;
 * the reading of an impedance meter below self-resonance (`meas.L_app`);
 * the ringing frequency with an added capacitor (`snub.C_par`) and the
-  damping an RC snubber with R = sqrt(L/C) (`snub.R`) gives;
+  snubber resistor's range for AN11160's damping factor (`snub.R`);
 * the core geometrical constant's scaling with the core's size (`mag.Kg_core`).
 """
 
@@ -77,28 +77,19 @@ def test_adding_three_times_the_capacitance_halves_the_ringing_frequency() -> No
     assert abs(c_add / ((f0 / f1) ** 2 - 1) - c_par) < mp.mpf("1e-30")
 
 
-def snubber_damping(ratio: float) -> tuple[mp.mpf, mp.mpf]:
-    """Damping ratio of the ringing pole pair and the amplitude left after one
-    ringing period, for L_par || C_par with R_snub = sqrt(L_par/C_par) in series
-    with C_snub = ratio * C_par across them (L_par = C_par = 1)."""
-    cs = mp.mpf(ratio)
-    # admittance 1/(sL) + s C + s C_s/(1 + s R C_s) = 0, times s L (1 + s R C_s)
-    roots = mp.polyroots([cs, 1 + cs, cs, 1], maxsteps=200, extraprec=100)
-    ring = next(r for r in roots if abs(mp.im(r)) > 1e-9)
-    zeta = -mp.re(ring) / abs(ring)
-    after = mp.exp(mp.re(ring) * 2 * mp.pi / abs(mp.im(ring)))
-    return zeta, after
-
-
-def test_snubber_with_characteristic_impedance_damps_within_a_period() -> None:
-    for ratio in (3, 4.4, 10, 100, 1e4):
-        zeta, after = snubber_damping(ratio)
-        assert 0.49 <= zeta <= 0.54
-        assert after < 0.03
-    zeta1, _ = snubber_damping(1)
-    assert abs(zeta1 - mp.mpf("0.16")) < 0.01
-    zeta2, _ = snubber_damping(2)
-    assert abs(zeta2 - mp.mpf("0.35")) < 0.01
+def test_snubber_resistor_range_for_the_damping_factor() -> None:
+    """snub.R's note: a damping factor between 0.5 and 1 puts the resistor
+    between sqrt(L_par/C_snub) and twice that; it is the damping factor of the
+    series loop L_par, R, C_snub (roots of s^2 L C + s R C + 1)."""
+    L, C = mp.mpf("1.2665e-6"), mp.mpf("1e-10")
+    z0 = mp.sqrt(L / C)
+    for zeta, ratio in ((mp.mpf("0.5"), 1), (mp.mpf(1), 2)):
+        r = 2 * zeta * mp.sqrt(L / C)
+        assert abs(r / z0 - ratio) < mp.mpf("1e-30")
+        # the loop's poles have that damping factor (critically damped at 1)
+        roots = mp.polyroots([L * C, r * C, 1], maxsteps=100, extraprec=60)
+        w0 = 1 / mp.sqrt(L * C)
+        assert abs(-mp.re(roots[0]) / w0 - zeta) < mp.mpf("1e-12")
 
 
 def test_core_constant_grows_as_the_fifth_power_of_size() -> None:

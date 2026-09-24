@@ -8,8 +8,8 @@ checks the part it does not: that a link such as
 actually carries that id in the built page (equation anchors, derivation
 sections, bibliography entries, headings).
 
-Links into the equation explorer and the simulator are skipped: their hash holds the tool
-state (#eq=...&D=0.5), not an anchor.
+Links into the tool pages are skipped: their hash holds the tool's state
+(#eq=...&D=0.5, src/lib/useStateHash.ts), not an anchor.
 
     npm run build && python scripts/anchorcheck.py [dist]
 """
@@ -23,7 +23,16 @@ from urllib.parse import unquote, urljoin, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "/switching_converter_study"
-STATE_HASH_PAGES = ("/design/explorer/", "/simulate/simulator/")
+STATE_HASH_PAGES = (
+    "/design/explorer/",
+    "/simulate/simulator/",
+    "/design/converter-designer/",
+    "/design/magnetics-designer/",
+    "/design/loss-budget/",
+    "/design/clamp-check/",
+    "/design/source-matcher/",
+    "/design/sense-chain/",
+)
 
 
 class Page(HTMLParser):
