@@ -123,12 +123,15 @@ def test_the_ideal_values_come_from_the_catalogue(case) -> None:
 
 
 def test_the_committed_files_are_the_generators() -> None:
-    """Without ngspice: the files drawn from results.json (READMEs, waveforms) and the ones written
-    from the parts (netlists, schematics) are what is committed; ngspice's numbers themselves are
-    checked in the spice job (sim_library.py --check)."""
+    """Without ngspice: results.json is what the generator writes from the ngspice numbers it stores
+    (the ideal values, the quantities' names and the parameters from the current code), and the files
+    drawn from it (READMEs, waveforms) and from the parts (netlists, schematics) are what is committed;
+    ngspice's numbers themselves are checked in the spice job (sim_library.py --check)."""
     pytest.importorskip("matplotlib")
     pytest.importorskip("schemdraw")
-    results = json.loads((ROOT / "sim" / "results.json").read_text(encoding="utf-8"))
+    committed = (ROOT / "sim" / "results.json").read_text(encoding="utf-8")
+    results = sl.expected_results(json.loads(committed))
+    assert committed == json.dumps(results, indent=1, ensure_ascii=False) + "\n"
     stale = [str(p.relative_to(ROOT)) for p, text in sl.files(results).items() if not p.exists() or p.read_text(encoding="utf-8") != text]
     assert stale == []
     for c in sl.CASES:
@@ -136,3 +139,18 @@ def test_the_committed_files_are_the_generators() -> None:
         assert rec["params"] == sl.case_params(c) and rec["cycles"] == c["cycles"]
         # ngspice's values in results.json within 1 % of the ideal equations, and settled
         assert sl.compare(c, rec["values"], sl.analytic(c)) == []
+
+
+def test_stale_metadata_in_results_json_is_caught() -> None:
+    """An ideal value that no longer matches its equation, within the 1 % that ngspice is allowed, or a
+    renamed quantity: ngspice's numbers still pass, but the file the generator writes differs."""
+    results = json.loads((ROOT / "sim" / "results.json").read_text(encoding="utf-8"))
+    case = next(c for c in sl.CASES if c["id"] == "buck-ccm")
+    rec = results["cases"]["buck-ccm"]
+    key = next(iter(rec["analytic"]))
+    rec["analytic"][key] = float(f"{rec['analytic'][key] * 1.005:.7g}")
+    assert sl.compare(case, rec["values"], rec["analytic"]) == []  # ngspice still within 1 % of it
+    assert sl.expected_results(results)["cases"]["buck-ccm"]["analytic"] != rec["analytic"]
+    results = json.loads((ROOT / "sim" / "results.json").read_text(encoding="utf-8"))
+    results["cases"]["buck-ccm"]["quantities"]["v_out"]["label"] = "output"
+    assert sl.expected_results(results) != results

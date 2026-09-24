@@ -1071,10 +1071,10 @@ def sim_readme() -> str:
 # ---- files ----------------------------------------------------------------------------------------
 
 
-def results_of(runs: dict[str, dict]) -> dict:
+def results_of(runs: dict[str, dict], version: str) -> dict:
     """results.json: per case, ngspice's values and samples (7 significant digits), what the .cir prints,
-    the quantities' names, and the ideal equations' values."""
-    out = {"ngspice": ngspice_version(), "steps_per_period": STEPS, "periods_recorded": PLOTTED, "cases": {}}
+    the quantities' names, and the ideal equations' values; `version` is the ngspice that ran."""
+    out = {"ngspice": version, "steps_per_period": STEPS, "periods_recorded": PLOTTED, "cases": {}}
     for c in CASES:
         p = case_params(c)
         r = runs[c["id"]]
@@ -1099,6 +1099,16 @@ def results_of(runs: dict[str, dict]) -> dict:
             "samples": {k: [float(f"{x:.7g}") for x in xs] for k, xs in r["samples"].items()},
         }
     return out
+
+
+def expected_results(old: dict) -> dict:
+    """results.json as the generator writes it now, with the numbers ngspice gave kept as stored (its
+    values, what the .cir prints, the samples and its version: a rerun must agree with them within
+    RERUN, rerun_errors) and everything else from the current code: the cases, their parameters and
+    presets, the quantities' names and the ideal equations' values. The committed file must equal it,
+    so an equation that changes within TOL still marks results.json and the READMEs stale."""
+    runs = {cid: {k: rec[k] for k in ("values", "printed", "samples")} for cid, rec in old["cases"].items()}
+    return results_of(runs, old["ngspice"])
 
 
 def ngspice_version() -> str:
@@ -1172,14 +1182,17 @@ def main() -> int:
         else:
             old = json.loads(RESULTS.read_text(encoding="utf-8"))
             errors += rerun_errors(old, runs)
-            want = files(old)
-            want[RESULTS] = RESULTS.read_text(encoding="utf-8")
-            for path, text in want.items():
-                if not path.exists() or path.read_text(encoding="utf-8") != text:
-                    errors.append(f"{path.relative_to(ROOT)} is stale (run python scripts/sim_library.py)")
-            present = {p for p in SIM.rglob("*") if p.is_file()}
-            for path in sorted(present - set(want)):
-                errors.append(f"{path.relative_to(ROOT)} is not generated (remove it, or add it to scripts/sim_library.py)")
+            if all(c["id"] in old["cases"] for c in CASES):
+                # results.json itself, the READMEs and the waveforms as the generator writes them now
+                new = expected_results(old)
+                want = files(new)
+                want[RESULTS] = json.dumps(new, indent=1, ensure_ascii=False) + "\n"
+                for path, text in want.items():
+                    if not path.exists() or path.read_text(encoding="utf-8") != text:
+                        errors.append(f"{path.relative_to(ROOT)} is stale (run python scripts/sim_library.py)")
+                present = {p for p in SIM.rglob("*") if p.is_file()}
+                for path in sorted(present - set(want)):
+                    errors.append(f"{path.relative_to(ROOT)} is not generated (remove it, or add it to scripts/sim_library.py)")
             # every schematic on disk read back and compared with its netlist
             for c in CASES:
                 asc = SIM / "ltspice" / c["topology"] / f"{c['id']}.asc"
@@ -1198,7 +1211,7 @@ def main() -> int:
         for e in errors:
             print("  " + e, file=sys.stderr)
         return 1
-    results = results_of(runs)
+    results = results_of(runs, ngspice_version())
     RESULTS.parent.mkdir(parents=True, exist_ok=True)
     RESULTS.write_text(json.dumps(results, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     for path, text in files(results).items():
