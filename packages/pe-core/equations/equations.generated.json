@@ -7276,8 +7276,8 @@
       ],
       "convention": "",
       "convention_ko": "",
-      "notes": "the battery charges when its terminals are above its open-circuit voltage and discharges below it; the open-circuit voltage rises slowly with the state of charge, so over the few hundred switching periods of a simulation it is a constant",
-      "notes_ko": "단자 전압이 개방 전압보다 높으면 배터리가 충전되고 낮으면 방전된다; 개방 전압은 충전 상태에 따라 천천히 오르므로 수백 스위칭 주기의 시뮬레이션 동안에는 상수로 본다",
+      "notes": "the battery charges when its terminals are above its open-circuit voltage and discharges below it; the open-circuit voltage and the resistance depend on the state of charge, the state of health and the temperature, which the simulator holds constant over the periods it computes",
+      "notes_ko": "단자 전압이 개방 전압보다 높으면 배터리가 충전되고 낮으면 방전된다; 개방 전압과 저항은 충전 상태, 건강 상태, 온도에 따라 달라지며, 시뮬레이터는 계산하는 주기 동안 이를 상수로 둔다",
       "cites": [
         {
           "key": "he2011",

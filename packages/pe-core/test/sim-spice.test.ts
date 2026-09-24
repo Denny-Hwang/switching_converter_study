@@ -10,19 +10,26 @@ import { analyse, buildModel, restState, runCycle, simulate, stepsFor, type SimP
  * smallest and end value, and its value at 40 instants spread over the period.
  * The SPICE parts are near-ideal: the switch's on-resistance is the case's (the
  * simulator uses the same), its off-resistance 1 GΩ, and each diode drops a few
- * millivolts on top of the case's V_F. So each value must agree within 0.5 % of
- * the quantity's largest magnitude in the period, and each peak-to-peak swing
- * within 2 % of itself. The waveform values are compared away from the
+ * millivolts on top of the case's V_F. So each value must agree within 0.5 %
+ * of the quantity's largest magnitude in the period, and each peak-to-peak
+ * swing within 2 % of itself (and of the scale's 1e-4), with room for what the
+ * SPICE parts add: 5 mV for a voltage (a diode's extra drop; a voltage that
+ * stays near zero, such as a switch whose body diode conducts all period, has
+ * no scale of its own), a microampere for a current (what a switch or a diode
+ * leaks when off). The waveform values are compared away from the
  * simulator's events (switching, a diode starting or stopping), where the
  * timing of a real edge and an ideal one differ by nanoseconds.
  *
  * One exception, with a node capacitance: at the end of the rise the diode
  * takes over the inductor current from the capacitance at once, and ngspice's
- * steep diode overshoots at that instant for a few picoseconds (a spike of up
- * to half an ampere; its charge, some 1e-12 C, is nothing). An ideal diode has
- * no such spike, so there the diode current's largest value, and the input
- * current's extremes (for the buck the capacitance returns the spike to the
- * input), are left out.
+ * steep diode overshoots at that instant for a few picoseconds (0.4 A to
+ * 1.3 A in the buck and boost cases, near 10 A on the flyback's secondary, a
+ * few amperes reflected to its primary; it shrinks with a smaller maximum
+ * step, an artefact of the integration). An ideal diode has no such spike, so
+ * there the diode current's largest value and its swing are left out, and for
+ * the buck and the flyback, whose input current carries the spike (through
+ * the node capacitance, or reflected, both ways), the input current's
+ * extremes and swing too.
  */
 
 interface SpiceCase {
@@ -52,6 +59,8 @@ const fixture = JSON.parse(readFileSync(new URL('./fixtures/spice.json', import.
 
 const VALUE_TOL = 0.005;
 const SWING_TOL = 0.02;
+/** What the SPICE parts add to a value: a diode's extra drop (V), a part's leakage when off (A). */
+const PARTS = { v: 5e-3, i: 1e-6 };
 /** Waveform values within this time of an event are not compared. */
 const EVENT_GAP = 2e-8;
 
@@ -97,6 +106,19 @@ describe(`simulator against ngspice ${fixture.ngspice} (${fixture.cases.length} 
     expect(cs.some((c) => c.load.kind === 'network' && c.load.battery && c.load.R !== undefined)).toBe(true);
     expect(cs.some((c) => c.load.kind === 'network' && !c.load.battery && c.load.R === undefined)).toBe(true);
     expect(cs.some((c) => c.startup)).toBe(true);
+    // a reset winding of other turns than the primary's, and a battery with a node capacitance
+    expect(cs.some((c) => c.topology === 'forward' && c.nr !== 1)).toBe(true);
+    expect(cs.some((c) => c.Cnode && c.load.kind === 'network' && c.load.battery)).toBe(true);
+  });
+
+  it("every interval of every converter's model runs in some case", () => {
+    const seen: Record<string, Set<string>> = { twoSwitch: new Set(), forward: new Set() };
+    for (const { case: c } of fixture.cases) {
+      const r = lastPeriod(c);
+      for (const iv of r.waveforms.interval as string[]) seen[c.topology === 'forward' ? 'forward' : 'twoSwitch']!.add(iv);
+    }
+    expect([...seen.twoSwitch!].sort()).toEqual(['clamp', 'idle', 'off', 'on', 'onRev', 'rev', 'ring', 'rise']);
+    expect([...seen.forward!].sort()).toEqual(['idle', 'off', 'offL0', 'offM0', 'on', 'onL0']);
   });
 
   for (const { case: c, spice, samples } of fixture.cases) {
@@ -120,15 +142,18 @@ describe(`simulator against ngspice ${fixture.ngspice} (${fixture.cases.length} 
         const ts = { avg: r.avg[q]!, max: r.max[q]!, min: r.min[q]!, end: series!.at(-1)! };
         const sp = { avg: spice[`${q}_avg`]!, max: spice[`${q}_max`]!, min: spice[`${q}_min`]!, end: spice[`${q}_end`]! };
         const scale = Math.max(Math.abs(sp.max), Math.abs(sp.min), 1e-12);
+        const parts = q.startsWith('v_') ? PARTS.v : PARTS.i;
         // the diode's take-over spike at the end of a node capacitance's rise (see above)
-        const spike = c.Cnode !== undefined && (q === 'i_D' || q === 'i_in');
-        const fns = spike ? (['avg', 'end'] as const) : (['avg', 'max', 'min', 'end'] as const);
+        const spikeD = c.Cnode !== undefined && q === 'i_D';
+        const spikeIn = c.Cnode !== undefined && q === 'i_in' && (c.topology === 'buck' || c.topology === 'flyback');
+        const spike = spikeD || spikeIn;
+        const fns = spikeIn ? (['avg', 'end'] as const) : spikeD ? (['avg', 'min', 'end'] as const) : (['avg', 'max', 'min', 'end'] as const);
         for (const fn of fns) {
-          expect(Math.abs(ts[fn] - sp[fn]), `${c.id}: ${q} ${fn}: simulator ${ts[fn]}, ngspice ${sp[fn]}`).toBeLessThanOrEqual(VALUE_TOL * scale);
+          expect(Math.abs(ts[fn] - sp[fn]), `${c.id}: ${q} ${fn}: simulator ${ts[fn]}, ngspice ${sp[fn]}`).toBeLessThanOrEqual(VALUE_TOL * scale + parts);
         }
         if (!spike) {
           const swing = sp.max - sp.min;
-          expect(Math.abs(ts.max - ts.min - swing), `${c.id}: ${q} peak-to-peak: simulator ${ts.max - ts.min}, ngspice ${swing}`).toBeLessThanOrEqual(SWING_TOL * swing + 1e-4 * scale);
+          expect(Math.abs(ts.max - ts.min - swing), `${c.id}: ${q} peak-to-peak: simulator ${ts.max - ts.min}, ngspice ${swing}`).toBeLessThanOrEqual(SWING_TOL * swing + 1e-4 * scale + parts);
         }
         // the waveform, instant by instant
         const tk = samples.t!;
@@ -137,7 +162,7 @@ describe(`simulator against ngspice ${fixture.ngspice} (${fixture.cases.length} 
         for (let k = 0; k < tk.length; k++) {
           if (events.some((e) => Math.abs(e - tk[k]!) < EVENT_GAP)) continue;
           const y = at(t, series!, tk[k]!);
-          expect(Math.abs(y - yk[k]!), `${c.id}: ${q} at t = ${(tk[k]! * 1e6).toFixed(3)} µs: simulator ${y}, ngspice ${yk[k]}`).toBeLessThanOrEqual(VALUE_TOL * scale);
+          expect(Math.abs(y - yk[k]!), `${c.id}: ${q} at t = ${(tk[k]! * 1e6).toFixed(3)} µs: simulator ${y}, ngspice ${yk[k]}`).toBeLessThanOrEqual(VALUE_TOL * scale + parts);
           compared++;
         }
       }

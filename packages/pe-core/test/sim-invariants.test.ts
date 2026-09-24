@@ -108,6 +108,63 @@ describe('steady state with each load: balances and energy', () => {
   }
 });
 
+describe('steady state with a fixed output or a capacitor alone: balance and energy', () => {
+  // a fixed output below its balancing duty ratio settles in DCM
+  const FIXED: Record<Topology, { Vg: number; D: number; V: number }> = {
+    buck: { Vg: 24, D: 0.3, V: 12 },
+    boost: { Vg: 12, D: 0.3, V: 24 },
+    buckboost: { Vg: 24, D: 0.25, V: 14 },
+    flyback: { Vg: 24, D: 0.25, V: 14 },
+    forward: { Vg: 24, D: 0.3, V: 10 },
+  };
+  for (const topology of ['buck', 'boost', 'buckboost', 'flyback', 'forward'] as Topology[]) {
+    for (const lossy of [false, true]) {
+      const { Vg, D, V } = FIXED[topology];
+      const base = {
+        topology,
+        Vg,
+        fs,
+        L: 1e-4,
+        n: topology === 'flyback' || topology === 'forward' ? 1 : undefined,
+        nr: topology === 'forward' ? 1 : undefined,
+        LM: topology === 'forward' ? 2e-3 : undefined,
+        Ron: lossy ? 0.05 : 0,
+        RL: lossy ? 0.03 : 0,
+        VF: lossy ? 0.4 : 0,
+      };
+      it(`${topology}, fixed output${lossy ? ', with losses' : ''}`, () => {
+        const p = { ...base, D, load: { kind: 'fixed', V } } as SimParams;
+        const r = simulate(p);
+        expect(r.status).toBe('steady');
+        expect(r.mode).toBe('DCM');
+        const w = r.waveforms;
+        const iL = w.i_L as number[];
+        const vInd = (w.v_L as number[]).map((v, k) => v - (p.RL ?? 0) * iL[k]!);
+        expect(Math.abs(avgOf(r, (k) => vInd[k]!))).toBeLessThan(1e-7 * Math.max(...vInd.map(Math.abs)));
+        // the source's power = what the fixed output takes + the losses
+        const Pin = avgOf(r, (k) => (w.v_in as number[])[k]! * (w.i_in as number[])[k]!);
+        expect(Pin).toBeGreaterThan(0);
+        expect(Math.abs(Pin - loadPower(p, r) - r.losses.total)).toBeLessThan(1e-6 * Pin);
+      });
+      if (topology === 'buck' || topology === 'forward') {
+        it(`${topology}, a capacitor alone${lossy ? ', with losses' : ''}`, () => {
+          const p = { ...base, D: 0.4, load: { kind: 'network', C: 1e-4, V0: 0 } } as SimParams;
+          const r = simulate(p);
+          expect(r.status).toBe('steady');
+          const w = r.waveforms;
+          const iIn = w.i_in as number[];
+          const scaleI = Math.max(...iIn.map(Math.abs), 1e-12);
+          // nothing takes charge from the capacitor: in its steady state none flows to it (to the search's tolerance)
+          expect(Math.max(...(w.i_C as number[]).map(Math.abs))).toBeLessThan(1e-6 * scaleI);
+          // what the source gives is lost (the forward converter's magnetizing current, through R_on)
+          const Pin = avgOf(r, (k) => (w.v_in as number[])[k]! * iIn[k]!);
+          expect(Math.abs(Pin - r.losses.total)).toBeLessThan(1e-9 * Vg * scaleI);
+        });
+      }
+    }
+  }
+});
+
 describe('batteries: the average charging current against the hand value', () => {
   it('buck in CCM, ideal parts: I_b = (D V_g - V_b) / R_b (the inductor averages the switch node to D V_g)', () => {
     const p: SimParams = { topology: 'buck', Vg: 24, D: 0.6, fs, L: 1e-4, load: { kind: 'network', C: 22e-6, battery: { V: 12, R: 0.5 } } };

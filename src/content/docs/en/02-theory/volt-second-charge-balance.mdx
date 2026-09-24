@@ -55,9 +55,12 @@ voltage times the period, over the inductance:
 
 During a transient (a start-up, a load or line step) this change carries
 the converter towards its new steady state, period by period. A circuit in
-which the average cannot reach zero has no steady state at all: a fixed
-output fed in CCM at any duty ratio but the balancing one gains or loses the
-same current every period, without bound <Cite key="erickson2020" where="Ch. 2" />.
+which the average cannot reach zero has no steady state at all
+<Cite key="erickson2020" where="Ch. 2" />. A fixed output fed in CCM above
+the duty ratio that balances it gains the same current every period, without
+bound. Below that duty ratio the current falls to zero within the period
+instead, and the converter settles in DCM, where the idle interval makes the
+average zero.
 
 ### Charge balance
 

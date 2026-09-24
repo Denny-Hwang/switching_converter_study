@@ -46,12 +46,14 @@ DCM, the idle interval <Cite key="erickson2020" where="Ch. 2" />,
 <Cite key="erickson2020" where="Ch. 5" />.
 
 - **Switches and diodes.** The transistor is an ideal switch with an optional
-  on-resistance and an ideal body diode. The diode is a constant forward drop
-  that blocks ideally, with no reverse recovery. The inductor can have a
-  winding resistance. A current that would reverse through a diode stops
-  instead: the forward converter's rectifier blocks while its output is
-  above $n V_g$ less the diode drop, and a negative inductor current at
-  turn-off flows on through the switch's body diode.
+  on-resistance and an ideal body diode across it. The diode is a constant
+  forward drop that blocks ideally, with no reverse recovery. The inductor
+  can have a winding resistance. A current that would reverse through a
+  diode stops instead: the forward converter's rectifier blocks while its
+  output is above $n V_g$ less the diode drop. A negative current through
+  the switch flows through its body diode, which conducts at zero volts:
+  after turn-off until the current reaches zero, and while the switch is on
+  too, when the diode takes the current from the on-resistance.
 - **Transformers.** They are ideal (1:n with $n$ the secondary turns over
   the primary turns) except for the magnetizing inductance. There is no
   leakage inductance.
@@ -87,18 +89,16 @@ bus), with no capacitor. The battery's current is
 
 <Eq id="bat.rint" />
 
-It is positive while the battery charges. The Rint model is the simplest of
-a battery's equivalent circuits: the RC, Thevenin, PNGV and
-dual-polarization models add resistor-capacitor branches, with which the
-terminal voltage lags a change of current <Cite key="he2011" />. In a real
-battery the resistance and the open-circuit voltage also depend on the state
-of charge, the state of health and the temperature
-<Cite key="he2011" where="Sec. 2.1" />; the simulator holds them
-constant. Over the few hundred switching periods it computes, the charge a
-battery takes is a tiny part of its capacity, so this is a battery at one
-state of charge. The load table below the charts splits the battery's power into
-what its open-circuit voltage stores, $V_b \langle i_b \rangle$, and what
-its internal resistance dissipates, $R_b \langle i_b^2 \rangle$.
+It is positive while the battery charges. In a real battery the resistance
+and the open-circuit voltage depend on the state of charge, the state of
+health and the temperature <Cite key="he2011" where="Sec. 2.1" />; the
+simulator holds both constant: a battery at one state of charge. Over the
+periods it computes (a handful to find a steady state, a few hundred at
+most for a start-up) the charge a battery takes is a tiny part of any real
+battery's capacity. The load table below the charts splits the battery's
+power into what its open-circuit voltage takes ($V_b$ times the battery's
+average current) and what its internal resistance dissipates ($R_b$ times
+the mean square of that current).
 
 ## When there is no steady state
 
@@ -113,26 +113,46 @@ start voltage or the battery's) in place of the steady-state period:
 
 - **An inductor current that runs away.** A fixed output fed in CCM from a
   fixed input balances the inductor's volt-seconds at one duty ratio only.
-  At any other, the average voltage the inductance sees over a cycle is not
-  zero, and the current changes by the same amount every cycle
-  (<EqRef id="vsb.drift" label="change over one period" />). The message
-  gives that change, that average voltage, and the duty ratio that would
-  balance with ideal parts: the catalogue's CCM conversion ratio solved for
-  $D$, with the fixed output over the input as the ratio. A flyback into a
-  fixed output, for example, gains in each on-interval the rise that its
-  magnetizing current has from zero in DCM
+  Above it, the average voltage the inductance sees over a cycle is
+  positive, and the current grows by the same amount every cycle
+  (<EqRef id="vsb.drift" label="change over one period" />). Below it, the
+  current falls to zero within the cycle instead, and the converter settles
+  in DCM. The message gives the change per cycle, that average voltage, and
+  the duty ratio that would balance with ideal parts: the catalogue's CCM
+  conversion ratio solved for $D$, with the fixed output over the input as
+  the ratio (negative for the buck-boost, whose output is inverted). A
+  flyback into a fixed output, for example, gains in each on-interval the
+  rise that its magnetizing current has from zero in DCM
   (<EqRef id="flyback.Ipk.dcm" label="the on-interval's rise" />), and loses
   in the off-interval only what the output voltage, reflected to the
   primary, takes away in the time left. The forward converter's magnetizing
   current walks up in the same way above its reset limit
-  (<EqRef id="forward.reset.Dmax" label="maximum duty ratio" />).
-- **A capacitor that charges.** With nothing across it, the output
-  capacitor keeps what every cycle delivers. Behind a boost, buck-boost or
-  flyback it charges without bound; behind a buck or a forward converter it
-  stops at the input's voltage (the forward converter's $n V_g$ less the
-  diode drop). The message gives the voltage reached and the gain per cycle.
+  (<EqRef id="forward.reset.Dmax" label="maximum duty ratio" />), which the
+  message then names. At exactly the balancing duty ratio, with ideal parts, the
+  volt-seconds balance whatever the current: every current that starts
+  and ends a period at the same value is a steady state, and the simulator
+  reports the one it reaches from its starting point.
+- **A capacitor that charges without bound.** With nothing across it, the
+  output capacitor keeps what every cycle delivers. Behind a boost,
+  buck-boost or flyback without a capacitance across the switch, every cycle
+  stores energy in the inductance and hands it on whatever the output's
+  voltage, so the capacitor charges without bound. The message gives the
+  voltage reached and the gain per cycle.
 - **Anything else** that has not settled within the cycle limit, such as
   an undamped L-C ringing.
+
+A capacitor alone does settle behind the other converters, and its steady
+state then depends on where it started. Behind a buck it settles at the
+input's voltage, because the switch conducts both ways. Behind a forward
+converter it stops once no more charge reaches it, at $n V_g$ less the diode
+drop or above: an L-C charge can overshoot that voltage on its way up and
+keep the peak, since the rectifier lets no current back. With a capacitance
+across the switch, a boost, buck-boost or flyback stops too, at the voltage
+to which its inductance can no longer lift that capacitance. The simulator
+follows the start-up from $V_0$ and reports the voltage at which it stops:
+for the forward converter it runs the start-up until the capacitor stops
+changing, and a search that ends above the voltage a start-up creeps up to
+is brought back to it.
 
 Without a steady state there is no conduction mode, no comparison with the
 equations and no table of the load or the losses: each of them describes a
@@ -172,6 +192,11 @@ periodic steady state.
     is below one part in a million of the state's size. The change alone
     would not do: a very large capacitor changes little per period even
     while it is still far from its steady state.
+
+  Where the steady state is not a single point, the Newton step has no
+  answer: a fixed output at exactly its balancing duty ratio, or a
+  capacitor alone that no more charge reaches. There a period that returns
+  every state to itself, to rounding, takes the place of the second test.
 - **The mode** is DCM when the inductor current stays at zero for part of
   the period, BCM when it only touches zero, and CCM otherwise, also when
   it reverses and flows on through the switch's body diode.
@@ -200,34 +225,59 @@ against the equations:
 - **Source-driven flyback.** It pins its input at the critical voltage when
   the source can supply more than the DCM power there, and it settles below
   that voltage in DCM when the source cannot.
-- **No steady state.** A buck fed into a fixed output at the wrong duty ratio
-  reports the current's change per cycle, the average inductor voltage and
-  the balancing duty ratio exactly, and a forward converter above its reset
-  limit reports its magnetizing current walking up.
+- **No steady state.** A buck fed into a fixed output above its balancing
+  duty ratio reports the current's change per cycle, the average inductor
+  voltage and the balancing duty ratio exactly; below it, and at it, the
+  buck and the boost settle; the buck-boost's balancing duty ratio comes
+  from its inverted ratio; a forward converter above its reset limit reports
+  its magnetizing current walking up, also into a fixed output or a
+  capacitor alone.
+- **A capacitor alone.** It charges without bound behind a boost; behind a
+  buck it settles at the input from below and from above; behind a forward
+  converter it keeps a start voltage above $n V_g$, and the peak of an L-C
+  charge that overshoots; with a capacitance across the switch a boost
+  stops where its start-up stops. A search cut short reports that the
+  capacitor has not settled.
 
 Two further suites check the simulator by other means:
 
-- **Against SPICE** (`packages/pe-core/test/sim-spice.test.ts`). Twenty-three
+- **Against SPICE** (`packages/pe-core/test/sim-spice.test.ts`). Thirty
   circuits are written again as netlists from their schematics and run from
   rest in ngspice <Cite key="ngspice" />, an independent solver with its own
   integrator (`scripts/spice_crosscheck.py`). They cover every topology in
-  CCM and DCM, the forward converter's intervals, the node capacitance's
-  ringing, a Thevenin source, batteries with and without a resistor, a fixed
-  output, a runaway start-up and capacitors charging from empty. In the last
-  period, each quantity's average, largest, smallest and end value, and its
-  value at 40 instants across the period, agree within 0.5 % of the
-  quantity's largest magnitude. The SPICE parts are near-ideal: switches
-  with the case's on-resistance (a milliohm when it gives none), and diodes
-  that drop a few millivolts more than the case's $V_F$. CI reruns ngspice on every change and compares
+  CCM and DCM; every interval of the forward converter, with reset windings
+  of the primary's turns and of half of them, and a battery that holds its
+  rectifier off; the node capacitance's ringing, also with a battery; a
+  Thevenin source; batteries with and without a resistor, and one above the
+  input, whose current flows back through the switch's body diode; a fixed
+  output; a runaway start-up; and capacitors charging from empty, also
+  behind a boost with a node capacitance. In the last period, each
+  quantity's average, largest, smallest and end value, and its value at 40
+  instants across the period, agree within 0.5 % of the quantity's largest
+  magnitude in these cases. The SPICE parts are near-ideal: switches with
+  the case's on-resistance (a milliohm when it gives none), and diodes that
+  drop a few millivolts more than the case's $V_F$; a battery's current, set
+  by a small $R_b$, is the most sensitive to those millivolts. The forward
+  converter's netlist also has a small RC snubber across its freewheeling
+  diode, which the simulator does not, to keep ngspice's integrator stable
+  when that diode turns off. Two things are left out of
+  the comparison: the values within 20 ns of the simulator's events (a real
+  edge and an ideal one differ by nanoseconds), and, with a node
+  capacitance, the diode's largest current and the input current's
+  extremes, where ngspice's steep diode overshoots for a few picoseconds as
+  it takes over the current. CI reruns ngspice on every change and compares
   with the stored results.
 - **Invariants** (`packages/pe-core/test/sim-invariants.test.ts`). For every
-  converter with each load, ideal and with losses: in the steady state the
-  inductor's volt-seconds and the output capacitor's charge balance, the
-  capacitor's current is $C$ times the slope of the simulated output voltage,
-  and the source's power equals what the resistor, the battery's
-  open-circuit voltage and its internal resistance take, plus the losses.
-  Over a start-up from rest the source's energy equals the energy stored in
-  the inductors and capacitors plus what the load took and the losses.
+  converter with a resistor, a battery, both, a capacitor alone and a fixed
+  output, ideal and with losses: in the steady state the inductor's
+  volt-seconds and the output capacitor's charge balance, the capacitor's
+  current is $C$ times the slope of the simulated output voltage, and the
+  source's power equals what the resistor, the battery's open-circuit
+  voltage and its internal resistance, or the fixed output take, plus the
+  losses. Over a start-up from rest the source's energy equals the energy
+  stored in the inductors and capacitors plus what the load took and the
+  losses. The first two hold by construction in a periodic steady state, so
+  they check the bookkeeping; the energy balances check the model.
 
 ## Worked example: a flyback that pins its source
 
@@ -258,8 +308,7 @@ zero. The battery's average current then follows from the Rint model:
 The simulator gives the same average battery current, and its load table
 shows the <Val example="sim-buck-battery" name="I_b" /> split into the
 power stored and the power lost in $R_b$. Nothing in the converter limits
-that current except $R_b$: a small change of $D$ changes it a lot, which is
-why chargers control the current and do not run at a fixed duty ratio.
+that current except $R_b$: a small change of $D$ changes it a lot.
 
 <TrySim example="sim-buck-battery" topology="buck" />
 
@@ -276,9 +325,13 @@ why chargers control the current and do not run at a fixed duty ratio.
   resistance limits and that can be very large. For
   the forward converter's magnetizing current that is only the
   on-resistance: the winding resistance belongs to the output inductor.
-- **A battery at one state of charge.** The Rint model holds the
-  open-circuit voltage constant and has no polarization; the battery's
-  internal resistance is its only loss.
+- **A battery at one state of charge.** The simulator holds the battery's
+  open-circuit voltage and resistance constant, and the Rint model has no
+  polarization: the internal resistance is the battery's only loss.
+- **A slow L-C charge.** A forward converter's capacitor alone is followed
+  for at most 4000 periods before the search. An L-C charge slower than
+  that ends at $n V_g$ less the diode drop, below the peak at which an
+  overshooting start-up would stop.
 
 ## Screenshot
 

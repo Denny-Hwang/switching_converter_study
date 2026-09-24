@@ -46,7 +46,11 @@ FIXTURE = ROOT / "packages/pe-core/test/fixtures/spice.json"
 # Near-ideal parts: a switch of 1 mOhm when a case gives none (the fixture
 # records it, and the simulator runs with the same R_on) with a body diode,
 # and diodes whose drop at 1 A is about 4 mV (N = 0.005) on top of the
-# case's V_F.
+# case's V_F. A case may take a steeper diode ("spice": {"diode": ...}): a
+# few millivolts more drop shift the end of a diode's conduction by a
+# nanosecond, and with it the phase of a fast node ringing that follows a
+# long off-interval (buck-battery-ring: 0.2 V at N = 0.005, 0.08 V at
+# N = 0.001, which some other cases do not converge with).
 RON_MIN = 1e-3
 DIODE = "D(Is=1e-12 N=0.005)"
 
@@ -93,6 +97,18 @@ CASES: list[dict] = [
     {"id": "flyback-charging-early", "topology": "flyback", "Vg": 24, "D": 0.3, "fs": 1e5, "L": 5e-5, "n": 1, "load": {"kind": "network", "C": 1e-4, "V0": 0}, "cycles": 15, "startup": True},
     # (the buck's capacitor is still charging at cycle 10; by cycle 30 it has reached V_g and the current has stopped)
     {"id": "buck-charging", "topology": "buck", "Vg": 24, "D": 0.5, "fs": 1e5, "L": 1e-4, "load": {"kind": "network", "C": 22e-6, "V0": 0}, "cycles": 10, "startup": True},
+    # a boost with a node capacitance charging a capacitor from 0 V: the diode must turn on at the first turn-off
+    {"id": "boost-cnode-startup", "topology": "boost", "Vg": 12, "D": 0.3, "fs": 1e5, "L": 1e-4, "Ron": 0.05, "Cnode": 1e-9, "load": {"kind": "network", "C": 1e-7, "V0": 0}, "cycles": 5, "startup": True, "spice": RING},
+    # a battery above the input: the current reverses and flows through the switch's body diode, on or off
+    {"id": "buck-reverse", "topology": "buck", "Vg": 24, "D": 0.5, "fs": 1e5, "L": 1e-4, "Ron": 0.05, "load": {"kind": "network", "C": 22e-6, "battery": {"V": 30, "R": 0.5}}, "cycles": 1000},
+    {"id": "buckboost-dcm", "topology": "buckboost", "Vg": 12, "D": 0.3, "fs": 1e5, "L": 1e-5, "load": {"kind": "resistive", "R": 50, "C": 22e-6}, "cycles": 2000},
+    # a reset winding of other turns (n_r = 0.5): the output inductor's current ends before the core has reset
+    {"id": "forward-dcm-nr", "topology": "forward", "Vg": 48, "D": 0.4, "fs": 1e5, "L": 5e-6, "n": 0.5, "nr": 0.5, "LM": 1e-3, "VF": 0.5, "load": {"kind": "resistive", "R": 30, "C": 22e-6}, "cycles": 1500},
+    # a battery above n V_g less the diode drop keeps the rectifier blocked while the switch is on
+    {"id": "forward-battery-blocked", "topology": "forward", "Vg": 48, "D": 0.3, "fs": 1e5, "L": 1e-4, "n": 0.5, "nr": 0.5, "LM": 1e-3, "VF": 0.5, "load": {"kind": "network", "C": 22e-6, "battery": {"V": 25, "R": 0.5}}, "cycles": 200},
+    # a battery with a node capacitance (the flyback's magnetizing current is negative at turn-on: the body diode first)
+    {"id": "buck-battery-ring", "topology": "buck", "Vg": 24, "D": 0.3, "fs": 1e5, "L": 2e-5, "Ron": 0.05, "Cnode": 1e-10, "load": {"kind": "network", "C": 4.7e-6, "battery": {"V": 12, "R": 0.5}}, "cycles": 500, "spice": {**RING, "diode": "D(Is=1e-12 N=0.001)"}},
+    {"id": "flyback-battery-ring", "topology": "flyback", "Vg": 48, "D": 0.3, "fs": 1e5, "L": 2e-5, "n": 0.25, "VF": 0.5, "Ron": 0.1, "Cnode": 1e-10, "load": {"kind": "network", "C": 4.7e-6, "battery": {"V": 12, "R": 0.2}}, "cycles": 500, "spice": RING},
 ]
 # fmt: on
 for _c in CASES:
@@ -151,7 +167,7 @@ def netlist(c: dict) -> tuple[str, dict[str, str]]:
         # the switch: a resistance that moves from R_off to R_on on a log scale
         # as the gate crosses 0..1 V (smooth, so the solver can follow it)
         f".model SWM aswitch(cntl_off=0 cntl_on=1 r_off=1e9 r_on={g(c['Ron'])} log=TRUE)",
-        f".model DM {DIODE}",
+        f".model DM {c.get('spice', {}).get('diode', DIODE)}",
     ]
     q: dict[str, str] = {}
 
