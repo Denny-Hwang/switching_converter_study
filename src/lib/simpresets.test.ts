@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { sim } from 'pe-core';
 import { stateFromHash, toParams } from '../tools/Simulator';
@@ -68,5 +69,20 @@ describe('simulator presets', () => {
     expect(result.drift!.Dbalance).toBeCloseTo(0.5, 9);
     // (V_g D - V) T_s / L = (19.2 - 12) V x 10 us / 100 uH
     expect(result.drift!.perCycle).toBeCloseTo(0.72, 9);
+  });
+});
+
+describe('the SPICE library (sim/results.json) and the presets', () => {
+  const lib = JSON.parse(readFileSync(new URL('../../sim/results.json', import.meta.url), 'utf8')) as {
+    cases: Record<string, { topology: string; example: string; preset: { id: string; en: string; ko: string } }>;
+  };
+
+  it('each library case is a preset: the same example, topology and names', () => {
+    expect(Object.keys(lib.cases).length).toBeGreaterThan(0);
+    for (const [id, c] of Object.entries(lib.cases)) {
+      const p = PRESETS.find((x) => x.id === c.preset.id);
+      expect(p, id).toBeDefined();
+      expect([p!.example, p!.topology, p!.en, p!.ko], id).toEqual([c.example, c.topology, c.preset.en, c.preset.ko]);
+    }
   });
 });

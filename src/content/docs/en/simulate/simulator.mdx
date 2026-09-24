@@ -576,6 +576,26 @@ Two further suites check the simulator by other means:
   losses. The first two hold by construction in a periodic steady state, so
   they check the bookkeeping; the energy balances check the model.
 
+## The same circuits in LTspice and ngspice
+
+The presets below are also LTspice schematics and ngspice netlists, with the
+same numbers, in the repository's
+[SPICE library](https://github.com/Denny-Hwang/switching_converter_study/tree/main/sim). Each folder's README says what to
+plot and shows the waveforms ngspice computes. On every average and extreme
+listed there, the simulator and ngspice agree within 1 %
+(`packages/pe-core/test/sim-library.test.ts`), and ngspice agrees with the
+equations within 1 % (`scripts/sim_library.py`).
+
+| Preset | LTspice | ngspice |
+| --- | --- | --- |
+| Buck, CCM | [buck-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buck/buck-ccm.asc) | [buck-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buck/buck-ccm.cir) |
+| Buck, light load (DCM) | [buck-dcm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buck/buck-dcm.asc) | [buck-dcm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buck/buck-dcm.cir) |
+| Boost | [boost-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/boost/boost-ccm.asc) | [boost-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/boost/boost-ccm.cir) |
+| Buck-boost | [buckboost-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buckboost/buckboost-ccm.asc) | [buckboost-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buckboost/buckboost-ccm.cir) |
+| Flyback, CCM | [flyback-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/flyback/flyback-ccm.asc) | [flyback-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/flyback/flyback-ccm.cir) |
+| Flyback, DCM | [flyback-dcm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/flyback/flyback-dcm.asc) | [flyback-dcm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/flyback/flyback-dcm.cir) |
+| Forward | [forward-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/forward/forward-ccm.asc) | [forward-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/forward/forward-ccm.cir) |
+
 ## Worked example: a flyback that pins its source
 
 A flyback with a fixed duty ratio charges a fixed output from a

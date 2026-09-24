@@ -1,0 +1,101 @@
+# Buck converter: LTspice schematics
+
+[한국어](#한국어)
+
+Each file carries the numbers of a synthetic example (not from any design), the example the in-browser [simulator](https://denny-hwang.github.io/switching_converter_study/en/simulate/simulator/) also opens with its preset of the same name. The same circuits as ngspice netlists: [../../ngspice/buck/](../../ngspice/buck/).
+
+| File | Example | Mode | Preset |
+| --- | --- | --- | --- |
+| [buck-ccm.asc](buck-ccm.asc) | Buck example (`buck-basic`): V_g = 24 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 10 Ω | CCM | Buck, CCM |
+| [buck-dcm.asc](buck-dcm.asc) | Buck example at light load (`buck-light-load`): V_g = 24 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 100 Ω | DCM | Buck, light load (DCM) |
+
+## Run
+
+Open the file in LTspice and press Run: the schematic carries its `.param`, `.model`, `.tran` and `.options` lines. The run starts from rest and lasts several hundred periods, so the last ones are the steady state. Click a node for its voltage and a part for its current; the node names are the ngspice netlist's.
+
+## buck-ccm
+
+Plot: `V(sw)` (switch node), `I(L1)` (inductor current), `V(out)` (output voltage).
+
+![buck-ccm](../../waveforms/buck-ccm.svg)
+
+| Quantity | ngspice | Ideal | From the catalogue |
+| --- | --- | --- | --- |
+| output voltage, average | 11.99 V | 12 V | `buck.ccm.M` |
+| inductor current, average | 1.199 A | 1.2 A | `buck.IL` |
+| inductor current, largest | 1.499 A | 1.5 A | `buck.IL + buck.ripple.iL` |
+| inductor current, smallest | 0.8978 A | 0.9 A | `buck.IL - buck.ripple.iL` |
+| switch node, largest | 24 V | 24 V | `V_g` |
+
+## buck-dcm
+
+Plot: `V(sw)` (switch node), `I(L1)` (inductor current), `V(out)` (output voltage).
+
+![buck-dcm](../../waveforms/buck-dcm.svg)
+
+| Quantity | ngspice | Ideal | From the catalogue |
+| --- | --- | --- | --- |
+| output voltage, average | 15.74 V | 15.74 V | `buck.dcm.M` |
+| inductor current, average | 0.1574 A | 0.1574 A | `buck.IL` |
+| inductor current, largest | 0.4134 A | 0.413 A | `2 buck.ripple.iL (DCM: from zero)` |
+| inductor current, smallest | 8.216e-06 A | 0 A | `DCM: zero` |
+| switch node, largest | 24 V | 24 V | `V_g` |
+
+## Notes
+
+- The switch is 1 mΩ on and 1 MΩ off, and the diodes drop about 30 mV at an ampere, so the results land within 1 % of the ideal equations; `scripts/sim_library.py --check` confirms it in CI.
+- A transformer is coupled inductors with a coupling of 1: the primary's inductance is the magnetizing inductance (referred to the primary), the turns ratio 1:n with n = N_s/N_p. SPICE takes each inductor's first node as its dotted end; LTspice draws the dot at the other end of every winding, so the relative polarity is the same.
+- The `.options` line asks for Gear's integration and a relative tolerance of 1e-4. Without it, at their default settings, ngspice 42 and LTspice 26.1.1 both draw spikes far below zero on the DCM flyback's drain voltage, which the circuit does not have.
+- LTspice puts 1 mΩ in series with an inductor that is not coupled (its help, Inductor Models): less than 0.1 % on these results.
+- LTspice warns that the diodes' emission coefficient, N = 0.05, is too small and might lead to numerical problems. That N is what makes the drop about 30 mV at an ampere. Checked once with LTspice 26.1.1 under wine: the netlists it writes from these schematics have the `.cir`'s parts, and its results agree with ngspice's within 0.3 % of each quantity's largest magnitude.
+
+## 한국어
+
+### 벅 컨버터: LTspice 회로도
+
+각 파일은 합성 예제(설계에서 가져오지 않은 수)의 값을 씁니다. 브라우저 [시뮬레이터](https://denny-hwang.github.io/switching_converter_study/ko/simulate/simulator/)의 같은 이름 프리셋(preset)도 같은 예제로 열립니다. 같은 회로의 ngspice 넷리스트는 [../../ngspice/buck/](../../ngspice/buck/)에 있습니다.
+
+| 파일 | 예제 | 모드 | 프리셋 |
+| --- | --- | --- | --- |
+| [buck-ccm.asc](buck-ccm.asc) | 벅 예제 (`buck-basic`): V_g = 24 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 10 Ω | CCM | 벅, CCM |
+| [buck-dcm.asc](buck-dcm.asc) | 경부하 벅 예제 (`buck-light-load`): V_g = 24 V, D = 0.5, f_s = 100 kHz, L = 100 µH, C = 10 µF, R = 100 Ω | DCM | 벅, 경부하(DCM) |
+
+#### 실행
+
+LTspice에서 파일을 열고 Run을 누릅니다. `.param`, `.model`, `.tran`, `.options` 줄이 회로도에 있습니다. 정지 상태에서 시작해 수백 주기를 계산하므로, 마지막 주기들이 정상상태(steady state)입니다. 노드를 누르면 전압을, 부품을 누르면 전류를 그립니다. 노드 이름은 ngspice 넷리스트와 같습니다.
+
+#### buck-ccm
+
+그릴 것: `V(sw)` (스위치 노드), `I(L1)` (인덕터 전류), `V(out)` (출력 전압).
+
+![buck-ccm](../../waveforms/buck-ccm.svg)
+
+| 양 | ngspice | 이상적인 식 | 카탈로그의 식 |
+| --- | --- | --- | --- |
+| 출력 전압, 평균 | 11.99 V | 12 V | `buck.ccm.M` |
+| 인덕터 전류, 평균 | 1.199 A | 1.2 A | `buck.IL` |
+| 인덕터 전류, 최댓값 | 1.499 A | 1.5 A | `buck.IL + buck.ripple.iL` |
+| 인덕터 전류, 최솟값 | 0.8978 A | 0.9 A | `buck.IL - buck.ripple.iL` |
+| 스위치 노드, 최댓값 | 24 V | 24 V | `V_g` |
+
+#### buck-dcm
+
+그릴 것: `V(sw)` (스위치 노드), `I(L1)` (인덕터 전류), `V(out)` (출력 전압).
+
+![buck-dcm](../../waveforms/buck-dcm.svg)
+
+| 양 | ngspice | 이상적인 식 | 카탈로그의 식 |
+| --- | --- | --- | --- |
+| 출력 전압, 평균 | 15.74 V | 15.74 V | `buck.dcm.M` |
+| 인덕터 전류, 평균 | 0.1574 A | 0.1574 A | `buck.IL` |
+| 인덕터 전류, 최댓값 | 0.4134 A | 0.413 A | `2 buck.ripple.iL (DCM: from zero)` |
+| 인덕터 전류, 최솟값 | 8.216e-06 A | 0 A | `DCM: zero` |
+| 스위치 노드, 최댓값 | 24 V | 24 V | `V_g` |
+
+#### 참고
+
+- 스위치는 켜지면 1 mΩ, 꺼지면 1 MΩ이고, 다이오드는 1 A에서 약 30 mV가 떨어집니다. 그래서 결과가 이상적인 식과 1 % 안에서 맞습니다. `scripts/sim_library.py --check`가 CI에서 이를 확인합니다.
+- 변압기는 결합 계수 1인 결합 인덕터입니다. 1차 인덕턴스가 자화 인덕턴스(1차 기준)이고, 권선비는 1:n, n = N_s/N_p입니다. SPICE는 각 인덕터의 첫 노드를 점(dot)으로 봅니다. LTspice는 모든 권선에서 점을 다른 끝에 그리므로, 상대 극성은 같습니다.
+- `.options` 줄은 기어(Gear) 적분법과 상대 허용오차(relative tolerance) 1e-4를 지정합니다. 이 줄이 없으면 기본 설정의 ngspice 42와 LTspice 26.1.1 모두 DCM 플라이백의 드레인 전압에, 회로에는 없는, 0보다 훨씬 낮은 스파이크를 그립니다.
+- LTspice는 결합되지 않은 인덕터에 1 mΩ 직렬 저항을 기본으로 넣습니다(도움말의 Inductor Models). 결과에 주는 영향은 0.1 %보다 작습니다.
+- LTspice는 다이오드의 방출 계수(emission coefficient) N = 0.05가 너무 작아 수치 문제가 생길 수 있다고 경고합니다. 1 A에서 약 30 mV가 떨어지게 하는 것이 이 N입니다. wine에서 LTspice 26.1.1로 한 번 확인했습니다. 이 회로도에서 LTspice가 만든 넷리스트는 `.cir`와 부품이 같고, 결과는 각 양의 최대 크기 대비 0.3 % 안에서 ngspice와 맞습니다.
