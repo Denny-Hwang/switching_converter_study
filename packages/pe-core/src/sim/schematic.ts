@@ -58,6 +58,8 @@ export interface SchematicBranch {
   plus?: 'from' | 'to';
   /** The element's voltage from the outputs, where the model has it (the switch's, the inductor's, a capacitor's). */
   voltage?: (o: Outputs) => number;
+  /** An inductor's winding resistance (ohm), whose drop its voltage includes. */
+  resistance?: number;
   /** Where the element's name and state are drawn (default: above a horizontal element, right of a vertical one). */
   label?: Side;
   /** The side an inductor's or a winding's turns bulge to (a winding's: towards its core), or a switch's body diode is drawn on. */
@@ -248,7 +250,7 @@ function buck(b: Builder, p: SimParams): void {
   b.node('g_out', x + 4.1, BOTTOM);
   highSide(b, p, top, x);
   b.el('D', 'diode', 'g_d', 'sw', get('i_D'), { dot: 'from' });
-  b.el('L', 'inductor', 'sw', 'out', get('i_L'), { voltage: get('v_L') });
+  b.el('L', 'inductor', 'sw', 'out', get('i_L'), { voltage: get('v_L'), resistance: p.RL ?? 0 });
   load(b, p, 'out', 'g_out', x + 4.1, 1);
   b.wire('g_out', 'g_d', get('i_out'));
   b.wire('g_d', bottom, (o) => (o.i_out ?? 0) - (o.i_D ?? 0));
@@ -263,7 +265,7 @@ function boost(b: Builder, p: SimParams): void {
   b.node('out', xo, 0);
   b.node('g_s', xs, BOTTOM);
   b.node('g_out', xo, BOTTOM);
-  b.el('L', 'inductor', top, 'lx', get('i_L'), { voltage: get('v_L') });
+  b.el('L', 'inductor', top, 'lx', get('i_L'), { voltage: get('v_L'), resistance: p.RL ?? 0 });
   lowSide(b, p, 'lx', 'g_s', xs, 'left', { y0: 1.3, y1: 3.1, xc: xs + 0.8 });
   b.el('D', 'diode', 'lx', 'out', get('i_D'), { dot: 'from' });
   load(b, p, 'out', 'g_out', xo, 1);
@@ -279,7 +281,7 @@ function buckboost(b: Builder, p: SimParams): void {
   b.node('g_out', x + 4.1, BOTTOM);
   highSide(b, p, top, x);
   // the inductor's symbol on the lower part of its column, clear of a node capacitance's name
-  b.el('L', 'inductor', 'sw', 'g_l', get('i_L'), { voltage: get('v_L'), label: 'left', via: [[x + 2.5, 1.2]] });
+  b.el('L', 'inductor', 'sw', 'g_l', get('i_L'), { voltage: get('v_L'), resistance: p.RL ?? 0, label: 'left', via: [[x + 2.5, 1.2]] });
   // the output's top rail is its negative terminal: the diode conducts from it into the switch node
   b.el('D', 'diode', 'out', 'sw', get('i_D'), { dot: 'from' });
   load(b, p, 'out', 'g_out', x + 4.1, -1);
@@ -301,7 +303,7 @@ function flyback(b: Builder, p: SimParams): void {
   // the ideal winding carries the reflected secondary current n i_D, from its undotted end to its dot
   const iW1 = (o: Outputs) => -n * (o.i_D ?? 0);
   b.wire(top, 'pM', get('i_in'));
-  b.el('LM', 'inductor', 'pM', 'd', get('i_L'), { voltage: get('v_L'), label: 'left' });
+  b.el('LM', 'inductor', 'pM', 'd', get('i_L'), { voltage: get('v_L'), resistance: p.RL ?? 0, label: 'left' });
   b.wire('pM', 'pW', iW1);
   b.wire('pW', 'wT', iW1);
   b.el('W1', 'winding', 'wT', 'wB', iW1, { dot: 'from', label: 'left', bulge: 'right' });
@@ -349,7 +351,7 @@ function forward(b: Builder, p: SimParams): void {
   const iR = get('i_Dr');
   const iW1 = (o: Outputs) => n * (o.i_D1 ?? 0) - nr * iR(o);
   b.wire(top, 'tM', get('i_in'));
-  b.el('LM', 'inductor', 'tM', 'd', get('i_M'), { label: 'left' });
+  b.el('LM', 'inductor', 'tM', 'd', get('i_M'), { voltage: get('v_M'), label: 'left' });
   b.wire('tM', 'tW', (o) => iW1(o) - iR(o));
   b.wire('tW', 'tR', (o) => -iR(o));
   b.wire('tW', 'wT', iW1, [[x + 2.85, 2.0]]);
@@ -377,7 +379,7 @@ function forward(b: Builder, p: SimParams): void {
   b.wire('sWt', 'sT2', get('i_D1'));
   b.el('D1', 'diode', 'sT2', 'xr', get('i_D1'), { dot: 'from' });
   b.el('D2', 'diode', 'g_x', 'xr', get('i_D2'), { dot: 'from' });
-  b.el('L', 'inductor', 'xr', 'out', get('i_L'), { voltage: get('v_L') });
+  b.el('L', 'inductor', 'xr', 'out', get('i_L'), { voltage: get('v_L'), resistance: p.RL ?? 0 });
   load(b, p, 'out', 'g_out', xs + 3, 1);
   b.wire('g_out', 'g_x', get('i_out'));
   b.wire('g_x', 'sB2', (o) => (o.i_out ?? 0) - (o.i_D2 ?? 0));

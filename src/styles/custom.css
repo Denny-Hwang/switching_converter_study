@@ -574,7 +574,8 @@ html:lang(ko) body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 4.5rem;
+  /* at least as wide as its longest word (a browser without hyphenation keeps "freewheeling" whole) */
+  min-width: auto;
   min-height: 3.25rem;
   margin: 0;
   padding: 0.3rem 0.25rem;
@@ -593,6 +594,8 @@ html:lang(ko) body {
   cursor: pointer;
 }
 .pe-seq__mode strong {
+  /* and never narrower than 4.5rem with its padding */
+  min-width: 4rem;
   font-size: var(--sl-text-sm);
 }
 .pe-seq__mode:hover {

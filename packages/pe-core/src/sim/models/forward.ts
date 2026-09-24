@@ -151,6 +151,7 @@ export function forward(p: SimParams): Model {
       return {
         ...o,
         i_M: x[c.idx('iM')]!,
+        v_M: e(s.vM),
         i_D1: e(s.iD1),
         i_D2: e(s.iD2),
         i_Dr: e(s.iDr),

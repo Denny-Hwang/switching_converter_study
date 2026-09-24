@@ -19,7 +19,7 @@ import { sim } from 'pe-core';
 import { fmtValue } from '../lib/format';
 import type { PlotTheme } from '../lib/plot';
 import { FONT, U, layoutCircuit, textWidth, wireSegments, type BranchLayout, type P } from '../lib/seqlayout';
-import { descKey, elementKey, energySentences, fill, kindKey, stateKey, type SeqText } from '../i18n/sequence';
+import { elementKey, fill, kindKey, modeDescription, stateKey, type SeqText } from '../i18n/sequence';
 import { Rich } from './ToolUi';
 
 type SimResult = sim.SimResult;
@@ -32,7 +32,7 @@ export type { SeqText };
 
 interface Props {
   result: SimResult;
-  /** The period's modes (pe-core's modes(result)). */
+  /** The period's modes (pe-core's modes(result)); none for a circuit at rest. */
   modes: OperatingMode[];
   text: SeqText;
   selected: number;
@@ -52,6 +52,14 @@ export default function SequenceView({ result, modes, text, selected, onSelect, 
   const states = useMemo(() => (mode ? sim.elementStates(result, mode, s, scales) : []), [result, mode, s, scales]);
   const flow = useMemo(() => (mode ? sim.branchFlow(result, mode, s, scales) : new Map<string, BranchFlow>()), [result, mode, s, scales]);
   const rest = useMemo(() => sim.atRest(result, s, scale), [result, s, scale]);
+  if (rest) {
+    return (
+      <section className="pe-seq" aria-labelledby="pe-seq-title">
+        <h3 id="pe-seq-title">{text.title}</h3>
+        <p className="pe-tool__hint">{text.rest}</p>
+      </section>
+    );
+  }
   if (!mode) return null;
   const topo = result.params.topology;
   const Ts = 1 / result.params.fs;
@@ -61,16 +69,10 @@ export default function SequenceView({ result, modes, text, selected, onSelect, 
   const tIn = (x: number) => fmtValue(x, 's', Math.min(9, Math.max(3, Math.ceil(Math.log10(Math.abs(x) / (mode.t1 - mode.t0))) + 2)));
   // a current below its element's counting threshold is shown as zero (the same threshold as the states)
   const eps = (id: string) => sim.countingFloor(result, scales.get(id) ?? 0);
-  const next = modes[k + 1]?.kind;
-  const description = [text[descKey(topo, mode.kind, text, next)] ?? '', ...energySentences(states, text)].filter(Boolean).join(' ');
-  if (rest) {
-    return (
-      <section className="pe-seq" aria-labelledby="pe-seq-title">
-        <h3 id="pe-seq-title">{text.title}</h3>
-        <p className="pe-tool__hint">{text.rest}</p>
-      </section>
-    );
-  }
+  // each element as the table shows it; the description's voltages are the table's
+  const rows = states.map((e) => ({ e, ...shown(e, flow.get(e.id)?.sign || 1, eps(e.id)) }));
+  const said = rows.map(({ e, volts }) => ({ id: e.id, state: e.state, volts }));
+  const description = modeDescription(topo, mode.kind, modes[k + 1]?.kind, said, text, sim.coreReset(result, mode, states, scales));
   return (
     <section className="pe-seq" aria-labelledby="pe-seq-title">
       <h3 id="pe-seq-title">{text.title}</h3>
@@ -115,24 +117,19 @@ export default function SequenceView({ result, modes, text, selected, onSelect, 
             </tr>
           </thead>
           <tbody>
-            {states.map((e) => {
-              const still = Math.max(Math.abs(e.min), Math.abs(e.max)) <= eps(e.id);
-              // along the element's arrow on the circuit (its average current's direction in the mode)
-              const dir = flow.get(e.id)?.sign || 1;
-              return (
-                <tr key={e.id} className={still ? 'pe-seq__idle' : undefined}>
-                  <th scope="row">
-                    <Rich text={text[elementKey(topo, e.id)] ?? e.id} />
-                  </th>
-                  <td>
-                    {text[stateKey(e.kind, e.state, 'st')]}
-                    {e.tSign !== undefined && e.signChanges === 1 && <span className="pe-field__meaning"> ({fill(text.reverses!, { t: t(e.tSign) })})</span>}
-                  </td>
-                  <td>{still ? '0' : span(dir * e.i0, dir * e.i1, dir * e.avg, 'A', eps(e.id))}</td>
-                  <td>{e.v0 === undefined || e.v1 === undefined ? '' : span(e.v0, e.v1, e.vAvg!, 'V', 1e-9 * Math.max(Math.abs(e.v0), Math.abs(e.v1), 1))}</td>
-                </tr>
-              );
-            })}
+            {rows.map(({ e, still, current, voltage }) => (
+              <tr key={e.id} className={still ? 'pe-seq__idle' : undefined}>
+                <th scope="row">
+                  <Rich text={text[elementKey(topo, e.id)] ?? e.id} />
+                </th>
+                <td>
+                  {text[stateKey(e.kind, e.state, 'st')]}
+                  {e.tSign !== undefined && e.signChanges === 1 && <span className="pe-field__meaning"> ({fill(text.reverses!, { t: tIn(e.tSign) })})</span>}
+                </td>
+                <td>{current}</td>
+                <td>{voltage}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -145,6 +142,29 @@ export default function SequenceView({ result, modes, text, selected, onSelect, 
 function span(a: number, b: number, avg: number, unit: string, zero: number): string {
   const f = (x: number) => fmtValue(Math.abs(x) <= zero ? 0 : x, unit, 3);
   return `${f(a)} → ${f(b)} (${f(avg)})`;
+}
+
+/**
+ * An element's current and voltage in a mode as the table shows them. The
+ * current is taken along the element's arrow on the circuit (`dir`, the
+ * direction of its average current in the mode), and so is an inductor's
+ * voltage, so that the two follow one convention; every other voltage is in
+ * the element's own direction. A current within `eps` of zero (its counting
+ * floor) is zero. An inductor's average voltage, with a winding resistance
+ * its parts across the resistance and across the inductance, is what the
+ * description says, formatted the same.
+ */
+export function shown(e: ElementInMode, dir: number, eps: number): { still: boolean; current: string; voltage: string; volts?: { v: string; vr?: string; vl?: string } } {
+  const still = Math.max(Math.abs(e.min), Math.abs(e.max)) <= eps;
+  const current = still ? '0' : span(dir * e.i0, dir * e.i1, dir * e.avg, 'A', eps);
+  if (e.v0 === undefined || e.v1 === undefined || e.vAvg === undefined) return { still, current, voltage: '' };
+  const d = e.kind === 'inductor' ? dir : 1;
+  const zero = 1e-9 * Math.max(Math.abs(e.v0), Math.abs(e.v1), 1);
+  const f = (x: number) => fmtValue(Math.abs(x) <= zero ? 0 : x, 'V', 3);
+  const voltage = span(d * e.v0, d * e.v1, d * e.vAvg, 'V', zero);
+  if (e.kind !== 'inductor') return { still, current, voltage };
+  const volts = e.vRes === undefined || e.vRes === 0 ? { v: f(d * e.vAvg) } : { v: f(d * e.vAvg), vr: f(d * e.vRes), vl: f(d * (e.vAvg - e.vRes)) };
+  return { still, current, voltage, volts };
 }
 
 // ---------------------------------------------------------------------------
@@ -201,7 +221,7 @@ function Circuit({ s, flow, states, text, theme, k }: CircuitProps) {
       {l.dots.map((d, j) => (
         <circle key={`dot${j}`} cx={d[0]} cy={d[1]} r={3.2} fill={theme.text} />
       ))}
-      <g fontSize={FONT.legend} fill={theme.muted} transform={`translate(8 ${l.legendY.toFixed(1)})`}>
+      <g className="pe-seq__legend" fontSize={FONT.legend} fill={theme.muted} transform={`translate(8 ${l.legendY.toFixed(1)})`}>
         <line x1={0} y1={-4} x2={18} y2={-4} stroke={active} strokeWidth={2.6} />
         <text x={24} y={0}>
           {text.legendActive}

@@ -91,6 +91,8 @@ export interface ElementInMode {
   v0?: number;
   v1?: number;
   vAvg?: number;
+  /** An inductor's average voltage across its winding resistance (V), part of vAvg; the rest is across its inductance. */
+  vRes?: number;
 }
 
 /** Interval families whose runs form one mode. */
@@ -126,7 +128,17 @@ export function modes(r: SimResult): OperatingMode[] {
     }
     out.splice(j, 1);
   }
-  // two modes of one kind that a sliver separated are one mode
+  mergeSameKind(out);
+  // what a mode is follows from what its elements do: an interval whose defining current counts as none
+  // (a rectifier carrying rounding, a diode carrying a ringing's last nanoamperes) is the interval without it
+  relabel(r, out);
+  mergeSameKind(out);
+  out.forEach((m, j) => (m.index = j + 1));
+  return out;
+}
+
+/** Two neighbouring modes of one kind (a sliver or a relabelling separated them) are one mode. */
+function mergeSameKind(out: OperatingMode[]): void {
   for (let j = 1; j < out.length; ) {
     const prev = out[j - 1]!;
     const m = out[j]!;
@@ -139,7 +151,50 @@ export function modes(r: SimResult): OperatingMode[] {
     for (const x of m.intervals) if (prev.intervals.at(-1) !== x) prev.intervals.push(x);
     out.splice(j, 1);
   }
-  out.forEach((m, j) => (m.index = j + 1));
+}
+
+/**
+ * Names each mode by what its elements do, where the engine's interval says
+ * more than the currents: the forward converter's rectifier, freewheeling
+ * diode and reset diode, the diode of the others, and the switch's body
+ * diode, each counted as conducting only when its current counts
+ * (countingFloor). A forward converter turned on with its output at exactly
+ * n V_g carries rounding in its rectifier: that is the rectifier blocked.
+ */
+function relabel(r: SimResult, out: OperatingMode[]): void {
+  const s = schematic(r.params);
+  const peaks = branchScales(r, s);
+  const hasCn = !!r.params.Cnode && r.params.topology !== 'forward';
+  for (const m of out) {
+    const on = activeElements(r, m, s, modeScales(r, m, s, peaks));
+    if (r.params.topology === 'forward') {
+      if (m.gate) m.kind = on.has('D1') ? 'on' : 'onL0';
+      else if (m.kind !== 'ring') {
+        const L = on.has('D2') || on.has('D1');
+        const M = on.has('D3');
+        m.kind = L && M ? 'off' : L ? 'offM0' : M ? 'offL0' : 'idle';
+      }
+      continue;
+    }
+    if (m.kind === 'on' || m.kind === 'onRev') {
+      // the switch's channel or, for a negative current, its body diode
+      const st = elementStates(r, m, s, modeScales(r, m, s, peaks)).find((e) => e.id === 'S')?.state;
+      m.kind = st === 'onBodyDiode' ? 'onRev' : 'on';
+    } else if (m.kind === 'off' && !on.has('D')) m.kind = hasCn ? 'ring' : 'idle';
+    else if (m.kind === 'rev' && !on.has('S')) m.kind = 'idle';
+  }
+}
+
+/** The elements whose current counts somewhere in a mode. */
+function activeElements(r: SimResult, mode: OperatingMode, s: Schematic, scales: Map<string, number>): Set<string> {
+  const out = new Set<string>();
+  for (let k = mode.k0; k <= mode.k1; k++) {
+    const o = outputsAt(r, k);
+    for (const b of s.branches) {
+      if (b.kind === 'wire' || out.has(b.id)) continue;
+      if (Math.abs(b.current(o)) > countingFloor(r, scales.get(b.id) ?? 0)) out.add(b.id);
+    }
+  }
   return out;
 }
 
@@ -196,49 +251,209 @@ export function currentScale(r: SimResult, s: Schematic): number {
 }
 
 /**
- * A current smaller than this share of its scale counts as none. The scale
- * of the switching cell (the switch, the diodes, the windings, the
- * inductances, the node capacitance and a direct input) is the largest
- * current in the cell during the mode: the microamperes a node capacitance
- * draws through the input while the diode carries amperes are not a current
- * path worth drawing, nor a state of the input, while a ringing that turns
- * the diode on again for a few nanoseconds conducts a current that is that
- * mode's whole story, however small next to the period's peak. The scale of
- * the load and the source (the output capacitor, the resistor, the battery,
- * a fixed output, the Thevenin source, its resistance and bus capacitor) is
- * the element's own largest current over the period: they carry the load's
- * or the source's current in every mode, beside which the cell's current in
- * a short mode would count for nothing.
+ * A current smaller than this share of its scale counts as none. The scale is
+ * the largest current, during the mode, of the current system the element
+ * belongs to:
+ * - the switching cell: the switch, the diode, the inductor, the node
+ *   capacitance and the input; for a flyback or a forward converter, the
+ *   primary's (the switch, the primary and reset windings, the magnetizing
+ *   inductance, the reset diode, the node capacitance, the input) and the
+ *   secondary's (the secondary winding, the rectifier and freewheeling
+ *   diodes, the output inductor) apart, since the transformer scales one
+ *   against the other. The microamperes a node capacitance draws through the
+ *   input while the diode carries amperes are not a current path worth
+ *   drawing, while a ringing that turns the diode on again for a few
+ *   nanoseconds conducts a current that is that mode's whole story, however
+ *   small next to the period's peak;
+ * - the output capacitor, with the load's resistor, battery and fixed
+ *   output: the capacitor that alone feeds the load in a mode counts, however
+ *   small next to the pulse that charged it; and never against less than the
+ *   smaller of the resistor's and the battery's own largest currents, so that
+ *   a trickle into a battery that draws amperes does not count;
+ * - the bus capacitor, with the source's resistance, and never against less
+ *   than the resistance's own largest current.
+ * An inductor is also measured against its own largest current over the
+ * period, if that is smaller: a magnetizing current growing beside the
+ * reflected load current is its own story. The load's resistor and battery, a
+ * fixed output, the source and its resistance, which conduct in every mode by
+ * nature, are measured against their own largest current over the period.
+ * Where these scales would leave the currents that count at an electrical
+ * node unbalanced, the element at the node with the largest current that
+ * does not count is measured against the largest one that does (closePaths):
+ * a battery feeding a resistor between its charging pulses counts with the
+ * resistor. Never below rounding (countingFloor).
  */
 export const NONE = 1e-3;
 
-/** The load's and the source's elements, measured against their own peaks. */
-const OUTSIDE = new Set(['C', 'R', 'B', 'V', 'Voc', 'Rs', 'Cbus']);
+/** The load's and the source's branches that conduct in every mode, measured against their own peaks. */
+const OWN = new Set(['R', 'B', 'V', 'Voc', 'Rs']);
+
+/** The current system an element belongs to (see NONE). */
+export function systemOf(topology: string, id: string): string {
+  if (id === 'C' || id === 'R' || id === 'B' || id === 'V') return 'load';
+  if (id === 'Cbus' || id === 'Rs' || id === 'Voc') return 'source';
+  if (topology === 'forward') return ['W2', 'D1', 'D2', 'L'].includes(id) ? 'secondary' : 'primary';
+  if (topology === 'flyback') return ['W2', 'D'].includes(id) ? 'secondary' : 'primary';
+  return 'cell';
+}
 
 /**
- * Each branch's scale in a mode, by id: for the switching cell's branches
- * and the wires, the largest current in the cell during the mode; for the
- * load's and the source's elements, their own largest current over the period.
+ * Each element's scale in a mode, by id (see NONE); wires have none of their
+ * own: branchFlow routes the currents of the elements that carry one.
  */
 export function modeScales(r: SimResult, mode: OperatingMode, s: Schematic = schematic(r.params), peaks = branchScales(r, s)): Map<string, number> {
-  let cell = 0;
-  for (let k = mode.k0; k <= mode.k1; k++) {
-    const o = outputsAt(r, k);
-    for (const b of s.branches) if (b.kind !== 'wire' && !OUTSIDE.has(b.id)) cell = Math.max(cell, Math.abs(b.current(o)));
+  const topo = r.params.topology;
+  const most = new Map<string, number>();
+  const os: Outputs[] = [];
+  for (let k = mode.k0; k <= mode.k1; k++) os.push(outputsAt(r, k));
+  for (const o of os) {
+    for (const b of s.branches) {
+      if (b.kind === 'wire') continue;
+      const g = systemOf(topo, b.id);
+      most.set(g, Math.max(most.get(g) ?? 0, Math.abs(b.current(o))));
+    }
   }
-  return new Map(s.branches.map((b) => [b.id, OUTSIDE.has(b.id) ? peaks.get(b.id)! : cell]));
+  // what the load and the source draw by nature: the smaller of their own peaks
+  const draws = (ids: string[]) => Math.min(...ids.map((id) => (peaks.has(id) ? peaks.get(id)! : Infinity)));
+  const load = draws(['R', 'B']);
+  const source = draws(['Rs']);
+  const out = new Map<string, number>();
+  for (const b of s.branches) {
+    if (b.kind === 'wire') {
+      out.set(b.id, 0);
+      continue;
+    }
+    const own = peaks.get(b.id) ?? 0;
+    const sys = most.get(systemOf(topo, b.id)) ?? 0;
+    let scale = OWN.has(b.id) ? own : b.kind === 'inductor' ? Math.min(own, sys) : sys;
+    // the output and the bus capacitor count against what the load or the source draws, too: a capacitor
+    // feeding a load's 850 µA counts, one trickling 10 nA into a battery that draws amperes does not
+    if (b.id === 'C' && Number.isFinite(load)) scale = Math.max(scale, load);
+    if (b.id === 'Cbus' && Number.isFinite(source)) scale = Math.max(scale, source);
+    out.set(b.id, scale);
+  }
+  closePaths(r, s, os, out);
+  return out;
+}
+
+/**
+ * Kirchhoff's current law for what counts: at each electrical node (the
+ * nodes wires join), the currents that count must add up to zero, to within
+ * a thousandth of the largest of them. Where they do not, the path of a
+ * current that counts would end at the node: a resistor fed by a battery
+ * whose charging pulses put its discharge below a thousandth of its own
+ * scale, a diode conducting for nanoseconds into an output whose capacitor
+ * and battery carry amperes at other times. The element at the node with the
+ * largest current that does not count is then measured against the largest
+ * current that does, and so counts; until every node balances.
+ */
+function closePaths(r: SimResult, s: Schematic, os: Outputs[], scales: Map<string, number>): void {
+  const net = netsOf(s);
+  const els = s.branches.filter((b) => b.kind !== 'wire' && net.get(b.from) !== net.get(b.to));
+  const cur = new Map(els.map((b) => [b.id, os.map((o) => b.current(o))]));
+  const peak = new Map(els.map((b) => [b.id, Math.max(...cur.get(b.id)!.map(Math.abs))]));
+  const counts = (id: string) => peak.get(id)! > countingFloor(r, scales.get(id) ?? 0);
+  const nets = [...new Set(net.values())];
+  for (let pass = 0; pass <= els.length; pass++) {
+    let changed = false;
+    for (const N of nets) {
+      const at = els.filter((b) => net.get(b.from) === N || net.get(b.to) === N);
+      const on = at.filter((b) => counts(b.id));
+      if (!on.length) continue;
+      const big = Math.max(...on.map((b) => peak.get(b.id)!));
+      const tol = countingFloor(r, big);
+      let worst = 0;
+      for (let k = 0; k < os.length; k++) {
+        let sum = 0;
+        for (const b of on) sum += (net.get(b.to) === N ? 1 : -1) * cur.get(b.id)![k]!;
+        worst = Math.max(worst, Math.abs(sum));
+      }
+      if (worst <= tol) continue;
+      const off = at.filter((b) => !counts(b.id) && peak.get(b.id)! > tol).sort((a, b) => peak.get(b.id)! - peak.get(a.id)!);
+      if (!off.length) continue;
+      scales.set(off[0]!.id, big);
+      changed = true;
+    }
+    if (!changed) break;
+  }
+}
+
+const NETS = new WeakMap<Schematic, Map<string, string>>();
+/** Each node's electrical node: the nodes wires join, by one representative node id. */
+export function netsOf(s: Schematic): Map<string, string> {
+  const hit = NETS.get(s);
+  if (hit) return hit;
+  const out = netsOfUncached(s);
+  NETS.set(s, out);
+  return out;
+}
+function netsOfUncached(s: Schematic): Map<string, string> {
+  const up = new Map(s.nodes.map((n) => [n.id, n.id]));
+  const root = (x: string): string => {
+    let y = x;
+    while (up.get(y) !== y) y = up.get(y)!;
+    return y;
+  };
+  for (const b of s.branches) if (b.kind === 'wire') up.set(root(b.from), root(b.to));
+  return new Map(s.nodes.map((n) => [n.id, root(n.id)]));
+}
+
+const SIDES = new WeakMap<Schematic, Map<string, [string[], string[]]>>();
+/**
+ * The elements on each side of every wire: the wires of an electrical node
+ * form a tree, and a wire's current is what the elements attached on one
+ * side pass to those on the other. By wire id: [the side of `from`, the side
+ * of `to`], element ids (an element with both ends on one side is left out).
+ */
+export function wireSides(s: Schematic): Map<string, [string[], string[]]> {
+  const hit = SIDES.get(s);
+  if (hit) return hit;
+  const out = wireSidesUncached(s);
+  SIDES.set(s, out);
+  return out;
+}
+function wireSidesUncached(s: Schematic): Map<string, [string[], string[]]> {
+  const net = netsOf(s);
+  const wires = s.branches.filter((b) => b.kind === 'wire');
+  // an element joins two electrical nodes: at each, it is attached to one side of every wire there
+  const els = s.branches.filter((b) => b.kind !== 'wire' && net.get(b.from) !== net.get(b.to));
+  const out = new Map<string, [string[], string[]]>();
+  for (const w of wires) {
+    // the nodes reached from `from` through the other wires
+    const near = new Set([w.from]);
+    const todo = [w.from];
+    while (todo.length) {
+      const n = todo.pop()!;
+      for (const v of wires) {
+        const m = v === w ? undefined : v.from === n ? v.to : v.to === n ? v.from : undefined;
+        if (m !== undefined && !near.has(m)) {
+          near.add(m);
+          todo.push(m);
+        }
+      }
+    }
+    if (near.has(w.to)) throw new Error(`schematic: the wires at ${w.from} form a loop`);
+    const far = new Set([...net.keys()].filter((n) => net.get(n) === net.get(w.from) && !near.has(n)));
+    const on = (side: Set<string>) => els.filter((e) => side.has(e.from) || side.has(e.to)).map((e) => e.id);
+    out.set(w.id, [on(near), on(far)]);
+  }
+  return out;
 }
 
 /** Below this share of the circuit's natural current (the model's scales), a current is rounding. */
 export const ROUNDING = 1e-9;
 
+const NATURAL = new WeakMap<SimResult, number>();
 /** The circuit's natural current: the largest of its inductor currents' scales (pe-core's model scales, V T_s / L). */
 function naturalCurrent(r: SimResult): number {
+  const hit = NATURAL.get(r);
+  if (hit !== undefined) return hit;
   const m = buildModel(r.params);
   let c = 0;
   m.stateNames.forEach((name, j) => {
     if (name === 'i' || name === 'iM') c = Math.max(c, m.scales?.[j] ?? 0);
   });
+  NATURAL.set(r, c);
   return c;
 }
 
@@ -342,6 +557,7 @@ export function elementStates(r: SimResult, mode: OperatingMode, s: Schematic = 
       for (let j = 1; j < v.length; j++) va += 0.5 * (v[j - 1]! + v[j]!) * (t[mode.k0 + j]! - t[mode.k0 + j - 1]!);
       vAvg = span > 0 ? va / span : v[0];
     }
+    const vRes = b.resistance ? b.resistance * avg : undefined;
     switch (b.kind) {
       case 'switch': {
         // gate on: the channel carries the current, or (a negative one) the body diode at zero volts;
@@ -398,9 +614,26 @@ export function elementStates(r: SimResult, mode: OperatingMode, s: Schematic = 
       default:
         state = active ? 'conducting' : 'idle';
     }
-    out.push({ id: b.id, kind: b.kind as Exclude<ElementKind, 'wire'>, state, i0, i1, avg, min, max, tSign, signChanges, v0, v1, vAvg });
+    out.push({ id: b.id, kind: b.kind as Exclude<ElementKind, 'wire'>, state, i0, i1, avg, min, max, tSign, signChanges, v0, v1, vAvg, vRes });
   }
   return out;
+}
+
+/**
+ * The forward converter's core reset in a mode, from its magnetizing
+ * current: 'reset' when, with the switch off, a magnetizing current that
+ * counts has fallen to none by the mode's end (the reset winding has
+ * returned the core's energy to the input); 'noReset' when the mode ends the
+ * period with the switch off and the magnetizing current still counting (it
+ * has not returned to zero when the switch turns on again). Nothing in any
+ * other mode or converter.
+ */
+export function coreReset(r: SimResult, mode: OperatingMode, states: ElementInMode[], scales: Map<string, number>): 'reset' | 'noReset' | undefined {
+  if (r.params.topology !== 'forward' || mode.gate) return undefined;
+  const lm = states.find((e) => e.id === 'LM');
+  if (!lm || lm.state === 'zero') return undefined;
+  if (Math.abs(lm.i1) <= countingFloor(r, scales.get('LM') ?? 0)) return 'reset';
+  return mode.k1 >= (r.waveforms.t as number[]).length - 1 ? 'noReset' : undefined;
 }
 
 export interface BranchFlow {
@@ -413,15 +646,55 @@ export interface BranchFlow {
   reverses: boolean;
 }
 
-/** Whether a branch carries current in a mode (for drawing its path), which way on average, and whether it reverses. */
+/**
+ * Whether a branch carries current in a mode (for drawing its path), which
+ * way on average, and whether it reverses. An element carries one when its
+ * current counts (NONE of its scale); a wire, when the currents of the
+ * elements that count, and of no other, flow through it: its current is what
+ * the counting elements on one of its sides pass to those on the other
+ * (wireSides), and it counts for the smallest-scaled of them on either side,
+ * so that a coloured wire joins coloured branches.
+ */
 export function branchFlow(r: SimResult, mode: OperatingMode, s: Schematic, scales = modeScales(r, mode, s)): Map<string, BranchFlow> {
   const t = r.waveforms.t as number[];
   const out = new Map<string, BranchFlow>();
   const os: Outputs[] = [];
   for (let k = mode.k0; k <= mode.k1; k++) os.push(outputsAt(r, k));
+  const on = activeElements(r, mode, s, scales);
+  const sides = wireSides(s);
+  const net = netsOf(s);
+  const byId = new Map(s.branches.map((b) => [b.id, b]));
+  const cur = new Map<string, number[]>();
+  for (const b of s.branches) if (b.kind !== 'wire') cur.set(b.id, os.map((o) => b.current(o)));
+  // what the counting elements on one side of a wire (at the electrical node N) put into that side, sample by sample
+  const into = (ids: string[], N: string) => os.map((_, k) => ids.reduce((sum, id) => sum + (net.get(byId.get(id)!.to) === N ? 1 : -1) * cur.get(id)![k]!, 0));
   for (const b of s.branches) {
-    const eps = countingFloor(r, scales.get(b.id) ?? 0);
-    const i = os.map((o) => b.current(o));
+    let i: number[];
+    let eps: number;
+    if (b.kind === 'wire') {
+      // a wire joins the elements on its two sides: its current, from -> to, is what the counting elements on
+      // its `from` side put into that side. It carries a path when that counts for the smallest-scaled of the
+      // counting elements on either side: the whole current of a resistor fed from a capacitor that carries
+      // amperes counts; what is left where a battery's and a resistor's currents cancel beside a capacitor at
+      // rest does not, on either side; a side where nothing counts passes nothing
+      const N = net.get(b.from)!;
+      const [near, far] = sides.get(b.id)!.map((ids) => ids.filter((id) => on.has(id))) as [string[], string[]];
+      i = into(near, N);
+      const back = into(far, N);
+      eps = Infinity;
+      if (near.length && far.length) {
+        for (const [ids, x] of [
+          [near, i],
+          [far, back],
+        ] as const) {
+          const floor = countingFloor(r, Math.min(...ids.map((id) => scales.get(id) ?? 0)));
+          if (Math.max(...x.map(Math.abs)) > floor) eps = Math.min(eps, floor);
+        }
+      }
+    } else {
+      i = cur.get(b.id)!;
+      eps = countingFloor(r, scales.get(b.id) ?? 0);
+    }
     let area = 0;
     for (let j = 1; j < i.length; j++) area += 0.5 * (i[j - 1]! + i[j]!) * (t[mode.k0 + j]! - t[mode.k0 + j - 1]!);
     const span = mode.t1 - mode.t0;

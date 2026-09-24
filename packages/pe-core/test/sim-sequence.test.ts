@@ -338,3 +338,178 @@ describe("each mode's circuit sentence and its states agree in random circuits",
     expect(wrong).toEqual([]);
   });
 });
+
+describe("each forward converter mode's circuit sentence and its states agree", () => {
+  // what each forward mode's description asserts about the switch, the three diodes and the two inductances
+  const asserts: Record<string, Record<string, string[]>> = {
+    on: { S: ['on'], D1: ['conducting'], D2: ['blocking'], D3: ['blocking'] },
+    onL0: { S: ['on'], D1: ['blocking'], D2: ['blocking'], D3: ['blocking'], L: ['zero'] },
+    off: { S: ['off'], D1: ['blocking'], D2: ['conducting'], D3: ['conducting'] },
+    offM0: { S: ['off'], D1: ['blocking'], D2: ['conducting'], D3: ['blocking'], LM: ['zero'] },
+    offL0: { S: ['off'], D1: ['blocking'], D2: ['blocking'], D3: ['conducting'], L: ['zero'] },
+    idle: { S: ['off'], D1: ['blocking'], D2: ['blocking'], D3: ['blocking'], L: ['zero'], LM: ['zero'] },
+  };
+  // and where each inductance carries current
+  const carries: Record<string, string[]> = { on: ['L', 'LM'], onL0: ['LM'], off: ['L', 'LM'], offM0: ['L'], offL0: ['LM'], idle: [] };
+  function wrongIn(p: SimParams): string[] {
+    const r = simulate(p);
+    if (r.status !== 'steady' || atRest(r)) return [];
+    const out: string[] = [];
+    for (const m of modes(r)) {
+      const st = byId(elementStates(r, m));
+      const a = asserts[m.kind];
+      if (!a) {
+        out.push(`mode ${m.index}: no description for ${m.kind}`);
+        continue;
+      }
+      for (const [id, allowed] of Object.entries(a)) if (!allowed.includes(st[id]!.state)) out.push(`mode ${m.index} (${m.kind}): ${id} is ${st[id]!.state}`);
+      for (const id of carries[m.kind]!) if (st[id]!.state === 'zero') out.push(`mode ${m.index} (${m.kind}): ${id} carries none`);
+    }
+    return out;
+  }
+  const cases: [string, SimParams][] = [
+    // the second review's circuits: a magnetizing current a thousandth of the load current and its reset
+    ['magnetizing current beside 19 A', { topology: 'forward', Vg: 48, D: 0.4, fs, L: 1e-4, n: 0.5, nr: 1, LM: 1e-2, load: { kind: 'resistive', R: 0.5, C: 1e-4 } }],
+    ['magnetizing current beside 20 A, lossy', { topology: 'forward', Vg: 48, D: 0.45, fs: 2e5, L: 1e-5, n: 0.25, nr: 1, LM: 6e-3, Ron: 0.02, VF: 0.4, load: { kind: 'resistive', R: 0.25, C: 1e-4 } }],
+    // a capacitor alone charged to n V_g: rounding in the rectifier is no conduction
+    ['capacitor alone at n V_g', { topology: 'forward', Vg: 48, D: 0.4, fs, L: 1e-4, n: 0.5, nr: 1, LM: 1e-3, load: { kind: 'network', C: 1e-4, V0: 0 } }],
+    ['capacitor alone, R_on', { topology: 'forward', Vg: 48, D: 0.4, fs, L: 1e-4, n: 0.5, nr: 1, LM: 1e-3, Ron: 0.1, load: { kind: 'network', C: 1e-5, V0: 0 } }],
+    // beyond the reset limit: steady only through R_on
+    ['beyond the reset limit, R_on', { topology: 'forward', Vg: 48, D: 0.7, fs, L: 1e-4, n: 0.5, nr: 1, LM: 1e-3, Ron: 0.1, load: { kind: 'resistive', R: 5, C: 1e-4 } }],
+    ['beyond the reset limit, fixed output', { topology: 'forward', Vg: 67.1, D: 0.695, fs: 2e4, L: 1.88e-6, n: 0.149, nr: 1.44, LM: 6.05e-3, Ron: 0.102, RL: 0.00781, VF: 0.101, load: { kind: 'fixed', V: 8.65 } }],
+    ['battery held off, source', { topology: 'forward', Vg: 24, D: 0.3, fs, L: 5e-5, n: 0.5, nr: 1, LM: 1e-3, Ron: 0.05, VF: 0.5, source: { Voc: 24, Rs: 0.5, Cbus: 1e-4 }, load: { kind: 'network', C: 1e-4, battery: { V: 12, R: 0.2 } } }],
+    ['DCM, reset winding of half the turns', { topology: 'forward', Vg: 48, D: 0.3, fs, L: 2e-5, n: 0.5, nr: 0.5, LM: 1e-3, VF: 0.5, load: { kind: 'resistive', R: 20, C: 1e-4 } }],
+  ];
+  for (const [name, p] of cases) it(name, () => expect(wrongIn(p)).toEqual([]));
+
+  it('40 random forward converters', () => {
+    let seed = 2654435761;
+    const rnd = () => {
+      seed = (seed * 1664525 + 1013904223) >>> 0;
+      return seed / 2 ** 32;
+    };
+    const pick = <T,>(a: readonly T[]) => a[Math.floor(rnd() * a.length)]!;
+    const logU = (lo: number, hi: number) => Math.exp(Math.log(lo) + rnd() * (Math.log(hi) - Math.log(lo)));
+    const r3 = (x: number) => Number(x.toPrecision(3));
+    const wrong: string[] = [];
+    for (let k = 0; k < 40; k++) {
+      const Vg = r3(logU(5, 100));
+      const n = r3(logU(0.1, 2));
+      const kind = pick(['res', 'bat', 'batr', 'fixed', 'cap'] as const);
+      const C = r3(logU(1e-7, 1e-4));
+      const load: SimParams['load'] =
+        kind === 'res'
+          ? { kind: 'resistive', R: r3(logU(0.5, 1e3)), C }
+          : kind === 'fixed'
+            ? { kind: 'fixed', V: r3(n * Vg * logU(0.2, 1.2)) }
+            : kind === 'cap'
+              ? { kind: 'network', C, V0: 0 }
+              : { kind: 'network', C, battery: { V: r3(n * Vg * logU(0.1, 1.2)), R: r3(logU(0.05, 5)) }, ...(kind === 'batr' ? { R: r3(logU(5, 1e3)) } : {}) };
+      const p: SimParams = {
+        topology: 'forward',
+        Vg,
+        D: r3(0.05 + 0.85 * rnd()),
+        fs: pick([5e4, 1e5, 2e5]),
+        L: r3(logU(2e-6, 1e-3)),
+        n,
+        nr: pick([0.5, 1, 1.5]),
+        LM: r3(logU(1e-4, 1e-2)),
+        Ron: rnd() < 0.7 ? r3(logU(0.01, 0.5)) : undefined,
+        RL: rnd() < 0.5 ? r3(logU(0.01, 0.2)) : undefined,
+        VF: rnd() < 0.5 ? r3(logU(0.2, 0.8)) : undefined,
+        load,
+      };
+      if (rnd() < 0.25) p.source = { Voc: r3(Vg * logU(1, 1.5)), Rs: r3(logU(0.05, 5)), Cbus: r3(logU(1e-6, 1e-3)) };
+      for (const x of wrongIn(p)) wrong.push(`${JSON.stringify(p)}: ${x}`);
+    }
+    expect(wrong).toEqual([]);
+  });
+});
+
+describe('each energy state agrees with the physics of its element', () => {
+  /**
+   * Independent of how the states are read from the currents: across an
+   * inductance, the average voltage along the current's direction is L times
+   * the current's change over the mode, so a current that only grows has a
+   * positive one; a capacitor's voltage rises while it charges; a battery
+   * charges only while the output is above its open-circuit voltage.
+   */
+  function wrongIn(p: SimParams): string[] {
+    const r = simulate(p);
+    if (r.status !== 'steady' || atRest(r)) return [];
+    const out: string[] = [];
+    const Vb = p.load.kind === 'network' ? p.load.battery?.V : undefined;
+    const vout = r.waveforms.v_out as number[];
+    for (const m of modes(r)) {
+      for (const e of elementStates(r, m)) {
+        const at = `mode ${m.index} (${m.kind}), ${e.id} ${e.state}`;
+        if (e.kind === 'inductor' && e.signChanges === 0 && e.vAvg !== undefined && (e.state === 'storing' || e.state === 'releasing')) {
+          const dir = Math.sign(e.avg);
+          const vInd = dir * (e.vAvg - (e.vRes ?? 0));
+          // the change it makes, L (i1 - i0) / T along the arrow, where that is clear of the trapezoids' error
+          const want = e.state === 'storing' ? 1 : -1;
+          if (Math.sign(vInd) !== want && Math.abs(vInd) > 1e-6 * Math.max(Math.abs(e.v0!), Math.abs(e.v1!), 1e-12)) out.push(`${at}: the inductance's average voltage along the arrow is ${vInd}`);
+        }
+        if (e.id === 'C' && (e.state === 'charging' || e.state === 'discharging')) {
+          const dv = e.v1! - e.v0!;
+          if (dv !== 0 && Math.sign(dv) !== (e.state === 'charging' ? 1 : -1)) out.push(`${at}: its voltage moves by ${dv}`);
+        }
+        if (e.kind === 'battery' && Vb !== undefined && (e.state === 'charging' || e.state === 'discharging')) {
+          const v = vout.slice(m.k0, m.k1 + 1);
+          const ok = e.state === 'charging' ? Math.max(...v) > Vb : Math.min(...v) < Vb;
+          if (!ok) out.push(`${at}: the output is ${Math.min(...v)} to ${Math.max(...v)} V, the battery's V_b ${Vb} V`);
+        }
+      }
+    }
+    return out;
+  }
+  it('80 random circuits of every converter', () => {
+    let seed = 40503;
+    const rnd = () => {
+      seed = (seed * 1664525 + 1013904223) >>> 0;
+      return seed / 2 ** 32;
+    };
+    const pick = <T,>(a: readonly T[]) => a[Math.floor(rnd() * a.length)]!;
+    const logU = (lo: number, hi: number) => Math.exp(Math.log(lo) + rnd() * (Math.log(hi) - Math.log(lo)));
+    const r3 = (x: number) => Number(x.toPrecision(3));
+    const wrong: string[] = [];
+    let checked = 0;
+    for (let k = 0; k < 80; k++) {
+      const topology = pick(['buck', 'boost', 'buckboost', 'flyback', 'forward'] as const);
+      const Vg = r3(logU(5, 100));
+      const kind = pick(['res', 'bat', 'batr', 'fixed'] as const);
+      const C = r3(logU(1e-7, 1e-4));
+      const load: SimParams['load'] =
+        kind === 'res'
+          ? { kind: 'resistive', R: r3(logU(1, 1e3)), C }
+          : kind === 'fixed'
+            ? { kind: 'fixed', V: r3(Vg * logU(0.2, 2)) }
+            : { kind: 'network', C, battery: { V: r3(Vg * logU(0.1, 2)), R: r3(logU(0.05, 5)) }, ...(kind === 'batr' ? { R: r3(logU(5, 1e3)) } : {}) };
+      const p: SimParams = {
+        topology,
+        Vg,
+        D: r3(0.05 + 0.9 * rnd()),
+        fs: pick([5e4, 1e5, 2e5]),
+        L: r3(logU(2e-6, 1e-3)),
+        n: topology === 'flyback' || topology === 'forward' ? r3(logU(0.1, 2)) : undefined,
+        nr: topology === 'forward' ? pick([0.5, 1, 1.5]) : undefined,
+        LM: topology === 'forward' ? r3(logU(1e-4, 1e-2)) : undefined,
+        Ron: r3(logU(0.01, 0.5)),
+        RL: rnd() < 0.6 ? r3(logU(0.01, 0.3)) : undefined,
+        VF: rnd() < 0.5 ? r3(logU(0.2, 0.8)) : undefined,
+        Cnode: topology !== 'forward' && rnd() < 0.3 ? pick([1e-10, 1e-9]) : undefined,
+        load,
+      };
+      let x: string[];
+      try {
+        x = wrongIn(p);
+      } catch {
+        continue; // a node capacitance that rings too fast is refused
+      }
+      checked++;
+      for (const w of x) wrong.push(`${JSON.stringify(p)}: ${w}`);
+    }
+    expect(checked).toBeGreaterThan(60);
+    expect(wrong).toEqual([]);
+  });
+});

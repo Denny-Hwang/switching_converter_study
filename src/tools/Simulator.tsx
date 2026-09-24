@@ -634,9 +634,10 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
   const plotRef = useRef<HTMLDivElement>(null);
   const runner = useSimRunner();
   const theme = usePlotTheme();
-  // the operating modes of a steady period, and the one shown (kept while the parameters change)
+  // the operating modes of a steady period, and the one shown (kept while the parameters change); a
+  // circuit at rest has none (nothing moves: the charts show no bands, the mode view says why)
   const [modeSel, setModeSel] = useState(0);
-  const modes = useMemo(() => (result?.converged ? sim.modes(result) : []), [result]);
+  const modes = useMemo(() => (result?.converged && !sim.atRest(result) ? sim.modes(result) : []), [result]);
   const sel = Math.min(modeSel, Math.max(modes.length - 1, 0));
 
   const params = useMemo(() => toParams(fstate, values), [fstate, values]);
@@ -1033,7 +1034,7 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
           {result && <p className="pe-tool__hint">{labels.plotHint}</p>}
         </div>
       </div>
-      {result?.converged && modes.length > 0 && <SequenceView result={result} modes={modes} text={seqText} selected={sel} onSelect={setModeSel} theme={theme} />}
+      {result?.converged && <SequenceView result={result} modes={modes} text={seqText} selected={sel} onSelect={setModeSel} theme={theme} />}
       {result?.converged && (
         <>
           <h3>{labels.status}</h3>
