@@ -1,5 +1,5 @@
-import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import generated from '../equations/equations.generated.json';
 
@@ -20,4 +20,25 @@ describe('repository links used by <Eq>', () => {
       expect(yamlLines[line - 1]).toContain(`id: ${id}`);
     },
   );
+});
+
+// Pages may link a repository file on the default branch as well (the gotcha
+// template, for example); the same reasoning applies to those links.
+function mdxFiles(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((d) =>
+    d.isDirectory() ? mdxFiles(join(dir, d.name)) : d.name.endsWith('.mdx') ? [join(dir, d.name)] : [],
+  );
+}
+const BLOB = /https:\/\/github\.com\/Denny-Hwang\/switching_converter_study\/(?:blob|tree)\/main\/([^\s)"'#>]+)/g;
+const pageLinks = mdxFiles(resolve(root, 'src/content/docs')).flatMap((f) =>
+  [...readFileSync(f, 'utf8').matchAll(BLOB)].map((m) => [f.slice(root.length + 1), m[1]!] as const),
+);
+
+describe('repository links in the pages', () => {
+  it('finds the links it checks', () => {
+    expect(pageLinks.length).toBeGreaterThan(0);
+  });
+  it.each(pageLinks)('%s links %s, which exists', (_page, target) => {
+    expect(existsSync(resolve(root, target))).toBe(true);
+  });
 });

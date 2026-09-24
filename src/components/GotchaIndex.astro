@@ -1,0 +1,75 @@
+---
+/**
+ * <GotchaIndex /> -- the index of the gotcha pages (08-gotchas): every page
+ * with its one-line description and tags, then the pages under each tag.
+ * Built from the docs collection, so a new page appears here by itself.
+ * A Korean page that is still pending is listed with its English title at
+ * its Korean URL (Starlight serves the English content there).
+ */
+import { getCollection } from 'astro:content';
+import { ui } from '../i18n/ui';
+import { GOTCHA_TAG_IDS, GOTCHAS_DIR, tagAnchor, tagLabel, type GotchaTag } from '../lib/gotchas';
+import { pageHref } from '../lib/paths';
+import { pageLocale } from '../lib/locale';
+
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const prefix = (loc: string) => `${loc}/${GOTCHAS_DIR}/`;
+const all = await getCollection('docs', (e) => e.id.startsWith(prefix('en')) || e.id.startsWith(prefix(locale)));
+const own = new Map(all.filter((e) => e.id.startsWith(prefix(locale))).map((e) => [e.id.slice(prefix(locale).length), e]));
+const pages = all
+  .filter((e) => e.id.startsWith(prefix('en')))
+  .map((en) => {
+    const slug = en.id.slice(prefix('en').length);
+    const e = own.get(slug) ?? en;
+    if (!e.data.gotcha) throw new Error(`gotcha page ${e.id} has no gotcha.tags in its frontmatter`);
+    return {
+      slug,
+      title: e.data.title,
+      description: e.data.description ?? '',
+      tags: e.data.gotcha.tags as GotchaTag[],
+      order: e.data.sidebar?.order ?? 1000,
+      href: pageHref(locale, `${GOTCHAS_DIR}/${slug}`),
+    };
+  })
+  .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
+const tags = GOTCHA_TAG_IDS.filter((tag) => pages.some((p) => p.tags.includes(tag)));
+---
+
+<ol class="pe-gotchas not-content">
+  {
+    pages.map((p) => (
+      <li>
+        <a href={p.href}>{p.title}</a>
+        <br />
+        <span class="pe-gotchas__desc">{p.description}</span>
+        <br />
+        <span class="pe-gotchas__tags">
+          {p.tags.map((tag) => (
+            <a class="pe-tag" href={`#${tagAnchor(tag)}`}>
+              {tagLabel(tag, locale)}
+            </a>
+          ))}
+        </span>
+      </li>
+    ))
+  }
+</ol>
+
+<h2 id="by-tag">{t['gotcha.byTag']}</h2>
+{
+  tags.map((tag) => (
+    <section class="pe-gotchas__tag">
+      <h3 id={tagAnchor(tag)}>{tagLabel(tag, locale)}</h3>
+      <ul>
+        {pages
+          .filter((p) => p.tags.includes(tag))
+          .map((p) => (
+            <li>
+              <a href={p.href}>{p.title}</a>
+            </li>
+          ))}
+      </ul>
+    </section>
+  ))
+}

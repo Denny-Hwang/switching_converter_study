@@ -1,0 +1,62 @@
+---
+title: A current reading below the meter across the shunt
+description: When a sense chain clips on the peaks of a pulsed current, the average of its readings falls below the true average, which a DMM across the shunt still reads.
+sidebar:
+  order: 12
+gotcha:
+  tags: [measurement, sensing]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+
+<GotchaTags />
+
+## Symptom
+
+A pulsed current, averaged from the samples of a sense amplifier and an
+ADC, reads lower than a DMM on its dc voltage range reads across the same
+shunt. The gap grows with the load, or as the current's pulses become
+narrower and taller for the same average.
+
+## Why
+
+The shunt's voltage follows the current at every instant
+(<EqRef id="sense.burden" label="sense voltage" />). A DMM's integrating
+converter passes dc and low-frequency signals and attenuates noise at
+specific frequencies <Cite key="keithley_llmh7" />, so across the shunt it
+reads the dc component of the voltage: its average. For a train of pulses
+that is the pulses' height times their duty ratio
+(<EqRef id="fourier.pulse.harm" label="pulse-train harmonics" />).
+
+The sense chain reads only up to its limits: the amplifier's largest output
+and the ADC's full scale ([sense chain](../../design/sense-chain/)). A
+chain sized for the average current can clip on the pulses' peaks, and
+the average of clipped samples is lower than the true average: the chain
+loses the part of every pulse above its limit.
+
+## How to confirm
+
+Look at the amplifier's output with an oscilloscope: flat tops at the same
+voltage in every pulse are clipping. Then pass a steady dc current, within
+the chain's range, and compare the chain's reading with the DMM's: if they
+agree there, the chain is calibrated, and the gap with the pulsed current
+comes from its limits. Repeat the DMM reading on its next range up: the
+same reading shows that the meter itself is not the one clipping.
+
+## Fix
+
+Size the chain's full scale for the peak of the current, not its average:
+lower the gain until the highest peak fits below both limits. The
+[sense chain](../../design/sense-chain/) tool gives the full-scale current
+and flags a reading that can clip.
+
+## References
+
+- <Cite key="keithley_llmh7" />: an integrating converter passes dc and
+  attenuates noise at specific frequencies.
+- [Sense chain](../../design/sense-chain/): the amplifier's and the ADC's
+  limits.
+- [Fourier series](../../00-foundations/fourier/): the dc component of a
+  pulse train.

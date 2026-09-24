@@ -202,6 +202,21 @@
       "kind": "Application Note",
       "url": "https://assets.nexperia.com/documents/application-note/AN11160.pdf"
     },
+    "nexperia_an90059": {
+      "key": "nexperia_an90059",
+      "type": "techreport",
+      "label": "Nexperia 2025",
+      "authors": [
+        "Nexperia"
+      ],
+      "title": "Power MOSFET gate driver fundamentals",
+      "verified": true,
+      "institution": "Nexperia",
+      "number": "AN90059, Rev. 1",
+      "year": "2025",
+      "kind": "Application Note",
+      "url": "https://assets.nexperia.com/documents/application-note/AN90059.pdf"
+    },
     "keysight_5950_3000": {
       "key": "keysight_5950_3000",
       "type": "manual",
@@ -491,6 +506,20 @@
       "number": "SLUSBH2",
       "kind": "Data sheet",
       "url": "https://www.ti.com/lit/ds/symlink/bq25570.pdf"
+    },
+    "ti_tpl5110": {
+      "key": "ti_tpl5110",
+      "type": "manual",
+      "label": "Texas Instruments, TPL5110 Nano-Power System Timer for Power Gating",
+      "authors": [
+        "Texas Instruments"
+      ],
+      "title": "TPL5110 Nano-Power System Timer for Power Gating",
+      "verified": true,
+      "organization": "Texas Instruments",
+      "number": "SNAS650",
+      "kind": "Data sheet",
+      "url": "https://www.ti.com/lit/ds/symlink/tpl5110.pdf"
     },
     "zi2015": {
       "key": "zi2015",

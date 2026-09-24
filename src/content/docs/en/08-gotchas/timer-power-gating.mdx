@@ -1,0 +1,56 @@
+---
+title: A power-gating timer that switches its load off too soon
+description: A nano-power timer that gates a load's supply needs its mode pin tied to a rail, and takes a very short pulse on its DONE input as the signal to switch the load off.
+sidebar:
+  order: 7
+gotcha:
+  tags: [power-gating]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+
+<GotchaTags />
+
+## Symptom
+
+A load whose supply a nano-power timer switches (the timer turns a power
+switch on at intervals, and off again when the load signals that it has
+finished) switches off right after it starts, runs only once, or behaves
+differently from board to board.
+
+## Why
+
+Two of such a timer's inputs are easy to leave undefined. The TPL5110 is
+the example here <Cite key="ti_tpl5110" />:
+
+- Its EN/ONE_SHOT pin selects between periodic operation and a single
+  cycle, and it must be tied to GND or VDD with short traces, never left
+  floating <Cite key="ti_tpl5110" />. A floating pin's level is undefined,
+  and so is the mode.
+- Its DONE input is the load's signal that it has finished. The timer takes
+  a low-to-high transition as a valid DONE and switches the load off, and a
+  pulse as short as 100 ns is enough <Cite key="ti_tpl5110" />. A stray
+  rising edge that lasts that long ends the cycle just as a real DONE
+  would: from a controller's pin, for example, while the controller starts
+  up and before its firmware drives that pin.
+
+## How to confirm
+
+Watch DONE with an oscilloscope while the load powers up, triggered on a
+rising edge, with a timebase short enough to show a pulse of the data
+sheet's minimum width. A pulse there before the firmware signals that it
+has finished is the cause. Check that the mode pin connects straight to
+GND or VDD.
+
+## Fix
+
+Tie the mode pin to GND or VDD with a short trace <Cite key="ti_tpl5110" />.
+Hold DONE low with a pull-down resistor, so that it stays low while nothing
+drives it, and have the firmware raise it only when the work is done. Then
+repeat the check above.
+
+## References
+
+- <Cite key="ti_tpl5110" />: the mode pin, which must not float, and the
+  DONE input: a low-to-high transition, and the shortest valid pulse.

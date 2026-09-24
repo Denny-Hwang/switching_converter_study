@@ -1,0 +1,67 @@
+---
+title: A current-output monitor that clips before its full scale
+description: Raising a current-output monitor's output resistor raises its gain, not the largest voltage its output can reach.
+sidebar:
+  order: 5
+gotcha:
+  tags: [sensing]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## Symptom
+
+A current-sense monitor with a current output reads correctly at small
+currents, but above some current its output stops rising, below the full
+scale the design computed from its gain. A larger output resistor makes the
+reading clip at an even lower current.
+
+## Why
+
+The monitor forces the sense voltage across its input resistor and sends
+the resulting current through its output resistor, so its gain is the ratio
+of the two (<EqRef id="sense.current_out_monitor" label="current-output monitor" />)
+<Cite key="adi_ltc6101" />. Its output can rise only to a largest voltage,
+which its data sheet gives; the LTC6101's data sheet gives it as absolute
+values at stated supply voltages <Cite key="adi_ltc6101" />. The output
+resistor sets the gain and so the current at which the output reaches that
+voltage, but not the voltage itself. The full scale is the lower of that
+limit and the ADC's full scale.
+
+In the sense chain's example, the monitor can drive its output to
+<Val example="sense-current" name="V_OUTmax" />, and the ADC reads up to
+<Val example="sense-current" name="V_FS" />. At the largest current,
+<Val example="sense-current" name="I_SENSE" />, the output is
+<Val example="sense-current" name="V_OUT" />, and
+<Val example="sense-current" name="V_OUThi" /> with the pads and the offset
+at the sign that raises it. Doubling the output resistor doubles that
+highest output, past both limits.
+
+## How to confirm
+
+Raise the current in steps and read the output at the monitor's own pin.
+A line that bends flat at a voltage that does not move when the output
+resistor changes is the output's limit; compare it with the data sheet's
+largest output at your supply voltage.
+
+## Fix
+
+Choose the output resistor so that the output at the largest current, with
+the offset's and the pads' contribution at the sign that raises it, stays
+below both the monitor's largest output and the ADC's full scale. The
+[sense chain](../../design/sense-chain/) tool computes that full-scale
+current and flags a reading that can clip.
+
+## References
+
+- <Cite key="adi_ltc6101" />: the current-output monitor, its gain from the
+  two resistors, and its largest output voltage.
+- [Sense chain](../../design/sense-chain/): the full scale and the output's
+  limits, worked through.
+- [Current sensing](../../06-bench/current-sensing/): the shunt and its
+  connections.

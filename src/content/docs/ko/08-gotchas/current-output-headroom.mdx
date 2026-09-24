@@ -1,0 +1,59 @@
+---
+title: 최대 눈금에 이르기 전에 포화되는 전류 출력형 모니터
+description: 전류 출력형 모니터의 출력 저항을 키우면 이득은 커지지만, 출력이 낼 수 있는 가장 큰 전압은 커지지 않습니다.
+sidebar:
+  order: 5
+gotcha:
+  tags: [sensing]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## 증상
+
+전류 출력형(current-output) 전류 센스 모니터가 작은 전류에서는 바르게 읽다가, 어떤
+전류부터 출력이 더 오르지 않습니다. 그 전류는 설계가 이득으로 계산한 최대 눈금(full
+scale)보다 낮습니다. 출력 저항을 키우면 더 낮은 전류에서 측정값이 잘립니다.
+
+## 원인
+
+모니터는 센스 전압을 입력 저항 양단에 강제하고, 그 결과 흐르는 전류를 출력 저항으로
+보내므로, 이득은 두 저항의 비입니다
+(<EqRef id="sense.current_out_monitor" label="전류 출력형 모니터" />)
+<Cite key="adi_ltc6101" />. 출력은 데이터시트가 정한 가장 큰 전압까지만 오를 수 있고,
+LTC6101 데이터시트는 이를 정해진 전원 전압에서의 절댓값으로 제시합니다
+<Cite key="adi_ltc6101" />. 출력 저항은 이득과, 따라서 출력이 그 전압에 이르는 전류를
+정할 뿐, 그 전압 자체는 정하지 않습니다. 최대 눈금은 그 한계와 ADC의 최대 눈금 가운데
+낮은 쪽입니다.
+
+센스 체인 예제에서 모니터는 출력을 <Val example="sense-current" name="V_OUTmax" />까지
+낼 수 있고, ADC는 <Val example="sense-current" name="V_FS" />까지 읽습니다. 가장 큰
+전류 <Val example="sense-current" name="I_SENSE" />에서 출력은
+<Val example="sense-current" name="V_OUT" />이고, 패드와, 출력을 높이는 부호의
+오프셋까지 더하면 <Val example="sense-current" name="V_OUThi" />입니다. 출력 저항을
+두 배로 하면 그 가장 높은 출력도 두 배가 되어 두 한계를 모두 넘습니다.
+
+## 확인 방법
+
+전류를 단계적으로 올리며 모니터의 출력 핀에서 직접 출력을 읽으십시오. 출력 저항을
+바꿔도 움직이지 않는 전압에서 평평하게 꺾이는 직선이 출력의 한계입니다. 그 전압을
+사용하는 전원 전압에서 데이터시트가 주는 최대 출력과 비교하십시오.
+
+## 해결
+
+오프셋과 패드의 기여를 출력을 높이는 부호로 넣고도 가장 큰 전류에서의 출력이 모니터의
+최대 출력과 ADC의 최대 눈금보다 모두 낮도록 출력 저항을 고르십시오.
+[센스 체인](../../design/sense-chain/) 도구가 그 최대 눈금 전류를 계산하고, 잘릴 수
+있는 측정값을 표시합니다.
+
+## 참고 자료
+
+- <Cite key="adi_ltc6101" />: 전류 출력형 모니터, 두 저항으로 정해지는 이득, 최대
+  출력 전압.
+- [센스 체인](../../design/sense-chain/): 최대 눈금과 출력의 한계.
+- [전류 센싱](../../06-bench/current-sensing/): 션트와 그 연결.

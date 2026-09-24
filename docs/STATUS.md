@@ -161,9 +161,25 @@ _Last updated: Phase 4c (07-harvesting). `python scripts/modulelint.py` checks e
 
 ## 08-gotchas
 
-| Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| index | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+Gotcha pages are not modules: each follows the template symptom · why · how to confirm · fix · references
+(BUILD_SPEC §5), carries its tags, and has a Korean mirror; `python scripts/modulelint.py` checks all three.
+
+| Gotcha | Phase | EN | KO | Notes |
+| --- | --- | --- | --- | --- |
+| index | 4 | ✅ | ✅ | the list of every gotcha and the lists by tag, built from the pages (`<GotchaIndex />`); links the template `docs/GOTCHA_TEMPLATE.md` (mission M9) |
+| lcr-self-resonance | 4 | ✅ | ✅ | seed 1; links `passive.f_srf`, `meas.L_app`; example `lcr-srf` |
+| two-wire-resistance | 4 | ✅ | ✅ | seed 2; links `wind.dcr`, `wind.rho_T` |
+| ceramic-dc-bias | 4 | ✅ | ✅ | seed 3; links `buck.ripple.v`; example `ceramic-bias` (new) |
+| tvs-clamping-voltage | 4 | ✅ | ✅ | seed 4; links `tvs.V_clamp`, `clamp.Vds`; example `clamp-tvs` |
+| current-output-headroom | 4 | ✅ | ✅ | seed 5; links `sense.current_out_monitor`; example `sense-current` |
+| shunt-pad-resistance | 4 | ✅ | ✅ | seed 6; links `sense.pad_error`; example `bench-sense` |
+| timer-power-gating | 4 | ✅ | ✅ | seed 7; cites `ti_tpl5110` (new) |
+| flyback-open-load | 4 | ✅ | ✅ | seed 8; links `flyback.V_ceiling`; example `clamp-tvs` |
+| electrolytic-cold-esr | 4 | ✅ | ✅ | seed 9; links `cap.esr.ripple`; example `bench-cold` |
+| wide-bandgap-gate-drive | 4 | ✅ | ✅ | seed 10; cites `nexperia_an90059` (new), `epc_wp008` |
+| flyback-source-pinning | 4 | ✅ | ✅ | seed 11; links `lfr.R_in`, `flyback.V_crit`, `src.cv_extraction`; example and simulator preset `flyback-source` |
+| dmm-true-average | 4 | ✅ | ✅ | seed 12; links `sense.burden`, `fourier.pulse.harm` |
+| sub-nyquist-pulses | 4 | ✅ | ✅ | seed 13; links `adc.nyquist`, `fourier.pulse.harm` |
 
 ## 09-missions
 

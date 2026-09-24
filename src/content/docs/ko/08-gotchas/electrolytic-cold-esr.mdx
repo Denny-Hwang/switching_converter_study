@@ -1,0 +1,48 @@
+---
+title: 추위 속의 전해 커패시터
+description: 알루미늄 전해 커패시터의 ESR은 저온에서 가파르게 커지고, 그 양단의 리플도 함께 커집니다.
+sidebar:
+  order: 9
+gotcha:
+  tags: [capacitors, temperature]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## 증상
+
+온도 범위의 추운 끝에서 컨버터의 출력 리플이 몇 배로 커지는데, 상온에서는 모든 것이
+정상입니다.
+
+## 원인
+
+알루미늄 전해 커패시터의 ESR(등가 직렬 저항)은 저온 한계에서 10배 넘게 커질 수
+있습니다 <Cite key="cde_ae_guide" />. 커패시터를 흐르는 리플 전류는 ESR 양단에
+비례하는 리플 전압을 만들고, 이것이 용량성 리플에 더해집니다
+(<EqRef id="cap.esr.ripple" label="ESR 리플" />). 저온 예제에서
+<Val example="bench-cold" name="Delta_i_pp" />의 리플 전류를 받는
+<Val example="bench-cold" name="R_esr" />의 ESR은
+<Val example="bench-cold" name="Delta_v_esr" />를 만들고, 그 열 배인
+<Val example="bench-cold" name="R_esr_cold" />는
+<Val example="bench-cold" name="Delta_v_esr_cold" />를 만듭니다.
+
+## 확인 방법
+
+항온항습 챔버에서 커패시터를 사양의 최저 온도에 둔 채 출력 리플이나 스위칭
+주파수에서의 커패시터 ESR을 재고, 상온에서의 값과 비교하십시오.
+
+## 해결
+
+커패시터는 데이터시트에서 얻은 최저 온도에서의 ESR로 크기를 정해, 그 온도에서도
+리플이 한계를 지키게 하십시오. 병렬 커패시터는 리플 전류를 나누고 ESR을 나누므로,
+개수를 늘려도 리플이 줄어듭니다.
+
+## 참고 자료
+
+- <Cite key="cde_ae_guide" />: 저온 한계에서의 알루미늄 전해 커패시터 ESR.
+- [저온](../../06-bench/low-temp/): ESR 리플의 풀이와 벤치 실습.

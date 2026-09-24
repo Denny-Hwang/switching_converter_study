@@ -1,0 +1,60 @@
+---
+title: An open-loop flyback with its load removed
+description: Without regulation and without a load, a flyback's output charges until its voltage, reflected to the primary, reaches the primary clamp; the clamp then takes all the input power.
+sidebar:
+  order: 8
+gotcha:
+  tags: [flyback, protection]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## Symptom
+
+A flyback that runs at a fixed duty ratio, without feedback, drives its
+output far above its normal value when the load is disconnected, during a
+test or through a loose connector. A part on the output side fails, or the
+primary clamp overheats.
+
+## Why
+
+Each switching period stores energy in the magnetizing inductance and
+delivers it to the output. Without a load the output capacitor keeps that
+energy, and the output voltage rises from period to period. It stops rising
+only when the output's voltage, reflected to the primary, reaches the
+clamp's voltage: from then on the clamp takes the energy instead
+(<EqRef id="flyback.V_ceiling" label="open-load output voltage" />)
+<Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />. The clamp
+then dissipates all of the input power. An RCD clamp's voltage rises with
+the power it takes, so with one the output rises higher still.
+
+In the clamp tool's example, the output of
+<Val example="clamp-tvs" name="V" /> rises to
+<Val example="clamp-tvs" name="V_omax" /> without its load.
+
+## How to confirm
+
+Compute the ceiling from the clamp's voltage, the turns ratio and the
+diode's drop (<EqRef id="flyback.V_ceiling" label="open-load output voltage" />),
+and compare it with the ratings of every part on the output side. To see it
+on the bench, remove the load with the input current limited and reduced,
+and watch the output rise towards the ceiling.
+
+## Fix
+
+Keep the output from being left without a load: regulate it with feedback,
+keep a minimum load the converter cannot lose, or clamp the output below
+the ratings of what it feeds. If the primary clamp must survive an open
+load, rate it for the whole input power.
+
+## References
+
+- <Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />: the
+  flyback and its transformer model, from which the ceiling follows.
+- [Snubbers and clamps](../../04-magnetics/snubbers-clamps/) and the
+  [clamp check](../../design/clamp-check/), which gives the ceiling.

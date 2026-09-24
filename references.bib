@@ -183,6 +183,20 @@
   urlquotes   = {the damping factor should be set to somewhere between 0.5 to 1 to achieve minimum peak voltage | is a good starting point in terms of the compromise between power loss and peak voltage | the second term is inevitable even if a snubber is not used | It is a matter of compromise between damping the oscillations and keeping the energy loss low | Power dissipation in the snubber resistor should be taken into consideration when selecting the components},
   urlkind     = {pdf}
 }
+@techreport{nexperia_an90059,
+  author      = {{Nexperia}},
+  title       = {Power {MOSFET} gate driver fundamentals},
+  institution = {Nexperia},
+  type        = {Application Note},
+  number      = {AN90059, Rev. 1},
+  year        = {2025},
+  url         = {https://assets.nexperia.com/documents/application-note/AN90059.pdf},
+  note        = {verified 2026-09-24, round 1 (web search: assets.nexperia.com AN90059, "Power MOSFET gate driver fundamentals", Rev. 1 of 22 April 2025 in one search summary; cited for: logic-level MOSFETs are designed to be driven with a 5 V gate voltage, while standard-level MOSFETs need at least 10 V to be fully turned on, and a higher gate voltage lowers the on-resistance further; a gate-source resistance in the kilohm range keeps a MOSFET off when the gate drive circuit has a fault or no power is applied)},
+  urltitle    = {Power MOSFET gate driver fundamentals},
+  urlquotes   = {range is usually suitable},
+  urlkind     = {pdf}
+}
+
 @manual{keysight_5950_3000,
   title        = {Impedance Measurement Handbook: A guide to measurement technology and techniques},
   organization = {Keysight Technologies},
@@ -202,8 +216,9 @@
   number      = {7th edition},
   year        = {2014},
   url         = {https://download.tek.com/document/LowLevelHandbook_7Ed.pdf},
-  note        = {verified 2026-09-24 (web search: tek.com "Keithley Low Level Measurements Handbook - 7th Edition" page and the download.tek.com PDF, "Low Level Measurements Handbook - 7th Edition Precision DC Current, Voltage, and Resistance Measurements"; cited for: the four-wire (Kelvin) method removes the test leads' resistance from a low-resistance measurement)},
+  note        = {verified 2026-09-24 (web search: tek.com "Keithley Low Level Measurements Handbook - 7th Edition" page and the download.tek.com PDF, "Low Level Measurements Handbook - 7th Edition Precision DC Current, Voltage, and Resistance Measurements"; cited for: the four-wire (Kelvin) method removes the test leads' resistance from a low-resistance measurement). Phase 4d, round 1, 2026-09-24 (web search: the handbook's discussion of normal-mode rejection, "Noise rejection is accomplished by using the integrating A/D converter to attenuate noise at specific frequencies (usually 50 and 60Hz) while passing low frequency or DC normal mode signals"); cited also for: an integrating converter passes dc and low-frequency signals and attenuates noise at specific frequencies},
   urltitle    = {Low Level Measurements Handbook},
+  urlquotes   = {while passing low frequency or DC normal mode signals},
   urlkind     = {pdf}
 }
 
@@ -409,6 +424,19 @@
   url     = {https://www.ti.com/lit/ds/symlink/bq25570.pdf},
   urltitle = {bq25570 Nano Power Boost Charger and Buck Converter},
   urlquotes = {disabling the charger | thermoelectric harvesters},
+  urlkind = {pdf}
+}
+
+@manual{ti_tpl5110,
+  author  = {{Texas Instruments}},
+  title   = {{TPL5110} Nano-Power System Timer for Power Gating},
+  organization = {Texas Instruments},
+  type    = {Data sheet},
+  number  = {SNAS650},
+  note    = {verified 2026-09-24, round 1 (web search: ti.com/lit/ds/symlink/tpl5110.pdf and ti.com/lit/gpn/TPL5110, "TPL5110 Nano-Power System Timer for Power Gating", literature number SNAS650, first issued January 2015 and revised since; the data sheet says that the EN/ONE_SHOT pin selects timer or one-shot mode and should be tied to GND or VDD with short traces and never left floating, that the TPL5110 recognizes a valid DONE signal as a low to high transition, that the minimum DONE signal pulse length is 100 ns, and that the timer turns the powered system off when it receives DONE). Cited for those statements},
+  url     = {https://www.ti.com/lit/ds/symlink/tpl5110.pdf},
+  urltitle = {Nano-Power System Timer for Power Gating},
+  urlquotes = {recognizes a valid DONE signal as a low to high transition | never be left floating},
   urlkind = {pdf}
 }
 
@@ -662,10 +690,10 @@
 @manual{adi_ceramic_caps,
   title        = {Temperature and Voltage Variation of Ceramic Capacitors, or Why Your 4.7 {µF} Capacitor Becomes a 0.33 {µF} Capacitor},
   organization = {Analog Devices (Maxim Integrated)},
-  note         = {verified 2026-09-24 (two independent web-search rounds: the analog.com technical article "Temperature and Voltage Variation of Ceramic Capacitors, or Why Your 4.7µF Capacitor Becomes a 0.33µF Capacitor"; its author and date were not confirmed; cited for: class-2 codes such as X7R say nothing about a capacitor's change with its dc voltage; and the title's example, a 4.7 µF, 6.3 V, 0603 Y5V capacitor that at 5 V bias and room temperature keeps 0.33 µF, "92.9% below nominal", the dc voltage alone (with the bias it kept slightly more at +85 C than at room temperature). Corrected in Phase 4d after a round-2 review read the example in three search summaries (analog.com, EDN, Maxim tutorial 5527): the note had said that temperature and dc voltage together gave that loss)},
+  note         = {verified 2026-09-24 (two independent web-search rounds: the analog.com technical article "Temperature and Voltage Variation of Ceramic Capacitors, or Why Your 4.7µF Capacitor Becomes a 0.33µF Capacitor"; its author and date were not confirmed; cited for: class-2 codes such as X7R say nothing about a capacitor's change with its dc voltage; and the title's example, a 4.7 µF, 6.3 V, 0603 Y5V capacitor that at 5 V bias and room temperature keeps 0.33 µF, "92.9% below nominal", the dc voltage alone (with the bias it kept slightly more at +85 C than at room temperature). Corrected in Phase 4d after a round-2 review read the example in three search summaries (analog.com, EDN, Maxim tutorial 5527): the note had said that temperature and dc voltage together gave that loss). Phase 4d, round 1, 2026-09-24 (web search: "Engineers must check the data to know, really know, how a specific capacitor will perform under voltage"; a vendor can call a capacitor X7R as long as it meets the temperature-coefficient specification, however large its voltage coefficient); cited also for: the data of the specific part must be checked},
   url          = {https://www.analog.com/en/resources/technical-articles/temperature-and-voltage-variation-ceramic-capacitor.html},
   urltitle     = {Temperature and Voltage Variation of Ceramic Capacitors},
-  urlquotes    = {imply nothing about voltage coefficients | 92.9% below nominal},
+  urlquotes    = {imply nothing about voltage coefficients | 92.9% below nominal | how a specific capacitor will perform under voltage},
   urlkind      = {html}
 }
 

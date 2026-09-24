@@ -1,0 +1,65 @@
+---
+title: Sampling at ten times the switching frequency that misses the pulses
+description: An ADC sampling a pulsed current at a multiple of the switching frequency catches a pulse only when a sample happens to fall inside one; the pulses' harmonics alias.
+sidebar:
+  order: 13
+gotcha:
+  tags: [sampling, sensing]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+
+<GotchaTags />
+
+## Symptom
+
+The average of ADC samples of a pulsed current, such as a switch's current
+or an inductor's current in DCM, jumps or drifts when the switching
+frequency or the sampling rate changes slightly, sits far from a DMM's
+reading, or reads zero at light load, although the ADC samples at ten times
+the switching frequency.
+
+## Why
+
+A sampled signal represents only the band from dc to half the sampling
+rate (<EqRef id="adc.nyquist" label="Nyquist frequency" />); any component
+above it aliases back into that band <Cite key="kester_mt002" />. A pulse
+train has harmonics at every multiple of the switching frequency, and they
+fall only in inverse proportion to their order
+(<EqRef id="fourier.pulse.harm" label="pulse-train harmonics" />): the
+narrower the pulses, the more of them stay large. Sampling at ten times the
+switching frequency puts the Nyquist frequency at five times it: every
+harmonic above the fifth aliases.
+
+Seen in time: when the samples lie further apart than a pulse is wide, a
+sample falls inside a pulse only by chance. With the sampling rate an exact
+multiple of the switching frequency, the samples fall at the same points of
+every period, and read the pulse either every time or never.
+
+## How to confirm
+
+Change the sampling rate by a small fraction and watch the average: a
+reading that moves is aliasing. Compare it with an average taken before the
+sampling, such as a DMM across the shunt
+([a current reading below the meter](../dmm-true-average/)).
+
+## Fix
+
+Filter before the ADC: an anti-aliasing filter removes the components above
+the Nyquist frequency <Cite key="kester_mt002" />, and for the average
+current its corner belongs well below the switching frequency. The
+[sense chain](../../design/sense-chain/) tool checks the corner against the
+Nyquist frequency and gives the filter's gain at the switching frequency.
+Alternatively, sample fast enough that several samples fall inside the
+narrowest pulse.
+
+## References
+
+- <Cite key="kester_mt002" />: the Nyquist bandwidth, aliasing, and the
+  anti-aliasing filter.
+- <Cite key="alexander2017" where="Ch. 17 (The Fourier Series)" />: the
+  harmonics of a pulse train.
+- [Sense chain](../../design/sense-chain/): the filter against the sampling
+  rate.

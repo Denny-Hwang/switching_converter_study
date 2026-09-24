@@ -1,0 +1,64 @@
+---
+title: A ceramic capacitor that loses capacitance under voltage
+description: A class-2 ceramic capacitor (X7R, X5R) can keep only a fraction of its rated capacitance at its working dc voltage and temperature, and its code does not say how much.
+sidebar:
+  order: 3
+gotcha:
+  tags: [capacitors]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## Symptom
+
+A converter's output ripple is several times the value the design predicts,
+or a filter's corner sits well away from its calculation, although an LCR
+meter reads the ceramic capacitor close to its rated value on the bench.
+
+## Why
+
+A class-2 code such as X7R or X5R states how much the capacitance may
+change over a temperature range. It implies nothing about the change with
+the dc voltage across the capacitor, so the data for the specific part must
+be checked <Cite key="adi_ceramic_caps" />. Temperature and dc voltage
+together can leave a small fraction of the rated capacitance: the source's
+own example is a 4.7 µF capacitor that works as 0.33 µF <Cite key="adi_ceramic_caps" />.
+An LCR meter's small test signal with no dc voltage does not show the loss.
+
+The ripple follows the capacitance that is actually there
+(<EqRef id="buck.ripple.v" label="output voltage ripple" />). An example
+buck's output capacitor of <Val example="ceramic-bias" name="C" /> would
+ripple by <Val example="ceramic-bias" name="Delta_v" /> (half peak-to-peak); if it keeps
+<Val example="ceramic-bias" name="C_bias" /> at its working voltage, the
+ripple is <Val example="ceramic-bias" name="Delta_v_bias" />.
+
+## How to confirm
+
+Read the capacitance with the working dc voltage applied: an impedance
+meter that can add a dc bias does it, or the manufacturer's curve of
+capacitance against dc voltage for that exact part number. In the circuit,
+compute the capacitance the measured ripple implies and compare it with the
+rating.
+
+## Fix
+
+Size the capacitor from its capacitance at the working dc voltage and at
+the extreme temperature, taken from the data of the part itself, and
+compare candidate parts by those data, not by their codes
+<Cite key="adi_ceramic_caps" />. Where that capacitance falls short, add
+capacitors in parallel until the remaining capacitance meets the ripple.
+
+## References
+
+- <Cite key="adi_ceramic_caps" />: class-2 codes say nothing about the
+  change with dc voltage; temperature and voltage together can leave a small
+  fraction of the rated value.
+- [Real passives](../../00-foundations/passives-real/): series resistance,
+  self-resonance and output ripple.
+- [Low temperature](../../06-bench/low-temp/): what the cold changes on the
+  bench.

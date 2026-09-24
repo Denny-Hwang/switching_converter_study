@@ -1,0 +1,72 @@
+---
+title: A fixed-duty flyback that pins its source's voltage
+description: Fed from a current-limited source, a fixed-duty-ratio flyback presents a resistance only in DCM; once its input reaches the critical voltage, CCM holds it there.
+sidebar:
+  order: 11
+gotcha:
+  tags: [flyback, harvesting]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import TrySim from '../../../../components/TrySim.astro';
+
+<GotchaTags />
+
+## Symptom
+
+A flyback sized to present a high-impedance source's resistance takes the
+expected share of the source's power at small amplitudes. Above some
+amplitude its input voltage stops following the source, and it takes less
+than the source's available power.
+
+## Why
+
+In DCM a fixed-duty-ratio flyback presents a resistance at its input
+(<EqRef id="lfr.R_in" label="loss-free resistor" />)
+<Cite key="erickson2020" where="Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)" />.
+It stays in DCM only below the
+<EqRef id="flyback.V_crit" label="critical input voltage" />. A source strong
+enough to raise the input to it drives the flyback into CCM, where, with the
+output fixed, the conversion ratio allows only that one input voltage
+<Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />. The input stays
+there: the flyback has become a constant-voltage sink, and its share of the
+source's power depends on the source's amplitude
+(<EqRef id="src.cv_extraction" label="constant-voltage extraction" />).
+
+In the example, a source of <Val example="flyback-source" name="V_oc" />
+behind <Val example="flyback-source" name="R_s" /> can give
+<Val example="flyback-source" name="P_max" /> to a matched resistance. The
+flyback's input is held at its critical voltage,
+<Val example="flyback-source" name="V_gcrit" />, where it takes a share of
+<Val example="flyback-source" name="eta_ext" /> of that power.
+
+## How to confirm
+
+Plot the input voltage against the source's amplitude: it follows the
+amplitude in DCM and flattens at the critical voltage. Or watch the
+magnetizing current: in CCM it no longer falls to zero in each period. The
+simulator's current-limited source shows the input settling at the critical
+voltage:
+
+<TrySim example="flyback-source" topology="flyback" />
+
+## Fix
+
+Choose the duty ratio and the turns ratio so that the critical voltage lies
+above the highest input voltage the source can drive
+(<EqRef id="lfr.Vg" label="bus voltage of a loss-free resistor" />), then
+rate the switch for the voltage that follows
+(<EqRef id="flyback.Vds_off" label="switch voltage" />). A smaller turns
+ratio raises the critical voltage.
+
+## References
+
+- <Cite key="erickson2020" where="Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)" />:
+  the loss-free resistor.
+- <Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />: the flyback's
+  CCM conversion ratio.
+- [The DCM flyback as a loss-free resistor](../../07-harvesting/lfr-dcm-flyback/)
+  and the [source matcher](../../design/source-matcher/).

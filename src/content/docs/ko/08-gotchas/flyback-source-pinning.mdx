@@ -1,0 +1,66 @@
+---
+title: 전원의 전압을 고정해 버리는 고정 듀티 플라이백
+description: 전류가 제한된 전원에서 동작하는 고정 듀티비 플라이백은 DCM에서만 저항으로 보이고, 입력이 임계 전압에 이르면 CCM이 입력을 그 전압에 붙잡아 둡니다.
+sidebar:
+  order: 11
+gotcha:
+  tags: [flyback, harvesting]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import TrySim from '../../../../components/TrySim.astro';
+
+<GotchaTags />
+
+## 증상
+
+고임피던스 전원의 저항으로 보이도록 크기를 정한 플라이백이 작은 진폭에서는 전원
+전력의 기대한 몫을 가져갑니다. 그런데 어떤 진폭 위에서는 입력 전압이 전원을 더 따라가지
+않고, 전원이 줄 수 있는 전력보다 적게 가져갑니다.
+
+## 원인
+
+DCM에서 고정 듀티비 플라이백은 입력에서 저항으로 보입니다
+(<EqRef id="lfr.R_in" label="무손실 저항" />)
+<Cite key="erickson2020" where="Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)" />.
+DCM은 <EqRef id="flyback.V_crit" label="임계 입력 전압" />보다 낮은 입력에서만
+유지됩니다. 입력을 그 전압까지 올릴 만큼 강한 전원은 플라이백을 CCM으로 몰아넣고,
+출력이 고정되어 있으면 CCM의 변환비는 그 한 입력 전압만 허용합니다
+<Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />. 입력은 거기에
+머뭅니다. 플라이백은 정전압 싱크(constant-voltage sink)가 되었고, 전원 전력 가운데
+가져가는 몫은 전원의 진폭에 따라 달라집니다
+(<EqRef id="src.cv_extraction" label="정전압 추출 비율" />).
+
+예제에서 <Val example="flyback-source" name="R_s" /> 뒤의
+<Val example="flyback-source" name="V_oc" /> 전원은 정합된 저항에
+<Val example="flyback-source" name="P_max" />를 줄 수 있습니다. 플라이백의 입력은
+임계 전압 <Val example="flyback-source" name="V_gcrit" />에 붙잡히고, 거기서 그
+전력의 <Val example="flyback-source" name="eta_ext" />만큼을 가져갑니다.
+
+## 확인 방법
+
+전원 진폭에 대한 입력 전압을 그려 보십시오. DCM에서는 진폭을 따라가다가 임계 전압에서
+평평해집니다. 또는 자화 전류를 보십시오. CCM에서는 주기마다 0으로 떨어지지 않습니다.
+시뮬레이터의 전류 제한 전원은 입력이 임계 전압에 자리 잡는 것을 보여 줍니다.
+
+<TrySim example="flyback-source" topology="flyback" />
+
+## 해결
+
+전원이 끌어올릴 수 있는 가장 높은 입력 전압
+(<EqRef id="lfr.Vg" label="무손실 저항의 버스 전압" />)보다 임계 전압이 높도록 듀티비와
+권선비를 고르고, 그에 따라 정해지는 전압에 맞춰 스위치의 정격을 정하십시오
+(<EqRef id="flyback.Vds_off" label="스위치 전압" />). 권선비를 작게 하면 임계 전압이
+높아집니다.
+
+## 참고 자료
+
+- <Cite key="erickson2020" where="Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)" />:
+  무손실 저항(loss-free resistor).
+- <Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />: 플라이백의 CCM
+  변환비.
+- [무손실 저항으로 동작하는 DCM 플라이백](../../07-harvesting/lfr-dcm-flyback/)과
+  [전원 정합 도구](../../design/source-matcher/).

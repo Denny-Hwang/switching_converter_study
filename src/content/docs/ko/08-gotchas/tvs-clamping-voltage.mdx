@@ -1,0 +1,64 @@
+---
+title: 항복 전압으로 판단한 TVS
+description: 실제로 클램프하는 전류에서 TVS는 항복 전압보다 높은 전압을 유지하고, TVS가 보호하는 스위치는 그 전압을 봅니다.
+sidebar:
+  order: 4
+gotcha:
+  tags: [protection, flyback]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## 증상
+
+플라이백의 스위치가 고장 나거나, 턴오프 때 드레인 전압이 1차 측 클램프를 고를 때
+기준으로 삼은 값보다 높이 치솟습니다. 그런데 TVS의 항복 전압(breakdown voltage)은
+스위치의 정격에 여유를 남겼습니다.
+
+## 원인
+
+TVS는 항복 전압에서 도통하기 시작하지만, 전류를 흘리는 동안에는 클램핑
+전압(clamping voltage), 곧 항복 전압에 동저항(dynamic resistance)과 전류의 곱을 더한
+전압을 유지합니다 <Cite key="st_an316" />
+(<EqRef id="tvs.V_clamp" label="클램핑 전압" />). 데이터시트의 클램핑 전압은 표준
+펄스의 피크 전류에서의 최댓값이고, 동저항은 펄스 길이에 따라 달라지며, 항복 전압은
+온도에 따라 올라갑니다 <Cite key="st_an316" />. 플라이백에서 클램프는 턴오프 때 누설
+인덕턴스의 전류를 받고, 스위치는 입력 전압에 클램프 전압을 더한 전압을 봅니다
+(<EqRef id="clamp.Vds" label="클램프가 도통하는 동안의 스위치 전압" />).
+
+클램프 도구의 예제에서, <Val example="clamp-tvs" name="V_BR" />에서 항복하고
+<Val example="clamp-tvs" name="I_PP" /> 펄스에서
+<Val example="clamp-tvs" name="V_CL" />로 클램프하는 TVS의 동저항은
+<Val example="clamp-tvs" name="R_D" />입니다. 플라이백의
+<Val example="clamp-tvs" name="I_pk" />에서 이 TVS는
+<Val example="clamp-tvs" name="V_clamp" />를 유지하고, 스위치는 정격
+<Val example="clamp-tvs" name="V_rating" />에 대해
+<Val example="clamp-tvs" name="V_DS" />를 봅니다.
+
+## 확인 방법
+
+그 전압에 맞는 정격의 프로브와 짧은 접지 연결로 턴오프 때의 드레인 전압을
+포착하십시오([프로브](../../06-bench/probes/)). 클램프가 도통하는 동안 드레인은 입력
+전압에 클램프 전압을 더한 값에 머뭅니다. 그 평탄부를 실제 피크 전류에서의 클램핑
+전압과 비교하고, 그 피크를 스위치의 정격과 비교하십시오.
+
+## 해결
+
+TVS는 실제 피크 전류와 가장 높은 온도에서의 클램핑 전압으로, 스위치 정격에 여유를
+두고 고르십시오. [클램프 점검 도구](../../design/clamp-check/)가 데이터시트의 항복
+전압과 클램핑 전압으로 이를 계산합니다. 클램프 전압은 반사된 출력 전압보다도 충분히
+높게 유지하십시오. 반사 전압에 가까운 클램프 전압은 누설 에너지보다 훨씬 많은
+에너지를 가져갑니다 <Cite key="ti_ssztcv6" />.
+
+## 참고 자료
+
+- <Cite key="st_an316" />: 항복 전압과 동저항으로 구하는 응용 전류에서의 클램핑
+  전압과, 데이터시트의 클램핑 전압이 뜻하는 것.
+- <Cite key="ti_ssztcv6" />: 반사 전압에 가까운 클램프 전압은 전력을 낭비합니다.
+- [스너버와 클램프](../../04-magnetics/snubbers-clamps/)와
+  [클램프 점검 도구](../../design/clamp-check/).

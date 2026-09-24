@@ -1,0 +1,63 @@
+---
+title: An inductance that grows with the test frequency
+description: A winding with many turns reads high on an LCR meter, and higher at a higher test frequency, because its own capacitance brings its self-resonance close.
+sidebar:
+  order: 1
+gotcha:
+  tags: [measurement, magnetics]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## Symptom
+
+An LCR meter reads a winding with many turns, a flyback's primary for
+example, well above the inductance the design expects, and it reads a
+different value at each test frequency: the higher the frequency, the higher
+the reading.
+
+## Why
+
+The meter reports the part's effective value at its test frequency,
+parasitics included <Cite key="keysight_5950_3000" />. The capacitance
+between the turns sits in parallel with the inductance and resonates with it
+(<EqRef id="passive.f_srf" label="self-resonant frequency" />). Below that
+resonance the pair behaves as a larger inductance, and the reading rises
+steeply as the test frequency approaches it
+(<EqRef id="meas.L_app" label="apparent inductance" />). Many turns bring
+much inductance and much capacitance together, so their resonance sits low.
+
+For example, a winding of <Val example="lcr-srf" name="L" /> with
+<Val example="lcr-srf" name="C_p" /> across it resonates at
+<Val example="lcr-srf" name="f_srf" />. A meter reads it as
+<Val example="lcr-srf" name="L_app_lo" sig={4} /> at
+<Val example="lcr-srf" name="f_lo" />, and as
+<Val example="lcr-srf" name="L_app_hi" /> at
+<Val example="lcr-srf" name="f_hi" />.
+
+## How to confirm
+
+Read the winding at two or more of the meter's test frequencies. A reading
+that rises with the frequency comes from the resonance; the inductance
+itself does not depend on the test frequency. To find the resonance, sweep
+the winding's impedance with an impedance analyzer: above the resonance the
+part is capacitive (<EqRef id="passive.f_srf" label="self-resonant frequency" />).
+
+## Fix
+
+Measure at a test frequency well below the self-resonance: at a tenth of it
+the reading is 1 % high (<EqRef id="meas.L_app" label="apparent inductance" />).
+If the meter's test frequencies all sit too close, find the self-resonance
+with a sweep and correct the reading with the same equation.
+
+## References
+
+- <Cite key="keysight_5950_3000" />: an impedance meter reads the effective
+  value at its test frequency, parasitics included.
+- [Magnetics measurement](../../04-magnetics/measurement/): the apparent
+  inductance, worked through, and a bench exercise.
