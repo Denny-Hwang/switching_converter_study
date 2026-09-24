@@ -52,8 +52,10 @@ result names the equation it comes from.
 
 **Simulate.** A time-domain simulator in the browser: pick a topology, move a
 slider and watch the waveforms, the operating mode and the losses change.
-Every result sits next to the formula's value, and the simulator is
-validated against the formulas to within 2 %.
+Step through the period mode by mode, with the circuit's current paths and
+each element's state. Every result sits next to the formula's value, and the
+simulator is validated against the formulas to within 2 % and against
+ngspice.
 
 <img src="docs/images/simulate-en.png" alt="The simulator: topology and preset buttons, the detected mode, and the parameter fields beside the stacked waveforms">
 
@@ -116,6 +118,7 @@ python scripts/privacy_scan.py         # privacy rules
 python scripts/refcheck.py             # citation keys and VERIFY flags
 python scripts/anchorcheck.py dist     # every #fragment link lands (after the build)
 node scripts/keyboard_check.mjs        # keyboard focus order of the tool pages (after the build)
+node scripts/seq_check.mjs             # the operating-mode drawing's real text boxes (after the build)
 ```
 
 </details>
@@ -246,6 +249,7 @@ python scripts/privacy_scan.py         # 개인정보 규칙
 python scripts/refcheck.py             # 인용 키와 VERIFY 표시
 python scripts/anchorcheck.py dist     # 모든 #fragment 링크의 대상 존재 (빌드 후)
 node scripts/keyboard_check.mjs        # 도구 페이지의 키보드 포커스 순서 (빌드 후)
+node scripts/seq_check.mjs             # 동작 모드 회로도의 실제 글자 상자 (빌드 후)
 ```
 
 </details>

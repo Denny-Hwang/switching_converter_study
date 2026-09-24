@@ -182,6 +182,107 @@ Without a steady state there is no conduction mode, no comparison with the
 equations and no table of the load or the losses: each of them describes a
 periodic steady state.
 
+## Operating modes
+
+Below the charts the steady-state period is split into its modes, the way
+converter papers describe a circuit mode by mode: each mode is a stretch of
+the period in which one linear circuit holds (the switch on, the diode
+conducting, the idle interval of DCM <Cite key="erickson2020" where="Ch. 5" />,
+the node capacitance's rise and ringing, the forward converter's reset).
+Pick a mode with its button, or click on the charts; the charts shade it.
+For the selected mode the view shows:
+
+- **the circuit**, with the branches that carry current in the mode in
+  colour and the others grey, and an arrow on each coloured branch in the
+  direction its current flows (two heads when the current reverses within
+  the mode). The switch is drawn closed while its gate is on; its body
+  diode, across it, is coloured when it carries the current. Next to each
+  element are its name and its state;
+- **what happens**: first which parts conduct in the mode and how they
+  connect; then, for each inductor that carries current, the average
+  voltage across it in the mode, the number in the table (with a winding
+  resistance, split into the drop across the resistance and the voltage
+  across the inductance itself), and what its current does; for the
+  forward converter's magnetizing inductance, whether its current has
+  returned to zero, the core's reset, or has not when the switch turns on
+  again; then one sentence each for the output capacitor, the battery or
+  the fixed output, the input or the source and its bus capacitor, from
+  their states in the table;
+- **a table** of every element's state, its current at the start and the
+  end of the mode with its average over it (like the period's averages, the
+  exact integral over the mode divided by the mode's length; the voltages'
+  averages too), and its voltage where the simulator has it. Each current is positive in the direction of the
+  element's arrow on the circuit, the direction of its average current in
+  the mode; a negative value flows against the arrow. An inductor's voltage
+  is taken along its arrow too, so that a positive voltage across the
+  inductance goes with a current that grows along the arrow; it includes
+  the drop across the winding resistance. Every other voltage keeps the
+  element's own direction.
+
+The states are read from the simulated waveforms of the mode, never
+assumed: an inductor stores energy while its current's magnitude grows and
+releases it while it shrinks, and a current that grows and then shrinks
+within the mode (or the other way round) is reported so; a capacitor or a
+battery charges while its current flows into its positive terminal; a
+source delivers while its current leaves its positive terminal, and a
+source or a fixed output whose current changes direction within the mode
+carries power both ways; a current that changes sign once is reported with
+the instant it reverses. The parts that conduct also name the mode: a
+forward converter's switch-on interval whose rectifier carries no current
+that counts is the rectifier blocked, and a switch-off interval whose diode
+carries none is idle, or ringing with a node capacitance. Each state is
+read at the samples the simulator records in the mode, every sub-step (a
+two-thousandth of the period) and both sides of every event: a mode shorter
+than a sub-step, such as a node capacitance's rise of a few nanoseconds, is
+read from its two ends. An inductor's state also reads its current's exact
+extremes in the mode, between the samples: a current that peaks inside the
+first sub-step after a node capacitance's rise stores, then releases.
+
+A current smaller than a thousandth of its scale counts as none, in the
+drawing, the states and the table. The scale is the largest current,
+during the mode, among the elements the current flows with: the switching
+cell (the switch, the diodes, the windings, the inductances, the node
+capacitance and a direct input; a transformer's primary side and its
+secondary side apart, since the turns ratio scales one against the other),
+the output capacitor with the load, the bus capacitor with the source. So
+the microamperes a node capacitance draws through the input while the
+diode carries amperes are not a current path, while a ringing that turns
+the diode on again for a few nanoseconds conducts a current that is that
+mode's whole story, however small beside the period's peak. An inductor's
+scale is at most its own largest current over the period: a forward
+converter's magnetizing current, a thousandth of the load current, is its
+own story. A capacitor's scale is at least what the load or the source
+draws: a capacitor that alone feeds a megohm resistor counts, one that
+trickles nanoamperes into a battery drawing amperes does not. The
+resistor, the battery, a fixed output, and the source with its resistance,
+which conduct in every mode by nature, are measured against their own
+largest current over the period. The currents that count at each node must
+then balance: where they do not (a battery feeding the resistor between
+its charging pulses, with a current far below a thousandth of theirs), the
+element at the node with the largest current that does not count is
+measured against the largest one that does, until every node balances. A
+wire is coloured when what it passes between the elements on its two sides
+counts for the smallest-scaled of the elements on either side, so a
+coloured path never ends at a node. Whether a current that counts grows or
+shrinks is read more finely, from a millionth of its scale.
+
+Rounding stays below all of this: a current smaller than a billionth of
+the circuit's natural current (what its largest voltage builds in one
+period in its inductance) never counts; a mode shorter than a billionth of
+the period (a current left at $10^{-21}$ A sends the switch through its
+body diode for $10^{-26}$ s) joins the mode next to it; and a circuit in
+which every current is rounding (a capacitor alone at its steady voltage)
+is shown at rest, without modes and without mode bands on the charts.
+
+The drawing and the table use the same currents, and those come from the
+model's outputs for each element: Kirchhoff's current law holds at every
+node of the drawn circuit at every instant of the period, for every
+topology, load, node capacitance and source (`sim-schematic.test.ts`).
+Near each mode boundary where a diode's or an inductor's current ends, the
+instant that current last falls through 5 % of its average in the period
+agrees with ngspice within 3 ns (2.1 ns at worst) in every circuit of the
+SPICE comparison below.
+
 ## How it computes
 
 - **Within an interval** the state (inductor current, capacitor voltages)
@@ -421,8 +522,47 @@ Two further suites check the simulator by other means:
   ideal one differ by nanoseconds), and, with a node capacitance, the
   diode's largest current and, for the buck and the flyback, the input
   current's extremes, where ngspice's steep diode overshoots for a few
-  picoseconds as it takes over the current. CI reruns ngspice on every
-  change and compares with the stored results.
+  picoseconds as it takes over the current. Where a current ends within
+  the period (a diode's or an inductor's in DCM, the forward converter's
+  magnetizing current at the end of its reset), the instant it last falls
+  through 5 % of its average in the period, measured from the period's
+  start, agrees within 3 ns: 2.1 ns at worst, where ngspice's slightly
+  larger diode drop ends a DCM flyback's demagnetization early. That
+  instant lies at most about a hundred nanoseconds before the current
+  reaches zero; with a node capacitance it is the last of the ringing's
+  crossings.
+  CI reruns ngspice on every change and compares with the stored results.
+- **Operating modes** (`sim-schematic.test.ts`, `sim-sequence.test.ts`,
+  `sim-flow.test.ts`, `src/tools/SequenceView.test.ts`,
+  `src/lib/seqlayout.test.ts`). Kirchhoff's current law at every node of the
+  drawn circuit at every sample, for every topology with each load, with and
+  without a node capacitance and a source; the modes cover the period's
+  intervals, and the states match hand-checked cases (a buck in CCM and DCM,
+  a boost in DCM, a flyback whose ringing leaves a negative current for its
+  body diode at turn-on, a forward converter's reset, a boost whose output is
+  below its input, an inductor current that rises and falls within a mode,
+  a reverse current held constant by a battery, a rise that ends in ringing
+  with the diode off, the input carrying a flyback's ringing both ways). In
+  every mode of fixed and random circuits of every converter, each mode's
+  description names the parts that conduct as the table's states do, and
+  the states agree with the physics however they were read: the average
+  voltage across an inductance, along its current, has the sign of the
+  current's change, a capacitor's voltage rises while it charges, and a
+  battery charges only while the output is above its open-circuit voltage.
+  The drawn paths are closed, the arrows at a node never all point in or
+  all point out, and the coloured elements' currents balance at every node,
+  in every mode of each converter with each load (with and
+  without a source and a node capacitance), of circuits found by random
+  sweeps, and of 50 random ones. As
+  the page renders it, the description gives each inductor's voltage as the
+  number in its table, and says the forward converter's core reset in the
+  mode where it happens. A circuit at rest shows no modes. Every mode,
+  element and state has an English and a Korean text, and the drawing's
+  labels, symbols, wires and arrows do not overlap for any circuit in either
+  language: with estimated text widths in the tests, and with the text the
+  browser draws in `scripts/seq_check.mjs`, which CI runs on the built site;
+  it also checks the legend, and that each mode button's text stays inside
+  its button at 1280, 768 and 360 pixels.
 - **Invariants** (`packages/pe-core/test/sim-invariants.test.ts`). For every
   converter with a resistor, a battery, both, a capacitor alone and a fixed
   output, ideal and with losses: in the steady state the inductor's
@@ -430,7 +570,8 @@ Two further suites check the simulator by other means:
   current is $C$ times the slope of the simulated output voltage, and the
   source's power equals what the resistor, the battery's open-circuit
   voltage and its internal resistance, or the fixed output take, plus the
-  losses. Over a start-up from rest the source's energy equals the energy
+  losses; the forward converter's magnetizing voltage is $L_M$ times the
+  slope of its current, and its volt-seconds balance. Over a start-up from rest the source's energy equals the energy
   stored in the inductors and capacitors plus what the load took and the
   losses. The first two hold by construction in a periodic steady state, so
   they check the bookkeeping; the energy balances check the model.
@@ -504,6 +645,6 @@ that current except $R_b$: a small change of $D$ changes it a lot.
 ## Screenshot
 
 <figure class="pe-shot">
-  <Image src={shot} alt="The simulator opened with the preset of the worked example: the status line reports CCM, the compare panel sets the simulated bus voltage beside V_g,crit, and the plots show one period of the currents, the inductor voltage, the switch voltage, the output voltage and the bus voltage." />
+  <Image src={shot} alt="The simulator opened with the preset of the worked example: the status line reports CCM, the compare panel sets the simulated bus voltage beside V_g,crit, and the plots show one period of the currents, the inductor voltage, the switch voltage, the output voltage and the bus voltage; below them, the operating modes: the circuit of the first mode with its current paths, what happens in it, and every element's state." />
   <figcaption>The simulator opened with the preset of the worked example.</figcaption>
 </figure>

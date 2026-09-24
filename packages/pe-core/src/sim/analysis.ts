@@ -88,6 +88,8 @@ export interface SimResult {
   M: number;
   /** Mean squares over the period (A²): the switch, inductor, diode and battery currents (their rms values squared). */
   meanSquare: Record<string, number>;
+  /** The state (as the model's stateNames) at every sample of the waveforms: exact integrals over part of the period start from it. */
+  states: number[][];
   /** Losses (W). */
   losses: { conduction: number; diode: number; capacitive: number; total: number };
   /** Energy per cycle (J). */
@@ -327,6 +329,7 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
     max,
     pp,
     meanSquare,
+    states: ss.run.samples.map((smp) => smp.x),
     M: avg.v_out! / avg.v_in!,
     losses: { conduction, diode, capacitive, total: conduction + diode + capacitive },
     energy: { input: ex.quad['v_in*i_in']!, output: ex.quad['v_out*i_out']! },

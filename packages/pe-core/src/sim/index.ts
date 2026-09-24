@@ -8,3 +8,7 @@ export { analyse, analyticM, analyticRipplePP, balanceDuty, chargingLoad, diagno
 export type { DiodeFlag, Drift, Mode, SimResult, StartUp, Status, Waveforms } from './analysis';
 export { checkRange, linearIntegral, outputForms, periodIntegrals, quadraticIntegral, type IntegralOptions } from './integrals';
 export type { PeriodIntegrals } from './integrals';
+export { BOTTOM, kclResiduals, schematic } from './schematic';
+export type { ElementKind, Outputs, Schematic, SchematicBranch, SchematicNode, Side } from './schematic';
+export { CHANGE, NONE, ROUNDING, SLIVER, STATES, atRest, branchFlow, branchScales, changeFloor, coreReset, modeScales, countingFloor, currentScale, elementStates, firstSignChange, modes, netsOf, outputsAt, systemOf, wireSides } from './sequence';
+export type { BranchFlow, ElementInMode, ElementState, ModeKind, OperatingMode } from './sequence';

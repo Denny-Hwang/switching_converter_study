@@ -176,6 +176,18 @@ async function simulatorAction(page, where, errors) {
     .then(() => true, () => false);
   const topo = await page.locator(`${TOOL} .pe-choices[data-choice="select"] button[aria-pressed="true"]`).innerText();
   if (!got || topo.trim().length === 0) errors.push(`${where}: the page's own preset link did not load its preset (hash change)`);
+  // the operating modes: Space on a mode's button selects it, and the circuit and the text follow
+  const modes = page.locator(`${TOOL} .pe-seq__mode`);
+  await modes.nth(1).waitFor({ timeout: 30000 }).catch(() => errors.push(`${where}: no operating modes after the preset`));
+  if ((await modes.count()) > 1) {
+    const heading = page.locator(`${TOOL} .pe-seq h4`);
+    const before = await heading.innerText();
+    await modes.nth(1).focus();
+    await page.keyboard.press('Space');
+    await page.waitForTimeout(100);
+    if ((await modes.nth(1).getAttribute('aria-pressed')) !== 'true') errors.push(`${where}: Space did not select the second operating mode`);
+    if ((await heading.innerText()) === before) errors.push(`${where}: the operating mode's text did not follow the selection`);
+  }
 }
 
 /**

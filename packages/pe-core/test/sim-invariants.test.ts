@@ -239,3 +239,34 @@ describe('start-up from rest: energy is conserved cycle by cycle', () => {
     });
   }
 });
+
+describe("the forward converter's magnetizing voltage", () => {
+  // v_M, the voltage across L_M that the operating-mode view reports, is L_M di_M/dt of the simulated magnetizing
+  // current in every interval, and its volt-seconds balance over the period
+  const cases: [string, SimParams][] = [
+    ['CCM', { topology: 'forward', Vg: 48, D: 0.4, fs, L: 1e-4, n: 0.5, nr: 1, LM: 1e-3, load: { kind: 'resistive', R: 2, C: 1e-4 } }],
+    ['DCM, losses, a reset winding of half the turns', { topology: 'forward', Vg: 48, D: 0.3, fs, L: 2e-5, n: 0.5, nr: 0.5, LM: 1e-3, Ron: 0.1, RL: 0.05, VF: 0.5, load: { kind: 'resistive', R: 20, C: 1e-4 } }],
+    ['beyond the reset limit, held by R_on', { topology: 'forward', Vg: 48, D: 0.7, fs, L: 1e-4, n: 0.5, nr: 1, LM: 1e-3, Ron: 0.1, load: { kind: 'resistive', R: 5, C: 1e-4 } }],
+  ];
+  for (const [name, p] of cases) {
+    it(name, () => {
+      const r = simulate(p);
+      expect(r.status).toBe('steady');
+      const w = r.waveforms;
+      const t = w.t as number[];
+      const iv = w.interval as string[];
+      const iM = w.i_M as number[];
+      const vM = w.v_M as number[];
+      const scaleV = Math.max(...vM.map(Math.abs));
+      expect(scaleV).toBeGreaterThan(0.5 * p.Vg);
+      expect(Math.abs(avgOf(r, (k) => vM[k]!))).toBeLessThan(1e-7 * scaleV);
+      let worst = 0;
+      for (let k = 1; k < t.length - 1; k++) {
+        if (iv[k - 1] !== iv[k] || iv[k + 1] !== iv[k] || !(t[k + 1]! > t[k]!) || !(t[k]! > t[k - 1]!)) continue;
+        const didt = (iM[k + 1]! - iM[k - 1]!) / (t[k + 1]! - t[k - 1]!);
+        worst = Math.max(worst, Math.abs(p.LM! * didt - vM[k]!));
+      }
+      expect(worst).toBeLessThan(2e-3 * scaleV);
+    });
+  }
+});

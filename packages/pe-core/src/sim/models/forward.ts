@@ -43,7 +43,12 @@ export function forward(p: SimParams): Model {
 
   interface FSpec extends IntervalSpec {
     vM: Lin;
+    /** The forward diode D1, the freewheeling diode D2 and the reset winding's diode. */
+    iD1: Lin;
+    iD2: Lin;
+    iDr: Lin;
   }
+  const iReset = mul(iM, 1 / nr); // the reset winding returns the magnetizing current, divided by n_r
   const specs: Record<string, FSpec> = {
     on: {
       gate: true,
@@ -54,6 +59,9 @@ export function forward(p: SimParams): Model {
       vSw: mul(iPri, Ron),
       iSw: iPri,
       iD: iL,
+      iD1: iL,
+      iD2: zero,
+      iDr: zero,
       guards: [],
     },
     off: {
@@ -65,14 +73,17 @@ export function forward(p: SimParams): Model {
       vSw: vswReset,
       iSw: zero,
       iD: iL,
+      iD1: zero,
+      iD2: iL,
+      iDr: iReset,
       guards: [],
     },
     // The rectifier diode blocks while the switch is on: the output inductor
     // would need a negative current (an output held above n V_g).
-    onL0: { gate: true, vL: zero, vM: vPri, iOut: zero, iIn: iPri, vSw: mul(iPri, Ron), iSw: iPri, iD: zero, guards: [] },
-    offL0: { gate: false, vL: zero, vM: resetV, iOut: zero, iIn: mul(iM, -1 / nr), vSw: vswReset, iSw: zero, iD: zero, guards: [] },
-    offM0: { gate: false, vL: freewheel, vM: zero, iOut: iL, iIn: zero, vSw: vin, iSw: zero, iD: iL, guards: [] },
-    idle: { gate: false, vL: zero, vM: zero, iOut: zero, iIn: zero, vSw: vin, iSw: zero, iD: zero, guards: [] },
+    onL0: { gate: true, vL: zero, vM: vPri, iOut: zero, iIn: iPri, vSw: mul(iPri, Ron), iSw: iPri, iD: zero, iD1: zero, iD2: zero, iDr: zero, guards: [] },
+    offL0: { gate: false, vL: zero, vM: resetV, iOut: zero, iIn: mul(iM, -1 / nr), vSw: vswReset, iSw: zero, iD: zero, iD1: zero, iD2: zero, iDr: iReset, guards: [] },
+    offM0: { gate: false, vL: freewheel, vM: zero, iOut: iL, iIn: zero, vSw: vin, iSw: zero, iD: iL, iD1: zero, iD2: iL, iDr: zero, guards: [] },
+    idle: { gate: false, vL: zero, vM: zero, iOut: zero, iIn: zero, vSw: vin, iSw: zero, iD: zero, iD1: zero, iD2: zero, iDr: zero, guards: [] },
   };
   const zeroI = assign(c, { i: 0 });
   const zeroM = assign(c, { iM: 0 });
@@ -127,6 +138,8 @@ export function forward(p: SimParams): Model {
       return { interval: iv, set: [...(i ? [] : zeroI), ...(m ? [] : zeroM)] };
     },
     outputs: (x, iv) => {
+      const s = specs[iv]!;
+      const e = (l: Lin) => evalLin(l, c.names, x);
       const o = outputs(x, iv);
       // the diodes' voltages, anode to cathode. The primary winding holds v_in - v_sw. The rectifier D_1 runs from
       // the secondary (n times that) to the diodes' common cathode, the freewheeling D_2 from ground to it; the
@@ -135,7 +148,17 @@ export function forward(p: SimParams): Model {
       // the primary's voltage at the reset diode's anode; its cathode is at the input.
       const vPri = o.v_in! - o.v_sw!;
       const cathode = o.v_out! + o.v_L!;
-      return { ...o, i_M: x[c.idx('iM')]!, v_D1: n * vPri - cathode, v_D2: -cathode, v_Dr: -nr * vPri - o.v_in! };
+      return {
+        ...o,
+        i_M: x[c.idx('iM')]!,
+        v_M: e(s.vM),
+        i_D1: e(s.iD1),
+        i_D2: e(s.iD2),
+        i_Dr: e(s.iDr),
+        v_D1: n * vPri - cathode,
+        v_D2: -cathode,
+        v_Dr: -nr * vPri - o.v_in!,
+      };
     },
   };
 }

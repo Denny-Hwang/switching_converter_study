@@ -282,8 +282,23 @@ def netlist(c: dict) -> tuple[str, dict[str, str]]:
         lines.append(f"meas tran {vec}_end FIND {vec} AT={g(tstop)}")
         for k, tk in enumerate(sample_times(c)):
             lines.append(f"meas tran {vec}_s{k:02d} FIND {vec} AT={g(t0 + tk)}")
+        if name in FALLS:
+            # where the current last falls through 5 % of its average in the period (near the end of a
+            # diode's or an inductor's conduction in DCM); none when it does not. The average, not the
+            # peak: a diode's take-over spike at a node capacitance inflates the peak. Measured from the
+            # period's start (TRIG AT), not as an absolute time: ngspice prints 7 significant digits,
+            # which for an absolute time of 15 ms would be steps of 10 ns
+            lines.append(f"let {vec}_thr = {FALL_LEVEL} * {vec}_avg")
+            lines.append(f"meas tran {vec}_fall TRIG AT={g(t0)} TARG {vec} VAL=$&{vec}_thr FALL=LAST")
     lines += ["quit", ".endc", ".end", ""]
     return "\n".join(lines), q
+
+
+# The currents whose end of conduction is measured, and the level (a share of the period's average);
+# a rerun must find each such instant within FALL_CHECK of the period of the stored one.
+FALLS = ("i_D", "i_L", "i_M")
+FALL_LEVEL = 0.05
+FALL_CHECK = 1e-6
 
 
 def sample_times(c: dict) -> list[float]:
@@ -292,12 +307,13 @@ def sample_times(c: dict) -> list[float]:
     return [(k + 0.5) * Ts / SAMPLES for k in range(SAMPLES)]
 
 
-MEAS = re.compile(r"^q_(\w+?)_(avg|max|min|end|s\d\d)\s*=\s*([-+0-9.eE]+)")
+MEAS = re.compile(r"^q_(\w+?)_(avg|max|min|end|fall|s\d\d)\s*=\s*([-+0-9.eE]+)")
 
 
 def run(c: dict) -> dict:
-    """ngspice's measurements of the case's last period: {"values": {q_avg, q_max, q_min, q_end},
-    "samples": {"t": instants, q: values at those instants}}."""
+    """ngspice's measurements of the case's last period: {"values": {q_avg, q_max, q_min, q_end, and
+    q_fall where a current ends within the period (from the period's start)}, "samples": {"t": instants,
+    q: values at those instants}}."""
     text, q = netlist(c)
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "case.cir"
@@ -314,6 +330,8 @@ def run(c: dict) -> dict:
         name, fn, v = names[m.group(1)], m.group(2), float(m.group(3))
         if fn.startswith("s"):
             samples[name][int(fn[1:])] = v
+        elif fn == "fall":
+            values[f"{name}_fall"] = v
         else:
             values[f"{name}_{fn}"] = v
     missing = [f"{k}_{fn}" for k in q for fn in ("avg", "max", "min", "end") if f"{k}_{fn}" not in values]
@@ -366,13 +384,15 @@ def main() -> int:
             if set(o["spice"]) != set(r["spice"]):
                 errors.append(f"{r['case']['id']}: measures {sorted(r['spice'])} now, {sorted(o['spice'])} in the fixture")
                 continue
-            # each value within 1e-3 of its quantity's largest magnitude in the period
+            # each value within 1e-3 of its quantity's largest magnitude in the period; an instant (a fall)
+            # within FALL_CHECK of the period
             def scale(q: str) -> float:
                 return max(abs(o["spice"][f"{q}_max"]), abs(o["spice"][f"{q}_min"]), 1e-12)
 
             for k, v in r["spice"].items():
-                q = k.rsplit("_", 1)[0]
-                if abs(v - o["spice"][k]) > 1e-3 * scale(q):
+                q, fn = k.rsplit("_", 1)
+                tol = FALL_CHECK / r["case"]["fs"] if fn == "fall" else 1e-3 * scale(q)
+                if abs(v - o["spice"][k]) > tol:
                     errors.append(f"{r['case']['id']}: {k} = {v} now, {o['spice'][k]} in the fixture")
             for q, vs in r["samples"].items():
                 if q == "t":

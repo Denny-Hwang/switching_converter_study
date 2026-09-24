@@ -184,6 +184,7 @@ export function twoSwitch(p: SimParams): Model {
     iSw: zero,
     iD: zero,
     qc: zero,
+    iBd: mul(iL, -1),
     guards: untilFromZero(mul(iL, -1), scales[0]!, next, { reset: assign(c, { i: 0 }) }),
   });
   // The switch is on and its current negative: the body diode across it conducts at zero voltage,
