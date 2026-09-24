@@ -1,0 +1,49 @@
+name: TEMPORARY - LTspice symbols and batch mode (removed before the pull request merges)
+on:
+  push:
+    branches: [claude/blissful-einstein-r71bmd]
+permissions:
+  contents: read
+jobs:
+  ltspice:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Download LTspice's installer
+        run: |
+          curl -sSL --retry 3 -A "Mozilla/5.0 (X11; Linux x86_64)" -o lt.msi https://ltspice.analog.com/software/LTspice64.msi || true
+          ls -la lt.msi; file lt.msi; sha256sum lt.msi
+      - name: Extract it and print the symbols a converter schematic uses
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq msitools unzip >/dev/null
+          mkdir -p lt && (cd lt && msiextract ../lt.msi | sed -n '1,60p')
+          echo "== zip files"; find lt -iname "*.zip" | head -20
+          for z in $(find lt -iname "*.zip"); do mkdir -p "unz/$(basename "$z" .zip)"; unzip -q -o "$z" -d "unz/$(basename "$z" .zip)" || true; done
+          echo "== asy count"; find lt unz -iname "*.asy" 2>/dev/null | wc -l
+          for s in res cap ind ind2 diode schottky voltage current sw nmos; do
+            f=$(find lt unz -ipath "*/sym/$s.asy" 2>/dev/null | head -1)
+            echo "===== $s: $f"
+            [ -n "$f" ] && tr -d '\r' < "$f"
+          done
+          for e in Vswitch.asc; do
+            f=$(find lt unz -iname "$e" 2>/dev/null | head -1)
+            echo "===== $e: $f"
+            [ -n "$f" ] && tr -d '\r' < "$f"
+          done
+      - name: Try LTspice in batch mode under wine
+        continue-on-error: true
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq wine64 wine xvfb >/dev/null 2>&1 || sudo apt-get install -y -qq wine xvfb
+          wine --version || true
+          export WINEDEBUG=-all
+          xvfb-run -a wine msiexec /i lt.msi /qn; echo "msiexec exit $?"
+          find "$HOME/.wine" -iname "LTspice*.exe" 2>/dev/null | head
+          EXE=$(find "$HOME/.wine" -iname "LTspice.exe" 2>/dev/null | head -1)
+          [ -z "$EXE" ] && EXE=$(find lt -iname "LTspice.exe" | head -1)
+          echo "exe: $EXE"
+          printf '* divider\nV1 in 0 10\nR1 in out 1k\nR2 out 0 1k\n.op\n.end\n' > div.cir
+          timeout 300 xvfb-run -a wine "$EXE" -b div.cir; echo "batch exit $?"
+          ls -la div.*; tr -d '\r\000' < div.log 2>/dev/null | head -40
