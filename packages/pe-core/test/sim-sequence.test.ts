@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SLIVER, atRest, elementStates, modes, runCycle, buildModel, simulate, type ElementInMode, type SimParams } from '../src/sim';
+import { SLIVER, atRest, branchFlow, elementStates, modes, runCycle, buildModel, schematic, simulate, type ElementInMode, type SimParams } from '../src/sim';
 
 /**
  * The operating modes: each mode is one interval of the engine, lasting what
@@ -512,4 +512,53 @@ describe('each energy state agrees with the physics of its element', () => {
     expect(checked).toBeGreaterThan(60);
     expect(wrong).toEqual([]);
   });
+});
+
+describe("each mode's averages are the exact integrals of its part of the period", () => {
+  const cases: [string, SimParams][] = [
+    ['buck in CCM with losses', { topology: 'buck', Vg: 24, D: 0.5, fs, L: 1e-4, Ron: 0.1, RL: 0.05, VF: 0.5, load: { kind: 'resistive', R: 6, C: 1e-4 } }],
+    ['flyback in DCM with a node capacitance', { topology: 'flyback', Vg: 48, D: 0.3, fs, L: 2e-5, n: 0.25, VF: 0.5, Ron: 0.1, Cnode: 1e-10, load: { kind: 'resistive', R: 10, C: 1e-4 } }],
+    ['forward in DCM', { topology: 'forward', Vg: 48, D: 0.3, fs, L: 2e-5, n: 0.5, nr: 1, LM: 1e-3, VF: 0.5, load: { kind: 'resistive', R: 20, C: 1e-4 } }],
+    ['boost charging a battery on a source', { topology: 'boost', Vg: 0, D: 0.5, fs, L: 5e-5, Ron: 0.05, VF: 0.4, source: { Voc: 12, Rs: 0.5, Cbus: 1e-5 }, load: { kind: 'network', C: 1e-5, R: 50, battery: { V: 20, R: 0.1 } } }],
+    // the seventh review's flyback: a 2 ns output time constant against 0.33 us sub-steps, which trapezoids between samples miss
+    ['flyback into a 200 pF output at 1.5 kHz', { topology: 'flyback', Vg: 24, D: 0.3, fs: 1500, L: 1e-5, n: 0.5, Ron: 0.05, VF: 0.4, load: { kind: 'resistive', R: 10, C: 2e-10 } }],
+  ];
+  for (const [name, p] of cases) {
+    it(`${name}: the modes' averages, weighted by their lengths, add up to the period's`, () => {
+      const r = simulate(p);
+      expect(r.status).toBe('steady');
+      const ms = modes(r);
+      const T = 1 / p.fs;
+      const s = schematic(p);
+      // an element whose current is one of the period's outputs: its modes' averages add up to the period average the page shows
+      const pairs: [string, string][] = [
+        ['L', 'i_L'],
+        ['LM', p.topology === 'forward' ? 'i_M' : 'i_L'],
+        ['C', 'i_C'],
+        ['D', 'i_D'],
+      ];
+      for (const [id, key] of pairs) {
+        if (!s.branches.some((b) => b.id === id) || r.avg[key] === undefined) continue;
+        let sum = 0;
+        for (const m of ms) sum += byId(elementStates(r, m, s))[id]!.avg * (m.t1 - m.t0);
+        // against the current's peak: the capacitor's average is nearly zero, what is left of large parts that cancel
+        const peak = Math.max(Math.abs(r.max[key]!), Math.abs(r.min[key]!));
+        expect(Math.abs(sum / T - r.avg[key]!), `${id} against <${key}>`).toBeLessThanOrEqual(1e-11 * peak);
+      }
+      // the output capacitor's charge, mode by mode, adds up to C times its voltage's change over the recorded
+      // period (zero to the steady state's tolerance)
+      const model = buildModel(p);
+      const iv = model.stateNames.indexOf('v');
+      const dv = r.states.at(-1)![iv]! - r.states[0]![iv]!;
+      let q = 0;
+      for (const m of ms) q += byId(elementStates(r, m, s)).C!.avg * (m.t1 - m.t0);
+      const C = (p.load as { C: number }).C;
+      expect(Math.abs(q - C * dv)).toBeLessThanOrEqual(1e-11 * Math.max(Math.abs(r.max.i_C!), Math.abs(r.min.i_C!)) * T);
+      // the arrows' averages are the table's
+      for (const m of ms) {
+        const flow = branchFlow(r, m, s);
+        for (const e of elementStates(r, m, s)) expect(flow.get(e.id)!.avg).toBe(e.avg);
+      }
+    });
+  }
 });

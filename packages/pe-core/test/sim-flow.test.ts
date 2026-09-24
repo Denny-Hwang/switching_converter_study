@@ -47,7 +47,9 @@ function problems(r: SimResult): string[] {
       const e = states.get(b.id)!;
       // a switch is on or off by its gate: whether it carries current is the flow's alone
       if (b.kind !== 'switch' && f.active === STILL.has(e.state)) out.push(`${at}: ${b.id} is ${f.active ? '' : 'not '}coloured but ${e.state}`);
-      if (f.active && f.sign * e.avg < 0) out.push(`${at}: ${b.id}'s arrow points against its average current`);
+      // (an average at rounding, a billionth of the peak, has no direction: the first current that counts sets it)
+      const noise = Math.abs(e.avg) <= 1e-9 * Math.max(Math.abs(e.min), Math.abs(e.max));
+      if (f.active && f.sign * e.avg < 0 && !noise) out.push(`${at}: ${b.id}'s arrow points against its average current`);
     }
     // Kirchhoff's current law for the coloured elements, at each electrical node, at every sample
     const os: Record<string, number>[] = [];

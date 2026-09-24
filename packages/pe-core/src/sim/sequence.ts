@@ -14,8 +14,69 @@
  */
 
 import type { SimResult } from './analysis';
+import type { Model, Sample } from './engine';
+import { periodIntegrals } from './integrals';
 import { buildModel } from './models';
 import { schematic, type ElementKind, type Outputs, type Schematic } from './schematic';
+
+/** A result's model and recorded samples, built once per result: the mode's averages integrate between them. */
+const recordedOf = new WeakMap<SimResult, { model: Model; samples: Sample[] }>();
+function recorded(r: SimResult): { model: Model; samples: Sample[] } {
+  let e = recordedOf.get(r);
+  if (!e) {
+    const t = r.waveforms.t as number[];
+    const iv = r.waveforms.interval as string[];
+    e = { model: buildModel(r.params), samples: t.map((tk, k) => ({ t: tk, interval: iv[k]!, x: r.states[k]! })) };
+    recordedOf.set(r, e);
+  }
+  return e;
+}
+
+/**
+ * The averages over a mode of functions of the outputs (an element's current
+ * or voltage, a wire's current), like the period's averages: the exact
+ * integral of the simulated solution between the mode's samples
+ * (periodIntegrals over them), divided by the mode's length; a mode of no
+ * length gives the value at its sample. For the names in `peaks`, also their
+ * exact least and greatest values in the mode, between the samples too; the
+ * others' are their samples'.
+ */
+function modeIntegrals(
+  r: SimResult,
+  mode: OperatingMode,
+  fns: Map<string, (o: Outputs) => number>,
+  peaks: ReadonlySet<string> = new Set(),
+): { avg: Map<string, number>; min: Map<string, number>; max: Map<string, number> } {
+  const avg = new Map<string, number>();
+  const min = new Map<string, number>();
+  const max = new Map<string, number>();
+  // the mode's length from its own samples' times
+  const t = r.waveforms.t as number[];
+  const span = t[mode.k1]! - t[mode.k0]!;
+  if (!(span > 0)) {
+    const o = outputsAt(r, mode.k0);
+    for (const [k, f] of fns) {
+      const v = f(o);
+      avg.set(k, v);
+      min.set(k, v);
+      max.set(k, v);
+    }
+    return { avg, min, max };
+  }
+  const { model, samples } = recorded(r);
+  const map = (y: Record<string, number>) => {
+    const v: Record<string, number> = {};
+    for (const [k, f] of fns) v[k] = f(y);
+    return v;
+  };
+  const ex = periodIntegrals(model, { samples }, [], { from: mode.k0, to: mode.k1, map, extremes: (k) => peaks.has(k) });
+  for (const k of fns.keys()) {
+    avg.set(k, ex.lin[k]! / span);
+    min.set(k, ex.min[k]!);
+    max.set(k, ex.max[k]!);
+  }
+  return { avg, min, max };
+}
 
 export type ModeKind = string;
 
@@ -516,18 +577,24 @@ export function elementStates(r: SimResult, mode: OperatingMode, s: Schematic = 
   const out: ElementInMode[] = [];
   const os: Outputs[] = [];
   for (let k = mode.k0; k <= mode.k1; k++) os.push(outputsAt(r, k));
-  const span = mode.t1 - mode.t0;
+  const fns = new Map<string, (o: Outputs) => number>();
+  for (const b of s.branches) {
+    if (b.kind === 'wire') continue;
+    fns.set(`i:${b.id}`, b.current);
+    if (b.voltage) fns.set(`v:${b.id}`, b.voltage);
+  }
+  // an inductor's state reads its current's extremes, so those are found between the samples too
+  const peaks = new Set(s.branches.filter((b) => b.kind === 'inductor').map((b) => `i:${b.id}`));
+  const ints = modeIntegrals(r, mode, fns, peaks);
   for (const b of s.branches) {
     if (b.kind === 'wire') continue;
     const eps = countingFloor(r, scales.get(b.id) ?? 0);
     const fine = changeFloor(r, scales.get(b.id) ?? 0);
     const i = os.map((o) => b.current(o));
-    let area = 0;
     let tSign: number | undefined;
     // the sign of the last current that counts
     let lastSign = 0;
     for (let j = 0; j < i.length; j++) {
-      if (j > 0) area += 0.5 * (i[j - 1]! + i[j]!) * (t[mode.k0 + j]! - t[mode.k0 + j - 1]!);
       if (Math.abs(i[j]!) <= eps) continue;
       const sg = Math.sign(i[j]!);
       if (lastSign !== 0 && sg !== lastSign && tSign === undefined) {
@@ -539,9 +606,10 @@ export function elementStates(r: SimResult, mode: OperatingMode, s: Schematic = 
       lastSign = sg;
     }
     const signChanges = signChangesOf(i, eps);
-    const avg = span > 0 ? area / span : i[0]!;
-    const min = Math.min(...i);
-    const max = Math.max(...i);
+    const avg = ints.avg.get(`i:${b.id}`)!;
+    const exact = peaks.has(`i:${b.id}`);
+    const min = Math.min(...i, ...(exact ? [ints.min.get(`i:${b.id}`)!] : []));
+    const max = Math.max(...i, ...(exact ? [ints.max.get(`i:${b.id}`)!] : []));
     const active = Math.max(Math.abs(min), Math.abs(max)) > eps;
     const i0 = i[0]!;
     const i1 = i.at(-1)!;
@@ -553,9 +621,7 @@ export function elementStates(r: SimResult, mode: OperatingMode, s: Schematic = 
       const v = os.map((o) => b.voltage!(o));
       v0 = v[0];
       v1 = v.at(-1);
-      let va = 0;
-      for (let j = 1; j < v.length; j++) va += 0.5 * (v[j - 1]! + v[j]!) * (t[mode.k0 + j]! - t[mode.k0 + j - 1]!);
-      vAvg = span > 0 ? va / span : v[0];
+      vAvg = ints.avg.get(`v:${b.id}`)!;
     }
     const vRes = b.resistance ? b.resistance * avg : undefined;
     switch (b.kind) {
@@ -576,17 +642,20 @@ export function elementStates(r: SimResult, mode: OperatingMode, s: Schematic = 
         break;
       case 'inductor': {
         // its energy, L i^2 / 2, grows while the current's magnitude grows: from the start, the end and the
-        // extremes of its magnitude within the mode (a current that rises and falls again stores, then releases)
+        // extremes of its magnitude within the mode, between the samples too (a current that rises and falls again
+        // stores, then releases)
         const a0 = Math.abs(i0);
         const a1 = Math.abs(i1);
         const peak = Math.max(Math.abs(min), Math.abs(max));
-        const dip = Math.min(...i.map(Math.abs));
+        const dip = min <= 0 && max >= 0 ? 0 : Math.min(Math.abs(min), Math.abs(max));
         const d = a1 - a0;
         if (!active) state = 'zero';
         else if (signChanges >= 2) state = 'ringing';
         else if (signChanges === 1) state = 'reversing';
         else if (peak > Math.max(a0, a1) + fine) state = 'storeRelease';
-        else if (dip < Math.min(a0, a1) - fine) state = 'releaseStore';
+        // (a current that starts or ends within the counting floor stores or releases nothing on that side of its dip:
+        // a current that falls to zero and overshoots it by a few microamperes releases)
+        else if (dip < Math.min(a0, a1) - fine && Math.min(a0, a1) > eps) state = 'releaseStore';
         else state = Math.abs(d) <= fine ? 'steady' : d > 0 ? 'storing' : 'releasing';
         break;
       }
@@ -656,7 +725,6 @@ export interface BranchFlow {
  * so that a coloured wire joins coloured branches.
  */
 export function branchFlow(r: SimResult, mode: OperatingMode, s: Schematic, scales = modeScales(r, mode, s)): Map<string, BranchFlow> {
-  const t = r.waveforms.t as number[];
   const out = new Map<string, BranchFlow>();
   const os: Outputs[] = [];
   for (let k = mode.k0; k <= mode.k1; k++) os.push(outputsAt(r, k));
@@ -666,8 +734,12 @@ export function branchFlow(r: SimResult, mode: OperatingMode, s: Schematic, scal
   const byId = new Map(s.branches.map((b) => [b.id, b]));
   const cur = new Map<string, number[]>();
   for (const b of s.branches) if (b.kind !== 'wire') cur.set(b.id, os.map((o) => b.current(o)));
-  // what the counting elements on one side of a wire (at the electrical node N) put into that side, sample by sample
+  // what the counting elements on one side of a wire (at the electrical node N) put into that side, as a function
+  // of the outputs, and sample by sample
+  const intoFn = (ids: string[], N: string) => (o: Outputs) => ids.reduce((sum, id) => sum + (net.get(byId.get(id)!.to) === N ? 1 : -1) * byId.get(id)!.current(o), 0);
   const into = (ids: string[], N: string) => os.map((_, k) => ids.reduce((sum, id) => sum + (net.get(byId.get(id)!.to) === N ? 1 : -1) * cur.get(id)![k]!, 0));
+  const fns = new Map<string, (o: Outputs) => number>();
+  const found = new Map<string, { i: number[]; eps: number }>();
   for (const b of s.branches) {
     let i: number[];
     let eps: number;
@@ -680,6 +752,7 @@ export function branchFlow(r: SimResult, mode: OperatingMode, s: Schematic, scal
       const N = net.get(b.from)!;
       const [near, far] = sides.get(b.id)!.map((ids) => ids.filter((id) => on.has(id))) as [string[], string[]];
       i = into(near, N);
+      fns.set(b.id, intoFn(near, N));
       const back = into(far, N);
       eps = Infinity;
       if (near.length && far.length) {
@@ -694,14 +767,20 @@ export function branchFlow(r: SimResult, mode: OperatingMode, s: Schematic, scal
     } else {
       i = cur.get(b.id)!;
       eps = countingFloor(r, scales.get(b.id) ?? 0);
+      fns.set(b.id, b.current);
     }
-    let area = 0;
-    for (let j = 1; j < i.length; j++) area += 0.5 * (i[j - 1]! + i[j]!) * (t[mode.k0 + j]! - t[mode.k0 + j - 1]!);
-    const span = mode.t1 - mode.t0;
-    const avg = span > 0 ? area / span : i[0]!;
+    found.set(b.id, { i, eps });
+  }
+  const avgs = modeIntegrals(r, mode, fns).avg;
+  for (const b of s.branches) {
+    const { i, eps } = found.get(b.id)!;
+    const avg = avgs.get(b.id)!;
     const peak = Math.max(...i.map(Math.abs));
     const active = peak > eps;
-    out.set(b.id, { active, sign: active ? Math.sign(avg) || Math.sign(firstCounting(i, eps)) : 0, avg, reverses: signChangesOf(i, eps) > 0 });
+    // the arrow follows the average; an average at the rounding of the currents in the branch (a billionth of their
+    // peak: a capacitor whose charge nets to nothing) has no direction, and the first current that counts sets it
+    const sign = Math.abs(avg) > 1e-9 * peak ? Math.sign(avg) : Math.sign(firstCounting(i, eps));
+    out.set(b.id, { active, sign: active ? sign : 0, avg, reverses: signChangesOf(i, eps) > 0 });
   }
   return out;
 }
