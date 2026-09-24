@@ -194,8 +194,8 @@ periodic steady state.
   switch, a small output capacitor with the inductance, the input bus. A
   circuit that rings so fast that a ring would still span fewer than three
   sub-steps is refused: a diode could turn on and off again between two
-  sub-steps unseen. A start-up drawn without a steady state uses the same
-  rule, so that its events are found too.
+  sub-steps unseen. A start-up drawn without a steady state follows the
+  same rule.
 - **Events** such as the diode current reaching zero or a clamp starting to
   conduct are located inside a sub-step on the same exact solution, by a
   search that keeps the event bracketed like bisection (regula falsi in its
@@ -206,6 +206,15 @@ periodic steady state.
   passes the diode's turn-on voltage just before its current ends at the
   peak. The gate edges fall exactly at the start of the period and at the
   duty ratio.
+- **Averages.** The states at every sub-step and event are exact, but the
+  averages, losses and powers come from the samples, with straight lines
+  between them. A transient faster than a sub-step, such as a time constant
+  shorter than one, falls between two samples. So the steady period is
+  recorded again at half the sub-steps. If no average the page shows moves
+  by more than a ten-thousandth of its size, the result stands. Otherwise
+  the period is recorded at twice the sub-steps, and again, until two grids
+  agree, down to a twenty-thousandth of the period. When the averages still
+  move there, the page says so, and by how much.
 - **Rounding.** Within a period the simulator follows each state's
   deviation from its value at the start of the period. Its rounding errors
   then scale with how far the state moves, not with its size, so the change
@@ -305,12 +314,15 @@ against the equations:
     buck-boost or a flyback with a heavy load on a source too weak for it;
     a forward converter beyond its reset limit on one; a forward converter
     whose switch drop, $R_\mathrm{on}$ times its current, exceeds a sagging
-    bus while the switch is on, which forward-biases $D_2$; a boost into a
+    bus while the switch is on, which forward-biases $D_2$ (and $D_3$ once
+    the drop exceeds $(1 + 1/n_r)$ times the bus); a boost into a
     fixed output below its input, whose current through $R_\mathrm{on}$
     lifts the switch node above the output;
   - the switch voltage falling below zero, where the ideal body diode would
-    conduct. In the idle interval of DCM the switch voltage follows the
-    input bus, so a bus below zero there is flagged this way.
+    conduct. Without a capacitance across the switch, the switch voltage
+    follows the input bus in the idle interval of DCM, so a bus below zero
+    there is flagged this way. With one, the model's clamp interval conducts
+    through the body diode instead.
 
   A diode with the model's drop would conduct there, which the model leaves
   out, so the page says that the results may not hold. How much they change

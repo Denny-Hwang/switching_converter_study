@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildModel, eigenvalues, ringsPerPeriod, stepsFor, type SimParams, type Topology } from '../src/sim';
+import { buildModel, eigenvalues, ringsPerPeriod, simulate, stepsFor, type SimParams, type Topology } from '../src/sim';
 
 type C = { re: number; im: number };
 const mul = (a: C, b: C): C => ({ re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re });
@@ -151,5 +151,18 @@ describe('sub-steps from the fastest ring', () => {
     // at a tenth of f_s the same ring needs more than MAX_STEPS: capped, still at least three sub-steps per ring
     expect(stepsFor({ ...p, fs: 1e3 })).toBe(20000);
     expect(() => stepsFor({ ...p, fs: 50 })).toThrow(/rings too fast/);
+    // the remedy: fewer rings per period, from a higher f_s or a larger L or C
+    expect(() => stepsFor({ ...p, fs: 50 })).toThrow(/a larger inductance or capacitance, or a higher switching frequency/);
+  });
+
+  it('two nearly identical lossless rings coupled by almost nothing: the QR iteration fails, and a norm bound stands in', () => {
+    // the sixth review's circuit: n = 1e-10 and R_s = 1e21 leave the output L-C and the bus L_M-C_bus rings almost
+    // uncoupled and equal; without the bound, simulate() threw
+    const p: SimParams = { topology: 'forward', Vg: 0, D: 0.3, fs: 1000, L: 0.0009765625, n: 1e-10, nr: 1, LM: 0.0009765625, load: { kind: 'network', C: 9.5367431640625e-7, V0: 0 }, source: { Voc: 10, Rs: 1e21, Cbus: 9.5367431640625e-7 } };
+    const rings = ringsPerPeriod(buildModel(p));
+    expect(Number.isFinite(rings)).toBe(true);
+    // at least the true ring (1/(2 pi sqrt(L C)) = 5.2 kHz, 5.2 per period): the bound only asks for more
+    expect(rings).toBeGreaterThan(5.2);
+    expect(() => simulate(p)).not.toThrow();
   });
 });

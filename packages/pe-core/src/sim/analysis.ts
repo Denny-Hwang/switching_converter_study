@@ -98,13 +98,20 @@ export interface SimResult {
    * (DiodeFlag). The models leave that conduction out, so the results may
    * not hold then. A source too weak for the load can bring either about:
    * its bus sagging below zero puts the switch voltage below zero where the
-   * switch node follows the bus (DCM's idle interval), and can forward-bias
-   * a diode; a bus below zero elsewhere turns on no diode by itself.
+   * switch node follows the bus (DCM's idle interval, without a node
+   * capacitance), and can forward-bias a diode; a bus below zero elsewhere
+   * turns on no diode by itself.
    */
   switchBelowZero?: number;
   diodes?: DiodeFlag[];
   /** In a start-up, the first cycle (from 1) in which the switch voltage falls below zero. */
   switchFrom?: number;
+  /**
+   * A steady period whose averages are not resolved to RESOLVE_TOL even at
+   * MAX_STEPS sub-steps (resolvePeriod): the largest change of an average,
+   * relative to its scale, between half as many sub-steps and MAX_STEPS.
+   */
+  unresolved?: number;
 }
 
 /**
@@ -127,17 +134,15 @@ const SERIES = ['i_L', 'v_L', 'v_sw', 'i_sw', 'i_D', 'i_out', 'i_in', 'v_in', 'v
 export function waveforms(model: Model, run: CycleRun): Waveforms {
   const out: Waveforms = { t: [], interval: [] };
   const names = new Set<string>();
-  for (const s of run.samples) {
-    const y = model.outputs(s.x, s.interval);
-    for (const k of Object.keys(y)) names.add(k);
-  }
+  const ys = run.samples.map((s) => model.outputs(s.x, s.interval));
+  for (const y of ys) for (const k of Object.keys(y)) names.add(k);
   for (const k of names) out[k] = [];
-  for (const s of run.samples) {
+  run.samples.forEach((s, m) => {
     (out.t as number[]).push(s.t);
     (out.interval as string[]).push(s.interval);
-    const y = model.outputs(s.x, s.interval);
+    const y = ys[m]!;
     for (const k of names) (out[k] as number[]).push(y[k] ?? NaN);
-  }
+  });
   return out;
 }
 
@@ -256,9 +261,9 @@ export function initialState(p: SimParams, model: Model): Vec {
   return x;
 }
 
-export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steadyState>): SimResult {
+export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steadyState>, recorded?: Waveforms): SimResult {
   const Ts = model.Ts;
-  const wf = waveforms(model, ss.run);
+  const wf = recorded ?? waveforms(model, ss.run);
   const t = wf.t as number[];
   const avg: Record<string, number> = {};
   const min: Record<string, number> = {};
@@ -389,6 +394,112 @@ function outsideModel(p: SimParams, model: Model, w: Waveforms, startUp = false)
   return out;
 }
 
+/** How far an average may move, relative to its scale, when the period is recorded again at twice the sub-steps (the page shows four digits). */
+export const RESOLVE_TOL = 1e-4;
+
+/**
+ * The averages the page shows from a recorded period, each with its scale:
+ * the voltages and currents in the tables (v_out, v_in, the inductor, input,
+ * output, switch, diode, resistor and battery currents), the squared
+ * currents that give the conduction losses (and a battery's resistance
+ * loss), and the input and output power. An average is judged against
+ * itself, or against a thousandth of its series' peak when it is smaller
+ * (one near zero, whose digits the ripple swamps). An average smaller than
+ * a billionth of the circuit's largest current (or voltage, or power) is
+ * left out: rounding, not a quantity the page shows.
+ */
+const SHOWN_V = ['v_out', 'v_in'] as const;
+const SHOWN_I = ['i_L', 'i_in', 'i_out', 'i_sw', 'i_D', 'i_R', 'i_bat'] as const;
+function periodSummary(model: Model, w: Waveforms, squares: readonly string[]): { values: number[]; scales: number[] } {
+  const t = w.t as number[];
+  const Ts = model.Ts;
+  const peakOf = (y: number[], f: (v: number) => number) => y.reduce((m, v) => Math.max(m, Math.abs(f(v))), 0);
+  const series = (k: string) => w[k] as number[] | undefined;
+  const id = (v: number) => v;
+  const sq = (v: number) => v * v;
+  const Vmax = Math.max(0, ...SHOWN_V.map((k) => (series(k) ? peakOf(series(k)!, id) : 0)));
+  const Imax = Math.max(0, ...SHOWN_I.map((k) => (series(k) ? peakOf(series(k)!, id) : 0)));
+  const values: number[] = [];
+  const scales: number[] = [];
+  const add = (y: number[] | undefined, f: (v: number) => number, size: number) => {
+    if (!y) return;
+    const a = average(t, y, Ts, f);
+    const scale = Math.max(Math.abs(a), 1e-3 * peakOf(y, f));
+    if (!(scale > 1e-9 * size)) return;
+    values.push(a);
+    scales.push(scale);
+  };
+  for (const k of SHOWN_V) add(series(k), id, Vmax);
+  for (const k of SHOWN_I) add(series(k), id, Imax);
+  for (const k of squares) add(series(k), sq, Imax * Imax);
+  const product = (a: string, b: string) => {
+    const x = series(a);
+    const y = series(b);
+    return x && y ? x.map((v, k) => v * y[k]!) : undefined;
+  };
+  add(product('v_in', 'i_in'), id, Vmax * Imax);
+  add(product('v_out', 'i_out'), id, Vmax * Imax);
+  return { values, scales };
+}
+
+/** The largest change between two summaries of the same period, each relative to its scale (quantities that are zero throughout are left out). */
+function summaryChange(a: { values: number[]; scales: number[] }, b: { values: number[]; scales: number[] }): number {
+  let worst = 0;
+  for (let j = 0; j < a.values.length; j++) {
+    const scale = Math.max(a.scales[j]!, b.scales[j] ?? 0);
+    const d = Math.abs(a.values[j]! - b.values[j]!);
+    if (scale > 0 && Number.isFinite(d)) worst = Math.max(worst, d / scale);
+  }
+  return worst;
+}
+
+/**
+ * The steady period, recorded finely enough for its averages. The states at
+ * every sub-step and event are exact, but the averages, losses and powers
+ * come from the samples (trapezoids between them): a transient faster than
+ * a sub-step (a time constant shorter than one, which no ring shows) is
+ * integrated wrongly. The period is first recorded again at half the
+ * sub-steps: if no average moves by more than RESOLVE_TOL of its scale, the
+ * grid holds (its own error is smaller still) and the result is unchanged.
+ * Otherwise it is recorded at twice the sub-steps, and again, until two
+ * grids agree, keeping the coarser of the two; at MAX_STEPS what still moves
+ * is reported.
+ */
+export function resolvePeriod(
+  model: Model,
+  x0: Vec,
+  run: CycleRun,
+  steps: number,
+  squares: readonly string[] = ['i_sw', 'i_L'],
+): { run: CycleRun; wf: Waveforms; steps: number; unresolved?: number } {
+  const summary = (w: Waveforms) => periodSummary(model, w, squares);
+  const record = (n: number) => {
+    const r = runCycle(model, x0, { stepsPerPeriod: n, record: true });
+    return { r, wf: waveforms(model, r) };
+  };
+  let cur = { r: run, wf: waveforms(model, run) };
+  let a = summary(cur.wf);
+  const half = Math.floor(steps / 2);
+  if (half >= 1 && summaryChange(summary(record(half).wf), a) <= RESOLVE_TOL) return { run, wf: cur.wf, steps };
+  let s = steps;
+  for (;;) {
+    if (s >= MAX_STEPS) {
+      // nothing finer: what moved between half of MAX_STEPS and it
+      const change = summaryChange(summary(record(MAX_STEPS / 2).wf), a);
+      return { run: cur.r, wf: cur.wf, steps: s, ...(change > RESOLVE_TOL ? { unresolved: change } : {}) };
+    }
+    const next = Math.min(MAX_STEPS, 2 * s);
+    const fine = record(next);
+    const b = summary(fine.wf);
+    const change = summaryChange(a, b);
+    if (change <= RESOLVE_TOL) return { run: cur.r, wf: cur.wf, steps: s };
+    if (next >= MAX_STEPS) return { run: fine.r, wf: fine.wf, steps: next, unresolved: change };
+    cur = fine;
+    s = next;
+    a = b;
+  }
+}
+
 /** Most sub-steps per period, and the fewest sub-steps per ring that still find the events inside the ringing. */
 export const MAX_STEPS = 20000;
 export const MIN_STEPS_PER_RING = 3;
@@ -404,7 +515,15 @@ export const STEPS_PER_RING = 20;
  */
 export function ringsPerPeriod(model: Model): number {
   let w = 0;
-  for (const iv of Object.values(model.intervals)) for (const e of eigenvalues(iv.A)) w = Math.max(w, Math.abs(e.im));
+  for (const iv of Object.values(model.intervals)) {
+    try {
+      for (const e of eigenvalues(iv.A)) w = Math.max(w, Math.abs(e.im));
+    } catch {
+      // the QR iteration did not converge (two nearly identical lossless rings coupled by almost nothing): every
+      // eigenvalue's size is at most the matrix's Frobenius norm, a bound that can only ask for more sub-steps
+      w = Math.max(w, Math.sqrt(iv.A.reduce((s, row) => s + row.reduce((r, v) => r + v * v, 0), 0)));
+    }
+  }
   return (w * model.Ts) / (2 * Math.PI);
 }
 
@@ -424,7 +543,7 @@ export function stepsFor(p: SimParams, model: Model = buildModel(p)): number {
     throw new Error(
       `the circuit rings too fast to simulate: its fastest ring (period ${(model.Ts / rings).toExponential(2)} s) would span ` +
         `${perRing.toFixed(1)} of the ${MAX_STEPS} sub-steps per switching period, fewer than ${MIN_STEPS_PER_RING}; ` +
-        'use a larger capacitance or a lower switching frequency',
+        'use a larger inductance or capacitance, or a higher switching frequency',
     );
   }
   return Math.min(MAX_STEPS, Math.max(2000, Math.ceil(STEPS_PER_RING * rings)));
@@ -578,21 +697,19 @@ export const FOLLOW = { cycles: 4000, work: 2e6, quiet: 50, still: 3, creep: 10,
 /**
  * Sub-steps per cycle for following a start-up: the search's own where a
  * node capacitance rings (a diode that turns on near the top of a ring is
- * found only on the same grid), otherwise enough for twenty per period of
- * the output L-C (a current that falls through zero within one sub-step is
- * still found), and at least 100.
+ * found only on the same grid), otherwise STEPS_PER_RING per period of the
+ * circuit's fastest ring (a current that rings through zero within one
+ * sub-step would be missed), at least 100 and at most the search's.
  */
-function followSteps(p: SimParams, steps: number): number {
+function followSteps(p: SimParams, model: Model, steps: number): number {
   if (p.Cnode && p.topology !== 'forward') return steps;
-  const C = p.load.kind === 'fixed' ? Infinity : p.load.C;
-  const ring = 2 * Math.PI * Math.sqrt(p.L * C);
-  return Math.min(steps, Math.max(100, Math.ceil(20 / (p.fs * ring))));
+  return Math.min(steps, Math.max(100, Math.ceil(STEPS_PER_RING * ringsPerPeriod(model))));
 }
 
 /** The start-up of a capacitor alone from rest, followed as FOLLOW says: where it ends, and after how many cycles. */
 export function followStartUp(p: SimParams, model: Model, steps: number): { x: Vec; cycles: number } {
   const iv = model.stateNames.indexOf('v');
-  const perCycle = followSteps(p, steps);
+  const perCycle = followSteps(p, model, steps);
   const max = Math.max(1, Math.min(FOLLOW.cycles, Math.floor(FOLLOW.work / perCycle)));
   let x = restState(p, model);
   let quiet = 0;
@@ -727,7 +844,13 @@ export function simulate(p: SimParams, opts: SteadyOptions = {}): SimResult {
   const ss = chargingLoad(p)
     ? capacitorAlone(p, model, opts, steps)
     : steadyState(model, initialState(p, model), { stopOnDrift: true, ...opts, stepsPerPeriod: steps });
-  if (ss.converged) return analyse(p, model, ss);
+  if (ss.converged) {
+    // the squared currents behind the losses the page shows: conduction, and a battery's resistance
+    const squares = ['i_sw', 'i_L', ...(p.load.kind === 'network' && p.load.battery ? ['i_bat'] : [])];
+    const period = resolvePeriod(model, ss.x0, ss.run, steps, squares);
+    const r = analyse(p, model, { ...ss, run: period.run }, period.wf);
+    return period.unresolved === undefined ? r : { ...r, unresolved: period.unresolved };
+  }
   const { status, drift } = diagnose(p, model, ss.x0, steps);
   return withStartUp(p, model, status, drift);
 }

@@ -86,6 +86,10 @@ export interface SimLabels {
   efficiency: string;
   invalid: string;
   nodeNeedsRon: string;
+  /** The engine's refusal of a circuit whose fastest ring its sub-steps cannot follow. */
+  ringsTooFast: string;
+  /** '{x}' filled in: how much the averages still change at the finest sub-steps (resolvePeriod). */
+  unresolved: string;
   share: string;
   time: string;
   running: string;
@@ -520,6 +524,12 @@ export function outsideModelText(r: SimResult | null | undefined, labels: SimLab
   return out.length ? out.join(' ') : null;
 }
 
+/** What the page says when a steady period's averages are not resolved even at the finest sub-steps. */
+export function resolutionText(r: SimResult | null | undefined, labels: SimLabels): string | null {
+  if (!r || r.unresolved === undefined) return null;
+  return fill(labels.unresolved, { x: `${(100 * r.unresolved).toPrecision(2)} %` });
+}
+
 /** The anchor a slider takes when its field is committed: the typed value if it lies outside the slider's range. */
 export function nextAnchor(anchor: number | undefined, raw: string): number | undefined {
   const v = parseField(raw);
@@ -666,7 +676,7 @@ export default function Simulator({ labels, presets, symbols }: Props) {
           setError(null);
         } else {
           setResult(null);
-          setError(`${labels.invalid} (${err})`);
+          setError(err && /rings too fast/.test(err) ? labels.ringsTooFast : `${labels.invalid} (${err})`);
         }
       });
     }, 150);
@@ -933,6 +943,11 @@ export default function Simulator({ labels, presets, symbols }: Props) {
             {outsideModelText(result, labels) && (
               <p className="pe-sim__nosteady">
                 <Rich text={outsideModelText(result, labels)!} />
+              </p>
+            )}
+            {resolutionText(result, labels) && (
+              <p className="pe-sim__nosteady">
+                <Rich text={resolutionText(result, labels)!} />
               </p>
             )}
             {result && result.status === 'steady' && (

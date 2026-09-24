@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { sim } from 'pe-core';
 import { ui } from '../i18n/ui';
-import { compareRows, fromSlider, hashOf, loadRows, nextAnchor, noSteadyText, outsideModelText, parseField, sliderAnchors, stateFromHash, toParams, type SimLabels, type SimPreset } from './Simulator';
+import { compareRows, fromSlider, hashOf, loadRows, nextAnchor, noSteadyText, outsideModelText, parseField, resolutionText, sliderAnchors, stateFromHash, toParams, type SimLabels, type SimPreset } from './Simulator';
 
 const buck = { topo: 'buck' as const, load: 'res' as const, source: false };
 const values = { Vg: '24', D: '0.5', fs: '100000', L: '0.0001', R: '10', C: '0.00001' };
@@ -257,6 +257,19 @@ describe('what the simulator says without a steady state', () => {
     expect(outsideModelText(sim.simulate({ topology: 'buck', Vg: 24, D: 0.3, fs, L: 2e-5, load: { kind: 'resistive', R: 50, C: 22e-6 } }), out)).toBeNull();
   });
 
+});
+
+describe('averages not resolved at the finest sub-steps', () => {
+  it('says how much they still change, in both languages; a resolved period says nothing', () => {
+    const r = sim.simulate({ topology: 'buck', Vg: 24, D: 0.3, fs: 1e5, L: 2e-5, load: { kind: 'resistive', R: 50, C: 22e-6 } });
+    const en = { unresolved: ui.en['sim.unresolved'] } as SimLabels;
+    const ko = { unresolved: ui.ko['sim.unresolved'] } as SimLabels;
+    expect(resolutionText(r, en)).toBeNull();
+    const text = resolutionText({ ...r, unresolved: 0.007356 }, en)!;
+    expect(text).toContain('still change by up to 0.74 % of their size');
+    expect(text).toContain('not resolved to the four digits shown');
+    expect(resolutionText({ ...r, unresolved: 0.007356 }, ko)).toContain('최대 0.74 %만큼 달라지므로');
+  });
 });
 
 describe('the load table', () => {

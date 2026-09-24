@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { evaluate } from '../src/equations';
-import { buildModel, followStartUp, restState, ringsPerPeriod, runCycle, simulate, startUp, steadyState, stepsFor, type SimParams } from '../src/sim';
+import { buildModel, followStartUp, restState, ringsPerPeriod, runCycle, simulate, startUp, steadyState, stepsFor, waveforms, type SimParams } from '../src/sim';
 
 /**
  * What the simulator reports when a circuit's steady state is not a single,
@@ -636,5 +636,52 @@ describe('outside the model: a diode the model holds off would conduct', () => {
     const b2 = simulate({ topology: 'buck', Vg: 26.3, D: 0.647, fs, L: 1.11e-5, Ron: 0.0102, source: { Voc: 26.3, Rs: 0.986, Cbus: 1.17e-6 }, load: { kind: 'network', C: 1.63e-5, V0: 0 } });
     if (b2.switchBelowZero !== undefined || b2.diodes !== undefined) flagged.push(`buck, capacitor alone, source: ${b2.switchBelowZero} ${JSON.stringify(b2.diodes)}`);
     expect(flagged).toEqual([]);
+  });
+});
+
+describe('the recorded steady period resolves the averages the page shows', () => {
+  const fs = 1e5;
+  it("an ordinary circuit: the half grid agrees, and the result is the default grid's", () => {
+    const p: SimParams = { topology: 'buck', Vg: 24, D: 0.4, fs, L: 1e-4, Ron: 0.1, VF: 0.5, load: { kind: 'resistive', R: 10, C: 1e-4 } };
+    const r = simulate(p);
+    expect(r.unresolved).toBeUndefined();
+    const model = buildModel(p);
+    const own = runCycle(model, r.x0, { stepsPerPeriod: stepsFor(p), record: true });
+    expect(r.waveforms.t.length).toBe(own.samples.length);
+  });
+
+  it('a bus faster than a sub-step: the input energy per cycle was 0.1 % off, and a finer grid is kept', () => {
+    // a flyback on a source with R_s C_bus = 11 ns, shorter than the default sub-step (25 ns); found in a random sweep
+    const p: SimParams = { topology: 'flyback', Vg: 56.1, D: 0.4474, fs: 2e4, L: 6.526e-5, n: 0.7967, Ron: 0.0138, VF: 0.1003, load: { kind: 'fixed', V: 1.6886 }, source: { Voc: 56.1, Rs: 0.1005, Cbus: 1.0944e-7 } };
+    const r = simulate(p);
+    expect(r.status).toBe('steady');
+    expect(r.unresolved).toBeUndefined();
+    const model = buildModel(p);
+    const energy = (n: number) => {
+      const w = waveforms(model, runCycle(model, r.x0, { stepsPerPeriod: n, record: true }));
+      const t = w.t as number[];
+      const v = w.v_in as number[];
+      const i = w.i_in as number[];
+      let e = 0;
+      for (let k = 1; k < t.length; k++) e += 0.5 * (v[k - 1]! * i[k - 1]! + v[k]! * i[k]!) * (t[k]! - t[k - 1]!);
+      return e;
+    };
+    const coarse = energy(stepsFor(p));
+    const fine = energy(16 * stepsFor(p));
+    expect(Math.abs(coarse - fine) / fine).toBeGreaterThan(5e-4);
+    expect(Math.abs(r.energy.input - fine) / fine).toBeLessThan(1e-4);
+    expect(r.waveforms.t.length).toBeGreaterThan(2 * stepsFor(p));
+  });
+
+  it('a time constant far shorter than even the finest sub-step: refined to 20000 and reported as unresolved', () => {
+    // the sixth review's flyback: a 200 pF output across 10 ohms at 1.5 kHz (2 ns against a sub-step of 0.33 us).
+    // Converged on a far finer grid: <v_out> 2.274 V; the default grid gave 1.086 V, with nothing said
+    const p: SimParams = { topology: 'flyback', Vg: 24, D: 0.3, fs: 1500, L: 1e-5, n: 0.5, Ron: 0.05, VF: 0.4, load: { kind: 'resistive', R: 10, C: 2e-10 } };
+    const r = simulate(p);
+    expect(r.status).toBe('steady');
+    expect(r.unresolved!).toBeGreaterThan(1e-4);
+    expect(r.waveforms.t.length).toBeGreaterThanOrEqual(20000);
+    expect(r.avg.v_out!).toBeGreaterThan(2.1);
+    expect(r.avg.v_out!).toBeLessThan(2.3);
   });
 });
