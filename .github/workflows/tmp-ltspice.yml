@@ -1,4 +1,4 @@
-name: TEMPORARY - LTspice symbols and batch mode (removed before the pull request merges)
+name: TEMPORARY - LTspice on the library's schematics (removed before the pull request merges)
 on:
   push:
     branches: [claude/blissful-einstein-r71bmd]
@@ -7,54 +7,100 @@ permissions:
 jobs:
   ltspice:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v5
-      - name: Download and extract LTspice
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install wine, LTspice and spicelib
         run: |
           curl -sSL --retry 3 -A "Mozilla/5.0 (X11; Linux x86_64)" -o lt.msi https://ltspice.analog.com/software/LTspice64.msi
           sha256sum lt.msi
-          sudo apt-get update -qq && sudo apt-get install -y -qq msitools unzip html2text >/dev/null
-          mkdir -p lt && (cd lt && msiextract ../lt.msi >/dev/null)
-          mkdir -p unz/lib unz/examples && unzip -q -o "lt/APPDIR:./lib.zip" -d unz/lib && unzip -q -o "lt/APPDIR:./examples.zip" -d unz/examples
-      - name: What LTspice's help says about coupled inductors and the phase dot
-        run: |
-          cd "lt/APPDIR:./LTspiceHelp"
-          grep -il "mutual induct" *.htm | head
-          for f in $(grep -il "mutual induct" *.htm | head -3); do echo "===== $f"; html2text "$f" | grep -i -B3 -A12 "dot\|polarity\|first node\|mutual" | head -80; done
-      - name: Example schematics with coupled inductors
-        run: |
-          grep -ril "^SYMBOL ind2" unz/examples | head -20
-          for f in $(grep -ril "^SYMBOL ind2" unz/examples | grep -i "flyback\|forward\|transformer" | head -2); do echo "===== $f"; tr -d '\r' < "$f"; done
-      - name: LTspice under wine, headless
-        continue-on-error: true
-        run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update -qq
           sudo apt-get install -y -qq wine64 wine xvfb xdotool >/dev/null 2>&1 || sudo apt-get install -y -qq wine xvfb xdotool
+          pip install -q spicelib==1.6.3 PyYAML==6.0.3
           export WINEDEBUG=-all
           Xvfb :99 -screen 0 1280x1024x24 >/dev/null 2>&1 &
-          export DISPLAY=:99
           sleep 2
-          wine msiexec /i lt.msi /qn; echo "msiexec exit $?"
+          DISPLAY=:99 wine msiexec /i lt.msi /qn; echo "msiexec exit $?"
+      - name: Netlist and simulate every schematic with LTspice
+        run: |
+          export WINEDEBUG=-all DISPLAY=:99
+          pgrep Xvfb >/dev/null || (Xvfb :99 -screen 0 1280x1024x24 >/dev/null 2>&1 &) ; sleep 1
           EXE="$HOME/.wine/drive_c/Program Files/ADI/LTspice/LTspice.exe"
-          LAD="$HOME/.wine/drive_c/users/$USER/AppData/Local/LTspice"
-          ls -la "$LAD" || true
-          mkdir -p "$LAD" && cp -r unz/lib/lib "$LAD/" && ls "$LAD" | head
-          cp "unz/examples/examples/Educational/Vswitch.asc" work.asc
-          printf '* divider\nV1 in 0 10\nR1 in out 1k\nR2 out 0 1k\n.op\n.end\n' > div.cir
-          for args in "-netlist work.asc" "-b div.cir"; do
-            echo "===== LTspice $args"
-            (timeout 150 wine "$EXE" $args; echo "exit $?") &
-            pid=$!
-            for i in $(seq 1 15); do
-              sleep 10
-              echo "-- after ${i}0 s: windows: $(xdotool search --name . getwindowname %@ 2>/dev/null | sort -u | tr '\n' '|' | head -c 400)"
-              ls work.net div.log div.raw 2>/dev/null
-              if ! kill -0 $pid 2>/dev/null; then break; fi
-            done
-            wait $pid || true
+          # LTspice asks once whether to share usage data: decline (Escape), or the window's No (Alt+N)
+          ( while true; do
+              for w in $(xdotool search --name "Share LTspice Usage" 2>/dev/null); do
+                echo "dialog: $(xdotool getwindowname $w 2>/dev/null)"
+                xdotool windowactivate --sync $w key --clearmodifiers Escape 2>/dev/null || true
+                sleep 1
+                xdotool search --name "Share LTspice Usage" >/dev/null 2>&1 && xdotool windowactivate --sync $w key --clearmodifiers alt+n 2>/dev/null || true
+              done
+              sleep 1
+            done ) &
+          mkdir -p work && cp sim/ltspice/*/*.asc work/
+          cd work
+          for f in *.asc; do
+            # an uncompressed waveform file for the comparison (not in the committed schematic)
+            printf 'TEXT -32 2000 Left 2 !.options plotwinsize=0\n' >> "$f"
+            timeout 180 wine "$EXE" -netlist "$f"; echo "netlist $f: exit $?"
+            timeout 900 wine "$EXE" -b "$f"; echo "batch $f: exit $?"
           done
-          echo "===== work.net"; tr -d '\r' < work.net 2>/dev/null || true
-          echo "===== div.log"; tr -d '\r\000' < div.log 2>/dev/null | head -30 || true
-          find "$HOME/.wine/drive_c/users" -iname "*.ini" 2>/dev/null | head; for f in $(find "$HOME/.wine/drive_c/users" -iname "LTspice*.ini" 2>/dev/null | head -1); do tr -d '\r' < "$f" | head -60; done
+          ls -la
+          for f in *.net; do echo "===== $f"; tr -d '\r' < "$f"; done
+          for f in *.log; do echo "===== $f"; tr -d '\r\000' < "$f" | head -40; done
+          for f in $(find "$HOME/.wine/drive_c/users" -iname "LTspice*.ini" 2>/dev/null | head -2); do echo "===== $f"; tr -d '\r' < "$f" | head -80; done
+      - name: Compare LTspice with the ngspice netlists and results.json
+        run: |
+          python - <<'PY'
+          import json, re
+          from pathlib import Path
+          from spicelib import RawRead
+          res = json.loads(Path("sim/results.json").read_text())
+          worst = 0.0
+          for cid, rec in res["cases"].items():
+              topo = rec["topology"]
+              cir = Path(f"sim/ngspice/{topo}/{cid}.cir").read_text()
+              want = sorted(l.split(";")[0].strip() for l in cir.splitlines() if re.match(r"^[VSDLCRK]\w*\s", l))
+              net = Path(f"work/{cid}.net")
+              if net.exists():
+                  got = sorted(l.strip() for l in net.read_text(errors="replace").splitlines() if re.match(r"^[VSDLCRK]\w*\s", l))
+                  print(f"{cid}: LTspice's netlist {'matches' if got == want else 'DIFFERS FROM'} the .cir's parts")
+                  if got != want:
+                      print("   only LTspice:", sorted(set(got) - set(want)))
+                      print("   only .cir:  ", sorted(set(want) - set(got)))
+              else:
+                  print(f"{cid}: no .net")
+              raw = Path(f"work/{cid}.raw")
+              if not raw.exists():
+                  print(f"{cid}: no .raw"); continue
+              r = RawRead(str(raw))
+              t = [abs(x) for x in r.get_trace("time").get_wave()]
+              names = {n.lower(): n for n in r.get_trace_names()}
+              fs = rec["params"]["fs"]; cyc = rec["cycles"]; Ts = 1 / fs
+              t0, t1 = (cyc - 1) * Ts, cyc * Ts
+              def trace(expr):
+                  total = None
+                  for term in expr.split("+"):
+                      k, name = (1.0, term)
+                      if "*" in term:
+                          a, name = term.split("*"); k = float(a)
+                      w = r.get_trace(names[name.lower()]).get_wave()
+                      total = [k * x for x in w] if total is None else [s + k * x for s, x in zip(total, w)]
+                  return total
+              idx = [i for i, x in enumerate(t) if t0 <= x <= t1]
+              for q, meta in rec["quantities"].items():
+                  y = trace(meta["ltspice"])
+                  tt = [t[i] for i in idx]; yy = [y[i] for i in idx]
+                  avg = sum((yy[i] + yy[i + 1]) / 2 * (tt[i + 1] - tt[i]) for i in range(len(tt) - 1)) / (tt[-1] - tt[0])
+                  lt = {"avg": avg, "max": max(yy), "min": min(yy)}
+                  scale = max(abs(rec["values"][f"{q}_max"]), abs(rec["values"][f"{q}_min"]), 1e-12)
+                  for fn, v in lt.items():
+                      ng = rec["values"][f"{q}_{fn}"]
+                      rel = abs(v - ng) / scale
+                      worst = max(worst, rel)
+                      print(f"   {cid:14s} {q:8s} {fn}: LTspice {v:11.5g}  ngspice {ng:11.5g}  diff {rel:.3%} of {scale:.4g}")
+          print(f"largest difference: {worst:.3%} of the quantity's scale")
+          PY

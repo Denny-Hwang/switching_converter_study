@@ -1,0 +1,1768 @@
+<svg stroke-linejoin="round" stroke-linecap="butt" xmlns:xlink="http://www.w3.org/1999/xlink" width="538.802pt" height="297.996pt" viewBox="0 0 538.802 297.996" xmlns="http://www.w3.org/2000/svg" version="1.1"><style>svg{color:#1f2328}@media (prefers-color-scheme:dark){svg{color:#e6edf3}}</style>
+ <g id="fig-sim-buckboost-ccm-figure_1">
+  <g id="fig-sim-buckboost-ccm-patch_1">
+   <path d="M 0 297.996 
+L 538.802 297.996 
+L 538.802 0 
+L 0 0 
+L 0 297.996 
+z
+" style="fill: none"/>
+  </g>
+  <g id="fig-sim-buckboost-ccm-axes_1">
+   <g id="fig-sim-buckboost-ccm-patch_2">
+    <path d="M 52.6144 69.7015 
+L 409.734 69.7015 
+L 409.734 3.6 
+L 52.6144 3.6 
+L 52.6144 69.7015 
+z
+" style="fill: none"/>
+   </g>
+   <g id="fig-sim-buckboost-ccm-matplotlib.axis_1">
+    <g id="fig-sim-buckboost-ccm-xtick_1">
+     <g id="fig-sim-buckboost-ccm-line2d_1">
+      <path d="M 52.6144 69.7015 
+L 52.6144 3.6 
+" clip-path="url(#fig-sim-buckboost-ccm-p8ac21b2090)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_2">
+      <defs>
+       <path id="fig-sim-buckboost-ccm-m8900079513" d="M 0 0 
+L 0 3.5 
+" style="stroke: currentColor; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="52.6144" y="69.7015" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_2">
+     <g id="fig-sim-buckboost-ccm-line2d_3">
+      <path d="M 97.2544 69.7015 
+L 97.2544 3.6 
+" clip-path="url(#fig-sim-buckboost-ccm-p8ac21b2090)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_4">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="97.2544" y="69.7015" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_3">
+     <g id="fig-sim-buckboost-ccm-line2d_5">
+      <path d="M 141.894 69.7015 
+L 141.894 3.6 
+" clip-path="url(#fig-sim-buckboost-ccm-p8ac21b2090)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_6">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="141.894" y="69.7015" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_4">
+     <g id="fig-sim-buckboost-ccm-line2d_7">
+      <path d="M 186.534 69.7015 
+L 186.534 3.6 
+" clip-path="url(#fig-sim-buckboost-ccm-p8ac21b2090)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_8">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="186.534" y="69.7015" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_5">
+     <g id="fig-sim-buckboost-ccm-line2d_9">
+      <path d="M 231.174 69.7015 
+L 231.174 3.6 
+" clip-path="url(#fig-sim-buckboost-ccm-p8ac21b2090)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_10">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="231.174" y="69.7015" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_6">
+     <g id="fig-sim-buckboost-ccm-line2d_11">
+      <path d="M 275.814 69.7015 
+L 275.814 3.6 
+" clip-path="url(#fig-sim-buckboost-ccm-p8ac21b2090)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_12">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="275.814" y="69.7015" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_7">
+     <g id="fig-sim-buckboost-ccm-line2d_13">
+      <path d="M 320.454 69.7015 
+L 320.454 3.6 
+" clip-path="url(#fig-sim-buckboost-ccm-p8ac21b2090)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_14">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="320.454" y="69.7015" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_8">
+     <g id="fig-sim-buckboost-ccm-line2d_15">
+      <path d="M 365.094 69.7015 
+L 365.094 3.6 
+" clip-path="url(#fig-sim-buckboost-ccm-p8ac21b2090)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_16">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="365.094" y="69.7015" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_9">
+     <g id="fig-sim-buckboost-ccm-line2d_17">
+      <path d="M 409.734 69.7015 
+L 409.734 3.6 
+" clip-path="url(#fig-sim-buckboost-ccm-p8ac21b2090)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_18">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="409.734" y="69.7015" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+   </g>
+   <g id="fig-sim-buckboost-ccm-matplotlib.axis_2">
+    <g id="fig-sim-buckboost-ccm-ytick_1">
+     <g id="fig-sim-buckboost-ccm-line2d_19">
+      <path d="M 52.6144 61.1355 
+L 409.734 61.1355 
+" clip-path="url(#fig-sim-buckboost-ccm-p8ac21b2090)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_20">
+      <defs>
+       <path id="fig-sim-buckboost-ccm-mfa34f57b25" d="M 0 0 
+L -3.5 0 
+" style="stroke: currentColor; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-mfa34f57b25" x="52.6144" y="61.1355" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_1">
+      <g style="fill: currentColor" transform="translate(28.7644 64.8855) scale(0.1 -0.1)">
+       <defs>
+        <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-425" d="M 3974 1408 
+L 410 1408 
+L 410 1830 
+L 3974 1830 
+L 3974 1408 
+z
+" transform="scale(0.015625)"/>
+        <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-14" d="M 2522 0 
+L 755 0 
+L 755 96 
+Q 1107 115 1235 227 
+Q 1363 339 1363 608 
+L 1363 3482 
+Q 1363 3795 1171 3795 
+Q 1082 3795 883 3718 
+L 710 3654 
+L 710 3744 
+L 1856 4326 
+L 1914 4307 
+L 1914 486 
+Q 1914 275 2042 185 
+Q 2170 96 2522 96 
+L 2522 0 
+z
+" transform="scale(0.015625)"/>
+        <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-13" d="M 3046 2112 
+Q 3046 1683 2963 1302 
+Q 2880 922 2717 602 
+Q 2554 282 2266 96 
+Q 1978 -90 1600 -90 
+Q 1210 -90 915 108 
+Q 621 307 461 640 
+Q 301 973 227 1350 
+Q 154 1728 154 2150 
+Q 154 2746 301 3222 
+Q 448 3699 790 4012 
+Q 1133 4326 1626 4326 
+Q 2253 4326 2649 3712 
+Q 3046 3098 3046 2112 
+z
+M 2432 2080 
+Q 2432 3091 2217 3625 
+Q 2003 4160 1587 4160 
+Q 1190 4160 979 3622 
+Q 768 3085 768 2106 
+Q 768 1120 979 598 
+Q 1190 77 1600 77 
+Q 2003 77 2217 598 
+Q 2432 1120 2432 2080 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-425"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-14" transform="translate(68.5 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-13" transform="translate(118.5 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-ytick_2">
+     <g id="fig-sim-buckboost-ccm-line2d_21">
+      <path d="M 52.6144 36.3464 
+L 409.734 36.3464 
+" clip-path="url(#fig-sim-buckboost-ccm-p8ac21b2090)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_22">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-mfa34f57b25" x="52.6144" y="36.3464" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_2">
+      <g style="fill: currentColor" transform="translate(40.6144 40.0964) scale(0.1 -0.1)">
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-13"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-ytick_3">
+     <g id="fig-sim-buckboost-ccm-line2d_23">
+      <path d="M 52.6144 11.5573 
+L 409.734 11.5573 
+" clip-path="url(#fig-sim-buckboost-ccm-p8ac21b2090)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_24">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-mfa34f57b25" x="52.6144" y="11.5573" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_3">
+      <g style="fill: currentColor" transform="translate(35.6144 15.3073) scale(0.1 -0.1)">
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-14"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-13" transform="translate(50 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-text_4">
+     <g style="fill: currentColor" transform="translate(16.1 39.6508) scale(0.12 -0.12)">
+      <defs>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-39" d="M 4461 4237 
+L 4461 4115 
+Q 4262 4109 4134 3990 
+Q 4006 3872 3872 3533 
+L 2451 -70 
+L 2355 -70 
+L 794 3411 
+Q 589 3866 467 3987 
+Q 346 4109 102 4115 
+L 102 4237 
+L 1798 4237 
+L 1798 4115 
+L 1619 4102 
+Q 1331 4083 1331 3904 
+Q 1331 3776 1581 3219 
+L 2554 1030 
+L 3494 3392 
+Q 3616 3699 3616 3853 
+Q 3616 3898 3606 3933 
+Q 3597 3968 3584 3993 
+Q 3571 4019 3536 4038 
+Q 3501 4058 3481 4067 
+Q 3462 4077 3411 4086 
+Q 3360 4096 3337 4099 
+Q 3315 4102 3248 4108 
+Q 3181 4115 3155 4115 
+L 3155 4237 
+L 4461 4237 
+z
+" transform="scale(0.015625)"/>
+      </defs>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-39"/>
+     </g>
+    </g>
+   </g>
+   <g id="fig-sim-buckboost-ccm-line2d_25">
+    <path d="M 52.6144 66.6967 
+L 53.5072 6.60461 
+L 141.894 6.60608 
+L 142.787 65.243 
+L 198.141 66.2467 
+L 231.174 66.6968 
+L 232.067 6.60461 
+L 320.454 6.60608 
+L 321.347 65.2431 
+L 376.701 66.2468 
+L 409.734 66.6969 
+L 409.734 66.6969 
+" clip-path="url(#fig-sim-buckboost-ccm-p8ac21b2090)" style="fill: none; stroke: #3b82f6; stroke-width: 1.4; stroke-linecap: square"/>
+   </g>
+   <g id="fig-sim-buckboost-ccm-patch_3">
+    <path d="M 52.6144 69.7015 
+L 52.6144 3.6 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-sim-buckboost-ccm-patch_4">
+    <path d="M 52.6144 69.7015 
+L 409.734 69.7015 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-sim-buckboost-ccm-legend_1">
+    <g id="fig-sim-buckboost-ccm-line2d_26">
+     <path d="M 418.734 16.6 
+L 425.734 16.6 
+L 432.734 16.6 
+" style="fill: none; stroke: #3b82f6; stroke-width: 1.4; stroke-linecap: square"/>
+    </g>
+    <g id="fig-sim-buckboost-ccm-text_5">
+     <g style="fill: currentColor" transform="translate(440.734 20.1) scale(0.1 -0.1)">
+      <defs>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-56" d="M 998 1926 
+L 1664 1523 
+Q 1984 1331 2105 1164 
+Q 2227 998 2227 736 
+Q 2227 416 1961 176 
+Q 1696 -64 1331 -64 
+Q 1030 -64 864 -6 
+Q 691 51 570 51 
+Q 461 51 416 -26 
+L 333 -26 
+L 333 979 
+L 435 979 
+Q 538 512 730 294 
+Q 922 77 1248 77 
+Q 1485 77 1632 211 
+Q 1779 346 1779 550 
+Q 1779 845 1440 1030 
+L 1094 1222 
+Q 326 1651 326 2150 
+Q 326 2522 566 2730 
+Q 806 2938 1210 2938 
+Q 1491 2938 1638 2867 
+Q 1754 2816 1818 2816 
+Q 1862 2816 1920 2880 
+L 1990 2880 
+L 2022 2010 
+L 1926 2010 
+Q 1818 2445 1654 2621 
+Q 1491 2797 1203 2797 
+Q 986 2797 854 2688 
+Q 723 2579 723 2362 
+Q 723 2253 796 2128 
+Q 870 2003 998 1926 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-5a" d="M 4442 2880 
+L 4442 2784 
+Q 4346 2752 4301 2691 
+Q 4256 2630 4179 2438 
+L 3296 224 
+Q 3168 -90 3117 -90 
+Q 3085 -90 3062 -48 
+Q 3040 -6 2963 186 
+L 2381 1696 
+L 1664 160 
+Q 1549 -90 1504 -90 
+Q 1446 -90 1338 192 
+L 474 2381 
+Q 378 2630 314 2700 
+Q 250 2771 134 2784 
+L 134 2880 
+L 1286 2880 
+L 1286 2784 
+Q 1120 2765 1056 2720 
+Q 992 2675 992 2573 
+Q 992 2477 1030 2381 
+L 1664 710 
+L 2246 1984 
+L 2118 2342 
+Q 2029 2598 1942 2681 
+Q 1856 2765 1677 2784 
+L 1677 2880 
+L 2976 2880 
+L 2976 2784 
+Q 2752 2752 2678 2707 
+Q 2605 2662 2605 2560 
+Q 2605 2458 2714 2176 
+L 3251 742 
+L 3827 2163 
+Q 3936 2432 3936 2592 
+Q 3936 2669 3875 2710 
+Q 3814 2752 3654 2784 
+L 3654 2880 
+L 4442 2880 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-4c" d="M 1152 4045 
+Q 1152 3904 1056 3811 
+Q 960 3718 819 3718 
+Q 685 3718 592 3811 
+Q 499 3904 499 4045 
+Q 499 4179 595 4275 
+Q 691 4371 826 4371 
+Q 966 4371 1059 4275 
+Q 1152 4179 1152 4045 
+z
+M 1619 0 
+L 102 0 
+L 102 96 
+Q 435 115 521 211 
+Q 608 307 608 666 
+L 608 2118 
+Q 608 2342 563 2432 
+Q 518 2522 397 2522 
+Q 243 2522 128 2490 
+L 128 2592 
+L 1120 2944 
+L 1146 2918 
+L 1146 672 
+Q 1146 314 1226 218 
+Q 1306 122 1619 96 
+L 1619 0 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-57" d="M 1702 493 
+L 1786 422 
+Q 1478 -64 1011 -64 
+Q 448 -64 448 749 
+L 448 2675 
+L 109 2675 
+Q 83 2694 83 2720 
+Q 83 2771 192 2842 
+Q 435 2982 813 3526 
+Q 826 3546 874 3606 
+Q 922 3667 941 3706 
+Q 986 3706 986 3622 
+L 986 2880 
+L 1632 2880 
+L 1632 2675 
+L 986 2675 
+L 986 845 
+Q 986 538 1062 403 
+Q 1139 269 1318 269 
+Q 1510 269 1702 493 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-46" d="M 2547 998 
+L 2637 941 
+Q 2362 403 2112 205 
+Q 1786 -64 1376 -64 
+Q 845 -64 502 336 
+Q 160 736 160 1357 
+Q 160 2170 698 2618 
+Q 1094 2944 1562 2944 
+Q 1965 2944 2256 2749 
+Q 2547 2554 2547 2285 
+Q 2547 2176 2457 2096 
+Q 2368 2016 2246 2016 
+Q 2022 2016 1939 2310 
+L 1901 2451 
+Q 1850 2630 1773 2694 
+Q 1696 2758 1523 2758 
+Q 1133 2758 893 2451 
+Q 653 2144 653 1645 
+Q 653 1094 928 745 
+Q 1203 397 1645 397 
+Q 1920 397 2118 528 
+Q 2317 659 2547 998 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-4b" d="M 3117 0 
+L 1760 0 
+L 1760 96 
+Q 2042 128 2118 224 
+Q 2195 320 2195 653 
+L 2195 1920 
+Q 2195 2598 1722 2598 
+Q 1530 2598 1370 2508 
+Q 1210 2419 1005 2195 
+L 1005 653 
+Q 1005 320 1081 224 
+Q 1158 128 1440 96 
+L 1440 0 
+L 58 0 
+L 58 96 
+Q 333 134 400 224 
+Q 467 314 467 653 
+L 467 3667 
+Q 467 3872 406 3933 
+Q 346 3994 141 3994 
+Q 83 3994 64 3987 
+L 64 4090 
+L 237 4141 
+Q 730 4288 973 4371 
+L 1005 4352 
+L 1005 2406 
+Q 1229 2694 1446 2819 
+Q 1664 2944 1946 2944 
+Q 2733 2944 2733 1926 
+L 2733 653 
+Q 2733 320 2793 233 
+Q 2854 147 3117 96 
+L 3117 0 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-3" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-51" d="M 3104 0 
+L 1773 0 
+L 1779 96 
+Q 2016 115 2096 233 
+Q 2176 352 2176 672 
+L 2176 1946 
+Q 2176 2592 1709 2592 
+Q 1549 2592 1408 2515 
+Q 1267 2438 1050 2227 
+L 1050 461 
+Q 1050 269 1136 192 
+Q 1222 115 1466 96 
+L 1466 0 
+L 115 0 
+L 115 96 
+Q 358 115 435 214 
+Q 512 314 512 602 
+L 512 2157 
+Q 512 2394 467 2483 
+Q 422 2573 288 2573 
+Q 160 2573 102 2547 
+L 102 2656 
+Q 550 2784 979 2944 
+L 1030 2925 
+L 1030 2426 
+L 1037 2426 
+Q 1491 2944 1958 2944 
+Q 2323 2944 2518 2688 
+Q 2714 2432 2714 1958 
+L 2714 544 
+Q 2714 288 2790 205 
+Q 2867 122 3104 96 
+L 3104 0 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-52" d="M 3008 1478 
+Q 3008 806 2608 371 
+Q 2208 -64 1568 -64 
+Q 979 -64 582 368 
+Q 186 800 186 1459 
+Q 186 2125 582 2534 
+Q 979 2944 1626 2944 
+Q 2221 2944 2614 2537 
+Q 3008 2131 3008 1478 
+z
+M 2432 1306 
+Q 2432 2035 2112 2445 
+Q 1856 2765 1504 2765 
+Q 1171 2765 966 2493 
+Q 762 2221 762 1747 
+Q 762 928 1101 435 
+Q 1318 115 1677 115 
+Q 2029 115 2230 432 
+Q 2432 749 2432 1306 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-47" d="M 3142 269 
+L 2202 -64 
+L 2176 -45 
+L 2176 365 
+Q 1869 -64 1357 -64 
+Q 826 -64 499 317 
+Q 173 698 173 1312 
+Q 173 1990 563 2467 
+Q 954 2944 1504 2944 
+Q 1850 2944 2176 2669 
+L 2176 3667 
+Q 2176 3866 2118 3930 
+Q 2061 3994 1882 3994 
+Q 1792 3994 1741 3987 
+L 1741 4090 
+Q 2323 4243 2682 4371 
+L 2714 4358 
+L 2714 730 
+Q 2714 506 2768 435 
+Q 2822 365 2995 365 
+Q 3034 365 3142 371 
+L 3142 269 
+z
+M 2176 653 
+L 2176 2125 
+Q 2176 2381 1981 2573 
+Q 1786 2765 1523 2765 
+Q 1158 2765 940 2438 
+Q 723 2112 723 1568 
+Q 723 979 963 624 
+Q 1203 269 1606 269 
+Q 1907 269 2080 474 
+Q 2176 582 2176 653 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-48" d="M 2611 1050 
+L 2714 1005 
+Q 2330 -64 1376 -64 
+Q 813 -64 486 329 
+Q 160 723 160 1389 
+Q 160 2074 525 2509 
+Q 890 2944 1485 2944 
+Q 2061 2944 2374 2502 
+Q 2560 2246 2592 1773 
+L 621 1773 
+Q 646 1370 700 1158 
+Q 755 947 915 730 
+Q 1184 378 1626 378 
+Q 1939 378 2153 531 
+Q 2368 685 2611 1050 
+z
+M 634 1978 
+L 1939 1978 
+Q 1882 2381 1750 2547 
+Q 1619 2714 1312 2714 
+Q 1043 2714 864 2525 
+Q 685 2336 634 1978 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-f" d="M 531 -902 
+L 467 -781 
+Q 998 -422 998 -96 
+Q 998 -13 909 -13 
+Q 883 -13 822 -25 
+Q 762 -38 723 -38 
+Q 352 -38 352 288 
+Q 352 454 457 553 
+Q 563 653 736 653 
+Q 954 653 1101 496 
+Q 1248 339 1248 96 
+Q 1248 -198 1053 -473 
+Q 858 -749 531 -902 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-b" d="M 1946 -1030 
+L 1869 -1133 
+Q 1126 -710 716 32 
+Q 307 774 307 1613 
+Q 307 3386 1888 4326 
+L 1946 4224 
+Q 1293 3667 1075 3126 
+Q 858 2586 858 1632 
+Q 858 685 1082 96 
+Q 1306 -493 1946 -1030 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-c" d="M 186 4224 
+L 262 4326 
+Q 992 3891 1408 3148 
+Q 1824 2406 1824 1581 
+Q 1824 -166 243 -1133 
+L 186 -1030 
+Q 845 -486 1059 54 
+Q 1274 595 1274 1562 
+Q 1274 2534 1059 3120 
+Q 845 3706 186 4224 
+z
+" transform="scale(0.015625)"/>
+      </defs>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-56"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-5a" transform="translate(38.9062 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-4c" transform="translate(111.109 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-57" transform="translate(138.906 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-46" transform="translate(166.703 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-4b" transform="translate(209.516 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-3" transform="translate(259.516 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-51" transform="translate(284.516 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-52" transform="translate(334.516 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-47" transform="translate(384.516 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-48" transform="translate(434.516 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-f" transform="translate(478.922 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-3" transform="translate(503.922 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-39" transform="translate(528.922 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-b" transform="translate(601.125 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-56" transform="translate(634.422 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-5a" transform="translate(673.328 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-c" transform="translate(745.531 0)"/>
+     </g>
+    </g>
+   </g>
+  </g>
+  <g id="fig-sim-buckboost-ccm-axes_2">
+   <g id="fig-sim-buckboost-ccm-patch_5">
+    <path d="M 52.6144 165.549 
+L 409.734 165.549 
+L 409.734 99.4472 
+L 52.6144 99.4472 
+L 52.6144 165.549 
+z
+" style="fill: none"/>
+   </g>
+   <g id="fig-sim-buckboost-ccm-matplotlib.axis_3">
+    <g id="fig-sim-buckboost-ccm-xtick_10">
+     <g id="fig-sim-buckboost-ccm-line2d_27">
+      <path d="M 52.6144 165.549 
+L 52.6144 99.4472 
+" clip-path="url(#fig-sim-buckboost-ccm-pf69ed33198)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_28">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="52.6144" y="165.549" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_11">
+     <g id="fig-sim-buckboost-ccm-line2d_29">
+      <path d="M 97.2544 165.549 
+L 97.2544 99.4472 
+" clip-path="url(#fig-sim-buckboost-ccm-pf69ed33198)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_30">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="97.2544" y="165.549" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_12">
+     <g id="fig-sim-buckboost-ccm-line2d_31">
+      <path d="M 141.894 165.549 
+L 141.894 99.4472 
+" clip-path="url(#fig-sim-buckboost-ccm-pf69ed33198)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_32">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="141.894" y="165.549" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_13">
+     <g id="fig-sim-buckboost-ccm-line2d_33">
+      <path d="M 186.534 165.549 
+L 186.534 99.4472 
+" clip-path="url(#fig-sim-buckboost-ccm-pf69ed33198)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_34">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="186.534" y="165.549" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_14">
+     <g id="fig-sim-buckboost-ccm-line2d_35">
+      <path d="M 231.174 165.549 
+L 231.174 99.4472 
+" clip-path="url(#fig-sim-buckboost-ccm-pf69ed33198)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_36">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="231.174" y="165.549" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_15">
+     <g id="fig-sim-buckboost-ccm-line2d_37">
+      <path d="M 275.814 165.549 
+L 275.814 99.4472 
+" clip-path="url(#fig-sim-buckboost-ccm-pf69ed33198)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_38">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="275.814" y="165.549" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_16">
+     <g id="fig-sim-buckboost-ccm-line2d_39">
+      <path d="M 320.454 165.549 
+L 320.454 99.4472 
+" clip-path="url(#fig-sim-buckboost-ccm-pf69ed33198)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_40">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="320.454" y="165.549" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_17">
+     <g id="fig-sim-buckboost-ccm-line2d_41">
+      <path d="M 365.094 165.549 
+L 365.094 99.4472 
+" clip-path="url(#fig-sim-buckboost-ccm-pf69ed33198)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_42">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="365.094" y="165.549" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_18">
+     <g id="fig-sim-buckboost-ccm-line2d_43">
+      <path d="M 409.734 165.549 
+L 409.734 99.4472 
+" clip-path="url(#fig-sim-buckboost-ccm-pf69ed33198)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_44">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="409.734" y="165.549" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+    </g>
+   </g>
+   <g id="fig-sim-buckboost-ccm-matplotlib.axis_4">
+    <g id="fig-sim-buckboost-ccm-ytick_4">
+     <g id="fig-sim-buckboost-ccm-line2d_45">
+      <path d="M 52.6144 145.718 
+L 409.734 145.718 
+" clip-path="url(#fig-sim-buckboost-ccm-pf69ed33198)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_46">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-mfa34f57b25" x="52.6144" y="145.718" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_6">
+      <g style="fill: currentColor" transform="translate(28.1144 149.468) scale(0.1 -0.1)">
+       <defs>
+        <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-15" d="M 3034 877 
+L 2688 0 
+L 186 0 
+L 186 77 
+L 1325 1286 
+Q 1773 1754 1965 2144 
+Q 2157 2534 2157 2950 
+Q 2157 3379 1920 3616 
+Q 1683 3853 1267 3853 
+Q 922 3853 720 3673 
+Q 518 3494 326 3021 
+L 192 3053 
+Q 301 3648 630 3987 
+Q 960 4326 1523 4326 
+Q 2054 4326 2380 4006 
+Q 2707 3686 2707 3200 
+Q 2707 2477 1888 1613 
+L 832 486 
+L 2330 486 
+Q 2541 486 2665 569 
+Q 2790 653 2944 915 
+L 3034 877 
+z
+" transform="scale(0.015625)"/>
+        <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-11" d="M 1158 275 
+Q 1158 134 1052 32 
+Q 947 -70 800 -70 
+Q 653 -70 550 32 
+Q 448 134 448 281 
+Q 448 429 553 534 
+Q 659 640 806 640 
+Q 947 640 1052 531 
+Q 1158 422 1158 275 
+z
+" transform="scale(0.015625)"/>
+        <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-18" d="M 2803 4358 
+L 2573 3814 
+Q 2534 3731 2400 3731 
+L 1158 3731 
+L 902 3187 
+Q 1606 3053 1920 2896 
+Q 2234 2739 2502 2368 
+Q 2726 2061 2726 1555 
+Q 2726 1094 2576 780 
+Q 2426 467 2099 224 
+Q 1664 -90 1011 -90 
+Q 646 -90 422 19 
+Q 198 128 198 307 
+Q 198 550 486 550 
+Q 717 550 960 352 
+Q 1210 147 1414 147 
+Q 1747 147 2012 480 
+Q 2278 813 2278 1229 
+Q 2278 1843 1850 2189 
+Q 1293 2637 486 2637 
+Q 410 2637 410 2688 
+L 416 2720 
+L 1114 4237 
+L 2438 4237 
+Q 2547 4237 2608 4269 
+Q 2669 4301 2746 4403 
+L 2803 4358 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-15"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-11" transform="translate(50 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-15" transform="translate(75 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-18" transform="translate(125 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-ytick_5">
+     <g id="fig-sim-buckboost-ccm-line2d_47">
+      <path d="M 52.6144 120.627 
+L 409.734 120.627 
+" clip-path="url(#fig-sim-buckboost-ccm-pf69ed33198)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_48">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-mfa34f57b25" x="52.6144" y="120.627" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_7">
+      <g style="fill: currentColor" transform="translate(28.1144 124.377) scale(0.1 -0.1)">
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-15"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-11" transform="translate(50 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-18" transform="translate(75 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-13" transform="translate(125 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-text_8">
+     <g style="fill: currentColor" transform="translate(15.45 135.498) scale(0.12 -0.12)">
+      <defs>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-24" d="M 4525 0 
+L 2893 0 
+L 2893 122 
+Q 3149 122 3245 179 
+Q 3334 224 3334 333 
+Q 3334 499 3213 781 
+L 2950 1382 
+L 1274 1382 
+L 979 653 
+Q 922 506 922 384 
+Q 922 237 1027 179 
+Q 1133 122 1370 122 
+L 1370 0 
+L 96 0 
+L 96 122 
+Q 365 147 486 316 
+Q 608 486 902 1190 
+L 2221 4314 
+L 2349 4314 
+L 3923 710 
+Q 4064 378 4176 262 
+Q 4288 147 4525 122 
+L 4525 0 
+z
+M 2861 1645 
+L 2118 3405 
+L 1382 1645 
+L 2861 1645 
+z
+" transform="scale(0.015625)"/>
+      </defs>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-24"/>
+     </g>
+    </g>
+   </g>
+   <g id="fig-sim-buckboost-ccm-line2d_49">
+    <path d="M 52.6144 162.535 
+L 54.4 161.456 
+L 141.894 102.452 
+L 166 118.369 
+L 191.891 135.738 
+L 220.461 155.183 
+L 231.174 162.54 
+L 232.96 161.46 
+L 320.454 102.456 
+L 344.56 118.374 
+L 370.451 135.742 
+L 398.128 154.576 
+L 409.734 162.544 
+L 409.734 162.544 
+" clip-path="url(#fig-sim-buckboost-ccm-pf69ed33198)" style="fill: none; stroke: #22a06b; stroke-width: 1.4; stroke-linecap: square"/>
+   </g>
+   <g id="fig-sim-buckboost-ccm-patch_6">
+    <path d="M 52.6144 165.549 
+L 52.6144 99.4472 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-sim-buckboost-ccm-patch_7">
+    <path d="M 52.6144 165.549 
+L 409.734 165.549 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-sim-buckboost-ccm-legend_2">
+    <g id="fig-sim-buckboost-ccm-line2d_50">
+     <path d="M 418.734 112.447 
+L 425.734 112.447 
+L 432.734 112.447 
+" style="fill: none; stroke: #22a06b; stroke-width: 1.4; stroke-linecap: square"/>
+    </g>
+    <g id="fig-sim-buckboost-ccm-text_9">
+     <g style="fill: currentColor" transform="translate(440.734 115.947) scale(0.1 -0.1)">
+      <defs>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-58" d="M 3072 320 
+L 3072 230 
+Q 2573 96 2195 -58 
+L 2163 -38 
+L 2163 486 
+L 2150 486 
+Q 1747 -64 1235 -64 
+Q 870 -64 662 160 
+Q 454 384 454 755 
+L 454 2362 
+Q 454 2598 371 2688 
+Q 288 2778 58 2790 
+L 58 2880 
+L 992 2880 
+L 992 813 
+Q 992 595 1123 451 
+Q 1254 307 1446 307 
+Q 1760 307 1984 506 
+Q 2067 582 2099 649 
+Q 2131 717 2131 877 
+L 2131 2355 
+Q 2131 2605 2041 2678 
+Q 1952 2752 1658 2771 
+L 1658 2880 
+L 2669 2880 
+L 2669 685 
+Q 2669 461 2742 390 
+Q 2816 320 3034 320 
+L 3072 320 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-55" d="M 1024 2931 
+L 1024 2342 
+Q 1267 2688 1430 2816 
+Q 1594 2944 1792 2944 
+Q 1958 2944 2051 2854 
+Q 2144 2765 2144 2605 
+Q 2144 2470 2077 2393 
+Q 2010 2317 1894 2317 
+Q 1773 2317 1638 2445 
+Q 1536 2541 1472 2541 
+Q 1338 2541 1181 2355 
+Q 1024 2170 1024 2016 
+L 1024 576 
+Q 1024 301 1133 205 
+Q 1242 109 1568 96 
+L 1568 0 
+L 32 0 
+L 32 96 
+Q 339 154 412 224 
+Q 486 294 486 538 
+L 486 2138 
+Q 486 2349 438 2435 
+Q 390 2522 269 2522 
+Q 166 2522 45 2496 
+L 45 2598 
+Q 448 2726 992 2944 
+L 1024 2931 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-2c" d="M 2016 0 
+L 115 0 
+L 115 122 
+Q 518 134 627 240 
+Q 736 346 736 717 
+L 736 3526 
+Q 736 3898 633 3994 
+Q 531 4090 115 4115 
+L 115 4237 
+L 2016 4237 
+L 2016 4115 
+Q 1613 4096 1501 3993 
+Q 1389 3891 1389 3526 
+L 1389 717 
+Q 1389 358 1504 246 
+Q 1619 134 2016 122 
+L 2016 0 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-2f" d="M 3827 1114 
+L 3520 0 
+L 77 0 
+L 77 122 
+Q 429 141 531 256 
+Q 634 371 634 736 
+L 634 3494 
+Q 634 3872 541 3981 
+Q 448 4090 77 4115 
+L 77 4237 
+L 1888 4237 
+L 1888 4115 
+Q 1498 4090 1392 3984 
+Q 1286 3878 1286 3507 
+L 1286 538 
+Q 1286 358 1398 304 
+Q 1510 250 1862 250 
+L 2310 250 
+Q 3085 250 3392 640 
+Q 3520 813 3661 1114 
+L 3827 1114 
+z
+" transform="scale(0.015625)"/>
+      </defs>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-4c"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-51" transform="translate(27.7969 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-47" transform="translate(77.7969 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-58" transform="translate(127.797 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-46" transform="translate(177.797 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-57" transform="translate(222.203 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-52" transform="translate(249.797 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-55" transform="translate(299.797 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-3" transform="translate(333.094 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-46" transform="translate(358.094 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-58" transform="translate(402.5 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-55" transform="translate(452.5 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-55" transform="translate(488.391 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-48" transform="translate(521.484 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-51" transform="translate(565.891 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-57" transform="translate(615.891 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-f" transform="translate(643.688 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-3" transform="translate(668.688 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-2c" transform="translate(693.688 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-b" transform="translate(726.984 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-2f" transform="translate(760.281 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-14" transform="translate(821.375 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-c" transform="translate(871.375 0)"/>
+     </g>
+    </g>
+   </g>
+  </g>
+  <g id="fig-sim-buckboost-ccm-axes_3">
+   <g id="fig-sim-buckboost-ccm-patch_8">
+    <path d="M 52.6144 261.396 
+L 409.734 261.396 
+L 409.734 195.294 
+L 52.6144 195.294 
+L 52.6144 261.396 
+z
+" style="fill: none"/>
+   </g>
+   <g id="fig-sim-buckboost-ccm-matplotlib.axis_5">
+    <g id="fig-sim-buckboost-ccm-xtick_19">
+     <g id="fig-sim-buckboost-ccm-line2d_51">
+      <path d="M 52.6144 261.396 
+L 52.6144 195.294 
+" clip-path="url(#fig-sim-buckboost-ccm-p43d6e18538)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_52">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="52.6144" y="261.396" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_10">
+      <g style="fill: currentColor" transform="translate(46.3644 275.896) scale(0.1 -0.1)">
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-13"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-11" transform="translate(50 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-13" transform="translate(75 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_20">
+     <g id="fig-sim-buckboost-ccm-line2d_53">
+      <path d="M 97.2544 261.396 
+L 97.2544 195.294 
+" clip-path="url(#fig-sim-buckboost-ccm-p43d6e18538)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_54">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="97.2544" y="261.396" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_11">
+      <g style="fill: currentColor" transform="translate(91.0044 275.896) scale(0.1 -0.1)">
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-15"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-11" transform="translate(50 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-18" transform="translate(75 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_21">
+     <g id="fig-sim-buckboost-ccm-line2d_55">
+      <path d="M 141.894 261.396 
+L 141.894 195.294 
+" clip-path="url(#fig-sim-buckboost-ccm-p43d6e18538)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_56">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="141.894" y="261.396" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_12">
+      <g style="fill: currentColor" transform="translate(135.644 275.896) scale(0.1 -0.1)">
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-18"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-11" transform="translate(50 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-13" transform="translate(75 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_22">
+     <g id="fig-sim-buckboost-ccm-line2d_57">
+      <path d="M 186.534 261.396 
+L 186.534 195.294 
+" clip-path="url(#fig-sim-buckboost-ccm-p43d6e18538)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_58">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="186.534" y="261.396" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_13">
+      <g style="fill: currentColor" transform="translate(180.284 275.896) scale(0.1 -0.1)">
+       <defs>
+        <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-1a" d="M 2874 4134 
+L 1517 -51 
+L 1101 -51 
+L 2368 3763 
+L 992 3763 
+Q 717 3763 582 3667 
+Q 448 3571 243 3238 
+L 128 3296 
+L 512 4237 
+L 2874 4237 
+L 2874 4134 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-1a"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-11" transform="translate(50 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-18" transform="translate(75 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_23">
+     <g id="fig-sim-buckboost-ccm-line2d_59">
+      <path d="M 231.174 261.396 
+L 231.174 195.294 
+" clip-path="url(#fig-sim-buckboost-ccm-p43d6e18538)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_60">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="231.174" y="261.396" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_14">
+      <g style="fill: currentColor" transform="translate(222.424 275.896) scale(0.1 -0.1)">
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-14"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-13" transform="translate(50 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-11" transform="translate(100 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-13" transform="translate(125 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_24">
+     <g id="fig-sim-buckboost-ccm-line2d_61">
+      <path d="M 275.814 261.396 
+L 275.814 195.294 
+" clip-path="url(#fig-sim-buckboost-ccm-p43d6e18538)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_62">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="275.814" y="261.396" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_15">
+      <g style="fill: currentColor" transform="translate(267.064 275.896) scale(0.1 -0.1)">
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-14"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-15" transform="translate(50 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-11" transform="translate(100 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-18" transform="translate(125 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_25">
+     <g id="fig-sim-buckboost-ccm-line2d_63">
+      <path d="M 320.454 261.396 
+L 320.454 195.294 
+" clip-path="url(#fig-sim-buckboost-ccm-p43d6e18538)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_64">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="320.454" y="261.396" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_16">
+      <g style="fill: currentColor" transform="translate(311.704 275.896) scale(0.1 -0.1)">
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-14"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-18" transform="translate(50 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-11" transform="translate(100 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-13" transform="translate(125 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_26">
+     <g id="fig-sim-buckboost-ccm-line2d_65">
+      <path d="M 365.094 261.396 
+L 365.094 195.294 
+" clip-path="url(#fig-sim-buckboost-ccm-p43d6e18538)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_66">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="365.094" y="261.396" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_17">
+      <g style="fill: currentColor" transform="translate(356.344 275.896) scale(0.1 -0.1)">
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-14"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-1a" transform="translate(50 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-11" transform="translate(100 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-18" transform="translate(125 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-xtick_27">
+     <g id="fig-sim-buckboost-ccm-line2d_67">
+      <path d="M 409.734 261.396 
+L 409.734 195.294 
+" clip-path="url(#fig-sim-buckboost-ccm-p43d6e18538)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_68">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-m8900079513" x="409.734" y="261.396" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_18">
+      <g style="fill: currentColor" transform="translate(400.984 275.896) scale(0.1 -0.1)">
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-15"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-13" transform="translate(50 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-11" transform="translate(100 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-13" transform="translate(125 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-text_19">
+     <g style="fill: currentColor" transform="translate(155.219 291.396) scale(0.12 -0.12)">
+      <defs>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-50" d="M 4960 0 
+L 3565 0 
+L 3565 96 
+Q 3834 122 3907 208 
+Q 3981 294 3981 576 
+L 3981 1894 
+Q 3981 2278 3869 2444 
+Q 3757 2611 3488 2611 
+Q 3264 2611 3107 2521 
+Q 2950 2432 2803 2221 
+L 2803 608 
+Q 2803 301 2896 201 
+Q 2989 102 3264 96 
+L 3264 0 
+L 1830 0 
+L 1830 96 
+Q 2112 115 2189 188 
+Q 2266 262 2266 550 
+L 2266 1901 
+Q 2266 2611 1850 2611 
+Q 1670 2611 1468 2531 
+Q 1267 2451 1171 2336 
+Q 1088 2240 1088 2227 
+L 1088 448 
+Q 1088 243 1177 176 
+Q 1267 109 1523 96 
+L 1523 0 
+L 102 0 
+L 102 96 
+Q 371 102 460 195 
+Q 550 288 550 563 
+L 550 2150 
+Q 550 2387 499 2480 
+Q 448 2573 326 2573 
+Q 230 2573 122 2547 
+L 122 2656 
+Q 557 2778 1011 2944 
+L 1062 2925 
+L 1062 2451 
+L 1075 2451 
+Q 1363 2752 1584 2848 
+Q 1805 2944 2054 2944 
+Q 2560 2944 2733 2406 
+Q 3232 2944 3776 2944 
+Q 4518 2944 4518 1792 
+L 4518 493 
+Q 4518 282 4582 202 
+Q 4646 122 4794 109 
+L 4960 96 
+L 4960 0 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-4f" d="M 1645 0 
+L 134 0 
+L 134 96 
+Q 435 122 531 221 
+Q 627 320 627 589 
+L 627 3590 
+Q 627 3821 569 3910 
+Q 512 4000 358 4000 
+Q 224 4000 122 3987 
+L 122 4090 
+Q 730 4237 1133 4371 
+L 1165 4346 
+L 1165 557 
+Q 1165 288 1254 201 
+Q 1344 115 1645 96 
+L 1645 0 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-44" d="M 2829 422 
+L 2829 243 
+Q 2586 -64 2253 -64 
+Q 1888 -64 1843 403 
+L 1837 403 
+Q 1427 -64 909 -64 
+Q 608 -64 422 112 
+Q 237 288 237 602 
+Q 237 1050 685 1350 
+Q 992 1555 1837 1869 
+L 1837 2214 
+Q 1837 2502 1699 2646 
+Q 1562 2790 1338 2790 
+Q 1146 2790 1018 2697 
+Q 890 2605 890 2477 
+Q 890 2419 909 2348 
+Q 928 2278 928 2208 
+Q 928 2112 841 2029 
+Q 755 1946 634 1946 
+Q 525 1946 441 2029 
+Q 358 2112 358 2240 
+Q 358 2547 685 2752 
+Q 986 2944 1421 2944 
+Q 1939 2944 2176 2656 
+Q 2291 2522 2323 2384 
+Q 2355 2246 2355 1946 
+L 2355 723 
+Q 2355 301 2554 301 
+Q 2682 301 2829 422 
+z
+M 1837 813 
+L 1837 1715 
+Q 1248 1510 1018 1293 
+Q 800 1094 800 800 
+Q 800 557 921 432 
+Q 1043 307 1242 307 
+Q 1453 307 1613 410 
+Q 1747 506 1792 589 
+Q 1837 672 1837 813 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-53" d="M 1018 2931 
+L 1018 2438 
+Q 1421 2944 1939 2944 
+Q 2406 2944 2707 2560 
+Q 3008 2176 3008 1581 
+Q 3008 883 2621 409 
+Q 2234 -64 1664 -64 
+Q 1466 -64 1328 -6 
+Q 1190 51 1018 211 
+L 1018 -794 
+Q 1018 -1094 1120 -1180 
+Q 1222 -1267 1581 -1274 
+L 1581 -1389 
+L 32 -1389 
+L 32 -1280 
+Q 314 -1254 397 -1171 
+Q 480 -1088 480 -838 
+L 480 2157 
+Q 480 2381 429 2451 
+Q 378 2522 218 2522 
+Q 115 2522 58 2515 
+L 58 2618 
+Q 506 2752 979 2944 
+L 1018 2931 
+z
+M 1018 2138 
+L 1018 563 
+Q 1018 422 1238 281 
+Q 1459 141 1683 141 
+Q 2029 141 2243 467 
+Q 2458 794 2458 1325 
+Q 2458 1888 2243 2224 
+Q 2029 2560 1670 2560 
+Q 1446 2560 1232 2419 
+Q 1018 2278 1018 2138 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-77" d="M 2752 2880 
+L 2752 614 
+Q 2752 173 2950 173 
+Q 3072 173 3277 358 
+L 3277 301 
+Q 3110 90 2998 13 
+Q 2886 -64 2707 -64 
+Q 2515 -64 2371 89 
+Q 2227 243 2221 512 
+L 2208 512 
+Q 1894 -64 1370 -64 
+Q 1094 -64 915 48 
+Q 736 160 582 410 
+Q 589 256 704 -233 
+Q 819 -723 819 -902 
+Q 819 -1395 512 -1395 
+Q 378 -1395 304 -1257 
+Q 230 -1120 230 -902 
+Q 230 -717 307 -217 
+Q 384 282 384 346 
+L 384 2880 
+L 947 2880 
+L 947 992 
+Q 947 666 1088 499 
+Q 1229 333 1485 333 
+Q 1990 333 2189 736 
+L 2189 2880 
+L 2752 2880 
+z
+" transform="scale(0.015625)"/>
+      </defs>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-57"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-4c" transform="translate(27.7969 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-50" transform="translate(55.5938 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-48" transform="translate(133.391 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-3" transform="translate(177.797 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-4c" transform="translate(202.797 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-51" transform="translate(230.594 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-3" transform="translate(280.594 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-57" transform="translate(305.594 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-4b" transform="translate(334.188 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-48" transform="translate(384.188 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-3" transform="translate(428.594 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-4f" transform="translate(453.594 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-44" transform="translate(481.391 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-56" transform="translate(525.797 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-57" transform="translate(563.906 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-3" transform="translate(591.703 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-57" transform="translate(616.703 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-5a" transform="translate(644.5 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-52" transform="translate(714.109 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-3" transform="translate(764.109 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-53" transform="translate(789.109 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-48" transform="translate(839.109 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-55" transform="translate(883.516 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-4c" transform="translate(918.719 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-52" transform="translate(946.516 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-47" transform="translate(996.516 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-56" transform="translate(1046.52 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-3" transform="translate(1085.42 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-b" transform="translate(1110.42 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-77" transform="translate(1143.72 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-56" transform="translate(1193.72 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-c" transform="translate(1232.62 0)"/>
+     </g>
+    </g>
+   </g>
+   <g id="fig-sim-buckboost-ccm-matplotlib.axis_6">
+    <g id="fig-sim-buckboost-ccm-ytick_6">
+     <g id="fig-sim-buckboost-ccm-line2d_69">
+      <path d="M 52.6144 236.596 
+L 409.734 236.596 
+" clip-path="url(#fig-sim-buckboost-ccm-p43d6e18538)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_70">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-mfa34f57b25" x="52.6144" y="236.596" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_20">
+      <g style="fill: currentColor" transform="translate(16.2644 240.346) scale(0.1 -0.1)">
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-425"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-14" transform="translate(68.5 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-15" transform="translate(118.5 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-11" transform="translate(168.5 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-13" transform="translate(193.5 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-13" transform="translate(243.5 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-ytick_7">
+     <g id="fig-sim-buckboost-ccm-line2d_71">
+      <path d="M 52.6144 211.34 
+L 409.734 211.34 
+" clip-path="url(#fig-sim-buckboost-ccm-p43d6e18538)" style="fill: none; stroke: currentColor; stroke-opacity: 0.12; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="fig-sim-buckboost-ccm-line2d_72">
+      <g>
+       <use xlink:href="#fig-sim-buckboost-ccm-mfa34f57b25" x="52.6144" y="211.34" style="fill: currentColor; stroke: currentColor; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="fig-sim-buckboost-ccm-text_21">
+      <g style="fill: currentColor" transform="translate(16.2644 215.09) scale(0.1 -0.1)">
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-425"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-14" transform="translate(68.5 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-14" transform="translate(118.5 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-11" transform="translate(168.5 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-1a" transform="translate(193.5 0)"/>
+       <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-18" transform="translate(243.5 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="fig-sim-buckboost-ccm-text_22">
+     <g style="fill: currentColor" transform="translate(3.6 231.345) scale(0.12 -0.12)">
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-39"/>
+     </g>
+    </g>
+   </g>
+   <g id="fig-sim-buckboost-ccm-line2d_73">
+    <path d="M 52.6144 258.382 
+L 54.4 257.256 
+L 81.184 238.9 
+L 107.968 220.818 
+L 132.074 204.774 
+L 141.894 198.299 
+L 150.822 205.804 
+L 158.858 212.276 
+L 166.893 218.477 
+L 174.928 224.408 
+L 182.963 230.071 
+L 190.998 235.463 
+L 199.034 240.586 
+L 207.069 245.44 
+L 215.104 250.025 
+L 223.139 254.34 
+L 231.174 258.388 
+L 232.96 257.262 
+L 259.744 238.906 
+L 286.528 220.823 
+L 313.312 203.01 
+L 320.454 198.304 
+L 328.49 205.074 
+L 336.525 211.574 
+L 344.56 217.807 
+L 352.595 223.768 
+L 360.63 229.46 
+L 368.666 234.881 
+L 376.701 240.035 
+L 384.736 244.918 
+L 392.771 249.532 
+L 400.806 253.878 
+L 408.842 257.954 
+L 409.734 258.391 
+L 409.734 258.391 
+" clip-path="url(#fig-sim-buckboost-ccm-p43d6e18538)" style="fill: none; stroke: #3b82f6; stroke-width: 1.4; stroke-linecap: square"/>
+   </g>
+   <g id="fig-sim-buckboost-ccm-patch_9">
+    <path d="M 52.6144 261.396 
+L 52.6144 195.294 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-sim-buckboost-ccm-patch_10">
+    <path d="M 52.6144 261.396 
+L 409.734 261.396 
+" style="fill: none; stroke: currentColor; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="fig-sim-buckboost-ccm-legend_3">
+    <g id="fig-sim-buckboost-ccm-line2d_74">
+     <path d="M 418.734 208.294 
+L 425.734 208.294 
+L 432.734 208.294 
+" style="fill: none; stroke: #3b82f6; stroke-width: 1.4; stroke-linecap: square"/>
+    </g>
+    <g id="fig-sim-buckboost-ccm-text_23">
+     <g style="fill: currentColor" transform="translate(440.734 211.794) scale(0.1 -0.1)">
+      <defs>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-59" d="M 3053 2880 
+L 3053 2784 
+Q 2906 2771 2835 2688 
+Q 2765 2605 2637 2285 
+L 1818 230 
+Q 1690 -90 1638 -90 
+Q 1587 -90 1523 77 
+Q 1510 96 1497 141 
+Q 1485 186 1472 211 
+L 704 2048 
+Q 499 2534 403 2652 
+Q 307 2771 122 2784 
+L 122 2880 
+L 1376 2880 
+L 1376 2784 
+Q 1210 2771 1146 2732 
+Q 1082 2694 1082 2611 
+Q 1082 2509 1139 2368 
+L 1792 730 
+L 2426 2387 
+Q 2464 2483 2464 2579 
+Q 2464 2758 2163 2784 
+L 2163 2880 
+L 3053 2880 
+z
+" transform="scale(0.015625)"/>
+       <path id="fig-sim-buckboost-ccm-STIXGeneral-Regular-4a" d="M 3008 2483 
+L 2477 2483 
+Q 2598 2208 2598 1946 
+Q 2598 1453 2265 1203 
+Q 1933 954 1600 954 
+Q 1530 954 1357 973 
+L 1235 986 
+Q 1107 947 979 812 
+Q 851 678 851 582 
+Q 851 435 1350 410 
+L 2176 371 
+Q 2528 358 2739 172 
+Q 2950 -13 2950 -314 
+Q 2950 -685 2566 -986 
+Q 2035 -1395 1286 -1395 
+Q 826 -1395 502 -1212 
+Q 179 -1030 179 -774 
+Q 179 -595 320 -419 
+Q 461 -243 806 6 
+Q 602 102 534 172 
+Q 467 243 467 346 
+Q 467 531 762 787 
+Q 909 915 1037 1043 
+Q 717 1203 579 1401 
+Q 442 1600 442 1901 
+Q 442 2336 752 2640 
+Q 1062 2944 1510 2944 
+Q 1766 2944 2022 2848 
+L 2163 2797 
+Q 2349 2733 2515 2733 
+L 3008 2733 
+L 3008 2483 
+z
+M 973 2163 
+L 973 2144 
+Q 973 1683 1155 1398 
+Q 1338 1114 1632 1114 
+Q 1850 1114 1978 1270 
+Q 2106 1427 2106 1690 
+Q 2106 2112 1914 2464 
+Q 1754 2765 1446 2765 
+Q 1222 2765 1097 2605 
+Q 973 2445 973 2163 
+z
+M 2771 -410 
+Q 2771 -230 2595 -163 
+Q 2419 -96 1978 -96 
+Q 1344 -96 941 -13 
+Q 749 -243 688 -348 
+Q 627 -454 627 -563 
+Q 627 -774 880 -902 
+Q 1133 -1030 1555 -1030 
+Q 2099 -1030 2435 -860 
+Q 2771 -691 2771 -410 
+z
+" transform="scale(0.015625)"/>
+      </defs>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-52"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-58" transform="translate(50 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-57" transform="translate(100 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-53" transform="translate(127.797 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-58" transform="translate(177.797 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-57" transform="translate(227.797 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-3" transform="translate(255.594 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-59" transform="translate(280.594 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-52" transform="translate(327.891 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-4f" transform="translate(377.891 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-57" transform="translate(405.688 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-44" transform="translate(434.484 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-4a" transform="translate(478.891 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-48" transform="translate(527.391 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-f" transform="translate(571.797 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-3" transform="translate(596.797 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-39" transform="translate(621.797 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-b" transform="translate(694 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-52" transform="translate(727.297 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-58" transform="translate(777.297 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-57" transform="translate(827.297 0)"/>
+      <use xlink:href="#fig-sim-buckboost-ccm-STIXGeneral-Regular-c" transform="translate(855.094 0)"/>
+     </g>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="fig-sim-buckboost-ccm-p8ac21b2090">
+   <rect x="52.6144" y="3.6" width="357.12" height="66.1015"/>
+  </clipPath>
+  <clipPath id="fig-sim-buckboost-ccm-pf69ed33198">
+   <rect x="52.6144" y="99.4472" width="357.12" height="66.1015"/>
+  </clipPath>
+  <clipPath id="fig-sim-buckboost-ccm-p43d6e18538">
+   <rect x="52.6144" y="195.294" width="357.12" height="66.1015"/>
+  </clipPath>
+ </defs>
+</svg>
