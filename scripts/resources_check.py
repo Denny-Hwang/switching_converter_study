@@ -21,13 +21,15 @@ resources.yaml (when present), then:
       Each URL is tried with an honest tool User-Agent and with a browser
       User-Agent, over HTTP/2 and HTTP/1.1 (curl), then urllib: some hosts
       reject one client and accept another.
+      Six URLs are checked at a time; the results print in order.
 
       A 404/410, or a real page or PDF whose title does not match, fails.
       When the live host never answers with content -- timeouts,
       403/429/5xx, or a bot wall/consent page without the page title (hosts
       that block cloud runners) -- the check falls back to the most recent
-      Internet Archive capture of the exact URL (Wayback CDX API), which
-      must pass the same title check. Such URLs are reported as "OK
+      Internet Archive capture of the exact URL (Wayback CDX API; for a PDF,
+      the most recent one the archive stored as a PDF), which must pass the
+      same title check. Such URLs are reported as "OK
       (archived YYYY-MM-DD)", never silently as live.
 
 This complements lychee (which checks every link on the built site): some
@@ -59,6 +61,7 @@ import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -74,6 +77,7 @@ CAP = 6_000_000  # bytes of a page searched for its title; some pages carry mega
 PDF_CAP = 60_000_000  # bytes kept per response: a PDF is read whole (its cross-reference table is at the end)
 PAGE1_TOP = 600  # characters (normalised) at the top of page 1 where a document shows its title
 MAX_PAGES = 150  # pages read when a bib entry has urlquotes
+WORKERS = 6  # URLs checked at once: a host that turns the runner away costs minutes of retries and archive lookups
 BROWSER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 # Titles of interstitial pages served instead of content (consent walls, bot
 # checks). Seeing one is inconclusive, not a mismatch.
@@ -413,18 +417,23 @@ def _slow_get(url: str, how: str, tries: int = 3) -> Fetch:
     return f
 
 
-def latest_capture(url: str) -> tuple[str, str] | None:
-    """(timestamp, original URL) of the most recent HTTP-200 capture, or None."""
-    q = urllib.parse.urlencode({"url": url, "output": "json", "fl": "timestamp,original",
-                                "filter": "statuscode:200", "limit": "-1"})
-    cdx = _slow_get("https://web.archive.org/cdx/search/cdx?" + q, "wayback cdx")
-    if cdx.status == 200:
-        try:
-            rows = json.loads(cdx.body.decode("utf-8") or "[]")
-        except ValueError:
-            rows = []
-        if len(rows) >= 2:
-            return rows[-1][0], rows[-1][1]
+def latest_capture(url: str, pdf: bool = False) -> tuple[str, str] | None:
+    """(timestamp, original URL) of the most recent HTTP-200 capture, or None.
+
+    For a PDF, the most recent capture the archive stored as a PDF comes
+    first: a later capture of the same URL can be a web page (a site's
+    download page or bot wall)."""
+    for mime in (["mimetype:application/pdf"], []) if pdf else ([],):
+        q = urllib.parse.urlencode([("url", url), ("output", "json"), ("fl", "timestamp,original"),
+                                    ("filter", "statuscode:200"), *[("filter", m) for m in mime], ("limit", "-1")])
+        cdx = _slow_get("https://web.archive.org/cdx/search/cdx?" + q, "wayback cdx")
+        if cdx.status == 200:
+            try:
+                rows = json.loads(cdx.body.decode("utf-8") or "[]")
+            except ValueError:
+                rows = []
+            if len(rows) >= 2:
+                return rows[-1][0], rows[-1][1]
     avail = _slow_get("https://archive.org/wayback/available?" + urllib.parse.urlencode({"url": url}), "wayback available")
     if avail.status == 200:
         try:
@@ -437,8 +446,8 @@ def latest_capture(url: str) -> tuple[str, str] | None:
 
 
 def archived(t: dict) -> tuple[str, str]:
-    """Check the latest Internet Archive capture (HTTP 200) of the exact URL."""
-    found = latest_capture(t["url"])
+    """Check the latest Internet Archive capture (HTTP 200) of the exact URL (for a PDF, its latest PDF capture)."""
+    found = latest_capture(t["url"], pdf=t["kind"] == "pdf")
     if not found:
         return "fail", "no Internet Archive capture found (or the archive did not answer)"
     stamp, original = found
@@ -483,7 +492,7 @@ def dump(key: str, targets: list[dict]) -> bool:
     fetches = list(attempts(t["url"]))
     if not any(f.status == 200 and b"%PDF" in f.body[:1024] for f in fetches):
         # the host does not answer this runner: its latest Internet Archive capture, as the check falls back to
-        if found := latest_capture(t["url"]):
+        if found := latest_capture(t["url"], pdf=True):
             stamp, original = found
             fetches.append(_slow_get(f"https://web.archive.org/web/{stamp}id_/{original}", f"wayback capture {stamp[:8]}"))
     for f in fetches:
@@ -509,14 +518,14 @@ def main() -> int:
         return 0 if all([dump(k, targets) for k in args.dump]) else 1
     archived_ok = []
     if args.online:
-        for t in targets:
-            status, detail = check_online(t)
-            print(f"  {status:14s} {t['src']:32s} {t['url']}  {detail[:200]}", flush=True)
-            if status == "FAIL":
-                errors.append(f"{t['src']}: {detail} ({t['url']})")
-            elif status != "OK":
-                archived_ok.append(t["src"])
-            time.sleep(0.5)
+        # several URLs at a time (each still tries its clients one after another); the results print in order
+        with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+            for t, (status, detail) in zip(targets, pool.map(check_online, targets)):
+                print(f"  {status:14s} {t['src']:32s} {t['url']}  {detail[:200]}", flush=True)
+                if status == "FAIL":
+                    errors.append(f"{t['src']}: {detail} ({t['url']})")
+                elif status != "OK":
+                    archived_ok.append(t["src"])
         if archived_ok:
             print(f"resources_check: {len(archived_ok)} URL(s) unreachable from this runner, confirmed from their "
                   f"latest Internet Archive capture: {', '.join(archived_ok)}")

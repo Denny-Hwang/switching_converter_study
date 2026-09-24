@@ -56,10 +56,13 @@ Verification has three layers.
    tool User-Agent and a browser User-Agent over HTTP/2 and HTTP/1.1. A 404
    or a real page with another title fails at once. Only when every attempt
    is inconclusive does it fall back to the most recent Internet Archive
-   capture of the *exact* URL (Wayback CDX API), which must pass the same
-   title check. Such URLs are reported as `OK (archived
-   YYYY-MM-DD)` in the CI log, so a live check and an archive check are
-   never confused.
+   capture of the *exact* URL (Wayback CDX API; for a PDF, the most recent
+   capture the archive stored as a PDF, since a later capture can be the
+   site's web page), which must pass the same title check. Such URLs are
+   reported as `OK (archived YYYY-MM-DD)` in the CI log, so a live check
+   and an archive check are never confused. Each blocked host costs minutes
+   of retries and archive lookups, so six URLs are checked at a time; the
+   log keeps their order.
 
 An identifier seen only in search-result summaries, but never in a result
 URL or title, keeps its `VERIFY` flag until layer 3 confirms it. In Phase 1
