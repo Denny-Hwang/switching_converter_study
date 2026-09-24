@@ -42,6 +42,17 @@ def test_derivation_reproduces_yaml(eq) -> None:
     )
 
 
+@pytest.mark.parametrize("eq", DERIVED, ids=[e.id for e in DERIVED])
+def test_derivation_shows_the_equation_lhs(eq) -> None:
+    # The derivations page prints each result as "lhs = expression": the left
+    # side must be the equation's own symbol (inrush.I_ramp once showed the
+    # step current's I_inrush there).
+    shown = [st.expr for st in derivation(eq.derived_by).steps if st.result_for == eq.id]
+    assert len(shown) == 1, f"{eq.id}: {len(shown)} result steps"
+    lhs = getattr(shown[0], "lhs", None)
+    assert lhs == CATALOG.sym(eq.lhs), f"{eq.id}: the derivation shows {lhs} = ..., equations.yaml has {eq.lhs}"
+
+
 def test_modules_only_claim_equations_that_point_back() -> None:
     by_module: dict[str, set[str]] = {}
     for eq in DERIVED:

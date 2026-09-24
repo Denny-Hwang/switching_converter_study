@@ -2585,11 +2585,11 @@ equations:
     title_ko: "스위칭 에지 뒤 링잉으로 구한 루프 인덕턴스"
     lhs: L_loop
     expr: "1/(4*pi**2*f_ring**2*C_node)"
-    symbols: {f_ring: "frequency of the ring after the turn-off edge", C_node: "switch-node capacitance (the switch's output capacitance, the diode's)"}
+    symbols: {f_ring: "frequency of the ring after the turn-off edge", C_node: "capacitance at the switch node: the switch's and the diode's output capacitances, the probe's and the board's"}
     ranges: {f_ring: [1.0e7, 1.0e9], C_node: [1.0e-11, 1.0e-9]}
     assumptions: [lossless_lc]
-    notes: "after the turn-off edge the loop's inductance rings with the switch node's capacitance; the ring's frequency, read on an oscilloscope, gives the inductance without a current probe in the loop"
-    notes_ko: "턴오프 에지 뒤에 루프 인덕턴스는 스위치 노드 커패시턴스와 링잉한다. 오실로스코프로 읽은 링잉 주파수로 루프에 전류 프로브를 넣지 않고 인덕턴스를 구한다"
+    notes: "after the turn-off edge the loop's inductance rings with the switch node's capacitance; the ring's frequency, read on an oscilloscope, gives the inductance without a current probe in the loop. The ring counts every capacitance at the node, the probe's included: leaving one out overstates the inductance"
+    notes_ko: "턴오프 에지 뒤에 루프 인덕턴스는 스위치 노드 커패시턴스와 링잉한다. 오실로스코프로 읽은 링잉 주파수로 루프에 전류 프로브를 넣지 않고 인덕턴스를 구한다. 링잉에는 프로브를 포함해 노드의 모든 커패시턴스가 들어가므로, 하나라도 빼면 인덕턴스를 크게 어림한다"
     cite: {key: alexander2017, where: "Ch. 14 (Frequency Response: series resonance); derived here"}
     derived_by: python/pe_core/derive/bench.py
     tests:

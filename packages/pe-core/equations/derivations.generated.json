@@ -2205,7 +2205,7 @@
         {
           "text": "so a voltage ramped linearly from zero to $V_g$ over $t_\\mathrm{ramp}$ draws a constant current:",
           "text_ko": "따라서 전압을 $t_\\mathrm{ramp}$ 동안 0에서 $V_g$까지 선형으로 올리면 일정한 전류가 흐른다.",
-          "latex": "I_\\mathrm{inrush} = \\frac{C_\\mathrm{in} V_g}{t_\\mathrm{ramp}}",
+          "latex": "I_\\mathrm{ramp} = \\frac{C_\\mathrm{in} V_g}{t_\\mathrm{ramp}}",
           "result_for": "inrush.I_ramp"
         },
         {

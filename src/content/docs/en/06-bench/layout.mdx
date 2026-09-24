@@ -100,9 +100,13 @@ ground connection your probe allows (see [probes](../probes/)); a switch
 whose terminals both move needs a differential probe. A current probe needs
 a wire loop added to the hot loop, which adds inductance of its own, so
 estimate the loop's inductance from the ring that follows the edge instead,
-with the switch node's capacitance from the data sheets (the switch's
-output capacitance, the diode's). With the edge's current step and fall
-time, compare the overshoot with the loop-voltage equation.
+with the whole capacitance at the switch node: the switch's and the diode's
+output capacitances from their data sheets, plus the probe's input
+capacitance and the board's. The ring measured again with a known capacitor
+added gives all of it at once (as in
+[snubbers and clamps](../../04-magnetics/snubbers-clamps/)). With the edge's
+current step and fall time, compare the overshoot with the loop-voltage
+equation.
 Then add a small ceramic capacitor right across the switch pair, making the
 loop shorter, and measure again.
 

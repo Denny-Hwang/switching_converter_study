@@ -206,7 +206,7 @@ def derive() -> Derivation:
         C * sp.diff(Vg * t / tr, t),
         "so a voltage ramped linearly from zero to $V_g$ over $t_\\mathrm{ramp}$ draws a constant current:",
         "따라서 전압을 $t_\\mathrm{ramp}$ 동안 0에서 $V_g$까지 선형으로 올리면 일정한 전류가 흐른다.",
-        Ipk,
+        S("I_ramp"),
     )
     # --- the junction temperature through a series thermal path -------------------------------------
     TJ, TA, PD = S("T_J"), S("T_A"), S("P_D")

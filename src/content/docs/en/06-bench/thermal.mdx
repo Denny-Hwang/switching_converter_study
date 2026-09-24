@@ -92,7 +92,10 @@ resistance instead moves the junction far less there.
 ## Bench exercise
 
 Run a converter at full load until its temperatures settle, and find each
-device's power from the loss model or from the measured input less output.
+device's power from the loss model. The measured input less output is the
+whole converter's loss, every switch, diode, magnetic part and capacitor and
+the control circuit together: it checks the loss model's total, not any one
+device's power.
 For a switch on a heat sink, measure the ambient and estimate the junction
 through the series path. For a device without a heat sink (a controller, or
 a surface-mount switch cooled by its board), measure the top of its package
