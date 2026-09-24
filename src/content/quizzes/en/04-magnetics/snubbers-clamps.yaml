@@ -3,19 +3,19 @@ numbers: synthetic
 questions:
   - q: 'A node rings at 20 MHz, and at 10 MHz with $150\,\mathrm{pF}$ added across it. What is its own capacitance?'
     options:
-      - '$50\,\mathrm{pF}$'
       - '$150\,\mathrm{pF}$'
       - '$75\,\mathrm{pF}$'
       - '$37.5\,\mathrm{pF}$'
-    answer: 0
+      - '$50\,\mathrm{pF}$'
+    answer: 3
     explain: 'Halving the frequency needs four times the capacitance, so the added 150 pF is three times the node''s own.'
   - q: 'How does AN11160 choose an RC snubber''s resistor?'
     options:
-      - 'For a damping factor between 0.5 and 1 of the parasitic inductance, the resistor and the snubber capacitor in series, then by trying a few values'
       - 'As small as possible'
       - 'As large as possible'
+      - 'For a damping factor between 0.5 and 1 of the parasitic inductance, the resistor and the snubber capacitor in series, then by trying a few values'
       - 'Equal to the load resistance'
-    answer: 0
+    answer: 2
     explain: 'A damping factor between 0.5 and 1 gives the least peak voltage; the best value in that range is found by trials.'
   - q: 'An RC snubber of $220\,\mathrm{pF}$ sees a 100 V swing at each edge, at 100 kHz. What loss does it add?'
     options:
@@ -27,19 +27,19 @@ questions:
     explain: 'Charging and discharging the snubber capacitor each lose half of C V squared: C V squared per period, times the frequency.'
   - q: 'How does the snubber resistor''s value change the snubber''s loss?'
     options:
-      - 'It does not: the capacitor, the voltage swing and the frequency set it'
       - 'A larger resistor lowers it'
+      - 'It does not: the capacitor, the voltage swing and the frequency set it'
       - 'A smaller resistor lowers it'
       - 'The loss is in the capacitor, not the resistor'
-    answer: 0
+    answer: 1
     explain: 'Charging a capacitor through a resistor loses half of C V squared whatever the resistance, and the next edge loses the stored half.'
   - q: 'What snubber capacitor does AN11160 take as a starting point?'
     options:
-      - 'One to two times the node''s own capacitance'
       - 'A tenth of the node''s own capacitance'
       - 'A hundred times the node''s own capacitance'
+      - 'One to two times the node''s own capacitance'
       - 'As large as the output capacitor'
-    answer: 0
+    answer: 2
     explain: 'A compromise: a larger capacitor lowers the peak voltage the best resistor can reach, but the loss grows with it.'
   - q: 'In the TVS model, a TVS with a 150 V breakdown voltage and a dynamic resistance of $0.5\,\Omega$ carries 10 A. What does it clamp at?'
     options:
@@ -51,9 +51,9 @@ questions:
     explain: 'The breakdown voltage plus the dynamic resistance times the current: 150 V plus 5 V.'
   - q: 'What happens to a flyback clamp''s loss if its voltage is set just above the reflected voltage?'
     options:
-      - 'It rises far above the leakage energy per period'
       - 'It falls to the leakage energy per period'
+      - 'It rises far above the leakage energy per period'
       - 'It becomes zero'
       - 'It does not change'
-    answer: 0
+    answer: 1
     explain: 'The leakage current then takes long to reset, and the clamp keeps drawing energy from the transformer meanwhile.'

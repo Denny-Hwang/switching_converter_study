@@ -3,19 +3,19 @@ numbers: synthetic
 questions:
   - q: 'Which three constraints does the core geometrical constant $K_g$ combine?'
     options:
-      - 'The flux limit, the window and the winding resistance'
       - 'The flux limit, the gap and the window'
       - 'The inductance, the gap and the core loss'
       - 'Saturation, core loss and temperature'
-    answer: 0
+      - 'The flux limit, the window and the winding resistance'
+    answer: 3
     explain: 'Eliminating the turns and the wire from the flux-density, window and resistance constraints leaves $K_g$; the gap is chosen afterwards and sets the inductance.'
   - q: 'With everything else fixed, $B_\mathrm{max}$ is raised from 0.2 T to 0.3 T. By what factor does the required $K_g$ change?'
     options:
-      - '0.44: it falls'
       - '0.67: it falls'
       - '1.5: it rises'
+      - '0.44: it falls'
       - '2.25: it rises'
-    answer: 0
+    answer: 2
     explain: 'The required $K_g$ is inversely proportional to the square of $B_\mathrm{max}$, and 0.2/0.3 squared is 0.44.'
   - q: 'The allowed copper loss is doubled at the same rms current. What happens to the required $K_g$?'
     options:
@@ -27,11 +27,11 @@ questions:
     explain: 'Twice the loss at the same current allows twice the winding resistance, which enters $K_g$ once, in the denominator.'
   - q: 'A core has twice the $K_g$ of another core of the same shape. How much larger is it in each dimension?'
     options:
-      - 'About 15 %'
       - 'About 26 %'
       - 'About 41 %'
       - 'Twice'
-    answer: 0
+      - 'About 15 %'
+    answer: 3
     explain: '$K_g$ grows as the fifth power of a core''s size, and the fifth root of 2 is 1.15.'
   - q: 'Why check the winding resistance again after rounding the turns up?'
     options:
@@ -43,9 +43,9 @@ questions:
     explain: 'The core''s $K_g$ covers the budget at the exact number of turns; rounding up or taking the turns at a smaller cross-section adds resistance that only a margin in $K_g$ covers.'
   - q: 'In which part is core loss, rather than saturation, most likely to limit the flux density?'
     options:
-      - 'A flyback transformer or a DCM inductor, whose flux swings widely every period'
       - 'A filter inductor with a small ripple'
       - 'An inductor carrying only dc'
+      - 'A flyback transformer or a DCM inductor, whose flux swings widely every period'
       - 'A choke at mains frequency'
-    answer: 0
+    answer: 2
     explain: 'Core loss comes from the ac flux. A filter inductor with a small ripple has little of it, while a large ripple swings the flux widely every period.'

@@ -3,11 +3,11 @@ numbers: synthetic
 questions:
   - q: 'What is the proximity effect?'
     options:
-      - 'Eddy currents induced in a layer by the field of the other layers'
       - 'The current crowding to the surface of a single conductor'
       - 'The capacitance between adjacent turns'
       - 'Core loss next to the winding'
-    answer: 0
+      - 'Eddy currents induced in a layer by the field of the other layers'
+    answer: 3
     explain: 'Each layer of a winding sits in the field of the layers beside it; the eddy currents that field induces add loss, growing quickly with the number of layers.'
   - q: 'A foil is 0.3 mm thick, and the skin depth at the frequency of interest is 0.2 mm. What is the foil''s thickness in skin depths?'
     options:
@@ -19,11 +19,11 @@ questions:
     explain: 'The thickness divided by the skin depth: 0.3/0.2.'
   - q: 'For layers thinner than a skin depth, how does the excess ac resistance grow with the layer thickness?'
     options:
-      - 'As the fourth power of the thickness'
       - 'In proportion to the thickness'
+      - 'As the fourth power of the thickness'
       - 'As the square of the thickness'
       - 'It does not grow'
-    answer: 0
+    answer: 1
     explain: 'The first term of Dowell''s series beyond 1 is proportional to $\varphi^4$.'
   - q: 'For three layers the loss is least at about 0.76 skin depths. What happens to the loss if the layers are made thicker than that?'
     options:
@@ -35,17 +35,17 @@ questions:
     explain: 'At a fixed frequency the loss is proportional to $F_R/\varphi$: past the optimum, $F_R$ grows faster than $\varphi$.'
   - q: 'From the thin-layer series, what is the ac resistance factor at the thickness of least loss?'
     options:
-      - '4/3, whatever the number of layers'
       - '1'
       - '2'
       - 'It grows with the number of layers'
-    answer: 0
+      - '4/3, whatever the number of layers'
+    answer: 3
     explain: 'At the optimum the fourth-order term equals one third, for any number of layers.'
   - q: 'How does interleaving a transformer''s windings lower the proximity loss?'
     options:
-      - 'It lowers the peak MMF and the number of layers from zero to peak MMF'
       - 'It shortens the mean length per turn'
       - 'It raises the skin depth'
+      - 'It lowers the peak MMF and the number of layers from zero to peak MMF'
       - 'It lowers the dc resistance'
-    answer: 0
+    answer: 2
     explain: 'Placing the secondary between the halves of the primary halves the peak MMF in the window, and with it the layer count that sets the proximity effect.'
