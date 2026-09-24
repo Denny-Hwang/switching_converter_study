@@ -45,6 +45,8 @@ export type ElementState =
   | 'blocking'
   | 'storing'
   | 'releasing'
+  | 'storeRelease'
+  | 'releaseStore'
   | 'reversing'
   | 'ringing'
   | 'zero'
@@ -55,6 +57,7 @@ export type ElementState =
   | 'dischargeCharge'
   | 'delivering'
   | 'absorbing'
+  | 'alternating'
   | 'idle';
 
 /** The states each kind of element can be in (elementStates() gives no other). */
@@ -63,11 +66,11 @@ export const STATES: Record<Exclude<ElementKind, 'wire'>, readonly ElementState[
   diode: ['conducting', 'blocking'],
   winding: ['conducting', 'idle'],
   resistor: ['conducting', 'idle'],
-  inductor: ['storing', 'releasing', 'reversing', 'ringing', 'zero', 'steady'],
+  inductor: ['storing', 'releasing', 'storeRelease', 'releaseStore', 'reversing', 'ringing', 'zero', 'steady'],
   capacitor: ['charging', 'discharging', 'chargeDischarge', 'dischargeCharge', 'ringing', 'idle'],
   battery: ['charging', 'discharging', 'chargeDischarge', 'dischargeCharge', 'ringing', 'idle'],
-  vsource: ['delivering', 'absorbing', 'idle'],
-  fixed: ['delivering', 'absorbing', 'idle'],
+  vsource: ['delivering', 'absorbing', 'alternating', 'idle'],
+  fixed: ['delivering', 'absorbing', 'alternating', 'idle'],
 };
 
 export interface ElementInMode {
@@ -93,8 +96,55 @@ export interface ElementInMode {
 /** Interval families whose runs form one mode. */
 const FAMILY: Record<string, string> = { ring: 'ring', clamp: 'ring' };
 
+/**
+ * A mode shorter than this share of the period is a numerical sliver (a
+ * current left at -1e-21 A by rounding sends the switch through its body
+ * diode for 1e-26 s): it joins the mode that follows it, or the one before.
+ */
+export const SLIVER = 1e-9;
+
 /** The modes of a result's recorded period. */
 export function modes(r: SimResult): OperatingMode[] {
+  const out = runs(r);
+  const Ts = 1 / r.params.fs;
+  for (let j = 0; j < out.length && out.length > 1; ) {
+    const m = out[j]!;
+    if (m.t1 - m.t0 >= SLIVER * Ts) {
+      j++;
+      continue;
+    }
+    const next = out[j + 1];
+    if (next) {
+      next.t0 = m.t0;
+      next.k0 = m.k0;
+      next.intervals = [...m.intervals.filter((x) => x !== next.intervals[0]), ...next.intervals];
+    } else {
+      const prev = out[j - 1]!;
+      prev.t1 = m.t1;
+      prev.k1 = m.k1;
+      for (const x of m.intervals) if (prev.intervals.at(-1) !== x) prev.intervals.push(x);
+    }
+    out.splice(j, 1);
+  }
+  // two modes of one kind that a sliver separated are one mode
+  for (let j = 1; j < out.length; ) {
+    const prev = out[j - 1]!;
+    const m = out[j]!;
+    if (m.kind !== prev.kind) {
+      j++;
+      continue;
+    }
+    prev.t1 = m.t1;
+    prev.k1 = m.k1;
+    for (const x of m.intervals) if (prev.intervals.at(-1) !== x) prev.intervals.push(x);
+    out.splice(j, 1);
+  }
+  out.forEach((m, j) => (m.index = j + 1));
+  return out;
+}
+
+/** The runs of one interval (or of one family) in a result's recorded period, however short. */
+function runs(r: SimResult): OperatingMode[] {
   const gate = (iv: string) => buildModel(r.params).intervals[iv]?.gate ?? false;
   const t = r.waveforms.t as number[];
   const iv = r.waveforms.interval as string[];
@@ -145,8 +195,86 @@ export function currentScale(r: SimResult, s: Schematic): number {
   return m;
 }
 
-/** A current smaller than this share of the period's largest counts as none. */
-export const NONE = 1e-6;
+/**
+ * A current smaller than this share of its scale counts as none. The scale
+ * of the switching cell (the switch, the diodes, the windings, the
+ * inductances, the node capacitance and a direct input) is the largest
+ * current in the cell during the mode: the microamperes a node capacitance
+ * draws through the input while the diode carries amperes are not a current
+ * path worth drawing, nor a state of the input, while a ringing that turns
+ * the diode on again for a few nanoseconds conducts a current that is that
+ * mode's whole story, however small next to the period's peak. The scale of
+ * the load and the source (the output capacitor, the resistor, the battery,
+ * a fixed output, the Thevenin source, its resistance and bus capacitor) is
+ * the element's own largest current over the period: they carry the load's
+ * or the source's current in every mode, beside which the cell's current in
+ * a short mode would count for nothing.
+ */
+export const NONE = 1e-3;
+
+/** The load's and the source's elements, measured against their own peaks. */
+const OUTSIDE = new Set(['C', 'R', 'B', 'V', 'Voc', 'Rs', 'Cbus']);
+
+/**
+ * Each branch's scale in a mode, by id: for the switching cell's branches
+ * and the wires, the largest current in the cell during the mode; for the
+ * load's and the source's elements, their own largest current over the period.
+ */
+export function modeScales(r: SimResult, mode: OperatingMode, s: Schematic = schematic(r.params), peaks = branchScales(r, s)): Map<string, number> {
+  let cell = 0;
+  for (let k = mode.k0; k <= mode.k1; k++) {
+    const o = outputsAt(r, k);
+    for (const b of s.branches) if (b.kind !== 'wire' && !OUTSIDE.has(b.id)) cell = Math.max(cell, Math.abs(b.current(o)));
+  }
+  return new Map(s.branches.map((b) => [b.id, OUTSIDE.has(b.id) ? peaks.get(b.id)! : cell]));
+}
+
+/** Below this share of the circuit's natural current (the model's scales), a current is rounding. */
+export const ROUNDING = 1e-9;
+
+/** The circuit's natural current: the largest of its inductor currents' scales (pe-core's model scales, V T_s / L). */
+function naturalCurrent(r: SimResult): number {
+  const m = buildModel(r.params);
+  let c = 0;
+  m.stateNames.forEach((name, j) => {
+    if (name === 'i' || name === 'iM') c = Math.max(c, m.scales?.[j] ?? 0);
+  });
+  return c;
+}
+
+/** The current below which an element carries none: NONE of its scale (modeScales), and never below rounding. */
+export function countingFloor(r: SimResult, scale: number): number {
+  return Math.max(NONE * scale, ROUNDING * naturalCurrent(r));
+}
+
+/**
+ * Whether a current that counts grows or shrinks is a finer question: a
+ * ripple of 0.02 A on 21 A is below NONE of the peak, and still the current
+ * stores and releases energy. A change counts above a millionth of the
+ * element's scale, and above rounding.
+ */
+export const CHANGE = 1e-6;
+
+/** The change of an element's current that counts as one (CHANGE of its scale, never below rounding). */
+export function changeFloor(r: SimResult, scale: number): number {
+  return Math.max(CHANGE * scale, ROUNDING * naturalCurrent(r));
+}
+
+/** Every current in the period is rounding: the circuit rests (a capacitor alone at its steady voltage, a fixed output at the input). */
+export function atRest(r: SimResult, s: Schematic = schematic(r.params), scale = currentScale(r, s)): boolean {
+  return scale <= ROUNDING * naturalCurrent(r);
+}
+
+/** Each branch's largest current over the period, by id: the scale of its states and arrows in every mode. */
+export function branchScales(r: SimResult, s: Schematic = schematic(r.params)): Map<string, number> {
+  const n = (r.waveforms.t as number[]).length;
+  const out = new Map<string, number>(s.branches.map((b) => [b.id, 0]));
+  for (let k = 0; k < n; k++) {
+    const o = outputsAt(r, k);
+    for (const b of s.branches) out.set(b.id, Math.max(out.get(b.id)!, Math.abs(b.current(o))));
+  }
+  return out;
+}
 
 /** The first current of a list that counts (its sign), or 0. */
 function firstCounting(i: number[], eps: number): number {
@@ -168,15 +296,16 @@ function signChangesOf(i: number[], eps: number): number {
 }
 
 /** Every element's state in a mode, from its current over the mode's samples. */
-export function elementStates(r: SimResult, mode: OperatingMode, s: Schematic = schematic(r.params), scale = currentScale(r, s)): ElementInMode[] {
+export function elementStates(r: SimResult, mode: OperatingMode, s: Schematic = schematic(r.params), scales = modeScales(r, mode, s)): ElementInMode[] {
   const t = r.waveforms.t as number[];
-  const eps = NONE * scale;
   const out: ElementInMode[] = [];
   const os: Outputs[] = [];
   for (let k = mode.k0; k <= mode.k1; k++) os.push(outputsAt(r, k));
   const span = mode.t1 - mode.t0;
   for (const b of s.branches) {
     if (b.kind === 'wire') continue;
+    const eps = countingFloor(r, scales.get(b.id) ?? 0);
+    const fine = changeFloor(r, scales.get(b.id) ?? 0);
     const i = os.map((o) => b.current(o));
     let area = 0;
     let tSign: number | undefined;
@@ -230,12 +359,19 @@ export function elementStates(r: SimResult, mode: OperatingMode, s: Schematic = 
         state = active ? 'conducting' : 'idle';
         break;
       case 'inductor': {
-        // its energy, L i^2 / 2, grows while the current's magnitude grows
-        const d = Math.abs(i1) - Math.abs(i0);
+        // its energy, L i^2 / 2, grows while the current's magnitude grows: from the start, the end and the
+        // extremes of its magnitude within the mode (a current that rises and falls again stores, then releases)
+        const a0 = Math.abs(i0);
+        const a1 = Math.abs(i1);
+        const peak = Math.max(Math.abs(min), Math.abs(max));
+        const dip = Math.min(...i.map(Math.abs));
+        const d = a1 - a0;
         if (!active) state = 'zero';
         else if (signChanges >= 2) state = 'ringing';
         else if (signChanges === 1) state = 'reversing';
-        else state = Math.abs(d) <= eps ? 'steady' : d > 0 ? 'storing' : 'releasing';
+        else if (peak > Math.max(a0, a1) + fine) state = 'storeRelease';
+        else if (dip < Math.min(a0, a1) - fine) state = 'releaseStore';
+        else state = Math.abs(d) <= fine ? 'steady' : d > 0 ? 'storing' : 'releasing';
         break;
       }
       case 'capacitor': {
@@ -254,8 +390,10 @@ export function elementStates(r: SimResult, mode: OperatingMode, s: Schematic = 
       case 'vsource':
       case 'fixed':
         // a source delivers when its current leaves its positive terminal; a fixed output absorbs
-        // when current enters its positive terminal
-        state = !active ? 'idle' : (b.kind === 'vsource') === avg > 0 ? 'delivering' : 'absorbing';
+        // when current enters its positive terminal; a current that changes direction does both in turn
+        if (!active) state = 'idle';
+        else if (signChanges >= 1) state = 'alternating';
+        else state = (b.kind === 'vsource') === avg > 0 ? 'delivering' : 'absorbing';
         break;
       default:
         state = active ? 'conducting' : 'idle';
@@ -276,13 +414,13 @@ export interface BranchFlow {
 }
 
 /** Whether a branch carries current in a mode (for drawing its path), which way on average, and whether it reverses. */
-export function branchFlow(r: SimResult, mode: OperatingMode, s: Schematic, scale: number): Map<string, BranchFlow> {
+export function branchFlow(r: SimResult, mode: OperatingMode, s: Schematic, scales = modeScales(r, mode, s)): Map<string, BranchFlow> {
   const t = r.waveforms.t as number[];
-  const eps = NONE * scale;
   const out = new Map<string, BranchFlow>();
   const os: Outputs[] = [];
   for (let k = mode.k0; k <= mode.k1; k++) os.push(outputsAt(r, k));
   for (const b of s.branches) {
+    const eps = countingFloor(r, scales.get(b.id) ?? 0);
     const i = os.map((o) => b.current(o));
     let area = 0;
     for (let j = 1; j < i.length; j++) area += 0.5 * (i[j - 1]! + i[j]!) * (t[mode.k0 + j]! - t[mode.k0 + j - 1]!);

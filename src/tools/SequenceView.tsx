@@ -19,7 +19,7 @@ import { sim } from 'pe-core';
 import { fmtValue } from '../lib/format';
 import type { PlotTheme } from '../lib/plot';
 import { FONT, U, layoutCircuit, textWidth, wireSegments, type BranchLayout, type P } from '../lib/seqlayout';
-import { descKey, elementKey, fill, kindKey, stateKey, type SeqText } from '../i18n/sequence';
+import { descKey, elementKey, energySentences, fill, kindKey, stateKey, type SeqText } from '../i18n/sequence';
 import { Rich } from './ToolUi';
 
 type SimResult = sim.SimResult;
@@ -45,15 +45,32 @@ export default function SequenceView({ result, modes, text, selected, onSelect, 
   const scale = useMemo(() => sim.currentScale(result, s), [result, s]);
   const k = Math.min(Math.max(selected, 0), modes.length - 1);
   const mode = modes[k];
-  const states = useMemo(() => (mode ? sim.elementStates(result, mode, s, scale) : []), [result, mode, s, scale]);
-  const flow = useMemo(() => (mode ? sim.branchFlow(result, mode, s, scale) : new Map<string, BranchFlow>()), [result, mode, s, scale]);
+  // each branch's states, arrows and zeros are measured against its scale in the mode: the switching
+  // cell's largest current in the mode, or a load's or source's element's own peak (sim.modeScales)
+  const peaks = useMemo(() => sim.branchScales(result, s), [result, s]);
+  const scales = useMemo(() => (mode ? sim.modeScales(result, mode, s, peaks) : new Map<string, number>()), [result, mode, s, peaks]);
+  const states = useMemo(() => (mode ? sim.elementStates(result, mode, s, scales) : []), [result, mode, s, scales]);
+  const flow = useMemo(() => (mode ? sim.branchFlow(result, mode, s, scales) : new Map<string, BranchFlow>()), [result, mode, s, scales]);
+  const rest = useMemo(() => sim.atRest(result, s, scale), [result, s, scale]);
   if (!mode) return null;
   const topo = result.params.topology;
   const Ts = 1 / result.params.fs;
   const byId = new Map(states.map((e) => [e.id, e]));
   const t = (x: number) => fmtValue(x, 's', 3);
-  // a current below the period's counting threshold is shown as zero
-  const eps = sim.NONE * scale;
+  // a start and an end that differ by little still read differently: enough digits for the mode's length
+  const tIn = (x: number) => fmtValue(x, 's', Math.min(9, Math.max(3, Math.ceil(Math.log10(Math.abs(x) / (mode.t1 - mode.t0))) + 2)));
+  // a current below its element's counting threshold is shown as zero (the same threshold as the states)
+  const eps = (id: string) => sim.countingFloor(result, scales.get(id) ?? 0);
+  const next = modes[k + 1]?.kind;
+  const description = [text[descKey(topo, mode.kind, text, next)] ?? '', ...energySentences(states, text)].filter(Boolean).join(' ');
+  if (rest) {
+    return (
+      <section className="pe-seq" aria-labelledby="pe-seq-title">
+        <h3 id="pe-seq-title">{text.title}</h3>
+        <p className="pe-tool__hint">{text.rest}</p>
+      </section>
+    );
+  }
   return (
     <section className="pe-seq" aria-labelledby="pe-seq-title">
       <h3 id="pe-seq-title">{text.title}</h3>
@@ -81,9 +98,9 @@ export default function SequenceView({ result, modes, text, selected, onSelect, 
           <Circuit s={s} flow={flow} states={byId} text={text} theme={theme} k={mode.index} />
         </div>
         <div className="pe-seq__text">
-          <h4>{fill(text.modeRange!, { k: mode.index, t0: t(mode.t0), t1: t(mode.t1), dt: t(mode.t1 - mode.t0) })}</h4>
+          <h4>{fill(text.modeRange!, { k: mode.index, t0: tIn(mode.t0), t1: tIn(mode.t1), dt: t(mode.t1 - mode.t0) })}</h4>
           <p>
-            <Rich text={text[descKey(topo, mode.kind, text)] ?? ''} />
+            <Rich text={description} />
           </p>
         </div>
       </div>
@@ -99,7 +116,9 @@ export default function SequenceView({ result, modes, text, selected, onSelect, 
           </thead>
           <tbody>
             {states.map((e) => {
-              const still = Math.max(Math.abs(e.min), Math.abs(e.max)) <= eps;
+              const still = Math.max(Math.abs(e.min), Math.abs(e.max)) <= eps(e.id);
+              // along the element's arrow on the circuit (its average current's direction in the mode)
+              const dir = flow.get(e.id)?.sign || 1;
               return (
                 <tr key={e.id} className={still ? 'pe-seq__idle' : undefined}>
                   <th scope="row">
@@ -109,7 +128,7 @@ export default function SequenceView({ result, modes, text, selected, onSelect, 
                     {text[stateKey(e.kind, e.state, 'st')]}
                     {e.tSign !== undefined && e.signChanges === 1 && <span className="pe-field__meaning"> ({fill(text.reverses!, { t: t(e.tSign) })})</span>}
                   </td>
-                  <td>{still ? '0' : span(e.i0, e.i1, e.avg, 'A', eps)}</td>
+                  <td>{still ? '0' : span(dir * e.i0, dir * e.i1, dir * e.avg, 'A', eps(e.id))}</td>
                   <td>{e.v0 === undefined || e.v1 === undefined ? '' : span(e.v0, e.v1, e.vAvg!, 'V', 1e-9 * Math.max(Math.abs(e.v0), Math.abs(e.v1), 1))}</td>
                 </tr>
               );
@@ -117,6 +136,7 @@ export default function SequenceView({ result, modes, text, selected, onSelect, 
           </tbody>
         </table>
       </div>
+      <p className="pe-tool__hint">{text.tableNote}</p>
     </section>
   );
 }
@@ -156,7 +176,8 @@ function Circuit({ s, flow, states, text, theme, k }: CircuitProps) {
     [s, flow, states, text],
   );
   const active = theme.colors[3]!;
-  const idle = theme.line;
+  // (the muted grey: the line grey is too faint against the dark theme's background)
+  const idle = theme.muted;
   const first = textWidth(text.legendActive!, FONT.legend);
   return (
     <svg

@@ -50,8 +50,8 @@ const STATE_WRAP = 64;
 
 /**
  * An estimate of a text's width (px), on the generous side of what browsers
- * draw with the site's sans-serif fonts (the browser check measures the real
- * one: scripts/seq_check.mjs).
+ * draw with the site's sans-serif fonts (scripts/seq_check.mjs measures the
+ * real one in Chromium, in CI).
  */
 export function textWidth(s: string, size: number): number {
   let w = 0;

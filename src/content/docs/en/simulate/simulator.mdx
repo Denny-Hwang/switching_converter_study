@@ -198,26 +198,55 @@ For the selected mode the view shows:
   the mode). The switch is drawn closed while its gate is on; its body
   diode, across it, is coloured when it carries the current. Next to each
   element are its name and its state;
-- **what happens**, in a few sentences for each topology and mode;
+- **what happens**: first the circuit (which parts conduct, and what the
+  inductor is connected across), which holds whatever the load and the
+  operating point; then one sentence for each inductor, the output
+  capacitor, the battery or the fixed output, the input or the source and
+  its bus capacitor, written from their states in the table;
 - **a table** of every element's state, its current at the start and the
   end of the mode with its average over it, and its voltage where the
-  simulator has it.
+  simulator has it. Each current is positive in the direction of the
+  element's arrow on the circuit, the direction of its average current in
+  the mode; a negative value flows against the arrow. The inductor's
+  voltage includes the drop across its winding resistance.
 
 The states are read from the simulated waveforms of the mode, never
 assumed: an inductor stores energy while its current's magnitude grows and
-releases it while it shrinks; a capacitor or a battery charges while its
-current flows into its positive terminal; a source delivers while its
-current leaves its positive terminal; a current that changes sign within
-the mode is reported with the instant it reverses. A current smaller than a
-millionth of the period's largest current counts as none.
+releases it while it shrinks, and a current that grows and then shrinks
+within the mode (or the other way round) is reported so; a capacitor or a
+battery charges while its current flows into its positive terminal; a
+source delivers while its current leaves its positive terminal, and a
+source or a fixed output whose current changes direction within the mode
+carries power both ways; a current that changes sign once is reported with
+the instant it reverses.
+
+A current smaller than a thousandth of its scale counts as none, in the
+drawing, the states and the table. In the switching cell (the switch, the
+diodes, the windings, the inductances, the node capacitance and a direct
+input) the scale is the largest current in the cell during the mode: the
+microamperes a node capacitance draws through the input while the diode
+carries amperes are not a current path, while a ringing that turns the
+diode on again for a few nanoseconds conducts a current that is that
+mode's whole story, however small beside the period's peak. The load's and
+the source's elements (the output capacitor, the resistor, the battery, a
+fixed output, the Thevenin source with its resistance and bus capacitor)
+carry the load's or the source's current in every mode, and are measured
+against their own largest current over the period. Whether a current that
+counts grows or shrinks is read more finely, from a millionth of its scale.
+Rounding is never a current
+or a mode: a mode shorter than a billionth of the period (a current left at
+$10^{-21}$ A sends the switch through its body diode for $10^{-26}$ s) joins
+the mode next to it, and a circuit in which every current is rounding (a
+capacitor alone at its steady voltage) is shown at rest, without modes.
 
 The drawing and the table use the same currents, and those come from the
 model's outputs for each element: Kirchhoff's current law holds at every
 node of the drawn circuit at every instant of the period, for every
 topology, load, node capacitance and source (`sim-schematic.test.ts`).
-Where a diode's or an inductor's current ends, the boundary between two
-modes, the simulator agrees with ngspice within 10 ns in every circuit of
-the SPICE comparison below.
+Near each mode boundary where a diode's or an inductor's current ends, the
+instant that current last falls through 5 % of its average in the period
+agrees with ngspice within 3 ns (2.1 ns at worst) in every circuit of the
+SPICE comparison below.
 
 ## How it computes
 
@@ -460,19 +489,29 @@ Two further suites check the simulator by other means:
   current's extremes, where ngspice's steep diode overshoots for a few
   picoseconds as it takes over the current. Where a current ends within
   the period (a diode's or an inductor's in DCM, the forward converter's
-  magnetizing current at the end of its reset), the instant it falls
-  through 5 % of its average agrees within 10 ns (3.4 ns at worst). CI
-  reruns ngspice on every change and compares with the stored results.
+  magnetizing current at the end of its reset), the instant it last falls
+  through 5 % of its average in the period, measured from the period's
+  start, agrees within 3 ns: 2.1 ns at worst, where ngspice's slightly
+  larger diode drop ends a DCM flyback's demagnetization early. That
+  instant lies a few to a hundred nanoseconds before the current reaches
+  zero; with a node capacitance it is the last of the ringing's crossings.
+  CI reruns ngspice on every change and compares with the stored results.
 - **Operating modes** (`sim-schematic.test.ts`, `sim-sequence.test.ts`,
   `src/lib/seqlayout.test.ts`). Kirchhoff's current law at every node of the
   drawn circuit at every sample, for every topology with each load, with and
   without a node capacitance and a source; the modes cover the period's
   intervals, and the states match hand-checked cases (a buck in CCM and DCM,
   a boost in DCM, a flyback whose ringing leaves a negative current for its
-  body diode at turn-on, a forward converter's reset). Every mode, element
-  and state has an English and a Korean text, and the drawing's labels,
+  body diode at turn-on, a forward converter's reset, a boost whose output is
+  below its input, an inductor current that rises and falls within a mode,
+  a reverse current held constant by a battery, a rise that ends in ringing
+  with the diode off, the input carrying a flyback's ringing both ways).
+  Rounding makes neither a mode nor a current, and a circuit at rest shows
+  none. Every mode, element and state has an English and a Korean text, the
+  energy sentences follow the table's states, and the drawing's labels,
   symbols, wires and arrows do not overlap for any circuit in either
-  language.
+  language: with estimated text widths in the tests, and with the text the
+  browser draws in `scripts/seq_check.mjs`, which CI runs on the built site.
 - **Invariants** (`packages/pe-core/test/sim-invariants.test.ts`). For every
   converter with a resistor, a battery, both, a capacitor alone and a fixed
   output, ideal and with losses: in the steady state the inductor's

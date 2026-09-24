@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { sim } from 'pe-core';
 import { NAMES } from '../lib/seqlayout';
-import { SEQ_TEXT, descKey, elementKey, kindKey, stateKey } from './sequence';
+import { SAY, SEQ_TEXT, descKey, elementKey, energySentences, kindKey, stateKey } from './sequence';
 
 /**
  * The operating-mode view has a text for everything the simulator can show:
@@ -52,7 +52,11 @@ describe('operating-mode texts', () => {
         for (const locale of ['en', 'ko'] as const) {
           const text = SEQ_TEXT[locale];
           if (!text[kindKey(p.topology, kind)]) missing.push(`${locale} ${kindKey(p.topology, kind)}`);
-          if (!text[descKey(p.topology, kind, text)]) missing.push(`${locale} ${descKey(p.topology, kind, text)}`);
+          // a rise ends as the diode takes over, as the current reaches zero first, or at turn-on
+          for (const next of kind === 'rise' ? ['off', 'ring', undefined] : [undefined]) {
+            const key = descKey(p.topology, kind, text, next);
+            if (!text[key]) missing.push(`${locale} ${key}`);
+          }
         }
       }
     }
@@ -77,5 +81,41 @@ describe('operating-mode texts', () => {
       }
     }
     expect([...new Set(missing)]).toEqual([]);
+  });
+});
+
+describe('the energy sentences', () => {
+  it('every state of every element they name has a sentence in both languages, and each source its name', () => {
+    const missing: string[] = [];
+    for (const p of variants()) {
+      for (const b of sim.schematic(p).branches) {
+        const say = SAY[b.id];
+        if (!say || b.kind === 'wire') continue;
+        expect(say.kind, b.id).toBe(b.kind);
+        for (const locale of ['en', 'ko'] as const) {
+          const text = SEQ_TEXT[locale];
+          for (const st of sim.STATES[b.kind]) if (!text[stateKey(say.kind, st, 'say')]) missing.push(`${locale} ${stateKey(say.kind, st, 'say')}`);
+          if (say.kind === 'vsource' && !text[`src.${b.id}`]) missing.push(`${locale} src.${b.id}`);
+        }
+      }
+    }
+    expect([...new Set(missing)]).toEqual([]);
+    for (const locale of ['en', 'ko'] as const) for (const k of ['rest', 'tableNote']) expect(SEQ_TEXT[locale][k], `${locale} ${k}`).toBeTruthy();
+  });
+
+  it("follow the table's states, one sentence per element, with no placeholder left", () => {
+    const p: sim.SimParams = { topology: 'buck', Vg: 24, D: 0.6, fs: 2e5, L: 2e-5, source: { Voc: 24, Rs: 0.2, Cbus: 1e-5 }, load: { kind: 'network', C: 2.2e-5, R: 20, battery: { V: 15.84, R: 2 } } };
+    const r = sim.simulate(p);
+    for (const m of sim.modes(r)) {
+      const states = sim.elementStates(r, m);
+      for (const locale of ['en', 'ko'] as const) {
+        const said = energySentences(states, SEQ_TEXT[locale]);
+        // L, C, the battery, the source and the bus capacitor
+        expect(said.length).toBe(5);
+        for (const x of said) expect(x).not.toMatch(/[{}]/);
+      }
+      const battery = states.find((e) => e.id === 'B')!;
+      expect(energySentences(states, SEQ_TEXT.en)).toContain(SEQ_TEXT.en[`say.battery.${battery.state}`]);
+    }
   });
 });

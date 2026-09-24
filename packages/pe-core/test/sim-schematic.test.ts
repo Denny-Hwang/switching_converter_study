@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { kclResiduals, schematic, simulate, type SimParams, type SimResult, type Topology } from '../src/sim';
+import { buildModel, kclResiduals, schematic, simulate, startUp, type SimParams, type SimResult, type Topology } from '../src/sim';
 
 /**
  * The circuit drawn for the operating modes carries, in every branch, a
@@ -27,6 +27,7 @@ function cases(): Case[] {
     ['R||C', { kind: 'resistive', R: 10, C: 1e-4 }],
     ['battery', { kind: 'network', C: 1e-4, battery: { V: 8, R: 0.5 } }],
     ['battery and R', { kind: 'network', C: 1e-4, R: 20, battery: { V: 8, R: 0.5 } }],
+    ['C alone', { kind: 'network', C: 1e-6, V0: 0 }],
   ];
   for (const t of ['buck', 'boost', 'buckboost', 'flyback', 'forward'] as Topology[]) {
     for (const [name, load] of loads) {
@@ -51,8 +52,7 @@ function cases(): Case[] {
   return out;
 }
 
-function samples(r: SimResult): Record<string, number>[] {
-  const w = r.waveforms;
+function samples(w: SimResult['waveforms']): Record<string, number>[] {
   const t = w.t as number[];
   const keys = Object.keys(w).filter((k) => k !== 't' && k !== 'interval');
   return t.map((_, j) => Object.fromEntries(keys.map((k) => [k, (w[k] as number[])[j]!])));
@@ -61,8 +61,12 @@ function samples(r: SimResult): Record<string, number>[] {
 describe('the drawn circuit: Kirchhoff\'s current law at every node, every sample', () => {
   for (const [name, p] of cases()) {
     it(name, () => {
+      // a capacitor alone: its start-up from rest (behind a buck its steady state rests, behind a boost,
+      // buck-boost or flyback it charges without bound), where every element carries current
+      const alone = p.load.kind === 'network' && p.load.R === undefined && !p.load.battery;
       const r = simulate(p);
-      expect(r.status, name).toBe('steady');
+      if (!alone) expect(r.status, name).toBe('steady');
+      const w = alone ? startUp(p, buildModel(p), 3, 400).waveforms : r.waveforms;
       const s = schematic(p);
       // every node joins at least two branches, and every branch joins two nodes that exist
       const ids = new Set(s.nodes.map((n) => n.id));
@@ -74,7 +78,7 @@ describe('the drawn circuit: Kirchhoff\'s current law at every node, every sampl
         degree[b.to] = (degree[b.to] ?? 0) + 1;
       }
       for (const n of s.nodes) expect(degree[n.id] ?? 0, `node ${n.id}`).toBeGreaterThanOrEqual(2);
-      const all = samples(r);
+      const all = samples(w);
       let scale = 0;
       for (const o of all) for (const b of s.branches) scale = Math.max(scale, Math.abs(b.current(o)));
       expect(scale).toBeGreaterThan(0);
@@ -84,7 +88,7 @@ describe('the drawn circuit: Kirchhoff\'s current law at every node, every sampl
         for (const [node, res] of Object.entries(kclResiduals(s, o))) {
           if (Math.abs(res) > worst) {
             worst = Math.abs(res);
-            where = `node ${node} at sample ${j} (${(r.waveforms.interval as string[])[j]})`;
+            where = `node ${node} at sample ${j} (${(w.interval as string[])[j]})`;
           }
         }
       });

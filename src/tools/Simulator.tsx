@@ -750,12 +750,15 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
     const shapes: Record<string, unknown>[] = [];
     const annotations: Record<string, unknown>[] = [];
     if (m) {
+      // the selected mode's band, at least 0.4 % of the period wide: a mode of a few nanoseconds still shows
+      const mid = (m.t0 + m.t1) / 2;
+      const half = Math.max((m.t1 - m.t0) / 2, 0.002 * Ts);
       shapes.push({
         type: 'rect',
         xref: 'x',
         yref: 'paper',
-        x0: m.t0 * f,
-        x1: m.t1 * f,
+        x0: (mid - half) * f,
+        x1: (mid + half) * f,
         y0: 0,
         y1: 1,
         fillcolor: theme.muted,
@@ -776,8 +779,15 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
           layer: 'below',
         });
       }
-      for (const b of modes) {
+      // labels: the selected mode's first, then the others from the longest down, each only where it keeps
+      // a twentieth of the period from those already placed (two short modes side by side would overlap)
+      const placed: number[] = [];
+      const order = [m, ...modes.filter((b) => b !== m).sort((a, b) => b.t1 - b.t0 - (a.t1 - a.t0))];
+      for (const b of order) {
         if ((b.t1 - b.t0) / Ts < 0.04 && b !== m) continue;
+        const x = (b.t0 + b.t1) / 2;
+        if (placed.some((q) => Math.abs(q - x) < 0.05 * Ts)) continue;
+        placed.push(x);
         annotations.push({
           xref: 'x',
           yref: 'paper',

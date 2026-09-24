@@ -266,8 +266,10 @@ html:lang(ko) body {
   line-height: 1.3;
   text-align: center;
   /* Korean labels break between words, not inside one */
+  /* whole words (Korean too), hyphenated rather than cut where one is too long */
   word-break: keep-all;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  hyphens: auto;
   cursor: pointer;
 }
 .pe-choices button:hover {
@@ -558,11 +560,13 @@ html:lang(ko) body {
 .pe-seq {
   margin-top: 1rem;
 }
-/* the period's modes, each as wide as it lasts (with a minimum) */
+/* the period's modes, each as wide as it lasts (with a minimum); many short modes scroll within the strip */
 .pe-seq__strip {
   display: flex;
   gap: 0.25rem;
   margin: 0.5rem 0;
+  padding-bottom: 0.25rem;
+  overflow-x: auto;
 }
 .pe-seq__mode {
   display: flex;
@@ -570,7 +574,7 @@ html:lang(ko) body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 3.25rem;
+  min-width: 4.5rem;
   min-height: 3.25rem;
   margin: 0;
   padding: 0.3rem 0.25rem;
@@ -582,8 +586,10 @@ html:lang(ko) body {
   font-size: var(--sl-text-xs);
   line-height: 1.25;
   text-align: center;
+  /* whole words (Korean too), hyphenated rather than cut where one is too long */
   word-break: keep-all;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  hyphens: auto;
   cursor: pointer;
 }
 .pe-seq__mode strong {
@@ -592,9 +598,10 @@ html:lang(ko) body {
 .pe-seq__mode:hover {
   border-color: var(--sl-color-accent);
 }
+/* the selected mode: the high accent behind the page's background colour, legible in both themes */
 .pe-seq__mode[aria-pressed='true'] {
-  background: var(--sl-color-accent);
-  border-color: var(--sl-color-accent);
+  background: var(--sl-color-accent-high);
+  border-color: var(--sl-color-accent-high);
   color: var(--sl-color-black);
 }
 .pe-seq__mode:focus-visible {
@@ -620,8 +627,10 @@ html:lang(ko) body {
   min-width: 0;
   overflow-x: auto;
 }
+/* never scaled below a legible size: a narrow screen scrolls the circuit instead */
 .pe-seq__svg {
   display: block;
+  min-width: 28rem;
   height: auto;
 }
 .pe-seq__text h4 {

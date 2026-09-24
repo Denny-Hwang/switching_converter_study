@@ -64,16 +64,20 @@ const PARTS = { v: 5e-3, i: 1e-6 };
 /** Waveform values within this time of an event are not compared. */
 const EVENT_GAP = 2e-8;
 /**
- * Where a current's conduction ends (a mode boundary in DCM: a diode or an
- * inductor current reaching zero, the forward converter's core reset): the
- * last instant in the period where it falls through FALL_LEVEL of its average
- * (not its peak, which a diode's take-over spike inflates in ngspice), found
- * the same way in both. They must agree within FALL_TOL of the period (10 ns
- * at 100 kHz); ngspice's diode, which drops a few millivolts more, ends a few
- * nanoseconds early (buck-battery-ring: see scripts/spice_crosscheck.py).
+ * Where a current's conduction ends (near a mode boundary in DCM: a diode or
+ * an inductor current reaching zero, the forward converter's core reset):
+ * the last instant in the period where it falls through FALL_LEVEL of its
+ * average (not its peak, which a diode's take-over spike inflates in
+ * ngspice), found the same way in both; ngspice measures it from the
+ * period's start. It lies a few to a hundred nanoseconds before the current
+ * reaches zero, and with a node capacitance it is the last of the ringing's
+ * crossings. They must agree within FALL_TOL of the period (3 ns at
+ * 100 kHz): ngspice's diodes drop a few millivolts more, which ends a DCM
+ * flyback's demagnetization 2.1 ns early (flyback-fixed-dcm). Only a current
+ * that conducts is compared: a diode held off leaks nanoamperes in ngspice.
  */
 const FALL_LEVEL = 0.05;
-const FALL_TOL = 1e-3;
+const FALL_TOL = 3e-4;
 
 /** The last instant where y falls through `level` times its average `avg` (linear between samples), after `after`. */
 function fallTime(t: number[], y: number[], level: number, avg: number, after: number): number | undefined {
@@ -201,7 +205,8 @@ describe(`simulator against ngspice ${fixture.ngspice} (${fixture.cases.length} 
       const Ts = 1 / c.fs;
       for (const q of ['i_D', 'i_L', 'i_M']) {
         const sp = spice[`${q}_fall`];
-        const spFall = sp !== undefined && sp > EVENT_GAP ? sp : undefined;
+        const conducts = Math.max(Math.abs(spice[`${q}_max`] ?? 0), Math.abs(spice[`${q}_min`] ?? 0)) > PARTS.i;
+        const spFall = conducts && sp !== undefined && sp > EVENT_GAP ? sp : undefined;
         const tsFall = w[q] ? fallTime(t, w[q] as number[], FALL_LEVEL, r.avg[q]!, EVENT_GAP) : undefined;
         expect(tsFall === undefined, `${c.id}: ${q} ends in the period: simulator ${tsFall}, ngspice ${spFall}`).toBe(spFall === undefined);
         if (tsFall !== undefined && spFall !== undefined) {

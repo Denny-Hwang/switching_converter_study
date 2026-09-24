@@ -10,5 +10,5 @@ export { checkRange, linearIntegral, outputForms, periodIntegrals, quadraticInte
 export type { PeriodIntegrals } from './integrals';
 export { BOTTOM, kclResiduals, schematic } from './schematic';
 export type { ElementKind, Outputs, Schematic, SchematicBranch, SchematicNode, Side } from './schematic';
-export { NONE, STATES, branchFlow, currentScale, elementStates, modes, outputsAt } from './sequence';
+export { CHANGE, NONE, ROUNDING, SLIVER, STATES, atRest, branchFlow, branchScales, changeFloor, modeScales, countingFloor, currentScale, elementStates, modes, outputsAt } from './sequence';
 export type { BranchFlow, ElementInMode, ElementState, ModeKind, OperatingMode } from './sequence';

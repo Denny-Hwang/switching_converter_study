@@ -112,6 +112,8 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
           node scripts/keyboard_check.mjs
+      - name: The operating-mode drawing's real text boxes (headless Chromium)
+        run: node scripts/seq_check.mjs
       - name: Mirror dist/ under the Pages base path for link checking
         run: |
           rm -rf _linkcheck
