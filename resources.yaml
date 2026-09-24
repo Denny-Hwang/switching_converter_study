@@ -893,13 +893,13 @@ resources:
     cite: ti_bq25570
 
   # --- Phase 4e: the remaining seed items of BUILD_SPEC section 6 ---------------
-  # Books (the publishers' own pages; never a copy of the book)
+  # Books (the publishers' own pages; never an unauthorized copy of the book)
   - id: erickson2020-book
     type: book
     title: "Fundamentals of Power Electronics, 3rd ed."
     author: "R. W. Erickson, D. Maksimović"
     url: https://link.springer.com/book/10.1007/978-3-030-43881-4
-    tags: [textbook, ccm, dcm, averaged-models, control, magnetics]
+    tags: [ccm-dcm, averaged-models, control-basics, magnetics]
     level: intermediate
     language: en
     retrieved: 2026-09-24
@@ -913,7 +913,7 @@ resources:
     title: "Power Electronics: Converters, Applications, and Design, 3rd ed."
     author: "N. Mohan, T. M. Undeland, W. P. Robbins"
     url: https://www.wiley.com/en-us/Power+Electronics:+Converters,+Applications,+and+Design,+3rd+Edition-p-9780471226932
-    tags: [textbook, rectifiers, devices, snubbers, gate-drive, magnetics]
+    tags: [rectifiers, semiconductors, snubbers, gate-drive, magnetics]
     level: intermediate
     language: en
     retrieved: 2026-09-24
@@ -926,8 +926,8 @@ resources:
     type: book
     title: "Switch-Mode Power Supplies: SPICE Simulations and Practical Designs, 2nd ed."
     author: "C. P. Basso"
-    url: https://www.accessengineeringlibrary.com/browse/switch-mode-power-supplies-spice-simulations-and-practical-designs
-    tags: [simulation, spice, averaged-models, control, flyback]
+    url: https://www.accessengineeringlibrary.com/content/book/9780071823463
+    tags: [simulation, spice, averaged-models, control-basics, flyback]
     level: advanced
     language: en
     retrieved: 2026-09-24
@@ -941,7 +941,7 @@ resources:
     title: "Power Electronics"
     author: "D. W. Hart"
     url: https://www.mheducation.com/highered/product/power-electronics-hart.html
-    tags: [textbook, introduction, spice]
+    tags: [topologies, spice]
     level: intro
     language: en
     retrieved: 2026-09-24
@@ -969,12 +969,12 @@ resources:
     title: "Power Electronics Specialization"
     author: "University of Colorado Boulder (Coursera; R. W. Erickson, D. Maksimović, K. Afridi)"
     url: https://www.coursera.org/specializations/power-electronics
-    tags: [course, ccm, dcm, control, magnetics]
+    tags: [ccm-dcm, control-basics, magnetics]
     level: intermediate
     language: en
     retrieved: 2026-09-24
     why: "The course series around the textbook, from converter circuits to control and magnetics; its courses are listed one by one as well."
-    why_ko: "교과서를 따라가는 강좌 시리즈로, 컨버터 회로부터 제어와 자성 부품까지 다룹니다. 개별 강좌도 따로 실려 있습니다."
+    why_ko: "교과서를 따라가는 강좌 시리즈: 컨버터 회로부터 제어와 자성 부품까지. 개별 강좌도 따로 실림."
     title_match: "Power Electronics"
     cite: cuboulder_pe_coursera
 
@@ -983,7 +983,7 @@ resources:
     title: "Modeling and Control of Power Electronics Specialization"
     author: "University of Colorado Boulder (Coursera; D. Maksimović)"
     url: https://www.coursera.org/specializations/modeling-and-control-of-power-electronics
-    tags: [course, averaged-models, small-signal, control]
+    tags: [averaged-models, small-signal, control-basics]
     level: advanced
     language: en
     retrieved: 2026-09-24
@@ -1011,12 +1011,12 @@ resources:
     title: "Power Supply Design Seminar (PSDS) library"
     author: "Texas Instruments"
     url: https://www.ti.com/about-ti/events/power-supply-design-seminar/psds-library.html
-    tags: [seminar, topologies, control, magnetics, gate-drive]
+    tags: [topologies, control-basics, magnetics, gate-drive]
     level: intermediate
     language: en
     retrieved: 2026-09-24
     why: "Seminar papers and recordings on topologies, control, magnetics and gate drive; the content needs a free myTI account."
-    why_ko: "토폴로지, 제어, 자성 부품, 게이트 구동에 관한 세미나 자료와 녹화 영상. 내용을 보려면 무료 myTI 계정이 필요합니다."
+    why_ko: "토폴로지, 제어, 자성 부품, 게이트 구동에 관한 세미나 자료와 녹화 영상. 내용을 보려면 무료 myTI 계정이 필요."
     title_match: "PSDS library"
     cite: ti_psds
 
@@ -1030,8 +1030,8 @@ resources:
     level: intro
     language: en
     retrieved: 2026-09-24
-    why: "A free SPICE simulator; this site's LTspice files open in it."
-    why_ko: "무료 SPICE 시뮬레이터. 이 사이트의 LTspice 파일을 열 수 있습니다."
+    why: "A free SPICE simulator from Analog Devices."
+    why_ko: "Analog Devices의 무료 SPICE 시뮬레이터."
     title_match: "LTspice"
     cite: ltspice
 
@@ -1045,21 +1045,21 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "An open-source SPICE simulator; the site's simulator is cross-checked against it in CI."
-    why_ko: "오픈 소스 SPICE 시뮬레이터. 이 사이트의 시뮬레이터는 CI에서 이것과 교차 검증됩니다."
+    why_ko: "오픈 소스 SPICE 시뮬레이터. 이 사이트의 시뮬레이터를 CI에서 이것과 교차 검증."
     title_match: "Ngspice"
     cite: ngspice
 
   - id: falstad-circuitjs
     type: tool
     title: "CircuitJS1 circuit simulator"
-    author: "P. Falstad"
+    author: "P. Falstad (the original Java applet), I. Sharp (the port to the browser)"
     url: https://www.falstad.com/circuit/
     tags: [simulation, browser]
     level: intro
     language: en
     retrieved: 2026-09-24
-    why: "A circuit simulator in the browser that animates the currents; good for a first look at a converter."
-    why_ko: "전류를 움직임으로 보여 주는 브라우저 회로 시뮬레이터. 컨버터를 처음 살펴보기에 좋습니다."
+    why: "A circuit simulator in the browser that animates the currents, Falstad's applet as ported to the browser by Iain Sharp; good for a first look at a converter."
+    why_ko: "전류를 움직임으로 보여 주는 브라우저 회로 시뮬레이터로, Falstad의 애플릿을 Iain Sharp가 브라우저로 옮긴 것. 컨버터를 처음 살펴보기에 좋음."
     title_match: "Circuit Simulator"
     cite: falstad_circuitjs
 
@@ -1107,8 +1107,8 @@ resources:
     type: paper
     title: "Realization of loss-free resistive elements"
     author: "S. Singer"
-    url: https://ieeexplore.ieee.org/document/45691
-    tags: [lfr, dcm, harvesting]
+    url: https://ieeexplore.ieee.org/document/45691/
+    tags: [loss-free-resistor, harvesting]
     level: advanced
     language: en
     retrieved: 2026-09-24
@@ -1121,7 +1121,7 @@ resources:
     type: paper
     title: "On the law of hysteresis"
     author: "C. P. Steinmetz"
-    url: https://ieeexplore.ieee.org/document/5570437
+    url: https://ieeexplore.ieee.org/document/5570437/
     tags: [magnetics, core-loss]
     level: advanced
     language: en
@@ -1148,7 +1148,7 @@ resources:
     type: paper
     title: "Adaptive piezoelectric energy harvesting circuit for wireless remote power supply"
     author: "G. K. Ottman, H. F. Hofmann, A. C. Bhatt, G. A. Lesieutre"
-    url: https://ieeexplore.ieee.org/document/1035141
+    url: https://ieeexplore.ieee.org/document/1035141/
     tags: [harvesting, piezoelectric]
     level: advanced
     language: en
@@ -1162,12 +1162,12 @@ resources:
     type: paper
     title: "A comparison between several vibration-powered piezoelectric generators for standalone systems"
     author: "E. Lefeuvre, A. Badel, C. Richard, L. Petit, D. Guyomar"
-    url: https://www.sciencedirect.com/science/article/pii/S0924424705006151
+    url: https://www.sciencedirect.com/science/article/abs/pii/S0924424705006151
     tags: [harvesting, piezoelectric, sece, sshi]
     level: advanced
     language: en
     retrieved: 2026-09-24
-    why: "The standard interface, SECE and the SSHI variants compared on the same piezoelectric generator."
-    why_ko: "같은 압전 발전기에서 표준 인터페이스, SECE, SSHI 변형들을 비교합니다."
+    why: "The standard interface, SECE and the SSHI variants compared for standalone systems."
+    why_ko: "독립형 시스템을 위한 표준 인터페이스, SECE, SSHI 변형의 비교."
     title_match: "A comparison between several vibration-powered piezoelectric generators"
     cite: lefeuvre2006

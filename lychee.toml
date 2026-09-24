@@ -62,4 +62,15 @@ exclude = [
   # quoted sentence.
   '^https?://jim\.sagepub\.com/',
   '^https://journals\.sagepub\.com/',
+  # Publishers' and vendors' pages that the resource pages link, whose hosts
+  # answer link checkers on CI runners with bot checks or 403: the urls-online
+  # job opens the same URLs with a browser User-Agent over HTTP/1.1 and, when
+  # the runner is refused, matches the title of each URL's latest Internet
+  # Archive capture instead.
+  '^https://www\.wiley\.com/',
+  '^https://www\.sciencedirect\.com/',
+  '^https://digital-library\.theiet\.org/',
+  '^https://www\.accessengineeringlibrary\.com/',
+  '^https://www\.mheducation\.com/',
+  '^https://www\.we-online\.com/',
 ]

@@ -48,8 +48,10 @@ then under an h2 of its own <GotchaIndex part="tags" />, which lists the
 pages by their tags.
 
 A page under 10-resources/ other than the bibliography lists resources.yaml
-with <ResourceTable types={[...]} />; its Korean mirror lists the same types,
-STATUS has its row, and every type used in resources.yaml has a page.
+with one <ResourceTable /> (the index with every type; the others with
+types={[...]}, each a type of src/lib/resources.ts); its Korean mirror lists
+the same types, STATUS has its row and no row without a page, and every type
+used in resources.yaml has a page.
 
 A page is a tool page when it embeds a tool island (<Explorer />,
 <Simulator />, ...). Each tool page has a "Screenshot" section (KO: 스크린샷)
@@ -99,6 +101,15 @@ GOTCHA_SECTIONS = {
 }
 RESOURCES_DIR = "10-resources"
 RESOURCE_TABLE = re.compile(r"<ResourceTable\b([^>]*)/>")
+RESOURCE_LIB = ROOT / "src" / "lib" / "resources.ts"
+
+
+def resource_type_ids() -> set[str]:
+    """The resource types of src/lib/resources.ts (RESOURCE_TYPES' keys)."""
+    text = RESOURCE_LIB.read_text(encoding="utf-8")
+    block = text[text.index("export const RESOURCE_TYPES"):]
+    block = block[: block.index("} as const")]
+    return set(re.findall(r"^\s+'?([a-z][a-z-]*)'?: \{ en:", block, re.M))
 DOD_COLUMNS = ("EN", "KO", "`<Eq>` only", "Try it", "Go deeper ≥ 2", "Gotchas", "Quiz ≥ 5")
 
 
@@ -287,10 +298,11 @@ def check_gotchas(status: dict[tuple[str, str], dict[str, str]]) -> tuple[list[s
 def check_resource_pages(status: dict[tuple[str, str], dict[str, str]], resources: dict[str, dict]) -> list[str]:
     """The pages under 10-resources that list resources.yaml."""
     errors: list[str] = []
+    known = resource_type_ids()
     listed: dict[tuple[str, str], list[str] | None] = {}
     for locale in SECTIONS:
         folder = DOCS / locale / RESOURCES_DIR
-        for path in sorted(folder.glob("*.mdx")) if folder.exists() else []:
+        for path in sorted([*folder.glob("*.mdx"), *folder.glob("*.md")]) if folder.exists() else []:
             if path.stem == "bibliography":
                 continue
             where = str(path.relative_to(ROOT))
@@ -300,7 +312,11 @@ def check_resource_pages(status: dict[tuple[str, str], dict[str, str]], resource
                 errors.append(f"{where}: a resource page embeds exactly one <ResourceTable />, found {len(tables)}")
                 continue
             m = re.search(r"types\s*=\s*\{([^}]*)\}", tables[0])
-            listed[(locale, path.stem)] = sorted(quoted_list(m.group(1))) if m else None
+            types = sorted(quoted_list(m.group(1))) if m else None
+            for ty in types or []:
+                if ty not in known:
+                    errors.append(f"{where}: unknown resource type {ty!r} (RESOURCE_TYPES in src/lib/resources.ts)")
+            listed[(locale, path.stem)] = types
     for (locale, slug), types in listed.items():
         if locale == "en":
             row = status.get((RESOURCES_DIR, slug))
@@ -312,11 +328,13 @@ def check_resource_pages(status: dict[tuple[str, str], dict[str, str]], resource
                 errors.append(f"src/content/docs/ko/{RESOURCES_DIR}/{slug}.mdx: lists types {listed[('ko', slug)]}, the English page {types}")
         elif ("en", slug) not in listed:
             errors.append(f"src/content/docs/ko/{RESOURCES_DIR}/{slug}.mdx: no English page of that name")
-    if listed:
-        covered = {ty for (loc, _), types in listed.items() if loc == "en" and types for ty in types}
-        for rid, r in resources.items():
-            if r.get("type") not in covered:
-                errors.append(f"resources.yaml: {rid} has type {r.get('type')!r}, which no 10-resources page lists by type")
+    covered = {ty for (loc, _), types in listed.items() if loc == "en" and types for ty in types}
+    for rid, r in resources.items():
+        if r.get("type") not in covered:
+            errors.append(f"resources.yaml: {rid} has type {r.get('type')!r}, which no 10-resources page lists by type")
+    for (section, slug) in status:
+        if section == RESOURCES_DIR and slug != "bibliography" and ("en", slug) not in listed:
+            errors.append(f"docs/STATUS.md: resources row {slug!r} has no page src/content/docs/en/{RESOURCES_DIR}/{slug}.mdx")
     return errors
 
 

@@ -469,6 +469,10 @@ html:lang(ko) body {
   margin: 1rem 0 0.5rem;
   font-size: var(--sl-text-sm);
 }
+.pe-res__filters[hidden] {
+  /* the author style above would otherwise override the browser's [hidden] */
+  display: none;
+}
 .pe-res__filters label {
   display: flex;
   flex-direction: column;
@@ -513,8 +517,17 @@ html:lang(ko) body {
 .pe-res__date {
   white-space: nowrap;
 }
-.pe-res__none {
+.pe-res__none,
+.pe-res__lang {
   color: var(--sl-color-gray-2);
+}
+.pe-res__lang {
+  margin: 0.25rem 0;
+  font-size: var(--sl-text-sm);
+}
+.pe-res__scroll:focus-visible {
+  outline: 2px solid var(--sl-color-accent);
+  outline-offset: 2px;
 }
 /* Gotcha pages: tags at the top of each page, and the index. */
 .pe-gotcha-tags {

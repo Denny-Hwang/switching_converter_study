@@ -473,3 +473,61 @@ def test_modulelint_resource_pages(tmp_path: Path) -> None:
     assert any("which no 10-resources page" in e for e in _resource_errors(tmp_path / "3", "['book']", "['book']", {"EN": "✅", "KO": "✅"}, {"a": {"type": "tool"}}))
     # STATUS lists the page
     assert any("needs a row" in e for e in _resource_errors(tmp_path / "4", "['book']", "['book']", None, ok))
+    # a type that src/lib/resources.ts does not know, beside one it does
+    assert any("unknown resource type 'bokk'" in e for e in _resource_errors(tmp_path / "5", "['book', 'bokk']", "['book', 'bokk']", {"EN": "✅", "KO": "✅"}, ok))
+
+
+def _resource_tree(root: Path, pages: dict[str, str]) -> None:
+    for rel, text in pages.items():
+        path = root / "src" / "content" / "docs" / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+
+
+def test_modulelint_resource_page_rules(tmp_path: Path) -> None:
+    lint = _script("modulelint")
+    ok = {"a": {"type": "book"}}
+    books = "---\ntitle: Books\n---\n\n<ResourceTable types={['book']} />\n"
+    row = {"EN": "✅", "KO": "✅"}
+
+    def errors(name: str, pages: dict[str, str], status: dict, resources: dict) -> list[str]:
+        root = tmp_path / name
+        _resource_tree(root, pages)
+        lint.ROOT, lint.DOCS = root, root / "src" / "content" / "docs"
+        return lint.check_resource_pages(status, resources)
+
+    # no resource page at all: every type still needs one
+    assert any("which no 10-resources page" in e for e in errors("none", {}, {}, ok))
+    # an English page without its Korean page, and a Korean page without its English one
+    got = errors("mirror", {"en/10-resources/books.mdx": books, "ko/10-resources/extra.mdx": books}, {("10-resources", "books"): row}, ok)
+    assert any("books.mdx: no Korean page" in e for e in got), got
+    assert any("extra.mdx: no English page of that name" in e for e in got), got
+    # two tables on one page
+    two = books + "\n<ResourceTable types={['paper']} />\n"
+    got = errors("two", {"en/10-resources/books.mdx": two, "ko/10-resources/books.mdx": two}, {("10-resources", "books"): row}, ok)
+    assert any("exactly one <ResourceTable />, found 2" in e for e in got), got
+    # a STATUS row without a page
+    got = errors("stale", {"en/10-resources/books.mdx": books, "ko/10-resources/books.mdx": books},
+                 {("10-resources", "books"): row, ("10-resources", "old"): row}, ok)
+    assert any("resources row 'old' has no page" in e for e in got), got
+    # a Markdown page is checked like an MDX page
+    got = errors("md", {"en/10-resources/books.md": books}, {("10-resources", "books"): row}, ok)
+    assert any("books.mdx: no Korean page" in e for e in got), got
+
+
+def test_resources_check_validates_level_tags_and_korean_line(tmp_path: Path) -> None:
+    rc = _script("resources_check")
+    entry = {"id": "x", "type": "book", "title": "T", "url": "https://example.org/", "tags": ["a"], "level": "intro",
+             "language": "en", "retrieved": "2026-09-24", "why": "w", "why_ko": "w", "title_match": "T"}
+    import yaml
+
+    def errors(**change) -> list[str]:
+        path = tmp_path / "resources.yaml"
+        path.write_text(yaml.safe_dump({"resources": [{**entry, **change}]}), encoding="utf-8")
+        rc.RESOURCES = path
+        return [e for e in rc.collect()[1] if "resources.yaml" in e]
+
+    assert errors() == []
+    assert any("level must be one of" in e for e in errors(level="beginner"))
+    assert any("missing why_ko" in e for e in errors(why_ko=""))
+    assert any("a tag is listed twice" in e for e in errors(tags=["a", "a"]))

@@ -143,7 +143,7 @@ node scripts/seq_check.mjs             # the operating-mode drawing's real text 
 | 1 | Equation engine: derivations, parity, math and citation lints | done |
 | 2 | Core content: foundations, physics, theory, topologies (EN + KO) | done |
 | 3 | Time-domain simulator and design tools: simulator, converter designer, magnetics designer, loss budget, clamp check, source matcher, sense chain | done |
-| 4 | Magnetics, bench, harvesting, gotchas, resources | planned |
+| 4 | Magnetics, bench, harvesting, gotchas, resources | done |
 | 5 | LTspice/ngspice/CircuitJS library, missions, v0.1.0 | planned |
 
 ### Contributing and licences
@@ -274,7 +274,7 @@ node scripts/seq_check.mjs             # 동작 모드 회로도의 실제 글�
 | 1 | 수식 엔진: 유도, 패리티, 수식·인용 린트 | 완료 |
 | 2 | 핵심 콘텐츠: 기초, 물리, 이론, 토폴로지(영어·한국어) | 완료 |
 | 3 | 시간 영역 시뮬레이터와 설계 도구: 시뮬레이터, 컨버터 설계, 자성 부품 설계, 손실 예산, 클램프 점검, 전원 정합, 센스 체인 | 완료 |
-| 4 | 자성 부품, 벤치, 하베스팅, 흔한 함정, 자료 모음 | 예정 |
+| 4 | 자성 부품, 벤치, 하베스팅, 주의할 점, 자료 | 완료 |
 | 5 | LTspice/ngspice/CircuitJS 라이브러리, 미션, v0.1.0 | 예정 |
 
 ### 기여와 라이선스

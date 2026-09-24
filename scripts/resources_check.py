@@ -4,8 +4,9 @@
 Collects URLs from references.bib (url / howpublished=\\url{...}) and from
 resources.yaml (when present), then:
 
-  offline (always): each resources.yaml entry has type, title, url, tags,
-      level, language, retrieved (YYYY-MM-DD) and why; bib entries with a
+  offline (always): each resources.yaml entry has type, title, url, tags
+      (no tag twice), level (intro, intermediate, advanced), language,
+      retrieved (YYYY-MM-DD), why and why_ko; bib entries with a
       URL that are verified carry a `urltitle` hint or are PDFs/login pages
       explicitly marked;
   --online (CI): opens every URL and checks that the page title (<title> in
@@ -72,6 +73,7 @@ from pe_core import bib  # noqa: E402
 RESOURCES = ROOT / "resources.yaml"
 DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 RESOURCE_TYPES = {"book", "course", "video", "channel", "app-note", "article", "tool", "paper", "datasheet", "lecture", "chapter"}
+RESOURCE_LEVELS = {"intro", "intermediate", "advanced"}
 TOOL_AGENT = "switching-converter-study-linkcheck/1.0 (+https://github.com/Denny-Hwang/switching_converter_study)"
 CAP = 6_000_000  # bytes of a page searched for its title; some pages carry megabytes of inline script before <title>
 PDF_CAP = 60_000_000  # bytes kept per response: a PDF is read whole (its cross-reference table is at the end)
@@ -169,9 +171,16 @@ def collect() -> tuple[list[dict], list[str]]:
     ids: set[str] = set()
     for i, r in enumerate(load_resources()):
         where = f"resources.yaml: resources[{i}] ({r.get('id', '?')})"
-        for field in ("id", "type", "title", "url", "tags", "level", "language", "retrieved", "why", "title_match"):
+        for field in ("id", "type", "title", "url", "tags", "level", "language", "retrieved", "why", "why_ko", "title_match"):
             if not r.get(field):
                 errors.append(f"{where}: missing {field}")
+        if r.get("level") and r["level"] not in RESOURCE_LEVELS:
+            errors.append(f"{where}: level must be one of {sorted(RESOURCE_LEVELS)}")
+        tags = r.get("tags") or []
+        if not isinstance(tags, list) or not all(isinstance(t, str) and t for t in tags):
+            errors.append(f"{where}: tags must be a list of names")
+        elif len(set(tags)) != len(tags):
+            errors.append(f"{where}: a tag is listed twice")
         if r.get("id") in ids:
             errors.append(f"{where}: duplicate id")
         ids.add(r.get("id"))

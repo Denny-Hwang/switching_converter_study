@@ -62,7 +62,7 @@ Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); th
 
 Legend: ✅ done · 🟡 partial · ⬜ not started · ➖ not applicable. "Phase" is the build phase that delivers the module (docs/BUILD_SPEC.md §7); "later" = not scheduled in phases 0–5. 00-foundations and 01-physics are compact refreshers (Phase 2 scope).
 
-_Last updated: Phase 4d (08-gotchas). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
+_Last updated: Phase 4e (10-resources). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
 
 "Try it" links open the [equation explorer](../src/content/docs/en/design/explorer.mdx) with a synthetic preset. Pages whose example is a whole converter also open the [simulator](../src/content/docs/en/simulate/simulator.mdx) with it (`<TrySim>`, Phase 3a); design-tool presets come with the design tools.
 
@@ -190,8 +190,9 @@ Gotcha pages are not modules: each follows the template symptom · why · how to
 ## 10-resources
 
 Generated from `resources.yaml` by `<ResourceTable>`: every row is in the page, and a script adds a text search and filters
-by type, level and tag. Every seed item of BUILD_SPEC §6 is resolved (none removed); `scripts/resources_check.py --online`
-opens every URL and matches its title in CI.
+by type, level and tag. Every seed item of BUILD_SPEC §6 is resolved (none removed; TI's PSDS recordings and its archive
+index are one entry, typed video). `scripts/resources_check.py --online` opens every URL and matches its title in CI, or,
+where a host turns the runner away, the title of the URL's latest Internet Archive capture.
 
 | Page | Phase | EN | KO | Notes |
 | --- | --- | --- | --- | --- |
