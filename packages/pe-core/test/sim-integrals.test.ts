@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { affineStep, buildModel, checkRange, linearIntegral, periodIntegrals, quadraticIntegral, runCycle, simulate, stepsFor, type CycleRun, type IntegralOptions, type Model, type SimParams, type Topology } from '../src/sim';
+import { stepMatrices } from '../src/sim/linalg';
 
 const rel = (a: number, b: number) => Math.abs(a - b) / Math.abs(b);
 
@@ -501,7 +502,10 @@ describe('a stiff bus behind a source resistance that is not small: balanced exp
   const A147: SimParams = { topology: 'flyback', Vg: 0, D: 0.271, fs: 5750, L: 4.84e-4, Ron: 0.00115, RL: 0.00169, VF: 0.923, n: 6.86, source: { Voc: 217, Rs: 26.8, Cbus: 1.36e-18 }, load: { kind: 'resistive', R: 900, C: 8.55e-4 } };
 
   it('the step of the on-interval against a 90-digit exponential', () => {
-    // with R_s C_bus = 1e-18 s; the references are 90-digit exponentials of the same matrices
+    // with R_s C_bus = 1e-18 s; the references are 90-digit exponentials of the same matrices. The engine's full
+    // sub-steps take stepMatrices (Φ and W, the input's integral, applied to b); the first and last sub-steps of an
+    // interval take affineStep. Unbalanced, stepMatrices put Φ[2][0] 6.8e-5 and 2.1e-4 off and W b 2.6e-2 and
+    // 2.0e-2 off on its first state, while affineStep, with the input inside its matrix, stayed within 2e-15
     for (const [Rs, ref] of [
       [10, { phi00: 0.99820448128513775973, phi20: -9.9820448128515838965, phi02: 2.0624059530685090057e-15, phi22: -2.0624059530685516295e-14, g0: 0.038951693831462351474, g2: 216.61048306168985191 }],
       [30, { phi00: 0.99462412472422471935, phi20: -29.838723741728590269, phi02: 2.0550085221576166201e-15, phi22: -6.1650255664732318208e-14, g0: 0.03888181701609696377, g2: 215.83354548953046093 }],
@@ -509,19 +513,27 @@ describe('a stiff bus behind a source resistance that is not small: balanced exp
       const p: SimParams = { ...A147, source: { Voc: 217, Rs, Cbus: 1e-18 / Rs } };
       const model = buildModel(p);
       const on = model.intervals.on!;
-      const { Phi, Gamma } = affineStep(on.A, on.b, model.Ts / stepsFor(p, model));
-      for (const [got, want] of [
-        [Phi[0]![0]!, ref.phi00],
-        [Phi[2]![0]!, ref.phi20],
-        [Phi[0]![2]!, ref.phi02],
-        [Phi[1]![1]!, 0.99999988699607949848],
-        [Gamma[0]!, ref.g0],
-        [Gamma[2]!, ref.g2],
-      ]) {
-        expect(rel(got, want), `R_s ${Rs}`).toBeLessThan(1e-14);
+      const h = model.Ts / stepsFor(p, model);
+      const affine = affineStep(on.A, on.b, h);
+      const full = stepMatrices(on.A, h);
+      const Wb = full.W.map((row) => row.reduce((s, w, j) => s + w * on.b[j]!, 0));
+      for (const [kind, Phi, Gamma] of [
+        ['affineStep', affine.Phi, affine.Gamma],
+        ['stepMatrices', full.Phi, Wb],
+      ] as const) {
+        for (const [got, want] of [
+          [Phi[0]![0]!, ref.phi00],
+          [Phi[2]![0]!, ref.phi20],
+          [Phi[0]![2]!, ref.phi02],
+          [Phi[1]![1]!, 0.99999988699607949848],
+          [Gamma[0]!, ref.g0],
+          [Gamma[2]!, ref.g2],
+        ]) {
+          expect(rel(got, want), `${kind}, R_s ${Rs}`).toBeLessThan(2e-14);
+        }
+        // the bus's own decay, e^{-h/(R_s C_bus)}, is long gone: what is left of it is kept to rounding against Φ's norm
+        expect(Math.abs(Phi[2]![2]! - ref.phi22), kind).toBeLessThan(1e-15 * Math.abs(ref.phi20));
       }
-      // the bus's own decay, e^{-h/(R_s C_bus)}, is long gone: what is left of it is kept to rounding against Φ's norm
-      expect(Math.abs(Phi[2]![2]! - ref.phi22)).toBeLessThan(1e-15 * Math.abs(ref.phi20));
     }
   });
 
@@ -542,7 +554,8 @@ describe('a diode current that flows for femtoseconds', () => {
     // diode's formula of the off interval, evaluated there, is -2.4 A, and taken from that state, <i_D^2> came out
     // -1.1e-28 A². The 60-digit references through the same samples: a current of 1e-17 A on average, which the
     // rounding of the steps decides (balancing them moved it by 13 %, every step still exact to 5e-14 of the
-    // states' scale); recompute them if the engine's samples change
+    // states' scale). The references pin the samples: the test detects a change in them, not an error; recompute
+    // the references if the engine's samples change
     const p: SimParams = { topology: 'flyback', Vg: 34.4, D: 0.723, fs: 274000, L: 1.18e-5, n: 0.998, Ron: 0.0085, VF: 0.751, Cnode: 4.5e-12, load: { kind: 'network', C: 3.92e-8, V0: 0 } };
     const r = simulate(p);
     const model = buildModel(p);

@@ -434,6 +434,39 @@
       "year": "1978",
       "doi": "10.1109/TAC.1978.1101743"
     },
+    "parlett1969": {
+      "key": "parlett1969",
+      "type": "article",
+      "label": "Parlett & Reinsch 1969",
+      "authors": [
+        "Beresford N. Parlett",
+        "Christian Reinsch"
+      ],
+      "title": "Balancing a matrix for calculation of eigenvalues and eigenvectors",
+      "verified": true,
+      "journal": "Numerische Mathematik",
+      "number": "4",
+      "volume": "13",
+      "pages": "293–304",
+      "year": "1969",
+      "doi": "10.1007/BF02165404"
+    },
+    "higham2005": {
+      "key": "higham2005",
+      "type": "article",
+      "label": "Higham 2005",
+      "authors": [
+        "Nicholas J. Higham"
+      ],
+      "title": "The scaling and squaring method for the matrix exponential revisited",
+      "verified": true,
+      "journal": "SIAM Journal on Matrix Analysis and Applications",
+      "number": "4",
+      "volume": "26",
+      "pages": "1179–1193",
+      "year": "2005",
+      "doi": "10.1137/04061101X"
+    },
     "benyaakov_youtube": {
       "key": "benyaakov_youtube",
       "type": "misc",

@@ -151,10 +151,13 @@ export function expm(a: Mat): Mat {
  * similar matrix D⁻¹ a D is exact in binary, and e^{D⁻¹ a D} = D⁻¹ e^a D. A
  * matrix whose large entries sit off its diagonal, such as a stiff bus's
  * 1/C_bus beside its 1/(R_s C_bus) behind a source resistance that is not
- * small, has a norm far above its eigenvalues: its exponential asks for more
- * squarings than its dynamics need, and their products add numbers of very
- * different sizes, which costs the slow states their digits. Balanced, it
- * does neither.
+ * small, has a norm far above its eigenvalues. Scaling by powers of two
+ * commutes exactly with the Padé products, with elimination in a fixed pivot
+ * order and with the doublings, so what balancing changes is what the norm
+ * decides: the number of squarings, and the pivots of the solve. That is
+ * what the slow states' digits depended on: unbalanced, the full step of such
+ * a bus (stepMatrices) came out 6.8e-5 off in its tested matrix; balanced, it
+ * is exact to rounding.
  */
 export function balancing(a: Mat): Vec | null {
   const m = a.length;

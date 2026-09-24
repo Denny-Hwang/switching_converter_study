@@ -195,9 +195,11 @@ periodic steady state.
   circuit that rings so fast that a ring would still span fewer than three
   sub-steps is refused: a diode could turn on and off again between two
   sub-steps unseen. A start-up drawn without a steady state follows the
-  same rule. The exponential is formed, and squared, less the identity,
-  after the states are rescaled by powers of two, which is exact, until each
-  state's couplings to the others are of similar size in both directions: a
+  same rule. The exponential is computed by scaling and squaring with a
+  Padé approximant <Cite key="higham2005" />, and is formed, and squared,
+  less the identity. Before that, the states are rescaled by powers of two,
+  which is exact, until each state's couplings to the others are of similar
+  size in both directions (balancing <Cite key="parlett1969" />): a
   tiny bus capacitance behind a source resistance that is not small would
   otherwise make the matrix far larger than its fastest mode. So a time
   constant far shorter than a sub-step does not cost the slower states their
@@ -235,13 +237,18 @@ periodic steady state.
   billion. Over hundreds of random circuits, two grids from the same start
   agree as closely against the circuit's largest current or voltage, down to
   the battery current's resolution, wherever they see the same events; where
+  the currents are themselves only rounding, as in a capacitor alone that has
+  settled, they agree to that rounding. Where
   one grid sees a diode conduct briefly inside a sub-step and the other does
   not, they differ by what that conduction carries (see Outside the model
   below). Each quantity's largest and smallest value also include a peak
   between two samples: where its slope changes sign within a sub-step, and
   where the slope dips through zero and back within one (a ring riding on a
   steeper ramp). The slope is also checked close to the sub-step's start,
-  where a fast transient decays. Each slope is the rate of change at the
+  where a fast transient decays. A turn within the rounding of the slope
+  itself is not searched; a quantity that barely moves, at the rounding of
+  its own value, is still searched where its slope turns, which makes a few
+  circuits several times slower. Each slope is the rate of change at the
   sample, summed in twice the precision and carried along the sub-step like
   the states, so an input bus behind a tiny source resistance and
   capacitance, whose slope is what is left of terms many orders of magnitude
