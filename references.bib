@@ -125,9 +125,9 @@
   number      = {SLUA618A},
   year        = {2018},
   url         = {https://www.ti.com/lit/pdf/slua618},
-  note        = {verified 2026-09-23 (ti.com/lit/pdf/slua618; SLUA618A, March 2017, revised October 2018; gate-drive power V_DRV Q_G f_DRV); rechecked 2026-09-24 by two independent web-search rounds for the Miller plateau: at turn-on, while the drain voltage falls, the gate-source voltage stays constant and all the gate current available from the driver discharges C_GD; at turn-off the plateau's gate current charges C_GD (that wording was seen only in search summaries, and CI checks it in the PDF)},
+  note        = {verified 2026-09-23 (ti.com/lit/pdf/slua618; SLUA618A, March 2017, revised October 2018; gate-drive power V_DRV Q_G f_DRV); rechecked 2026-09-24 by two independent web-search rounds for the Miller plateau: at turn-on, while the drain voltage falls, the gate-source voltage stays constant and all the gate current available from the driver discharges C_GD; at turn-off the plateau's gate current charges C_GD (that wording was seen only in search summaries, and CI checks it in the PDF). CI, 2026-09-24, reading the PDF: "While the drain voltage falls across the device, the gate-to-source voltage stays steady"; the earlier quote's "stays constant" is not the PDF's wording, and the quote is now its own},
   urltitle    = {Fundamentals of MOSFET and IGBT Gate Driver Circuits},
-  urlquotes   = {While the drain voltage falls, the gate-source voltage stays constant | all the gate current available from the driver is diverted to discharge | is strictly the charging current of the},
+  urlquotes   = {While the drain voltage falls across the device, the gate-to-source voltage stays steady | all the gate current available from the driver is diverted to discharge | is strictly the charging current of the},
   urlkind     = {pdf}
 }
 
@@ -517,10 +517,10 @@
 @manual{adi_an1144,
   title        = {{AN-1144}: Measuring Output Ripple and Switching Transients in Switching Regulators},
   organization = {Analog Devices},
-  note         = {verified 2026-09-24 (two independent web-search rounds: the analog.com application-note page "AN-1144: Measuring Output Ripple and Switching Transients in Switching Regulators" (an ADI note, not a TI one); its author and date appeared only in search summaries and are not given; cited for: the loop that a probe's signal and ground leads form adds inductance that makes switching transients look larger than they are; the tip-and-barrel method, the probe's long ground lead removed and its barrel connected to the ground reference; that method's name was seen only in search summaries, and CI checks it on the page)},
+  note         = {verified 2026-09-24 (two independent web-search rounds: the analog.com application-note page "AN-1144: Measuring Output Ripple and Switching Transients in Switching Regulators" (an ADI note, not a TI one); its author and date appeared only in search summaries and are not given; cited for: the loop that a probe's signal and ground leads form adds inductance that makes switching transients look larger than they are; the tip-and-barrel method, the probe's long ground lead removed and its barrel connected to the ground reference; that method's name was seen only in search summaries, and CI checks it on the page). CI, 2026-09-24, reading the page's latest archive capture: "the oscilloscope probe signal and ground leads introduce parasitic inductance. This inaccurately increases the amplitude of switching transients that are associated with the fast switching transitions"; the earlier quote joined the two sentences with "which", and the quotes are now the page's own},
   url          = {https://www.analog.com/en/resources/app-notes/an-1144.html},
   urltitle     = {Measuring Output Ripple and Switching Transients},
-  urlquotes    = {introduce parasitic inductance, which inaccurately increases the amplitude of switching transients | tip and barrel method},
+  urlquotes    = {oscilloscope probe signal and ground leads introduce parasitic inductance | This inaccurately increases the amplitude of switching transients | tip and barrel method},
   urlkind      = {html}
 }
 
@@ -580,9 +580,9 @@
   number      = {SLVA670A},
   year        = {2015},
   url         = {https://www.ti.com/lit/pdf/slva670},
-  note        = {verified 2026-09-24 (two independent web-search rounds: ti.com/lit/pdf/slva670, "Managing Inrush Current", SLVA670A, August 2014, revised May 2015; its authors appeared only in search summaries and are not given; cited for: a slower rise of the voltage across the load's capacitance reduces the inrush current)},
+  note        = {verified 2026-09-24 (two independent web-search rounds: ti.com/lit/pdf/slva670, "Managing Inrush Current", SLVA670A, August 2014, revised May 2015; its authors appeared only in search summaries and are not given; cited for: a slower rise of the voltage across the load's capacitance reduces the inrush current). CI, 2026-09-24, reading the PDF: "All three of these solutions center around increasing the voltage rise time which, as shown in Equation 1, leads to reduced inrush current"; the earlier quote left out the clause in the middle},
   urltitle    = {Managing Inrush Current},
-  urlquotes   = {increasing the voltage rise time which leads to reduced inrush},
+  urlquotes   = {center around increasing the voltage rise time which, as shown in Equation 1, leads to reduced inrush current},
   urlkind     = {pdf}
 }
 
