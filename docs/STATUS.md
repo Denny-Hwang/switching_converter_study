@@ -21,7 +21,7 @@
 | Symbol meanings: every symbol of `symbol_table` says in a few words what it is (`meaning`, `meaning_ko`, required by the loader) | ✅ 243 of 243; shown next to every tool input, under every `<Eq>` and in every worked example |
 | TS/Python parity (`vitest`, 1e-9 rel) | ✅ all shared vectors |
 | Strict KaTeX on every generated formula and derivation step (`vitest`) | ✅ |
-| `references.bib` verified (two web-search rounds + CI Crossref + URL title check; PDFs: title and `urlquotes` read from the file) | ✅ 62 of 62 verified (`steinmetz1984` DOI confirmed by the CI Crossref job; `ti_slva630` and `ti_snoa930` added in Phase 2c; `ti_ssztcv6` and `st_an316` added in Phase 3c; `ti_ina181`, `osullivan2012` and `kester_mt002` added in Phase 3d; `tdk_e25`, `tdk_etd29` and `nbs_hb100` added in Phase 3e, every value the core table and the copper constants take from them found by the CI check in the PDFs; `he2011` added with the simulator's battery load, `vanloan1978`, `parlett1969` and `higham2005` with its exact steps; `keysight_5950_3000`, `keithley_llmh7`, `hurley2000` and `nexperia_an11160` added in Phase 4a; `adi_an1144`, `adi_an136`, `adi_ceramic_caps`, `cde_ae_guide`, `epc_wp008`, `jeita_liion`, `keysight_5988_8008`, `littelfuse_fuseology`, `microchip_apt0403`, `tek_bw_risetime`, `ti_slua887`, `ti_slva139`, `ti_slva670`, `ti_slyt614`, `ti_snva021`, `ti_spra953`, `ti_sszta51` and `vishay_an608a` in Phase 4b; `lefeuvre2005`, `esram2007` and `ti_bq25570` in Phase 4c) |
+| `references.bib` verified (two web-search rounds + CI Crossref + URL title check; PDFs: title and `urlquotes` read from the file) | ✅ 65 of 65 verified (`steinmetz1984` DOI confirmed by the CI Crossref job; `ti_slva630` and `ti_snoa930` added in Phase 2c; `ti_ssztcv6` and `st_an316` added in Phase 3c; `ti_ina181`, `osullivan2012` and `kester_mt002` added in Phase 3d; `tdk_e25`, `tdk_etd29` and `nbs_hb100` added in Phase 3e, every value the core table and the copper constants take from them found by the CI check in the PDFs; `he2011` added with the simulator's battery load, `vanloan1978`, `parlett1969` and `higham2005` with its exact steps; `keysight_5950_3000`, `keithley_llmh7`, `hurley2000` and `nexperia_an11160` added in Phase 4a; `adi_an1144`, `adi_an136`, `adi_ceramic_caps`, `cde_ae_guide`, `epc_wp008`, `jeita_liion`, `keysight_5988_8008`, `littelfuse_fuseology`, `microchip_apt0403`, `tek_bw_risetime`, `ti_slua887`, `ti_slva139`, `ti_slva670`, `ti_slyt614`, `ti_snva021`, `ti_spra953`, `ti_sszta51` and `vishay_an608a` in Phase 4b; `lefeuvre2005`, `esram2007` and `ti_bq25570` in Phase 4c; `kester_mt027`, `nexperia_an90059` and `ti_tpl5110` in Phase 4d) |
 
 ## Simulator and tools (Phase 3)
 
@@ -54,15 +54,15 @@
 | Item | State |
 | --- | --- |
 | Symbols explained where they appear: under every `<Eq>` (`<dl>` of symbol and meaning) and next to every symbol of a worked example | ✅ every page, EN and KO |
-| Example numbers: each worked example, preset and quiz example is labelled an example; every page's footer states once that example numbers are synthetic (`PRIVACY_RULES.md`, checked by `privacy_scan.py`) | ✅ 63 examples, EN and KO |
-| Wording: filler and repeated statements removed; Korean pages give the English term in parentheses at the first use of a technical term (BUILD_SPEC §8) | ✅ all 108 pages (54 EN, 54 KO) |
+| Example numbers: each worked example, preset and quiz example is labelled an example; every page's footer states once that example numbers are synthetic (`PRIVACY_RULES.md`, checked by `privacy_scan.py`) | ✅ 64 examples, EN and KO |
+| Wording: filler and repeated statements removed; Korean pages give the English term in parentheses at the first use of a technical term (BUILD_SPEC §8) | ✅ all 136 pages (68 EN, 68 KO) |
 | Figures drawn from code (`scripts/gen_figures.py`): schematics in schemdraw, idealized waveforms in matplotlib, in the site's symbols; inlined in the theme's text colour, with a caption and a text alternative in EN and KO and the source each follows (`src/lib/figures.ts`, tested); CI redraws them and fails on a difference | ✅ 8 figures: buck, boost, buck-boost, flyback and forward schematics; the buck's switch-node voltage, volt-second balance, inductor current in CCM, at the boundary and in DCM |
 
 Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); theory uses only `<Eq>` embeds and each Eq has ≥ 1 test vector; "Try it" links a tool preset; "Go deeper" has ≥ 2 verified resources with retrieval dates; a gotchas subsection exists; quiz with ≥ 5 explained questions; build, tests and all lints green.
 
 Legend: ✅ done · 🟡 partial · ⬜ not started · ➖ not applicable. "Phase" is the build phase that delivers the module (docs/BUILD_SPEC.md §7); "later" = not scheduled in phases 0–5. 00-foundations and 01-physics are compact refreshers (Phase 2 scope).
 
-_Last updated: Phase 4c (07-harvesting). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
+_Last updated: Phase 4d (08-gotchas). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
 
 "Try it" links open the [equation explorer](../src/content/docs/en/design/explorer.mdx) with a synthetic preset. Pages whose example is a whole converter also open the [simulator](../src/content/docs/en/simulate/simulator.mdx) with it (`<TrySim>`, Phase 3a); design-tool presets come with the design tools.
 
@@ -161,9 +161,25 @@ _Last updated: Phase 4c (07-harvesting). `python scripts/modulelint.py` checks e
 
 ## 08-gotchas
 
-| Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| index | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+Gotcha pages are not modules: each follows the template symptom · why · how to confirm · fix · references
+(BUILD_SPEC §5), carries its tags, and has a Korean mirror; `python scripts/modulelint.py` checks all three.
+
+| Gotcha | Phase | EN | KO | Notes |
+| --- | --- | --- | --- | --- |
+| index | 4 | ✅ | ✅ | the list of every gotcha, then under its own heading the lists by tag, built from the pages (`<GotchaIndex part="list" />`, `<GotchaIndex part="tags" />`); links the template `docs/GOTCHA_TEMPLATE.md` (mission M9) |
+| lcr-self-resonance | 4 | ✅ | ✅ | seed 1; links `passive.f_srf`, `meas.L_app`, `mag.L_from_AL`; example `lcr-srf` |
+| two-wire-resistance | 4 | ✅ | ✅ | seed 2; links `wind.dcr`, `wind.rho_T` |
+| ceramic-dc-bias | 4 | ✅ | ✅ | seed 3; links `buck.ripple.v`; example `ceramic-bias` (new) |
+| tvs-clamping-voltage | 4 | ✅ | ✅ | seed 4; links `tvs.V_clamp`, `clamp.Vds`; example `clamp-tvs` |
+| current-output-headroom | 4 | ✅ | ✅ | seed 5; links `sense.current_out_monitor`; example `sense-current` |
+| shunt-pad-resistance | 4 | ✅ | ✅ | seed 6; links `sense.pad_error`; example `bench-sense` |
+| timer-power-gating | 4 | ✅ | ✅ | seed 7; cites `ti_tpl5110` (new, SNAS650A) |
+| flyback-open-load | 4 | ✅ | ✅ | seed 8; links `flyback.V_ceiling`, `clamp.rcd.V`; cites `st_an316`, `ti_ssztcv6`; example `clamp-tvs` |
+| electrolytic-cold-esr | 4 | ✅ | ✅ | seed 9; links `cap.esr.ripple`; example `bench-cold` |
+| wide-bandgap-gate-drive | 4 | ✅ | ✅ | seed 10; cites `nexperia_an90059` (new), `epc_wp008` |
+| flyback-source-pinning | 4 | ✅ | ✅ | seed 11; links `lfr.R_in`, `flyback.V_crit`, `src.cv_extraction`, `lfr.Vg`, `flyback.Vds_off`, `lfr.L_M`; example and simulator preset `flyback-source` |
+| dmm-true-average | 4 | ✅ | ✅ | seed 12; links `sense.burden`, `fourier.pulse.harm`; cites `kester_mt027` (new) |
+| sub-nyquist-pulses | 4 | ✅ | ✅ | seed 13; links `adc.nyquist`, `fourier.pulse.harm` |
 
 ## 09-missions
 

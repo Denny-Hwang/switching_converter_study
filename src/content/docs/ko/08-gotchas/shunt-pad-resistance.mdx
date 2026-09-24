@@ -1,0 +1,53 @@
+---
+title: 일정한 비율만큼 크게 읽히는 작은 션트
+description: 켈빈 연결이 없으면 작은 션트의 센스 경로에 있는 패드와 납땜이 저항에 더해져 이득 오차가 됩니다.
+sidebar:
+  order: 6
+gotcha:
+  tags: [sensing, measurement]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## 증상
+
+수 밀리옴 션트(shunt)로 읽은 전류가 모든 전류에서 같은 비율만큼 크게 나옵니다.
+오프셋이 아니라 이득 오차(gain error)입니다. 션트가 작을수록 오차가 큽니다.
+
+## 원인
+
+수 밀리옴 이하의 션트에서는 납땜 저항이 센스 소자 저항의 상당 부분을 차지합니다
+<Cite key="osullivan2012" />. 증폭기의 센스 연결이 패드의 먼 쪽에서 나오면, 증폭기는
+션트와 패드와 납땜을 함께 흐르는 전류를 보고, 측정값은 모든 전류에서 그 저항을 션트의
+저항으로 나눈 비율만큼 크게 나옵니다
+(<EqRef id="sense.pad_error" label="패드 오차" />). 예를 들어
+<Val example="bench-sense" name="R_SENSE" /> 션트의 센스 경로에 들어온
+<Val example="bench-sense" name="R_pad" />의 패드와 납땜은 모든 측정값을
+<Val example="bench-sense" name="eps_pad" /> 크게 만듭니다.
+
+## 확인 방법
+
+알고 있는 전류를 션트에 흘리고 전압을 두 번 재십시오. 한 번은 패드 끝에서, 한 번은
+션트 자체의 단자(또는 켈빈 패드)에서입니다. 그 차이를 전류로 나누면 패드와 납땜의
+저항이고, 두 전압의 비에서 1을 뺀 값이 측정값의 상대 오차입니다.
+
+## 해결
+
+켈빈 연결(Kelvin connection)로 패드를 센스 경로에서 빼십시오. 4단자 션트를 쓰거나,
+2단자 션트를 4패드(분할 패드, split-pad) 배치에 올립니다 <Cite key="osullivan2012" />.
+LTC6101 데이터시트는 전력이 아주 작은 응용을 빼면 센스 저항에 켈빈 연결을 쓰라고
+권합니다 <Cite key="adi_ltc6101" where="Applications Information" />. 켈빈 연결이면
+[센스 체인](../../design/sense-chain/) 도구의 패드 저항은 0입니다.
+
+## 참고 자료
+
+- <Cite key="osullivan2012" />: 밀리옴 션트에서의 납땜 저항, 켈빈 센싱과 분할 패드
+  센싱.
+- <Cite key="adi_ltc6101" where="Applications Information" />: 센스 저항에 대한 켈빈
+  연결.
+- [전류 센싱](../../06-bench/current-sensing/): 패드 오차의 풀이와 벤치 실습.

@@ -183,13 +183,27 @@
   urlquotes   = {the damping factor should be set to somewhere between 0.5 to 1 to achieve minimum peak voltage | is a good starting point in terms of the compromise between power loss and peak voltage | the second term is inevitable even if a snubber is not used | It is a matter of compromise between damping the oscillations and keeping the energy loss low | Power dissipation in the snubber resistor should be taken into consideration when selecting the components},
   urlkind     = {pdf}
 }
+@techreport{nexperia_an90059,
+  author      = {{Nexperia}},
+  title       = {Power {MOSFET} gate driver fundamentals},
+  institution = {Nexperia},
+  type        = {Application Note},
+  number      = {AN90059, Rev. 1},
+  year        = {2025},
+  url         = {https://assets.nexperia.com/documents/application-note/AN90059.pdf},
+  note        = {verified 2026-09-24, round 1 (web search: assets.nexperia.com AN90059, "Power MOSFET gate driver fundamentals", Rev. 1 of 22 April 2025 in one search summary; cited for: logic-level MOSFETs are designed to be driven with a 5 V gate voltage, while standard-level MOSFETs need at least 10 V to be fully turned on, and a higher gate voltage lowers the on-resistance further; a gate-source resistance in the kilohm range keeps a MOSFET off when the gate drive circuit has a fault or no power is applied). Round 2, 2026-09-24 (an independent review, web searches; assets.nexperia.com and its mirrors could not be opened from the sandbox, and the CI URL check opens the PDF and matches urltitle and urlquotes): the title and AN90059 Rev. 1 of 22 April 2025 confirmed ("Initial version" in its revision history, no later revision found); exact-phrase searches find "standard level MOSFETs require at least 10 V VGS to be fully turned on" and "further reducing the RDSon" in the PDF, and its sentence that a gate-source resistance in the kilohm range "is usually suitable"; the sentences around them, as search summaries give them: logic level MOSFETs "are designed to be driven with a 5 V gate voltage", and a pull-down resistor between gate and source keeps the MOSFET in a known state (off) when the gate drive circuit has a fault or no power is applied. Cited for: as in round 1},
+  urltitle    = {Power MOSFET gate driver fundamentals},
+  urlquotes   = {range is usually suitable},
+  urlkind     = {pdf}
+}
+
 @manual{keysight_5950_3000,
   title        = {Impedance Measurement Handbook: A guide to measurement technology and techniques},
   organization = {Keysight Technologies},
   edition      = {6th},
   number       = {5950-3000},
   url          = {https://www.keysight.com/us/en/assets/7018-06840/application-notes/5950-3000.pdf},
-  note         = {verified 2026-09-24 (web search: keysight.com asset page 7018-06840, "Impedance Measurement Handbook, A guide to measurement technology and techniques, 6th Edition", application note 5950-3000; its publication year was not confirmed and is left out; cited for: the value a meter measures is the component's effective value at the test frequency and signal, parasitics included; four-terminal connections keep the leads' impedance out of the measurement; an inductor of low reactance is modelled by its inductance in series with a resistance (the web-search index quotes the sentence; the CI check finds it in the PDF))},
+  note         = {verified 2026-09-24 (web search: keysight.com asset page 7018-06840, "Impedance Measurement Handbook, A guide to measurement technology and techniques, 6th Edition", application note 5950-3000; its publication year was not confirmed and is left out; cited for: the value a meter measures is the component's effective value at the test frequency and signal, parasitics included; four-terminal connections keep the leads' impedance out of the measurement; an inductor of low reactance is modelled by its inductance in series with a resistance (the web-search index quotes the sentence; the CI check finds it in the PDF)) Round 2, 2026-09-24 (the magnetics pages' second independent review, web searches): the 6th edition under this number, and the effective value a meter reads, parasitics included, confirmed.},
   urltitle     = {Impedance Measurement Handbook},
   urlquotes    = {When the inductor has a low reactance},
   urlkind      = {pdf}
@@ -202,8 +216,9 @@
   number      = {7th edition},
   year        = {2014},
   url         = {https://download.tek.com/document/LowLevelHandbook_7Ed.pdf},
-  note        = {verified 2026-09-24 (web search: tek.com "Keithley Low Level Measurements Handbook - 7th Edition" page and the download.tek.com PDF, "Low Level Measurements Handbook - 7th Edition Precision DC Current, Voltage, and Resistance Measurements"; cited for: the four-wire (Kelvin) method removes the test leads' resistance from a low-resistance measurement)},
+  note        = {verified 2026-09-24 (web search: tek.com "Keithley Low Level Measurements Handbook - 7th Edition" page and the download.tek.com PDF, "Low Level Measurements Handbook - 7th Edition Precision DC Current, Voltage, and Resistance Measurements"; cited for: the four-wire (Kelvin) method removes the test leads' resistance from a low-resistance measurement). Phase 4d, round 1, 2026-09-24 (web search: the handbook's discussion of normal-mode rejection, "Noise rejection is accomplished by using the integrating A/D converter to attenuate noise at specific frequencies (usually 50 and 60Hz) while passing low frequency or DC normal mode signals"); cited also for: an integrating converter passes dc and low-frequency signals and attenuates noise at specific frequencies Round 2, 2026-09-24 (the magnetics pages' second independent review, web searches): the 7th edition of 2014 at download.tek.com confirmed.},
   urltitle    = {Low Level Measurements Handbook},
+  urlquotes   = {while passing low frequency or DC normal mode signals},
   urlkind     = {pdf}
 }
 
@@ -271,6 +286,19 @@
   urlkind      = {pdf}
 }
 
+@manual{kester_mt027,
+  author       = {Kester, Walt and Bryant, James},
+  title        = {{ADC} Architectures {VIII}: Integrating {ADC}s},
+  organization = {Analog Devices},
+  type         = {Tutorial},
+  number       = {MT-027},
+  note         = {verified 2026-09-24, round 1 (two web searches; analog.com could not be opened from the sandbox, and the CI URL check opens it and matches urltitle and urlquotes in the PDF): Analog Devices tutorial MT-027, "ADC Architectures VIII: Integrating ADCs", by Walt Kester and James Bryant (the revision and year are not given here); cited for: in an integrating converter "the accumulated charge on the integrating capacitor is proportional to the average value of the input over the interval T", and the integration rejects inputs whose periods equal the integration time or a sub-multiple of it, so that a proper choice of it rejects the 50 Hz and 60 Hz line ripple. Round 2, 2026-09-24 (an independent review, web searches): the title and authors, and both statements, confirmed ("The fixed input signal integration period results in rejection of noise frequencies on the analog input that have periods that are equal to or a sub-multiple of the integration time T"); the revision and year were not confirmed (a 2009 copyright; the Chinese edition reads Rev.A, 10/08)},
+  url          = {https://www.analog.com/media/en/training-seminars/tutorials/MT-027.pdf},
+  urltitle     = {ADC Architectures VIII: Integrating ADCs},
+  urlquotes    = {proportional to the average value of the input over the interval},
+  urlkind      = {pdf}
+}
+
 @article{singer1990,
   author  = {Singer, Sigmond},
   title   = {Realization of loss-free resistive elements},
@@ -315,7 +343,7 @@
   pages   = {369--376},
   year    = {2000},
   doi     = {10.1109/63.838110},
-  note    = {verified 2026-09-24 (web search: IEEE Xplore document 838110 and Semantic Scholar, title, authors, vol. 15 no. 2 pp. 369-376, March 2000; the abstract gives the optimum foil or layer thickness for any periodic waveform from the rms values of the current and of its derivative; DOI confirmed by the CI Crossref job)}
+  note    = {verified 2026-09-24 (web search: IEEE Xplore document 838110 and Semantic Scholar, title, authors, vol. 15 no. 2 pp. 369-376, March 2000; the abstract gives the optimum foil or layer thickness for any periodic waveform from the rms values of the current and of its derivative; DOI confirmed by the CI Crossref job) Round 2, 2026-09-24 (the magnetics pages' second independent review, web searches): title, authors, IEEE Trans. Power Electron. 15(2), pp. 369-376 and DOI 10.1109/63.838110 confirmed (IEEE Xplore document 838110).}
 }
 
 @article{ottman2002,
@@ -412,6 +440,19 @@
   urlkind = {pdf}
 }
 
+@manual{ti_tpl5110,
+  author  = {{Texas Instruments}},
+  title   = {{TPL5110} Nano-Power System Timer for Power Gating},
+  organization = {Texas Instruments},
+  type    = {Data sheet},
+  number  = {SNAS650A},
+  note    = {verified 2026-09-24, round 1 (web search: ti.com/lit/ds/symlink/tpl5110.pdf and ti.com/lit/gpn/TPL5110, "TPL5110 Nano-Power System Timer for Power Gating", literature number SNAS650, first issued January 2015 and revised since; the data sheet says that the EN/ONE_SHOT pin selects timer or one-shot mode and should be tied to GND or VDD with short traces and never left floating, that the TPL5110 recognizes a valid DONE signal as a low to high transition, that the minimum DONE signal pulse length is 100 ns, and that the timer turns the powered system off when it receives DONE). Corrected in Phase 4d after an independent review and two further web searches: "should never be left floating" belongs to the TPL5111 data sheet's EN/ONE_SHOT sentence, not the TPL5110's, and is no longer cited; the current revision is SNAS650A (January 2015, revised September 2018). Round 2, 2026-09-24 (a second independent review read the data sheet SNAS650 of January 2015 in full from a mirror): 11.1 "The EN/ONE_SHOT needs to be tied to GND or VDD with short traces"; 8.3.2 "The TPL5110 recognizes a valid DONE signal as a low to high transition", "The minimum DONE signal pulse length is 100ns"; the word "floating" does not occur in it; SNAS650A confirmed by search results only. Cited for: the mode pin tied to GND or VDD, and the DONE input's valid transition and shortest pulse},
+  url     = {https://www.ti.com/lit/ds/symlink/tpl5110.pdf},
+  urltitle = {Nano-Power System Timer for Power Gating},
+  urlquotes = {recognizes a valid DONE signal as a low to high transition | tied to GND or VDD with short traces},
+  urlkind = {pdf}
+}
+
 @article{zi2015,
   author  = {Zi, Yunlong and Niu, Simiao and Wang, Jie and Wen, Zhen and Tang, Wei and Wang, Zhong Lin},
   title   = {Standards and figure-of-merits for quantifying the performance of triboelectric nanogenerators},
@@ -463,7 +504,7 @@
   pages   = {293--304},
   year    = {1969},
   doi     = {10.1007/BF02165404},
-  note    = {verified 2026-09-24 (round 1: web search; the SpringerLink article page and the ACM Digital Library record for this DOI give the title, Parlett and Reinsch, Numerische Mathematik 13, pp. 293-304, 1969; CI checks the DOI's record in Crossref). Cited for: balancing, a diagonal similarity that makes each row's and column's norms nearly equal, with the diagonal's entries powers of the radix so that it is exact}
+  note    = {verified 2026-09-24 (round 1: web search; the SpringerLink article page and the ACM Digital Library record for this DOI give the title, Parlett and Reinsch, Numerische Mathematik 13, pp. 293-304, 1969; CI checks the DOI's record in Crossref). Cited for: balancing, a diagonal similarity that makes each row's and column's norms nearly equal, with the diagonal's entries powers of the radix so that it is exact Round 2, 2026-09-24 (the simulator PR's twelfth review, an independent agent): the SpringerLink and ACM Digital Library records for this DOI confirmed.}
 }
 
 @article{higham2005,
@@ -475,7 +516,7 @@
   pages   = {1179--1193},
   year    = {2005},
   doi     = {10.1137/04061101X},
-  note    = {verified 2026-09-24 (round 1: web search; the University of Manchester research record and the author's eprint give the title, SIAM J. Matrix Anal. Appl. 26(4), pp. 1179-1193, 2005, and this DOI; CI checks the DOI's record in Crossref). Cited for: the matrix exponential by scaling and squaring with a Pade approximant of degree up to 13, the matrix scaled by a power of two to a small norm and the approximant squared back}
+  note    = {verified 2026-09-24 (round 1: web search; the University of Manchester research record and the author's eprint give the title, SIAM J. Matrix Anal. Appl. 26(4), pp. 1179-1193, 2005, and this DOI; CI checks the DOI's record in Crossref). Cited for: the matrix exponential by scaling and squaring with a Pade approximant of degree up to 13, the matrix scaled by a power of two to a small norm and the approximant squared back Round 2, 2026-09-24 (the simulator PR's twelfth review, an independent agent): the SIAM record and the University of Manchester eprint confirmed.}
 }
 
 % --- 06-bench (Phase 4b): two independent web-search rounds on 2026-09-24, reconciled; the CI resource check
@@ -662,10 +703,10 @@
 @manual{adi_ceramic_caps,
   title        = {Temperature and Voltage Variation of Ceramic Capacitors, or Why Your 4.7 {µF} Capacitor Becomes a 0.33 {µF} Capacitor},
   organization = {Analog Devices (Maxim Integrated)},
-  note         = {verified 2026-09-24 (two independent web-search rounds: the analog.com technical article "Temperature and Voltage Variation of Ceramic Capacitors, or Why Your 4.7µF Capacitor Becomes a 0.33µF Capacitor"; its author and date were not confirmed; cited for: class-2 codes such as X7R say nothing about a capacitor's change with its dc voltage; and the title's example, a 4.7 µF, 6.3 V, 0603 Y5V capacitor that at 5 V bias and room temperature keeps 0.33 µF, "92.9% below nominal", the dc voltage alone (with the bias it kept slightly more at +85 C than at room temperature). Corrected in Phase 4d after a round-2 review read the example in three search summaries (analog.com, EDN, Maxim tutorial 5527): the note had said that temperature and dc voltage together gave that loss)},
+  note         = {verified 2026-09-24 (two independent web-search rounds: the analog.com technical article "Temperature and Voltage Variation of Ceramic Capacitors, or Why Your 4.7µF Capacitor Becomes a 0.33µF Capacitor"; its author and date were not confirmed; cited for: class-2 codes such as X7R say nothing about a capacitor's change with its dc voltage; and the title's example, a 4.7 µF, 6.3 V, 0603 Y5V capacitor that at 5 V bias and room temperature keeps 0.33 µF, "92.9% below nominal", the dc voltage alone (with the bias it kept slightly more at +85 C than at room temperature). Corrected in Phase 4d after a round-2 review read the example in three search summaries (analog.com, EDN, Maxim tutorial 5527): the note had said that temperature and dc voltage together gave that loss). Phase 4d, round 1, 2026-09-24 (web search: "Engineers must check the data to know, really know, how a specific capacitor will perform under voltage"; a vendor can call a capacitor X7R as long as it meets the temperature-coefficient specification, however large its voltage coefficient); cited also for: the data of the specific part must be checked. Phase 4d, round 2 fix, 2026-09-24 (two web searches: larger cases lost capacitance under voltage more slowly than smaller ones, and "Within a package size and ceramic type, the voltage rating of the capacitors seems often to have no effect"); cited also for: in the article's data a larger case lost less, and within one case size and dielectric the voltage rating often made no difference. Round 2 of these corrections, 2026-09-24 (a second independent review, search summaries): the 4.7 uF, 6.3 V, 0603 Y5V part 92.9% below nominal (0.33 uF) at 5 V bias at room temperature ("the change in capacitance with 5V bias is worse at room temperature than at +85C"); the X5R and X7R 4.7 uF parts from 0603 to 1812: "as package size increases, the capacitance variation with applied DC voltage decreases substantially"; "Within a package size and ceramic type, the voltage rating of the capacitors seems often to have no effect" verbatim},
   url          = {https://www.analog.com/en/resources/technical-articles/temperature-and-voltage-variation-ceramic-capacitor.html},
   urltitle     = {Temperature and Voltage Variation of Ceramic Capacitors},
-  urlquotes    = {imply nothing about voltage coefficients | 92.9% below nominal},
+  urlquotes    = {imply nothing about voltage coefficients | 92.9% below nominal | how a specific capacitor will perform under voltage | seems often to have no effect},
   urlkind      = {html}
 }
 

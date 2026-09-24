@@ -1,0 +1,63 @@
+---
+title: 측정 주파수에 따라 커지는 인덕턴스
+description: 턴 수가 많은 권선은 LCR 미터에서 크게 읽히고, 측정 주파수가 높을수록 더 크게 읽힙니다. 권선 자신의 커패시턴스가 자기 공진을 가까이 끌어오기 때문입니다.
+sidebar:
+  order: 1
+gotcha:
+  tags: [measurement, magnetics]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## 증상
+
+LCR 미터가 턴 수가 많은 권선, 예를 들어 플라이백의 1차 권선을 설계가 기대하는
+인덕턴스보다 훨씬 크게 읽고, 측정 주파수(test frequency)마다 다른 값을 읽습니다.
+주파수가 높을수록 측정값이 큽니다.
+
+## 원인
+
+측정기는 기생 성분을 포함해 측정 주파수에서의 부품의 유효값(effective value)을 보고합니다
+<Cite key="keysight_5950_3000" />. 턴 사이의 커패시턴스는 인덕턴스와 병렬로 놓여
+그것과 공진합니다. 그 주파수가 자기 공진 주파수(self-resonant frequency)입니다
+(<EqRef id="passive.f_srf" label="자기 공진 주파수" />). 그 공진보다 아래에서 둘은 더 큰
+인덕턴스, 곧 겉보기 인덕턴스(apparent inductance)처럼 동작하고, 측정 주파수가 공진에
+다가갈수록 측정값이 가파르게 커집니다(<EqRef id="meas.L_app" label="겉보기 인덕턴스" />).
+턴 수가 많으면 턴 수의 제곱으로 커지는 큰 인덕턴스
+(<EqRef id="mag.L_from_AL" label="인덕턴스 계수로부터 인덕턴스" />)와 턴 사이의
+커패시턴스가 함께 있으므로 공진이 낮은 곳에 있습니다.
+
+예를 들어 <Val example="lcr-srf" name="C_p" />가 병렬로 붙은
+<Val example="lcr-srf" name="L" /> 권선은 <Val example="lcr-srf" name="f_srf" />에서
+공진합니다. 측정기는 <Val example="lcr-srf" name="f_lo" />에서 이 권선을
+<Val example="lcr-srf" name="L_app_lo" sig={4} />로,
+<Val example="lcr-srf" name="f_hi" />에서는
+<Val example="lcr-srf" name="L_app_hi" />로 읽습니다.
+
+## 확인 방법
+
+측정기의 측정 주파수 두 개 이상에서 권선을 읽어 보십시오. 주파수가 올라갈 때
+가파르게 커지는 측정값은 공진에서 온 것입니다. 공진 근처에서 겉보기 인덕턴스는 한없이
+커지며(<EqRef id="meas.L_app" label="겉보기 인덕턴스" />), 이는 코어 자체가 주파수에
+따라 변하는 정도보다 훨씬 큽니다. 공진을 찾으려면 임피던스 분석기로 권선의 임피던스를 스윕하십시오. 공진보다 위에서
+부품은 용량성입니다(<EqRef id="passive.f_srf" label="자기 공진 주파수" />).
+
+## 해결
+
+자기 공진보다 충분히 낮은 측정 주파수에서 측정하십시오. 그러면 측정값은 대략 두 주파수의
+비의 제곱만큼 크며, 공진의 10분의 1에서는 약 100분의 1만큼 큽니다
+(<EqRef id="meas.L_app" label="겉보기 인덕턴스" />). 측정기의 측정
+주파수가 모두 공진에 너무 가깝다면, 스윕으로 자기 공진을 찾고 같은 식으로 측정값을
+보정하십시오.
+
+## 참고 자료
+
+- <Cite key="keysight_5950_3000" />: 임피던스 측정기는 기생 성분을 포함한 측정
+  주파수에서의 유효값을 읽습니다.
+- [자성 부품 측정](../../04-magnetics/measurement/): 겉보기 인덕턴스의 풀이와 벤치
+  실습.

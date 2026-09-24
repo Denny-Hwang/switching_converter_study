@@ -1,0 +1,31 @@
+---
+/**
+ * <GotchaTags /> -- the tags of the gotcha page it sits on (its frontmatter's
+ * gotcha.tags), each linking to that tag's list on the gotcha index.
+ */
+import { ui } from '../i18n/ui';
+import { GOTCHAS_DIR, tagAnchor, tagLabel, type GotchaTag } from '../lib/gotchas';
+import { pageHref } from '../lib/paths';
+import { pageLocale } from '../lib/locale';
+
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const data = Astro.locals.starlightRoute?.entry?.data as { gotcha?: { tags: GotchaTag[] } } | undefined;
+const tags = data?.gotcha?.tags;
+if (!tags?.length) throw new Error('<GotchaTags /> sits on a page without gotcha.tags in its frontmatter');
+const index = pageHref(locale, GOTCHAS_DIR);
+---
+
+<p class="pe-gotcha-tags not-content">
+  <span>{t['gotcha.tags']}:</span>
+  {
+    tags.map((tag) => (
+      <Fragment>
+        {' '}
+        <a class="pe-tag" href={`${index}#${tagAnchor(tag)}`}>
+          {tagLabel(tag, locale)}
+        </a>
+      </Fragment>
+    ))
+  }
+</p>

@@ -1,0 +1,75 @@
+---
+title: A TVS judged by its breakdown voltage
+description: At the current it actually clamps, a TVS holds a voltage above its breakdown voltage, and the switch it protects sees that voltage.
+sidebar:
+  order: 4
+gotcha:
+  tags: [protection, flyback]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## Symptom
+
+A flyback's switch fails, or its drain voltage at turn-off peaks above the
+value the primary clamp was chosen for, although the TVS's breakdown voltage
+left margin to the switch's rating.
+
+## Why
+
+A TVS begins to conduct at its breakdown voltage, but while it carries a
+current it holds its clamping voltage: the breakdown voltage plus its
+dynamic resistance times the current <Cite key="st_an316" />
+(<EqRef id="tvs.V_clamp" label="clamping voltage" />). The data sheet's
+clamping voltage is a maximum at a standard pulse's peak current; the
+dynamic resistance depends on the pulse's duration, and the breakdown
+voltage rises with temperature <Cite key="st_an316" />. In a flyback the
+clamp takes the leakage inductance's current at turn-off, and the switch
+sees the input voltage plus the clamp's voltage
+(<EqRef id="clamp.Vds" label="switch voltage while the clamp conducts" />).
+
+In the clamp tool's example, a TVS that breaks down at
+<Val example="clamp-tvs" name="V_BR" /> and clamps at
+<Val example="clamp-tvs" name="V_CL" /> at its
+<Val example="clamp-tvs" name="I_PP" /> pulse has a dynamic resistance of
+<Val example="clamp-tvs" name="R_D" />. At the flyback's
+<Val example="clamp-tvs" name="I_pk" /> it holds
+<Val example="clamp-tvs" name="V_clamp" />, and the switch sees
+<Val example="clamp-tvs" name="V_DS" /> against its
+<Val example="clamp-tvs" name="V_rating" /> rating.
+
+## How to confirm
+
+Capture the drain voltage at turn-off, with a probe rated for it and a short
+ground connection ([probes](../../06-bench/probes/)). Where the primary's
+ground is not the oscilloscope's earth, as in an off-line converter, use a
+differential probe rated for the voltage: a probe's ground lead is tied to
+the oscilloscope's earth ([gate drive](../../06-bench/gate-drive/)). While
+the clamp conducts, the drain sits at the input voltage plus the clamp's
+voltage.
+Compare that plateau with the clamping voltage at the actual peak current,
+and its peak with the switch's rating.
+
+## Fix
+
+Choose the TVS by its clamping voltage at the actual peak current and at
+its highest temperature, with margin to the switch's rating; the
+[clamp check](../../design/clamp-check/) computes it from the data sheet's
+breakdown and clamping voltages. Keep the clamp's voltage well above the
+reflected output voltage as well: a clamp voltage close to it takes much
+more than the leakage energy <Cite key="ti_ssztcv6" />.
+
+## References
+
+- <Cite key="st_an316" />: the clamping voltage at the application's
+  current from the breakdown voltage and the dynamic resistance, and what
+  the data sheet's clamping voltage means.
+- <Cite key="ti_ssztcv6" />: a clamp voltage close to the reflected voltage
+  wastes power.
+- [Snubbers and clamps](../../04-magnetics/snubbers-clamps/) and the
+  [clamp check](../../design/clamp-check/) tool.

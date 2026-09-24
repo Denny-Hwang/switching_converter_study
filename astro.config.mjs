@@ -91,6 +91,11 @@ export default defineConfig({
           items: [{ autogenerate: { directory: 'simulate' } }],
         },
         {
+          label: 'Gotchas',
+          translations: { ko: '주의할 점' },
+          items: [{ autogenerate: { directory: '08-gotchas' } }],
+        },
+        {
           label: 'Resources',
           translations: { ko: '자료' },
           items: [{ autogenerate: { directory: '10-resources' } }],

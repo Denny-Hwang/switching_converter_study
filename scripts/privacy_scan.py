@@ -12,7 +12,11 @@ Checks every tracked (or new, not ignored) text file:
      source, so the same line must carry a <Cite key="..."> (a textbook
      example or a data-sheet fact). Numbers from synthetic examples are
      rendered by components that read examples/synthetic/*.yaml and never
-     appear literally in MDX.
+     appear literally in MDX. The check covers the electrical units a
+     design's values come in -- V, A, W, Ω (or ohms), Hz, H, F, J, C and
+     °C, with an SI prefix -- written as symbols, in English or in Korean
+     prose; percentages, times, decibels and units spelt out in words are
+     outside it.
   4. examples/synthetic/*.yaml must declare `synthetic: true`, and a `label`
      and `label_ko` that name it as an example ("example", "예제"); every
      page's footer states once that example numbers are synthetic, so the
@@ -39,9 +43,11 @@ SKIP_FILES = {"package-lock.json"}
 
 EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 EMAIL_OK = re.compile(r"(^|[._-])no-?reply@|@users\.noreply\.github\.com$", re.I)
-# e.g. "12 V", "3.3µH", "100 kHz", "10 mΩ", "1 MΩ", "25 °C", "-40 °C", "1e5 Hz"
+# e.g. "12 V", "3.3µH", "100 kHz", "10 mΩ", "1 MΩ", "25 °C", "-40 °C", "1e5 Hz", and in Korean prose "5 V에",
+# "0.33 µF로", "25 °C에서": the boundaries are ASCII word characters, since Python's \w takes Hangul as a letter and a
+# particle follows a unit directly
 NUM_UNIT = re.compile(
-    r"(?<![\w.])[-+−]?\d+(?:[.,]\d+)?(?:[eE][-+−]?\d+)?\s?(?:[kMGmµunp]?(?:V|A|W|Ω|Hz|H|F|J|C)|°C|ohms?)(?![\w])"
+    r"(?<![A-Za-z0-9_.])[-+−]?\d+(?:[.,]\d+)?(?:[eE][-+−]?\d+)?\s?(?:[kMGmµunp]?(?:V|A|W|Ω|Hz|H|F|J|C)|°C|ohms?)(?![A-Za-z0-9_])"
 )
 
 

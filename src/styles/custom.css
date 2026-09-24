@@ -460,6 +460,36 @@ html:lang(ko) body {
   font-size: var(--sl-text-sm);
   color: var(--sl-color-gray-2);
 }
+/* Gotcha pages: tags at the top of each page, and the index. */
+.pe-gotcha-tags {
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-2);
+}
+.pe-tag {
+  display: inline-block;
+  margin: 0.1rem 0.3rem 0.1rem 0;
+  padding: 0 0.45rem;
+  border-radius: 0.3rem;
+  font-size: var(--sl-text-xs);
+  text-decoration: none;
+  background: var(--sl-color-gray-6);
+  color: var(--sl-color-gray-1);
+}
+.pe-gotcha-tags > span {
+  margin-right: 0.4rem;
+}
+.pe-tag:hover,
+.pe-tag:focus-visible {
+  background: var(--sl-color-accent-low);
+  color: var(--sl-color-accent-high);
+}
+.pe-gotchas li {
+  margin: 0.6rem 0;
+}
+.pe-gotchas__desc {
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-2);
+}
 .pe-quiz__q {
   margin: 1rem 0;
 }

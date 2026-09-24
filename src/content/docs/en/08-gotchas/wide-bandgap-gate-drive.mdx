@@ -1,0 +1,77 @@
+---
+title: A gate driven too little, too much, or not at all
+description: A MOSFET is fully on only at the gate voltage it is made to be driven with; an eGaN FET's maximum gate voltage is low, and ringing adds to the drive; and a gate that nothing drives can turn the switch on.
+sidebar:
+  order: 10
+gotcha:
+  tags: [gate-drive]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+
+<GotchaTags />
+
+## Symptom
+
+A switching stage runs hotter than its loss budget predicts; or an eGaN
+transistor fails after its gate rings above its maximum gate-source
+voltage; or the
+switch conducts for a moment while the controller starts or resets, with a
+current spike or, in a half-bridge, a shoot-through.
+
+## Why
+
+Three things set the gate's window:
+
+- **Too little.** A MOSFET turns fully on only at the gate voltage it is
+  made to be driven with, and a higher gate voltage lowers its on-resistance
+  further: a logic-level MOSFET is made for 5 V, a standard-level one needs at least 10 V <Cite key="nexperia_an90059" />.
+  A drive that only just exceeds the threshold leaves the switch partly on,
+  at a higher resistance and loss than its data sheet's on-resistance.
+- **Too much.** The maximum allowable gate-source voltage of an eGaN FET is
+  low compared with silicon MOSFETs <Cite key="epc_wp008" />, and the
+  ringing of the gate loop's inductance adds to the drive
+  ([gate drive](../../06-bench/gate-drive/)), so the drive and its ringing
+  together must stay below that maximum.
+- **Not at all.** With the driver unpowered, nothing drives the gate and
+  its voltage is undefined. A gate-source resistance in the kilohm range
+  keeps a MOSFET off when the gate drive has a fault or no power is applied
+  <Cite key="nexperia_an90059" />. A powered driver whose input floats
+  while the controller starts up does drive the gate, to whatever level its
+  floating input reads, and the resistor at the gate cannot hold that off.
+
+## How to confirm
+
+Measure the gate-source voltage at the transistor's own terminals, with a
+short ground connection ([probes](../../06-bench/probes/)), at the switching
+edges and while the controller powers up and resets. A switch whose source
+is not at the oscilloscope's earth, such as a high-side switch or any switch
+on an off-line primary, needs a differential probe: a probe's ground lead
+is tied to the oscilloscope's earth
+([gate drive](../../06-bench/gate-drive/)). Compare the gate's high level
+with the drive voltage the transistor's data sheet gives its on-resistance
+at, its peaks with the gate's maximum, and look for any pulse while the
+controller is not yet running.
+
+## Fix
+
+Drive the gate at the voltage the data sheet gives the on-resistance at,
+from a driver whose undervoltage lockout stops it before its supply sags to
+where the switch is only partly on. Keep the gate loop short, so that its ringing
+stays well below the maximum. Place a resistor from gate to source for the
+driver without power <Cite key="nexperia_an90059" />, and for the driver
+with power hold its input at the level that keeps its output low (a
+pull-down resistor on a non-inverting input), unless the driver's data
+sheet says its input does so by itself. The gate currents at the edges are worked through in
+[gate drive](../../06-bench/gate-drive/)
+(<EqRef id="gate.I_on" label="gate current at turn-on" />).
+
+## References
+
+- <Cite key="nexperia_an90059" />: the gate voltage a MOSFET needs to be fully
+  on, and a gate-source resistor that keeps it off without drive.
+- <Cite key="epc_wp008" />: an eGaN FET's low maximum gate-source voltage.
+- [Gate drive](../../06-bench/gate-drive/) and
+  [Probes and measurement bandwidth](../../06-bench/probes/).

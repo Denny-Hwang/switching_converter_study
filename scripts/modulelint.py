@@ -30,6 +30,23 @@ A page is a module page when its frontmatter has `module: true`. For each:
     its language and in every definition-of-done column, and an English page
     without a Korean page is marked KO "pending".
 
+A page under 08-gotchas/ is a gotcha page (docs/BUILD_SPEC.md section 5).
+Each one except the index:
+
+  * has `gotcha: {tags: [...]}` in its frontmatter, every tag one of
+    src/lib/gotchas.json, and shows them with <GotchaTags /> before its
+    first section;
+  * has exactly the h2 sections, in this order,
+      EN: Symptom, Why, How to confirm, Fix, References
+      KO: 증상, 원인, 확인 방법, 해결, 참고 자료
+    and its References section cites at least one source (<Cite>);
+  * has a Korean mirror with the same tags and components (as for modules),
+    or docs/STATUS.md marks its KO pending; STATUS lists every gotcha.
+The gotcha pages sit directly in 08-gotchas/, each with a one-line
+description and no tag twice. The index embeds <GotchaIndex part="list" />,
+then under an h2 of its own <GotchaIndex part="tags" />, which lists the
+pages by their tags.
+
 A page is a tool page when it embeds a tool island (<Explorer />,
 <Simulator />, ...). Each tool page has a "Screenshot" section (KO: 스크린샷)
 that shows an image imported from src/assets/screenshots/<tool>-<locale>.png
@@ -70,6 +87,12 @@ SHOT_IMPORT = re.compile(r"^import\s+(\w+)\s+from\s+'((?:\.\./)+assets/screensho
 INLINE = ("Cite", "EqRef", "Val")
 COMPONENT = re.compile(r"<(" + "|".join(BLOCK + INLINE) + r")\b((?:[^>\"'{}]|\"[^\"]*\"|'[^']*'|\{(?:[^{}]|\{[^{}]*\})*\})*)/?>")
 ATTR = re.compile(r"(\w+)\s*=\s*(?:\"([^\"]*)\"|\{([^}]*)\})")
+GOTCHAS_DIR = "08-gotchas"
+GOTCHA_TAGS = set(json.loads((ROOT / "src" / "lib" / "gotchas.json").read_text(encoding="utf-8"))["tags"])
+GOTCHA_SECTIONS = {
+    "en": ["Symptom", "Why", "How to confirm", "Fix", "References"],
+    "ko": ["증상", "원인", "확인 방법", "해결", "참고 자료"],
+}
 DOD_COLUMNS = ("EN", "KO", "`<Eq>` only", "Try it", "Go deeper ≥ 2", "Gotchas", "Quiz ≥ 5")
 
 
@@ -163,6 +186,96 @@ def status_rows() -> dict[tuple[str, str], dict[str, str]]:
         elif not set(line) <= set("|-: "):
             rows[(section, cells[0])] = dict(zip(header, cells))
     return rows
+
+
+def check_gotcha_index(where: str, body: str) -> list[str]:
+    """The gotcha index: the list of pages, then, under an h2 of its own, the pages by tag."""
+    listed = re.search(r'<GotchaIndex\s+part="list"\s*/>', body)
+    by_tag = re.search(r'<GotchaIndex\s+part="tags"\s*/>', body)
+    if not listed or not by_tag:
+        return [f'{where}: the gotcha index must embed <GotchaIndex part="list" /> and, under an h2 of its own, <GotchaIndex part="tags" />']
+    if by_tag.start() < listed.start() or not re.search(r"^## \S", body[listed.end():by_tag.start()], re.M):
+        return [f'{where}: put an h2 (the table of contents shows it) between <GotchaIndex part="list" /> and <GotchaIndex part="tags" />']
+    return []
+
+
+def check_gotchas(status: dict[tuple[str, str], dict[str, str]]) -> tuple[list[str], int]:
+    """The gotcha pages (08-gotchas): template, tags, Korean mirror, STATUS."""
+    errors: list[str] = []
+    pages: dict[tuple[str, str], tuple[list[str], list[tuple[str, dict[str, str]]]]] = {}
+    for locale in SECTIONS:
+        folder = DOCS / locale / GOTCHAS_DIR
+        for path in sorted([*folder.rglob("*.mdx"), *folder.rglob("*.md")]) if folder.exists() else []:
+            where = str(path.relative_to(ROOT))
+            if path.parent != folder:
+                errors.append(f"{where}: a gotcha page sits directly in {GOTCHAS_DIR}/, not in a subfolder (the index lists only those)")
+                continue
+            meta, body = frontmatter(strip_code(path.read_text(encoding="utf-8")))
+            if meta.get("module"):
+                errors.append(f"{where}: a gotcha page is not a module page (remove `module: true`)")
+            if path.stem == "index":
+                errors += check_gotcha_index(where, body)
+                continue
+            if not str(meta.get("description") or "").strip():
+                errors.append(f"{where}: frontmatter needs a one-line `description` (the index shows it)")
+            tags = (meta.get("gotcha") or {}).get("tags") if isinstance(meta.get("gotcha"), dict) else None
+            if not isinstance(tags, list) or not tags:
+                errors.append(f"{where}: frontmatter needs `gotcha: {{tags: [...]}}` with at least one tag")
+                tags = []
+            for tag in tags:
+                if tag not in GOTCHA_TAGS:
+                    errors.append(f"{where}: unknown gotcha tag {tag!r} (src/lib/gotchas.json)")
+            if len({str(x) for x in tags}) != len(tags):
+                errors.append(f"{where}: a gotcha tag is listed twice")
+            # recorded before the section checks, so that a page with a wrong section still counts as a page
+            pages[(locale, path.stem)] = (sorted(str(x) for x in tags), components(body))
+            found = sections(body)
+            heads = [h for h, _ in found]
+            if heads != GOTCHA_SECTIONS[locale]:
+                errors.append(f"{where}: h2 sections must be {GOTCHA_SECTIONS[locale]}, found {heads}")
+                continue
+            intro = re.split(r"^## ", body, maxsplit=1, flags=re.M)[0]
+            if not re.search(r"<GotchaTags\s*/>", intro):
+                errors.append(f"{where}: show the tags with <GotchaTags /> before the first section")
+            refs = dict(found)[GOTCHA_SECTIONS[locale][-1]]
+            if not any(c == "Cite" for c, _ in components(refs)):
+                errors.append(f"{where}: the {GOTCHA_SECTIONS[locale][-1]} section cites no source (<Cite>)")
+
+    for (locale, slug), (tags, comps) in pages.items():
+        if locale != "en":
+            continue
+        row = status.get((GOTCHAS_DIR, slug))
+        if row is None:
+            errors.append(f"docs/STATUS.md: no row for gotcha {GOTCHAS_DIR}/{slug}")
+            row = {}
+        elif "✅" not in row.get("EN", ""):
+            errors.append(f"docs/STATUS.md: {GOTCHAS_DIR}/{slug} EN must be ✅")
+        ko = pages.get(("ko", slug))
+        if ko is None:
+            if "pending" not in row.get("KO", "").lower():
+                errors.append(f"src/content/docs/en/{GOTCHAS_DIR}/{slug}.mdx: no Korean page, and docs/STATUS.md does not mark KO pending")
+            continue
+        if "✅" not in row.get("KO", ""):
+            errors.append(f"docs/STATUS.md: {GOTCHAS_DIR}/{slug} KO must be ✅")
+        ko_tags, ko_comps = ko
+        if ko_tags != tags:
+            errors.append(f"src/content/docs/ko/{GOTCHAS_DIR}/{slug}.mdx: tags {ko_tags} differ from the English page's {tags}")
+        if signature(comps, BLOCK) != signature(ko_comps, BLOCK):
+            errors.append(f"src/content/docs/ko/{GOTCHAS_DIR}/{slug}.mdx: block components differ from the English page")
+        en_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(comps, INLINE))
+        ko_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(ko_comps, INLINE))
+        if en_inline != ko_inline:
+            errors.append(f"src/content/docs/ko/{GOTCHAS_DIR}/{slug}.mdx: inline components differ from the English page (missing {list(en_inline - ko_inline)}, extra {list(ko_inline - en_inline)})")
+    for (locale, slug) in pages:
+        if locale == "ko" and ("en", slug) not in pages:
+            errors.append(f"src/content/docs/ko/{GOTCHAS_DIR}/{slug}.mdx: no English page of that name")
+    for locale in SECTIONS:
+        if pages and not (DOCS / locale / GOTCHAS_DIR / "index.mdx").exists():
+            errors.append(f"src/content/docs/{locale}/{GOTCHAS_DIR}/index.mdx: the gotcha pages need their index")
+    for (section, slug) in status:
+        if section == GOTCHAS_DIR and slug != "index" and ("en", slug) not in pages:
+            errors.append(f"docs/STATUS.md: gotcha row {slug!r} has no page src/content/docs/en/{GOTCHAS_DIR}/{slug}.mdx")
+    return errors, sum(1 for (loc, _) in pages if loc == "en")
 
 
 def check_tool_page(path: Path, locale: str, body: str) -> list[str]:
@@ -302,6 +415,9 @@ def main() -> int:
             if en_key != ko_key:
                 errors.append(f"src/content/quizzes/ko/{slug}.yaml: answer key or option counts differ from the English quiz")
 
+    gotcha_errors, n_gotchas = check_gotchas(status)
+    errors += gotcha_errors
+
     if errors:
         print(f"modulelint: {len(errors)} error(s)", file=sys.stderr)
         for e in errors:
@@ -309,7 +425,7 @@ def main() -> int:
         return 1
     n_en = sum(1 for (loc, _) in pages if loc == "en")
     n_ko = sum(1 for (loc, _) in pages if loc == "ko")
-    print(f"modulelint: OK ({n_en} EN and {n_ko} KO module pages, {n_tools} tool pages with screenshots)")
+    print(f"modulelint: OK ({n_en} EN and {n_ko} KO module pages, {n_gotchas} gotcha pages, {n_tools} tool pages with screenshots)")
     return 0
 
 

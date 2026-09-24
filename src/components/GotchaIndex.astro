@@ -1,0 +1,87 @@
+---
+/**
+ * <GotchaIndex part="list" /> and <GotchaIndex part="tags" /> -- the index of
+ * the gotcha pages (08-gotchas), in two parts: every page with its one-line
+ * description and tags; then, under the index page's own h2 (so that the
+ * table of contents shows it), the pages under each tag. Built from the docs
+ * collection, so a new page appears here by itself; only the pages directly
+ * in 08-gotchas count. A Korean page that is still pending is listed with its
+ * English title at its Korean URL (Starlight serves the English content
+ * there).
+ */
+import { getCollection } from 'astro:content';
+import { GOTCHA_TAG_IDS, GOTCHAS_DIR, tagAnchor, tagLabel, type GotchaTag } from '../lib/gotchas';
+import { pageHref } from '../lib/paths';
+import { pageLocale } from '../lib/locale';
+
+interface Props {
+  part: 'list' | 'tags';
+}
+const { part } = Astro.props;
+if (part !== 'list' && part !== 'tags') throw new Error('<GotchaIndex /> needs part="list" or part="tags"');
+
+const locale = pageLocale(Astro);
+const prefix = (loc: string) => `${loc}/${GOTCHAS_DIR}/`;
+const direct = (id: string, loc: string) => id.startsWith(prefix(loc)) && !id.slice(prefix(loc).length).includes('/');
+const all = await getCollection('docs', (e) => direct(e.id, 'en') || direct(e.id, locale));
+const own = new Map(all.filter((e) => direct(e.id, locale)).map((e) => [e.id.slice(prefix(locale).length), e]));
+const pages = all
+  .filter((e) => direct(e.id, 'en'))
+  .map((en) => {
+    const slug = en.id.slice(prefix('en').length);
+    const e = own.get(slug) ?? en;
+    if (!e.data.gotcha) throw new Error(`gotcha page ${e.id} has no gotcha.tags in its frontmatter`);
+    return {
+      slug,
+      title: e.data.title,
+      description: e.data.description ?? '',
+      tags: e.data.gotcha.tags as GotchaTag[],
+      order: e.data.sidebar?.order ?? 1000,
+      href: pageHref(locale, `${GOTCHAS_DIR}/${slug}`),
+    };
+  })
+  .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
+const tags = GOTCHA_TAG_IDS.filter((tag) => pages.some((p) => p.tags.includes(tag)));
+---
+
+{
+  part === 'list' && (
+    <ol class="pe-gotchas not-content">
+      {pages.map((p) => (
+        <li>
+          <a href={p.href}>{p.title}</a>
+          <br />
+          <span class="pe-gotchas__desc">{p.description}</span>
+          <br />
+          <span class="pe-gotchas__tags">
+            {p.tags.map((tag, i) => (
+              <Fragment>
+                {i > 0 && ' '}
+                <a class="pe-tag" href={`#${tagAnchor(tag)}`}>
+                  {tagLabel(tag, locale)}
+                </a>
+              </Fragment>
+            ))}
+          </span>
+        </li>
+      ))}
+    </ol>
+  )
+}
+{
+  part === 'tags' &&
+    tags.map((tag) => (
+      <section class="pe-gotchas__tag">
+        <h3 id={tagAnchor(tag)}>{tagLabel(tag, locale)}</h3>
+        <ul>
+          {pages
+            .filter((p) => p.tags.includes(tag))
+            .map((p) => (
+              <li>
+                <a href={p.href}>{p.title}</a>
+              </li>
+            ))}
+        </ul>
+      </section>
+    ))
+}

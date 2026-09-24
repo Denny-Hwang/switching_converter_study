@@ -1,0 +1,15 @@
+{
+  "tags": {
+    "measurement": { "en": "Measurement", "ko": "측정" },
+    "sensing": { "en": "Current sensing", "ko": "전류 센싱" },
+    "sampling": { "en": "Sampling", "ko": "샘플링" },
+    "magnetics": { "en": "Magnetics", "ko": "자성 부품" },
+    "capacitors": { "en": "Capacitors", "ko": "커패시터" },
+    "temperature": { "en": "Temperature", "ko": "온도" },
+    "protection": { "en": "Protection", "ko": "보호" },
+    "gate-drive": { "en": "Gate drive", "ko": "게이트 구동" },
+    "power-gating": { "en": "Power gating", "ko": "전원 게이팅" },
+    "flyback": { "en": "Flyback", "ko": "플라이백" },
+    "harvesting": { "en": "Harvesting", "ko": "에너지 하베스팅" }
+  }
+}

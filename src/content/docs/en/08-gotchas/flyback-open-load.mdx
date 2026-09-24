@@ -1,0 +1,81 @@
+---
+title: An open-loop flyback with its load removed
+description: Without regulation and without a load, a flyback's output charges until its voltage, reflected to the primary, reaches the primary clamp; the clamp then takes all the input power.
+sidebar:
+  order: 8
+gotcha:
+  tags: [flyback, protection]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## Symptom
+
+A flyback that runs at a fixed duty ratio, without feedback, drives its
+output far above its normal value when the load is disconnected, during a
+test or through a loose connector. A part on the output side fails, or the
+primary clamp overheats.
+
+## Why
+
+Each switching period stores energy in the magnetizing inductance and
+delivers it to the output. Without a load the output capacitor keeps that
+energy, and the output voltage rises from period to period. It stops rising
+only when the output's voltage, reflected to the primary, reaches the
+clamp's voltage: from then on the clamp takes the energy instead
+(<EqRef id="flyback.V_ceiling" label="open-load output voltage" />)
+<Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />. The clamp
+then dissipates all of the input power. Take a TVS's clamping voltage at
+the peak primary current, and at the temperature that power gives it: its
+breakdown voltage rises with temperature, and the ceiling with it
+<Cite key="st_an316" />. An RCD clamp sets no fixed ceiling. Its voltage
+settles where its resistor dissipates the power it takes, the power balance
+behind the <EqRef id="clamp.rcd.V" label="RCD clamp voltage" />
+<Cite key="ti_ssztcv6" />, which in normal operation is the leakage energy
+alone. Without a load that power is the whole input power, so the clamp's,
+the output's and the switch's voltages all rise far above their loaded
+values.
+
+In the clamp tool's example, the output of
+<Val example="clamp-tvs" name="V" /> rises to
+<Val example="clamp-tvs" name="V_omax" /> without its load, before the TVS
+warms.
+
+## How to confirm
+
+Compute the ceiling from the clamp's voltage, the turns ratio and the
+diode's drop (<EqRef id="flyback.V_ceiling" label="open-load output voltage" />),
+and compare it with the ratings of every part on the output side. Remove the
+load on the bench only if every one of those parts is rated above the
+ceiling, the switch is rated above the input voltage plus the clamp's
+voltage at the TVS's temperature
+(<EqRef id="clamp.Vds" label="switch voltage while the clamp conducts" />),
+and the primary clamp is a TVS or a Zener rated for the whole input power;
+then watch the output rise towards the ceiling. A lower input voltage
+lowers the power the clamp takes, but the ceiling only a little, through
+the peak current and the TVS's temperature.
+
+## Fix
+
+Keep the output from being left without a load: regulate it with feedback,
+keep a minimum load the converter cannot lose, or clamp the output below
+the ratings of what it feeds. If the primary clamp must survive an open
+load, rate it for the whole input power; an RCD clamp needs a fixed-voltage
+clamp beside it, or an input power limited at no load, as the
+[clamp check](../../design/clamp-check/) warns.
+
+## References
+
+- <Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />: the
+  flyback and its transformer model, from which the ceiling follows.
+- <Cite key="st_an316" />: a TVS's clamping voltage at the actual current,
+  and its breakdown voltage rising with temperature.
+- <Cite key="ti_ssztcv6" />: the primary clamp, and an RCD clamp's voltage
+  against its losses.
+- [Snubbers and clamps](../../04-magnetics/snubbers-clamps/) and the
+  [clamp check](../../design/clamp-check/), which gives the ceiling.

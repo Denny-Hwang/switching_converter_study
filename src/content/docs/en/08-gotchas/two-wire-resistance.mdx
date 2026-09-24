@@ -1,0 +1,56 @@
+---
+title: A low resistance that depends on how the probes sit
+description: A two-wire reading of a winding's or a shunt's resistance includes the test leads and their contacts; four wires keep them out.
+sidebar:
+  order: 2
+gotcha:
+  tags: [measurement, magnetics]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+
+<GotchaTags />
+
+## Symptom
+
+The dc resistance of a winding with few turns, or of any low resistance,
+reads well above its calculated value
+(<EqRef id="wind.dcr" label="dc resistance of a winding" />), and the
+reading changes when the probes are pressed harder or moved.
+
+## Why
+
+A two-wire ohmmeter passes its test current through its leads and reads
+the voltage across the same leads, so the reading is the part together
+with the leads and their contacts. The four-wire (Kelvin) method passes the
+current through one pair of leads and senses the voltage with another, so
+the leads' resistance stays out of the reading <Cite key="keithley_llmh7" />.
+A winding of a few turns can have a resistance well below that of the leads.
+
+## How to confirm
+
+Touch the two probes together and read: that is the leads and their
+contacts alone. If it is not small against the part's reading, much of the
+reading is leads. Then measure the part with four wires: the difference
+between the two readings is the leads and their contacts.
+
+## Fix
+
+Measure with four wires: the current leads on the part's terminals, and the
+sense leads on the same terminals, inside the current contacts, so that
+only the part lies between the sense points <Cite key="keithley_llmh7" />. An impedance meter's
+four-terminal connections keep the leads' impedance out in the same way
+<Cite key="keysight_5950_3000" />. Note the winding's temperature with the
+reading: copper's resistance rises with it
+(<EqRef id="wind.rho_T" label="resistivity at temperature" />).
+
+## References
+
+- <Cite key="keithley_llmh7" />: the four-wire method keeps the test leads'
+  resistance out of a low-resistance measurement.
+- <Cite key="keysight_5950_3000" />: four-terminal connections keep the
+  leads' impedance out of an impedance measurement.
+- [Measuring magnetics](../../04-magnetics/measurement/): dc resistance
+  and a bench exercise with two and four wires.

@@ -30,7 +30,12 @@ def test_privacy_scan_finds_numbers_with_units(text: str) -> None:
     assert _script("privacy_scan").NUM_UNIT.search(f"a value of {text} here")
 
 
-@pytest.mark.parametrize("text", ["D = 0.5", "K_crit", "V_g", "the 2nd edition", "Ch. 5", "4/27", "x1e5"])
+@pytest.mark.parametrize("text", ["5 V에서 읽습니다", "0.33 µF로 줄어듭니다", "25 °C에서", "정격 6.3 V인", "10 mΩ을 넘는"])
+def test_privacy_scan_finds_numbers_with_units_before_korean_particles(text: str) -> None:
+    assert _script("privacy_scan").NUM_UNIT.search(text)
+
+
+@pytest.mark.parametrize("text", ["D = 0.5", "K_crit", "V_g", "the 2nd edition", "Ch. 5", "4/27", "x1e5", "3 Hzx", "2차 고조파"])
 def test_privacy_scan_ignores_unitless_text(text: str) -> None:
     assert not _script("privacy_scan").NUM_UNIT.search(text)
 
@@ -275,3 +280,174 @@ def test_modulelint_names_components_it_does_not_compare() -> None:
     ml = _script("modulelint")
     assert ml.unknown_components('<Eq id="x" /> <NewTable example="a" /> <Cite key="k" /> <b>bold</b>') == ["NewTable"]
     assert ml.unknown_components('<Eq id="x" /> <Val example="a" name="b" /> <em>text</em>') == []
+_GOTCHA_EN = """---
+title: A gotcha
+description: A reading that is high.
+gotcha:
+  tags: [measurement]
+---
+
+<GotchaTags />
+
+## Symptom
+
+It reads high.
+
+## Why
+
+Because <EqRef id="sense.pad_error" label="pad error" />.
+
+## How to confirm
+
+Measure twice.
+
+## Fix
+
+Use four wires.
+
+## References
+
+- <Cite key="keithley_llmh7" />
+"""
+
+_GOTCHA_KO = """---
+title: 주의할 점
+description: 높게 읽히는 값.
+gotcha:
+  tags: [measurement]
+---
+
+<GotchaTags />
+
+## 증상
+
+높게 읽힙니다.
+
+## 원인
+
+<EqRef id="sense.pad_error" label="패드 오차" /> 때문입니다.
+
+## 확인 방법
+
+두 번 잽니다.
+
+## 해결
+
+네 선을 씁니다.
+
+## 참고 자료
+
+- <Cite key="keithley_llmh7" />
+"""
+
+
+_GOTCHA_INDEX = '---\ntitle: Index\n---\n\n<GotchaIndex part="list" />\n\n## By tag\n\n<GotchaIndex part="tags" />\n'
+
+
+def _gotcha_tree(tmp_path: Path, en: str, ko: str | None, index: str = _GOTCHA_INDEX) -> Path:
+    for locale in ("en", "ko"):
+        d = tmp_path / "src" / "content" / "docs" / locale / "08-gotchas"
+        d.mkdir(parents=True)
+        (d / "index.mdx").write_text(index, encoding="utf-8")
+    (tmp_path / "src/content/docs/en/08-gotchas/x.mdx").write_text(en, encoding="utf-8")
+    if ko is not None:
+        (tmp_path / "src/content/docs/ko/08-gotchas/x.mdx").write_text(ko, encoding="utf-8")
+    return tmp_path
+
+
+def _gotcha_errors(tmp_path: Path, en: str, ko: str | None, row: dict[str, str] | None,
+                   index: str = _GOTCHA_INDEX, extra: dict[str, str] | None = None,
+                   more_rows: dict[str, dict[str, str]] | None = None) -> list[str]:
+    lint = _script("modulelint")
+    root = _gotcha_tree(tmp_path, en, ko, index)
+    for rel, text in (extra or {}).items():
+        path = root / "src" / "content" / "docs" / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+    lint.ROOT, lint.DOCS = root, root / "src" / "content" / "docs"
+    status = {("08-gotchas", "x"): row} if row is not None else {}
+    status.update({("08-gotchas", slug): r for slug, r in (more_rows or {}).items()})
+    errors, _ = lint.check_gotchas(status)
+    return errors
+
+
+def test_modulelint_accepts_a_gotcha_page_and_its_mirror(tmp_path: Path) -> None:
+    assert _gotcha_errors(tmp_path, _GOTCHA_EN, _GOTCHA_KO, {"EN": "✅", "KO": "✅"}) == []
+
+
+@pytest.mark.parametrize(
+    ("en", "ko", "row", "expect"),
+    [
+        # the template's sections, in order
+        (_GOTCHA_EN.replace("## Why", "## Cause"), _GOTCHA_KO, {"EN": "✅", "KO": "✅"}, "h2 sections must be"),
+        # a tag outside src/lib/gotchas.json
+        (_GOTCHA_EN.replace("[measurement]", "[wiring]"), _GOTCHA_KO, {"EN": "✅", "KO": "✅"}, "unknown gotcha tag"),
+        # no tags at all
+        (_GOTCHA_EN.replace("gotcha:\n  tags: [measurement]\n", ""), _GOTCHA_KO, {"EN": "✅", "KO": "✅"}, "needs `gotcha"),
+        # the tags shown before the first section
+        (_GOTCHA_EN.replace("<GotchaTags />\n", ""), _GOTCHA_KO, {"EN": "✅", "KO": "✅"}, "<GotchaTags />"),
+        # a References section without a source
+        (_GOTCHA_EN.replace('- <Cite key="keithley_llmh7" />', "- none"), _GOTCHA_KO, {"EN": "✅", "KO": "✅"}, "cites no source"),
+        # the Korean page mirrors the tags and the components
+        (_GOTCHA_EN, _GOTCHA_KO.replace("[measurement]", "[sensing]"), {"EN": "✅", "KO": "✅"}, "tags"),
+        (_GOTCHA_EN, _GOTCHA_KO.replace('<EqRef id="sense.pad_error" label="패드 오차" />', "패드"), {"EN": "✅", "KO": "✅"}, "inline components differ"),
+        # no Korean page, and STATUS does not say it is pending
+        (_GOTCHA_EN, None, {"EN": "✅", "KO": "⬜"}, "no Korean page"),
+        # STATUS lists every gotcha
+        (_GOTCHA_EN, _GOTCHA_KO, None, "no row for gotcha"),
+        # the index shows each page's description, and each tag once
+        (_GOTCHA_EN.replace("description: A reading that is high.\n", ""), _GOTCHA_KO, {"EN": "✅", "KO": "✅"}, "one-line `description`"),
+        (_GOTCHA_EN.replace("[measurement]", "[measurement, measurement]"), _GOTCHA_KO, {"EN": "✅", "KO": "✅"}, "listed twice"),
+        # a gotcha page is no module page
+        (_GOTCHA_EN.replace("gotcha:\n", "module: true\ngotcha:\n"), _GOTCHA_KO, {"EN": "✅", "KO": "✅"}, "not a module page"),
+    ],
+)
+def test_modulelint_gotcha_rules(tmp_path: Path, en: str, ko: str | None, row: dict[str, str] | None, expect: str) -> None:
+    errors = _gotcha_errors(tmp_path, en, ko, row)
+    assert any(expect in e for e in errors), errors
+
+
+def test_modulelint_gotcha_pending_korean_page_is_allowed(tmp_path: Path) -> None:
+    assert _gotcha_errors(tmp_path, _GOTCHA_EN, None, {"EN": "✅", "KO": "pending"}) == []
+
+
+@pytest.mark.parametrize(
+    ("index", "expect"),
+    [
+        # the list alone, or the old single embed
+        ('---\ntitle: Index\n---\n\n<GotchaIndex part="list" />\n', 'must embed <GotchaIndex part="list" />'),
+        ("---\ntitle: Index\n---\n\n<GotchaIndex />\n", 'must embed <GotchaIndex part="list" />'),
+        # the lists by tag without an h2 of their own
+        ('---\ntitle: Index\n---\n\n<GotchaIndex part="list" />\n\n<GotchaIndex part="tags" />\n', "put an h2"),
+    ],
+)
+def test_modulelint_gotcha_index_rules(tmp_path: Path, index: str, expect: str) -> None:
+    errors = _gotcha_errors(tmp_path, _GOTCHA_EN, _GOTCHA_KO, {"EN": "✅", "KO": "✅"}, index=index)
+    assert any(expect in e for e in errors), errors
+
+
+def test_modulelint_gotcha_page_without_its_counterparts(tmp_path: Path) -> None:
+    errors = _gotcha_errors(
+        tmp_path, _GOTCHA_EN, _GOTCHA_KO, {"EN": "✅", "KO": "✅"},
+        # a Korean page with no English page, and a STATUS row with no page
+        extra={"ko/08-gotchas/y.mdx": _GOTCHA_KO}, more_rows={"z": {"EN": "✅", "KO": "✅"}},
+    )
+    assert any("y.mdx: no English page of that name" in e for e in errors), errors
+    assert any("gotcha row 'z' has no page" in e for e in errors), errors
+
+
+def test_modulelint_gotcha_markdown_page_is_checked(tmp_path: Path) -> None:
+    errors = _gotcha_errors(tmp_path, _GOTCHA_EN, _GOTCHA_KO, {"EN": "✅", "KO": "✅"},
+                            extra={"en/08-gotchas/w.md": _GOTCHA_EN.replace("## Why", "## Cause")})
+    assert any("w.md: h2 sections must be" in e for e in errors), errors
+
+
+def test_modulelint_gotcha_page_in_a_subfolder(tmp_path: Path) -> None:
+    errors = _gotcha_errors(tmp_path, _GOTCHA_EN, _GOTCHA_KO, {"EN": "✅", "KO": "✅"}, extra={"en/08-gotchas/more/w.mdx": _GOTCHA_EN})
+    assert any("not in a subfolder" in e for e in errors), errors
+
+
+def test_modulelint_gotcha_wrong_section_reports_only_that(tmp_path: Path) -> None:
+    # a page with a wrong section is still a page: its mirror is found, and nothing else is reported
+    errors = _gotcha_errors(tmp_path, _GOTCHA_EN.replace("## Why", "## Cause"), _GOTCHA_KO, {"EN": "✅", "KO": "✅"})
+    assert len(errors) == 1 and "h2 sections must be" in errors[0], errors

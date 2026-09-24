@@ -1,0 +1,14 @@
+synthetic: true
+label: "Ceramic output capacitor example"
+label_ko: "세라믹 출력 커패시터 예제"
+# A buck's output capacitor rated 10 uF that keeps 4 uF at its working dc
+# voltage (a round fraction for the example, not a part's data), under an
+# inductor ripple of 0.5 A (half peak-to-peak) at a 2 us switching period.
+params:
+  Delta_i_L: 0.5
+  T_s: 2.0e-6
+  C: 1.0e-5
+  C_bias: 4.0e-6
+steps:
+  - buck.ripple.v
+  - {eq: buck.ripple.v, bind: {C: C_bias}, as: Delta_v_bias}
