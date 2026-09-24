@@ -6173,6 +6173,737 @@
       "value": 5.607623483312695
     },
     {
+      "id": "lfr.L_M",
+      "source": "yaml",
+      "inputs": {
+        "D": 0.2,
+        "R_in": 10000.0,
+        "f_s": 10000.0
+      },
+      "value": 0.020000000000000004
+    },
+    {
+      "id": "lfr.L_M",
+      "source": "random",
+      "inputs": {
+        "D": 0.505947,
+        "R_in": 146725.0,
+        "f_s": 3700.8
+      },
+      "value": 5.074445088906524
+    },
+    {
+      "id": "lfr.L_M",
+      "source": "random",
+      "inputs": {
+        "D": 0.772826,
+        "R_in": 962527.0,
+        "f_s": 1204.16
+      },
+      "value": 238.70536361918658
+    },
+    {
+      "id": "lfr.L_M",
+      "source": "random",
+      "inputs": {
+        "D": 0.276614,
+        "R_in": 62.4513,
+        "f_s": 58075.9
+      },
+      "value": 4.113995880302067e-05
+    },
+    {
+      "id": "lfr.L_M",
+      "source": "random",
+      "inputs": {
+        "D": 0.30975,
+        "R_in": 2472630.0,
+        "f_s": 2191.89
+      },
+      "value": 54.11691277604603
+    },
+    {
+      "id": "lfr.L_M",
+      "source": "random",
+      "inputs": {
+        "D": 0.32174,
+        "R_in": 21582.5,
+        "f_s": 715750.0
+      },
+      "value": 0.0015607038876542091
+    },
+    {
+      "id": "lfr.L_M",
+      "source": "random",
+      "inputs": {
+        "D": 0.574488,
+        "R_in": 312409.0,
+        "f_s": 117878.0
+      },
+      "value": 0.43734352933518084
+    },
+    {
+      "id": "lfr.P_env",
+      "source": "yaml",
+      "inputs": {
+        "R_s": 1000000.0,
+        "V_ocpk": 1000.0,
+        "eta_ext": 1.0
+      },
+      "value": 0.125
+    },
+    {
+      "id": "lfr.P_env",
+      "source": "yaml",
+      "inputs": {
+        "R_s": 10000.0,
+        "V_ocpk": 100.0,
+        "eta_ext": 0.75
+      },
+      "value": 0.09375
+    },
+    {
+      "id": "lfr.P_env",
+      "source": "random",
+      "inputs": {
+        "R_s": 493145.0,
+        "V_ocpk": 553.581,
+        "eta_ext": 0.645556
+      },
+      "value": 0.050145463800288184
+    },
+    {
+      "id": "lfr.P_env",
+      "source": "random",
+      "inputs": {
+        "R_s": 55.5364,
+        "V_ocpk": 2.99886,
+        "eta_ext": 0.920123
+      },
+      "value": 0.018624754562934966
+    },
+    {
+      "id": "lfr.P_env",
+      "source": "random",
+      "inputs": {
+        "R_s": 363638.0,
+        "V_ocpk": 2.50659,
+        "eta_ext": 0.75405
+      },
+      "value": 1.6285740195121265e-06
+    },
+    {
+      "id": "lfr.P_env",
+      "source": "random",
+      "inputs": {
+        "R_s": 1.09209,
+        "V_ocpk": 3.80314,
+        "eta_ext": 0.95491
+      },
+      "value": 1.5808790698649648
+    },
+    {
+      "id": "lfr.P_env",
+      "source": "random",
+      "inputs": {
+        "R_s": 1136.28,
+        "V_ocpk": 1.49683,
+        "eta_ext": 0.973893
+      },
+      "value": 0.00024003847138506443
+    },
+    {
+      "id": "lfr.P_env",
+      "source": "random",
+      "inputs": {
+        "R_s": 4.71103,
+        "V_ocpk": 13.8033,
+        "eta_ext": 0.353149
+      },
+      "value": 1.7853278427624268
+    },
+    {
+      "id": "piezo.VM",
+      "source": "yaml",
+      "inputs": {
+        "C_0": 5e-08,
+        "I_p": 0.0001,
+        "omega": 1000.0
+      },
+      "value": 2.0
+    },
+    {
+      "id": "piezo.VM",
+      "source": "random",
+      "inputs": {
+        "C_0": 5.81559e-10,
+        "I_p": 5.73691e-06,
+        "omega": 1309.15
+      },
+      "value": 7.5352010708142885
+    },
+    {
+      "id": "piezo.VM",
+      "source": "random",
+      "inputs": {
+        "C_0": 9.62948e-10,
+        "I_p": 2.40779e-06,
+        "omega": 40.9598
+      },
+      "value": 61.04610277939391
+    },
+    {
+      "id": "piezo.VM",
+      "source": "random",
+      "inputs": {
+        "C_0": 2.10418e-08,
+        "I_p": 0.000303637,
+        "omega": 108.246
+      },
+      "value": 133.3091460982465
+    },
+    {
+      "id": "piezo.VM",
+      "source": "random",
+      "inputs": {
+        "C_0": 5.72419e-09,
+        "I_p": 3.21542e-05,
+        "omega": 74.1624
+      },
+      "value": 75.74254478466565
+    },
+    {
+      "id": "piezo.VM",
+      "source": "random",
+      "inputs": {
+        "C_0": 7.37683e-10,
+        "I_p": 0.00263211,
+        "omega": 97.8158
+      },
+      "value": 36477.5153387876
+    },
+    {
+      "id": "piezo.VM",
+      "source": "random",
+      "inputs": {
+        "C_0": 6.73189e-09,
+        "I_p": 0.00280602,
+        "omega": 67.6109
+      },
+      "value": 6165.0561179347615
+    },
+    {
+      "id": "piezo.R_opt",
+      "source": "yaml",
+      "inputs": {
+        "C_0": 5e-08,
+        "omega": 1000.0
+      },
+      "value": 20000.0
+    },
+    {
+      "id": "piezo.R_opt",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.26997e-07,
+        "omega": 925.502
+      },
+      "value": 8508.033210946394
+    },
+    {
+      "id": "piezo.R_opt",
+      "source": "random",
+      "inputs": {
+        "C_0": 3.36343e-07,
+        "omega": 22.3173
+      },
+      "value": 133222.0017687318
+    },
+    {
+      "id": "piezo.R_opt",
+      "source": "random",
+      "inputs": {
+        "C_0": 2.48545e-08,
+        "omega": 562.767
+      },
+      "value": 71493.46501777283
+    },
+    {
+      "id": "piezo.R_opt",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.09429e-08,
+        "omega": 592.96
+      },
+      "value": 154114.0281162279
+    },
+    {
+      "id": "piezo.R_opt",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.56093e-08,
+        "omega": 22.7711
+      },
+      "value": 2813406.9887210494
+    },
+    {
+      "id": "piezo.R_opt",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.19918e-07,
+        "omega": 310.388
+      },
+      "value": 26866.475738889032
+    },
+    {
+      "id": "piezo.P_R",
+      "source": "yaml",
+      "inputs": {
+        "C_0": 5e-08,
+        "I_p": 0.0001,
+        "omega": 1000.0
+      },
+      "value": 5.000000000000001e-05
+    },
+    {
+      "id": "piezo.P_R",
+      "source": "random",
+      "inputs": {
+        "C_0": 4.81213e-09,
+        "I_p": 3.388e-06,
+        "omega": 10.4023
+      },
+      "value": 5.732711496543433e-05
+    },
+    {
+      "id": "piezo.P_R",
+      "source": "random",
+      "inputs": {
+        "C_0": 2.05537e-09,
+        "I_p": 5.56222e-06,
+        "omega": 4619.63
+      },
+      "value": 8.145900987859968e-07
+    },
+    {
+      "id": "piezo.P_R",
+      "source": "random",
+      "inputs": {
+        "C_0": 5.30167e-07,
+        "I_p": 0.00416079,
+        "omega": 97.753
+      },
+      "value": 0.08351198686627952
+    },
+    {
+      "id": "piezo.P_R",
+      "source": "random",
+      "inputs": {
+        "C_0": 7.22726e-10,
+        "I_p": 3.34221e-06,
+        "omega": 529.846
+      },
+      "value": 7.292629308870157e-06
+    },
+    {
+      "id": "piezo.P_R",
+      "source": "random",
+      "inputs": {
+        "C_0": 9.93995e-09,
+        "I_p": 1.13177e-05,
+        "omega": 3051.62
+      },
+      "value": 1.0557028937607806e-06
+    },
+    {
+      "id": "piezo.P_R",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.13461e-10,
+        "I_p": 7.7609e-06,
+        "omega": 32.9347
+      },
+      "value": 0.004029617880894406
+    },
+    {
+      "id": "piezo.P_std",
+      "source": "yaml",
+      "inputs": {
+        "C_0": 5e-08,
+        "I_p": 0.0001,
+        "V_DC": 1.0,
+        "omega": 1000.0
+      },
+      "value": 3.1830988618379074e-05
+    },
+    {
+      "id": "piezo.P_std",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.409e-09,
+        "I_p": 0.000746057,
+        "V_DC": 0.815723,
+        "omega": 7607.01
+      },
+      "value": 0.00038289105937303666
+    },
+    {
+      "id": "piezo.P_std",
+      "source": "random",
+      "inputs": {
+        "C_0": 3.51845e-08,
+        "I_p": 0.000973256,
+        "V_DC": 0.246027,
+        "omega": 178.778
+      },
+      "value": 0.00015219446827510752
+    },
+    {
+      "id": "piezo.P_std",
+      "source": "random",
+      "inputs": {
+        "C_0": 2.88435e-09,
+        "I_p": 0.000156683,
+        "V_DC": 3.76067,
+        "omega": 250.227
+      },
+      "value": 0.00036861922057316237
+    },
+    {
+      "id": "piezo.P_std",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.95185e-08,
+        "I_p": 3.29683e-06,
+        "V_DC": 0.163303,
+        "omega": 95.8596
+      },
+      "value": 3.109796523579739e-07
+    },
+    {
+      "id": "piezo.P_std",
+      "source": "random",
+      "inputs": {
+        "C_0": 9.4098e-09,
+        "I_p": 2.3877e-05,
+        "V_DC": 0.178995,
+        "omega": 338.856
+      },
+      "value": 2.655789531715606e-06
+    },
+    {
+      "id": "piezo.P_std",
+      "source": "random",
+      "inputs": {
+        "C_0": 3.58634e-10,
+        "I_p": 6.03794e-06,
+        "V_DC": 4.76209,
+        "omega": 1753.54
+      },
+      "value": 9.225771496137895e-06
+    },
+    {
+      "id": "piezo.P_std_max",
+      "source": "yaml",
+      "inputs": {
+        "C_0": 5e-08,
+        "I_p": 0.0001,
+        "omega": 1000.0
+      },
+      "value": 3.1830988618379074e-05
+    },
+    {
+      "id": "piezo.P_std_max",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.58065e-08,
+        "I_p": 0.00055466,
+        "omega": 123.409
+      },
+      "value": 0.025101014664727417
+    },
+    {
+      "id": "piezo.P_std_max",
+      "source": "random",
+      "inputs": {
+        "C_0": 3.51155e-07,
+        "I_p": 1.72912e-05,
+        "omega": 1851.28
+      },
+      "value": 7.319803691731233e-08
+    },
+    {
+      "id": "piezo.P_std_max",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.47174e-09,
+        "I_p": 1.63704e-06,
+        "omega": 2579.99
+      },
+      "value": 1.1232840647054327e-07
+    },
+    {
+      "id": "piezo.P_std_max",
+      "source": "random",
+      "inputs": {
+        "C_0": 2.60717e-08,
+        "I_p": 0.000440785,
+        "omega": 189.24
+      },
+      "value": 0.006267458342251013
+    },
+    {
+      "id": "piezo.P_std_max",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.68925e-08,
+        "I_p": 4.30999e-06,
+        "omega": 9014.97
+      },
+      "value": 1.9413973981967588e-08
+    },
+    {
+      "id": "piezo.P_std_max",
+      "source": "random",
+      "inputs": {
+        "C_0": 7.04489e-09,
+        "I_p": 1.15623e-06,
+        "omega": 195.02
+      },
+      "value": 1.5486569657821284e-07
+    },
+    {
+      "id": "piezo.P_sece",
+      "source": "yaml",
+      "inputs": {
+        "C_0": 5e-08,
+        "I_p": 0.0001,
+        "omega": 1000.0
+      },
+      "value": 0.0001273239544735163
+    },
+    {
+      "id": "piezo.P_sece",
+      "source": "random",
+      "inputs": {
+        "C_0": 6.38023e-10,
+        "I_p": 0.000360954,
+        "omega": 58.3118
+      },
+      "value": 2.229415716030733
+    },
+    {
+      "id": "piezo.P_sece",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.51892e-09,
+        "I_p": 5.58649e-05,
+        "omega": 686.782
+      },
+      "value": 0.001904602585864711
+    },
+    {
+      "id": "piezo.P_sece",
+      "source": "random",
+      "inputs": {
+        "C_0": 5.639e-07,
+        "I_p": 0.00115135,
+        "omega": 275.655
+      },
+      "value": 0.005429088042621512
+    },
+    {
+      "id": "piezo.P_sece",
+      "source": "random",
+      "inputs": {
+        "C_0": 2.44591e-08,
+        "I_p": 0.000121552,
+        "omega": 4556.59
+      },
+      "value": 8.439639881775707e-05
+    },
+    {
+      "id": "piezo.P_sece",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.19135e-09,
+        "I_p": 1.47438e-05,
+        "omega": 2409.96
+      },
+      "value": 4.820030446938107e-05
+    },
+    {
+      "id": "piezo.P_sece",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.50417e-07,
+        "I_p": 3.05824e-06,
+        "omega": 134.455
+      },
+      "value": 2.94407840682709e-07
+    },
+    {
+      "id": "piezo.P_sshi",
+      "source": "yaml",
+      "inputs": {
+        "C_0": 5e-08,
+        "I_p": 0.0001,
+        "V_DC": 5.0,
+        "gamma": 0.8,
+        "omega": 1000.0
+      },
+      "value": 0.00023873241463784304
+    },
+    {
+      "id": "piezo.P_sshi",
+      "source": "random",
+      "inputs": {
+        "C_0": 5.62028e-08,
+        "I_p": 0.000346403,
+        "V_DC": 814.129,
+        "gamma": 0.667805,
+        "omega": 12.0062
+      },
+      "value": 0.1322448247492367
+    },
+    {
+      "id": "piezo.P_sshi",
+      "source": "random",
+      "inputs": {
+        "C_0": 4.7923e-09,
+        "I_p": 0.000287307,
+        "V_DC": 0.232711,
+        "gamma": 0.758485,
+        "omega": 4209.03
+      },
+      "value": 4.248010342391262e-05
+    },
+    {
+      "id": "piezo.P_sshi",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.29042e-07,
+        "I_p": 0.0029242,
+        "V_DC": 0.804082,
+        "gamma": 0.506244,
+        "omega": 159.098
+      },
+      "value": 0.0014947956816375343
+    },
+    {
+      "id": "piezo.P_sshi",
+      "source": "random",
+      "inputs": {
+        "C_0": 3.43217e-09,
+        "I_p": 0.000500926,
+        "V_DC": 9.60211,
+        "gamma": 0.345447,
+        "omega": 620.863
+      },
+      "value": 0.003021172261759506
+    },
+    {
+      "id": "piezo.P_sshi",
+      "source": "random",
+      "inputs": {
+        "C_0": 3.85569e-08,
+        "I_p": 2.95348e-06,
+        "V_DC": 0.120094,
+        "gamma": 0.107208,
+        "omega": 14.0987
+      },
+      "value": 2.235779484240242e-07
+    },
+    {
+      "id": "piezo.P_sshi",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.53012e-10,
+        "I_p": 0.00304546,
+        "V_DC": 12.7094,
+        "gamma": 0.648705,
+        "omega": 44.1713
+      },
+      "value": 0.024640863302182216
+    },
+    {
+      "id": "piezo.P_sshi_max",
+      "source": "yaml",
+      "inputs": {
+        "C_0": 5e-08,
+        "I_p": 0.0001,
+        "gamma": 0.8,
+        "omega": 1000.0
+      },
+      "value": 0.0003183098861837908
+    },
+    {
+      "id": "piezo.P_sshi_max",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.08888e-07,
+        "I_p": 2.9032e-05,
+        "gamma": 0.646785,
+        "omega": 3205.47
+      },
+      "value": 2.1761717165879263e-06
+    },
+    {
+      "id": "piezo.P_sshi_max",
+      "source": "random",
+      "inputs": {
+        "C_0": 7.6366e-09,
+        "I_p": 8.62189e-05,
+        "gamma": 0.879136,
+        "omega": 44.4904
+      },
+      "value": 0.05762245615043086
+    },
+    {
+      "id": "piezo.P_sshi_max",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.6498e-09,
+        "I_p": 2.49899e-06,
+        "gamma": 0.74266,
+        "omega": 11.9055
+      },
+      "value": 0.00039327191102436293
+    },
+    {
+      "id": "piezo.P_sshi_max",
+      "source": "random",
+      "inputs": {
+        "C_0": 1.59545e-10,
+        "I_p": 0.000521115,
+        "gamma": 0.727106,
+        "omega": 2217.36
+      },
+      "value": 0.8953727679972219
+    },
+    {
+      "id": "piezo.P_sshi_max",
+      "source": "random",
+      "inputs": {
+        "C_0": 2.85943e-08,
+        "I_p": 3.23636e-06,
+        "gamma": 0.927742,
+        "omega": 1929.48
+      },
+      "value": 8.362922837650236e-07
+    },
+    {
+      "id": "piezo.P_sshi_max",
+      "source": "random",
+      "inputs": {
+        "C_0": 3.84966e-09,
+        "I_p": 5.39376e-06,
+        "gamma": 0.0536483,
+        "omega": 6282.87
+      },
+      "value": 4.0457621671202217e-07
+    },
+    {
       "id": "sense.current_out_monitor",
       "source": "yaml",
       "inputs": {
@@ -8184,55 +8915,55 @@
       "id": "pwm.d",
       "source": "random",
       "inputs": {
-        "V_M": 4.95306,
+        "V_M": 908.388,
         "V_ctrl": 0.0388149
       },
-      "value": 0.007836549526959093
+      "value": 4.2729428394034267e-05
     },
     {
       "id": "pwm.d",
       "source": "random",
       "inputs": {
-        "V_M": 1.51191,
+        "V_M": 0.793377,
         "V_ctrl": 0.707846
       },
-      "value": 0.4681799842583222
+      "value": 0.8921937489995299
     },
     {
       "id": "pwm.d",
       "source": "random",
       "inputs": {
-        "V_M": 4.31774,
+        "V_M": 247.486,
         "V_ctrl": 1.28722
       },
-      "value": 0.2981235553785082
+      "value": 0.005201183097225702
     },
     {
       "id": "pwm.d",
       "source": "random",
       "inputs": {
-        "V_M": 3.32605,
+        "V_M": 32.5117,
         "V_ctrl": 0.0291978
       },
-      "value": 0.008778521068534748
+      "value": 0.000898070540759173
     },
     {
       "id": "pwm.d",
       "source": "random",
       "inputs": {
-        "V_M": 4.73748,
+        "V_M": 584.318,
         "V_ctrl": 0.47573
       },
-      "value": 0.10041836588228341
+      "value": 0.0008141628359899918
     },
     {
       "id": "pwm.d",
       "source": "random",
       "inputs": {
-        "V_M": 1.80909,
+        "V_M": 1.4576,
         "V_ctrl": 0.017875
       },
-      "value": 0.009880658231486547
+      "value": 0.012263309549945114
     },
     {
       "id": "loop.T",
@@ -8252,9 +8983,9 @@
         "G_c": 3.68393,
         "G_vd": 0.6358,
         "H": 0.301727,
-        "V_M": 2.51417
+        "V_M": 6.17125
       },
-      "value": 0.28109390428353614
+      "value": 0.11451778186470134
     },
     {
       "id": "loop.T",
@@ -8263,9 +8994,9 @@
         "G_c": 45.5553,
         "G_vd": 167.936,
         "H": 0.0350608,
-        "V_M": 1.02699
+        "V_M": 0.294059
       },
-      "value": 261.1790406133815
+      "value": 912.1579782272833
     },
     {
       "id": "loop.T",
@@ -8274,9 +9005,9 @@
         "G_c": 0.0778109,
         "G_vd": 147.554,
         "H": 0.888283,
-        "V_M": 1.2174
+        "V_M": 0.434197
       },
-      "value": 8.377404370688536
+      "value": 23.48853649582154
     },
     {
       "id": "loop.T",
@@ -8285,9 +9016,9 @@
         "G_c": 0.144864,
         "G_vd": 1.07549,
         "H": 0.146818,
-        "V_M": 4.8339
+        "V_M": 711.798
       },
-      "value": 0.004732040917964476
+      "value": 3.213582026550859e-05
     },
     {
       "id": "loop.T",
@@ -8296,9 +9027,9 @@
         "G_c": 3.12655,
         "G_vd": 337.375,
         "H": 0.538726,
-        "V_M": 3.22177
+        "V_M": 26.2637
       },
-      "value": 176.3809505153495
+      "value": 21.636664100710775
     },
     {
       "id": "loop.T",
@@ -8307,9 +9038,9 @@
         "G_c": 251.855,
         "G_vd": 2.37692,
         "H": 0.373596,
-        "V_M": 2.51225
+        "V_M": 6.14707
       },
-      "value": 89.02346723336197
+      "value": 36.38305819797295
     },
     {
       "id": "loop.suppression",

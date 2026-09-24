@@ -73,6 +73,11 @@ export default defineConfig({
               translations: { ko: '06 · 벤치(실험대)' },
               items: [{ autogenerate: { directory: '06-bench' } }],
             },
+            {
+              label: '07 · Harvesting',
+              translations: { ko: '07 · 에너지 하베스팅' },
+              items: [{ autogenerate: { directory: '07-harvesting' } }],
+            },
           ],
         },
         {

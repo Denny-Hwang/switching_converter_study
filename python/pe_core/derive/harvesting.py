@@ -94,4 +94,40 @@ def derive() -> Derivation:
         "$V_g$에 대해 푼다. 전력이 클수록 입력 전압이 높아야 한다.",
         Vg,
     )
+
+    LM, D, fs = S("L_M"), S("D"), S("f_s")
+    d.step(
+        "A DCM flyback's input resistance is $R_\\mathrm{in} = 2 L_M f_s / D^2$ (derived with the flyback).",
+        "DCM 플라이백의 입력 저항은 $R_\\mathrm{in} = 2 L_M f_s / D^2$이다(플라이백과 함께 유도).",
+        sp.Eq(Rin, 2 * LM * fs / D**2),
+    )
+    sol = sp.solve(sp.Eq(Rin, 2 * LM * fs / D**2), LM)
+    if len(sol) != 1:
+        raise ValueError(f"unexpected solutions {sol}")
+    d.result(
+        "lfr.L_M",
+        sol[0],
+        "Solve for $L_M$: the inductance that presents a wanted $R_\\mathrm{in}$, such as $R_s$ to match the source.",
+        "$L_M$에 대해 푼다. 원하는 $R_\\mathrm{in}$(전원에 정합하려면 $R_s$)을 보이는 인덕턴스.",
+        LM,
+    )
+
+    Vpk, eta, t, Te = S("V_ocpk"), S("eta_ext"), d.local("t", "t", positive=True), d.local("T_e", "T_e", positive=True)
+    Voc_t = Vpk * sp.sin(sp.pi * t / Te)
+    d.step(
+        "Under an envelope slow against the bus, the loss-free resistor takes $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$ "
+        "at every instant; take $V_\\mathrm{oc}(t) = \\hat{V}_\\mathrm{oc} \\sin(\\pi t / T_e)$, one half-wave of the "
+        "envelope (a rectified sine repeats it).",
+        "포락선이 버스보다 충분히 느리면 무손실 저항은 매 순간 $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$를 받는다. "
+        "$V_\\mathrm{oc}(t) = \\hat{V}_\\mathrm{oc} \\sin(\\pi t / T_e)$, 즉 포락선의 반파 하나를 잡는다(정류된 사인은 이를 반복한다).",
+        sp.Eq(S("P"), eta * Voc_t**2 / (4 * Rs)),
+    )
+    avg = sp.simplify(sp.integrate(eta * Voc_t**2 / (4 * Rs), (t, 0, Te)) / Te)
+    d.result(
+        "lfr.P_env",
+        avg,
+        "Average over the half-wave: the square of a sine averages to half its peak's.",
+        "반파에 걸쳐 평균한다. 사인의 제곱은 평균이 최댓값 제곱의 절반이다.",
+        S("P_avg"),
+    )
     return d

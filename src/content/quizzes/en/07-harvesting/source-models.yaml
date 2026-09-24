@@ -1,0 +1,59 @@
+# Quiz for 07-harvesting/source-models. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A linear source has a 20 V open-circuit voltage behind 50 ohm. What is the most power it can give?'
+    options:
+      - '8 W'
+      - '2 W'
+      - '4 W'
+      - '0.5 W'
+    answer: 1
+    explain: 'The square of the open-circuit voltage over four times the source resistance: 400 over 200 is 2 W, into a 50 ohm load.'
+  - q: 'Into which load does that source give its most power?'
+    options:
+      - 'A short circuit, which draws the most current'
+      - 'An open circuit, which has the most voltage'
+      - 'A resistance equal to the source resistance, 50 ohm'
+      - 'A resistance twice the source resistance'
+    answer: 2
+    explain: 'At the matched load half the open-circuit voltage falls across the load and half across the source resistance; a short or an open takes no power at all.'
+  - q: 'A piezoelectric element drives a 50 uA current amplitude at 2000 rad/s beside a 25 nF clamped capacitance. What is its open-circuit voltage amplitude?'
+    options:
+      - '1 V'
+      - '0.5 V'
+      - '2 V'
+      - '4 V'
+    answer: 0
+    explain: 'With nothing connected, the whole current charges and discharges the capacitance: 50e-6 over (2000 times 25e-9), which is 1 V.'
+  - q: 'What power does the best resistor take from that element?'
+    options:
+      - '25 uW'
+      - '50 uW'
+      - '6.25 uW'
+      - '12.5 uW'
+    answer: 3
+    explain: 'The best resistor is the capacitance''s reactance, 1/(2000 times 25e-9) = 20 kohm, and it takes the current amplitude squared over four times omega C_0: 2.5e-9 over 2e-4, which is 12.5 uW.'
+  - q: 'The vibration''s frequency doubles and the current amplitude stays the same. What happens to the best resistor?'
+    options:
+      - 'It doubles'
+      - 'It halves'
+      - 'It stays the same'
+      - 'It falls to a quarter'
+    answer: 1
+    explain: 'It is the reactance of the clamped capacitance, one over omega C_0, which halves when omega doubles.'
+  - q: 'Why can an oscilloscope probe change the reading of a high-impedance source?'
+    options:
+      - 'Its input resistance and capacitance sit in parallel with the source and take part of its current'
+      - 'It adds a DC offset to every reading'
+      - 'It changes the vibration''s frequency'
+      - 'It cannot: a probe draws no current'
+    answer: 0
+    explain: 'The probe is a load. Against a source whose best resistor is large, a probe''s input resistance and capacitance are not negligible.'
+  - q: 'What does the performance figure of merit of Zi et al. multiply to rate a triboelectric nanogenerator?'
+    options:
+      - 'The open-circuit voltage times the short-circuit current'
+      - 'The power into a fixed resistor times the area'
+      - 'The capacitance times the frequency'
+      - 'A structural figure of merit set by the design, times the square of the surface charge density'
+    answer: 3
+    explain: 'It rates the energy a cycle can deliver, per area and per displacement: a design part and a material part, the square of the surface charge density.'

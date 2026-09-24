@@ -1,0 +1,132 @@
+---
+title: Matching
+description: How much of a linear source's available power a resistor, a constant voltage such as a battery, and a converter take; why a converter between the source and a battery lets the source work at its best voltage; and why a converter in DCM with a fixed duty ratio is a loss-free resistor.
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Work out the share of a linear source's available power that a constant voltage and a loss-free resistor take.
+- See why a converter between the source and a battery lets the source work at its best voltage.
+- Know that a converter in DCM with a fixed duty ratio is a loss-free resistor, and what it does as the source's amplitude changes.
+
+## Theory
+
+### A constant voltage
+
+A battery, or a bus held at a fixed voltage $V_c$, connected straight to a
+linear source draws the current that the difference between the two
+voltages drives through $R_s$. The power it takes is that current times its
+own voltage <Cite key="alexander2017" where="Sec. 4.8 (Maximum Power Transfer)" />:
+
+<Eq id="src.cv_power" />
+
+As a share of the available power
+(<EqRef id="src.Pmax" label="maximum power from a linear source" />):
+
+<Eq id="src.cv_extraction" />
+
+It takes the whole of it only at half the open-circuit voltage. A battery's
+voltage is set by its charge, not by the source, and a harvester's
+amplitude varies: connected straight, the two rarely meet at that point.
+
+### A converter in between
+
+A converter between the source and the battery separates their voltages:
+its input can sit where the source gives the most while its output stays at
+the battery's voltage. Ottman et al. ran a step-down converter in DCM
+between a piezoelectric element and a battery at the duty ratio that gives
+the most power, and report that it raised the power into the battery "by
+400%" over the element used without it <Cite key="ottman2003" />.
+
+### The loss-free resistor
+
+In DCM with a fixed duty ratio, a buck-boost or flyback draws an average
+input current proportional to its input voltage: its input is a resistance,
+the <EqRef id="lfr.R_in" label="loss-free resistor" />, which passes the
+power on instead of dissipating it <Cite key="singer1990" />
+<Cite key="erickson2020" where="Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)" />.
+With a linear source, that resistance and the source resistance divide the
+source voltage:
+
+<Eq id="lfr.Vg" />
+
+and the converter takes the same share of the available power at any source
+amplitude <Cite key="alexander2017" where="Sec. 4.8 (Maximum Power Transfer)" />:
+
+<Eq id="lfr.eta" />
+
+The share is the whole of it when the input resistance equals the source
+resistance, and falls slowly on either side. A fixed duty ratio therefore
+keeps a linear source at its maximum power point as its amplitude changes,
+without measuring anything, as long as the converter stays in DCM
+([the DCM flyback](../lfr-dcm-flyback/)).
+
+## Worked example
+
+A linear source, into a battery and into a loss-free resistor:
+
+<Worked example="match-basic" />
+
+The source gives at most <Val example="match-basic" name="P_max" />. A
+battery at <Val example="match-basic" name="V_c" /> connected straight to it
+takes <Val example="match-basic" name="P_cv" />, a share of
+<Val example="match-basic" name="eta_ext_cv" />. A loss-free resistor of
+<Val example="match-basic" name="R_in" /> holds the input at
+<Val example="match-basic" name="V_g" /> and takes a share of
+<Val example="match-basic" name="eta_ext_lfr" />, and it keeps that share at
+any source amplitude.
+
+## Try it
+
+<TryIt eq="src.cv_extraction" example="match-basic" sweep="V_c" />
+
+Sweep the voltage a constant-voltage load holds: the share peaks at half the
+open-circuit voltage and falls to zero at both ends.
+
+<TryIt eq="lfr.eta" example="match-basic" sweep="R_in" />
+
+Sweep the input resistance: a factor of two either side of the source
+resistance still takes eight ninths of the available power.
+
+## Bench exercise
+
+Build a linear source from a bench supply and a series power resistor.
+Connect an electronic load in constant-voltage mode, a battery's stand-in,
+step its voltage from zero to the supply's, and record the current at each
+step. Plot the power against the voltage and find where it peaks; compare
+with half the supply's voltage. Then replace the load with a converter whose
+duty ratio is fixed in DCM, and measure its input voltage and current at two
+supply voltages: their ratio, the input resistance, stays the same.
+
+## Gotchas
+
+- **A battery connected straight to a source works at the battery's voltage,**
+  not at the source's best (<EqRef id="src.cv_extraction" label="constant-voltage extraction" />).
+- **The loss-free resistor holds only in DCM** (<EqRef id="lfr.R_in" label="loss-free resistor" />);
+  a strong source can drive the converter into CCM
+  ([the DCM flyback](../lfr-dcm-flyback/)).
+- **Half the open-circuit voltage is the best point of a linear source only.**
+  A source that is not linear has its own
+  ([MPPT](../sece-sshi-mppt/#tracking-the-maximum-power-point)).
+- **A fixed resistance keeps its share as the amplitude changes; a fixed voltage does not**
+  (<EqRef id="lfr.eta" label="extraction by a loss-free resistor" />).
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch15', 'ottman2003-ieee']} />
+
+## Quiz
+
+<Quiz id="07-harvesting/matching" />

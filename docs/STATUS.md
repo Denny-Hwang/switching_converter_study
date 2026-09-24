@@ -152,11 +152,11 @@ _Last updated: Phase 4b (06-bench). `python scripts/modulelint.py` checks every 
 
 | Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| source-models | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| matching | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| lfr-dcm-flyback | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| sece-sshi-mppt | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
-| synthetic-case | 4 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| source-models | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `src.Pmax` (moved from design/source-matcher), `piezo.VM`, `piezo.R_opt`, `piezo.P_R` |
+| matching | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `src.cv_power`, `src.cv_extraction`, `lfr.Vg`, `lfr.eta` (moved from design/source-matcher) |
+| lfr-dcm-flyback | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `lfr.L_M`, `lfr.Vg_power` (moved from design/source-matcher); links the simulator's current-limited source |
+| sece-sshi-mppt | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `piezo.P_std`, `piezo.P_std_max`, `piezo.P_sece`, `piezo.P_sshi`, `piezo.P_sshi_max` |
+| synthetic-case | 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | homes `lfr.P_env`; the case of BUILD_SPEC §7 Phase 4 in `examples/synthetic/harvesting-source.yaml` |
 
 ## 08-gotchas
 
@@ -195,6 +195,6 @@ _Last updated: Phase 4b (06-bench). `python scripts/modulelint.py` checks every 
 | design/magnetics-designer | ✅ | ✅ | Phase 3e; homes the thirteen magnetics and winding equations (`mag.N_Bmax`, `mag.gap_length`, `mag.B_ac`, `wind.round_area`, `wind.fill`, `wind.rho_T`, `wind.dcr`, `wind.skin_depth`, `wind.porosity`, `wind.phi_round`, `wind.dowell`, `xfmr.leakage.ps`, `xfmr.leakage.psp`); the 04-magnetics pages refer to them; state in the URL hash; screenshot and keyboard check |
 | design/loss-budget | ✅ | ✅ | Phase 3b; state in the URL hash; screenshot and keyboard check |
 | design/clamp-check | ✅ | ✅ | Phase 3c; homes the eight clamp equations (`flyback.V_OR`, `clamp.*`, `tvs.*`, `flyback.V_ceiling`); state in the URL hash; screenshot and keyboard check |
-| design/source-matcher | ✅ | ✅ | Phase 3c; homes `src.Pmax`, `src.cv_power`, `src.cv_extraction`, `lfr.Vg`, `lfr.eta`, `lfr.Vg_power` until the harvesting pages (Phase 4); state in the URL hash; screenshot and keyboard check |
+| design/source-matcher | ✅ | ✅ | Phase 3c; links to `src.Pmax`, `src.cv_power`, `src.cv_extraction`, `lfr.Vg`, `lfr.eta`, `lfr.Vg_power`, whose homes moved to the 07-harvesting pages (Phase 4c); state in the URL hash; screenshot and keyboard check |
 | design/sense-chain | ✅ | ✅ | Phase 3d; homes six `sense.*` equations and `adc.nyquist`; `sense.burden` and `sense.pad_error` moved to the current-sensing bench page (Phase 4b); state in the URL hash; screenshot and keyboard check |
 | 10-resources/bibliography | ✅ | ✅ | Phase 1: generated from `references.bib` (verified entries only) |

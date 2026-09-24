@@ -152,6 +152,30 @@ const base: Readonly<Record<string, Evaluator>> = {
   'lfr.Vg': eq(['V_oc', 'R_s', 'R_in'], ({ V_oc, R_s, R_in }) => (V_oc * R_in) / (R_s + R_in)),
   'lfr.eta': eq(['R_s', 'R_in'], ({ R_s, R_in }) => (4 * R_s * R_in) / sq(R_s + R_in)),
   'lfr.Vg_power': eq(['P', 'R_in'], ({ P, R_in }) => Math.sqrt(P * R_in)),
+  'lfr.L_M': eq(['R_in', 'D', 'f_s'], ({ R_in, D, f_s }) => (R_in * D * D) / (2 * f_s)),
+  // the mean of sin^2 over a half-wave is 1/2
+  'lfr.P_env': eq(['eta_ext', 'V_ocpk', 'R_s'], ({ eta_ext, V_ocpk, R_s }) => (eta_ext * sq(V_ocpk)) / (8 * R_s)),
+
+  // --- piezoelectric source: a current source I_p sin(wt) in parallel with C_0 --------------
+  'piezo.VM': eq(['I_p', 'omega', 'C_0'], ({ I_p, omega, C_0 }) => I_p / (omega * C_0)),
+  'piezo.R_opt': eq(['omega', 'C_0'], ({ omega, C_0 }) => 1 / (omega * C_0)),
+  'piezo.P_R': eq(['I_p', 'omega', 'C_0'], ({ I_p, omega, C_0 }) => sq(I_p) / (4 * omega * C_0)),
+  // per half period: V_DC times the charge 2 I_p / omega less the swing 2 C_0 V_DC; pi / omega per half period
+  'piezo.P_std': eq(['V_DC', 'I_p', 'omega', 'C_0'], ({ V_DC, I_p, omega, C_0 }) =>
+    (V_DC * (2 * I_p / omega - 2 * C_0 * V_DC) * omega) / Math.PI,
+  ),
+  'piezo.P_std_max': eq(['I_p', 'omega', 'C_0'], ({ I_p, omega, C_0 }) => sq(I_p) / (2 * Math.PI * omega * C_0)),
+  // C_0 (2 I_p / (omega C_0))^2 / 2 taken every half period
+  'piezo.P_sece': eq(['I_p', 'omega', 'C_0'], ({ I_p, omega, C_0 }) => {
+    const v = (2 * I_p) / (omega * C_0);
+    return ((C_0 * v * v) / 2) * (omega / Math.PI);
+  }),
+  'piezo.P_sshi': eq(['V_DC', 'I_p', 'omega', 'C_0', 'gamma'], ({ V_DC, I_p, omega, C_0, gamma }) =>
+    (V_DC * (2 * I_p / omega - (1 - gamma) * C_0 * V_DC) * omega) / Math.PI,
+  ),
+  'piezo.P_sshi_max': eq(['I_p', 'omega', 'C_0', 'gamma'], ({ I_p, omega, C_0, gamma }) =>
+    sq(I_p) / (Math.PI * omega * C_0 * (1 - gamma)),
+  ),
   'sense.current_out_monitor': eq(['I_SENSE', 'R_SENSE', 'R_OUT', 'R_IN'], ({ I_SENSE, R_SENSE, R_OUT, R_IN }) =>
     (I_SENSE * R_SENSE * R_OUT) / R_IN,
   ),

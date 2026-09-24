@@ -398,7 +398,8 @@
       "volume": "18",
       "pages": "696–703",
       "year": "2003",
-      "doi": "10.1109/TPEL.2003.809379"
+      "doi": "10.1109/TPEL.2003.809379",
+      "url": "https://pure.psu.edu/en/publications/optimized-piezoelectric-energy-harvesting-circuit-using-step-down-2/"
     },
     "guyomar2005": {
       "key": "guyomar2005",
@@ -417,7 +418,28 @@
       "volume": "52",
       "pages": "584–595",
       "year": "2005",
-      "doi": "10.1109/TUFFC.2005.1428041"
+      "doi": "10.1109/TUFFC.2005.1428041",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/16060507/"
+    },
+    "lefeuvre2005": {
+      "key": "lefeuvre2005",
+      "type": "article",
+      "label": "Lefeuvre et al. 2005",
+      "authors": [
+        "Elie Lefeuvre",
+        "Adrien Badel",
+        "Claude Richard",
+        "Daniel Guyomar"
+      ],
+      "title": "Piezoelectric energy harvesting device optimization by synchronous electric charge extraction",
+      "verified": true,
+      "journal": "Journal of Intelligent Material Systems and Structures",
+      "number": "10",
+      "volume": "16",
+      "pages": "865–876",
+      "year": "2005",
+      "doi": "10.1177/1045389X05056859",
+      "url": "https://journals.sagepub.com/doi/10.1177/1045389X05056859"
     },
     "lefeuvre2006": {
       "key": "lefeuvre2006",
@@ -439,6 +461,35 @@
       "year": "2006",
       "doi": "10.1016/j.sna.2005.10.043"
     },
+    "esram2007": {
+      "key": "esram2007",
+      "type": "article",
+      "label": "Esram & Chapman 2007",
+      "authors": [
+        "Trishan Esram",
+        "Patrick L. Chapman"
+      ],
+      "title": "Comparison of Photovoltaic Array Maximum Power Point Tracking Techniques",
+      "verified": true,
+      "journal": "IEEE Transactions on Energy Conversion",
+      "number": "2",
+      "volume": "22",
+      "pages": "439–449",
+      "year": "2007",
+      "doi": "10.1109/TEC.2006.874230"
+    },
+    "ti_bq25570": {
+      "key": "ti_bq25570",
+      "type": "manual",
+      "label": "Texas Instruments, bq25570 Nano Power Boost Charger and Buck Converter for Energy Harvester Powered Applications",
+      "authors": [
+        "Texas Instruments"
+      ],
+      "title": "bq25570 Nano Power Boost Charger and Buck Converter for Energy Harvester Powered Applications",
+      "verified": true,
+      "organization": "Texas Instruments",
+      "url": "https://www.ti.com/lit/ds/symlink/bq25570.pdf"
+    },
     "zi2015": {
       "key": "zi2015",
       "type": "article",
@@ -457,7 +508,8 @@
       "volume": "6",
       "pages": "8376",
       "year": "2015",
-      "doi": "10.1038/ncomms9376"
+      "doi": "10.1038/ncomms9376",
+      "url": "https://www.nature.com/articles/ncomms9376"
     },
     "he2011": {
       "key": "he2011",

@@ -1,0 +1,26 @@
+synthetic: true
+label: "Harvesting source example"
+label_ko: "하베스팅 전원 예제"
+# The synthetic case of docs/BUILD_SPEC.md (Phase 4): a source whose open-circuit voltage follows a
+# sinusoidal envelope of 10 s up to 1 kV, behind 1 MOhm, and a fixed-D DCM flyback at 1 kHz sized
+# as a loss-free resistor equal to R_s, charging a 5 V output through a 0.5 V diode.
+params:
+  V_ocpk: 1000
+  R_s: 1.0e6
+  T_env: 10
+  f_s: 1000
+  D: 0.05
+  V: 5
+  V_D: 0.5
+  n: 0.1
+steps:
+  - {eq: src.Pmax, bind: {V_oc: V_ocpk}}
+  - {eq: lfr.L_M, bind: {R_in: R_s}}
+  - lfr.R_in
+  - {eq: lfr.Vg, bind: {V_oc: V_ocpk}}
+  - lfr.eta
+  - lfr.P_env
+  - flyback.V_crit
+  - flyback.Vds_off
+checks:
+  - {when: "V_g < V_gcrit", then: {en: "DCM at the envelope's peak: a loss-free resistor throughout", ko: "포락선 최댓값에서도 DCM: 내내 무손실 저항"}, else: {en: "CCM near the envelope's peak: the bus is held at V_g,crit there", ko: "포락선 최댓값 부근에서 CCM: 그곳에서 버스가 V_g,crit에 묶임"}}

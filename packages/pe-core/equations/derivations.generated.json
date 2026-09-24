@@ -1860,7 +1860,9 @@
         "src.cv_extraction",
         "lfr.Vg",
         "lfr.eta",
-        "lfr.Vg_power"
+        "lfr.Vg_power",
+        "lfr.L_M",
+        "lfr.P_env"
       ],
       "steps": [
         {
@@ -1928,6 +1930,146 @@
           "text_ko": "$V_g$에 대해 푼다. 전력이 클수록 입력 전압이 높아야 한다.",
           "latex": "V_g = \\sqrt{P R_\\mathrm{in}}",
           "result_for": "lfr.Vg_power"
+        },
+        {
+          "text": "A DCM flyback's input resistance is $R_\\mathrm{in} = 2 L_M f_s / D^2$ (derived with the flyback).",
+          "text_ko": "DCM 플라이백의 입력 저항은 $R_\\mathrm{in} = 2 L_M f_s / D^2$이다(플라이백과 함께 유도).",
+          "latex": "R_\\mathrm{in} = \\frac{2 L_M f_s}{D^{2}}",
+          "result_for": null
+        },
+        {
+          "text": "Solve for $L_M$: the inductance that presents a wanted $R_\\mathrm{in}$, such as $R_s$ to match the source.",
+          "text_ko": "$L_M$에 대해 푼다. 원하는 $R_\\mathrm{in}$(전원에 정합하려면 $R_s$)을 보이는 인덕턴스.",
+          "latex": "L_M = \\frac{R_\\mathrm{in} D^{2}}{2 f_s}",
+          "result_for": "lfr.L_M"
+        },
+        {
+          "text": "Under an envelope slow against the bus, the loss-free resistor takes $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$ at every instant; take $V_\\mathrm{oc}(t) = \\hat{V}_\\mathrm{oc} \\sin(\\pi t / T_e)$, one half-wave of the envelope (a rectified sine repeats it).",
+          "text_ko": "포락선이 버스보다 충분히 느리면 무손실 저항은 매 순간 $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$를 받는다. $V_\\mathrm{oc}(t) = \\hat{V}_\\mathrm{oc} \\sin(\\pi t / T_e)$, 즉 포락선의 반파 하나를 잡는다(정류된 사인은 이를 반복한다).",
+          "latex": "P = \\frac{\\eta_\\mathrm{ext} \\hat{V}_\\mathrm{oc}^{2} \\sin^{2}{\\left(\\frac{\\pi t}{T_e} \\right)}}{4 R_s}",
+          "result_for": null
+        },
+        {
+          "text": "Average over the half-wave: the square of a sine averages to half its peak's.",
+          "text_ko": "반파에 걸쳐 평균한다. 사인의 제곱은 평균이 최댓값 제곱의 절반이다.",
+          "latex": "\\bar{P} = \\frac{\\eta_\\mathrm{ext} \\hat{V}_\\mathrm{oc}^{2}}{8 R_s}",
+          "result_for": "lfr.P_env"
+        }
+      ]
+    },
+    {
+      "module": "piezo",
+      "source": "python/pe_core/derive/piezo.py",
+      "title": "Piezoelectric source: loads and interfaces",
+      "title_ko": "압전 전원: 부하와 인터페이스",
+      "intro": "Under a steady sinusoidal vibration of constant amplitude, a piezoelectric element is a current source $I_p \\sin \\omega t$ in parallel with its clamped capacitance $C_0$. What a load or an interface takes follows from where that current's charge goes in each half period.",
+      "intro_ko": "진폭이 일정한 정현파 진동을 받는 압전 소자는 클램프 커패시턴스 $C_0$와 병렬인 전류원 $I_p \\sin \\omega t$이다. 부하나 인터페이스가 얼마를 받는지는 반주기마다 그 전류의 전하가 어디로 가는지에서 나온다.",
+      "results": [
+        "piezo.VM",
+        "piezo.R_opt",
+        "piezo.P_R",
+        "piezo.P_std",
+        "piezo.P_std_max",
+        "piezo.P_sece",
+        "piezo.P_sshi",
+        "piezo.P_sshi_max"
+      ],
+      "steps": [
+        {
+          "text": "With nothing connected, the whole current charges $C_0$: $v = \\frac{1}{C_0}\\int I_p \\sin \\omega t \\, dt$.",
+          "text_ko": "아무것도 연결하지 않으면 전류 전부가 $C_0$를 충전한다: $v = \\frac{1}{C_0}\\int I_p \\sin \\omega t \\, dt$.",
+          "latex": "v = - \\frac{I_p \\cos{\\left(\\omega t \\right)}}{C_0 \\omega}",
+          "result_for": null
+        },
+        {
+          "text": "Its amplitude.",
+          "text_ko": "그 진폭.",
+          "latex": "V_M = \\frac{I_p}{\\omega C_0}",
+          "result_for": "piezo.VM"
+        },
+        {
+          "text": "A resistor $R$ across the element shares the current with $C_0$: its voltage amplitude is $I_p |R \\parallel 1/(j\\omega C_0)|$, and it takes half the square of that over $R$.",
+          "text_ko": "소자 양단의 저항 $R$은 $C_0$와 전류를 나눈다. 전압 진폭은 $I_p |R \\parallel 1/(j\\omega C_0)|$이고, 저항은 그 제곱의 절반을 $R$로 나눈 만큼을 받는다.",
+          "latex": "P = \\frac{R I_p^{2}}{2 \\left(1 + C_0^{2} R^{2} \\omega^{2}\\right)}",
+          "result_for": null
+        },
+        {
+          "text": "$dP/dR = 0$.",
+          "text_ko": "$dP/dR = 0$.",
+          "latex": "R = \\frac{1}{\\omega C_0}",
+          "result_for": "piezo.R_opt"
+        },
+        {
+          "text": "Substitute it.",
+          "text_ko": "이를 대입한다.",
+          "latex": "P = \\frac{I_p^{2}}{4 \\omega C_0}",
+          "result_for": "piezo.P_R"
+        },
+        {
+          "text": "The source drives $2 I_p/\\omega$ of charge each half period, between two extrema of the displacement.",
+          "text_ko": "전원은 변위의 두 극값 사이, 즉 반주기마다 $2 I_p/\\omega$의 전하를 흘린다.",
+          "latex": "q = \\frac{2 I_p}{\\omega}",
+          "result_for": null
+        },
+        {
+          "text": "Through a full-wave bridge onto $V_\\mathrm{DC}$, the element's voltage swings from $-V_\\mathrm{DC}$ to $V_\\mathrm{DC}$ before the bridge conducts, which takes $2 C_0 V_\\mathrm{DC}$; the rest of the charge enters $V_\\mathrm{DC}$.",
+          "text_ko": "전파 브리지를 거쳐 $V_\\mathrm{DC}$에 연결하면, 소자 전압이 $-V_\\mathrm{DC}$에서 $V_\\mathrm{DC}$까지 바뀐 뒤에야 브리지가 도통하며 이 변화에 $2 C_0 V_\\mathrm{DC}$가 든다. 나머지 전하가 $V_\\mathrm{DC}$로 들어간다.",
+          "latex": "E_{1/2} = V_\\mathrm{DC} \\left(- 2 C_0 V_\\mathrm{DC} + \\frac{2 I_p}{\\omega}\\right)",
+          "result_for": null
+        },
+        {
+          "text": "Per unit time: one such half period every $\\pi/\\omega$.",
+          "text_ko": "단위 시간당: $\\pi/\\omega$마다 반주기 하나.",
+          "latex": "P = \\frac{2 I_p V_\\mathrm{DC}}{\\pi} - \\frac{2 C_0 \\omega V_\\mathrm{DC}^{2}}{\\pi} = \\frac{2 V_\\mathrm{DC} \\left(I_p - \\omega C_0 V_\\mathrm{DC}\\right)}{\\pi}",
+          "result_for": "piezo.P_std"
+        },
+        {
+          "text": "$dP/dV_\\mathrm{DC} = 0$: half the open-circuit amplitude.",
+          "text_ko": "$dP/dV_\\mathrm{DC} = 0$: 개방 전압 진폭의 절반.",
+          "latex": "V_\\mathrm{DC} = \\frac{I_p}{2 C_0 \\omega}",
+          "result_for": null
+        },
+        {
+          "text": "Substitute it.",
+          "text_ko": "이를 대입한다.",
+          "latex": "P_\\mathrm{max} = \\frac{I_p^{2}}{2 \\pi \\omega C_0}",
+          "result_for": "piezo.P_std_max"
+        },
+        {
+          "text": "SECE leaves the element open between extrema, so its voltage climbs from zero to $2 I_p/(\\omega C_0)$; at the extremum all of $\\tfrac12 C_0 v^2$ is taken, whatever the load.",
+          "text_ko": "SECE는 극값 사이에서 소자를 개방해 두므로 전압이 0에서 $2 I_p/(\\omega C_0)$까지 오른다. 극값에서 $\\tfrac12 C_0 v^2$ 전부를 꺼내며, 부하와 무관하다.",
+          "latex": "E_{1/2} = \\frac{2 I_p^{2}}{C_0 \\omega^{2}}",
+          "result_for": null
+        },
+        {
+          "text": "Per unit time.",
+          "text_ko": "단위 시간당.",
+          "latex": "P = \\frac{2 I_p^{2}}{\\pi \\omega C_0}",
+          "result_for": "piezo.P_sece"
+        },
+        {
+          "text": "Parallel SSHI inverts the element's voltage at each extremum, from $\\mp V_\\mathrm{DC}$ to $\\pm\\gamma V_\\mathrm{DC}$, so the swing to the other rail takes only $(1 - \\gamma) C_0 V_\\mathrm{DC}$.",
+          "text_ko": "병렬 SSHI는 극값마다 소자 전압을 $\\mp V_\\mathrm{DC}$에서 $\\pm\\gamma V_\\mathrm{DC}$로 반전시키므로, 반대쪽 레일까지의 변화에는 $(1 - \\gamma) C_0 V_\\mathrm{DC}$만 든다.",
+          "latex": "E_{1/2} = V_\\mathrm{DC} \\left(- C_0 V_\\mathrm{DC} \\left(1 - \\gamma\\right) + \\frac{2 I_p}{\\omega}\\right)",
+          "result_for": null
+        },
+        {
+          "text": "Per unit time.",
+          "text_ko": "단위 시간당.",
+          "latex": "P = \\frac{2 I_p V_\\mathrm{DC}}{\\pi} - \\frac{C_0 \\omega V_\\mathrm{DC}^{2}}{\\pi} + \\frac{C_0 \\gamma \\omega V_\\mathrm{DC}^{2}}{\\pi} = \\frac{2 V_\\mathrm{DC} \\left(I_p - \\frac{\\omega C_0 V_\\mathrm{DC} \\left(1 - \\gamma\\right)}{2}\\right)}{\\pi}",
+          "result_for": "piezo.P_sshi"
+        },
+        {
+          "text": "$dP/dV_\\mathrm{DC} = 0$.",
+          "text_ko": "$dP/dV_\\mathrm{DC} = 0$.",
+          "latex": "V_\\mathrm{DC} = - \\frac{I_p}{C_0 \\omega \\left(-1 + \\gamma\\right)}",
+          "result_for": null
+        },
+        {
+          "text": "Substitute it.",
+          "text_ko": "이를 대입한다.",
+          "latex": "P_\\mathrm{max} = - \\frac{I_p^{2}}{\\pi C_0 \\omega \\left(-1 + \\gamma\\right)} = \\frac{I_p^{2}}{\\pi \\omega C_0 \\left(1 - \\gamma\\right)}",
+          "result_for": "piezo.P_sshi_max"
         }
       ]
     },

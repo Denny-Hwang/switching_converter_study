@@ -1,0 +1,117 @@
+---
+title: 설계 사례
+description: 하베스팅 설계 하나를 예제의 수치로 전원부터 스위치까지 따라갑니다. 진폭이 느린 포락선을 따르는 큰 저항 뒤의 고전압 전원과, 그 무손실 저항으로 설계한 DCM 플라이백.
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 하베스팅 설계 하나를 전원부터 스위치까지 따라갑니다.
+- 진폭이 느린 포락선(envelope)을 따르는 전원에서 무손실 저항이 받는 평균 전력을 어림합니다.
+- 포락선 최댓값에서 설계를 확인합니다: DCM, 그리고 스위치 전압.
+
+## 이론
+
+### 전원
+
+이 사례의 전원은 선형입니다. 큰 전원 저항 뒤의 개방 전압이며, 그 진폭은 같은 반파
+사인이 반복되는 느린 포락선을 따라 오르내립니다. 매 순간 전원이 낼 수 있는 최대
+전력은 <EqRef id="src.Pmax" label="선형 전원의 최대 전력" />이며, 이 값은 포락선의
+제곱을 따릅니다.
+
+### 컨버터
+
+전원 저항과 같은 무손실 저항으로 설계한 고정 듀티비 DCM 플라이백은
+(<EqRef id="lfr.L_M" label="무손실 저항의 자화 인덕턴스" />) 입력을 전원 전압의 절반에
+두고, 두 가지가 성립하는 동안 매 순간 가용 전력 전부를 가져갑니다
+(<EqRef id="lfr.eta" label="무손실 저항의 추출 비율" />). 버스가 가장 높은 포락선
+최댓값에서도 DCM에 머물러야 하고(<EqRef id="flyback.V_crit" label="임계 입력 전압" />),
+버스가 포락선을 따라가도록 포락선이 버스 자신의 시정수, 곧 버스 커패시턴스에 전원
+저항과 입력 저항의 병렬 저항을 곱한 값보다 충분히 느려야 합니다
+<Cite key="alexander2017" where="Ch. 7 (First-Order Circuits)" />.
+
+### 평균 전력
+
+사인의 제곱은 평균이 최댓값 제곱의 절반이므로, 포락선에 걸쳐 평균한 전력은
+최댓값에서의 전력의 절반입니다 <Cite key="alexander2017" where="Ch. 11" />.
+
+<Eq id="lfr.P_env" />
+
+[소스 매처](../../design/source-matcher/)는 이런 포락선을 스위칭 사이클 단위로
+시뮬레이션하며, 최댓값이 플라이백을 CCM으로 몰아넣는 곳에서 버스가 임계 전압에 묶이는
+것을 보여 줍니다.
+
+### 스위치
+
+포락선 최댓값에서 스위치는 가장 높은 전압, 곧 버스에 반사된 출력을 더한 전압을
+차단하며(<EqRef id="flyback.Vds_off" label="스위치 전압" />), 누설 스파이크가 그 위에
+더해집니다([스너버와 클램프](../../04-magnetics/snubbers-clamps/)). 평균이나 포락선의
+시작에 맞춰 정격을 고른 스위치는 최댓값에서 고장 납니다.
+
+## 풀이 예제
+
+포락선 최댓값과 평균에서 본 이 사례:
+
+<Worked example="harvesting-source" />
+
+전원은 <Val example="harvesting-source" name="R_s" /> 뒤에서, 주기가
+<Val example="harvesting-source" name="T_env" />인 포락선을 따라
+<Val example="harvesting-source" name="V_ocpk" />까지 오르며, 최댓값에서
+<Val example="harvesting-source" name="P_max" />를 낼 수 있습니다.
+<Val example="harvesting-source" name="f_s" />와
+<Val example="harvesting-source" name="D" />에서
+<Val example="harvesting-source" name="L_M" />의 자화 인덕턴스는
+<Val example="harvesting-source" name="R_in" />을 보이므로, 플라이백은 매 순간 가용
+전력 전부, 평균 <Val example="harvesting-source" name="P_avg" />를 가져갑니다.
+최댓값에서 버스는 임계 전압 <Val example="harvesting-source" name="V_gcrit" />보다
+낮은 <Val example="harvesting-source" name="V_g" />에 이르고, 스위치는 누설 스파이크
+전에 <Val example="harvesting-source" name="V_DS" />를 차단합니다.
+
+## 직접 해 보기
+
+<TryIt eq="lfr.P_env" example="harvesting-source" sweep="V_ocpk" />
+
+포락선 최댓값을 바꿔 보면 평균 전력이 그 제곱을 따릅니다.
+
+<TryIt eq="lfr.eta" example="harvesting-source" sweep="R_in" />
+
+플라이백의 입력 저항을 전원 저항 주변에서 바꿔 보면, 두 배 안쪽에서는 비율이 거의
+1에 머뭅니다.
+
+## 벤치 실습
+
+이 사례를 원래 전압 그대로 개방된 실험대에서 만들지 않습니다. 전원 전압을 어떤 배수로
+나누고 저항은 그대로 두어 축소합니다. 그러면 버스 전압은 그 배수로, 전력은 그 제곱으로
+줄어들고, 출력과 변압기를 거쳐 반사된 전압은 그대로입니다. 전원 저항과 같은 저항
+뒤에서 포락선을 따라 단계적으로 바뀌는 프로그래머블 전원으로 전원을 모사하고, 부하는
+고정 듀티비의 플라이백으로 둡니다. 단계마다 입력 전압과 전류를 기록해 전력을 계산하고,
+포락선에 걸친 평균을 축소한 식의 값과 비교합니다.
+
+## 주의할 점
+
+- **부하가 없는 버스는 개방 전압까지 충전됩니다.** 큰 저항 뒤의 전원 전류는 작지만,
+  그 양단의 커패시터는 결국 전체 전압에 이르고, 그 전압을 유지합니다.
+- **평균에는 느린 포락선이 필요합니다.** 버스 시정수에 견줄 만한 포락선에서는 버스가
+  뒤처지고, 무손실 저항의 비율이 매 순간 성립하지 않습니다.
+- **DCM은 평균이 아니라 최댓값에서 확인합니다**
+  (<EqRef id="flyback.V_crit" label="임계 입력 전압" />).
+- **스위치 정격은 최댓값에 맞춥니다**(<EqRef id="flyback.Vds_off" label="스위치 전압" />).
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch15', 'zi2015-nature']} />
+
+## 퀴즈
+
+<Quiz id="07-harvesting/synthetic-case" />

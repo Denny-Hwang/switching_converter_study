@@ -271,6 +271,17 @@ symbol_table:
   theta_SA: {latex: "\\theta_\\mathrm{SA}", unit: "K/W", desc: "heat-sink-to-ambient thermal resistance", meaning: "sink-to-ambient thermal resistance", meaning_ko: "방열판-주위 열저항", range: [0.5, 100], scale: log}
   Psi_JT: {latex: "\\Psi_\\mathrm{JT}", unit: "K/W", desc: "junction-to-top characterization parameter: the junction's rise above the package top per watt of the device's power", meaning: "junction-to-top characterization parameter", meaning_ko: "접합-윗면 특성 파라미터", range: [0.1, 20], scale: log}
 
+  # --- piezoelectric source and harvesting envelopes (07-harvesting) --------
+  I_p: {latex: "I_p", unit: "A", desc: "amplitude of the current a vibrating piezoelectric element drives: its force factor times the velocity amplitude", meaning: "piezoelectric current amplitude", meaning_ko: "압전 전류 진폭", range: [1.0e-6, 1.0e-2], scale: log}
+  C_0: {latex: "C_0", unit: "F", desc: "clamped capacitance of a piezoelectric element", meaning: "clamped capacitance", meaning_ko: "클램프 커패시턴스(clamped capacitance)", range: [1.0e-10, 1.0e-6], scale: log}
+  omega: {latex: "\\omega", unit: "rad/s", desc: "angular frequency of a sinusoidal vibration", meaning: "vibration angular frequency", meaning_ko: "진동 각주파수", range: [10, 1.0e4], scale: log}
+  V_M: {latex: "V_M", unit: "V", desc: "open-circuit voltage amplitude of a vibrating piezoelectric element", meaning: "open-circuit voltage amplitude", meaning_ko: "개방 전압 진폭", range: [0.1, 1000], scale: log}
+  V_DC: {latex: "V_\\mathrm{DC}", unit: "V", desc: "DC voltage behind a full-wave bridge rectifier", meaning: "rectified DC voltage", meaning_ko: "정류된 직류 전압", range: [0.1, 1000], scale: log}
+  gamma: {latex: "\\gamma", unit: "1", desc: "fraction of its voltage a synchronized-switch inversion keeps: the element goes from V to -gamma V", meaning: "inversion coefficient", meaning_ko: "반전 계수(inversion coefficient)", range: [0, 0.95]}
+  V_ocpk: {latex: "\\hat{V}_\\mathrm{oc}", unit: "V", desc: "peak of a source's open-circuit voltage envelope", meaning: "peak open-circuit voltage", meaning_ko: "개방 전압의 최댓값", range: [1, 1000], scale: log}
+  T_env: {latex: "T_\\mathrm{env}", unit: "s", desc: "period of a source's open-circuit voltage envelope", meaning: "envelope period", meaning_ko: "포락선 주기"}
+  P_avg: {latex: "\\bar{P}", unit: "W", desc: "power averaged over a period of the source's envelope", meaning: "power averaged over the envelope", meaning_ko: "포락선 주기에 걸친 평균 전력", range: [1.0e-6, 100], scale: log}
+
 # Human-readable labels for the `assumptions` tags (shown in the <Eq> expander).
 assumption_labels:
   ideal: {en: "ideal (lossless) switches and passive components", ko: "이상적(무손실) 스위치와 수동 소자"}
@@ -302,6 +313,9 @@ assumption_labels:
   capacitor_takes_ripple: {en: "the whole inductor ripple current flows into the output capacitor; the load draws only dc", ko: "인덕터 리플 전류 전체가 출력 커패시터로 흐르고 부하는 직류만 받음"}
   small_ripple_currents: {en: "rms currents computed with small ripple (flat-topped current pulses)", ko: "소리플 근사로 계산한 실효 전류(윗면이 평평한 전류 펄스)"}
   constant_excitation: {en: "constant voltage (inductor) or current (capacitor) during the interval t", ko: "구간 t 동안 전압(인덕터) 또는 전류(커패시터)가 일정함"}
+  piezo_source: {en: "piezoelectric element as a current source I_p sin(ωt) in parallel with its clamped capacitance C_0; the vibration's amplitude does not depend on the electrical load (weak coupling)", ko: "압전 소자를 클램프 커패시턴스 C_0와 병렬인 전류원 I_p sin(ωt)로 모델링; 진동 진폭은 전기적 부하와 무관(약결합)"}
+  ideal_bridge: {en: "ideal full-wave bridge rectifier onto a constant DC voltage", ko: "일정한 직류 전압에 연결된 이상적 전파 브리지 정류기"}
+  slow_envelope: {en: "envelope slow against the bus time constant, and the converter a loss-free resistor (DCM) throughout", ko: "포락선이 버스 시정수보다 충분히 느리고, 컨버터가 내내 무손실 저항(DCM)으로 동작"}
   sinusoidal_steady_state: {en: "sinusoidal steady state (phasor analysis)", ko: "정현파 정상상태(페이저 해석)"}
   first_order_rc: {en: "first-order R-C low-pass filter with no load on its output", ko: "출력에 부하가 없는 1차 R-C 저역통과 필터"}
   rectangular_pulse: {en: "ideal rectangular pulse train between 0 and V_pk with duty ratio D", ko: "0과 V_pk 사이를 오가는 듀티비 D의 이상적인 직사각형 펄스열"}
@@ -1590,6 +1604,162 @@ equations:
     derived_by: python/pe_core/derive/harvesting.py
     tests:
       - {inputs: {P: 0.5, R_in: 200.0}, expect: 10.0}
+
+  - id: lfr.L_M
+    title: "Magnetizing inductance of a DCM flyback that presents a given input resistance"
+    title_ko: "주어진 입력 저항을 보이는 DCM 플라이백의 자화 인덕턴스"
+    lhs: L_M
+    expr: "R_in*D**2/(2*f_s)"
+    symbols: {R_in: "loss-free input resistance wanted", D: "duty ratio", f_s: "switching frequency"}
+    assumptions: [ideal, dcm, steady_state]
+    notes: "the loss-free resistor $R_\\mathrm{in} = 2 L_M f_s / D^2$ solved for $L_M$; to match a linear source, $R_\\mathrm{in} = R_s$"
+    notes_ko: "무손실 저항 $R_\\mathrm{in} = 2 L_M f_s / D^2$를 $L_M$에 대해 푼 식; 선형 전원에 정합하려면 $R_\\mathrm{in} = R_s$"
+    cite:
+      - {key: erickson2020, where: "Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode); derived here"}
+      - {key: singer1990}
+    derived_by: python/pe_core/derive/harvesting.py
+    tests:
+      - {inputs: {R_in: 1.0e4, D: 0.2, f_s: 1.0e4}, expect: 0.02}
+
+  - id: lfr.P_env
+    title: "Average power a loss-free resistor takes from a source whose open-circuit voltage follows a sinusoidal envelope"
+    title_ko: "개방 전압이 사인파 포락선을 따르는 전원에서 무손실 저항이 받는 평균 전력"
+    lhs: P_avg
+    expr: "eta_ext*V_ocpk**2/(8*R_s)"
+    symbols: {eta_ext: "extraction fraction of the loss-free resistor", V_ocpk: "peak of the open-circuit voltage", R_s: "source resistance"}
+    assumptions: [linear_source, slow_envelope]
+    ranges: {eta_ext: [0.05, 1.0]}
+    notes: "the power $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$ follows the square of the envelope, and the square of a sine (or of a rectified sine) averages to half its peak's"
+    notes_ko: "전력 $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$는 포락선의 제곱을 따르며, 사인(또는 정류된 사인)의 제곱은 평균이 최댓값 제곱의 절반이다"
+    cite: {key: alexander2017, where: "Sec. 4.8 (Maximum Power Transfer); derived here"}
+    derived_by: python/pe_core/derive/harvesting.py
+    tests:
+      - {inputs: {eta_ext: 1.0, V_ocpk: 1000.0, R_s: 1.0e6}, expect: 0.125}
+      - {inputs: {eta_ext: 0.75, V_ocpk: 100.0, R_s: 1.0e4}, expect: 0.09375}
+
+  - id: piezo.VM
+    title: "Open-circuit voltage amplitude of a vibrating piezoelectric element"
+    title_ko: "진동하는 압전 소자의 개방 전압 진폭"
+    lhs: V_M
+    expr: "I_p/(omega*C_0)"
+    symbols: {I_p: "current amplitude", omega: "vibration angular frequency", C_0: "clamped capacitance"}
+    assumptions: [piezo_source]
+    notes: "with nothing connected, the whole current charges and discharges $C_0$"
+    notes_ko: "아무것도 연결하지 않으면 전류 전부가 $C_0$를 충방전한다"
+    cite: {key: guyomar2005, where: "the element's electromechanical model; derived here"}
+    derived_by: python/pe_core/derive/piezo.py
+    tests:
+      - {inputs: {I_p: 1.0e-4, omega: 1000.0, C_0: 5.0e-8}, expect: 2.0}
+
+  - id: piezo.R_opt
+    title: "Resistive load that takes the most power from a vibrating piezoelectric element"
+    title_ko: "진동하는 압전 소자에서 가장 많은 전력을 받는 저항 부하"
+    lhs: R
+    expr: "1/(omega*C_0)"
+    symbols: {omega: "vibration angular frequency", C_0: "clamped capacitance"}
+    assumptions: [piezo_source]
+    notes: "the reactance of the clamped capacitance at the vibration's frequency"
+    notes_ko: "진동 주파수에서 클램프 커패시턴스의 리액턴스"
+    cite: {key: guyomar2005, where: "the element's electromechanical model; derived here"}
+    derived_by: python/pe_core/derive/piezo.py
+    tests:
+      - {inputs: {omega: 1000.0, C_0: 5.0e-8}, expect: 20000.0}
+
+  - id: piezo.P_R
+    title: "Power into the best resistive load"
+    title_ko: "최적 저항 부하로 들어가는 전력"
+    lhs: P
+    expr: "I_p**2/(4*omega*C_0)"
+    symbols: {I_p: "current amplitude", omega: "vibration angular frequency", C_0: "clamped capacitance"}
+    assumptions: [piezo_source]
+    notes: "a resistor $1/(\\omega C_0)$ across the element takes $I_p^2 R/(2(1 + (\\omega R C_0)^2))$, largest at that value"
+    notes_ko: "소자 양단의 저항 $1/(\\omega C_0)$는 $I_p^2 R/(2(1 + (\\omega R C_0)^2))$를 받으며, 그 값에서 최대이다"
+    cite: {key: guyomar2005, where: "the element's electromechanical model; derived here"}
+    derived_by: python/pe_core/derive/piezo.py
+    tests:
+      - {inputs: {I_p: 1.0e-4, omega: 1000.0, C_0: 5.0e-8}, expect: 5.0e-5}
+
+  - id: piezo.P_std
+    title: "Power through a full-wave bridge onto a DC voltage (the standard interface)"
+    title_ko: "전파 브리지를 거쳐 직류 전압으로 들어가는 전력(표준 인터페이스)"
+    lhs: P
+    expr: "2*V_DC*(I_p - omega*C_0*V_DC)/pi"
+    symbols: {V_DC: "rectified DC voltage", I_p: "current amplitude", omega: "vibration angular frequency", C_0: "clamped capacitance"}
+    assumptions: [piezo_source, ideal_bridge]
+    constraints: ["V_DC < I_p/(omega*C_0)"]
+    notes: "each half period the element's voltage swings from $-V_\\mathrm{DC}$ to $V_\\mathrm{DC}$ before the bridge conducts, which takes $2 C_0 V_\\mathrm{DC}$ of the $2 I_p/\\omega$ the source drives; from $V_\\mathrm{DC} = V_M$ on the bridge never conducts"
+    notes_ko: "반주기마다 소자 전압이 $-V_\\mathrm{DC}$에서 $V_\\mathrm{DC}$까지 바뀐 뒤에야 브리지가 도통하며, 이 변화가 전원이 흘리는 $2 I_p/\\omega$ 가운데 $2 C_0 V_\\mathrm{DC}$를 가져간다; $V_\\mathrm{DC} = V_M$부터는 브리지가 도통하지 않는다"
+    cite:
+      - {key: guyomar2005, where: "the standard technique; derived here"}
+      - {key: lefeuvre2006}
+    derived_by: python/pe_core/derive/piezo.py
+    tests:
+      - {inputs: {V_DC: 1.0, I_p: 1.0e-4, omega: 1000.0, C_0: 5.0e-8}, expect: 3.18309886183791e-5}
+
+  - id: piezo.P_std_max
+    title: "Largest power of the standard interface"
+    title_ko: "표준 인터페이스의 최대 전력"
+    lhs: P_max
+    expr: "I_p**2/(2*pi*omega*C_0)"
+    symbols: {I_p: "current amplitude", omega: "vibration angular frequency", C_0: "clamped capacitance"}
+    assumptions: [piezo_source, ideal_bridge]
+    notes: "at $V_\\mathrm{DC} = V_M/2$, half the open-circuit amplitude"
+    notes_ko: "$V_\\mathrm{DC} = V_M/2$, 즉 개방 전압 진폭의 절반에서"
+    cite:
+      - {key: guyomar2005, where: "the standard technique; derived here"}
+      - {key: lefeuvre2006}
+    derived_by: python/pe_core/derive/piezo.py
+    tests:
+      - {inputs: {I_p: 1.0e-4, omega: 1000.0, C_0: 5.0e-8}, expect: 3.18309886183791e-5}
+
+  - id: piezo.P_sece
+    title: "Power of synchronous electric charge extraction (SECE)"
+    title_ko: "동기 전하 추출(SECE)의 전력"
+    lhs: P
+    expr: "2*I_p**2/(pi*omega*C_0)"
+    symbols: {I_p: "current amplitude", omega: "vibration angular frequency", C_0: "clamped capacitance"}
+    assumptions: [piezo_source]
+    notes: "the element is left open and its whole charge is taken at each extremum of its voltage, $\\tfrac12 C_0 (2 V_M)^2$ twice a period whatever the load: four times the standard interface's largest power"
+    notes_ko: "소자를 개방해 두고 전압이 극값일 때마다 전하 전부를 꺼내므로, 부하와 관계없이 한 주기에 두 번 $\\tfrac12 C_0 (2 V_M)^2$를 얻는다: 표준 인터페이스 최대 전력의 네 배"
+    cite:
+      - {key: lefeuvre2005, where: "derived here"}
+      - {key: lefeuvre2006}
+    derived_by: python/pe_core/derive/piezo.py
+    tests:
+      - {inputs: {I_p: 1.0e-4, omega: 1000.0, C_0: 5.0e-8}, expect: 1.27323954473516e-4}
+
+  - id: piezo.P_sshi
+    title: "Power of parallel synchronized switch harvesting on inductor (SSHI)"
+    title_ko: "병렬 인덕터 동기 스위치 하베스팅(SSHI)의 전력"
+    lhs: P
+    expr: "2*V_DC*(I_p - omega*C_0*V_DC*(1 - gamma)/2)/pi"
+    symbols: {V_DC: "rectified DC voltage", I_p: "current amplitude", omega: "vibration angular frequency", C_0: "clamped capacitance", gamma: "inversion coefficient"}
+    assumptions: [piezo_source, ideal_bridge]
+    constraints: ["V_DC*(1 - gamma) < 2*I_p/(omega*C_0)"]
+    notes: "at each extremum of the displacement a switch and an inductor invert the element's voltage from $V_\\mathrm{DC}$ to $-\\gamma V_\\mathrm{DC}$, so the swing to the other rail takes only $(1 - \\gamma) C_0 V_\\mathrm{DC}$"
+    notes_ko: "변위가 극값일 때마다 스위치와 인덕터가 소자 전압을 $V_\\mathrm{DC}$에서 $-\\gamma V_\\mathrm{DC}$로 반전시키므로, 반대쪽 레일까지의 변화에는 $(1 - \\gamma) C_0 V_\\mathrm{DC}$만 든다"
+    cite:
+      - {key: guyomar2005, where: "derived here"}
+      - {key: lefeuvre2006}
+    derived_by: python/pe_core/derive/piezo.py
+    tests:
+      - {inputs: {V_DC: 5.0, I_p: 1.0e-4, omega: 1000.0, C_0: 5.0e-8, gamma: 0.8}, expect: 2.38732414637843e-4}
+
+  - id: piezo.P_sshi_max
+    title: "Largest power of parallel SSHI"
+    title_ko: "병렬 SSHI의 최대 전력"
+    lhs: P_max
+    expr: "I_p**2/(pi*omega*C_0*(1 - gamma))"
+    symbols: {I_p: "current amplitude", omega: "vibration angular frequency", C_0: "clamped capacitance", gamma: "inversion coefficient"}
+    assumptions: [piezo_source, ideal_bridge]
+    notes: "at $V_\\mathrm{DC} = V_M/(1 - \\gamma)$: $2/(1 - \\gamma)$ times the standard interface's largest power"
+    notes_ko: "$V_\\mathrm{DC} = V_M/(1 - \\gamma)$에서: 표준 인터페이스 최대 전력의 $2/(1 - \\gamma)$배"
+    cite:
+      - {key: guyomar2005, where: "derived here"}
+      - {key: lefeuvre2006}
+    derived_by: python/pe_core/derive/piezo.py
+    tests:
+      - {inputs: {I_p: 1.0e-4, omega: 1000.0, C_0: 5.0e-8, gamma: 0.8}, expect: 3.18309886183791e-4}
 
   - id: sense.current_out_monitor
     title: "Output of a current-output high-side current-sense amplifier"

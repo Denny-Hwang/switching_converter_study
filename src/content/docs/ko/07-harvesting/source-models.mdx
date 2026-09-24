@@ -1,0 +1,126 @@
+---
+title: 전원 모델
+description: 전원 저항 뒤의 개방 전압으로 본 하베스터와 그 최대 전력, 클램프 커패시턴스와 병렬인 전류원으로 본 진동하는 압전 소자와 그로부터 가장 많은 전력을 받는 저항, 그리고 마찰전기 발전기의 성능 지수가 비교하는 것.
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 동작 범위에서 선형인 하베스터를 전원 저항 뒤의 개방 전압으로 모델링하고, 그 전원이 낼 수 있는 최대 전력을 압니다.
+- 진동하는 압전 소자(piezoelectric element)를 클램프 커패시턴스(clamped capacitance)와 병렬인 전류원으로 모델링하고, 그로부터 가장 많은 전력을 받는 저항을 구합니다.
+- 마찰전기 발전기(triboelectric generator)의 성능 지수(figure of merit)가 무엇을 비교하는지 알아 둡니다.
+
+## 이론
+
+### 선형 전원
+
+동작 범위에서 선형인 전원은 부하에서 보면 전원 저항 $R_s$ 뒤의 개방 전압(open-circuit
+voltage) $V_\mathrm{oc}$, 곧 테브난 등가회로(Thevenin equivalent)입니다
+<Cite key="alexander2017" where="Ch. 4" />. 이 전원은 자신의 저항과 같은 부하에 가장
+큰 전력을 전달합니다 <Cite key="alexander2017" where="Sec. 4.8 (Maximum Power Transfer)" />.
+
+<Eq id="src.Pmax" />
+
+이것이 전원의 가용 전력입니다. 그 뒤의 컨버터가 이 가운데 얼마를 가져가는지는 컨버터
+입력이 어떻게 보이는지에 달려 있으며, [정합](../matching/) 모듈에서 그 비율을 구합니다.
+
+### 진동하는 압전 소자
+
+정현파로 진동하는 구조물에 붙은 압전 소자는 구조물의 속도에 비례하는 전류를
+흘립니다. 단자 양단의 클램프 커패시턴스 $C_0$와 함께 보면, 이 소자는 $C_0$와 병렬인
+전류원 $I_p \sin \omega t$입니다 <Cite key="guyomar2005" />. 단, 전기 쪽이 가져가는
+에너지가 진동의 진폭을 바꾸지 않는 동안에 그렇습니다. 아무것도 연결하지 않으면 전류
+전부가 $C_0$를 충방전하고, 전압은 양쪽으로 다음만큼 흔들립니다.
+
+<Eq id="piezo.VM" />
+
+내부 임피던스는 저항이 아니라 커패시턴스입니다. 소자 양단의 저항은 $C_0$와 전류를
+나누며, 진동 주파수에서 커패시턴스의 리액턴스와 같을 때 가장 많은 전력을 받습니다.
+
+<Eq id="piezo.R_opt" />
+
+<Eq id="piezo.P_R" />
+
+최적 저항은 주파수에 따라 달라지므로, 한 진동에 맞춘 저항은 다른 진동에서는 정합되지
+않습니다. 부하가 가져가는 에너지는 진동에서 나오므로, 이 모델은 그 에너지가 구조물의
+에너지보다 작을 때 성립합니다. 그렇지 않으면 수확이 진동을 감쇠시키고, 모델은 전력을
+과대평가합니다.
+
+저장 소자에는 직류 전압이 필요하므로 소자는 보통 정류기를 거쳐 동작합니다. 최적 직류
+전압에 연결된 전파 브리지(full-wave bridge)는 최적 저항보다 적게 가져가고,
+[SECE, SSHI, MPPT](../sece-sshi-mppt/)의 비선형 인터페이스는 더 많이 가져갑니다
+(<EqRef id="piezo.P_std_max" label="표준 인터페이스의 최대 전력" />).
+
+### 마찰전기 발전기
+
+Zi 등은 마찰전기 나노발전기(triboelectric nanogenerator)를, 한 사이클의 운동이 낼 수
+있는 가장 큰 에너지, 곧 최대 에너지 출력 사이클(cycles for maximized energy output)의
+에너지를 면적과 변위로 나눈 값으로 비교하자고 제안했습니다. 이 성능 지수는 설계가
+정하는 구조 성능 지수(structural figure of merit)에, 재료가 정하는 표면 전하 밀도의
+제곱을 곱한 값입니다 <Cite key="zi2015" />. 특정 부하가 받는 전력이 아니라 사이클당
+에너지로 발전기를 평가합니다.
+
+## 풀이 예제
+
+열어 둔 압전 소자, 그리고 최적 저항을 연결한 같은 소자:
+
+<Worked example="piezo-source" />
+
+소자는 <Val example="piezo-source" name="C_0" /> 옆에서
+<Val example="piezo-source" name="omega" />로
+<Val example="piezo-source" name="I_p" />를 흘립니다. 열어 두면 전압이 양쪽으로
+<Val example="piezo-source" name="V_M" />만큼 흔들립니다. 최적 저항은
+<Val example="piezo-source" name="R" />이고, 이 저항은
+<Val example="piezo-source" name="P_R" />를 받습니다.
+
+## 직접 해 보기
+
+<TryIt eq="piezo.R_opt" example="piezo-source" sweep="omega" />
+
+진동 주파수를 바꿔 보면 주파수가 높을수록 최적 저항이 작아집니다. 고정된 저항은 한
+진동에만 정합됩니다.
+
+<TryIt eq="src.Pmax" example="match-basic" sweep="R_s" />
+
+선형 전원의 전원 저항을 바꿔 보면, 절반으로 줄일 때 가용 전력이 두 배가 됩니다.
+
+## 벤치 실습
+
+소자를 일정한 정현파 진폭으로 구동하는 가진기(shaker)에 붙입니다. 입력 저항이 최적
+저항보다 훨씬 큰 프로브로 개방 전압 진폭을 재고, $C_0$에 더해지는 프로브의 입력
+커패시턴스를 적어 둡니다([프로브](../../06-bench/probes/)). 이어서 소자에 가변 저항
+상자(decade resistance box)를 연결해 값마다 전압 진폭을 기록하고, 각 저항이 받는
+전력을 계산합니다. 가장 많이 받는 저항을 찾아, LCR 미터로 잰 소자 커패시턴스의 진동
+주파수에서의 리액턴스와 비교합니다. 두 번째 주파수에서 반복해 최적 저항이 옮겨 가는
+것을 봅니다.
+
+## 주의할 점
+
+- **프로브는 임피던스가 높은 전원에 부하가 됩니다.** 프로브의 입력 저항과 커패시턴스는
+  전원과 병렬로 들어가므로, 읽은 값을 믿기 전에 최적 저항
+  (<EqRef id="piezo.R_opt" label="최적 저항" />) 및 $C_0$와 비교합니다.
+- **최적 저항은 한 주파수에서만 맞습니다.** 진동 주파수에서의 $C_0$ 리액턴스이므로
+  주파수와 함께 움직입니다.
+- **직류 전압에 연결된 브리지는 최적 저항보다 적게 받습니다**
+  (<EqRef id="piezo.P_std_max" label="표준 인터페이스의 최대 전력" />).
+- **모델은 진동을 감쇠시키지 않습니다.** 구조물 에너지의 큰 부분을 가져가는 부하는
+  진동 진폭을 낮추며, 그때 모델은 전력을 과대평가합니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['zi2015-nature', 'guyomar2005-pubmed']} />
+
+## 퀴즈
+
+<Quiz id="07-harvesting/source-models" />

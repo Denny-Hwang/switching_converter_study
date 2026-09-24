@@ -1,0 +1,135 @@
+---
+title: The DCM flyback as a loss-free resistor
+description: Size a fixed-duty-ratio flyback in DCM so that it presents a source's resistance, find the source amplitude above which CCM takes over and holds the bus, and see what its switch must block and what more power costs.
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Size a fixed-duty-ratio DCM flyback so that it presents a source's resistance.
+- Find the source amplitude above which it leaves DCM, and know what it does then.
+- Know what voltage its switch blocks, and why more power through the same resistance needs more of it.
+
+## Theory
+
+### Sizing the loss-free resistor
+
+A flyback in DCM with a fixed duty ratio presents the
+<EqRef id="lfr.R_in" label="loss-free resistor" /> at its input
+<Cite key="erickson2020" where="Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)" />.
+Solved for the magnetizing inductance, that resistance gives the inductance
+a design needs:
+
+<Eq id="lfr.L_M" />
+
+To match a linear source, the input resistance is set to the source
+resistance (<EqRef id="lfr.eta" label="extraction by a loss-free resistor" />).
+A lower switching frequency, or a larger duty ratio, needs a larger
+inductance for the same resistance. The output voltage does not enter: in
+DCM the input resistance depends only on the inductance, the switching
+frequency and the duty ratio.
+
+### Where DCM ends
+
+The flyback stays in DCM while its input voltage is below the
+<EqRef id="flyback.V_crit" label="critical input voltage" />, which the
+output voltage, the diode's drop, the duty ratio and the turns ratio set. A
+source strong enough to raise the divider voltage
+(<EqRef id="lfr.Vg" label="bus voltage of a loss-free resistor" />) above it
+drives the flyback into CCM. With the output fixed, the CCM conversion ratio
+then allows only one input voltage, the critical one
+<Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />: the bus is
+held there, and the flyback becomes a constant-voltage sink, whose share of
+the available power depends on the source's amplitude
+(<EqRef id="src.cv_extraction" label="constant-voltage extraction" />). The
+simulator's current-limited source shows the bus settling at the critical
+voltage.
+
+### What the switch blocks, and more power
+
+The switch blocks the input voltage plus the output voltage reflected
+through the turns ratio (<EqRef id="flyback.Vds_off" label="switch voltage" />),
+and the leakage inductance's spike adds on top
+([snubbers and clamps](../../04-magnetics/snubbers-clamps/)). Through the
+same input resistance, a larger power needs a higher input voltage:
+
+<Eq id="lfr.Vg_power" />
+
+so drawing more power through a matched flyback raises its switch's voltage.
+That holds up to the critical voltage. There CCM holds the bus, and the
+switch voltage stays at <EqRef id="flyback.Vds_clamped" label="its CCM value" />
+whatever power the source then pushes in; the largest power the flyback
+draws as a resistor is <EqRef id="dcm.P_in" label="the power a DCM converter draws" />
+at the critical voltage.
+
+## Worked example
+
+A flyback sized to present the source's resistance:
+
+<Worked example="lfr-flyback" />
+
+At <Val example="lfr-flyback" name="D" /> and
+<Val example="lfr-flyback" name="f_s" />, a magnetizing inductance of
+<Val example="lfr-flyback" name="L_M" /> presents
+<Val example="lfr-flyback" name="R_in" />, the source's resistance. The
+source's <Val example="lfr-flyback" name="V_oc" /> then divides to
+<Val example="lfr-flyback" name="V_g" />, below the critical input voltage of
+<Val example="lfr-flyback" name="V_gcrit" />: the flyback takes the whole
+available <Val example="lfr-flyback" name="P_max" />, and its switch blocks
+<Val example="lfr-flyback" name="V_DS" /> before the leakage spike.
+
+## Try it
+
+<TryIt eq="lfr.L_M" example="lfr-flyback" sweep="D" />
+
+Sweep the duty ratio: the inductance that presents the same resistance grows
+as its square.
+
+<TrySim example="flyback-source" topology="flyback" />
+
+A stronger source into the same kind of flyback: the bus rises until CCM
+begins and settles at the critical input voltage.
+
+## Bench exercise
+
+Build the flyback with its duty ratio fixed, and feed it from a bench
+supply through a series resistor equal to its computed input resistance.
+Measure the input voltage: it should sit at half the supply's voltage. Raise
+the supply slowly until the input voltage stops following it; that is the
+critical input voltage, to compare with the formula. At each step, capture
+the switch's drain voltage with a probe rated for it
+([probes](../../06-bench/probes/)), and read the plateau before the leakage
+spike against the formula.
+
+## Gotchas
+
+- **Above the critical input voltage the flyback no longer matches.**
+  CCM holds the bus there (<EqRef id="flyback.V_crit" label="critical input voltage" />).
+- **The switch voltage includes the reflected output,** and the leakage
+  spike adds to it (<EqRef id="flyback.Vds_off" label="switch voltage" />).
+- **More power through the same resistance needs a higher voltage**
+  (<EqRef id="lfr.Vg_power" label="input voltage for a given power" />).
+- **The match is forgiving.** The share is flat at its top: a small error
+  in the inductance moves the input resistance by the same fraction, and the
+  share falls by only about a quarter of that fraction squared
+  (<EqRef id="lfr.eta" label="extraction by a loss-free resistor" />).
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch15', 'erickson-ch5', 'ottman2003-ieee']} />
+
+## Quiz
+
+<Quiz id="07-harvesting/lfr-dcm-flyback" />

@@ -37,9 +37,7 @@ $V_\mathrm{oc}$이며, 정합된 부하(matched load)에 가장 큰 전력을 �
 
 ### 가용 전력
 
-선형 전원은 자신의 저항과 같은 부하에 가장 큰 전력을 전달합니다.
-
-<Eq id="src.Pmax" />
+선형 전원은 자신의 저항과 같은 부하에 가장 큰 전력을 전달합니다(<EqRef id="src.Pmax" label="선형 전원의 최대 전력" />).
 
 ### 저항으로 동작하는 플라이백
 
@@ -47,14 +45,10 @@ $V_\mathrm{oc}$이며, 정합된 부하(matched load)에 가장 큰 전력을 �
 입력이 저항, 곧 <EqRef id="lfr.R_in" label="무손실 저항(loss-free resistor)" />으로
 보이며, 이 저항은 전력을 소산하지 않고 전달합니다 <Cite key="singer1990" />
 <Cite key="erickson2020" where="Ch. 15" />. 선형 전원에 연결되면 이 저항과 전원
-저항이 전원 전압을 분압합니다.
-
-<Eq id="lfr.Vg" />
+저항이 전원 전압을 분압합니다(<EqRef id="lfr.Vg" label="무손실 저항의 버스 전압" />).
 
 플라이백은 전원 진폭과 관계없이 가용 전력 중 같은 비율을 가져가며, 그 저항이
-전원 저항과 같으면 전부를 가져갑니다 <Cite key="alexander2017" where="Sec. 4.8" />.
-
-<Eq id="lfr.eta" />
+전원 저항과 같으면 전부를 가져갑니다 <Cite key="alexander2017" where="Sec. 4.8" /> (<EqRef id="lfr.eta" label="무손실 저항의 추출 비율" />).
 
 ### CCM이 시작되는 지점
 
@@ -62,9 +56,7 @@ $V_\mathrm{oc}$이며, 정합된 부하(matched load)에 가장 큰 전력을 �
 낮은 동안 DCM에 머뭅니다. 분압 전압을 그보다 높일 만큼 강한 전원은 플라이백을
 CCM으로 보내고, CCM은 버스를 임계 전압에 붙잡습니다. 그러면 플라이백은
 정전압 싱크(constant-voltage sink)로 동작하며, 가용 전력 중 가져가는 비율은
-전원 진폭에 따라 달라집니다 <Cite key="alexander2017" where="Sec. 4.8" />.
-
-<Eq id="src.cv_extraction" />
+전원 진폭에 따라 달라집니다 <Cite key="alexander2017" where="Sec. 4.8" /> (<EqRef id="src.cv_extraction" label="정전압 싱크의 추출 비율" />).
 
 도구는 분압 수식을 $V_\mathrm{oc}$에 대해 풀어 이 상태가 시작되는 전원 진폭을
 구합니다. 추출 비율 차트는 두 영역을 모두 보여 줍니다. 플라이백이 저항으로
@@ -75,9 +67,7 @@ CCM으로 보내고, CCM은 버스를 임계 전압에 붙잡습니다. 그러�
 
 ### 전력이 클수록 높은 스위치 전압, 임계 전압까지
 
-같은 입력 저항으로 더 큰 전력을 끌어오려면 버스 전압이 더 높아야 합니다.
-
-<Eq id="lfr.Vg_power" />
+같은 입력 저항으로 더 큰 전력을 끌어오려면 버스 전압이 더 높아야 합니다(<EqRef id="lfr.Vg_power" label="주어진 전력을 끌어오는 입력 전압" />).
 
 스위치는 버스 전압과 반사된 출력 전압(reflected output voltage)의 합을 차단(blocking)합니다
 (<EqRef id="flyback.Vds_off" label="스위치 전압" />). 이는 임계 전압까지만
@@ -108,9 +98,7 @@ $R_s C_\mathrm{bus}$입니다. CCM이 버스를 붙잡으면 평균화한 버스
 스위칭 주기마다 평균합니다.
 
 끌어온 전력은 전원이 버스 전압에서 버스로 전달하는 전력입니다
-<Cite key="alexander2017" where="Sec. 4.8" />.
-
-<Eq id="src.cv_power" />
+<Cite key="alexander2017" where="Sec. 4.8" /> (<EqRef id="src.cv_power" label="정전압 싱크로 들어가는 전력" />).
 
 전원 진폭이 버스 전압보다 낮아져 버스가 전원으로 전력을 되돌려 보내는 동안에는
 음수입니다. 한 주기 동안의 합을 가용 에너지로 나누면 포락선 전체의 추출 비율이

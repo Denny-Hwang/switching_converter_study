@@ -1,0 +1,51 @@
+# Quiz for 07-harvesting/matching. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A linear source of 10 V behind 25 ohm charges a battery held at 5 V, connected straight to it. What share of the available power does the battery take?'
+    options:
+      - 'Half'
+      - 'All of it'
+      - 'A quarter'
+      - 'Three quarters'
+    answer: 1
+    explain: 'The battery sits at half the open-circuit voltage, where a constant voltage takes the whole available power: 0.2 A times 5 V is 1 W, and the available power is 100 over 100, also 1 W.'
+  - q: 'The same source charges a battery held at 2 V instead. What share does it take?'
+    options:
+      - '0.2'
+      - '0.8'
+      - '0.64'
+      - '0.36'
+    answer: 2
+    explain: 'Four times 2 times 8 over 10 squared: 64 over 100. The battery draws 8 V over 25 ohm, 0.32 A, at 2 V: 0.64 W of the available 1 W.'
+  - q: 'A converter that is a loss-free resistor of 100 ohm draws from the same 25 ohm source. What share does it take?'
+    options:
+      - '0.64'
+      - '0.8'
+      - '0.25'
+      - '1'
+    answer: 0
+    explain: 'Four times 25 times 100 over 125 squared: 10000 over 15625, which is 0.64.'
+  - q: 'The source''s open-circuit voltage doubles. What happens to the loss-free resistor''s share?'
+    options:
+      - 'It doubles'
+      - 'It halves'
+      - 'It falls to a quarter'
+      - 'It stays the same'
+    answer: 3
+    explain: 'The two resistances divide any source voltage in the same ratio: the share depends only on the resistances.'
+  - q: 'The 10 V source doubles to 20 V while the battery stays at 5 V. What share does the battery take now?'
+    options:
+      - 'All of it'
+      - '0.75'
+      - '0.5'
+      - '0.25'
+    answer: 1
+    explain: 'Four times 5 times 15 over 20 squared: 300 over 400. A fixed voltage keeps its share only while it is half the source''s voltage.'
+  - q: 'Which converter input is a loss-free resistor?'
+    options:
+      - 'A buck in CCM'
+      - 'Any converter with a fixed duty ratio'
+      - 'A buck-boost or a flyback in DCM with a fixed duty ratio'
+      - 'A boost in CCM with a fixed duty ratio'
+    answer: 2
+    explain: 'In DCM with a fixed duty ratio, a buck-boost or flyback draws an average input current proportional to its input voltage, and passes the power on.'

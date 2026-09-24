@@ -23,6 +23,7 @@ MODULES = (
     "windings",
     "measurement",
     "harvesting",
+    "piezo",
     "sensing",
     "bench",
 )
