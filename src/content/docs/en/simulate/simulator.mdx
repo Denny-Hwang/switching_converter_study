@@ -174,8 +174,8 @@ A capacitor alone does settle behind the other converters:
   instead, with the capacitor high enough that no charge reaches it, and the
   voltage brought down to the lowest one that no charge reaches. Such a
   start-up is reported below the voltage it would stop at, by up to about
-  0.07 % in random trials, and a steady state found from above can lie about
-  a millionth above it. The periods followed count in the number of cycles
+  0.07 % in random trials, and a steady state found from above can lie a
+  few millionths above it. The periods followed count in the number of cycles
   the result reports.
 
 Without a steady state there is no conduction mode, no comparison with the
@@ -195,8 +195,13 @@ periodic steady state.
 - **Events** such as the diode current reaching zero or a clamp starting to
   conduct are located inside a sub-step on the same exact solution, by a
   search that keeps the event bracketed like bisection (regula falsi in its
-  Illinois variant, which needs far fewer steps). The gate edges fall
-  exactly at the start of the period and at the duty ratio.
+  Illinois variant, which needs far fewer steps). When one event ends a
+  sub-step early, the other conditions are checked again at that instant.
+  A condition that was met earlier in the sub-step, but no longer holds at
+  its end, happened first: for example, a node capacitance's rise that
+  passes the diode's turn-on voltage just before its current ends at the
+  peak. The gate edges fall exactly at the start of the period and at the
+  duty ratio.
 - **Rounding.** Within a period the simulator follows each state's
   deviation from its value at the start of the period. Its rounding errors
   then scale with how far the state moves, not with its size, so the change
@@ -286,13 +291,25 @@ against the equations:
   output above the input (an L-C overshoot, a battery behind a resistor),
   the buck's current turns negative at once through the switch's body
   diode, and the switch voltage never falls below zero.
-- **Outside the model.** A source too weak for its load lets the input bus
-  fall below zero: a buck, a buck-boost and a flyback with a heavy load on a
-  small bus capacitance, and a forward converter beyond its reset limit. In
-  all of them but the buck the switch voltage falls below zero too. Both are
-  flagged, also when the search does not settle (its last cycle is looked
-  at, besides the start-up's). Every converter, load, source and node
-  capacitance of a sweep of ordinary circuits keeps both at or above zero.
+- **Outside the model.** The models hold each diode off outside the
+  intervals in which it conducts. Two things are flagged, in the waveforms
+  the page draws (the steady period, or the whole start-up):
+  - a diode held off but forward-biased beyond its drop. Examples: a buck,
+    a buck-boost or a flyback with a heavy load on a source too weak for
+    it; a forward converter beyond its reset limit on one; a boost into a
+    fixed output below its input, whose current through $R_\mathrm{on}$
+    lifts the switch node above the output;
+  - the switch voltage falling below zero, where the body diode would
+    conduct.
+
+  A bus below zero alone turns on no diode. Two buck-boosts and a boost
+  whose buses sag below zero, with every diode still off, are not flagged.
+  ngspice with every diode in place agrees with them within the SPICE
+  comparison's tolerance. No converter, load, source or node capacitance in
+  a sweep of ordinary circuits is flagged. A diode's excess over its drop
+  counts from a ten-thousandth of the circuit's largest voltage: what a
+  diode forward-biased by less would take changes the results by about as
+  little, below the four digits the page shows.
 
 Two further suites check the simulator by other means:
 
@@ -396,15 +413,18 @@ that current except $R_b$: a small change of $D$ changes it a lot.
   behind a converter with a capacitance across its switch, is followed for
   at most 4000 periods and two million sub-steps before the search (100 to
   1000 periods with a node capacitance). A start-up slower than that, such
-  as a slow L-C charge, is searched from where it got to, and is reported
+  as a slow L-C charge, is searched from where it got to. It is reported
   below the voltage at which it would stop, by up to about 0.07 % in random
-  trials. With a node capacitance that rings fast, such a circuit can take
-  up to about ten seconds to solve.
-- **An input that stays above zero.** A Thevenin source too weak to hold
-  its bus up can let it swing below zero, where a real circuit's diodes
-  (the switch's body diode, the freewheeling diode or the rectifier) would
-  conduct. The models leave them out, and the simulator says that the
-  results do not hold.
+  trials. A steady state found from above can instead lie a few millionths
+  above that voltage. With a node capacitance that rings fast, such a
+  circuit can take tens of seconds to solve. It can take about a minute
+  when the search then does not settle.
+- **Diodes only where they are expected.** Each diode, the switch's body
+  diode among them, is part of the model only in the intervals in which it
+  conducts. A weak source can let the bus sag, or a large current through
+  $R_\mathrm{on}$ can lift a switch node, until a diode the model holds off
+  is forward-biased. The simulator then says that the results do not
+  hold.
 
 ## Screenshot
 

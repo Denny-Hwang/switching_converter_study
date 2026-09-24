@@ -183,14 +183,19 @@ export function common(p: SimParams, extraStates: string[]): Common {
  * builds in one period in the state's inductance for a current.
  */
 export function stateScales(c: Common, p: SimParams, inductances: Record<string, number>): Vec {
+  const V = givenVoltage(p);
+  return c.names.map((k) => (inductances[k] !== undefined ? (V * c.Ts) / inductances[k]! : V));
+}
+
+/** The largest voltage the circuit is given (the input, the source, a fixed output, a battery, a start voltage): the natural size of its voltages. */
+export function givenVoltage(p: SimParams): number {
   const l = p.load;
-  const V = Math.max(
+  return Math.max(
     Math.abs(p.Vg),
     Math.abs(p.source?.Voc ?? 0),
     l.kind === 'fixed' ? Math.abs(l.V) : 0,
     l.kind === 'network' ? Math.max(Math.abs(l.battery?.V ?? 0), Math.abs(l.V0 ?? 0)) : 0,
   );
-  return c.names.map((k) => (inductances[k] !== undefined ? (V * c.Ts) / inductances[k]! : V));
 }
 
 /** Current the load draws from the output capacitor's node besides the capacitor: the resistor's and the battery's (charging positive). */

@@ -365,6 +365,24 @@ function integrate(sh: Shifted, cur: Cursor, t1: number, dt: number, tr: Tracker
         first = { tau, g };
       }
     }
+    // A guard that crossed zero before that event and turned back by the step's end is still below zero
+    // at the event (a node capacitance's rise passing the diode's turn-on voltage just before its current
+    // ends at the peak): it came first.
+    while (first) {
+      const at = flow(iv.A, sh.input(cur.iv), cur.y, first.tau);
+      let earlier: { tau: number; g: Guard } | null = null;
+      for (const g of iv.guards) {
+        if (g === first.g) continue;
+        const gAt = sh.guard(g, at);
+        if (!(sh.guard(g, cur.y) > 0 && gAt <= 0)) continue;
+        const tau = locate(sh, cur.iv, cur.y, g, first.tau, gAt);
+        if (tau >= first.tau || (earlier && tau >= earlier.tau)) continue;
+        if (g.when && !g.when(sh.state(flow(iv.A, sh.input(cur.iv), cur.y, tau)))) continue;
+        earlier = { tau, g };
+      }
+      if (!earlier) break;
+      first = earlier;
+    }
     if (first) {
       if (++guardEvents > 1000) throw new Error(`${model.topology}: too many events in one cycle (chattering)`);
       const toEvent = sh.step(cur.iv, first.tau, !!cur.N);

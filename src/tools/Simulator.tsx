@@ -52,9 +52,17 @@ export interface SimLabels {
   /** '{n}', '{v}', '{dv}' filled in. */
   settling: string;
   unsettled: string;
-  /** '{v}' filled in: the switch voltage's minimum. */
-  busBelowZero: string;
+  /** '{v}' filled in: the switch voltage's minimum; '{where}' and '{holds}' (outsidePeriod or outsideStartUp, outsideResults or outsideStartUpFrom). */
   switchBelowZero: string;
+  /** '{v}' and '{vf}' filled in: the diode's largest voltage and its forward voltage (the two-switch converters); '{where}', '{holds}'. */
+  diodeForward: string;
+  /** '{v}' filled in: the forward converter's reset diode's largest voltage; '{where}', '{holds}'. */
+  resetDiodeForward: string;
+  outsidePeriod: string;
+  /** '{k}' filled in: the start-up's first cycle that leaves the model. */
+  outsideStartUp: string;
+  outsideResults: string;
+  outsideStartUpFrom: string;
   loadTable: string;
   vout: string;
   iR: string;
@@ -487,14 +495,23 @@ export function noSteadyText(r: SimResult, labels: SimLabels): string | null {
 }
 
 /**
- * What the page says when a voltage falls below zero where a diode the model
- * leaves out would conduct: the bus first (its cause), else the switch.
+ * What the page says when the drawn waveforms leave the model: a diode it
+ * holds off forward-biased beyond its drop, and the switch voltage below
+ * zero (its body diode), each where a real circuit's diode would conduct.
  */
 export function outsideModelText(r: SimResult | null | undefined, labels: SimLabels): string | null {
   if (!r) return null;
-  if (r.busBelowZero !== undefined) return fill(labels.busBelowZero, { v: fmtValue(r.busBelowZero, 'V') });
-  if (r.switchBelowZero !== undefined) return fill(labels.switchBelowZero, { v: fmtValue(r.switchBelowZero, 'V') });
-  return null;
+  // in a steady period the results do not hold; in a start-up, the start-up from the first cycle that leaves the model
+  const place = (from?: number) =>
+    from === undefined ? { where: labels.outsidePeriod, holds: labels.outsideResults } : { where: fill(labels.outsideStartUp, { k: String(from) }), holds: labels.outsideStartUpFrom };
+  const out: string[] = [];
+  if (r.diodeForward !== undefined) {
+    const v = fmtValue(r.diodeForward, 'V');
+    const at = place(r.diodeFrom);
+    out.push(r.params.topology === 'forward' ? fill(labels.resetDiodeForward, { v, ...at }) : fill(labels.diodeForward, { v, vf: fmtValue(r.params.VF ?? 0, 'V'), ...at }));
+  }
+  if (r.switchBelowZero !== undefined) out.push(fill(labels.switchBelowZero, { v: fmtValue(r.switchBelowZero, 'V'), ...place(r.switchFrom) }));
+  return out.length ? out.join(' ') : null;
 }
 
 /** The anchor a slider takes when its field is committed: the typed value if it lies outside the slider's range. */
@@ -907,7 +924,11 @@ export default function Simulator({ labels, presets, symbols }: Props) {
             {error && <p className="pe-sim__error">{error}</p>}
             {((busy && !result && !error) || slow) && <p>{labels.running}</p>}
             {result && result.status !== 'steady' && <p className="pe-sim__nosteady">{noSteadyText(result, labels)}</p>}
-            {outsideModelText(result, labels) && <p className="pe-sim__nosteady">{outsideModelText(result, labels)}</p>}
+            {outsideModelText(result, labels) && (
+              <p className="pe-sim__nosteady">
+                <Rich text={outsideModelText(result, labels)!} />
+              </p>
+            )}
             {result && result.status === 'steady' && (
               <p>
                 {labels.mode}: <strong className={`pe-sim__mode pe-sim__mode--${result.mode}`}>{result.mode}</strong>

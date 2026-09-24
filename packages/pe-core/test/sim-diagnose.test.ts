@@ -15,9 +15,10 @@ const rel = (a: number, b: number) => Math.abs(a - b) / Math.abs(b);
 
 /**
  * Cycles from rest until the output capacitor has stopped changing for good:
- * its change over a cycle exactly zero for `quiet` cycles in a row (the other
- * states may still settle for a while, and the capacitor take a little more
- * charge). Its last change, and the voltage it stops at.
+ * its change over a cycle zero to rounding (a few units in the last place)
+ * for `quiet` cycles in a row (the other states may still settle for a while,
+ * and the capacitor take a little more charge). Its last change, and the
+ * voltage it stops at.
  */
 function startUpUntilStopped(p: SimParams, max: number, quiet = 200): { v: number; lastStep: number } {
   const model = buildModel(p);
@@ -29,7 +30,7 @@ function startUpUntilStopped(p: SimParams, max: number, quiet = 200): { v: numbe
   for (let k = 0; k < max; k++) {
     const r = runCycle(model, x, { stepsPerPeriod: steps });
     x = r.x;
-    if (r.dx[iv] === 0) {
+    if (Math.abs(r.dx[iv]!) <= 4 * Number.EPSILON * Math.abs(x[iv]!)) {
       if (++still >= quiet) return { v: x[iv]!, lastStep };
     } else {
       still = 0;
@@ -223,9 +224,24 @@ describe('a capacitor alone', () => {
     const r = simulate(p);
     expect(r.status).toBe('steady');
     const su = startUpUntilStopped(p, 5000);
-    // no charge reaches the capacitor there; the start-up is followed until it stops, so the voltage is its own
-    expect(r.max.i_D).toBe(0);
+    // no charge that counts reaches the capacitor there (at most the ringing's peak touches the diode's turn-on
+    // voltage); the start-up is followed until it stops, so the voltage is its own
+    expect(r.max.i_D!).toBeLessThan(1e-6 * r.max.i_L!);
     expect(rel(r.avg.v_out!, su.v)).toBeLessThan(1e-12);
+  });
+
+  it("a rise that passes the diode's turn-on voltage just before its current ends at the peak turns the diode on", () => {
+    // the rise ends when the current reaches zero, at the node's peak, within a sub-step whose end has the node back
+    // below the turn-on voltage: the engine checks the other conditions again at that event (before, the rise
+    // went on to ring 6 mV past the diode's drop, and the capacitor stopped 6 mV low)
+    const p: SimParams = { topology: 'boost', Vg: 24, D: 0.4, fs, L: 1e-4, Ron: 0.1, VF: 0.5, Cnode: 1e-10, load: { kind: 'network', C: 1e-5, V0: 0 } };
+    const r = simulate(p);
+    expect(r.status).toBe('steady');
+    const model = buildModel(p);
+    const run = runCycle(model, r.x0, { stepsPerPeriod: stepsFor(p) });
+    expect(run.events.map((e) => `${e.from}>${e.to}`)).toContain('rise>off');
+    expect(Math.max(...(r.waveforms.v_D as number[]))).toBeLessThanOrEqual(0.5 + 1e-9 * r.max.v_out!);
+    expect(r.diodeForward).toBeUndefined();
   });
 
   it('a capacitor that stops while the current still rings, flipping sign from cycle to cycle, is steady there: the search takes no step on it', () => {
@@ -235,7 +251,7 @@ describe('a capacitor alone', () => {
       const p: SimParams = { topology: 'boost', Vg: 12, D: 0.6, fs, L: 1e-4, Ron: 0.05, Cnode: 1e-9, load: { kind: 'network', C, V0: 0 } };
       const r = simulate(p);
       expect(r.status, `C ${C}`).toBe('steady');
-      expect(r.max.i_D, `C ${C}`).toBe(0);
+      expect(r.max.i_D!, `C ${C}`).toBeLessThan(1e-6 * r.max.i_L!);
       expect(rel(r.avg.v_out!, startUpUntilStopped(p, 5000).v), `C ${C}`).toBeLessThan(1e-12);
       // the start-up followed, the search, and its checks, all counted
       const model = buildModel(p);
@@ -403,66 +419,134 @@ describe("a negative current through the switch's body diode", () => {
     // about 24 - 12 V across 100 uH (the output moves a little), with 0.3 A to make up: 2.5 us after turn-on
     expect(rel(run.events[0]!.t, (0.3 * 1e-4) / 12)).toBeLessThan(2e-3);
   });
+
+  it('a body-diode interval entered with the current at exactly zero ends as the current turns positive, at any sub-step', () => {
+    // the fourth review's buck on a source: its diode's current ends at 38.058 us, the output above the bus, and the
+    // body diode takes over at zero current. Within one sub-step of 50 per period the current went negative and
+    // back above zero, the guard never saw it positive, and 0.148 A flowed forward through the body diode
+    // (5.349 V after one cycle instead of 1.482 V)
+    const q: SimParams = { topology: 'buck', Vg: 5.39, D: 0.761, fs: 2e4, L: 6.36e-6, Ron: 2.06e-3, source: { Voc: 5.39, Rs: 0.0986, Cbus: 1.56e-5 }, load: { kind: 'resistive', R: 68.8, C: 1.3e-7 } };
+    const model = buildModel(q);
+    const iv = model.stateNames.indexOf('v');
+    const ends = [50, 100, 2000, 20000].map((steps) => {
+      const run = runCycle(model, restState(q, model), { stepsPerPeriod: steps, record: true });
+      expect(run.events.map((e) => `${e.from}>${e.to}`).slice(-2), `${steps}`).toEqual(['off>rev', 'rev>idle']);
+      // no current through the body diode but a negative one: at most the second guard's rounding-level threshold
+      for (const x of run.samples) if (x.interval === 'rev') expect(x.x[0]!, `${steps}`).toBeLessThanOrEqual(2e-12 * model.scales![0]!);
+      return run.x[iv]!;
+    });
+    for (const v of ends) expect(rel(v, ends.at(-1)!)).toBeLessThan(1e-9);
+    expect(ends.at(-1)!).toBeCloseTo(1.4815, 4);
+  });
 });
 
-describe('outside the model: the input bus or the switch voltage below zero', () => {
-  it('a forward converter beyond its reset limit, its bus collapsed below zero by a weak source, is flagged', () => {
-    // the magnetizing current held only by R_s: the bus swings below zero, and with it the switch
-    // voltage during the reset, where a real switch's body diode would conduct
+describe('outside the model: a diode the model holds off would conduct', () => {
+  const maxOf = (w: Record<string, unknown>, k: string) => Math.max(...(w[k] as number[]));
+  const minOf = (w: Record<string, unknown>, k: string) => Math.min(...(w[k] as number[]));
+
+  it('a forward converter beyond its reset limit, its bus collapsed below zero by a weak source: the reset diode and the switch', () => {
+    // the magnetizing current held only by R_s: the bus swings below zero, where the reset diode would
+    // conduct, and with it the switch voltage during the reset, where a real switch's body diode would
     const r = simulate({ topology: 'forward', Vg: 48, D: 0.7, fs, L: 1e-4, n: 0.5, nr: 1, LM: 1e-3, Ron: 0.01, source: { Voc: 48, Rs: 10, Cbus: 1e-6 }, load: { kind: 'resistive', R: 10, C: 1e-5 } });
-    expect(r.busBelowZero).toBe(r.min.v_in);
-    expect(r.busBelowZero!).toBeLessThan(0);
+    expect(r.status).toBe('steady');
+    expect(r.min.v_in!).toBeLessThan(0);
+    // a steady period: no start-up cycle to name
+    expect([r.switchFrom, r.diodeFrom]).toEqual([undefined, undefined]);
+    expect(r.diodeForward).toBe(maxOf(r.waveforms, 'v_Dr'));
+    expect(r.diodeForward!).toBeGreaterThan(10);
     expect(r.switchBelowZero).toBe(r.min.v_sw);
     expect(r.switchBelowZero!).toBeLessThan(-10);
   });
 
-  it('a weak source lets the bus of a buck, a buck-boost or a flyback fall below zero: flagged, the buck with its switch voltage still above zero', () => {
-    // ngspice, with the diodes the models leave out: the buck's bus -0.48 V and output 0.263 V (the model: -8.26 V, 0.203 V);
-    // the buck-boost's bus -3.07 V and output 3.19 V (the model: -5.05 V, 2.81 V)
+  it("a weak source that drives the diode of a buck, a buck-boost or a flyback beyond its drop is flagged", () => {
+    // ngspice, with the diodes the models leave out: the buck's bus -0.48 V and output 0.263 V (the model: -8.26 V,
+    // 0.203 V); the buck-boost's bus -3.07 V and output 3.19 V (the model: -5.05 V, 2.81 V). In the model the buck's
+    // freewheeling diode sees 8.3 V forward while the switch is on
     const buck = simulate({ topology: 'buck', Vg: 24, D: 0.5, fs, L: 1e-5, Ron: 0.05, VF: 0.5, source: { Voc: 24, Rs: 50, Cbus: 1e-8 }, load: { kind: 'resistive', R: 0.5, C: 1e-5 } });
-    expect(buck.busBelowZero!).toBeLessThan(-8);
+    expect(buck.diodeForward).toBe(maxOf(buck.waveforms, 'v_D'));
+    expect(buck.diodeForward!).toBeGreaterThan(8);
     expect(buck.switchBelowZero).toBeUndefined();
     for (const topology of ['buckboost', 'flyback'] as const) {
       const r = simulate({ topology, Vg: 24, D: 0.6, fs, L: 1e-4, n: 1, Ron: 0.05, source: { Voc: 24, Rs: 20, Cbus: 1e-7 }, load: { kind: 'resistive', R: 5, C: 1e-5 } } as SimParams);
-      expect(r.busBelowZero!, topology).toBeLessThan(-5);
+      expect(r.diodeForward!, topology).toBeGreaterThan(2);
       expect(r.switchBelowZero!, topology).toBeLessThan(-2);
     }
   });
 
-  it('without a steady state the search\'s last cycle is looked at too, not only the start-up\'s', () => {
-    // a forward converter beyond its reset limit, the search cut short: the start-up's bus is still well above
-    // zero, the search's last cycle has it below
+  it("a boost into a fixed output below its input: 400 A through R_on lift the switch node above the output, and the diode would conduct while the switch is on", () => {
+    const r = simulate({ topology: 'boost', Vg: 24, D: 0.4, fs, L: 1e-4, Ron: 0.1, VF: 0.5, load: { kind: 'fixed', V: 12 } });
+    expect(r.status).toBe('steady');
+    expect(r.max.i_L!).toBeGreaterThan(400);
+    expect(r.diodeForward).toBe(maxOf(r.waveforms, 'v_D'));
+    // R_on i - V: 0.1 ohm times about 413 A, less the 12 V output
+    expect(r.diodeForward!).toBeGreaterThan(29);
+  });
+
+  it('a bus below zero that turns no diode on is not flagged: the model holds, as ngspice with the diodes confirms', () => {
+    // the fourth review's circuits, each within the SPICE comparison's tolerance of ngspice with every diode in place:
+    // a buck-boost whose bus reaches -0.81 V (or -1.67 V with 300 nF), a boost whose bus reaches -0.11 V
+    const cases: SimParams[] = [
+      { topology: 'buckboost', Vg: 12, D: 0.5, fs, L: 2e-5, Ron: 0.05, source: { Voc: 12, Rs: 10, Cbus: 1e-7 }, load: { kind: 'resistive', R: 5, C: 1e-5 } },
+      { topology: 'buckboost', Vg: 12, D: 0.5, fs, L: 2e-5, Ron: 0.05, source: { Voc: 12, Rs: 10, Cbus: 3e-7 }, load: { kind: 'resistive', R: 5, C: 1e-5 } },
+      { topology: 'boost', Vg: 7, D: 0.188, fs: 2e4, L: 2.84e-5, Ron: 4.61e-3, VF: 0.13, source: { Voc: 7, Rs: 28.1, Cbus: 1.22e-6 }, load: { kind: 'resistive', R: 2.11, C: 6.37e-7 } },
+    ];
+    for (const p of cases) {
+      const r = simulate(p);
+      expect(r.status).toBe('steady');
+      expect(r.min.v_in!, p.topology).toBeLessThan(-0.1);
+      expect([r.diodeForward, r.switchBelowZero], p.topology).toEqual([undefined, undefined]);
+    }
+  });
+
+  it('without a steady state the whole start-up the page draws is looked at, and only it', () => {
+    // a boost charging a capacitor alone from a weak source: in the start-up's second cycle the bus falls to -2.3 V
+    // and the idle switch voltage with it, where the switch's body diode would conduct
+    const boost = simulate({ topology: 'boost', Vg: 5.11, D: 0.234, fs, L: 1.71e-5, source: { Voc: 5.11, Rs: 13.1, Cbus: 7.21e-7 }, load: { kind: 'network', C: 8.53e-6, V0: 0 } });
+    expect(boost.status).toBe('charging');
+    expect(boost.switchBelowZero).toBe(minOf(boost.startUp!.waveforms, 'v_sw'));
+    expect(boost.switchBelowZero!).toBeLessThan(-0.5);
+    // the first cycle that leaves the model: the start-up does not hold from there on
+    const w = boost.startUp!.waveforms;
+    const k = (w.v_sw as number[]).findIndex((v) => v < -1e-6);
+    expect(boost.switchFrom).toBe(Math.floor((w.t as number[])[k]! * fs + 1e-9) + 1);
+    expect(boost.switchFrom).toBe(2);
+    // a forward converter beyond its reset limit, the search cut short: its search's last cycle leaves the model,
+    // but the start-up the page draws does not, and the page says what it draws
     const p = { topology: 'forward', Vg: 89.2, D: 0.51, fs, L: 3.83e-4, RL: 0.0663, VF: 0.18, n: 0.162, nr: 2, LM: 3.55e-4, source: { Voc: 89.2, Rs: 2.67, Cbus: 2.18e-6 }, load: { kind: 'network', C: 4.88e-8, V0: 0 } } as SimParams;
     const r = simulate(p, { maxCycles: 10 });
     expect(r.status).toBe('unsettled');
-    expect(Math.min(...(r.startUp!.waveforms.v_in as number[]))).toBeGreaterThan(0);
-    expect(r.busBelowZero!).toBeLessThan(-30);
-    expect(r.switchBelowZero!).toBeLessThan(-30);
+    expect(minOf(r.startUp!.waveforms, 'v_in')).toBeGreaterThan(0);
+    expect([r.diodeForward, r.switchBelowZero]).toEqual([undefined, undefined]);
     // and a start-up that has stopped gives no change per cycle for a search that did not settle
     expect(r.drift).toBeUndefined();
   });
 
-  it('an ordinary circuit is not flagged: every converter, load, source and node capacitance keeps its bus and switch voltage at or above zero', () => {
+  it('an ordinary circuit is not flagged: every converter, load, source and node capacitance, a capacitor alone too', () => {
     const loads: SimParams['load'][] = [
       { kind: 'resistive', R: 10, C: 1e-4 },
       { kind: 'network', C: 1e-4, battery: { V: 8, R: 0.5 } },
       { kind: 'network', C: 1e-4, R: 20, battery: { V: 8, R: 0.5 } },
-      { kind: 'fixed', V: 12 },
+      { kind: 'network', C: 1e-5, V0: 0 },
     ];
+    // a fixed output above each converter's balancing voltage at D = 0.4 (it settles in DCM) and within its reach
+    const fixedV = { buck: 12, boost: 48, buckboost: 20, flyback: 12, forward: 8 } as const;
     const flagged: string[] = [];
     for (const topology of ['buck', 'boost', 'buckboost', 'flyback', 'forward'] as const) {
-      for (const load of loads) {
-        const p = { topology, Vg: 24, D: 0.4, fs, L: 1e-4, n: 0.5, nr: 1, LM: 1e-3, Ron: 0.1, load } as SimParams;
+      for (const load of [...loads, { kind: 'fixed' as const, V: fixedV[topology] }]) {
+        const p = { topology, Vg: 24, D: 0.4, fs, L: 1e-4, n: 0.5, nr: 1, LM: 1e-3, Ron: 0.1, VF: 0.5, load } as SimParams;
         const variants: SimParams[] = [p, { ...p, source: { Voc: 30, Rs: 1, Cbus: 1e-4 } }];
         if (topology !== 'forward') variants.push({ ...p, Cnode: 1e-10 });
         for (const q of variants) {
           const r = simulate(q);
           const what = `${topology} ${load.kind}${q.source ? ' source' : ''}${q.Cnode ? ' C_node' : ''}`;
           if (r.switchBelowZero !== undefined) flagged.push(`${what}: switch ${r.switchBelowZero}`);
-          if (r.busBelowZero !== undefined) flagged.push(`${what}: bus ${r.busBelowZero}`);
+          if (r.diodeForward !== undefined) flagged.push(`${what}: diode ${r.diodeForward}`);
         }
       }
     }
+    // the fourth review's buck charging a capacitor alone from a source: its switch voltage rests at -1.7e-17 V
+    const b2 = simulate({ topology: 'buck', Vg: 26.3, D: 0.647, fs, L: 1.11e-5, Ron: 0.0102, source: { Voc: 26.3, Rs: 0.986, Cbus: 1.17e-6 }, load: { kind: 'network', C: 1.63e-5, V0: 0 } });
+    if (b2.switchBelowZero !== undefined || b2.diodeForward !== undefined) flagged.push(`buck, capacitor alone, source: ${b2.switchBelowZero} ${b2.diodeForward}`);
     expect(flagged).toEqual([]);
   });
 });

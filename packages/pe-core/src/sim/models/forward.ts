@@ -126,6 +126,11 @@ export function forward(p: SimParams): Model {
       const iv = i && m ? 'off' : i ? 'offM0' : m ? 'offL0' : 'idle';
       return { interval: iv, set: [...(i ? [] : zeroI), ...(m ? [] : zeroM)] };
     },
-    outputs: (x, iv) => ({ ...outputs(x, iv), i_M: x[c.idx('iM')]! }),
+    outputs: (x, iv) => {
+      const o = outputs(x, iv);
+      // the reset diode's voltage, anode to cathode: the reset winding (its dot at ground) holds -n_r times the
+      // primary's voltage, v_in - v_sw, at its anode; its cathode is at the input
+      return { ...o, i_M: x[c.idx('iM')]!, v_Dr: -nr * (o.v_in! - o.v_sw!) - o.v_in! };
+    },
   };
 }

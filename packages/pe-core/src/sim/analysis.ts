@@ -16,7 +16,7 @@ import { evaluate } from '../equations';
 import { invert } from '../invert';
 import { runCycle, steadyState, type CycleRun, type Model, type SteadyOptions, type SteadyResult } from './engine';
 import type { Vec } from './linalg';
-import { buildModel, type SimParams } from './models';
+import { buildModel, givenVoltage, type SimParams } from './models';
 
 export type Mode = 'CCM' | 'DCM' | 'BCM';
 
@@ -90,16 +90,22 @@ export interface SimResult {
   /** Energy per cycle (J). */
   energy: { input: number; output: number };
   /**
-   * Outside the model: the input bus's minimum when a source lets it fall
-   * below zero within the cycle (a source too weak for the load), and the
-   * switch voltage's minimum when it falls below zero. A real circuit's
-   * diodes (the switch's body diode, the freewheeling diode or rectifier)
-   * would conduct there, which the models leave out, so the results do not
-   * hold then. Without a steady state, the start-up's last cycle and the
-   * search's last cycle are both looked at.
+   * Outside the model, in the waveforms the page draws (the steady period,
+   * or the whole start-up without a steady state): the switch voltage's
+   * minimum when it falls below zero, where the switch's body diode would
+   * conduct; and the largest voltage across a diode the model holds off
+   * (the diode of the two-switch converters, the forward converter's reset
+   * diode D_3) when it exceeds the diode's drop, where that diode would
+   * conduct. A real circuit's diode would conduct there, which the models
+   * leave out, so the results do not hold then. A source too weak for the
+   * load can bring either about (its bus sagging below zero), but a bus
+   * below zero alone turns on no diode.
    */
-  busBelowZero?: number;
   switchBelowZero?: number;
+  diodeForward?: number;
+  /** In a start-up, the first cycle (from 1) in which each of them happens: the start-up does not hold from there on. */
+  switchFrom?: number;
+  diodeFrom?: number;
 }
 
 const SERIES = ['i_L', 'v_L', 'v_sw', 'i_sw', 'i_D', 'i_out', 'i_in', 'v_in', 'v_out', 'i_R', 'i_bat', 'i_C'] as const;
@@ -288,7 +294,7 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
   const iout = wf.i_out as number[];
   const pin = t.map((_, k) => vin[k]! * iin[k]!);
   const pout = t.map((_, k) => vout[k]! * iout[k]!);
-  const below = belowZero(p, min, max);
+  const outside = outsideModel(p, model, wf);
   return {
     params: p,
     stateNames: model.stateNames,
@@ -309,41 +315,58 @@ export function analyse(p: SimParams, model: Model, ss: ReturnType<typeof steady
     M: avg.v_out! / avg.v_in!,
     losses: { conduction, diode, capacitive, total: conduction + diode + capacitive },
     energy: { input: average(t, pin, Ts) * Ts, output: average(t, pout, Ts) * Ts },
-    ...below,
+    ...outside,
   };
 }
 
 /**
- * The bus (with a source) and the switch voltage when they fall below zero
- * beyond rounding, where a diode the models leave out would conduct.
+ * Where drawn waveforms leave the model: the switch voltage below zero (its
+ * body diode would conduct), and the voltage across the diode the model
+ * holds off above its drop (the two-switch converters' diode, with V_F; the
+ * forward converter's reset diode, ideal): a real circuit's diode would
+ * conduct there. Rounding is not: the switch voltage is measured against a
+ * billionth of the largest voltage involved (never less than the circuit's
+ * given voltage). A diode's excess over its drop counts from a
+ * ten-thousandth of it: what a diode forward-biased by less would take
+ * changes the results by about as little, below the four digits the page
+ * shows.
  */
-function belowZero(p: SimParams, min: Record<string, number>, max: Record<string, number>): { busBelowZero?: number; switchBelowZero?: number } {
-  const under = (k: string) => {
-    const scale = Math.max(Math.abs(max[k]!), Math.abs(min[k]!), Number.MIN_VALUE);
-    return min[k]! < -1e-9 * scale ? min[k]! : undefined;
+function outsideModel(p: SimParams, model: Model, w: Waveforms, startUp = false): Pick<SimResult, 'switchBelowZero' | 'diodeForward' | 'switchFrom' | 'diodeFrom'> {
+  const most = (k: string) => {
+    let m = 0;
+    for (const v of (w[k] as number[] | undefined) ?? []) m = Math.max(m, Math.abs(v));
+    return m;
   };
-  const bus = p.source ? under('v_in') : undefined;
-  const sw = under('v_sw');
-  return { ...(bus !== undefined ? { busBelowZero: bus } : {}), ...(sw !== undefined ? { switchBelowZero: sw } : {}) };
-}
-
-/** The lowest bus and switch voltages over the search's last cycle, merged into a result without a steady state. */
-function withSearchFlags(p: SimParams, model: Model, r: SimResult, x: Vec, steps: number): SimResult {
-  const run = runCycle(model, x, { stepsPerPeriod: steps, record: true });
-  const min: Record<string, number> = { v_in: Infinity, v_sw: Infinity };
-  const max: Record<string, number> = { v_in: -Infinity, v_sw: -Infinity };
-  for (const s of run.samples) {
-    const y = model.outputs(s.x, s.interval);
-    for (const k of ['v_in', 'v_sw']) {
-      min[k] = Math.min(min[k]!, y[k]!);
-      max[k] = Math.max(max[k]!, y[k]!);
-    }
+  const V = Math.max(givenVoltage(p), most('v_in'), most('v_out'), most('v_sw'));
+  const t = w.t as number[];
+  const cycle = (k: number) => Math.floor(t[k]! / model.Ts + 1e-9) + 1;
+  const out: Pick<SimResult, 'switchBelowZero' | 'diodeForward' | 'switchFrom' | 'diodeFrom'> = {};
+  const vsw = w.v_sw as number[];
+  let lo = Infinity;
+  let first = -1;
+  for (let k = 0; k < vsw.length; k++) {
+    if (vsw[k]! < -1e-9 * V && first < 0) first = k;
+    lo = Math.min(lo, vsw[k]!);
   }
-  const f = belowZero(p, min, max);
-  const lower = (a?: number, b?: number) => (a === undefined ? b : b === undefined ? a : Math.min(a, b));
-  const bus = lower(r.busBelowZero, f.busBelowZero);
-  const sw = lower(r.switchBelowZero, f.switchBelowZero);
-  return { ...r, ...(bus !== undefined ? { busBelowZero: bus } : {}), ...(sw !== undefined ? { switchBelowZero: sw } : {}) };
+  if (first >= 0) {
+    out.switchBelowZero = lo;
+    if (startUp) out.switchFrom = cycle(first);
+  }
+  const key = model.topology === 'forward' ? 'v_Dr' : 'v_D';
+  const drop = model.topology === 'forward' ? 0 : (p.VF ?? 0);
+  const vD = (w[key] as number[] | undefined) ?? [];
+  const limit = drop + 1e-4 * Math.max(V, most(key));
+  let hi = -Infinity;
+  first = -1;
+  for (let k = 0; k < vD.length; k++) {
+    if (vD[k]! > limit && first < 0) first = k;
+    hi = Math.max(hi, vD[k]!);
+  }
+  if (first >= 0) {
+    out.diodeForward = hi;
+    if (startUp) out.diodeFrom = cycle(first);
+  }
+  return out;
 }
 
 /** Most sub-steps per period, and the fewest sub-steps per ring of the node capacitance that still find its events. */
@@ -668,7 +691,7 @@ export function simulate(p: SimParams, opts: SteadyOptions = {}): SimResult {
     : steadyState(model, initialState(p, model), { stopOnDrift: true, ...opts, stepsPerPeriod: steps });
   if (ss.converged) return analyse(p, model, ss);
   const { status, drift } = diagnose(p, model, ss.x0, steps);
-  return withSearchFlags(p, model, withStartUp(p, model, status, drift), ss.x0, steps);
+  return withStartUp(p, model, status, drift);
 }
 
 /** The result without a steady state: the start-up from rest, and the analysis of its last cycle. */
@@ -687,7 +710,9 @@ function withStartUp(p: SimParams, model: Model, status: Status, drift?: Drift):
     const dv = su.end[iv]! - su.lastStart[iv]!;
     d = status === 'charging' || Math.abs(dv) > 64 * Number.EPSILON * Math.max(Math.abs(su.end[iv]!), model.scales?.[iv] ?? 0) ? { state: 'v', perCycle: dv } : undefined;
   }
-  return { ...r, status, drift: d, startUp: su };
+  // what the page draws is the start-up: whether it leaves the model is read from all of it
+  const { switchBelowZero: _s, diodeForward: _d, ...rest } = r;
+  return { ...rest, ...outsideModel(p, model, su.waveforms, true), status, drift: d, startUp: su };
 }
 
 export { SERIES };

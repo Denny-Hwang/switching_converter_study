@@ -207,20 +207,43 @@ describe('what the simulator says without a steady state', () => {
     expect(noSteadyText(sim.simulate(p), labels)).toBeNull();
   });
 
-  it('outside the model: the input bus below zero is named first, else the switch voltage', () => {
-    const out = { ...labels, busBelowZero: t['sim.busBelowZero'], switchBelowZero: t['sim.switchBelowZero'] } as SimLabels;
-    // a buck on a weak source: the bus falls below zero, the switch voltage does not
+  it('outside the model: the diode the model holds off, then the switch voltage, each with its own number', () => {
+    const out = {
+      ...labels,
+      switchBelowZero: t['sim.switchBelowZero'],
+      diodeForward: t['sim.diodeForward'],
+      resetDiodeForward: t['sim.resetDiodeForward'],
+      outsidePeriod: t['sim.outside.period'],
+      outsideStartUp: t['sim.outside.startUp'],
+      outsideResults: t['sim.outside.results'],
+      outsideStartUpFrom: t['sim.outside.startUpFrom'],
+    } as SimLabels;
+    // a buck on a weak source: its freewheeling diode would conduct while the switch is on; the switch voltage stays up
     const buck = sim.simulate({ topology: 'buck', Vg: 24, D: 0.5, fs, L: 1e-5, Ron: 0.05, VF: 0.5, source: { Voc: 24, Rs: 50, Cbus: 1e-8 }, load: { kind: 'resistive', R: 0.5, C: 1e-5 } });
-    expect(outsideModelText(buck, out)).toContain('The input bus falls below 0 V within the period (to −8.256 V)');
-    // a buck-boost on a weak source: both, and the bus is named
+    expect(buck.diodeForward!).toBeGreaterThan(8.28);
+    expect(buck.diodeForward!).toBeLessThan(8.29);
+    expect(outsideModelText(buck, out)).toBe(
+      t['sim.diodeForward']!.replace('{v}', '8.288 V').replace('{vf}', '500 mV').replace('{where}', 'within the period').replace('{holds}', 'so these results do not hold'),
+    );
+    // a buck-boost on a weak source: both, the diode first
     const bb = sim.simulate({ topology: 'buckboost', Vg: 24, D: 0.6, fs, L: 1e-4, Ron: 0.05, source: { Voc: 24, Rs: 20, Cbus: 1e-7 }, load: { kind: 'resistive', R: 5, C: 1e-5 } });
-    expect(bb.switchBelowZero).toBeLessThan(0);
-    expect(outsideModelText(bb, out)).toContain('The input bus falls below 0 V');
+    const both = outsideModelText(bb, out)!;
+    expect(both.indexOf('The voltage across the diode D')).toBe(0);
+    expect(both).toContain('The switch voltage falls below 0 V within the period');
     // the switch voltage alone
-    expect(outsideModelText({ ...bb, busBelowZero: undefined }, out)).toContain('The switch voltage falls below 0 V within the period');
+    expect(outsideModelText({ ...bb, diodeForward: undefined }, out)).toContain('The switch voltage falls below 0 V within the period');
+    // a start-up: from the first cycle that leaves the model (a boost charging a capacitor alone from a weak source)
+    const boost = sim.simulate({ topology: 'boost', Vg: 5.11, D: 0.234, fs, L: 1.71e-5, source: { Voc: 5.11, Rs: 13.1, Cbus: 7.21e-7 }, load: { kind: 'network', C: 8.53e-6, V0: 0 } });
+    expect(boost.switchFrom).toBeGreaterThanOrEqual(1);
+    expect(outsideModelText(boost, out)).toContain(`The switch voltage falls below 0 V in the start-up, first in cycle ${boost.switchFrom} (to `);
+    expect(outsideModelText(boost, out)).toContain('so the start-up does not hold from that cycle on.');
+    // the forward converter names its reset diode
+    const fwd = sim.simulate({ topology: 'forward', Vg: 48, D: 0.7, fs, L: 1e-4, n: 0.5, nr: 1, LM: 1e-3, Ron: 0.01, source: { Voc: 48, Rs: 10, Cbus: 1e-6 }, load: { kind: 'resistive', R: 10, C: 1e-5 } });
+    expect(outsideModelText(fwd, out)).toContain('The voltage across the reset diode D_3 rises to');
     // an ordinary circuit: nothing
     expect(outsideModelText(sim.simulate({ topology: 'buck', Vg: 24, D: 0.3, fs, L: 2e-5, load: { kind: 'resistive', R: 50, C: 22e-6 } }), out)).toBeNull();
   });
+
 });
 
 describe('the load table', () => {

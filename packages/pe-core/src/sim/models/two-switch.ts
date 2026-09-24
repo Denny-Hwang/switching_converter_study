@@ -5,6 +5,7 @@ import {
   assign,
   common,
   evalLin,
+  givenVoltage,
   lin,
   loadAndBus,
   makeInterval,
@@ -53,6 +54,17 @@ export function twoSwitch(p: SimParams): Model {
     next,
     ...more,
   });
+  const scales = stateScales(c, p, { i: L });
+  /**
+   * The guard of `until`, and a second one for an interval entered with e at
+   * exactly zero: the first never sees e positive, so the second ends the
+   * interval as e passes a rounding-level fraction `size` (e's natural size)
+   * below zero.
+   */
+  const untilFromZero = (e: Lin, size: number, next: string, more: Partial<Guard> = {}): Guard[] => [
+    until(e, next, more),
+    until(add(e, lin([1e-12 * size, '1'])), next, more),
+  ];
 
   // Topology-specific pieces: voltage across L while the diode conducts, the
   // current delivered to the output node, the input current, the ringing
@@ -145,7 +157,7 @@ export function twoSwitch(p: SimParams): Model {
   ];
   const specs: Record<string, IntervalSpec> = {
     // a current reaching zero from above while the switch is on moves to the body diode
-    on: { gate: true, vL: onVL, iOut: onOut, iIn: iL, vSw: lin([Ron, 'i']), iSw: iL, iD: zero, guards: [until(iL, 'onRev', { reset: assign(c, { i: 0 }) })] },
+    on: { gate: true, vL: onVL, iOut: onOut, iIn: iL, vSw: lin([Ron, 'i']), iSw: iL, iD: zero, guards: untilFromZero(iL, scales[0]!, 'onRev', { reset: assign(c, { i: 0 }) }) },
     off: {
       gate: false,
       vL: offVL,
@@ -172,7 +184,7 @@ export function twoSwitch(p: SimParams): Model {
     iSw: zero,
     iD: zero,
     qc: zero,
-    guards: [until(mul(iL, -1), next, { reset: assign(c, { i: 0 }) })],
+    guards: untilFromZero(mul(iL, -1), scales[0]!, next, { reset: assign(c, { i: 0 }) }),
   });
   // The switch is on and its current negative: the body diode across it conducts at zero voltage,
   // so the switch's resistance carries nothing; once the current reaches zero the switch takes it.
@@ -191,13 +203,12 @@ export function twoSwitch(p: SimParams): Model {
       // the output): the diode conducts again.
       const g = add(vout, lin([VF, '1']), mul(vin, -1));
       const forward = (x: Vec) => evalLin(g, c.names, x) <= 0;
-      guards.push(until(g, 'off'));
+      guards.push(...untilFromZero(g, givenVoltage(p), 'off'));
       // A reverse current that ends while the diode is forward-biased hands over to it directly.
-      const toIdle = specs.rev.guards[0]!;
-      specs.rev.guards = [
+      specs.rev.guards = specs.rev.guards.flatMap((toIdle) => [
         { ...toIdle, next: 'off', when: forward },
-        { ...toIdle, when: (x) => !forward(x) },
-      ];
+        { ...toIdle, when: (x: Vec) => !forward(x) },
+      ]);
     }
     specs.idle = { gate: false, vL: zero, iOut: zero, iIn: alwaysIn ? iL : zero, vSw: idleVsw, iSw: zero, iD: zero, guards };
   } else {
@@ -230,11 +241,12 @@ export function twoSwitch(p: SimParams): Model {
 
   const intervals: Record<string, Interval> = {};
   for (const [name, s] of Object.entries(specs)) intervals[name] = makeInterval(c, L, name, s);
+  const outputs = outputsFrom(c, L, specs);
   const jc = c.idx('vc');
   return {
     topology: p.topology,
     stateNames: c.names,
-    scales: stateScales(c, p, { i: L }),
+    scales,
     Ts: c.Ts,
     D: p.D,
     intervals,
@@ -261,6 +273,11 @@ export function twoSwitch(p: SimParams): Model {
       if (i < 0 || bodyDiodeAtZero(x)) return { interval: 'rev' };
       return { interval: toIdle };
     },
-    outputs: outputsFrom(c, L, specs),
+    outputs: (x: Vec, iv: string) => {
+      const o = outputs(x, iv);
+      // the diode's voltage, anode to cathode: while it conducts the switch voltage is
+      // a_in v_in + a_out v_out + kD V_F, so its own share is what the switch voltage leaves, over kD
+      return { ...o, v_D: (o.v_sw! - aIn * o.v_in! - aOut * o.v_out!) / kD };
+    },
   };
 }
