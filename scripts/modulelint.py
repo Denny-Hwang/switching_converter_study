@@ -20,9 +20,12 @@ A page is a module page when its frontmatter has `module: true`. For each:
     page's locale with >= 5 questions, 2-6 options each, answers in range and
     `numbers: synthetic`;
   * the Korean page mirrors the English one: the same block components
-    (Eq, Worked, TryIt, TrySim, GoDeeper, Quiz) with the same attributes in the same
-    order, the same inline components (Cite, EqRef, Val) in any order (Korean
-    word order differs), and a quiz with the same answer key;
+    (Eq, Worked, TryIt, TrySim, GoDeeper, Quiz, Figure, CoreKg, MagWorked,
+    TryMag) with the same attributes in the same order, the same inline
+    components (Cite, EqRef, Val) in any order (Korean word order differs),
+    and a quiz with the same answer key; a component that is neither (a new
+    one) is an error until it is added to one of the two lists, so that no
+    content escapes the comparison;
   * docs/STATUS.md agrees: every existing module page is marked done (✅) in
     its language and in every definition-of-done column, and an English page
     without a Korean page is marked KO "pending".
@@ -58,7 +61,7 @@ SECTIONS = {
     "en": ["Intent", "Theory", "Worked example", "Try it", "Bench exercise", "Gotchas", "Go deeper", "Quiz"],
     "ko": ["목표", "이론", "풀이 예제", "직접 해 보기", "벤치 실습", "주의할 점", "더 알아보기", "퀴즈"],
 }
-BLOCK = ("Eq", "Worked", "TryIt", "TrySim", "GoDeeper", "Quiz")
+BLOCK = ("Eq", "Worked", "TryIt", "TrySim", "GoDeeper", "Quiz", "Figure", "CoreKg", "MagWorked", "TryMag")
 SIM_TOPOLOGIES = ("buck", "boost", "buckboost", "flyback", "forward")
 TOOLS = ("Explorer", "Simulator", "ConverterDesigner", "MagneticsDesigner", "LossBudget", "ClampCheck", "SourceMatcher", "SenseChain")
 TOOL_TAG = re.compile(r"<(" + "|".join(TOOLS) + r")\b")
@@ -104,6 +107,11 @@ def sections(body: str) -> list[tuple[str, str]]:
 def quoted_list(value: str) -> list[str]:
     """"{['a', "b"]}" -> ['a', 'b']"""
     return [a or b for a, b in re.findall(r"'([^']+)'|\"([^\"]+)\"", value)]
+
+
+def unknown_components(text: str) -> list[str]:
+    """Components on a module page that the EN/KO comparison does not know (neither BLOCK nor INLINE)."""
+    return sorted(set(re.findall(r"<([A-Z]\w*)\b", text)) - set(BLOCK + INLINE))
 
 
 def signature(comps: list[tuple[str, dict[str, str]]], kinds: tuple[str, ...]) -> list[tuple[str, dict[str, str]]]:
@@ -249,6 +257,11 @@ def main() -> int:
             errors += check_quiz(load_quiz(locale, slug), f"src/content/quizzes/{locale}/{slug}.yaml")
 
         pages[(locale, slug)] = components(body)
+        for tag in unknown_components(body):
+            errors.append(
+                f"{where}: <{tag}> is neither a block nor an inline component of modulelint; add it to BLOCK "
+                "(compared in order) or INLINE (compared as a set) so the Korean page's mirror check covers it"
+            )
 
         section, module = slug.split("/", 1) if "/" in slug else ("", slug)
         row = status.get((section, module))
@@ -275,7 +288,7 @@ def main() -> int:
                 errors.append(f"src/content/docs/en/{slug}.mdx: no Korean page, and docs/STATUS.md does not mark KO pending")
             continue
         if signature(comps, BLOCK) != signature(ko, BLOCK):
-            errors.append(f"src/content/docs/ko/{slug}.mdx: block components differ from the English page (Eq, Worked, TryIt, TrySim, GoDeeper, Quiz)")
+            errors.append(f"src/content/docs/ko/{slug}.mdx: block components differ from the English page ({', '.join(BLOCK)})")
         en_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(comps, INLINE))
         ko_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(ko, INLINE))
         if en_inline != ko_inline:
