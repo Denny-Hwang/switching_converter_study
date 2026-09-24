@@ -23,8 +23,8 @@
 An open, bilingual learning repository on power electronics for electrical
 engineers, and a web app that puts **learning**, **design** and
 **simulation** in one place. It covers switching-converter theory
-(CCM/DCM), the basic topologies, magnetics and losses. Energy-harvesting
-interfaces, bench practice and the SPICE library follow (see the roadmap).
+(CCM/DCM), the basic topologies, magnetics and losses, energy-harvesting
+interfaces and bench practice. The SPICE library follows (see the roadmap).
 
 <table>
 <tr>
@@ -158,8 +158,8 @@ the citation rules. Documentation: CC BY-SA 4.0 (`LICENSE-DOCS`). Code: MIT
 
 전기공학 엔지니어를 위한 전력전자 공개 학습 저장소(영어 원본, 한국어 미러)이자
 **학습**, **설계**, **시뮬레이션**을 한곳에 모은 웹 앱입니다. 스위칭 컨버터
-이론(CCM/DCM), 기본 토폴로지, 자성 부품, 손실을 다룹니다. 에너지 하베스팅
-인터페이스, 벤치 실습, SPICE 라이브러리는 이어서 추가됩니다(로드맵 참고).
+이론(CCM/DCM), 기본 토폴로지, 자성 부품, 손실, 에너지 하베스팅 인터페이스, 벤치
+실습을 다룹니다. SPICE 라이브러리는 이어서 추가됩니다(로드맵 참고).
 
 <table>
 <tr>
