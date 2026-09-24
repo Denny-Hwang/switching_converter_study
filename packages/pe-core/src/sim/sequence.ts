@@ -571,6 +571,34 @@ function signChangesOf(i: number[], eps: number): number {
   return n;
 }
 
+/**
+ * Where a current first changes sign, from its samples i at the times t: after
+ * a sample beyond the counting floor eps with one sign, and before one with
+ * the other. Samples within the floor count as no current, but the zero lies
+ * between the two adjacent samples, among those in between, whose own values
+ * bracket it: the last one still on the old side and the next one, which is
+ * zero or on the other side. The time is where the straight line between them
+ * crosses zero. A dip into the floor and back to the same side is no change.
+ */
+export function firstSignChange(t: readonly number[], i: readonly number[], eps: number): number | undefined {
+  let lastSign = 0;
+  let lastJ = -1;
+  for (let j = 0; j < i.length; j++) {
+    if (Math.abs(i[j]!) <= eps) continue;
+    const sg = Math.sign(i[j]!);
+    if (lastSign !== 0 && sg !== lastSign) {
+      let k = lastJ;
+      while (k + 1 < j && Math.sign(i[k + 1]!) === lastSign) k++;
+      const a = Math.abs(i[k]!);
+      const b = Math.abs(i[k + 1]!);
+      return t[k]! + ((t[k + 1]! - t[k]!) * a) / (a + b);
+    }
+    lastSign = sg;
+    lastJ = j;
+  }
+  return undefined;
+}
+
 /** Every element's state in a mode, from its current over the mode's samples. */
 export function elementStates(r: SimResult, mode: OperatingMode, s: Schematic = schematic(r.params), scales = modeScales(r, mode, s)): ElementInMode[] {
   const t = r.waveforms.t as number[];
@@ -591,20 +619,7 @@ export function elementStates(r: SimResult, mode: OperatingMode, s: Schematic = 
     const eps = countingFloor(r, scales.get(b.id) ?? 0);
     const fine = changeFloor(r, scales.get(b.id) ?? 0);
     const i = os.map((o) => b.current(o));
-    let tSign: number | undefined;
-    // the sign of the last current that counts
-    let lastSign = 0;
-    for (let j = 0; j < i.length; j++) {
-      if (Math.abs(i[j]!) <= eps) continue;
-      const sg = Math.sign(i[j]!);
-      if (lastSign !== 0 && sg !== lastSign && tSign === undefined) {
-        // between the previous sample and this one, where the straight line between them crosses zero
-        const a = Math.abs(i[j - 1]!);
-        const dt = t[mode.k0 + j]! - t[mode.k0 + j - 1]!;
-        tSign = t[mode.k0 + j - 1]! + (dt * a) / (a + Math.abs(i[j]!));
-      }
-      lastSign = sg;
-    }
+    const tSign = firstSignChange(t.slice(mode.k0, mode.k1 + 1), i, eps);
     const signChanges = signChangesOf(i, eps);
     const avg = ints.avg.get(`i:${b.id}`)!;
     const exact = peaks.has(`i:${b.id}`);

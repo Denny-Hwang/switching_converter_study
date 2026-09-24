@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SLIVER, atRest, branchFlow, elementStates, modes, netsOf, runCycle, buildModel, schematic, simulate, wireSides, type ElementInMode, type SimParams } from '../src/sim';
+import { SLIVER, atRest, branchFlow, elementStates, firstSignChange, modes, netsOf, runCycle, buildModel, schematic, simulate, wireSides, type ElementInMode, type SimParams } from '../src/sim';
 
 /**
  * The operating modes: each mode is one interval of the engine, lasting what
@@ -628,3 +628,29 @@ describe("each mode's averages are the exact integrals of its part of the period
     });
   }
 });
+
+describe('where a current first changes sign', () => {
+  const t = [0, 1, 2, 3, 4];
+  it('between two samples beyond the floor, on the line between them', () => {
+    expect(firstSignChange(t.slice(0, 4), [2, 1, -1, -2], 0.5)).toBeCloseTo(1.5, 14);
+  });
+  it('between the samples that bracket the zero, when one within the floor is already on the other side', () => {
+    // the sample within the floor is -0.1: the zero lies before it, not between it and the next sample
+    expect(firstSignChange(t.slice(0, 3), [2, -0.1, -2], 0.5)).toBeCloseTo(2 / 2.1, 14);
+    expect(firstSignChange(t, [2, 0.1, -0.1, -0.2, -2], 0.5)).toBeCloseTo(1.5, 14);
+  });
+  it('at a sample that is exactly zero', () => {
+    expect(firstSignChange(t, [2, 0.1, 0, -0.1, -2], 0.5)).toBe(2);
+  });
+  it('none for a dip into the floor and back, or a current within the floor alone', () => {
+    expect(firstSignChange(t, [2, 0.1, -0.1, 0.1, 2], 0.5)).toBeUndefined();
+    expect(firstSignChange(t, [0.1, -0.1, 0.2, -0.2, 0], 0.5)).toBeUndefined();
+  });
+  it('from the first sample that counts, after samples within the floor', () => {
+    expect(firstSignChange(t.slice(0, 4), [0.1, -0.1, -2, 2], 0.5)).toBeCloseTo(2.5, 14);
+  });
+  it('the first change only, when the current changes sign twice', () => {
+    expect(firstSignChange(t, [1, -1, -1, 1, 1], 0.5)).toBeCloseTo(0.5, 14);
+  });
+});
+
