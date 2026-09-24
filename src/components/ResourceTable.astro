@@ -1,0 +1,174 @@
+---
+/**
+ * <ResourceTable types={['book', 'chapter']} /> -- the resources of
+ * resources.yaml (all of them without `types`) as a table: title with its
+ * author and why, type, level, tags and retrieval date, in the order of the
+ * types and, within a type, of resources.yaml.
+ * Every row is in the HTML; a small script adds a text search and filters
+ * by type, level and tag (without JavaScript the form stays hidden and the
+ * whole table shows).
+ */
+import { ui } from '../i18n/ui';
+import { RESOURCE_LEVELS, RESOURCE_TYPES, resources, typeLabel, type ResourceType } from '../lib/resources';
+import { pageLocale } from '../lib/locale';
+import { fold } from '../lib/fold';
+
+interface Props {
+  /** Resource types to list (default: every type). */
+  types?: ResourceType[];
+}
+const { types } = Astro.props;
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const order = Object.keys(RESOURCE_TYPES);
+// Array.prototype.sort is stable: within a type, resources.yaml's order stays
+const rows = resources
+  .filter((r) => !types || types.includes(r.type as ResourceType))
+  .slice()
+  .sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
+const shownTypes = order.filter((ty) => rows.some((r) => r.type === ty));
+const tags = [...new Set(rows.flatMap((r) => r.tags))].sort();
+const levels = (Object.keys(RESOURCE_LEVELS) as (keyof typeof RESOURCE_LEVELS)[]).filter((l) => rows.some((r) => r.level === l));
+const allEnglish = rows.every((r) => r.language === 'en');
+const languageName = { en: { en: 'English', ko: '영어' }, ko: { en: 'Korean', ko: '한국어' } } as const;
+// an English title on a Korean page is marked as English for screen readers and hyphenation
+const lang = (l: 'en' | 'ko') => (l === locale ? undefined : l);
+const id = `pe-res-${(types ?? ['all']).join('-')}`;
+---
+
+<div class="pe-res not-content" data-pe-res id={id}>
+  <form class="pe-res__filters" data-filters hidden onsubmit="return false" aria-label={t['res.filters']}>
+    <label>
+      {t['res.search']}
+      <input type="search" data-f="q" />
+    </label>
+    {
+      shownTypes.length > 1 && (
+        <label>
+          {t['res.type']}
+          <select data-f="type">
+            <option value="">{t['res.all']}</option>
+            {shownTypes.map((ty) => (
+              <option value={ty}>{typeLabel(ty, locale)}</option>
+            ))}
+          </select>
+        </label>
+      )
+    }
+    {
+      levels.length > 1 && (
+        <label>
+          {t['res.level']}
+          <select data-f="level">
+            <option value="">{t['res.all']}</option>
+            {levels.map((l) => (
+              <option value={l}>{RESOURCE_LEVELS[l][locale]}</option>
+            ))}
+          </select>
+        </label>
+      )
+    }
+    <label>
+      {t['res.tag']}
+      <select data-f="tag">
+        <option value="">{t['res.all']}</option>
+        {tags.map((tag) => (
+          <option value={tag} lang={lang('en')}>
+            {tag}
+          </option>
+        ))}
+      </select>
+    </label>
+    <output data-count data-template={t['res.count']} aria-live="off"></output>
+  </form>
+  {allEnglish && <p class="pe-res__lang">{t['res.allEnglish']}</p>}
+  <div class="pe-res__scroll" tabindex="0" role="region" aria-labelledby={`${id}-caption`}>
+    <table class="pe-res__table">
+      <caption class="sr-only" id={`${id}-caption`}>{allEnglish ? t['res.caption'] : t['res.captionLang']}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{t['res.resource']}</th>
+          <th scope="col">{t['res.type']}</th>
+          <th scope="col">{t['res.level']}</th>
+          <th scope="col">{t['res.tags']}</th>
+          {!allEnglish && <th scope="col">{t['res.language']}</th>}
+          <th scope="col">{t['res.retrieved']}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((r) => (
+            <tr
+              data-type={r.type}
+              data-level={r.level}
+              data-tags={r.tags.join(' ')}
+              data-text={fold(`${r.title} ${r.author} ${r.why} ${r.why_ko} ${r.tags.join(' ')}`)}
+            >
+              <td>
+                <a href={r.url} lang={lang(r.language)}>
+                  {r.title}
+                </a>
+                <br />
+                <span class="pe-res__author" lang={lang(r.language)}>
+                  {r.author}
+                </span>
+                <br />
+                <span class="pe-res__why">{locale === 'ko' ? r.why_ko : r.why}</span>
+              </td>
+              <td>{typeLabel(r.type, locale)}</td>
+              <td>{RESOURCE_LEVELS[r.level][locale]}</td>
+              <td class="pe-res__tags" lang={lang('en')}>
+                {r.tags.join(', ')}
+              </td>
+              {!allEnglish && <td>{languageName[r.language][locale]}</td>}
+              <td class="pe-res__date">{r.retrieved}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+  <p class="pe-res__none" data-none hidden>{t['res.none']}</p>
+</div>
+
+<script>
+  import { fold } from '../lib/fold';
+
+  function setup(root: HTMLElement): void {
+    const form = root.querySelector<HTMLFormElement>('[data-filters]');
+    const rows = [...root.querySelectorAll<HTMLTableRowElement>('tbody tr')];
+    const count = root.querySelector<HTMLOutputElement>('[data-count]');
+    const none = root.querySelector<HTMLElement>('[data-none]');
+    if (!form || !count || !none) return;
+    const field = (name: string) => form.querySelector<HTMLInputElement | HTMLSelectElement>(`[data-f="${name}"]`);
+    const template = count.dataset.template ?? '{shown} / {total}';
+    const apply = () => {
+      const q = fold((field('q')?.value ?? '').trim());
+      const type = field('type')?.value ?? '';
+      const level = field('level')?.value ?? '';
+      const tag = field('tag')?.value ?? '';
+      let shown = 0;
+      for (const row of rows) {
+        const ok =
+          (!q || q.split(/\s+/).every((w) => (row.dataset.text ?? '').includes(w))) &&
+          (!type || row.dataset.type === type) &&
+          (!level || row.dataset.level === level) &&
+          (!tag || (row.dataset.tags ?? '').split(' ').includes(tag));
+        row.hidden = !ok;
+        if (ok) shown++;
+      }
+      count.value = template.replace('{shown}', String(shown)).replace('{total}', String(rows.length));
+      none.hidden = shown > 0;
+    };
+    const changed = () => {
+      // an <output> is a polite live region by itself: silent at page load, announced from the first change on
+      count.setAttribute('aria-live', 'polite');
+      apply();
+    };
+    form.hidden = false;
+    // a select fires input and change alike: listening to input alone applies each change once
+    form.addEventListener('input', changed);
+    apply();
+  }
+  document.querySelectorAll<HTMLElement>('[data-pe-res]').forEach(setup);
+</script>

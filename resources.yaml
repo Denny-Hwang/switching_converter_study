@@ -167,7 +167,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "Designing a transformer when core loss, rather than saturation, limits the ac flux density, with copper and core loss traded against each other."
-    why_ko: "포화가 아니라 코어 손실이 교류 자속 밀도를 제한할 때의 변압기 설계. 구리 손실과 코어 손실을 서로 맞바꾼다."
+    why_ko: "포화가 아니라 코어 손실이 교류 자속 밀도를 제한할 때의 변압기 설계와, 구리 손실과 코어 손실의 맞교환."
     title_match: "Transformer Design"
     cite: erickson2020
 
@@ -414,7 +414,7 @@ resources:
     language: en
     retrieved: 2026-09-23
     why: "Written for inductive sensing; its explanation of the capacitance between turns, the self-resonant frequency and how to measure it applies to any wound inductor."
-    why_ko: "유도형 센싱을 위한 문서이지만, 턴 사이 커패시턴스, 자기 공진 주파수, 그 측정 방법에 대한 설명은 모든 권선 인덕터에 적용된다."
+    why_ko: "유도형 센싱을 위한 문서. 턴 사이 커패시턴스, 자기 공진 주파수, 그 측정 방법에 대한 설명은 모든 권선 인덕터에 해당."
     title_match: "Sensor Design for Inductive Sensing Applications Using LDC"
     urlkind: pdf
     cite: ti_snoa930
@@ -515,7 +515,7 @@ resources:
     title: "Sam Ben-Yaakov — power electronics videos"
     author: "S. Ben-Yaakov"
     url: https://www.youtube.com/user/sambenyaakov
-    tags: [intuition, dcm, flyback, magnetics]
+    tags: [intuition, ccm-dcm, flyback, magnetics]
     level: intro
     language: en
     retrieved: 2026-09-23
@@ -831,7 +831,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "The paper that introduced synchronized switch harvesting on inductor; the PubMed record carries its abstract."
-    why_ko: "인덕터 동기 스위치 하베스팅(SSHI)을 처음 제안한 논문; PubMed 기록에 초록이 있다."
+    why_ko: "인덕터 동기 스위치 하베스팅(SSHI)을 처음 제안한 논문. PubMed 기록에 초록이 실림."
     title_match: "Toward energy harvesting using active materials and conversion improvement by nonlinear processing"
     cite: guyomar2005
 
@@ -853,8 +853,8 @@ resources:
     type: paper
     title: "Optimized piezoelectric energy harvesting circuit using step-down converter in discontinuous conduction mode"
     author: "G. K. Ottman, H. F. Hofmann, G. A. Lesieutre"
-    url: https://ieeexplore.ieee.org/document/1189621
-    tags: [harvesting, piezoelectric, dcm, matching]
+    url: https://ieeexplore.ieee.org/document/1189621/
+    tags: [harvesting, piezoelectric, ccm-dcm, matching]
     level: advanced
     language: en
     retrieved: 2026-09-24
@@ -867,7 +867,7 @@ resources:
     type: paper
     title: "Comparison of Photovoltaic Array Maximum Power Point Tracking Techniques"
     author: "T. Esram, P. L. Chapman"
-    url: https://ieeexplore.ieee.org/document/4207429
+    url: https://ieeexplore.ieee.org/document/4207429/
     tags: [harvesting, mppt]
     level: intermediate
     language: en
@@ -891,3 +891,283 @@ resources:
     title_match: "bq25570 Nano Power Boost Charger and Buck Converter"
     urlkind: pdf
     cite: ti_bq25570
+
+  # --- Phase 4e: the remaining seed items of BUILD_SPEC section 6 ---------------
+  # Books (the publishers' own pages; never an unauthorized copy of the book)
+  - id: erickson2020-book
+    type: book
+    title: "Fundamentals of Power Electronics, 3rd ed."
+    author: "R. W. Erickson, D. Maksimović"
+    url: https://link.springer.com/book/10.1007/978-3-030-43881-4
+    tags: [ccm-dcm, averaged-models, control-basics, magnetics]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "The textbook this site follows for its symbols and derivations: steady state, DCM, averaged models, control and magnetics."
+    why_ko: "이 사이트가 기호와 유도의 기준으로 삼는 교과서: 정상 상태, DCM, 평균화 모델, 제어, 자성 부품."
+    title_match: "Fundamentals of Power Electronics"
+    cite: erickson2020
+
+  - id: mohan2003-book
+    type: book
+    title: "Power Electronics: Converters, Applications, and Design, 3rd ed."
+    author: "N. Mohan, T. M. Undeland, W. P. Robbins"
+    url: https://www.wiley.com/en-us/Power+Electronics:+Converters,+Applications,+and+Design,+3rd+Edition-p-9780471226932
+    tags: [rectifiers, semiconductors, snubbers, gate-drive, magnetics]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "A broad textbook that also covers line-frequency rectifiers, the semiconductor devices, snubbers, drive circuits and heat sinks."
+    why_ko: "상용 주파수 정류기, 반도체 소자, 스너버, 구동 회로, 방열판까지 다루는 폭넓은 교과서."
+    title_match: "Power Electronics: Converters, Applications, and Design"
+    cite: mohan2003
+
+  - id: basso2014-book
+    type: book
+    title: "Switch-Mode Power Supplies: SPICE Simulations and Practical Designs, 2nd ed."
+    author: "C. P. Basso"
+    url: https://www.mheducation.com/highered/mhp/product/switch-mode-power-supplies-second-edition.html
+    tags: [simulation, spice, averaged-models, control-basics, flyback]
+    level: advanced
+    language: en
+    retrieved: 2026-09-24
+    why: "Converters worked through with SPICE: averaged models, loop compensation and practical designs."
+    why_ko: "SPICE로 컨버터를 풀어 가는 책: 평균화 모델, 루프 보상, 실제 설계."
+    title_match: "Switch-Mode Power Supplies, Second Edition"
+    cite: basso2014
+
+  - id: hart2011-book
+    type: book
+    title: "Power Electronics"
+    author: "D. W. Hart"
+    url: https://www.mheducation.com/highered/product/power-electronics-hart.html
+    tags: [topologies, spice]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "An introductory undergraduate textbook, with PSpice simulations beside the circuit analysis."
+    why_ko: "회로 해석 옆에 PSpice 시뮬레이션을 곁들인 학부 입문 교과서."
+    title_match: "Power Electronics"
+    cite: hart2011
+
+  - id: wurth-trilogy
+    type: book
+    title: "Trilogy of Magnetics"
+    author: "Würth Elektronik"
+    url: https://www.we-online.com/en/components/products/TRILOGY_OF_MAGNETICS_EN
+    tags: [magnetics, emi, inductors]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "A reference guide on magnetic components: basic principles, the components and their applications in EMI filters, switch-mode supplies and RF circuits."
+    why_ko: "자성 부품에 관한 참고서: 기본 원리, 부품, 그리고 EMI 필터·스위칭 전원·RF 회로에서의 응용."
+    title_match: "Trilogy of Magnetics"
+
+  # Courses
+  - id: coursera-pe-specialization
+    type: course
+    title: "Power Electronics Specialization"
+    author: "University of Colorado Boulder (Coursera; R. W. Erickson, D. Maksimović, K. Afridi)"
+    url: https://www.coursera.org/specializations/power-electronics
+    tags: [ccm-dcm, control-basics, magnetics]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "The course series around the textbook, from converter circuits to control and magnetics; its courses are listed one by one as well."
+    why_ko: "교과서를 따라가는 강좌 시리즈: 컨버터 회로부터 제어와 자성 부품까지. 개별 강좌도 따로 실림."
+    title_match: "Power Electronics | Coursera"
+    cite: cuboulder_pe_coursera
+
+  - id: coursera-mcpe-specialization
+    type: course
+    title: "Modeling and Control of Power Electronics Specialization"
+    author: "University of Colorado Boulder (Coursera; D. Maksimović)"
+    url: https://www.coursera.org/specializations/modeling-and-control-of-power-electronics
+    tags: [averaged-models, small-signal, control-basics]
+    level: advanced
+    language: en
+    retrieved: 2026-09-24
+    why: "Averaged and small-signal modeling of converters and the design of their control loops."
+    why_ko: "컨버터의 평균화·소신호 모델링과 제어 루프 설계."
+    title_match: "Modeling and Control of Power Electronics"
+    cite: cuboulder_mcpe_coursera
+
+  # Videos
+  - id: adi-ltspice-basics
+    type: video
+    title: "LTspice Basics (video series)"
+    author: "Analog Devices"
+    url: https://www.analog.com/en/resources/media-center/videos/series/ltspice-basics-video-series.html
+    tags: [simulation, spice, ltspice]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "Short videos on a first schematic, transient and AC simulations, and the waveform viewer in LTspice."
+    why_ko: "LTspice에서 첫 회로도, 과도·AC 시뮬레이션, 파형 뷰어를 다루는 짧은 동영상."
+    title_match: "LTspice Basics"
+
+  - id: ti-psds
+    type: video
+    title: "Power Supply Design Seminar (PSDS) library"
+    author: "Texas Instruments"
+    url: https://www.ti.com/about-ti/events/power-supply-design-seminar/psds-library.html
+    tags: [topologies, control-basics, magnetics, gate-drive]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "Seminar papers and recordings on topologies, control, magnetics and gate drive; the content needs a free myTI account."
+    why_ko: "토폴로지, 제어, 자성 부품, 게이트 구동에 관한 세미나 자료와 녹화 영상. 내용을 보려면 무료 myTI 계정이 필요."
+    title_match: "PSDS library"
+    cite: ti_psds
+
+  # Tools
+  - id: ltspice-tool
+    type: tool
+    title: "LTspice"
+    author: "Analog Devices"
+    url: https://www.analog.com/en/resources/design-tools-and-calculators/ltspice-simulator.html
+    tags: [simulation, spice, ltspice]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "A free SPICE simulator from Analog Devices."
+    why_ko: "Analog Devices의 무료 SPICE 시뮬레이터."
+    title_match: "LTspice"
+    cite: ltspice
+
+  - id: ngspice-tool
+    type: tool
+    title: "ngspice"
+    author: "the ngspice project"
+    url: https://ngspice.sourceforge.io/
+    tags: [simulation, spice, ngspice]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "An open-source SPICE simulator; the site's simulator is cross-checked against it in CI."
+    why_ko: "오픈 소스 SPICE 시뮬레이터. 이 사이트의 시뮬레이터를 CI에서 이것과 교차 검증."
+    title_match: "Ngspice"
+    cite: ngspice
+
+  - id: falstad-circuitjs
+    type: tool
+    title: "CircuitJS1 circuit simulator"
+    author: "P. Falstad (the original Java applet), I. Sharp (the port to the browser)"
+    url: https://www.falstad.com/circuit/
+    tags: [simulation, browser]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "A circuit simulator in the browser that animates the currents; good for a first look at a converter."
+    why_ko: "전류를 움직임으로 보여 주는 브라우저 회로 시뮬레이터. 컨버터를 처음 살펴보기에 좋음."
+    title_match: "Circuit Simulator"
+    cite: falstad_circuitjs
+
+  - id: tdk-mdt
+    type: tool
+    title: "Ferrite Magnetic Design Tool"
+    author: "TDK Electronics"
+    url: https://www.tdk-electronics.tdk.com/en/180490/design-support/design-tools/ferrite-magnetic-design-tool
+    tags: [magnetics, core-loss, ferrite]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-24
+    why: "The manufacturer's ferrite material data as curves: permeability, power loss against frequency, flux density and temperature, and core calculations."
+    why_ko: "제조사의 페라이트 재료 데이터를 곡선으로: 투자율, 주파수·자속 밀도·온도에 따른 전력 손실, 코어 계산."
+    title_match: "Ferrite magnetic design tool"
+
+  - id: katex
+    type: tool
+    title: "KaTeX"
+    author: "Khan Academy and contributors"
+    url: https://katex.org/
+    tags: [site, math]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "The math typesetting library that renders every equation on this site, in strict mode at build time."
+    why_ko: "이 사이트의 모든 수식을 빌드 때 엄격 모드로 렌더링하는 수식 조판 라이브러리."
+    title_match: "KaTeX"
+
+  - id: starlight
+    type: tool
+    title: "Starlight"
+    author: "the Astro project"
+    url: https://starlight.astro.build/
+    tags: [site]
+    level: intro
+    language: en
+    retrieved: 2026-09-24
+    why: "The documentation theme for Astro this site is built with."
+    why_ko: "이 사이트를 만드는 데 쓴 Astro 문서 테마."
+    title_match: "Starlight"
+
+  # Papers (the publishers' pages)
+  - id: singer1990-ieee
+    type: paper
+    title: "Realization of loss-free resistive elements"
+    author: "S. Singer"
+    url: https://ieeexplore.ieee.org/document/45691/
+    tags: [loss-free-resistor, harvesting]
+    level: advanced
+    language: en
+    retrieved: 2026-09-24
+    why: "The loss-free resistor: a converter that draws power like a resistor and delivers it instead of dissipating it."
+    why_ko: "무손실 저항: 저항처럼 전력을 끌어오되 소비하지 않고 전달하는 컨버터."
+    title_match: "Realization of loss-free resistive elements"
+    cite: singer1990
+
+  - id: steinmetz1892-ieee
+    type: paper
+    title: "On the law of hysteresis"
+    author: "C. P. Steinmetz"
+    url: https://ieeexplore.ieee.org/document/5570437/
+    tags: [magnetics, core-loss]
+    level: advanced
+    language: en
+    retrieved: 2026-09-24
+    why: "The 1892 paper behind the Steinmetz equation for core loss (reprinted in the Proceedings of the IEEE in 1984)."
+    why_ko: "코어 손실의 스타인메츠 식이 나온 1892년 논문(1984년 Proceedings of the IEEE에 재수록)."
+    title_match: "On the Law of Hysteresis"
+
+  - id: dowell1966-iet
+    type: paper
+    title: "Effects of eddy currents in transformer windings"
+    author: "P. L. Dowell"
+    url: https://digital-library.theiet.org/content/journals/10.1049/piee.1966.0236
+    tags: [magnetics, winding-loss]
+    level: advanced
+    language: en
+    retrieved: 2026-09-24
+    why: "The layer model behind the ac resistance of windings, used on the winding-loss page."
+    why_ko: "권선 손실 페이지에서 쓰는, 권선 교류 저항의 층 모델."
+    title_match: "Effects of eddy currents in transformer windings"
+    cite: dowell1966
+
+  - id: ottman2002-ieee
+    type: paper
+    title: "Adaptive piezoelectric energy harvesting circuit for wireless remote power supply"
+    author: "G. K. Ottman, H. F. Hofmann, A. C. Bhatt, G. A. Lesieutre"
+    url: https://ieeexplore.ieee.org/document/1035141/
+    tags: [harvesting, piezoelectric]
+    level: advanced
+    language: en
+    retrieved: 2026-09-24
+    why: "An adaptive dc-dc converter that tracks a piezoelectric element's best operating point."
+    why_ko: "압전 소자의 최적 동작점을 추종하는 적응형 DC-DC 컨버터."
+    title_match: "Adaptive piezoelectric energy harvesting circuit"
+    cite: ottman2002
+
+  - id: lefeuvre2006-sd
+    type: paper
+    title: "A comparison between several vibration-powered piezoelectric generators for standalone systems"
+    author: "E. Lefeuvre, A. Badel, C. Richard, L. Petit, D. Guyomar"
+    url: https://www.sciencedirect.com/science/article/abs/pii/S0924424705006151
+    tags: [harvesting, piezoelectric, sece, sshi]
+    level: advanced
+    language: en
+    retrieved: 2026-09-24
+    why: "The standard interface, SECE and the SSHI variants compared for standalone systems."
+    why_ko: "독립형 시스템을 위한 표준 인터페이스, SECE, SSHI 변형의 비교."
+    title_match: "A comparison between several vibration-powered piezoelectric generators"
+    cite: lefeuvre2006

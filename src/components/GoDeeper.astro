@@ -4,7 +4,7 @@
  * verified external resources with retrieval dates (from resources.yaml).
  */
 import { ui } from '../i18n/ui';
-import { getResource } from '../lib/resources';
+import { getResource, typeLabel } from '../lib/resources';
 import { pageLocale } from '../lib/locale';
 
 interface Props {
@@ -14,26 +14,13 @@ const { ids } = Astro.props;
 const items = ids.map(getResource);
 const locale = pageLocale(Astro);
 const t = ui[locale];
-const typeLabel: Record<string, { en: string; ko: string }> = {
-  book: { en: 'Book', ko: '도서' },
-  chapter: { en: 'Book chapter', ko: '도서 장' },
-  course: { en: 'Course', ko: '강좌' },
-  lecture: { en: 'Lecture notes', ko: '강의 노트' },
-  video: { en: 'Video', ko: '동영상' },
-  channel: { en: 'Video channel', ko: '동영상 채널' },
-  'app-note': { en: 'Application note', ko: '응용 노트' },
-  article: { en: 'Technical article', ko: '기술 기사' },
-  datasheet: { en: 'Data sheet', ko: '데이터시트' },
-  tool: { en: 'Tool', ko: '도구' },
-  paper: { en: 'Paper', ko: '논문' },
-};
 ---
 
 <ul class="pe-godeeper not-content">
   {
     items.map((r) => (
       <li>
-        <span class="pe-godeeper__type">{typeLabel[r.type]?.[locale] ?? r.type}</span>{' '}
+        <span class="pe-godeeper__type">{typeLabel(r.type, locale)}</span>{' '}
         <a href={r.url}>{r.title}</a>
         <span class="pe-godeeper__meta">
           {' '}
