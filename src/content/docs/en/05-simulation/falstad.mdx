@@ -109,7 +109,8 @@ coupling only between zero and one <Cite key="circuitjs1_source" />. The
 library's transformers use 0.99999. The leakage inductance left adds a spike
 to the drain for one step at turn-off, as the switch stops its current within
 that step (<EqRef id="sim.step_jump" label="one-step jump" />, with the
-leakage inductance and the current the switch interrupts). That current does
+leakage inductance the switch's current flows through and the current it
+interrupts). That current does
 not shrink with the step, so the spike, less than a volt at the library's
 step, is proportional to one minus the coupling and to one over the step.
 
@@ -165,7 +166,7 @@ set a time step short enough to resolve the ring, a small fraction of its
 period. The switch node now leaves zero smoothly and rings at the bench's
 frequency, clipped by the body diode at the input if it swings that far.
 Compare the frequency, not the decay: backward Euler damps an oscillation by
-itself, as its factor for one is below one in size
+itself, as its factor for an oscillation is below one in size
 <Cite key="hairer1996" where="Sec. IV.3" />, and the fewer steps a ring
 period spans, the sooner the simulated ring dies out.
 
@@ -184,7 +185,8 @@ period spans, the sooner the simulated ring dies out.
 - **A diode with a steep curve converges loosely.** The iteration stops on a
   change of voltage, not of current, so a near-ideal diode can end a step with
   the inductor's current well past zero. Give the current a path: a body diode
-  bounds the jump, and a node capacitance removes it.
+  bounds the jump, and a node capacitance stepped by backward Euler
+  (Trapezoidal Approximation unchecked) removes it.
 
 ## Go deeper
 

@@ -20,8 +20,9 @@ switch, 1 MOhm off; diodes of about 30 mV at an ampere), with three changes Circ
 - backward Euler for the inductors and transformers (their flag 2), which damps a mode much
   faster than the step where the trapezoidal rule would ring (05-simulation/ngspice);
 - a coupling of 0.99999 instead of 1: CircuitJS1 inverts the windings' inductance matrix,
-  which is singular at 1. The leakage left, 2e-5 of the winding's inductance, adds a spike of
-  under a volt at turn-off at this step (it grows as the step shrinks).
+  which is singular at 1. The leakage left (2e-5 of the primary's inductance in a two-winding
+  transformer) adds a spike of under a volt at turn-off at this step (it grows as the step
+  shrinks).
 
 The check below reads every circuit back: it finds each element's connections from its
 coordinates as CircuitJS1 places them, and compares the circuit node by node with the SPICE
