@@ -14,6 +14,7 @@ import EqRef from '../../../../components/EqRef.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TrySim from '../../../../components/TrySim.astro';
+import FalstadLink from '../../../../components/FalstadLink.astro';
 import shot from '../../../../assets/screenshots/simulator-en.png';
 
 Pick a topology or a preset, choose the load, and set the parameters in SI
@@ -579,25 +580,28 @@ Two further suites check the simulator by other means:
   losses. The first two hold by construction in a periodic steady state, so
   they check the bookkeeping; the energy balances check the model.
 
-## The same circuits in LTspice and ngspice
+## The same circuits in LTspice, ngspice and CircuitJS1
 
 The presets below are also LTspice schematics and ngspice netlists, with the
 same numbers, in the repository's
-[SPICE library](https://github.com/Denny-Hwang/switching_converter_study/tree/main/sim). Each folder's README says what to
-plot and shows the waveforms ngspice computes. On every average and extreme
-listed there, the simulator and ngspice agree within 1 %
-(`packages/pe-core/test/sim-library.test.ts`), and ngspice agrees with the
-equations within 1 % (`scripts/sim_library.py`).
+[SPICE library](https://github.com/Denny-Hwang/switching_converter_study/tree/main/sim), and CircuitJS1 circuits that open on
+falstad.com ([the converters in CircuitJS1](../../05-simulation/falstad/)).
+Each folder's README says what to plot and shows the waveforms ngspice
+computes. On every average and extreme listed there, the simulator and
+ngspice agree within 1 % (`packages/pe-core/test/sim-library.test.ts`), and
+ngspice agrees with the equations within 1 % (`scripts/sim_library.py`).
+CircuitJS1 agrees with them within 1 % too, on the averages and extremes its
+check measures over its last two periods (`scripts/falstad_check.mjs`).
 
-| Preset | LTspice | ngspice |
-| --- | --- | --- |
-| Buck, CCM | [buck-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buck/buck-ccm.asc) | [buck-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buck/buck-ccm.cir) |
-| Buck, light load (DCM) | [buck-dcm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buck/buck-dcm.asc) | [buck-dcm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buck/buck-dcm.cir) |
-| Boost | [boost-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/boost/boost-ccm.asc) | [boost-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/boost/boost-ccm.cir) |
-| Buck-boost | [buckboost-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buckboost/buckboost-ccm.asc) | [buckboost-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buckboost/buckboost-ccm.cir) |
-| Flyback, CCM | [flyback-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/flyback/flyback-ccm.asc) | [flyback-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/flyback/flyback-ccm.cir) |
-| Flyback, DCM | [flyback-dcm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/flyback/flyback-dcm.asc) | [flyback-dcm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/flyback/flyback-dcm.cir) |
-| Forward | [forward-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/forward/forward-ccm.asc) | [forward-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/forward/forward-ccm.cir) |
+| Preset | LTspice | ngspice | CircuitJS1 |
+| --- | --- | --- | --- |
+| Buck, CCM | [buck-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buck/buck-ccm.asc) | [buck-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buck/buck-ccm.cir) | <FalstadLink id="buck-ccm" /> |
+| Buck, light load (DCM) | [buck-dcm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buck/buck-dcm.asc) | [buck-dcm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buck/buck-dcm.cir) | <FalstadLink id="buck-dcm" /> |
+| Boost | [boost-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/boost/boost-ccm.asc) | [boost-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/boost/boost-ccm.cir) | <FalstadLink id="boost-ccm" /> |
+| Buck-boost | [buckboost-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buckboost/buckboost-ccm.asc) | [buckboost-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buckboost/buckboost-ccm.cir) | <FalstadLink id="buckboost-ccm" /> |
+| Flyback, CCM | [flyback-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/flyback/flyback-ccm.asc) | [flyback-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/flyback/flyback-ccm.cir) | <FalstadLink id="flyback-ccm" /> |
+| Flyback, DCM | [flyback-dcm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/flyback/flyback-dcm.asc) | [flyback-dcm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/flyback/flyback-dcm.cir) | <FalstadLink id="flyback-dcm" /> |
+| Forward | [forward-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/forward/forward-ccm.asc) | [forward-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/forward/forward-ccm.cir) | <FalstadLink id="forward-ccm" /> |
 
 ## Worked example: a flyback that pins its source
 

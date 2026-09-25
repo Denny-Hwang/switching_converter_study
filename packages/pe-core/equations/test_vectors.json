@@ -12857,6 +12857,86 @@
       "value": 0.9918142492991661
     },
     {
+      "id": "sim.step_jump",
+      "source": "yaml",
+      "inputs": {
+        "Delta_t": 2e-08,
+        "I_os": 0.0037,
+        "L": 0.0001
+      },
+      "value": 18.5
+    },
+    {
+      "id": "sim.step_jump",
+      "source": "yaml",
+      "inputs": {
+        "Delta_t": 1e-08,
+        "I_os": 0.1,
+        "L": 1e-06
+      },
+      "value": 10.0
+    },
+    {
+      "id": "sim.step_jump",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 2.13232e-05,
+        "I_os": 0.0330457,
+        "L": 0.00349981
+      },
+      "value": 5.423842168014182
+    },
+    {
+      "id": "sim.step_jump",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 2.18163e-08,
+        "I_os": 0.00151827,
+        "L": 0.000199782
+      },
+      "value": 13.903504129481165
+    },
+    {
+      "id": "sim.step_jump",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 1.78013e-06,
+        "I_os": 2.71508,
+        "L": 0.00184648
+      },
+      "value": 2816.277978799301
+    },
+    {
+      "id": "sim.step_jump",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 3.27086e-08,
+        "I_os": 0.616477,
+        "L": 0.00704605
+      },
+      "value": 132800.78529347025
+    },
+    {
+      "id": "sim.step_jump",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 4.38805e-10,
+        "I_os": 0.0155171,
+        "L": 3.7308e-05
+      },
+      "value": 1319.2920928430626
+    },
+    {
+      "id": "sim.step_jump",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 7.73194e-09,
+        "I_os": 0.461059,
+        "L": 7.51256e-05
+      },
+      "value": 4479.77273626024
+    },
+    {
       "id": "filter.tau_env",
       "source": "yaml",
       "inputs": {

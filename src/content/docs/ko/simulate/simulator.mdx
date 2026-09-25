@@ -14,6 +14,7 @@ import EqRef from '../../../../components/EqRef.astro';
 import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TrySim from '../../../../components/TrySim.astro';
+import FalstadLink from '../../../../components/FalstadLink.astro';
 import shot from '../../../../assets/screenshots/simulator-ko.png';
 
 토폴로지(topology)나 프리셋을 고르고 부하를 정한 뒤 파라미터를 SI 단위로
@@ -508,24 +509,27 @@ ngspice와 3 ns 이내(최악 2.1 ns)로 일치합니다.
   정상상태에서 정의상 성립하므로 계산의 일관성을 확인하고, 에너지 평형은 모델
   자체를 확인합니다.
 
-## LTspice와 ngspice의 같은 회로
+## LTspice, ngspice, CircuitJS1의 같은 회로
 
 아래 프리셋은 저장소의 [SPICE 라이브러리](https://github.com/Denny-Hwang/switching_converter_study/tree/main/sim)에 같은
-값의 LTspice 회로도(schematic)와 ngspice 넷리스트(netlist)로도 있습니다.
+값의 LTspice 회로도(schematic)와 ngspice 넷리스트(netlist)로도 있고,
+falstad.com에서 열리는 CircuitJS1 회로로도 있습니다([CircuitJS1로 보는 컨버터](../../05-simulation/falstad/)).
 각 폴더의 README에 무엇을 그릴지와 ngspice가 계산한 파형이 있습니다. 거기에
 적힌 모든 평균값과 최댓값·최솟값에서 이 시뮬레이터와 ngspice는 1 % 안에서
 일치하고(`packages/pe-core/test/sim-library.test.ts`), ngspice는 식과 1 %
-안에서 일치합니다(`scripts/sim_library.py`).
+안에서 일치합니다(`scripts/sim_library.py`). CircuitJS1도 검사가 마지막 두
+주기에서 측정하는 평균값과 최댓값·최솟값에서 식과 1 % 안에서
+일치합니다(`scripts/falstad_check.mjs`).
 
-| 프리셋 | LTspice | ngspice |
-| --- | --- | --- |
-| 벅, CCM | [buck-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buck/buck-ccm.asc) | [buck-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buck/buck-ccm.cir) |
-| 벅, 경부하(DCM) | [buck-dcm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buck/buck-dcm.asc) | [buck-dcm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buck/buck-dcm.cir) |
-| 부스트 | [boost-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/boost/boost-ccm.asc) | [boost-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/boost/boost-ccm.cir) |
-| 벅-부스트 | [buckboost-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buckboost/buckboost-ccm.asc) | [buckboost-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buckboost/buckboost-ccm.cir) |
-| 플라이백, CCM | [flyback-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/flyback/flyback-ccm.asc) | [flyback-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/flyback/flyback-ccm.cir) |
-| 플라이백, DCM | [flyback-dcm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/flyback/flyback-dcm.asc) | [flyback-dcm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/flyback/flyback-dcm.cir) |
-| 포워드 | [forward-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/forward/forward-ccm.asc) | [forward-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/forward/forward-ccm.cir) |
+| 프리셋 | LTspice | ngspice | CircuitJS1 |
+| --- | --- | --- | --- |
+| 벅, CCM | [buck-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buck/buck-ccm.asc) | [buck-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buck/buck-ccm.cir) | <FalstadLink id="buck-ccm" /> |
+| 벅, 경부하(DCM) | [buck-dcm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buck/buck-dcm.asc) | [buck-dcm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buck/buck-dcm.cir) | <FalstadLink id="buck-dcm" /> |
+| 부스트 | [boost-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/boost/boost-ccm.asc) | [boost-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/boost/boost-ccm.cir) | <FalstadLink id="boost-ccm" /> |
+| 벅-부스트 | [buckboost-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/buckboost/buckboost-ccm.asc) | [buckboost-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/buckboost/buckboost-ccm.cir) | <FalstadLink id="buckboost-ccm" /> |
+| 플라이백, CCM | [flyback-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/flyback/flyback-ccm.asc) | [flyback-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/flyback/flyback-ccm.cir) | <FalstadLink id="flyback-ccm" /> |
+| 플라이백, DCM | [flyback-dcm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/flyback/flyback-dcm.asc) | [flyback-dcm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/flyback/flyback-dcm.cir) | <FalstadLink id="flyback-dcm" /> |
+| 포워드 | [forward-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/forward/forward-ccm.asc) | [forward-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/forward/forward-ccm.cir) | <FalstadLink id="forward-ccm" /> |
 
 ## 풀이 예제: 전원을 한 값에 묶어 두는 플라이백
 

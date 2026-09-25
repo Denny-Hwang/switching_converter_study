@@ -747,6 +747,14 @@ html:lang(ko) body {
 .pe-sim .pe-sim__table td {
   white-space: nowrap;
 }
+.pe-falstad code {
+  white-space: nowrap;
+}
+.pe-falstad__sub {
+  margin-top: 0.2rem;
+  font-weight: 400;
+  color: var(--sl-color-gray-2);
+}
 .pe-eqid {
   display: inline-block;
   margin-left: 0.3rem;
