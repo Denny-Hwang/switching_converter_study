@@ -330,6 +330,7 @@ const foundations: Readonly<Record<string, Evaluator>> = {
   'num.gain_fe': eq(['Delta_t', 'tau'], ({ Delta_t, tau }) => 1 - Delta_t / tau),
   'num.gain_tr': eq(['Delta_t', 'tau'], ({ Delta_t, tau }) => (2 * tau - Delta_t) / (2 * tau + Delta_t)),
   'num.gain_be': eq(['Delta_t', 'tau'], ({ Delta_t, tau }) => tau / (tau + Delta_t)),
+  'sim.step_jump': eq(['L', 'I_os', 'Delta_t'], ({ L, I_os, Delta_t }) => (L * I_os) / Delta_t),
   'filter.tau_env': eq(['R', 'C'], ({ R, C }) => 2 * R * C),
   'sim.periods_settle': eq(['tau_env', 'T_s', 'eps_r'], ({ tau_env, T_s, eps_r }) => (-tau_env * Math.log(eps_r)) / T_s),
   'num.rel_diff': eq(['x_val', 'x_ref'], ({ x_val, x_ref }) => Math.abs(x_val - x_ref) / Math.abs(x_ref)),

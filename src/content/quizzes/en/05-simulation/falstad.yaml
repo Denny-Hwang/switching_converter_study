@@ -1,0 +1,51 @@
+# Quiz for 05-simulation/falstad. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'How does CircuitJS1 advance the library''s circuits in time?'
+    options:
+      - 'By steps it chooses from an estimate of its error, as SPICE does'
+      - 'By one fixed step, a five-hundredth of the switching period; it would halve the step only on a convergence failure with Auto-Adjust Timestep on'
+      - 'By a step it shortens at every diode turn-off'
+      - 'By one step per switching period'
+    answer: 1
+    explain: 'CircuitJS1 keeps its time step fixed. It halves it only when its iteration fails to converge, and only with Auto-Adjust Timestep on, which the library''s circuits leave off; nothing shortens a step where a diode turns off.'
+  - q: 'A 100 µH inductor steps by backward Euler with a 20 ns step. When its diode turns off, its current is 3.7 mA past zero and nothing else takes it. How large is the one-step jump across the inductor?'
+    options:
+      - '0.74 V'
+      - '18.5 V'
+      - '37 V'
+      - '185 V'
+    answer: 1
+    explain: 'The step must bring the current back to zero, so the inductor carries L times the current over the step: 100 µH times 3.7 mA over 20 ns is 18.5 V.'
+  - q: 'You halve the time step to get rid of that spike. What happens to it?'
+    options:
+      - 'It halves'
+      - 'It doubles'
+      - 'It stays about the same size, because the current past zero shrinks with the step'
+      - 'It disappears'
+    answer: 2
+    explain: 'The current goes past zero by about its change in one step, which halves with the step, while the shorter step doubles the voltage for a given current. The jump stays near the voltage the inductor had before the diode turned off: in the library''s DCM buck, between about three-quarters of and one and a half times the output voltage.'
+  - q: 'What removes the spike?'
+    options:
+      - 'A tighter tolerance'
+      - 'A path for the current, such as a body diode, a snubber or a node capacitance'
+      - 'The trapezoidal rule'
+      - 'A coupling of exactly one'
+    answer: 1
+    explain: 'The spike comes from a current that has to stop within one step. A body diode, a snubber or a node capacitance lets it flow on; the library''s circuits give each switch a body diode.'
+  - q: 'With Trapezoidal Approximation ticked on its transformer, the DCM flyback''s drain alternates at every step between about twice its expected level and zero. Why?'
+    options:
+      - 'The leakage inductance rings with the switch''s capacitance'
+      - 'The trapezoidal rule meets a mode far faster than the step, and its factor per step for that mode is close to minus one'
+      - 'The body diode conducts at every other step'
+      - 'The output capacitor''s series resistance'
+    answer: 1
+    explain: 'The leakage inductance makes a mode far faster than the step. The trapezoidal rule multiplies it by nearly minus one in every step, so it flips its sign without decaying; backward Euler''s factor for it is close to zero.'
+  - q: 'Why do the library''s transformers use a coupling of 0.99999 rather than 1?'
+    options:
+      - 'To model a real transformer''s leakage'
+      - 'CircuitJS1 inverts the windings'' inductance matrix, which is singular at a coupling of one, and its dialog accepts only values below one'
+      - 'A coupling of one would slow the simulation down'
+      - 'To damp the ringing of the drain'
+    answer: 1
+    explain: 'The determinant L1 L2 - M^2 of the inductance matrix vanishes at a coupling of one, so the matrix cannot be inverted. The leakage that 0.99999 leaves adds a one-step spike of less than a volt to the drain at turn-off.'

@@ -288,6 +288,14 @@
       "en": "the same time step every step",
       "ko": "매 스텝 같은 시간 간격"
     },
+    "backward_euler_step": {
+      "en": "backward Euler: the inductor's voltage at the end of the step is its inductance times the change of its current over the step",
+      "ko": "후진 오일러: 스텝 끝의 인덕터 전압이 인덕턴스와 스텝 동안의 전류 변화를 곱해 스텝으로 나눈 값임"
+    },
+    "current_blocked": {
+      "en": "the current's path opens within the step, and nothing else (a body diode, a snubber, a node capacitance) takes the current",
+      "ko": "스텝 안에서 전류 경로가 열리고, 다른 것(바디 다이오드, 스너버, 노드 커패시턴스)이 전류를 받지 않음"
+    },
     "underdamped_filter": {
       "en": "the output filter rings: its quality factor Q is above 1/2",
       "ko": "출력 필터가 진동함: Q가 1/2보다 큼"
@@ -956,6 +964,18 @@
       "meaning_ko": "측정할 최소 전류",
       "range": null,
       "scale": "linear"
+    },
+    "I_os": {
+      "latex": "I_\\mathrm{os}",
+      "unit": "A",
+      "desc": "current that has gone past zero through a diode when the diode turns off, and that the next step must bring back to zero",
+      "meaning": "current past zero",
+      "meaning_ko": "0을 지나친 전류",
+      "range": [
+        0.0001,
+        10.0
+      ],
+      "scale": "log"
     },
     "I_p": {
       "latex": "I_p",
@@ -3117,6 +3137,15 @@
       ],
       "scale": "linear"
     },
+    "v_jump": {
+      "latex": "v_\\mathrm{jump}",
+      "unit": "V",
+      "desc": "voltage a backward Euler step puts across an inductor whose current it brings from I_os back to zero",
+      "meaning": "one-step voltage jump",
+      "meaning_ko": "한 스텝 전압 점프",
+      "range": null,
+      "scale": "linear"
+    },
     "v_s_avg": {
       "latex": "\\langle v_s \\rangle",
       "unit": "V",
@@ -3203,7 +3232,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 387
+      "yaml_line": 391
     },
     "boost.ccm.M": {
       "id": "boost.ccm.M",
@@ -3238,7 +3267,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 402
+      "yaml_line": 406
     },
     "buckboost.ccm.M": {
       "id": "buckboost.ccm.M",
@@ -3273,7 +3302,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 417
+      "yaml_line": 421
     },
     "flyback.ccm.M": {
       "id": "flyback.ccm.M",
@@ -3310,7 +3339,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 432
+      "yaml_line": 436
     },
     "forward.ccm.M": {
       "id": "forward.ccm.M",
@@ -3347,7 +3376,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 447
+      "yaml_line": 451
     },
     "forward.reset.Dmax": {
       "id": "forward.reset.Dmax",
@@ -3380,7 +3409,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 8,
-      "yaml_line": 462
+      "yaml_line": 466
     },
     "buck.ripple.iL": {
       "id": "buck.ripple.iL",
@@ -3423,7 +3452,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 480
+      "yaml_line": 484
     },
     "buck.ripple.iL_pp": {
       "id": "buck.ripple.iL_pp",
@@ -3466,7 +3495,7 @@
       ],
       "derived_by": "python/pe_core/derive/ccm_ratios.py",
       "n_tests": 7,
-      "yaml_line": 494
+      "yaml_line": 498
     },
     "K.def": {
       "id": "K.def",
@@ -3502,7 +3531,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 511
+      "yaml_line": 515
     },
     "Kcrit.buck": {
       "id": "Kcrit.buck",
@@ -3538,7 +3567,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 524
+      "yaml_line": 528
     },
     "Kcrit.boost": {
       "id": "Kcrit.boost",
@@ -3574,7 +3603,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 537
+      "yaml_line": 541
     },
     "Kcrit.buckboost": {
       "id": "Kcrit.buckboost",
@@ -3610,7 +3639,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 552
+      "yaml_line": 556
     },
     "Kcrit.flyback": {
       "id": "Kcrit.flyback",
@@ -3648,7 +3677,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 565
+      "yaml_line": 569
     },
     "L.crit": {
       "id": "L.crit",
@@ -3688,7 +3717,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 580
+      "yaml_line": 584
     },
     "buck.dcm.M": {
       "id": "buck.dcm.M",
@@ -3726,7 +3755,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 598
+      "yaml_line": 602
     },
     "boost.dcm.M": {
       "id": "boost.dcm.M",
@@ -3764,7 +3793,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 613
+      "yaml_line": 617
     },
     "buckboost.dcm.M": {
       "id": "buckboost.dcm.M",
@@ -3802,7 +3831,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 8,
-      "yaml_line": 628
+      "yaml_line": 632
     },
     "flyback.dcm.M": {
       "id": "flyback.dcm.M",
@@ -3840,7 +3869,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 8,
-      "yaml_line": 643
+      "yaml_line": 647
     },
     "dcm.P_in": {
       "id": "dcm.P_in",
@@ -3884,7 +3913,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 663
+      "yaml_line": 667
     },
     "lfr.R_in": {
       "id": "lfr.R_in",
@@ -3926,7 +3955,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 679
+      "yaml_line": 683
     },
     "flyback.V_crit": {
       "id": "flyback.V_crit",
@@ -3968,7 +3997,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 695
+      "yaml_line": 699
     },
     "flyback.Vds_off": {
       "id": "flyback.Vds_off",
@@ -4008,7 +4037,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 709
+      "yaml_line": 713
     },
     "flyback.Vds_clamped": {
       "id": "flyback.Vds_clamped",
@@ -4050,7 +4079,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 723
+      "yaml_line": 727
     },
     "flyback.diode.VR": {
       "id": "flyback.diode.VR",
@@ -4087,7 +4116,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 737
+      "yaml_line": 741
     },
     "flyback.IM": {
       "id": "flyback.IM",
@@ -4129,7 +4158,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 749
+      "yaml_line": 753
     },
     "flyback.ripple.iM": {
       "id": "flyback.ripple.iM",
@@ -4169,7 +4198,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 765
+      "yaml_line": 769
     },
     "flyback.ripple.v": {
       "id": "flyback.ripple.v",
@@ -4213,7 +4242,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 779
+      "yaml_line": 783
     },
     "flyback.Ipk.dcm": {
       "id": "flyback.Ipk.dcm",
@@ -4253,7 +4282,7 @@
       ],
       "derived_by": "python/pe_core/derive/flyback.py",
       "n_tests": 7,
-      "yaml_line": 795
+      "yaml_line": 799
     },
     "flyback.leak.E": {
       "id": "flyback.leak.E",
@@ -4287,7 +4316,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 812
+      "yaml_line": 816
     },
     "flyback.leak.P": {
       "id": "flyback.leak.P",
@@ -4322,7 +4351,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 826
+      "yaml_line": 830
     },
     "flyback.V_OR": {
       "id": "flyback.V_OR",
@@ -4359,7 +4388,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 840
+      "yaml_line": 844
     },
     "clamp.Vds": {
       "id": "clamp.Vds",
@@ -4393,7 +4422,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 854
+      "yaml_line": 858
     },
     "clamp.t_reset": {
       "id": "clamp.t_reset",
@@ -4431,7 +4460,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 868
+      "yaml_line": 872
     },
     "clamp.P": {
       "id": "clamp.P",
@@ -4472,7 +4501,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 883
+      "yaml_line": 887
     },
     "clamp.rcd.V": {
       "id": "clamp.rcd.V",
@@ -4514,7 +4543,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 898
+      "yaml_line": 902
     },
     "tvs.R_D": {
       "id": "tvs.R_D",
@@ -4550,7 +4579,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 912
+      "yaml_line": 916
     },
     "tvs.V_clamp": {
       "id": "tvs.V_clamp",
@@ -4586,7 +4615,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 926
+      "yaml_line": 930
     },
     "flyback.V_ceiling": {
       "id": "flyback.V_ceiling",
@@ -4625,7 +4654,7 @@
       ],
       "derived_by": "python/pe_core/derive/clamp.py",
       "n_tests": 7,
-      "yaml_line": 939
+      "yaml_line": 943
     },
     "snub.C_par": {
       "id": "snub.C_par",
@@ -4662,7 +4691,7 @@
       ],
       "derived_by": "python/pe_core/derive/snubbers.py",
       "n_tests": 8,
-      "yaml_line": 953
+      "yaml_line": 957
     },
     "snub.L_par": {
       "id": "snub.L_par",
@@ -4696,7 +4725,7 @@
       ],
       "derived_by": "python/pe_core/derive/snubbers.py",
       "n_tests": 8,
-      "yaml_line": 970
+      "yaml_line": 974
     },
     "snub.R": {
       "id": "snub.R",
@@ -4732,7 +4761,7 @@
       ],
       "derived_by": "python/pe_core/derive/snubbers.py",
       "n_tests": 8,
-      "yaml_line": 984
+      "yaml_line": 988
     },
     "snub.P": {
       "id": "snub.P",
@@ -4772,7 +4801,7 @@
       ],
       "derived_by": "python/pe_core/derive/snubbers.py",
       "n_tests": 7,
-      "yaml_line": 999
+      "yaml_line": 1003
     },
     "snub.P_R": {
       "id": "snub.P_R",
@@ -4812,7 +4841,7 @@
       ],
       "derived_by": "python/pe_core/derive/snubbers.py",
       "n_tests": 8,
-      "yaml_line": 1015
+      "yaml_line": 1019
     },
     "dcm.ring.f": {
       "id": "dcm.ring.f",
@@ -4846,7 +4875,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 1031
+      "yaml_line": 1035
     },
     "loss.cond": {
       "id": "loss.cond",
@@ -4880,7 +4909,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 1045
+      "yaml_line": 1049
     },
     "loss.sw.cap": {
       "id": "loss.sw.cap",
@@ -4918,7 +4947,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 1057
+      "yaml_line": 1061
     },
     "loss.gate": {
       "id": "loss.gate",
@@ -4954,7 +4983,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 1069
+      "yaml_line": 1073
     },
     "loss.diode": {
       "id": "loss.diode",
@@ -4992,7 +5021,7 @@
       ],
       "derived_by": "python/pe_core/derive/energy.py",
       "n_tests": 7,
-      "yaml_line": 1083
+      "yaml_line": 1087
     },
     "loss.steinmetz": {
       "id": "loss.steinmetz",
@@ -5036,7 +5065,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1095
+      "yaml_line": 1099
     },
     "loss.core": {
       "id": "loss.core",
@@ -5070,7 +5099,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1113
+      "yaml_line": 1117
     },
     "mag.L_from_AL": {
       "id": "mag.L_from_AL",
@@ -5108,7 +5137,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 1129
+      "yaml_line": 1133
     },
     "mag.AL_gap": {
       "id": "mag.AL_gap",
@@ -5155,7 +5184,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 8,
-      "yaml_line": 1143
+      "yaml_line": 1147
     },
     "mag.B_pk": {
       "id": "mag.B_pk",
@@ -5198,7 +5227,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 1161
+      "yaml_line": 1165
     },
     "mag.B_ac": {
       "id": "mag.B_ac",
@@ -5237,7 +5266,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 1175
+      "yaml_line": 1179
     },
     "mag.dB_faraday": {
       "id": "mag.dB_faraday",
@@ -5279,7 +5308,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 1191
+      "yaml_line": 1195
     },
     "mag.N_Bmax": {
       "id": "mag.N_Bmax",
@@ -5318,7 +5347,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 1207
+      "yaml_line": 1211
     },
     "mag.gap_length": {
       "id": "mag.gap_length",
@@ -5363,7 +5392,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 7,
-      "yaml_line": 1221
+      "yaml_line": 1225
     },
     "mag.Kg_req": {
       "id": "mag.Kg_req",
@@ -5407,7 +5436,7 @@
       ],
       "derived_by": "python/pe_core/derive/magnetics.py",
       "n_tests": 8,
-      "yaml_line": 1236
+      "yaml_line": 1240
     },
     "mag.Kg_core": {
       "id": "mag.Kg_core",
@@ -5443,7 +5472,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1252
+      "yaml_line": 1256
     },
     "wind.fill": {
       "id": "wind.fill",
@@ -5479,7 +5508,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1266
+      "yaml_line": 1270
     },
     "wind.dcr": {
       "id": "wind.dcr",
@@ -5517,7 +5546,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 7,
-      "yaml_line": 1279
+      "yaml_line": 1283
     },
     "wind.skin_depth": {
       "id": "wind.skin_depth",
@@ -5554,7 +5583,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 8,
-      "yaml_line": 1293
+      "yaml_line": 1297
     },
     "wind.dowell": {
       "id": "wind.dowell",
@@ -5592,7 +5621,7 @@
       ],
       "derived_by": null,
       "n_tests": 9,
-      "yaml_line": 1308
+      "yaml_line": 1312
     },
     "wind.phi_foil": {
       "id": "wind.phi_foil",
@@ -5626,7 +5655,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1325
+      "yaml_line": 1329
     },
     "wind.dowell_low": {
       "id": "wind.dowell_low",
@@ -5665,7 +5694,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 8,
-      "yaml_line": 1338
+      "yaml_line": 1342
     },
     "wind.loss_rel": {
       "id": "wind.loss_rel",
@@ -5704,7 +5733,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 8,
-      "yaml_line": 1356
+      "yaml_line": 1360
     },
     "wind.phi_opt": {
       "id": "wind.phi_opt",
@@ -5742,7 +5771,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 8,
-      "yaml_line": 1374
+      "yaml_line": 1378
     },
     "xfmr.leakage.ps": {
       "id": "xfmr.leakage.ps",
@@ -5787,7 +5816,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 7,
-      "yaml_line": 1392
+      "yaml_line": 1396
     },
     "xfmr.leakage.psp": {
       "id": "xfmr.leakage.psp",
@@ -5832,7 +5861,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 7,
-      "yaml_line": 1406
+      "yaml_line": 1410
     },
     "xfmr.k": {
       "id": "xfmr.k",
@@ -5872,7 +5901,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1420
+      "yaml_line": 1424
     },
     "xfmr.L_sc": {
       "id": "xfmr.L_sc",
@@ -5910,7 +5939,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 8,
-      "yaml_line": 1435
+      "yaml_line": 1439
     },
     "xfmr.L_sc_T": {
       "id": "xfmr.L_sc_T",
@@ -5947,7 +5976,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 7,
-      "yaml_line": 1452
+      "yaml_line": 1456
     },
     "xfmr.V_oc": {
       "id": "xfmr.V_oc",
@@ -5984,7 +6013,7 @@
       ],
       "derived_by": "python/pe_core/derive/windings.py",
       "n_tests": 8,
-      "yaml_line": 1466
+      "yaml_line": 1470
     },
     "wind.rho_T": {
       "id": "wind.rho_T",
@@ -6020,7 +6049,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1481
+      "yaml_line": 1485
     },
     "wind.round_area": {
       "id": "wind.round_area",
@@ -6054,7 +6083,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1495
+      "yaml_line": 1499
     },
     "wind.porosity": {
       "id": "wind.porosity",
@@ -6096,7 +6125,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1509
+      "yaml_line": 1513
     },
     "wind.phi_round": {
       "id": "wind.phi_round",
@@ -6136,7 +6165,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 1525
+      "yaml_line": 1529
     },
     "src.Pmax": {
       "id": "src.Pmax",
@@ -6170,7 +6199,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 1544
+      "yaml_line": 1548
     },
     "src.cv_power": {
       "id": "src.cv_power",
@@ -6206,7 +6235,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1558
+      "yaml_line": 1562
     },
     "src.cv_extraction": {
       "id": "src.cv_extraction",
@@ -6240,7 +6269,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1573
+      "yaml_line": 1577
     },
     "lfr.Vg": {
       "id": "lfr.Vg",
@@ -6278,7 +6307,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1589
+      "yaml_line": 1593
     },
     "lfr.eta": {
       "id": "lfr.eta",
@@ -6314,7 +6343,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1604
+      "yaml_line": 1608
     },
     "lfr.Vg_power": {
       "id": "lfr.Vg_power",
@@ -6354,7 +6383,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 1619
+      "yaml_line": 1623
     },
     "lfr.L_M": {
       "id": "lfr.L_M",
@@ -6396,7 +6425,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 7,
-      "yaml_line": 1635
+      "yaml_line": 1639
     },
     "lfr.P_env": {
       "id": "lfr.P_env",
@@ -6433,7 +6462,7 @@
       ],
       "derived_by": "python/pe_core/derive/harvesting.py",
       "n_tests": 8,
-      "yaml_line": 1651
+      "yaml_line": 1655
     },
     "piezo.Vp": {
       "id": "piezo.Vp",
@@ -6469,7 +6498,7 @@
       ],
       "derived_by": "python/pe_core/derive/piezo.py",
       "n_tests": 7,
-      "yaml_line": 1667
+      "yaml_line": 1671
     },
     "piezo.R_opt": {
       "id": "piezo.R_opt",
@@ -6503,7 +6532,7 @@
       ],
       "derived_by": "python/pe_core/derive/piezo.py",
       "n_tests": 7,
-      "yaml_line": 1681
+      "yaml_line": 1685
     },
     "piezo.P_R": {
       "id": "piezo.P_R",
@@ -6539,7 +6568,7 @@
       ],
       "derived_by": "python/pe_core/derive/piezo.py",
       "n_tests": 7,
-      "yaml_line": 1695
+      "yaml_line": 1699
     },
     "piezo.P_std": {
       "id": "piezo.P_std",
@@ -6582,7 +6611,7 @@
       ],
       "derived_by": "python/pe_core/derive/piezo.py",
       "n_tests": 7,
-      "yaml_line": 1709
+      "yaml_line": 1713
     },
     "piezo.P_std_max": {
       "id": "piezo.P_std_max",
@@ -6623,7 +6652,7 @@
       ],
       "derived_by": "python/pe_core/derive/piezo.py",
       "n_tests": 7,
-      "yaml_line": 1726
+      "yaml_line": 1730
     },
     "piezo.P_sece": {
       "id": "piezo.P_sece",
@@ -6664,7 +6693,7 @@
       ],
       "derived_by": "python/pe_core/derive/piezo.py",
       "n_tests": 7,
-      "yaml_line": 1742
+      "yaml_line": 1746
     },
     "piezo.P_sshi": {
       "id": "piezo.P_sshi",
@@ -6709,7 +6738,7 @@
       ],
       "derived_by": "python/pe_core/derive/piezo.py",
       "n_tests": 7,
-      "yaml_line": 1758
+      "yaml_line": 1762
     },
     "piezo.P_sshi_max": {
       "id": "piezo.P_sshi_max",
@@ -6752,7 +6781,7 @@
       ],
       "derived_by": "python/pe_core/derive/piezo.py",
       "n_tests": 7,
-      "yaml_line": 1775
+      "yaml_line": 1779
     },
     "sense.current_out_monitor": {
       "id": "sense.current_out_monitor",
@@ -6790,7 +6819,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1791
+      "yaml_line": 1795
     },
     "sense.burden": {
       "id": "sense.burden",
@@ -6824,7 +6853,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1805
+      "yaml_line": 1809
     },
     "sense.voltage_out_monitor": {
       "id": "sense.voltage_out_monitor",
@@ -6862,7 +6891,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 8,
-      "yaml_line": 1819
+      "yaml_line": 1823
     },
     "sense.offset_current": {
       "id": "sense.offset_current",
@@ -6900,7 +6929,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1834
+      "yaml_line": 1838
     },
     "sense.pad_error": {
       "id": "sense.pad_error",
@@ -6938,7 +6967,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 7,
-      "yaml_line": 1850
+      "yaml_line": 1854
     },
     "sense.reading": {
       "id": "sense.reading",
@@ -6980,7 +7009,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 9,
-      "yaml_line": 1866
+      "yaml_line": 1870
     },
     "sense.rel_error": {
       "id": "sense.rel_error",
@@ -7022,7 +7051,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 8,
-      "yaml_line": 1884
+      "yaml_line": 1888
     },
     "sense.filter_R": {
       "id": "sense.filter_R",
@@ -7057,7 +7086,7 @@
       ],
       "derived_by": "python/pe_core/derive/sensing.py",
       "n_tests": 8,
-      "yaml_line": 1901
+      "yaml_line": 1905
     },
     "adc.nyquist": {
       "id": "adc.nyquist",
@@ -7090,7 +7119,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1916
+      "yaml_line": 1920
     },
     "def.Ts": {
       "id": "def.Ts",
@@ -7122,7 +7151,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1932
+      "yaml_line": 1936
     },
     "def.V": {
       "id": "def.V",
@@ -7156,7 +7185,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 1943
+      "yaml_line": 1947
     },
     "sw.v_avg": {
       "id": "sw.v_avg",
@@ -7191,7 +7220,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1958
+      "yaml_line": 1962
     },
     "vsb.v_off": {
       "id": "vsb.v_off",
@@ -7226,7 +7255,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1972
+      "yaml_line": 1976
     },
     "vsb.drift": {
       "id": "vsb.drift",
@@ -7262,7 +7291,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 1986
+      "yaml_line": 1990
     },
     "csb.i_off": {
       "id": "csb.i_off",
@@ -7297,7 +7326,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 2000
+      "yaml_line": 2004
     },
     "buck.dcm.D2": {
       "id": "buck.dcm.D2",
@@ -7334,7 +7363,7 @@
       ],
       "derived_by": "python/pe_core/derive/dcm.py",
       "n_tests": 7,
-      "yaml_line": 2014
+      "yaml_line": 2018
     },
     "boost.ccm.M_RL": {
       "id": "boost.ccm.M_RL",
@@ -7374,7 +7403,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 2030
+      "yaml_line": 2034
     },
     "boost.ccm.eta_RL": {
       "id": "boost.ccm.eta_RL",
@@ -7414,7 +7443,7 @@
       ],
       "derived_by": "python/pe_core/derive/averaging.py",
       "n_tests": 7,
-      "yaml_line": 2044
+      "yaml_line": 2048
     },
     "buck.ss.Gd0": {
       "id": "buck.ss.Gd0",
@@ -7449,7 +7478,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 2059
+      "yaml_line": 2063
     },
     "buck.ss.w0": {
       "id": "buck.ss.w0",
@@ -7486,7 +7515,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 2073
+      "yaml_line": 2077
     },
     "buck.ss.Q": {
       "id": "buck.ss.Q",
@@ -7525,7 +7554,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 2085
+      "yaml_line": 2089
     },
     "boost.ss.Gd0": {
       "id": "boost.ss.Gd0",
@@ -7562,7 +7591,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 2097
+      "yaml_line": 2101
     },
     "boost.ss.w0": {
       "id": "boost.ss.w0",
@@ -7601,7 +7630,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 2111
+      "yaml_line": 2115
     },
     "boost.ss.Q": {
       "id": "boost.ss.Q",
@@ -7642,7 +7671,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 2123
+      "yaml_line": 2127
     },
     "boost.ss.wz": {
       "id": "boost.ss.wz",
@@ -7681,7 +7710,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 2135
+      "yaml_line": 2139
     },
     "buckboost.ss.Gd0": {
       "id": "buckboost.ss.Gd0",
@@ -7718,7 +7747,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 2149
+      "yaml_line": 2153
     },
     "buckboost.ss.w0": {
       "id": "buckboost.ss.w0",
@@ -7757,7 +7786,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 2163
+      "yaml_line": 2167
     },
     "buckboost.ss.Q": {
       "id": "buckboost.ss.Q",
@@ -7798,7 +7827,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 2175
+      "yaml_line": 2179
     },
     "buckboost.ss.wz": {
       "id": "buckboost.ss.wz",
@@ -7837,7 +7866,7 @@
       ],
       "derived_by": "python/pe_core/derive/small_signal.py",
       "n_tests": 7,
-      "yaml_line": 2187
+      "yaml_line": 2191
     },
     "pwm.d": {
       "id": "pwm.d",
@@ -7871,7 +7900,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 2202
+      "yaml_line": 2206
     },
     "loop.T": {
       "id": "loop.T",
@@ -7909,7 +7938,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 2217
+      "yaml_line": 2221
     },
     "loop.suppression": {
       "id": "loop.suppression",
@@ -7942,7 +7971,7 @@
       ],
       "derived_by": "python/pe_core/derive/control.py",
       "n_tests": 7,
-      "yaml_line": 2231
+      "yaml_line": 2235
     },
     "buck.IL": {
       "id": "buck.IL",
@@ -7980,7 +8009,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2248
+      "yaml_line": 2252
     },
     "ripple.Ipk": {
       "id": "ripple.Ipk",
@@ -8015,7 +8044,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 2262
+      "yaml_line": 2266
     },
     "buck.ripple.v": {
       "id": "buck.ripple.v",
@@ -8054,7 +8083,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2275
+      "yaml_line": 2279
     },
     "boost.IL": {
       "id": "boost.IL",
@@ -8094,7 +8123,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2291
+      "yaml_line": 2295
     },
     "boost.ripple.iL": {
       "id": "boost.ripple.iL",
@@ -8135,7 +8164,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2305
+      "yaml_line": 2309
     },
     "boost.ripple.v": {
       "id": "boost.ripple.v",
@@ -8179,7 +8208,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2317
+      "yaml_line": 2321
     },
     "buckboost.V": {
       "id": "buckboost.V",
@@ -8216,7 +8245,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2331
+      "yaml_line": 2335
     },
     "buckboost.IL": {
       "id": "buckboost.IL",
@@ -8256,7 +8285,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2345
+      "yaml_line": 2349
     },
     "buckboost.ripple.iL": {
       "id": "buckboost.ripple.iL",
@@ -8297,7 +8326,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2359
+      "yaml_line": 2363
     },
     "buckboost.ripple.v": {
       "id": "buckboost.ripple.v",
@@ -8341,7 +8370,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2371
+      "yaml_line": 2375
     },
     "buck.Vds": {
       "id": "buck.Vds",
@@ -8375,7 +8404,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2385
+      "yaml_line": 2389
     },
     "boost.Vds": {
       "id": "boost.Vds",
@@ -8410,7 +8439,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2397
+      "yaml_line": 2401
     },
     "buckboost.Vds": {
       "id": "buckboost.Vds",
@@ -8447,7 +8476,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2409
+      "yaml_line": 2413
     },
     "forward.Vds": {
       "id": "forward.Vds",
@@ -8482,7 +8511,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2421
+      "yaml_line": 2425
     },
     "forward.ripple.iL": {
       "id": "forward.ripple.iL",
@@ -8527,7 +8556,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2435
+      "yaml_line": 2439
     },
     "util.buck": {
       "id": "util.buck",
@@ -8562,7 +8591,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2450
+      "yaml_line": 2454
     },
     "util.boost": {
       "id": "util.boost",
@@ -8597,7 +8626,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2464
+      "yaml_line": 2468
     },
     "util.buckboost": {
       "id": "util.buckboost",
@@ -8632,7 +8661,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2478
+      "yaml_line": 2482
     },
     "util.forward": {
       "id": "util.forward",
@@ -8669,7 +8698,7 @@
       ],
       "derived_by": "python/pe_core/derive/topologies.py",
       "n_tests": 7,
-      "yaml_line": 2492
+      "yaml_line": 2496
     },
     "ind.di": {
       "id": "ind.di",
@@ -8706,7 +8735,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2509
+      "yaml_line": 2513
     },
     "cap.dv": {
       "id": "cap.dv",
@@ -8743,7 +8772,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2523
+      "yaml_line": 2527
     },
     "ind.E": {
       "id": "ind.E",
@@ -8778,7 +8807,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2537
+      "yaml_line": 2541
     },
     "cap.E": {
       "id": "cap.E",
@@ -8812,7 +8841,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2549
+      "yaml_line": 2553
     },
     "imp.ZL": {
       "id": "imp.ZL",
@@ -8847,7 +8876,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2561
+      "yaml_line": 2565
     },
     "imp.ZC": {
       "id": "imp.ZC",
@@ -8882,7 +8911,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2575
+      "yaml_line": 2579
     },
     "rc.fc": {
       "id": "rc.fc",
@@ -8916,7 +8945,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2589
+      "yaml_line": 2593
     },
     "rc.gain": {
       "id": "rc.gain",
@@ -8951,7 +8980,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 8,
-      "yaml_line": 2603
+      "yaml_line": 2607
     },
     "fourier.pulse.harm": {
       "id": "fourier.pulse.harm",
@@ -8988,7 +9017,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 8,
-      "yaml_line": 2618
+      "yaml_line": 2622
     },
     "fourier.pulse.rms": {
       "id": "fourier.pulse.rms",
@@ -9022,7 +9051,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2633
+      "yaml_line": 2637
     },
     "passive.f_srf": {
       "id": "passive.f_srf",
@@ -9056,7 +9085,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2645
+      "yaml_line": 2649
     },
     "meas.L_app": {
       "id": "meas.L_app",
@@ -9093,7 +9122,7 @@
       ],
       "derived_by": "python/pe_core/derive/measurement.py",
       "n_tests": 8,
-      "yaml_line": 2659
+      "yaml_line": 2663
     },
     "cap.esr.ripple": {
       "id": "cap.esr.ripple",
@@ -9127,7 +9156,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2676
+      "yaml_line": 2680
     },
     "mag.H_ampere": {
       "id": "mag.H_ampere",
@@ -9163,7 +9192,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2691
+      "yaml_line": 2695
     },
     "mag.B_H": {
       "id": "mag.B_H",
@@ -9200,7 +9229,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 2703
+      "yaml_line": 2707
     },
     "xfmr.V2": {
       "id": "xfmr.V2",
@@ -9238,7 +9267,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2716
+      "yaml_line": 2720
     },
     "xfmr.I2": {
       "id": "xfmr.I2",
@@ -9276,7 +9305,7 @@
       ],
       "derived_by": "python/pe_core/derive/foundations.py",
       "n_tests": 7,
-      "yaml_line": 2732
+      "yaml_line": 2736
     },
     "bat.rint": {
       "id": "bat.rint",
@@ -9312,7 +9341,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 2750
+      "yaml_line": 2754
     },
     "layout.v_spike": {
       "id": "layout.v_spike",
@@ -9348,7 +9377,7 @@
       ],
       "derived_by": "python/pe_core/derive/bench.py",
       "n_tests": 8,
-      "yaml_line": 2765
+      "yaml_line": 2769
     },
     "layout.L_ring": {
       "id": "layout.L_ring",
@@ -9382,7 +9411,7 @@
       ],
       "derived_by": "python/pe_core/derive/bench.py",
       "n_tests": 7,
-      "yaml_line": 2780
+      "yaml_line": 2784
     },
     "boot.C": {
       "id": "boot.C",
@@ -9416,7 +9445,7 @@
       ],
       "derived_by": "python/pe_core/derive/bench.py",
       "n_tests": 7,
-      "yaml_line": 2795
+      "yaml_line": 2799
     },
     "probe.t_rise": {
       "id": "probe.t_rise",
@@ -9448,7 +9477,7 @@
       ],
       "derived_by": "python/pe_core/derive/bench.py",
       "n_tests": 7,
-      "yaml_line": 2809
+      "yaml_line": 2813
     },
     "probe.f_ring": {
       "id": "probe.f_ring",
@@ -9482,7 +9511,7 @@
       ],
       "derived_by": "python/pe_core/derive/bench.py",
       "n_tests": 7,
-      "yaml_line": 2823
+      "yaml_line": 2827
     },
     "inrush.I_pk": {
       "id": "inrush.I_pk",
@@ -9516,7 +9545,7 @@
       ],
       "derived_by": "python/pe_core/derive/bench.py",
       "n_tests": 7,
-      "yaml_line": 2837
+      "yaml_line": 2841
     },
     "inrush.I2t": {
       "id": "inrush.I2t",
@@ -9552,7 +9581,7 @@
       ],
       "derived_by": "python/pe_core/derive/bench.py",
       "n_tests": 7,
-      "yaml_line": 2851
+      "yaml_line": 2855
     },
     "inrush.I_ramp": {
       "id": "inrush.I_ramp",
@@ -9589,7 +9618,7 @@
       ],
       "derived_by": "python/pe_core/derive/bench.py",
       "n_tests": 7,
-      "yaml_line": 2865
+      "yaml_line": 2869
     },
     "gate.I_on": {
       "id": "gate.I_on",
@@ -9629,7 +9658,7 @@
       ],
       "derived_by": "python/pe_core/derive/bench.py",
       "n_tests": 7,
-      "yaml_line": 2879
+      "yaml_line": 2883
     },
     "gate.I_off": {
       "id": "gate.I_off",
@@ -9667,7 +9696,7 @@
       ],
       "derived_by": "python/pe_core/derive/bench.py",
       "n_tests": 7,
-      "yaml_line": 2896
+      "yaml_line": 2900
     },
     "gate.t_pl": {
       "id": "gate.t_pl",
@@ -9705,7 +9734,7 @@
       ],
       "derived_by": "python/pe_core/derive/bench.py",
       "n_tests": 7,
-      "yaml_line": 2912
+      "yaml_line": 2916
     },
     "therm.Tj": {
       "id": "therm.Tj",
@@ -9745,7 +9774,7 @@
       ],
       "derived_by": "python/pe_core/derive/bench.py",
       "n_tests": 7,
-      "yaml_line": 2928
+      "yaml_line": 2932
     },
     "therm.psi": {
       "id": "therm.psi",
@@ -9781,7 +9810,7 @@
       ],
       "derived_by": null,
       "n_tests": 7,
-      "yaml_line": 2942
+      "yaml_line": 2946
     },
     "bat.v_term": {
       "id": "bat.v_term",
@@ -9817,7 +9846,7 @@
       ],
       "derived_by": "python/pe_core/derive/bench.py",
       "n_tests": 8,
-      "yaml_line": 2955
+      "yaml_line": 2959
     },
     "sim.exact_step": {
       "id": "sim.exact_step",
@@ -9856,7 +9885,7 @@
       ],
       "derived_by": "python/pe_core/derive/numerics.py",
       "n_tests": 8,
-      "yaml_line": 2973
+      "yaml_line": 2977
     },
     "num.gain_fe": {
       "id": "num.gain_fe",
@@ -9891,7 +9920,7 @@
       ],
       "derived_by": "python/pe_core/derive/numerics.py",
       "n_tests": 8,
-      "yaml_line": 2988
+      "yaml_line": 2992
     },
     "num.gain_tr": {
       "id": "num.gain_tr",
@@ -9930,7 +9959,7 @@
       ],
       "derived_by": "python/pe_core/derive/numerics.py",
       "n_tests": 8,
-      "yaml_line": 3003
+      "yaml_line": 3007
     },
     "num.gain_be": {
       "id": "num.gain_be",
@@ -9969,7 +9998,53 @@
       ],
       "derived_by": "python/pe_core/derive/numerics.py",
       "n_tests": 8,
-      "yaml_line": 3020
+      "yaml_line": 3024
+    },
+    "sim.step_jump": {
+      "id": "sim.step_jump",
+      "title": "Voltage of a backward Euler step that stops an inductor's current",
+      "title_ko": "인덕터 전류를 멈추는 후진 오일러 스텝의 전압",
+      "latex": "v_\\mathrm{jump} = \\frac{L I_\\mathrm{os}}{\\Delta t}",
+      "lhs": "v_jump",
+      "expr": "L*I_os/Delta_t",
+      "relation": "eq",
+      "variables": [
+        "Delta_t",
+        "I_os",
+        "L"
+      ],
+      "constants": [],
+      "symbols": {
+        "Delta_t": "time step",
+        "I_os": "current past zero",
+        "L": "inductance"
+      },
+      "assumptions": [
+        "backward_euler_step",
+        "current_blocked",
+        "fixed_step"
+      ],
+      "convention": "",
+      "convention_ko": "",
+      "notes": "a simulator with a fixed step does not stop at the instant a diode's current reaches zero, so a step can end with the current past zero. When the diode then turns off and nothing else takes the current, the next step has to bring the inductor's current from $-I_\\mathrm{os}$ back to zero, and backward Euler puts this voltage across the inductor for that step: the node the current leaves jumps by it. The circuit has no such spike, and a shorter step does not remove it: the overshoot shrinks with the step, so the jump stays about as large as the voltage the inductor had across it before the diode turned off. A path for the current, such as a body diode, a snubber or a node capacitance, removes it",
+      "notes_ko": "고정 스텝 시뮬레이터는 다이오드 전류가 0에 이르는 순간에 멈추지 않으므로, 전류가 0을 지나친 채로 스텝이 끝날 수 있다. 그 다음 다이오드가 꺼지고 다른 것이 전류를 받지 않으면, 다음 스텝은 인덕터 전류를 $-I_\\mathrm{os}$에서 0으로 되돌려야 하고, 후진 오일러는 그 스텝 동안 인덕터에 이 전압을 건다. 전류가 떠난 노드가 이만큼 튄다. 회로에는 이런 스파이크가 없으며, 스텝을 줄여도 사라지지 않는다. 초과 전류가 스텝과 함께 줄어들므로, 점프의 크기는 다이오드가 꺼지기 전 인덕터에 걸려 있던 전압의 크기 정도로 남는다. 바디 다이오드, 스너버, 노드 커패시턴스처럼 전류가 흐를 경로가 있으면 사라진다",
+      "cites": [
+        {
+          "key": "alexander2017",
+          "where": "Ch. 6 (Capacitors and Inductors: v = L di/dt, and the current through an inductor cannot change abruptly); derived here"
+        },
+        {
+          "key": "hairer1996",
+          "where": "Sec. IV.3 (implicit Euler takes the slope at the end of the step)"
+        },
+        {
+          "key": "circuitjs1_source",
+          "where": "Inductor.java: the backward Euler companion model, a resistance L over the time step in parallel with the previous current"
+        }
+      ],
+      "derived_by": "python/pe_core/derive/numerics.py",
+      "n_tests": 8,
+      "yaml_line": 3041
     },
     "filter.tau_env": {
       "id": "filter.tau_env",
@@ -10015,7 +10090,7 @@
       ],
       "derived_by": "python/pe_core/derive/numerics.py",
       "n_tests": 7,
-      "yaml_line": 3037
+      "yaml_line": 3059
     },
     "sim.periods_settle": {
       "id": "sim.periods_settle",
@@ -10051,7 +10126,7 @@
       ],
       "derived_by": "python/pe_core/derive/numerics.py",
       "n_tests": 8,
-      "yaml_line": 3054
+      "yaml_line": 3076
     },
     "num.rel_diff": {
       "id": "num.rel_diff",
@@ -10085,7 +10160,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 3069
+      "yaml_line": 3091
     },
     "num.unit_roundoff": {
       "id": "num.unit_roundoff",
@@ -10119,7 +10194,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 3083
+      "yaml_line": 3105
     }
   }
 }

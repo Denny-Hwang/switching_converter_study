@@ -1,0 +1,79 @@
+---
+/**
+ * <FalstadLinks /> -- every SPICE library case as a CircuitJS1 circuit: its share link, its
+ * circuit file, the same example in the site's simulator, and the ideal values the CI's
+ * falstad job (scripts/falstad_check.mjs) compares its last periods with.
+ */
+import { ui } from '../i18n/ui';
+import { REPO_BLOB } from '../config';
+import { pageHref } from '../lib/paths';
+import { pageLocale } from '../lib/locale';
+import { simulatorHash } from '../lib/simpresets';
+import { falstadCases, type FalstadCase } from '../lib/falstad';
+import { fmtValue } from '../lib/format';
+
+const locale = pageLocale(Astro);
+const t = ui[locale];
+
+type Stat = 'avg' | 'max' | 'min';
+const STATS: Stat[] = ['avg', 'max', 'min'];
+
+/** One line per measured quantity, in the order v_out, i_L, v_sw: "output voltage: average 12 V" and the like. */
+function lines(c: FalstadCase): { label: string; values: string[] }[] {
+  const out: { label: string; values: string[] }[] = [];
+  for (const q of ['v_out', 'i_L', 'v_sw']) {
+    const stats = STATS.filter((s) => c.expected[`${q}_${s}`] !== undefined);
+    if (!stats.length) continue;
+    const unit = q.startsWith('i_') ? 'A' : 'V';
+    const label = q === 'v_sw' && c.measure.v_sw?.node === 'drain' ? t['falstad.q.drain'] : t[`falstad.q.${q}` as 'falstad.q.v_out'];
+    // a value keeps its unit on its line
+    const values = stats.map((s) => `${t[`falstad.stat.${s}` as 'falstad.stat.avg']} ${fmtValue(c.expected[`${q}_${s}`]!.value, unit, 4).replace(' ', ' ')}`);
+    out.push({ label, values });
+  }
+  return out;
+}
+---
+
+<div class="pe-scroll not-content">
+  <table class="pe-sim__table pe-falstad">
+    <thead>
+      <tr>
+        <th scope="col">{t['falstad.case']}</th>
+        <th scope="col">{t['falstad.circuit']}</th>
+        <th scope="col">{t['falstad.ideal']}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        falstadCases.map((c) => (
+          <tr>
+            <th scope="row">
+              {locale === 'ko' ? c.title_ko : c.title}
+              <div class="pe-falstad__sub">
+                {t['falstad.sim']}:{' '}
+                <a href={`${pageHref(locale, 'simulate/simulator')}#${simulatorHash(c.example, c.topology)}`}>
+                  <code>{c.example}</code>
+                </a>
+              </div>
+            </th>
+            <td>
+              <a href={c.link}>{t['falstad.open']}</a>
+              <div class="pe-falstad__sub">
+                <a href={`${REPO_BLOB}/${c.file}`}>
+                  <code>{c.file.replace(/^.*\//, '')}</code>
+                </a>
+              </div>
+            </td>
+            <td>
+              {lines(c).map((l) => (
+                <div>
+                  {l.label}: {l.values.join(', ')}
+                </div>
+              ))}
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

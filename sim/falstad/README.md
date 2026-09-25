@@ -23,17 +23,25 @@ The parts are the SPICE library's near-ideal ones: a switch of 1 mOhm (1 MOhm of
 drop about 30 mV at an ampere. CircuitJS1 steps with a fixed time step, a five-hundredth of the
 switching period, and three changes follow from that:
 
-- **A body diode across each switch**, as the site's simulator has. When a diode stops conducting,
-  its current overshoots zero by up to one step's change, and the node that current leaves behind
-  would otherwise jump far past the input.
-- **Backward Euler for the inductors and transformers** (their edit dialogs' last checkbox), which
-  damps a mode much faster than the step, where the trapezoidal rule would ring from one step to
-  the next.
+- **A body diode across each switch**, as the site's simulator has. A diode's current reaches zero
+  within a step, and in CircuitJS1 it goes past zero before the diode turns off: the iteration stops
+  once a diode's voltage moves by less than 10 mV, while these diodes' current changes e-fold every
+  1.3 mV (in the DCM buck the current reaches 3.7 mA below zero, a little more than its change in
+  one step). The body diode carries that current. Without it the current would have to stop within
+  one step, and the node it leaves would jump far outside the supply: to 34 V against the buck's
+  24 V input, and to -50 V at the DCM flyback's drain. A shorter step does not help, as the
+  overshoot shrinks with the step.
+- **Backward Euler for the inductors and transformers** (the Trapezoidal Approximation box in their
+  edit dialogs, unchecked). A mode much faster than the step, such as the leakage inductance's, then
+  dies out within a step. With the trapezoidal rule it rings from one step to the next: the DCM
+  flyback's drain alternates between about 258 V and 0 V around the 129 V it should show.
 - **A coupling of 0.99999**, not 1: CircuitJS1 inverts the windings' inductance matrix, which is
-  singular at 1. The leakage left adds a spike of about a volt to the drain at turn-off.
+  singular at 1, and accepts only a coupling between 0 and 1. The leakage left adds a one-step spike
+  of under a volt to the drain at turn-off (0.2 V in the CCM flyback, 0.7 V in the forward), in
+  proportion to one minus the coupling.
 
 The scopes along the bottom show the inductor current (the flyback's switch current), the switch
-node and the output. Right-click an element and choose View in Scope to add another.
+node and the output. Right-click an element and choose View in New Scope to add another.
 
 # CircuitJS1로 보는 SPICE 라이브러리
 
@@ -60,13 +68,21 @@ node and the output. Right-click an element and choose View in Scope to add anot
 떨어지는 다이오드입니다. CircuitJS1은 스위칭 주기의 500분의 1인 고정 시간 간격으로 진행하므로 세 가지가
 달라집니다.
 
-- **스위치마다 바디 다이오드(body diode)**를 둡니다. 사이트의 시뮬레이터와 같습니다. 다이오드가 도통을
-  멈출 때 전류가 한 스텝의 변화만큼 0을 지나치므로, 그 전류가 남기는 노드가 입력을 훨씬 넘어 튈 수
-  있습니다.
-- **인덕터와 변압기에 후진 오일러(backward Euler)**를 씁니다(편집 대화 상자의 마지막 확인란). 스텝보다
-  훨씬 빠른 모드를 감쇠시킵니다. 사다리꼴 규칙이라면 스텝마다 링잉할 모드입니다.
+- **스위치마다 바디 다이오드(body diode)**를 둡니다. 사이트의 시뮬레이터와 같습니다. 다이오드 전류는
+  스텝 도중에 0에 이르는데, CircuitJS1에서는 다이오드가 꺼지기 전에 0을 지나칩니다. 반복 계산은 다이오드
+  전압의 변화가 10 mV보다 작아지면 멈추는데, 이 다이오드의 전류는 1.3 mV마다 e배씩 바뀌기 때문입니다
+  (DCM 벅에서는 전류가 0 아래 3.7 mA까지 내려가며, 한 스텝 동안의 변화보다 조금 큽니다). 바디 다이오드가
+  그 전류를 흘립니다. 바디 다이오드가 없으면 전류가 한 스텝 안에 멈춰야 하므로, 전류가 떠난 노드가 전원
+  범위를 훨씬 벗어나 튑니다. 벅에서는 24 V 입력에 대해 34 V까지, DCM 플라이백의 드레인에서는 -50 V까지
+  튑니다. 초과 전류가 스텝과 함께 줄어들므로 스텝을 줄여도 나아지지 않습니다.
+- **인덕터와 변압기에 후진 오일러(backward Euler)**를 씁니다(편집 대화 상자의 Trapezoidal Approximation
+  확인란을 끔). 그러면 누설 인덕턴스의 모드처럼 스텝보다 훨씬 빠른 모드가 한 스텝 안에 사라집니다.
+  사다리꼴 규칙에서는 이 모드가 스텝마다 링잉합니다. DCM 플라이백의 드레인은 보여야 할 129 V를 사이에
+  두고 약 258 V와 0 V를 번갈아 오갑니다.
 - **결합 계수는 1이 아니라 0.99999**입니다. CircuitJS1은 권선의 인덕턴스 행렬을 역행렬로 푸는데, 1에서는
-  그 행렬이 특이 행렬입니다. 남는 누설 때문에 턴오프 때 드레인에 약 1 V의 스파이크가 더해집니다.
+  그 행렬이 특이 행렬이며, 결합 계수로 0과 1 사이의 값만 받습니다. 남는 누설 때문에 턴오프 때 드레인에
+  한 스텝 동안 1 V 미만의 스파이크가 더해집니다(CCM 플라이백 0.2 V, 포워드 0.7 V). 스파이크는 1에서
+  결합 계수를 뺀 값에 비례합니다.
 
 아래쪽의 스코프는 인덕터 전류(플라이백은 스위치 전류), 스위치 노드, 출력을 보여 줍니다. 요소를
-오른쪽 클릭하고 View in Scope를 고르면 스코프를 더할 수 있습니다.
+오른쪽 클릭하고 View in New Scope를 고르면 스코프를 더할 수 있습니다.

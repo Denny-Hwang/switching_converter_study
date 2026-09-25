@@ -916,6 +916,18 @@
       "verified": true,
       "url": "https://www.falstad.com/circuit/"
     },
+    "circuitjs1_source": {
+      "key": "circuitjs1_source",
+      "type": "misc",
+      "label": "Falstad & Sharp, CircuitJS1 source code, version 4.1.5.1js",
+      "authors": [
+        "Paul Falstad",
+        "Iain Sharp"
+      ],
+      "title": "CircuitJS1 source code, version 4.1.5.1js",
+      "verified": true,
+      "url": "https://github.com/pfalstad/circuitjs1"
+    },
     "hairer1996": {
       "key": "hairer1996",
       "type": "book",

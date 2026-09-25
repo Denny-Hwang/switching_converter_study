@@ -1103,6 +1103,33 @@ resources:
     title_match: "Circuit Simulator"
     cite: falstad_circuitjs
 
+  - id: circuitjs1-source
+    type: tool
+    title: "CircuitJS1 source code"
+    author: "P. Falstad, I. Sharp"
+    url: https://github.com/pfalstad/circuitjs1
+    tags: [simulation, browser]
+    level: advanced
+    language: en
+    retrieved: 2026-09-25
+    why: "The simulator's source: how it steps in time, and how it models its inductors, transformers and diodes in each step."
+    why_ko: "시뮬레이터의 소스 코드. 시간 스텝을 진행하는 방법과, 스텝마다 인덕터·변압기·다이오드를 모델링하는 방법."
+    title_match: "pfalstad/circuitjs1"
+    cite: circuitjs1_source
+
+  - id: circuitjs1-js-interface
+    type: tool
+    title: "Circuit Simulator JavaScript Interface Documentation"
+    author: "the CircuitJS1 project"
+    url: https://www.falstad.com/circuit/doc/js-interface.html
+    tags: [simulation, browser]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-25
+    why: "How a web page runs the simulator from JavaScript and reads its node voltages and currents after every step, as the site's CI does to check the library's circuits."
+    why_ko: "웹 페이지에서 JavaScript로 시뮬레이터를 돌리고 스텝마다 노드 전압과 전류를 읽는 방법. 이 사이트의 CI가 라이브러리의 회로를 확인하는 방식이기도 함."
+    title_match: "Circuit Simulator JavaScript Interface Documentation"
+
   - id: tdk-mdt
     type: tool
     title: "Ferrite Magnetic Design Tool"

@@ -1,0 +1,186 @@
+---
+title: The converters in CircuitJS1
+description: How to open the SPICE library's circuits in Paul Falstad's browser simulator, how it steps a circuit, and why a fixed time step makes a spike where a diode stops conducting unless the current has somewhere to go.
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+import FalstadLinks from '../../../../components/FalstadLinks.astro';
+
+## Intent
+
+- Open the SPICE library's circuits in CircuitJS1 and read their scopes.
+- Know how CircuitJS1 steps a circuit, and what a fixed time step does where a diode stops conducting.
+- Tell a numerical spike from the circuit's own, and know why the library's circuits carry body diodes, backward Euler magnetics and a coupling just below one.
+
+## Theory
+
+### The library in CircuitJS1
+
+CircuitJS1 is Paul Falstad's circuit simulator, adapted to the browser by
+Iain Sharp <Cite key="falstad_circuitjs" />: it runs a circuit in the page and
+animates the currents through it. The repository's `sim/falstad/` folder has
+the SPICE library's seven cases as CircuitJS1 circuits, each as a text file
+(File > Import From Text) and as a link that opens it on falstad.com. The
+link carries the whole circuit, compressed into its address
+<Cite key="circuitjs1_source" />. A script writes every circuit from the list
+of parts behind the SPICE netlist of the same name, with the netlist's node
+names and the same example's values, and checks that each part joins the same
+nodes as in the netlist.
+
+<FalstadLinks />
+
+The scopes along the bottom show the inductor current (in the flyback, the
+switch current), the switch node or the drain, and the output. The site's CI
+opens every link on falstad.com in a headless browser, runs it from rest for
+as many periods as the SPICE case, and compares the averages and extremes of
+its last two periods with the ideal values in the table: each must lie within
+one percent of its quantity's largest magnitude over those periods.
+
+### How CircuitJS1 steps a circuit
+
+CircuitJS1 advances the whole circuit by one fixed time step at a time. It
+halves the step only when its iteration fails to converge, and then only if
+Auto-Adjust Timestep is on in Other Options <Cite key="circuitjs1_source" />.
+The library's circuits leave it off and step a five-hundredth of the
+switching period. SPICE instead chooses each step from an estimate of its
+error <Cite key="ngspice_manual" />; CircuitJS1 does not look for the instant
+a diode starts or stops conducting.
+
+In every step each inductor becomes a companion model, a conductance in
+parallel with a current source. The model follows the trapezoidal rule
+unless the inductor's Trapezoidal Approximation box is unchecked, which
+selects backward Euler, and a transformer's windings work the same way
+<Cite key="circuitjs1_source" />. A diode is nonlinear, so CircuitJS1
+iterates: it replaces the diode by a straight line at its present voltage,
+solves the circuit, and repeats. It counts the diode as converged once its
+voltage changes by no more than 10 mV from one iteration to the next <Cite key="circuitjs1_source" />,
+and then keeps the solution it has without solving again.
+
+### Where a diode stops conducting
+
+The library's diodes are near ideal: a change of their voltage far smaller
+than what the iteration accepts changes their current many times over. When
+a diode's current reaches zero within a step, the straight line that stands
+for the diode can still carry current past zero, for that step and perhaps
+the next, and the inductor's current ends below zero. In the library's DCM
+buck it goes past zero by a little more than it changes in one step. Once the
+iteration finds the diode off, and nothing else takes the current, the next
+step has to bring the current back to zero, and backward Euler puts across
+the inductor, for that one step:
+
+<Eq id="sim.step_jump" />
+
+The node the current leaves ends up that far from the inductor's other end:
+in the DCM buck without its body diode, the switch node leaps for one step
+from near zero to that much above the output, about ten volts above the
+input, a spike the circuit does not have. A shorter step does not remove it.
+The current's overshoot is about its change in one step, so it shrinks with
+the step, and the jump stays about as large as the voltage the inductor had
+across it before the diode turned off, the output voltage in the buck: with
+the step halved and halved again, the DCM buck's jump stayed between about
+three-quarters of and one and a half times its output voltage.
+
+The library's circuits therefore give each switch a body diode, as the
+site's simulator has. The current past zero then has a path, and a node goes
+no further than a diode drop past a rail: the DCM buck's switch node stops a
+diode drop above the input. At the DCM flyback's drain, which falls back to
+the input when the diode turns off, the jump points down: without the body
+diode it reaches far below ground, and with it the drain can still dip for a
+step, but not below ground.
+
+### Transformers
+
+CircuitJS1's transformer inverts the matrix of its windings' inductances,
+which is singular when the coupling is exactly one, and its dialog accepts a
+coupling only between zero and one <Cite key="circuitjs1_source" />. The
+library's transformers use 0.99999. The leakage inductance left adds a spike
+of less than a volt to the drain for one step at turn-off, in proportion to
+one minus the coupling.
+
+That leakage is also a mode far faster than the step, and the trapezoidal
+rule's factor for such a mode is close to minus one
+(<EqRef id="num.gain_tr" label="the trapezoidal rule's factor" />): it rings
+from one step to the next. With the Trapezoidal Approximation box ticked, the
+DCM flyback's drain alternates at every step between about twice the level it
+should show and zero. The library's inductors and transformers therefore use
+backward Euler, whose factor for such a mode is close to zero
+(<EqRef id="num.gain_be" label="backward Euler's factor" />).
+
+## Worked example
+
+The library's DCM buck steps its inductor with backward Euler. Take its body
+diode away, and the current past zero when the freewheeling diode turns off
+has to stop within one step:
+
+<Worked example="falstad-jump" />
+
+The switch node jumps <Val example="falstad-jump" name="v_jump" /> above the
+output, which sits at <Val example="buck-light-load" name="V_dcm" />, so for
+one step it shows about ten volts above the input. With the body diode in
+place, the current flows back to the input through it, and the switch node
+stops a diode drop above the input.
+
+## Try it
+
+<TryIt eq="sim.step_jump" example="falstad-jump" sweep="I_os" />
+
+For a given step, the jump grows in proportion to the current past zero. Then
+see it in CircuitJS1: open the DCM buck from the table, select the diode
+across the switch and delete it, and watch the switch node's scope spike at
+the end of each diode conduction. Change the time step in Other Options: the
+spike stays. In the DCM flyback, double-click the transformer and tick
+Trapezoidal Approximation: the drain's scope fills with the step-by-step
+alternation. The site's simulator finds the instant a diode's current reaches
+zero within its step
+([how it steps](../in-browser-simulator/#events)), so it shows neither:
+
+<TrySim example="buck-light-load" topology="buck" />
+
+## Bench exercise
+
+Capture a DCM converter's switch node on the bench as the diode stops
+conducting: the inductance rings with the capacitance at the switch node
+(<EqRef id="dcm.ring.f" label="ringing frequency" />). Work out that
+capacitance from the ring's frequency and the inductance. In CircuitJS1, give
+the library's DCM buck your converter's values, add the capacitance across
+the switch, delete the body diode, and set a time step short enough to
+resolve the ring, a small fraction of its period. The one-step jump gives way
+to a ring at the bench's frequency, since the node capacitance gives the
+current somewhere to go. Expect the bench's ring to decay faster, damped by
+losses the model leaves out.
+
+## Gotchas
+
+- **A spike that lasts one step, and changes when the step changes,** is
+  numerical: look for a current with nowhere to go
+  (<EqRef id="sim.step_jump" label="one-step jump" />) before you look for a
+  cause in the circuit.
+- **A node that alternates at every step** is the trapezoidal rule on a mode
+  far faster than the step. Uncheck Trapezoidal Approximation on the
+  inductors and transformers.
+- **A coupling of exactly one cannot be entered**: the dialog refuses it
+  <Cite key="circuitjs1_source" />. Use a value just below one, and expect a
+  small leakage spike at turn-off.
+- **A diode with a steep curve converges loosely.** The iteration stops on a
+  change of voltage, not of current, so a near-ideal diode can end a step with
+  its current well past zero. Give the current a path, such as a body diode,
+  a snubber or a node capacitance.
+
+## Go deeper
+
+<GoDeeper ids={['falstad-circuitjs', 'circuitjs1-source', 'circuitjs1-js-interface']} />
+
+## Quiz
+
+<Quiz id="05-simulation/falstad" />

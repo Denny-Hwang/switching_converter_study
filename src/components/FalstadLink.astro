@@ -1,0 +1,17 @@
+---
+/**
+ * <FalstadLink id="buck-ccm" /> -- a SPICE library case's circuit, opened on falstad.com in
+ * CircuitJS1 (the share link of src/generated/falstad.json).
+ */
+import { ui } from '../i18n/ui';
+import { pageLocale } from '../lib/locale';
+import { falstadCase } from '../lib/falstad';
+
+interface Props {
+  id: string;
+}
+const c = falstadCase(Astro.props.id);
+const t = ui[pageLocale(Astro)];
+---
+
+<a href={c.link}>{t['falstad.open']}</a>

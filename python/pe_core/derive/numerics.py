@@ -1,12 +1,15 @@
 """Simulation: the exact time step of a first-order circuit; the factor by
 which forward Euler, the trapezoidal rule and backward Euler multiply a
-decaying mode in each step; the envelope of an L-C filter's ring with a
-resistive load; and the switching periods a start-up needs to settle.
+decaying mode in each step; the voltage of a backward Euler step that stops
+an inductor's current; the envelope of an L-C filter's ring with a resistive
+load; and the switching periods a start-up needs to settle.
 
-References: Alexander & Sadiku (2017), Ch. 7 (the complete response of a
-first-order circuit) and Ch. 8 (the source-free parallel RLC circuit); Hairer
-& Wanner (1996), Sec. IV.2 and IV.3 (a one-step method applied to the test
-equation multiplies its solution by a fixed factor in each step).
+References: Alexander & Sadiku (2017), Ch. 6 (an inductor's voltage is L
+di/dt), Ch. 7 (the complete response of a first-order circuit) and Ch. 8 (the
+source-free parallel RLC circuit); Hairer & Wanner (1996), Sec. IV.2 and IV.3
+(a one-step method applied to the test equation multiplies its solution by a
+fixed factor in each step; implicit Euler takes the slope at the end of the
+step).
 """
 
 from __future__ import annotations
@@ -130,6 +133,34 @@ def derive() -> Derivation:
             sp.Eq(sp.Limit(g_tr, dt, sp.oo), sp.limit(g_tr, dt, sp.oo)),
             sp.Eq(sp.Limit(g_be, dt, sp.oo), sp.limit(g_be, dt, sp.oo)),
         ),
+    )
+
+    # --- the step that stops an inductor's current ---------------------------------------------
+    L_ind, i_os = S("L"), S("I_os")
+    i0 = d.local("i_0", "i_0")
+    i1 = d.local("i_1", "i_1")
+    v1 = d.local("v_L1", "v_{L,1}")
+    be_ind = sp.Eq(i1, i0 + dt * v1 / L_ind)
+    d.step(
+        "Backward Euler steps an inductor's current with the slope at the end of the step, the voltage $v_{L,1}$ "
+        "across it over its inductance:",
+        "후진 오일러는 스텝 끝의 기울기, 곧 인덕터 전압 $v_{L,1}$을 인덕턴스로 나눈 값으로 인덕터 전류를 진행시킨다.",
+        be_ind,
+    )
+    stop = be_ind.subs({i0: -i_os, i1: 0})
+    d.step(
+        "A diode's current has gone past zero, to $-I_\\mathrm{os}$, before the diode turns off. If nothing else "
+        "takes the current, the next step must end with it at zero:",
+        "다이오드가 꺼지기 전에 전류가 0을 지나 $-I_\\mathrm{os}$까지 갔다. 다른 것이 전류를 받지 않으면 다음 "
+        "스텝은 전류가 0인 상태로 끝나야 한다.",
+        stop,
+    )
+    d.result(
+        "sim.step_jump",
+        sp.solve(stop, v1)[0],
+        "Solve for the voltage across the inductor in that step:",
+        "그 스텝 동안 인덕터에 걸리는 전압에 대해 푼다.",
+        S("v_jump"),
     )
 
     # --- the envelope of the output filter's ring ---------------------------------------------

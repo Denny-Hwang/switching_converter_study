@@ -21,8 +21,9 @@ A page is a module page when its frontmatter has `module: true`. For each:
     `numbers: synthetic`;
   * the Korean page mirrors the English one: the same block components
     (Eq, Worked, TryIt, TrySim, GoDeeper, Quiz, Figure, CoreKg, MagWorked,
-    TryMag) with the same attributes in the same order, the same inline
-    components (Cite, EqRef, Val) in any order (Korean word order differs),
+    TryMag, TryTool, Mission, FalstadLinks) with the same attributes in the
+    same order, the same inline components (Cite, EqRef, Val, FalstadLink)
+    in any order (Korean word order differs),
     and a quiz with the same answer key; a component that is neither (a new
     one) is an error until it is added to one of the two lists, so that no
     content escapes the comparison;
@@ -103,13 +104,13 @@ SECTIONS = {
     "en": ["Intent", "Theory", "Worked example", "Try it", "Bench exercise", "Gotchas", "Go deeper", "Quiz"],
     "ko": ["목표", "이론", "풀이 예제", "직접 해 보기", "벤치 실습", "주의할 점", "더 알아보기", "퀴즈"],
 }
-BLOCK = ("Eq", "Worked", "TryIt", "TrySim", "GoDeeper", "Quiz", "Figure", "CoreKg", "MagWorked", "TryMag", "TryTool", "Mission")
+BLOCK = ("Eq", "Worked", "TryIt", "TrySim", "GoDeeper", "Quiz", "Figure", "CoreKg", "MagWorked", "TryMag", "TryTool", "Mission", "FalstadLinks")
 SIM_TOPOLOGIES = ("buck", "boost", "buckboost", "flyback", "forward")
 TOOLS = ("Explorer", "Simulator", "ConverterDesigner", "MagneticsDesigner", "LossBudget", "ClampCheck", "SourceMatcher", "SenseChain")
 TOOL_TAG = re.compile(r"<(" + "|".join(TOOLS) + r")\b")
 SHOT_SECTION = {"en": "Screenshot", "ko": "스크린샷"}
 SHOT_IMPORT = re.compile(r"^import\s+(\w+)\s+from\s+'((?:\.\./)+assets/screenshots/([\w-]+)\.png)';", re.M)
-INLINE = ("Cite", "EqRef", "Val")
+INLINE = ("Cite", "EqRef", "Val", "FalstadLink")
 COMPONENT = re.compile(r"<(" + "|".join(BLOCK + INLINE) + r")\b((?:[^>\"'{}]|\"[^\"]*\"|'[^']*'|\{(?:[^{}]|\{[^{}]*\})*\})*)/?>")
 ATTR = re.compile(r"(\w+)\s*=\s*(?:\"([^\"]*)\"|\{([^}]*)\})")
 GOTCHAS_DIR = "08-gotchas"
