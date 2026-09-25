@@ -13,10 +13,11 @@ import { isToolHash } from '../lib/hash';
 import { PLOT_CONFIG, axis, baseLayout, logTicks, sub, usePlotTheme } from '../lib/plot';
 import { fmtValue } from '../lib/format';
 import { useStateHash } from '../lib/useStateHash';
-import { Choices, FieldLabel, Rich } from './ToolUi';
+import { Choices, FieldLabel, NumInput, Rich } from './ToolUi';
+import { parseSI } from '../lib/siparse';
 
 export interface ClampLabels {
-  /** Values are entered in base SI units. */
+  /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
   siHint: string;
   kind: string;
   kinds: Record<ClampKind, string>;
@@ -93,38 +94,40 @@ export const FIELDS: Field[] = [
   { key: 'R', label: 'R_clamp', unit: 'Ω', group: 'rcd' },
 ];
 const KEYS = FIELDS.map((f) => f.key);
+/** Each field's unit, which its value may carry after the number (lib/siparse.ts). */
+const UNIT: Record<string, string> = Object.fromEntries(FIELDS.map((f) => [f.key, f.unit]));
 const shownFor = (kind: ClampKind) => FIELDS.filter((f) => f.group === 'operating' || f.group === kind);
 
 /** A number field's value; an empty or non-finite field is NaN, never 0. */
-function num(raw: string | undefined): number {
+function num(raw: string | undefined, unit?: string): number {
   const t = (raw ?? '').trim();
-  const v = t === '' ? Number.NaN : Number(t);
+  const v = parseSI(t, unit);
   return Number.isFinite(v) ? v : Number.NaN;
 }
 
 /** The clamp check's specification from the form, or null when a field is missing or out of range. */
 export function toClampSpec(kind: ClampKind, values: Record<string, string>): ClampSpec | null {
   for (const f of shownFor(kind)) {
-    const v = num(values[f.key]);
+    const v = num(values[f.key], f.unit);
     if (f.zero ? !(v >= 0) : !(v > 0)) return null;
   }
   const base = {
-    Vg: num(values.Vg),
-    V: num(values.V),
-    VD: num(values.VD),
-    n: num(values.n),
-    Llk: num(values.Llk),
-    Ipk: num(values.Ipk),
-    fs: num(values.fs),
-    Vrating: num(values.Vrating),
+    Vg: num(values.Vg, UNIT.Vg),
+    V: num(values.V, UNIT.V),
+    VD: num(values.VD, UNIT.VD),
+    n: num(values.n, UNIT.n),
+    Llk: num(values.Llk, UNIT.Llk),
+    Ipk: num(values.Ipk, UNIT.Ipk),
+    fs: num(values.fs, UNIT.fs),
+    Vrating: num(values.Vrating, UNIT.Vrating),
   };
   if (kind === 'tvs') {
-    const clamp = { kind: 'tvs' as const, VBR: num(values.VBR), VCL: num(values.VCL), IPP: num(values.IPP) };
+    const clamp = { kind: 'tvs' as const, VBR: num(values.VBR, UNIT.VBR), VCL: num(values.VCL, UNIT.VCL), IPP: num(values.IPP, UNIT.IPP) };
     // the clamping voltage at the peak pulse current lies above the breakdown voltage
     if (!(clamp.VCL > clamp.VBR)) return null;
     return { ...base, clamp };
   }
-  return { ...base, clamp: { kind: 'rcd', R: num(values.R) } };
+  return { ...base, clamp: { kind: 'rcd', R: num(values.R, UNIT.R) } };
 }
 
 /** Results with SI prefixes (lib/format.ts). */
@@ -316,7 +319,7 @@ export default function ClampCheck({ labels, presets, symbols }: Props) {
     return (
       <div key={f.key} className="pe-row pe-row--full">
         <FieldLabel htmlFor={id} sym={f.label} meaning={symbols[f.label]} unit={f.unit} />
-        <input id={id} type="number" step="any" value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
+        <NumInput id={id} unit={f.unit} value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
       </div>
     );
   };

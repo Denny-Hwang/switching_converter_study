@@ -10,10 +10,11 @@ import { catalog, evaluate } from 'pe-core';
 import { PLOT_CONFIG, axis, baseLayout, usePlotTheme } from '../lib/plot';
 import { latexHtml, symHtml } from '../lib/sym';
 import { useStateHash } from '../lib/useStateHash';
-import { FieldLabel, Rich } from './ToolUi';
+import { FieldLabel, NumInput, Rich } from './ToolUi';
+import { parseSI } from '../lib/siparse';
 
 interface Labels {
-  /** Values are entered in base SI units. */
+  /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
   siHint: string;
   equation: string;
   inputs: string;
@@ -70,10 +71,9 @@ function axisTitle(name: string, locale: 'en' | 'ko'): string {
   return `${latexHtml(catalog.symbols[name]?.latex ?? name)}${meaning ? ` — ${symHtml(meaning)}` : ''}${u ? ` [${u}]` : ''}`;
 }
 
-/** A number field's value; an empty or partial field is NaN, never 0. */
-export function parseField(raw: string | undefined): number {
-  const t = (raw ?? '').trim();
-  return t === '' ? Number.NaN : Number(t);
+/** A number field's value, the symbol's unit allowed after it; an empty or partial field is NaN, never 0. */
+export function parseField(raw: string | undefined, unit?: string): number {
+  return parseSI(raw, unit);
 }
 
 function fmt(x: number): string {
@@ -136,7 +136,7 @@ export default function EquationExplorer({ locale, labels }: Props) {
 
   const numeric = useMemo(() => {
     const out: Record<string, number> = {};
-    for (const v of meta.variables) out[v] = parseField(values[v]);
+    for (const v of meta.variables) out[v] = parseField(values[v], unitLabel(v));
     return out;
   }, [meta, values]);
 
@@ -171,8 +171,8 @@ export default function EquationExplorer({ locale, labels }: Props) {
   // sweep plot
   useEffect(() => {
     const el = plotRef.current;
-    const a = parseField(from);
-    const b = parseField(to);
+    const a = parseField(from, unitLabel(sweep));
+    const b = parseField(to, unitLabel(sweep));
     if (!el || !(a < b) || (logx && a <= 0)) return;
     let cancelled = false;
     const n = 201;
@@ -246,10 +246,9 @@ export default function EquationExplorer({ locale, labels }: Props) {
             {meta.variables.map((v) => (
               <div key={v} className="pe-row pe-row--full">
                 <FieldLabel htmlFor={`explorer-${v}`} sym={v} symHtml={symbolHtml(v)} meaning={meaningOf(v, locale)} unit={unitLabel(v)} />
-                <input
+                <NumInput
                   id={`explorer-${v}`}
-                  type="number"
-                  step="any"
+                  unit={unitLabel(v)}
                   value={values[v] ?? ''}
                   onChange={(e) => setValues({ ...values, [v]: e.target.value })}
                 />
@@ -286,11 +285,11 @@ export default function EquationExplorer({ locale, labels }: Props) {
             </div>
             <div className="pe-row pe-row--full">
               <label htmlFor="explorer-from">{labels.from}</label>
-              <input id="explorer-from" type="number" step="any" value={from} onChange={(e) => setFrom(e.target.value)} />
+              <NumInput id="explorer-from" unit={unitLabel(sweep)} value={from} onChange={(e) => setFrom(e.target.value)} />
             </div>
             <div className="pe-row pe-row--full">
               <label htmlFor="explorer-to">{labels.to}</label>
-              <input id="explorer-to" type="number" step="any" value={to} onChange={(e) => setTo(e.target.value)} />
+              <NumInput id="explorer-to" unit={unitLabel(sweep)} value={to} onChange={(e) => setTo(e.target.value)} />
             </div>
             <label className="pe-check" htmlFor="explorer-logx">
               <input id="explorer-logx" type="checkbox" checked={logx} onChange={(e) => setLogx(e.target.checked)} />

@@ -16,7 +16,9 @@ import { LOADS, loadChoiceOf, type LoadChoice } from '../lib/simload';
 import type { SimReply } from './simulator.worker';
 import SequenceView, { type SeqText } from './SequenceView';
 import ModeSheet from './ModeSheet';
-import { Choices, FieldLabel, Rich, Sym } from './ToolUi';
+import { Choices, FieldLabel, NumInput, Rich, Sym } from './ToolUi';
+import { parseSI } from '../lib/siparse';
+import { falstadLink, falstadText, currentBar } from '../lib/falstadgen';
 
 /** The sheet of every mode starts open up to this many modes. */
 const SHEET_OPEN_MODES = 6;
@@ -26,7 +28,7 @@ type SimParams = sim.SimParams;
 type SimResult = sim.SimResult;
 
 export interface SimLabels {
-  /** Values are entered in base SI units. */
+  /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
   siHint: string;
   topology: string;
   presets: string;
@@ -98,6 +100,11 @@ export interface SimLabels {
   running: string;
   slider: string;
   plotHint: string;
+  /** The CircuitJS1 link for the form's values (lib/falstadgen.ts). */
+  falstadOpen: string;
+  falstadHint: string;
+  falstadLeftOut: string;
+  falstadNeeds: string;
   topologies: Record<Topology, string>;
 }
 
@@ -240,6 +247,8 @@ export const FIELDS: Field[] = [
   },
 ];
 const KEYS = FIELDS.map((f) => f.key);
+/** Each field's unit, which its value may carry after the number (lib/siparse.ts). */
+const UNIT: Record<string, string> = Object.fromEntries(FIELDS.map((f) => [f.key, f.unit]));
 
 /** Sliders: D is linear on (0, 1); the other positive parameters move over one decade either side of an anchor. */
 const D_RANGE = { min: 0.01, max: 0.99, step: 0.01 };
@@ -249,7 +258,7 @@ const DECADES = 1;
 export function sliderAnchors(values: Record<string, string>): Record<string, number> {
   const out: Record<string, number> = {};
   for (const k of KEYS) {
-    const v = parseField(values[k]);
+    const v = parseField(values[k], UNIT[k]);
     if (Number.isFinite(v) && v > 0) out[k] = v;
   }
   return out;
@@ -264,22 +273,21 @@ function readHash(): URLSearchParams {
   return new URLSearchParams(typeof window === 'undefined' ? '' : window.location.hash.replace(/^#/, ''));
 }
 
-/** A number field's value; an empty or partial field is NaN, never 0. */
-export function parseField(raw: string | undefined): number {
-  const t = (raw ?? '').trim();
-  return t === '' ? Number.NaN : Number(t);
+/** A number field's value, the field's unit allowed after it; an empty or partial field is NaN, never 0. */
+export function parseField(raw: string | undefined, unit?: string): number {
+  return parseSI(raw, unit);
 }
 
 /** Simulator parameters from the form state, or an error key. */
 export function toParams(fs: FieldState, values: Record<string, string>): SimParams | { error: 'invalid' | 'node' } {
   const num = (k: string, fallback?: number) => {
-    const v = parseField(values[k]);
+    const v = parseField(values[k], UNIT[k]);
     return Number.isFinite(v) ? v : (fallback ?? Number.NaN);
   };
   const shown = FIELDS.filter((f) => f.show(fs));
   for (const f of shown) {
     const optional = f.group === 'nonideal';
-    const v = parseField(values[f.key]);
+    const v = parseField(values[f.key], f.unit);
     if (!(Number.isFinite(v) || (optional && (values[f.key] ?? '').trim() === ''))) return { error: 'invalid' };
     // the capacitor may start empty
     if (f.key === 'V0' ? !(v >= 0) : !optional && f.key !== 'Vg' && !(v > 0)) return { error: 'invalid' };
@@ -522,8 +530,8 @@ export function outsideModelText(r: SimResult | null | undefined, labels: SimLab
 }
 
 /** The anchor a slider takes when its field is committed: the typed value if it lies outside the slider's range. */
-export function nextAnchor(anchor: number | undefined, raw: string): number | undefined {
-  const v = parseField(raw);
+export function nextAnchor(anchor: number | undefined, raw: string, unit?: string): number | undefined {
+  const v = parseField(raw, unit);
   if (!(Number.isFinite(v) && v > 0)) return anchor;
   if (anchor === undefined || v < anchor / 10 ** DECADES || v > anchor * 10 ** DECADES) return v;
   return anchor;
@@ -547,6 +555,59 @@ export function stateFromHash(h: URLSearchParams, presets: SimPreset[]): { fs: F
     },
     values,
   };
+}
+
+/**
+ * The values a change of the form (a new load, the source switched on or off) needs: each field the new
+ * state shows and the previous did not (but a non-ideal one, whose empty field is an ideal part) that is
+ * empty takes an example's value, from the first preset of the topology that has it, else from any
+ * preset's. The result then appears at once, each value stays one the user can change, and a field the
+ * user cleared before the change stays empty.
+ */
+export function fillShown(prev: FieldState, fs: FieldState, values: Record<string, string>, presets: SimPreset[]): Record<string, string> {
+  const filled: Record<string, string> = {};
+  for (const f of FIELDS) {
+    if (f.group === 'nonideal' || !f.show(fs) || f.show(prev) || (values[f.key] ?? '').trim() !== '') continue;
+    const from = presets.find((p) => p.topology === fs.topo && p.values[f.key] !== undefined) ?? presets.find((p) => p.values[f.key] !== undefined);
+    if (from) filled[f.key] = String(from.values[f.key]);
+  }
+  return filled;
+}
+
+/**
+ * The simulated converter as a CircuitJS1 link (lib/falstadgen.ts), for a resistive load without a
+ * source: the form's values, the switch's R_on (the library's 1 mOhm when empty), and the start at the
+ * simulated steady state when the switch turns on (the output voltage, the inductor's current, the
+ * flyback's magnetizing current), where the ideal equations' values of the library's links are close. `leftOut` names the non-ideal parts CircuitJS1's circuit does not have.
+ * Null for another load or with a source.
+ */
+export function falstadFor(r: SimResult): { text: string; link: string; leftOut: string[] } | null {
+  const p = r.params;
+  if (p.source || p.load.kind !== 'resistive') return null;
+  const w = r.waveforms;
+  const at0 = (k: string) => (w[k] as number[] | undefined)?.[0] ?? 0;
+  const flyback = p.topology === 'flyback';
+  const text = falstadText(
+    {
+      topology: p.topology,
+      Vg: p.Vg,
+      D: p.D,
+      fs: p.fs,
+      L: p.L,
+      C: p.load.C,
+      R: p.load.R,
+      n: p.n,
+      nr: p.nr,
+      Lm: flyback ? p.L : p.LM,
+      // the library's 1 mOhm when the field is empty or 0: CircuitJS1's switch needs an on-resistance
+      Ron: p.Ron && p.Ron > 0 ? p.Ron : undefined,
+    },
+    // the simulator's buck-boost output is the load's voltage, taken positive; the circuit's node sits below ground
+    { vOut: (p.topology === 'buckboost' ? -1 : 1) * at0('v_out'), iL: flyback ? 0 : at0('i_L'), iM: flyback ? at0('i_L') : 0 },
+    { bar: currentBar((r.avg.v_out ?? 0) / p.load.R) },
+  );
+  const leftOut = [...((p.RL ?? 0) > 0 ? ['R_L'] : []), ...((p.VF ?? 0) > 0 ? ['V_F'] : []), ...((p.Cnode ?? 0) > 0 ? ['C_node'] : [])];
+  return { text, link: falstadLink(text), leftOut };
 }
 
 /** The URL hash of the form: every shown field, an empty one as `key=`. */
@@ -881,9 +942,19 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
   /** Re-anchor a field's slider when the typed value is committed (not on every keystroke). */
   function commitField(key: string) {
     setAnchors((prev) => {
-      const a = nextAnchor(prev[key], values[key] ?? '');
+      const a = nextAnchor(prev[key], values[key] ?? '', UNIT[key]);
       return a === prev[key] ? prev : { ...prev, [key]: a! };
     });
+  }
+
+  /** A new load, or the source switched on or off: the fields it shows that are still empty get values. */
+  function changeForm(next: FieldState) {
+    const filled = fillShown(fstate, next, values, presets);
+    setFstate(next);
+    if (Object.keys(filled).length) {
+      setValues((prev) => ({ ...prev, ...filled }));
+      setAnchors((prev) => ({ ...prev, ...sliderAnchors(filled) }));
+    }
   }
 
   function changeTopology(t: Topology) {
@@ -895,7 +966,7 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
   const shown = FIELDS.filter((f) => f.show(fstate));
   const slider = (f: Field) => {
     const name = `${f.label(fstate)} (${labels.slider})`;
-    const v = parseField(values[f.key]);
+    const v = parseField(values[f.key], f.unit);
     const text = `${values[f.key] ?? ''} ${f.unit}`.trim();
     if (f.key === 'D') {
       return (
@@ -938,10 +1009,9 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
     return (
       <div key={f.key} className="pe-row">
         <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} />
-        <input
+        <NumInput
           id={id}
-          type="number"
-          step="any"
+          unit={f.unit}
           value={values[f.key] ?? ''}
           onChange={(e) => setField(f.key, e.target.value)}
           onBlur={() => commitField(f.key)}
@@ -979,7 +1049,7 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
             <legend>{labels.parameters}</legend>
             <div className="pe-row pe-row--full">
               <label htmlFor="sim-load">{labels.load}</label>
-              <select id="sim-load" value={fstate.load} onChange={(e) => setFstate({ ...fstate, load: e.target.value as LoadChoice })}>
+              <select id="sim-load" value={fstate.load} onChange={(e) => changeForm({ ...fstate, load: e.target.value as LoadChoice })}>
                 {LOADS.map((l) => (
                   <option key={l} value={l}>
                     {labels.loads[l]}
@@ -988,7 +1058,7 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
               </select>
             </div>
             <label className="pe-check" htmlFor="sim-src">
-              <input id="sim-src" type="checkbox" checked={fstate.source} onChange={(e) => setFstate({ ...fstate, source: e.target.checked })} />
+              <input id="sim-src" type="checkbox" checked={fstate.source} onChange={(e) => changeForm({ ...fstate, source: e.target.checked })} />
               <span>
                 <Rich text={labels.source} />
               </span>
@@ -1036,6 +1106,7 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
             style={{ height: fstate.source ? 680 : 560, display: error ? 'none' : undefined }}
           />
           {result && <p className="pe-tool__hint">{labels.plotHint}</p>}
+          {result?.converged && <FalstadOpen result={result} labels={labels} />}
         </div>
       </div>
       {result?.converged && <SequenceView result={result} modes={modes} text={seqText} selected={sel} onSelect={setModeSel} theme={theme} />}
@@ -1130,5 +1201,27 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
       )}
       <p className="pe-tool__hint">{labels.share}</p>
     </div>
+  );
+}
+
+/** The link that opens the simulated converter in CircuitJS1, or why there is none. */
+function FalstadOpen({ result, labels }: { result: SimResult; labels: SimLabels }) {
+  const f = useMemo(() => falstadFor(result), [result]);
+  if (!f) return <p className="pe-tool__hint">{labels.falstadNeeds}</p>;
+  return (
+    <p className="pe-tool__hint pe-sim__falstad">
+      <a href={f.link} target="_blank" rel="noopener">
+        <span aria-hidden="true">▶ </span>
+        {labels.falstadOpen}
+      </a>
+      <br />
+      <Rich text={labels.falstadHint} />
+      {f.leftOut.length > 0 && (
+        <>
+          {' '}
+          <Rich text={labels.falstadLeftOut.replace('{list}', f.leftOut.join(', '))} />
+        </>
+      )}
+    </p>
   );
 }
