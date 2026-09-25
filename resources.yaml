@@ -647,11 +647,11 @@ resources:
     type: app-note
     title: "Understanding Oscilloscope Frequency Response and Its Effect on Rise-Time Accuracy (5988-8008)"
     author: "Keysight Technologies"
-    url: https://www.keysight.com/us/en/assets/7018-01129/application-notes/5988-8008.pdf
+    url: https://helpfiles.keysight.com/sp/PD1000A/Content/PD1500A%20DPT%20Tests/5988-8008en.pdf
     tags: [probes, measurement, bench]
     level: intermediate
     language: en
-    retrieved: 2026-09-24
+    retrieved: 2026-09-25
     why: "Why the rise time an oscilloscope shows depends on the shape of its frequency response, not on its bandwidth alone."
     why_ko: "오실로스코프가 보여 주는 상승 시간이 대역폭뿐 아니라 주파수 응답의 모양에 따라 달라지는 이유."
     title_match: "Oscilloscope Frequency Response"

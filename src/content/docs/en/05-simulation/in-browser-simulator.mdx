@@ -136,7 +136,7 @@ the final voltage, while the circuit does not.
 - **The steady state is not the start-up.** Where a steady state exists,
   the simulator reports it; a start-up or a load step on the bench passes
   through transients it does not show. It draws the start-up from rest only
-  for a circuit that has no steady state.
+  when it finds no steady state.
 - **A small step does not make an explicit rule stable by itself.** For a
   mode that decays without ringing, the step must be shorter than twice the
   *fastest* time constant, even when that mode is too fast to matter

@@ -9997,12 +9997,20 @@
       ],
       "convention": "",
       "convention_ko": "",
-      "notes": "with ideal parts and the buck's source at rest, the filter is the inductance, the capacitance and the load in parallel: a parallel RLC circuit, whose ring decays as $e^{-t/(2RC)}$ whatever the inductance. A lighter load (a larger $R$) rings for longer. The averaged models of the boost and the buck-boost give the same decay rate, $\\omega_0/(2Q) = 1/(2RC)$. Real parts add damping: the winding's resistance, the capacitor's series resistance and the switch's on-resistance make the ring decay faster, and the inductance then matters too. This is how an open-loop converter's output settles in CCM after a start-up or a step; a feedback loop sets its own settling, and in DCM, where the inductance carries no energy from one period to the next, the output settles with a single time constant instead",
-      "notes_ko": "이상적인 부품으로 벅의 전원이 멈춘 상태에서 필터는 인덕턴스, 커패시턴스, 부하가 병렬로 연결된 병렬 RLC 회로이며, 그 링잉은 인덕턴스와 관계없이 $e^{-t/(2RC)}$로 감쇠한다. 부하가 가벼울수록(R이 클수록) 오래 울린다. 부스트와 벅-부스트의 평균화 모델도 같은 감쇠율 $\\omega_0/(2Q) = 1/(2RC)$를 준다. 실제 부품은 감쇠를 더한다. 권선 저항, 커패시터의 직렬 저항, 스위치의 온 저항이 링잉을 더 빨리 줄이며, 그때는 인덕턴스도 영향을 준다. CCM에서 개루프 컨버터의 출력은 시작이나 계단 변화 뒤 이렇게 정착한다. 피드백 루프가 있으면 루프가 정착을 정하고, 인덕턴스가 주기에서 다음 주기로 에너지를 넘기지 않는 DCM에서는 출력이 하나의 시정수로 정착한다",
+      "notes": "with ideal parts and the buck's source at rest, the filter is the inductance, the capacitance and the load in parallel: a parallel RLC circuit, whose ring decays as $e^{-t/(2RC)}$ whatever the inductance. A lighter load (a larger $R$) rings for longer. The averaged models of the boost and the buck-boost give the same decay rate, $\\omega_0/(2Q) = 1/(2RC)$. Real parts change the decay: the winding's and the switch's resistances always make the ring decay faster, the capacitor's series resistance does when Q is above 1, and the inductance then matters too. This is how an open-loop converter's output settles in CCM after a start-up or a step; a feedback loop sets its own settling, and in DCM, where the inductance carries no energy from one period to the next, the output settles near its steady state with a single time constant instead",
+      "notes_ko": "이상적인 부품으로 벅의 전원이 멈춘 상태에서 필터는 인덕턴스, 커패시턴스, 부하가 병렬로 연결된 병렬 RLC 회로이며, 그 링잉은 인덕턴스와 관계없이 $e^{-t/(2RC)}$로 감쇠한다. 부하가 가벼울수록(R이 클수록) 오래 울린다. 부스트와 벅-부스트의 평균화 모델도 같은 감쇠율 $\\omega_0/(2Q) = 1/(2RC)$를 준다. 실제 부품은 감쇠를 바꾼다. 권선과 스위치의 저항은 언제나 링잉을 더 빨리 줄이고, 커패시터의 직렬 저항은 Q가 1보다 클 때 그러하며, 그때는 인덕턴스도 영향을 준다. CCM에서 개루프 컨버터의 출력은 시작이나 계단 변화 뒤 이렇게 정착한다. 피드백 루프가 있으면 루프가 정착을 정하고, 인덕턴스가 주기에서 다음 주기로 에너지를 넘기지 않는 DCM에서는 출력이 정상상태 근처에서 하나의 시정수로 정착한다",
       "cites": [
         {
           "key": "alexander2017",
           "where": "Ch. 8 (Second-Order Circuits: the source-free parallel RLC circuit); derived here"
+        },
+        {
+          "key": "erickson2020",
+          "where": "Ch. 8 (Converter Transfer Functions: the boost and buck-boost resonances, whose omega_0/(2Q) is also 1/(2RC))"
+        },
+        {
+          "key": "erickson2020",
+          "where": "Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode: a single low-frequency pole)"
         }
       ],
       "derived_by": "python/pe_core/derive/numerics.py",
@@ -10043,7 +10051,7 @@
       ],
       "derived_by": "python/pe_core/derive/numerics.py",
       "n_tests": 8,
-      "yaml_line": 3051
+      "yaml_line": 3054
     },
     "num.rel_diff": {
       "id": "num.rel_diff",
@@ -10077,7 +10085,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 3066
+      "yaml_line": 3069
     },
     "num.unit_roundoff": {
       "id": "num.unit_roundoff",
@@ -10101,8 +10109,8 @@
       ],
       "convention": "",
       "convention_ko": "",
-      "notes": "rounding a real number to the nearest number of the format changes it by at most this fraction of itself (in the normal range). For binary64, the IEEE 754 double precision in which the site's TypeScript and Python compute, the base is 2 and the precision 53 digits, so $u = 2^{-53} \\approx 1.1 \\times 10^{-16}$. Higham writes the precision as $t$",
-      "notes_ko": "실수를 형식에서 가장 가까운 수로 반올림하면 (정규 범위에서) 값이 최대 자신의 이 비율만큼 바뀐다. 이 사이트의 TypeScript와 Python이 계산에 쓰는 IEEE 754 배정밀도(binary64)는 밑이 2, 정밀도가 53자리이므로 $u = 2^{-53} \\approx 1.1 \\times 10^{-16}$이다. Higham은 정밀도를 $t$로 쓴다",
+      "notes": "rounding a real number to the nearest number of the format changes it by at most this fraction of itself (in the normal range). For binary64, the IEEE 754 double precision of JavaScript's numbers and Python's floats, the base is 2 and the precision 53 digits, so $u = 2^{-53} \\approx 1.1 \\times 10^{-16}$. Higham writes the precision as $t$",
+      "notes_ko": "실수를 형식에서 가장 가까운 수로 반올림하면 (정규 범위에서) 값이 최대 자신의 이 비율만큼 바뀐다. JavaScript의 수와 Python의 float가 쓰는 IEEE 754 배정밀도(binary64)는 밑이 2, 정밀도가 53자리이므로 $u = 2^{-53} \\approx 1.1 \\times 10^{-16}$이다. Higham은 정밀도를 $t$로 쓴다",
       "cites": [
         {
           "key": "higham2002",
@@ -10111,7 +10119,7 @@
       ],
       "derived_by": null,
       "n_tests": 8,
-      "yaml_line": 3080
+      "yaml_line": 3083
     }
   }
 }

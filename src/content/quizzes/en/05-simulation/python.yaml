@@ -32,7 +32,7 @@ questions:
       - 'Because the equations are only known to a billionth'
       - 'Because YAML cannot hold smaller numbers'
     answer: 1
-    explain: 'A billionth is millions of times the unit roundoff, so rounding passes in an evaluation that does not cancel, while a wrong constant or factor is far larger.'
+    explain: 'A billionth is millions of times the unit roundoff, so rounding passes in an evaluation that does not magnify it, while a wrong constant or factor is far larger.'
   - q: 'Why does the relative difference fail near a zero reference?'
     options:
       - 'Dividing by a reference near zero makes a tiny absolute difference look huge'

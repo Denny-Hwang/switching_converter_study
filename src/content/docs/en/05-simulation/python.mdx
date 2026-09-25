@@ -53,20 +53,21 @@ Two computations are compared by their relative difference:
 It does not change when the quantity is scaled, as by a change of unit from
 volts to millivolts, so one tolerance serves every quantity. At a zero
 reference it is undefined <Cite key="higham2002" where="Sec. 1.2" />, and
-near one it exaggerates a small difference, so compare against a scale
-there. Two correct programs need not produce the same bits: each operation rounds its result, and the result depends on
-the order of the operations. One rounding changes a number by at most the
-unit roundoff of the format, relative to its size:
+near zero it exaggerates a small difference, so compare against a scale
+there. Two correct programs need not produce the same bits: each operation
+rounds its result, and the result depends on the order of the operations.
+One rounding changes a number by at most the unit roundoff of the format,
+relative to its size:
 
 <Eq id="num.unit_roundoff" />
 
 The site requires the TypeScript and the Python evaluations of an equation to
 agree within one part in a billion. That is millions of times the unit
-roundoff, so rounding passes as long as an evaluation does not subtract
-nearly equal numbers, which magnifies the relative error (cancellation)
+roundoff, so rounding passes as long as the evaluation does not magnify its
+errors, as subtracting nearly equal numbers does (cancellation)
 <Cite key="higham2002" where="Sec. 1.7" />; yet it lies far below any real
-mistake, such as a wrong constant or a missing factor. A simulation compared with its equation
-gets a looser tolerance, because the equation idealizes the circuit: it takes
+mistake, such as a wrong constant or a missing factor. A simulation compared
+with its equation gets a looser tolerance, because the equation idealizes the circuit: it takes
 the ripple as small <Cite key="erickson2020" where="Ch. 2" />, and the SPICE
 library's switch and diodes are only nearly ideal. The SPICE library's values
 must lie within one percent of the ideal equations, measured against each
@@ -85,8 +86,8 @@ the SPICE parts add, and each peak-to-peak swing within two percent.
 ## Worked example
 
 A simulated conversion ratio against the ideal one, and the unit roundoff of
-binary64, the IEEE 754 double precision in which the site's TypeScript and
-Python compute:
+binary64, the IEEE 754 double precision of JavaScript's numbers and Python's
+floats:
 
 <Worked example="num-parity" />
 

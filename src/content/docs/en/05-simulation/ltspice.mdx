@@ -64,8 +64,9 @@ the start takes:
 
 A light load rings longer, and each factor of ten in accuracy adds the same
 number of periods. Real parts damp the ring a little more: the winding's
-resistance, the capacitor's series resistance and the switch's
-on-resistance. A start-up can also leave CCM for a while: in the library's
+and the switch's resistances always, and the capacitor's series resistance
+when the quality factor is above one. A start-up can also leave CCM for a
+while: in the library's
 buck, the inductor current falls to zero in several of its first twenty
 periods, after the output's first overshoot. The formula is then an
 estimate, not an exact count. In DCM the inductor current returns to zero in
@@ -79,15 +80,14 @@ script checks each run at the end: the output's average over the last period
 must lie within one part in ten thousand of its average over the period
 before, or the case fails as not settled. The check only catches a run far
 too short. In one period a decaying error shrinks only by a fraction of
-itself about equal to the period over the time constant, so with an envelope
-time constant of a hundred periods, as in the library's CCM flyback and
-forward cases, a change of one part in ten thousand still allows an error of
-about a percent; and near a crest of the ring, where the output's average
-stops rising and starts to fall, two consecutive averages can agree while
-the ring is still large.
-SPICE's own accuracy sets a floor, too: in the library's ngspice runs, the
-average shifts by up to a few parts in ten thousand long after the start-up
-has died away.
+itself about equal to the period over the time constant, so with a time
+constant of a hundred periods, as in the library's DCM flyback, a change of
+one part in ten thousand still allows an error of about a percent. Where the
+output rings, near a crest of the ring, where the output's average stops
+rising and starts to fall, two consecutive averages can agree while the ring
+is still large. SPICE's own accuracy sets a floor, too: in the library's
+ngspice runs, the average jumps by up to one or two parts in a thousand long
+after the start-up has died away.
 
 ### Integration settings
 
@@ -98,7 +98,7 @@ tolerance, not the kilovolt of ngspice's trapezoidal ringing. The `.options`
 line removes it, as it does in ngspice. The library records a one-time check
 with LTspice 26.1.1, in which LTspice's own netlists matched the library's
 and its results agreed with ngspice's within 0.3 % of each quantity's
-largest magnitude. The [ngspice page](../ngspice/) explains both effects:
+largest magnitude. The [ngspice page](../ngspice/) describes both effects:
 the factor by which each step multiplies a fast mode
 (<EqRef id="num.gain_tr" label="the trapezoidal rule's factor" />), and a
 diode's current overshooting through zero at a loose tolerance.
@@ -114,8 +114,8 @@ Its quality factor, <Val example="sim-settle" name="Q" />, is well above one
 half, so the filter rings. The envelope time constant is
 <Val example="sim-settle" name="tau_env" />, twenty periods, and the output
 needs <Val example="sim-settle" name="N_set" /> periods to settle to a
-thousandth, well inside the library's one percent and above the floor of
-SPICE's own accuracy. The library's buck case runs 400 periods before it
+thousandth, well inside the library's one percent and about as fine as its
+ngspice runs resolve. The library's buck case runs 400 periods before it
 measures the last one.
 
 ## Try it
@@ -138,11 +138,12 @@ resistor, and capture its output from the moment it starts switching.
 Measure the envelope's decay from two peaks of the ring a known time apart,
 after the inductor current has stopped touching zero if it does in the first
 periods, and compare the time constant with twice the load resistance times
-the output capacitance: the winding's resistance, the capacitor's series
-resistance and the switch's on-resistance damp the ring further, so expect a
-somewhat shorter one. Count the periods until the output stays within one
-percent of its final value, and compare with the formula for one percent
-left. Then run the library's schematic with your values and the same start.
+the output capacitance: the winding's and the switch's resistances damp the
+ring further, and so does the capacitor's series resistance when the quality
+factor is above one, so expect a somewhat shorter one. Count the periods
+until the output stays within one percent of its final value, and compare
+with the formula for one percent left. Then run the library's schematic with
+your values and the same start.
 
 ## Gotchas
 
