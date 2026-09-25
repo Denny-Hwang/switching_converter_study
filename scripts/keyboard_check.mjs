@@ -245,7 +245,7 @@ async function noStaleResult(page, where, errors, prefix, waitMs) {
  * hash too; it must not reset the tool's inputs to a preset.
  */
 async function anchorKeepsState(page, where, errors) {
-  const input = page.locator(`${TOOL} input[type="number"]`).first();
+  const input = page.locator(`${TOOL} input[data-num]`).first();
   if ((await input.count()) === 0) return;
   const before = await input.inputValue();
   const next = before === '' ? '7' : String(Number(before) * 1.5);
@@ -277,7 +277,7 @@ async function directAnchorKept(browser, url, ready, where, errors) {
   await settle(page, ready);
   const hash = await page.evaluate(() => decodeURIComponent(window.location.hash.slice(1)));
   if (hash !== id) errors.push(`${where}: opened at #${id}, the tool replaced the anchor with its state (#${hash.slice(0, 40)}…)`);
-  const input = page.locator(`${TOOL} input[type="number"]`).first();
+  const input = page.locator(`${TOOL} input[data-num]`).first();
   if ((await input.count()) > 0) {
     const before = await input.inputValue();
     await input.fill(before === '' ? '7' : String(Number(before) * 1.5));

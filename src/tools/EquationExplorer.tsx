@@ -71,10 +71,9 @@ function axisTitle(name: string, locale: 'en' | 'ko'): string {
   return `${latexHtml(catalog.symbols[name]?.latex ?? name)}${meaning ? ` — ${symHtml(meaning)}` : ''}${u ? ` [${u}]` : ''}`;
 }
 
-/** A number field's value; an empty or partial field is NaN, never 0. */
-export function parseField(raw: string | undefined): number {
-  const t = (raw ?? '').trim();
-  return parseSI(t);
+/** A number field's value, the symbol's unit allowed after it; an empty or partial field is NaN, never 0. */
+export function parseField(raw: string | undefined, unit?: string): number {
+  return parseSI(raw, unit);
 }
 
 function fmt(x: number): string {
@@ -137,7 +136,7 @@ export default function EquationExplorer({ locale, labels }: Props) {
 
   const numeric = useMemo(() => {
     const out: Record<string, number> = {};
-    for (const v of meta.variables) out[v] = parseField(values[v]);
+    for (const v of meta.variables) out[v] = parseField(values[v], unitLabel(v));
     return out;
   }, [meta, values]);
 
@@ -249,6 +248,7 @@ export default function EquationExplorer({ locale, labels }: Props) {
                 <FieldLabel htmlFor={`explorer-${v}`} sym={v} symHtml={symbolHtml(v)} meaning={meaningOf(v, locale)} unit={unitLabel(v)} />
                 <NumInput
                   id={`explorer-${v}`}
+                  unit={unitLabel(v)}
                   value={values[v] ?? ''}
                   onChange={(e) => setValues({ ...values, [v]: e.target.value })}
                 />

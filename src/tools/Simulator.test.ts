@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { PRESETS, presetValues, simulatorHash } from '../lib/simpresets';
 import { falstadCases } from '../lib/falstad';
+import { loadChoiceOf } from '../lib/simload';
 
 const buck = { topo: 'buck' as const, load: 'res' as const, source: false };
 const values = { Vg: '24', D: '0.5', fs: '100000', L: '0.0001', R: '10', C: '0.00001' };
@@ -75,16 +76,21 @@ describe('a new load or source', () => {
 
   it('fills each field it shows that is empty from an example, and leaves typed and non-ideal fields alone', () => {
     const bat = { topo: 'buck' as const, load: 'batr' as const, source: false };
-    const filled = fillShown(bat, { ...values, R: '22' }, presets);
+    const filled = fillShown(buck, bat, { ...values, R: '22' }, presets);
     // the battery's two values come from the buck's battery preset; R, typed, and R_on, ideal, stay
     const from = presets.find((p) => p.topology === 'buck' && p.values.Vb !== undefined)!;
     expect(filled).toEqual({ Vb: String(from.values.Vb), Rb: String(from.values.Rb) });
     expect('error' in toParams(bat, { ...values, R: '22', ...filled })).toBe(false);
   });
 
+  it('leaves alone a field the user cleared before the change', () => {
+    const bat = { topo: 'buck' as const, load: 'batr' as const, source: false };
+    expect(fillShown(buck, bat, { ...values, R: '' }, presets).R).toBeUndefined();
+  });
+
   it('switching the source on fills the source from a preset of any topology that has one', () => {
     const src = { topo: 'buck' as const, load: 'res' as const, source: true };
-    const filled = fillShown(src, values, presets);
+    const filled = fillShown(buck, src, values, presets);
     const from = presets.find((p) => p.values.Voc !== undefined)!;
     expect(filled).toEqual({ Voc: String(from.values.Voc), Rs: String(from.values.Rs), Cbus: String(from.values.Cbus) });
     expect('error' in toParams(src, { ...values, ...filled })).toBe(false);
@@ -96,7 +102,7 @@ describe('a new load or source', () => {
       for (const load of ['res', 'bat', 'batr', 'cap', 'fixed'] as const) {
         for (const source of [false, true]) {
           const fs = { topo: p.topology, load, source };
-          const form = { ...base, ...fillShown(fs, base, presets) };
+          const form = { ...base, ...fillShown({ topo: p.topology, load: loadChoiceOf(p.values), source: p.values.Voc !== undefined }, fs, base, presets) };
           expect(toParams(fs, form), `${p.id} ${load} ${source}`).not.toEqual({ error: 'invalid' });
         }
       }
@@ -359,7 +365,7 @@ describe('the form in CircuitJS1 (falstadFor)', () => {
   const run = (example: string, topology: sim.Topology, extra: Record<string, string> = {}, fs?: { load?: 'res' | 'batr'; source?: boolean }) => {
     const st = stateFromHash(new URLSearchParams(simulatorHash(example, topology)), presets);
     const form = { ...st.fs, ...(fs ?? {}) };
-    const values = { ...st.values, ...fillShown(form, st.values, presets), ...extra };
+    const values = { ...st.values, ...fillShown(st.fs, form, st.values, presets), ...extra };
     const p = toParams(form, values);
     if ('error' in p) throw new Error(example);
     return sim.simulate(p);

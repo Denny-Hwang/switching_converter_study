@@ -134,31 +134,33 @@ export const FIELDS: Field[] = [
   { key: 'fenv', label: 'f_env', unit: 'Hz', group: 'sine' },
 ];
 const KEYS = [...FIELDS.map((f) => f.key), 'pts'];
+/** Each field's unit, which its value may carry after the number (lib/siparse.ts). */
+const UNIT: Record<string, string> = Object.fromEntries(FIELDS.map((f) => [f.key, f.unit]));
 const ENVELOPES: EnvelopeKind[] = ['none', 'sine', 'points'];
 
 /** A number field's value; an empty or non-finite field is NaN, never 0. */
-function num(raw: string | undefined): number {
+function num(raw: string | undefined, unit?: string): number {
   const t = (raw ?? '').trim();
-  const v = parseSI(t);
+  const v = parseSI(t, unit);
   return Number.isFinite(v) ? v : Number.NaN;
 }
 
 /** The source matcher's specification from the form, or null when a field is missing or out of range. */
 export function toMatchSpec(values: Record<string, string>): MatchSpec | null {
   for (const f of FIELDS.filter((f) => f.group !== 'sine' && f.key !== 'Cbus')) {
-    const v = num(values[f.key]);
+    const v = num(values[f.key], f.unit);
     if (f.zero ? !(v >= 0) : !(v > 0)) return null;
   }
   const s: MatchSpec = {
-    Voc: num(values.Voc),
-    Rs: num(values.Rs),
-    LM: num(values.LM),
-    fs: num(values.fs),
-    D: num(values.D),
-    V: num(values.V),
-    VD: num(values.VD),
-    n: num(values.n),
-    Vrating: num(values.Vrating),
+    Voc: num(values.Voc, UNIT.Voc),
+    Rs: num(values.Rs, UNIT.Rs),
+    LM: num(values.LM, UNIT.LM),
+    fs: num(values.fs, UNIT.fs),
+    D: num(values.D, UNIT.D),
+    V: num(values.V, UNIT.V),
+    VD: num(values.VD, UNIT.VD),
+    n: num(values.n, UNIT.n),
+    Vrating: num(values.Vrating, UNIT.Vrating),
   };
   if (!(s.D < 1)) return null;
   return s;
@@ -171,7 +173,7 @@ export function toMatchSpec(values: Record<string, string>): MatchSpec | null {
  */
 export function toEnvelope(kind: EnvelopeKind, values: Record<string, string>): Envelope | null {
   if (kind === 'sine') {
-    const f = num(values.fenv);
+    const f = num(values.fenv, UNIT.fenv);
     return f > 0 ? { kind: 'sine', f } : null;
   }
   if (kind === 'points') {
@@ -316,7 +318,7 @@ export default function SourceMatcher({ labels, presets, simulatorHref, symbols 
     }
   }, [spec]);
   const envelope = useMemo(() => toEnvelope(env, values), [env, values]);
-  const Cbus = num(values.Cbus);
+  const Cbus = num(values.Cbus, UNIT.Cbus);
   const envelopeValid = env === 'none' || (envelope !== null && Cbus > 0);
   // switching cycles the envelope run would need; too many, or too few per period, are refused before it starts
   const need = env !== 'none' && spec && envelope && Cbus > 0 ? envelopeCycles(spec, Cbus, envelope) : null;
@@ -537,7 +539,7 @@ export default function SourceMatcher({ labels, presets, simulatorHref, symbols 
     return (
       <div key={f.key} className="pe-row pe-row--full">
         <FieldLabel htmlFor={id} sym={f.label} meaning={symbols[f.label]} unit={f.unit} />
-        <NumInput id={id} value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
+        <NumInput id={id} unit={f.unit} value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
       </div>
     );
   };

@@ -127,17 +127,19 @@ export const FIELDS: Field[] = [
   },
 ];
 const KEYS = FIELDS.map((f) => f.key);
+/** Each field's unit, which its value may carry after the number (lib/siparse.ts). */
+const UNIT: Record<string, string> = Object.fromEntries(FIELDS.map((f) => [f.key, f.unit]));
 
 /** A number field's value; an empty field is NaN, never 0. */
-function num(raw: string | undefined): number {
+function num(raw: string | undefined, unit?: string): number {
   const t = (raw ?? '').trim();
-  return parseSI(t);
+  return parseSI(t, unit);
 }
 
 /** The designer's specification from the form, or null when a required field is missing or out of range. */
 export function toSpec(topology: DesignTopology, values: Record<string, string>): DesignSpec | null {
   for (const f of FIELDS.filter((f) => f.show(topology))) {
-    const v = num(values[f.key]);
+    const v = num(values[f.key], f.unit);
     const empty = (values[f.key] ?? '').trim() === '';
     if (f.optional && empty) continue;
     if (f.key === 'Pmin' || f.key === 'VD') {
@@ -146,20 +148,20 @@ export function toSpec(topology: DesignTopology, values: Record<string, string>)
   }
   const spec: DesignSpec = {
     topology,
-    VgMin: num(values.VgMin),
-    VgMax: num(values.VgMax),
-    V: num(values.V),
-    P: num(values.P),
-    Pmin: num(values.Pmin),
-    fs: num(values.fs),
-    rippleI: num(values.rI),
-    rippleV: num(values.rV),
+    VgMin: num(values.VgMin, UNIT.VgMin),
+    VgMax: num(values.VgMax, UNIT.VgMax),
+    V: num(values.V, UNIT.V),
+    P: num(values.P, UNIT.P),
+    Pmin: num(values.Pmin, UNIT.Pmin),
+    fs: num(values.fs, UNIT.fs),
+    rippleI: num(values.rI, UNIT.rI),
+    rippleV: num(values.rV, UNIT.rV),
   };
   if (!(spec.VgMin <= spec.VgMax) || spec.Pmin > spec.P) return null;
-  if (isolated(topology)) spec.n = num(values.n);
-  if (topology === 'forward') spec.nr = num(values.nr);
-  if (topology === 'flyback') spec.VD = num(values.VD);
-  const L = num(values.L);
+  if (isolated(topology)) spec.n = num(values.n, UNIT.n);
+  if (topology === 'forward') spec.nr = num(values.nr, UNIT.nr);
+  if (topology === 'flyback') spec.VD = num(values.VD, UNIT.VD);
+  const L = num(values.L, UNIT.L);
   if (Number.isFinite(L)) spec.L = L;
   return spec;
 }
@@ -429,7 +431,7 @@ export default function ConverterDesigner({ labels, presets, simulatorHref, loss
     return (
       <div key={f.key} className="pe-row pe-row--full">
         <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} note={f.optional ? labels.optional : undefined} />
-        <NumInput id={id} value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
+        <NumInput id={id} unit={f.unit} value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
       </div>
     );
   };
@@ -437,7 +439,7 @@ export default function ConverterDesigner({ labels, presets, simulatorHref, loss
   const r = result;
   const Lname = topo === 'flyback' ? 'L_M' : 'L';
   const ends = r ? (r.points.length > 1 ? [r.points[0]!, r.points[r.points.length - 1]!] : [r.points[0]!]) : [];
-  const LM = num(values.LM);
+  const LM = num(values.LM, UNIT.LM);
   const links = r
     ? ends
         .map((p) => ({

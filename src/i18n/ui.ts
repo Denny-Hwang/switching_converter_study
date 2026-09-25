@@ -111,7 +111,7 @@ export const ui = {
     'sim.share': 'The URL holds the whole state: copy it to share this simulation.',
     'sim.falstadOpen': 'Open these values in CircuitJS1',
     'sim.falstadHint':
-      "The same converter as a CircuitJS1 circuit on falstad.com, built from the values above: near-ideal diodes, a body diode across the switch, the switch's R_on (1 mΩ when its field is empty), starting from this steady state at about one switching period a second.",
+      "The same converter as a CircuitJS1 circuit on falstad.com, built from the values above: near-ideal diodes, a body diode across the switch, the switch's R_on (1 mΩ when its field is empty or 0), starting from this steady state at about one switching period a second.",
     'sim.falstadLeftOut': 'CircuitJS1\'s circuit leaves out {list}.',
     'sim.falstadNeeds': 'A CircuitJS1 circuit is made for a resistive load without a source.',
     'sim.time': 'Time',
@@ -570,8 +570,8 @@ export const ui = {
     'sim.share': 'URL에 전체 상태가 담겨 있으므로 복사하면 이 시뮬레이션을 그대로 공유할 수 있습니다.',
     'sim.falstadOpen': '이 값으로 CircuitJS1에서 열기',
     'sim.falstadHint':
-      '위의 값으로 만든 같은 컨버터를 falstad.com의 CircuitJS1 회로로 엽니다. 다이오드는 이상에 가깝고, 스위치에는 바디 다이오드와 R_on(칸이 비어 있으면 1 mΩ)이 있으며, 이 정상상태에서 시작해 1초에 스위칭 주기 하나 정도의 속도로 움직입니다.',
-    'sim.falstadLeftOut': 'CircuitJS1 회로에는 {list}이 빠져 있습니다.',
+      '위의 값으로 만든 같은 컨버터를 falstad.com의 CircuitJS1 회로로 엽니다. 다이오드는 이상에 가깝고, 스위치에는 바디 다이오드와 R_on(칸이 비어 있거나 0이면 1 mΩ)이 있으며, 이 정상상태에서 시작해 1초에 스위칭 주기 하나 정도의 속도로 움직입니다.',
+    'sim.falstadLeftOut': 'CircuitJS1 회로에서 빠진 부분: {list}.',
     'sim.falstadNeeds': 'CircuitJS1 회로는 전원 없이 저항 부하일 때 만듭니다.',
     'sim.time': '시간',
     'sim.running': '시뮬레이션 중…',

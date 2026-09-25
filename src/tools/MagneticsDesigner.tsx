@@ -166,14 +166,16 @@ export const FIELDS: Field[] = [
   { key: 'mS', label: () => 'M_l', unit: '', group: 'secondary', flyback: true, integer: true },
 ];
 const KEYS = FIELDS.map((f) => f.key);
+/** Each field's unit, which its value may carry after the number (lib/siparse.ts). */
+const UNIT: Record<string, string> = Object.fromEntries(FIELDS.map((f) => [f.key, f.unit]));
 const CORE_KEYS = FIELDS.filter((f) => f.group === 'core').map((f) => f.key);
 const HASH_KEYS = [...KEYS, 'dev', 'core', 'arr'];
 const shownFor = (d: MagDevice) => FIELDS.filter((f) => !f.flyback || fly(d));
 
 /** A number field's value; an empty or non-finite field is NaN, never 0. */
-function num(raw: string | undefined): number {
+function num(raw: string | undefined, unit?: string): number {
   const t = (raw ?? '').trim();
-  const v = parseSI(t);
+  const v = parseSI(t, unit);
   return Number.isFinite(v) ? v : Number.NaN;
 }
 
@@ -190,11 +192,11 @@ export function withCore(values: Record<string, string>, id: CoreId): Record<str
 export function toMagSpec(device: MagDevice, coreId: CoreChoice, arr: Arrangement, values: Record<string, string>): MagSpec | null {
   for (const f of shownFor(device)) {
     if (f.optional && (values[f.key] ?? '').trim() === '') continue;
-    const v = num(values[f.key]);
+    const v = num(values[f.key], f.unit);
     if (f.signed ? !Number.isFinite(v) : f.zero ? !(v >= 0) : !(v > 0)) return null;
     if (f.integer && !Number.isInteger(v)) return null;
   }
-  const v = (k: string) => num(values[k]);
+  const v = (k: string) => num(values[k], UNIT[k]);
   const table = coreId === 'custom' ? undefined : coreById(coreId);
   const core: MagCore = table ? table.core : { Ae: v('Ae'), Amin: v('Amin'), le: v('le'), AL0: v('AL0'), WA: v('WA'), MLT: v('MLT') };
   const alpha = COPPER.alpha20;
@@ -432,7 +434,7 @@ export default function MagneticsDesigner({ labels, presets, symbols, coreSource
     return (
       <div key={f.key} className="pe-row pe-row--full">
         <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} note={note} />
-        <NumInput id={id} value={values[f.key] ?? ''} onChange={(e) => edit(f.key, e.target.value)} />
+        <NumInput id={id} unit={f.unit} value={values[f.key] ?? ''} onChange={(e) => edit(f.key, e.target.value)} />
       </div>
     );
   };

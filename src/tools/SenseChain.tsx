@@ -130,12 +130,14 @@ export const FIELDS: Field[] = [
   { key: 'fsw', label: 'f_sw', unit: 'Hz', group: 'adc', optional: true },
 ];
 const KEYS = FIELDS.map((f) => f.key);
+/** Each field's unit, which its value may carry after the number (lib/siparse.ts). */
+const UNIT: Record<string, string> = Object.fromEntries(FIELDS.map((f) => [f.key, f.unit]));
 const shownFor = (kind: MonitorKind) => FIELDS.filter((f) => f.group !== (kind === 'current' ? 'voltage' : 'current'));
 
 /** A number field's value; an empty or non-finite field is NaN, never 0. */
-function num(raw: string | undefined): number {
+function num(raw: string | undefined, unit?: string): number {
   const t = (raw ?? '').trim();
-  const v = parseSI(t);
+  const v = parseSI(t, unit);
   return Number.isFinite(v) ? v : Number.NaN;
 }
 
@@ -143,30 +145,30 @@ function num(raw: string | undefined): number {
 export function toSenseSpec(kind: MonitorKind, values: Record<string, string>): SenseSpec | null {
   for (const f of shownFor(kind)) {
     if (f.optional && (values[f.key] ?? '').trim() === '') continue;
-    const v = num(values[f.key]);
+    const v = num(values[f.key], f.unit);
     if (f.zero ? !(v >= 0) : !(v > 0)) return null;
   }
-  const opt = (k: string) => ((values[k] ?? '').trim() === '' ? undefined : num(values[k]));
+  const opt = (k: string) => ((values[k] ?? '').trim() === '' ? undefined : num(values[k], UNIT[k]));
   const spec: SenseSpec = {
-    Imax: num(values.Imax),
-    Imin: num(values.Imin),
-    Rsense: num(values.Rsense),
-    Rpad: num(values.Rpad),
+    Imax: num(values.Imax, UNIT.Imax),
+    Imin: num(values.Imin, UNIT.Imin),
+    Rsense: num(values.Rsense, UNIT.Rsense),
+    Rpad: num(values.Rpad, UNIT.Rpad),
     Prating: opt('Prating'),
     VburdenMax: opt('VburdenMax'),
     monitor:
       kind === 'current'
-        ? { kind: 'current', Rin: num(values.Rin), Rout: num(values.Rout) }
-        : { kind: 'voltage', G: num(values.G), Vref: num(values.Vref) },
-    Vos: num(values.Vos),
-    VoutMin: num(values.VoutMin),
-    VoutMax: num(values.VoutMax),
-    Vfs: num(values.Vfs),
-    fsamp: num(values.fsamp),
-    Rf: num(values.Rf),
-    Cf: num(values.Cf),
+        ? { kind: 'current', Rin: num(values.Rin, UNIT.Rin), Rout: num(values.Rout, UNIT.Rout) }
+        : { kind: 'voltage', G: num(values.G, UNIT.G), Vref: num(values.Vref, UNIT.Vref) },
+    Vos: num(values.Vos, UNIT.Vos),
+    VoutMin: num(values.VoutMin, UNIT.VoutMin),
+    VoutMax: num(values.VoutMax, UNIT.VoutMax),
+    Vfs: num(values.Vfs, UNIT.Vfs),
+    fsamp: num(values.fsamp, UNIT.fsamp),
+    Rf: num(values.Rf, UNIT.Rf),
+    Cf: num(values.Cf, UNIT.Cf),
     fsw: opt('fsw'),
-    errMax: num(values.errMax),
+    errMax: num(values.errMax, UNIT.errMax),
   };
   // the smallest current lies within the range, and the amplifier's output range is not empty
   if (!(spec.Imin <= spec.Imax) || !(spec.VoutMax > spec.VoutMin)) return null;
@@ -440,7 +442,7 @@ export default function SenseChain({ labels, presets, symbols }: Props) {
     return (
       <div key={f.key} className="pe-row pe-row--full">
         <FieldLabel htmlFor={id} sym={f.label} meaning={symbols[f.label]} unit={f.unit} note={f.optional ? labels.optional : undefined} />
-        <NumInput id={id} value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
+        <NumInput id={id} unit={f.unit} value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
       </div>
     );
   };

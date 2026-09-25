@@ -247,6 +247,8 @@ export const FIELDS: Field[] = [
   },
 ];
 const KEYS = FIELDS.map((f) => f.key);
+/** Each field's unit, which its value may carry after the number (lib/siparse.ts). */
+const UNIT: Record<string, string> = Object.fromEntries(FIELDS.map((f) => [f.key, f.unit]));
 
 /** Sliders: D is linear on (0, 1); the other positive parameters move over one decade either side of an anchor. */
 const D_RANGE = { min: 0.01, max: 0.99, step: 0.01 };
@@ -256,7 +258,7 @@ const DECADES = 1;
 export function sliderAnchors(values: Record<string, string>): Record<string, number> {
   const out: Record<string, number> = {};
   for (const k of KEYS) {
-    const v = parseField(values[k]);
+    const v = parseField(values[k], UNIT[k]);
     if (Number.isFinite(v) && v > 0) out[k] = v;
   }
   return out;
@@ -271,22 +273,21 @@ function readHash(): URLSearchParams {
   return new URLSearchParams(typeof window === 'undefined' ? '' : window.location.hash.replace(/^#/, ''));
 }
 
-/** A number field's value; an empty or partial field is NaN, never 0. */
-export function parseField(raw: string | undefined): number {
-  const t = (raw ?? '').trim();
-  return parseSI(t);
+/** A number field's value, the field's unit allowed after it; an empty or partial field is NaN, never 0. */
+export function parseField(raw: string | undefined, unit?: string): number {
+  return parseSI(raw, unit);
 }
 
 /** Simulator parameters from the form state, or an error key. */
 export function toParams(fs: FieldState, values: Record<string, string>): SimParams | { error: 'invalid' | 'node' } {
   const num = (k: string, fallback?: number) => {
-    const v = parseField(values[k]);
+    const v = parseField(values[k], UNIT[k]);
     return Number.isFinite(v) ? v : (fallback ?? Number.NaN);
   };
   const shown = FIELDS.filter((f) => f.show(fs));
   for (const f of shown) {
     const optional = f.group === 'nonideal';
-    const v = parseField(values[f.key]);
+    const v = parseField(values[f.key], f.unit);
     if (!(Number.isFinite(v) || (optional && (values[f.key] ?? '').trim() === ''))) return { error: 'invalid' };
     // the capacitor may start empty
     if (f.key === 'V0' ? !(v >= 0) : !optional && f.key !== 'Vg' && !(v > 0)) return { error: 'invalid' };
@@ -529,8 +530,8 @@ export function outsideModelText(r: SimResult | null | undefined, labels: SimLab
 }
 
 /** The anchor a slider takes when its field is committed: the typed value if it lies outside the slider's range. */
-export function nextAnchor(anchor: number | undefined, raw: string): number | undefined {
-  const v = parseField(raw);
+export function nextAnchor(anchor: number | undefined, raw: string, unit?: string): number | undefined {
+  const v = parseField(raw, unit);
   if (!(Number.isFinite(v) && v > 0)) return anchor;
   if (anchor === undefined || v < anchor / 10 ** DECADES || v > anchor * 10 ** DECADES) return v;
   return anchor;
@@ -557,15 +558,16 @@ export function stateFromHash(h: URLSearchParams, presets: SimPreset[]): { fs: F
 }
 
 /**
- * The values a form state needs that the form does not have yet: each field it shows (but a non-ideal
- * one, whose empty field is an ideal part) that is empty takes an example's value, from the first preset
- * of the topology that has it, else from any preset's. A new load or a source switched on then shows a
- * result at once, and each value stays one the user can change.
+ * The values a change of the form (a new load, the source switched on or off) needs: each field the new
+ * state shows and the previous did not (but a non-ideal one, whose empty field is an ideal part) that is
+ * empty takes an example's value, from the first preset of the topology that has it, else from any
+ * preset's. The result then appears at once, each value stays one the user can change, and a field the
+ * user cleared before the change stays empty.
  */
-export function fillShown(fs: FieldState, values: Record<string, string>, presets: SimPreset[]): Record<string, string> {
+export function fillShown(prev: FieldState, fs: FieldState, values: Record<string, string>, presets: SimPreset[]): Record<string, string> {
   const filled: Record<string, string> = {};
   for (const f of FIELDS) {
-    if (f.group === 'nonideal' || !f.show(fs) || (values[f.key] ?? '').trim() !== '') continue;
+    if (f.group === 'nonideal' || !f.show(fs) || f.show(prev) || (values[f.key] ?? '').trim() !== '') continue;
     const from = presets.find((p) => p.topology === fs.topo && p.values[f.key] !== undefined) ?? presets.find((p) => p.values[f.key] !== undefined);
     if (from) filled[f.key] = String(from.values[f.key]);
   }
@@ -597,6 +599,7 @@ export function falstadFor(r: SimResult): { text: string; link: string; leftOut:
       n: p.n,
       nr: p.nr,
       Lm: flyback ? p.L : p.LM,
+      // the library's 1 mOhm when the field is empty or 0: CircuitJS1's switch needs an on-resistance
       Ron: p.Ron && p.Ron > 0 ? p.Ron : undefined,
     },
     // the simulator's buck-boost output is the load's voltage, taken positive; the circuit's node sits below ground
@@ -939,14 +942,14 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
   /** Re-anchor a field's slider when the typed value is committed (not on every keystroke). */
   function commitField(key: string) {
     setAnchors((prev) => {
-      const a = nextAnchor(prev[key], values[key] ?? '');
+      const a = nextAnchor(prev[key], values[key] ?? '', UNIT[key]);
       return a === prev[key] ? prev : { ...prev, [key]: a! };
     });
   }
 
   /** A new load, or the source switched on or off: the fields it shows that are still empty get values. */
   function changeForm(next: FieldState) {
-    const filled = fillShown(next, values, presets);
+    const filled = fillShown(fstate, next, values, presets);
     setFstate(next);
     if (Object.keys(filled).length) {
       setValues((prev) => ({ ...prev, ...filled }));
@@ -963,7 +966,7 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
   const shown = FIELDS.filter((f) => f.show(fstate));
   const slider = (f: Field) => {
     const name = `${f.label(fstate)} (${labels.slider})`;
-    const v = parseField(values[f.key]);
+    const v = parseField(values[f.key], f.unit);
     const text = `${values[f.key] ?? ''} ${f.unit}`.trim();
     if (f.key === 'D') {
       return (
@@ -1008,6 +1011,7 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
         <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} />
         <NumInput
           id={id}
+          unit={f.unit}
           value={values[f.key] ?? ''}
           onChange={(e) => setField(f.key, e.target.value)}
           onBlur={() => commitField(f.key)}
@@ -1207,7 +1211,8 @@ function FalstadOpen({ result, labels }: { result: SimResult; labels: SimLabels 
   return (
     <p className="pe-tool__hint pe-sim__falstad">
       <a href={f.link} target="_blank" rel="noopener">
-        ▶ {labels.falstadOpen}
+        <span aria-hidden="true">▶ </span>
+        {labels.falstadOpen}
       </a>
       <br />
       <Rich text={labels.falstadHint} />

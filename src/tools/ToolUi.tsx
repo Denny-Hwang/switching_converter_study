@@ -133,10 +133,11 @@ export function Choices<T extends string>(props: ChoicesProps<T>) {
 
 /**
  * A number field. A text field, not type="number": a browser's number field refuses an SI prefix
- * ("100u", "200 kHz"), which lib/siparse.ts reads. Text that is not a number is marked invalid
- * (aria-invalid) as it is typed; an empty field is not.
+ * ("100u", "200 kHz"), which lib/siparse.ts reads, with the field's unit if one is given. Text that is not
+ * a number is marked invalid (aria-invalid) as it is typed; an empty field is not. data-num marks the
+ * tools' number fields for the browser checks (scripts/keyboard_check.mjs).
  */
-export function NumInput({ value, ...rest }: Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'value'> & { value: string }) {
-  const bad = value.trim() !== '' && Number.isNaN(parseSI(value));
-  return <input {...rest} type="text" autoComplete="off" spellCheck={false} value={value} aria-invalid={bad || undefined} />;
+export function NumInput({ value, unit, ...rest }: Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'value'> & { value: string; unit?: string }) {
+  const bad = value.trim() !== '' && Number.isNaN(parseSI(value, unit));
+  return <input {...rest} type="text" data-num="" autoComplete="off" spellCheck={false} value={value} aria-invalid={bad || undefined} />;
 }

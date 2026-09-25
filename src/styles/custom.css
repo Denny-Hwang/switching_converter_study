@@ -141,7 +141,6 @@ html:lang(ko) body {
   color: var(--sl-color-white);
   font-weight: 600;
 }
-.pe-tool input[type='number'],
 .pe-tool input[type='text'],
 .pe-tool select {
   width: 100%;
@@ -187,7 +186,6 @@ html:lang(ko) body {
 .pe-row > .pe-field {
   grid-area: label;
 }
-.pe-row > input[type='number'],
 .pe-row > input[type='text'],
 .pe-row > select,
 .pe-row > input[type='checkbox'] {

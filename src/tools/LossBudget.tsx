@@ -122,20 +122,22 @@ export const FIELDS: Field[] = [
   { key: 'Llk', label: () => 'L_lk', unit: 'H', group: 'leakage', show: (t) => t === 'flyback', optional: true },
 ];
 const KEYS = FIELDS.map((f) => f.key);
+/** Each field's unit, which its value may carry after the number (lib/siparse.ts). */
+const UNIT: Record<string, string> = Object.fromEntries(FIELDS.map((f) => [f.key, f.unit]));
 const CORE_KEYS = ['N', 'Ae', 'Ve', 'k', 'alpha', 'beta'];
 /** Parts that may be zero (an ideal part). */
 const MAY_BE_ZERO = new Set(['Ron', 'Qg', 'Vgs', 'Cnode', 'VF', 'rd', 'RL']);
 
-function num(raw: string | undefined): number {
+function num(raw: string | undefined, unit?: string): number {
   const t = (raw ?? '').trim();
-  return parseSI(t);
+  return parseSI(t, unit);
 }
 
 /** The loss-budget specification from the form, or null when it is incomplete or out of range. */
 export function toLossSpec(topology: Topology, values: Record<string, string>): LossSpec | null {
   const shown = FIELDS.filter((f) => f.show(topology));
   for (const f of shown) {
-    const v = num(values[f.key]);
+    const v = num(values[f.key], f.unit);
     const empty = (values[f.key] ?? '').trim() === '';
     if (f.optional && empty) continue;
     if (MAY_BE_ZERO.has(f.key) ? !(v >= 0) : !(v > 0)) return null;
@@ -144,30 +146,30 @@ export function toLossSpec(topology: Topology, values: Record<string, string>): 
   if (coreGiven.length !== 0 && coreGiven.length !== CORE_KEYS.length) return null;
   const s: LossSpec = {
     topology,
-    Vg: num(values.Vg),
-    V: num(values.V),
-    P: num(values.P),
-    fs: num(values.fs),
-    L: num(values.L),
-    C: num(values.C),
-    Ron: num(values.Ron),
-    Qg: num(values.Qg),
-    Vgs: num(values.Vgs),
-    Cnode: topology === 'forward' ? 0 : num(values.Cnode),
-    VF: num(values.VF),
-    rd: num(values.rd),
-    RL: num(values.RL),
+    Vg: num(values.Vg, UNIT.Vg),
+    V: num(values.V, UNIT.V),
+    P: num(values.P, UNIT.P),
+    fs: num(values.fs, UNIT.fs),
+    L: num(values.L, UNIT.L),
+    C: num(values.C, UNIT.C),
+    Ron: num(values.Ron, UNIT.Ron),
+    Qg: num(values.Qg, UNIT.Qg),
+    Vgs: num(values.Vgs, UNIT.Vgs),
+    Cnode: topology === 'forward' ? 0 : num(values.Cnode, UNIT.Cnode),
+    VF: num(values.VF, UNIT.VF),
+    rd: num(values.rd, UNIT.rd),
+    RL: num(values.RL, UNIT.RL),
   };
   if (s.Cnode > 0 && !(s.Ron > 0)) return null; // the simulator discharges C_node through R_on
-  if (isolated(topology)) s.n = num(values.n);
+  if (isolated(topology)) s.n = num(values.n, UNIT.n);
   if (topology === 'forward') {
-    s.nr = num(values.nr);
-    s.LM = num(values.LM);
+    s.nr = num(values.nr, UNIT.nr);
+    s.LM = num(values.LM, UNIT.LM);
   }
   if (coreGiven.length) {
-    s.core = { N: num(values.N), Ae: num(values.Ae), Ve: num(values.Ve), k: num(values.k), alpha: num(values.alpha), beta: num(values.beta) };
+    s.core = { N: num(values.N, UNIT.N), Ae: num(values.Ae, UNIT.Ae), Ve: num(values.Ve, UNIT.Ve), k: num(values.k, UNIT.k), alpha: num(values.alpha, UNIT.alpha), beta: num(values.beta, UNIT.beta) };
   }
-  if (topology === 'flyback' && Number.isFinite(num(values.Llk))) s.Llk = num(values.Llk);
+  if (topology === 'flyback' && Number.isFinite(num(values.Llk, UNIT.Llk))) s.Llk = num(values.Llk, UNIT.Llk);
   return s;
 }
 
@@ -415,7 +417,7 @@ export default function LossBudget({ labels, presets, simulatorHref, symbols }: 
     return (
       <div key={f.key} className="pe-row pe-row--full">
         <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} />
-        <NumInput id={id} value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
+        <NumInput id={id} unit={f.unit} value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
       </div>
     );
   };
