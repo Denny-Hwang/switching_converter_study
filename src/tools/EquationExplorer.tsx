@@ -171,8 +171,8 @@ export default function EquationExplorer({ locale, labels }: Props) {
   // sweep plot
   useEffect(() => {
     const el = plotRef.current;
-    const a = parseField(from);
-    const b = parseField(to);
+    const a = parseField(from, unitLabel(sweep));
+    const b = parseField(to, unitLabel(sweep));
     if (!el || !(a < b) || (logx && a <= 0)) return;
     let cancelled = false;
     const n = 201;
@@ -285,11 +285,11 @@ export default function EquationExplorer({ locale, labels }: Props) {
             </div>
             <div className="pe-row pe-row--full">
               <label htmlFor="explorer-from">{labels.from}</label>
-              <NumInput id="explorer-from" value={from} onChange={(e) => setFrom(e.target.value)} />
+              <NumInput id="explorer-from" unit={unitLabel(sweep)} value={from} onChange={(e) => setFrom(e.target.value)} />
             </div>
             <div className="pe-row pe-row--full">
               <label htmlFor="explorer-to">{labels.to}</label>
-              <NumInput id="explorer-to" value={to} onChange={(e) => setTo(e.target.value)} />
+              <NumInput id="explorer-to" unit={unitLabel(sweep)} value={to} onChange={(e) => setTo(e.target.value)} />
             </div>
             <label className="pe-check" htmlFor="explorer-logx">
               <input id="explorer-logx" type="checkbox" checked={logx} onChange={(e) => setLogx(e.target.checked)} />
