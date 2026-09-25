@@ -15,7 +15,11 @@ import { useStateHash } from '../lib/useStateHash';
 import { LOADS, loadChoiceOf, type LoadChoice } from '../lib/simload';
 import type { SimReply } from './simulator.worker';
 import SequenceView, { type SeqText } from './SequenceView';
+import ModeSheet from './ModeSheet';
 import { Choices, FieldLabel, Rich, Sym } from './ToolUi';
+
+/** The sheet of every mode starts open up to this many modes. */
+const SHEET_OPEN_MODES = 6;
 
 type Topology = sim.Topology;
 type SimParams = sim.SimParams;
@@ -1035,6 +1039,16 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
         </div>
       </div>
       {result?.converged && <SequenceView result={result} modes={modes} text={seqText} selected={sel} onSelect={setModeSel} theme={theme} />}
+      {result?.converged && modes.length > 0 && (
+        // open unless the period has many modes (a node capacitance's ringing): then one click away
+        <details className="pe-sheet__box" open={modes.length <= SHEET_OPEN_MODES}>
+          <summary>{seqText.sheetTitle}</summary>
+          <p className="pe-tool__hint">
+            <Rich text={seqText.sheetIntro!} />
+          </p>
+          <ModeSheet result={result} modes={modes} text={seqText} theme={theme} />
+        </details>
+      )}
       {result?.converged && (
         <>
           <h3>{labels.status}</h3>

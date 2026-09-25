@@ -858,6 +858,100 @@ html:lang(ko) body {
   color: var(--sl-color-gray-3);
 }
 
+/* ---- every mode at once (ModeSheet): the key waveforms, then one circuit per mode ---------- */
+/* the trace colours of lib/plot.ts (LIGHT, DARK), for drawings rendered at build time (STATIC_THEME) */
+:root {
+  --pe-trace-0: #1f6fb4;
+  --pe-trace-1: #e8710a;
+  --pe-trace-2: #1e8a4c;
+  --pe-trace-3: #d1343c;
+  --pe-trace-4: #7b4fb3;
+  --pe-trace-5: #8a5a44;
+  --pe-trace-6: #0f8f8f;
+}
+:root[data-theme='dark'] {
+  --pe-trace-0: #6cb2ff;
+  --pe-trace-1: #ffa551;
+  --pe-trace-2: #52cf8f;
+  --pe-trace-3: #ff737a;
+  --pe-trace-4: #bb95ff;
+  --pe-trace-5: #d9a986;
+  --pe-trace-6: #4fd6d6;
+}
+.pe-sheet {
+  margin-top: 0.75rem;
+}
+.pe-sheet__box {
+  margin-top: 1.25rem;
+}
+.pe-sheet__box > summary {
+  color: var(--sl-color-white);
+  font-size: var(--sl-text-h4);
+  font-weight: 600;
+  cursor: pointer;
+}
+.pe-sheet__scroll {
+  overflow-x: auto;
+}
+/* never scaled below a legible size: a narrow screen scrolls the waveforms instead */
+.pe-sheet__waves {
+  display: block;
+  min-width: 34rem;
+  height: auto;
+  font-family: var(--sl-font);
+}
+.pe-sheet__legend {
+  margin: 0.25rem 0 0.5rem;
+  color: var(--sl-color-gray-3);
+  font-size: var(--sl-text-xs);
+}
+.pe-sheet__legend svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+.pe-sheet__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr));
+  gap: 0.75rem 1rem;
+}
+.pe-sheet__grid--wide {
+  /* the forward converter's circuit, twice as wide as the others: one mode a row */
+  grid-template-columns: minmax(0, 1fr);
+}
+.pe-sheet__mode {
+  min-width: 0;
+  margin: 0;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.4rem;
+  /* below a legible size the card scrolls */
+  overflow-x: auto;
+}
+.pe-sheet__mode figcaption {
+  margin-bottom: 0.25rem;
+  color: var(--sl-color-white);
+  font-size: var(--sl-text-sm);
+}
+.pe-sheet__range {
+  color: var(--sl-color-gray-3);
+  font-size: var(--sl-text-xs);
+  font-variant-numeric: tabular-nums;
+}
+/* in the sheet a circuit shrinks with its card, down to a legible size (a card fits a 360 px phone) */
+.pe-sheet__mode .pe-seq__svg {
+  display: block;
+  min-width: 18rem;
+  height: auto;
+}
+.pe-sheet__grid--wide .pe-seq__svg {
+  min-width: 34rem;
+}
+.pe-sheet__desc {
+  margin: 0.35rem 0 0;
+  font-size: var(--sl-text-xs);
+  line-height: 1.45;
+}
+
 /* ---- converter designer --------------------------------------------------- */
 .pe-design__warnings {
   margin: 0.5rem 0;

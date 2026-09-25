@@ -14,6 +14,7 @@ import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
 import TrySim from '../../../../components/TrySim.astro';
+import ModeSheet from '../../../../components/ModeSheet.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -81,6 +82,17 @@ single stage that can step up or down. The small-signal model also has a
 right-half-plane zero (<EqRef id="buckboost.ss.wz" label="RHP zero" />). The
 flyback converter is the transformer-isolated version of this circuit
 (see the [flyback page](../flyback/)).
+
+### Operating modes
+
+The sheet below splits one steady period of the example into its modes, as
+papers on converters do, from the site's simulator; the simulator's [operating-mode view](../../simulate/simulator/#operating-modes) draws the
+same for any values. In CCM the period has two modes: the switch conducts and
+the inductor charges from the input while the capacitor alone feeds the load,
+then the switch is off and the diode carries the inductor's current into the
+output, which it charges negative <Cite key="erickson2020" where="Ch. 2" />.
+
+<ModeSheet example="buckboost-basic" topology="buckboost" />
 
 ## Worked example
 

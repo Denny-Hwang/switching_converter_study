@@ -14,6 +14,7 @@ import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
 import TrySim from '../../../../components/TrySim.astro';
+import ModeSheet from '../../../../components/ModeSheet.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -127,6 +128,23 @@ this value, where CCM begins and holds the input there: the converter then
 acts as a constant-voltage sink. At that point the switch blocks
 
 <Eq id="flyback.Vds_clamped" />
+
+### Operating modes
+
+The sheets below split one steady period of each example into its modes, as
+papers on converters do, from the site's simulator; the simulator's [operating-mode view](../../simulate/simulator/#operating-modes) draws the
+same for any values. In CCM the period has two modes: the switch conducts and
+the magnetizing inductance charges from the input while the output diode
+blocks, then the switch is off and the magnetizing current flows out of the
+secondary through the diode <Cite key="erickson2020" where="Ch. 6" />.
+
+<ModeSheet example="flyback-ccm" topology="flyback" />
+
+In DCM the magnetizing current reaches zero before the period ends, and a
+third mode follows in which neither the switch nor the diode conducts
+<Cite key="erickson2020" where="Ch. 5" />:
+
+<ModeSheet example="flyback-dcm" topology="flyback" />
 
 ## Worked example
 

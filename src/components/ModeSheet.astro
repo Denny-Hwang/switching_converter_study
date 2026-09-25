@@ -1,0 +1,47 @@
+---
+/**
+ * <ModeSheet example="buck-basic" topology="buck" /> -- the operating modes of
+ * an example's steady period as a paper lays them out (tools/ModeSheet.tsx),
+ * simulated at build time by pe-core with the same values the simulator's
+ * preset takes (lib/simpresets.ts), and drawn once as static SVG and HTML in
+ * the page's language. A link opens the same example in the simulator, where
+ * the values can be changed and the sheet follows them. An example without a
+ * steady state, or at rest, fails the build.
+ */
+import { sim } from 'pe-core';
+import ModeSheetView from '../tools/ModeSheet.tsx';
+import { stateFromHash, toParams } from '../tools/Simulator.tsx';
+import { SEQ_TEXT } from '../i18n/sequence';
+import { ui } from '../i18n/ui';
+import { pageHref } from '../lib/paths';
+import { pageLocale } from '../lib/locale';
+import { STATIC_THEME } from '../lib/plot';
+import { PRESETS, presetValues, simulatorHash } from '../lib/simpresets';
+import { renderInlineMath } from '../math/inline';
+
+interface Props {
+  example: string;
+  topology: sim.Topology;
+}
+const { example, topology } = Astro.props;
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const hash = simulatorHash(example, topology);
+const presets = PRESETS.map((p) => ({ id: p.id, label: p.en, topology: p.topology, values: presetValues(p.example, p.topology) }));
+const state = stateFromHash(new URLSearchParams(hash), presets);
+const params = toParams(state.fs, state.values);
+if ('error' in params) throw new Error(`<ModeSheet example="${example}">: the simulator refuses its values (${params.error})`);
+const result = sim.simulate(params);
+if (!result.converged || sim.atRest(result)) throw new Error(`<ModeSheet example="${example}">: no steady state with modes to draw`);
+const modes = sim.modes(result);
+const href = `${pageHref(locale, 'simulate/simulator')}#${hash}`;
+const [before, after] = t['sheet.caption'].split('{example}');
+---
+
+<figure class="pe-figure pe-sheet__figure" id={`modes-${example}`}>
+  <ModeSheetView result={result} modes={modes} text={SEQ_TEXT[locale]} theme={STATIC_THEME} />
+  <figcaption>
+    <Fragment set:html={renderInlineMath(before ?? '')} /><code>{example}</code><Fragment set:html={renderInlineMath(after ?? '')} />{' '}
+    <a href={href}>▶ {t['sheet.open']}</a>
+  </figcaption>
+</figure>

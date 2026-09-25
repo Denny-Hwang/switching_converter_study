@@ -14,6 +14,7 @@ import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
 import TrySim from '../../../../components/TrySim.astro';
+import ModeSheet from '../../../../components/ModeSheet.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -83,6 +84,22 @@ Both carry the peak inductor current <Cite key="erickson2020" where="Ch. 6" />.
 At light load the inductor current reaches zero and the buck enters DCM once
 $K$ falls below <EqRef id="Kcrit.buck" label="its critical value" />; its
 output then rises above $D V_g$ (<EqRef id="buck.dcm.M" label="DCM ratio" />).
+
+### Operating modes
+
+The sheet below splits one steady period of the example into its modes, as
+papers on converters do, from the site's simulator; the simulator's [operating-mode view](../../simulate/simulator/#operating-modes) draws the
+same for any values. In CCM the period has two modes: the switch conducts
+while the diode blocks, then the diode carries the inductor's current while
+the switch is off <Cite key="erickson2020" where="Ch. 2" />.
+
+<ModeSheet example="buck-basic" topology="buck" />
+
+At light load the inductor's current reaches zero before the period ends,
+and a third mode follows in which neither the switch nor the diode conducts
+and the capacitor alone feeds the load <Cite key="erickson2020" where="Ch. 5" />:
+
+<ModeSheet example="buck-light-load" topology="buck" />
 
 ## Worked example
 

@@ -284,6 +284,20 @@ instant that current last falls through 5 % of its average in the period
 agrees with ngspice within 3 ns (2.1 ns at worst) in every circuit of the
 SPICE comparison below.
 
+Under the mode view, **All modes at once** draws the whole period the way a
+paper lays it out. First the key waveforms, stacked on one time axis: the
+gate, the inductor's current, the switch's current (its body diode's
+included, negative) and the diode's, the switch's voltage and the inductor's voltage;
+for the forward converter, the magnetizing current and both output diodes'
+currents instead of the inductor's voltage. The boundaries $t_0$, $t_1$, …
+between the modes are dashed, and each row's largest value stands at its
+right, with its smallest where there is room. Then comes the
+circuit of every mode, lettered (a), (b), … in order, with the same colours,
+arrows and descriptions as the mode view. Like everything on the page, it
+follows the values in the form. The topology pages show it for their
+examples, [the buck converter's](../../03-topologies/buck/#operating-modes)
+for one.
+
 ## How it computes
 
 The ideas below, with worked numbers, are on the page

@@ -55,7 +55,8 @@ result names the equation it comes from.
 **Simulate.** A time-domain simulator in the browser: pick a topology, move a
 slider and watch the waveforms, the operating mode and the losses change.
 Step through the period mode by mode, with the circuit's current paths and
-each element's state. Every result sits next to the formula's value, and the
+each element's state, or see every mode at once as a paper draws it: the key
+waveforms with the modes' boundaries, then each mode's circuit. Every result sits next to the formula's value, and the
 simulator is validated against the formulas to within 2 % and against
 ngspice.
 
@@ -198,7 +199,9 @@ the citation rules. Documentation: CC BY-SA 4.0 (`LICENSE-DOCS`). Code: MIT
 
 **시뮬레이션.** 브라우저에서 동작하는 시간 영역(time-domain) 시뮬레이터입니다.
 토폴로지를 고르고 슬라이더를 움직이면 파형, 동작 모드, 손실이 바로 바뀝니다.
-모든 결과가 수식의 값과 나란히 표시되며, 시뮬레이터는 수식과 2 % 이내로
+한 주기를 모드별로 따라가며 회로의 전류 경로와 소자마다의 상태를 볼 수 있고,
+논문에서처럼 모든 모드를 한 번에 볼 수도 있습니다. 모드 경계를 표시한 주요 파형과
+각 모드의 회로를 함께 보여 줍니다. 모든 결과가 수식의 값과 나란히 표시되며, 시뮬레이터는 수식과 2 % 이내로
 일치하도록 검증됩니다.
 
 <img src="docs/images/simulate-ko.png" alt="시뮬레이터: 토폴로지와 프리셋 버튼, 검출된 동작 모드, 그리고 파형 옆의 파라미터 입력란">

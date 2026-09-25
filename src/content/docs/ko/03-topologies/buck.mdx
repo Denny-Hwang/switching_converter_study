@@ -14,6 +14,7 @@ import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
 import TrySim from '../../../../components/TrySim.astro';
+import ModeSheet from '../../../../components/ModeSheet.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -84,6 +85,21 @@ import Quiz from '../../../../components/Quiz.astro';
 <EqRef id="Kcrit.buck" label="임계값" />(critical value) 아래로 떨어지면 벅은
 DCM으로 들어갑니다. 이때 출력은 $D V_g$보다
 높아집니다(<EqRef id="buck.dcm.M" label="DCM 변환비" />).
+
+### 동작 모드(operating mode)
+
+아래 그림은 예제의 정상상태 한 주기를 컨버터 논문에서처럼 모드별로 나누어 보여 줍니다.
+사이트의 시뮬레이터로 계산했으며, 시뮬레이터의 [동작 모드 보기](../../simulate/simulator/#동작-모드)는 어떤 값에서든 같은 그림을 그립니다.
+CCM에서 한 주기는 두 모드로 이루어집니다. 스위치가 도통하는 동안 다이오드는 차단되고,
+스위치가 꺼지면 다이오드가 인덕터 전류를 이어받습니다 <Cite key="erickson2020" where="Ch. 2" />.
+
+<ModeSheet example="buck-basic" topology="buck" />
+
+경부하에서는 인덕터 전류가 주기가 끝나기 전에 0에 이르고, 스위치와 다이오드가 모두
+도통하지 않아 커패시터 혼자 부하에 전류를 공급하는 세 번째 모드가 이어집니다
+<Cite key="erickson2020" where="Ch. 5" />.
+
+<ModeSheet example="buck-light-load" topology="buck" />
 
 ## 풀이 예제
 

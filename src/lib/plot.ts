@@ -36,6 +36,22 @@ function cssVar(name: string, fallback: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
 }
 
+/**
+ * A theme for drawings rendered once at build time (ModeSheet.astro), which follows the page's light or
+ * dark theme by itself: the colours are CSS variables (Starlight's greys, and the trace colours above as
+ * --pe-trace-0 ... in custom.css), which SVG presentation attributes resolve like any other property.
+ */
+export const STATIC_THEME: PlotTheme = {
+  dark: false,
+  text: 'currentColor',
+  muted: 'var(--sl-color-gray-3)',
+  grid: 'var(--sl-color-gray-5)',
+  line: 'var(--sl-color-gray-4)',
+  band: 'currentColor',
+  font: 'inherit',
+  colors: LIGHT.map((_, j) => `var(--pe-trace-${j})`),
+};
+
 /** The theme Starlight has applied to the page (data-theme on <html>). */
 export function readTheme(): PlotTheme {
   const dark = typeof document !== 'undefined' && document.documentElement.dataset.theme === 'dark';
