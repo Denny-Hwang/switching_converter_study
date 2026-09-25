@@ -1,0 +1,13 @@
+synthetic: true
+label: "Exact-step example"
+label_ko: "정확한 스텝 예제"
+# A capacitance charging toward 10 V through a resistance, with a time constant of 10 ns,
+# stepped by 50 ns: the exact step, and forward Euler's factor for the same step.
+params:
+  v_0: 0
+  v_inf: 10
+  tau: 1.0e-8
+  Delta_t: 5.0e-8
+steps:
+  - sim.exact_step
+  - num.gain_fe

@@ -1,0 +1,140 @@
+---
+title: How the in-browser simulator works
+description: Why the site's simulator steps each switching interval exactly instead of with a small-step integration rule, and how it finds the periodic steady state without simulating hundreds of periods from rest.
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- See why a switching converter is a linear circuit within each switching interval, and what stepping it exactly means.
+- Compare the exact step with a simple integration rule on a fast time constant.
+- Know how the simulator finds the periodic steady state, and what that saves over a run from rest.
+
+## Theory
+
+### A linear circuit in each interval
+
+Between two switching events, every switch and diode of the
+[simulator](../../simulate/simulator/) is either on or off, and what is left
+is a linear circuit: resistances, inductances, capacitances and constant
+sources. Its state, the inductor currents and the capacitor voltages, obeys
+linear differential equations with constant sources in each interval, the
+same description that state-space averaging starts from
+<Cite key="erickson2020" where="Ch. 7" />. For a capacitor charged through a
+resistance, the solution over a step is exact, however long the step:
+
+<Eq id="sim.exact_step" />
+
+A circuit with several states steps them all at once with the exponential of
+its equations' matrix, which the simulator computes by scaling and squaring
+<Cite key="higham2005" />. Within an interval nothing is approximated beyond
+rounding, so the length of a step does not limit its accuracy.
+
+### A simple rule on a fast time constant
+
+A general-purpose integrator approximates the solution over small steps
+instead. The simplest rule, forward Euler, steps with the slope at the start
+of the step, and multiplies a decaying mode's deviation by a fixed factor in
+every step <Cite key="hairer1996" />:
+
+<Eq id="num.gain_fe" />
+
+A step longer than twice the time constant makes the factor larger than one
+in size, and the solution grows without bound. A converter has fast time
+constants, such as a small capacitance at the switch node behind a small
+resistance, next to the slow ones of its output filter: a rule like this
+would have to take steps shorter than the fastest, over as many periods as
+the slowest needs. SPICE avoids the blow-up with implicit rules, which keep a
+decaying mode from growing whatever the step (see the
+[ngspice page](../ngspice/)).
+
+### Events
+
+An interval ends when a switch changes state: at the gate's edges, and when a
+diode's current reaches zero or its voltage turns it on. The simulator finds
+that instant within the step on the same exact solution, so the next
+interval starts from the right state
+([how it computes](../../simulate/simulator/#how-it-computes)).
+
+### The periodic steady state
+
+From rest, a converter's output settles with its filter's envelope time
+constant (<EqRef id="filter.tau_env" label="envelope time constant" />), and
+reaching a small fraction of the start-up error takes many periods
+(<EqRef id="sim.periods_settle" label="periods to settle" />). The simulator
+looks instead for the state at the start of a period that the period maps
+back onto itself: the periodic steady state, a fixed point of the map from
+one period's initial state to the next. Newton's method finds it with the
+map's derivative, the product of the steps' matrices, in a few iterations
+<Cite key="aprille1972" />. When the switching instants do not depend on the
+state, as in CCM with a fixed duty ratio, the map is linear and a single
+Newton step lands on the steady state.
+
+## Worked example
+
+A capacitance charging towards a voltage with a time constant of ten
+nanoseconds, stepped by fifty:
+
+<Worked example="sim-exact-step" />
+
+In one step of five time constants, the exact step brings the capacitor from
+<Val example="sim-exact-step" name="v_0" /> to
+<Val example="sim-exact-step" name="v_1" />. Forward Euler's factor for the
+same step is <Val example="sim-exact-step" name="g_FE" />: its first step
+lands four times as far from the final voltage as it started, on the other
+side, and each further step does the same again.
+
+## Try it
+
+<TryIt eq="num.gain_fe" example="sim-exact-step" sweep="Delta_t" />
+
+Sweep the step: forward Euler's factor stays within one in size only below
+twice the time constant.
+
+<TryIt eq="sim.exact_step" example="sim-exact-step" sweep="Delta_t" />
+
+The exact step approaches the final voltage however long the step is. Open
+the simulator with the buck example: its steady state is computed directly,
+without a start-up.
+
+<TrySim example="buck-basic" topology="buck" />
+
+## Bench exercise
+
+Charge a capacitor through a resistor from a function generator's square
+wave, and capture the capacitor's voltage. Read it at the start of a
+half-period and one time constant later, and compare with the exact step.
+Then take the samples twice the time constant apart and apply forward
+Euler's rule by hand from the first one: the first step already overshoots
+the final voltage, while the circuit does not.
+
+## Gotchas
+
+- **The steady state is not the start-up.** The simulator reports the
+  periodic steady state; a start-up or a load step on the bench passes
+  through transients it does not show.
+- **A small step does not make an explicit rule stable by itself.** It must
+  be shorter than twice the *fastest* time constant, even when that mode is
+  too fast to matter (<EqRef id="num.gain_fe" label="forward Euler's factor" />).
+- **The plots draw samples.** A peak narrower than a sub-step can be in the
+  reported numbers but not in the plot.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch7', 'mit-6002']} />
+
+## Quiz
+
+<Quiz id="05-simulation/in-browser-simulator" />

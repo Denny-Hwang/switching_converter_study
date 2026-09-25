@@ -1,0 +1,16 @@
+synthetic: true
+label: "Buck settling example"
+label_ko: "벅 정착 예제"
+# The buck example's filter, load and switching frequency (buck-basic.yaml), simulated from
+# rest until a millionth of the start-up error is left.
+params:
+  f_s: 1.0e5
+  L: 1.0e-4
+  C: 1.0e-5
+  R: 10
+  eps_r: 1.0e-6
+steps:
+  - def.Ts
+  - buck.ss.Q
+  - filter.tau_env
+  - sim.periods_settle

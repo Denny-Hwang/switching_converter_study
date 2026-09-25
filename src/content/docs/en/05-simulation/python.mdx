@@ -1,0 +1,121 @@
+---
+title: Verifying with Python
+description: How the site's Python package derives each equation with SymPy and generates what the pages show, and how two computations are compared within a tolerance that rounding cannot fail and a real mistake cannot pass.
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Follow one equation from its SymPy derivation to the page and to the tests.
+- Compare two computations by their relative difference, and choose a tolerance that rounding cannot fail and a real mistake cannot pass.
+- Run the site's checks on your own machine.
+
+## Theory
+
+### One source, two implementations
+
+Every equation on the site lives once, in
+`packages/pe-core/equations/equations.yaml`, as a SymPy expression with its
+symbols, its tests and its citation. The Python package `python/pe_core`
+works from it:
+
+- Where it can, a script in `python/pe_core/derive/` derives the equation from
+  first principles, solving the circuit's balance equations with SymPy step by
+  step. The [derivations page](../../02-theory/derivations/) shows those steps
+  as the code computes them, and pytest checks that each result equals the
+  catalogue's expression.
+- `python scripts/gen_equations.py` writes the LaTeX the pages show and the
+  test vectors: each equation's own tests, and random inputs evaluated by
+  SymPy. CI runs it again and fails on any difference.
+
+The TypeScript engine behind the pages and the tools has its own evaluators,
+written by hand rather than generated from the same file, so that a mistake
+in one is not copied into the other. vitest checks every evaluator against
+the vectors.
+
+### Comparing two numbers
+
+Two computations are compared by their relative difference:
+
+<Eq id="num.rel_diff" />
+
+It does not depend on the unit or the scale, so one tolerance serves every
+quantity; near a zero reference it does not work, and an absolute limit is
+needed there <Cite key="higham2002" />. Two correct programs need not produce
+the same bits: each operation rounds its result, and the result depends on
+the order of the operations. One rounding changes a number by at most the
+unit roundoff of the format, relative to its size:
+
+<Eq id="num.unit_roundoff" />
+
+The site requires the TypeScript and the Python evaluations of an equation to
+agree within one part in a billion. That is millions of times the unit
+roundoff, so rounding passes, yet far below any real mistake such as a wrong
+constant or a missing factor. A simulation compared with its equation gets a
+looser tolerance, because the circuit it simulates is not exactly the ideal
+one of the equation: the SPICE library's cases must lie within one percent of
+the ideal equations, and the in-browser simulator within two percent.
+
+### Checks against another solver
+
+`scripts/spice_crosscheck.py` writes the in-browser simulator's circuits
+again as netlists, from their schematics rather than from the simulator's
+equations, and runs them in ngspice <Cite key="ngspice" />. CI compares the
+simulator with ngspice's results within half a percent.
+
+## Worked example
+
+A simulated conversion ratio against the ideal one, and the unit roundoff of
+binary64, the double that JavaScript and Python use:
+
+<Worked example="num-parity" />
+
+The ratio differs from the ideal one by
+<Val example="num-parity" name="delta_rel" />, within the library's one
+percent. The unit roundoff is <Val example="num-parity" name="u_r" />: a
+tolerance of one part in a billion leaves room for millions of roundings.
+
+## Try it
+
+<TryIt eq="num.rel_diff" example="num-parity" sweep="x_val" />
+
+Sweep the value under test: the relative difference grows linearly on each
+side of the reference and reaches zero only at the reference itself.
+
+## Bench exercise
+
+Measure a converter's input and output voltages on the bench with a
+multimeter, compute the relative difference of their ratio from the ideal
+one in Python, and list what can account for it: the diode's drop, the
+switch's and the winding's resistances, the ripple. Then change the load and
+see which of them grows with the current.
+
+## Gotchas
+
+- **A reference near zero** makes the relative difference meaningless; compare
+  against a scale, such as the quantity's largest value over the period, as
+  the library's checks do.
+- **Two implementations that share code share its mistakes.** Generated
+  evaluators would agree with the file they come from even where it is wrong.
+- **Floating-point numbers are not compared for equality.** 0.1 + 0.2 is not
+  0.3 in binary64: compare within a tolerance
+  (<EqRef id="num.unit_roundoff" label="unit roundoff" />).
+
+## Go deeper
+
+<GoDeeper ids={['sympy-solving', 'python-floatingpoint']} />
+
+## Quiz
+
+<Quiz id="05-simulation/python" />

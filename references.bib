@@ -67,7 +67,7 @@
   publisher = {McGraw-Hill Education},
   year      = {2017},
   isbn      = {978-0-07-802822-9},
-  note      = {verified 2026-09-23 (retailer listings for ISBN 978-0-07-802822-9, 6th ed., 2017; Section 4.8 is "Maximum Power Transfer"). Phase 4c, two review rounds (the table of contents): Ch. 4 "Circuit Theorems", Ch. 7 "First-Order Circuits", Ch. 11 "AC Power Analysis", the chapters the harvesting pages cite}
+  note      = {verified 2026-09-23 (retailer listings for ISBN 978-0-07-802822-9, 6th ed., 2017; Section 4.8 is "Maximum Power Transfer"). Phase 4c, two review rounds (the table of contents): Ch. 4 "Circuit Theorems", Ch. 7 "First-Order Circuits", Ch. 11 "AC Power Analysis", the chapters the harvesting pages cite. Phase 5c, round 1 (web searches, 2026-09-25): Ch. 8 is "Second-Order Circuits", with a section on the source-free parallel RLC circuit, whose natural response decays with the neper frequency alpha = 1/(2RC) (underdamped when alpha < omega_0); Ch. 7 gives the complete response of a first-order circuit, x(t) = x(inf) + [x(0) - x(inf)] e^(-t/tau)}
 }
 
 @techreport{dixon2001,
@@ -783,4 +783,55 @@
   howpublished = {\url{https://www.falstad.com/circuit/}},
   note         = {verified 2026-09-23 ("Circuit Simulator Applet" page; app at /circuit/circuitjs.html). Authors, 2026-09-24: round 1, a web search (Paul Falstad wrote the simulator as a Java applet; Iain Sharp ported it to the browser with GWT, github.com/sharpie7/circuitjs1); round 2, an independent review read the sharpie7/circuitjs1 README: "originally written by Paul Falstad as a Java Applet. It was adapted by Iain Sharp to run in the browser using GWT"},
   urltitle     = {Circuit Simulator}
+}
+
+% --- 05-simulation (Phase 5c): numerical integration, rounding, the periodic steady state, the ngspice manual.
+% Round 1: web searches on 2026-09-25 (most publisher hosts cannot be opened from the sandbox; CI checks each DOI
+% in Crossref and opens each URL).
+
+@book{hairer1996,
+  author    = {Hairer, Ernst and Wanner, Gerhard},
+  title     = {Solving Ordinary Differential Equations {II}: Stiff and Differential-Algebraic Problems},
+  edition   = {2},
+  series    = {Springer Series in Computational Mathematics},
+  volume    = {14},
+  publisher = {Springer},
+  address   = {Berlin, Heidelberg},
+  year      = {1996},
+  isbn      = {978-3-540-60452-5},
+  doi       = {10.1007/978-3-642-05221-7},
+  note      = {verified 2026-09-25 (round 1: web searches; the SpringerLink book page for this DOI gives the title, Hairer and Wanner, 2nd revised edition, Springer Series in Computational Mathematics, 1996; searches on stability functions confirm Sec. IV.2 "Stability Analysis for Explicit RK Methods" and Sec. IV.3 "Stability Function of Implicit RK-Methods", that applied to the test equation y' = lambda y a one-step method gives y_1 = R(h lambda) y_0, with R(z) = 1 + z for explicit Euler, 1/(1 - z) for implicit Euler and (1 + z/2)/(1 - z/2) for the trapezoidal rule, and that the trapezoidal rule is A-stable with |R(infinity)| = 1 while implicit Euler is L-stable, R(infinity) = 0; CI checks the DOI's record in Crossref). Cited for: the factor each step multiplies a decaying mode by, R(z) at z = -Delta t/tau, for explicit Euler (Sec. IV.2), the trapezoidal rule and implicit Euler (Sec. IV.3); A-stability and L-stability}
+}
+
+@book{higham2002,
+  author    = {Higham, Nicholas J.},
+  title     = {Accuracy and Stability of Numerical Algorithms},
+  edition   = {2},
+  publisher = {Society for Industrial and Applied Mathematics},
+  address   = {Philadelphia},
+  year      = {2002},
+  isbn      = {978-0-89871-521-7},
+  doi       = {10.1137/1.9780898718027},
+  note      = {verified 2026-09-25 (round 1: web searches; the SIAM Publications Library record for this DOI and the author's page give the title, the second edition, SIAM, 2002; searches on its contents give Sec. 1.2 "Relative Error and Significant Digits" and, in Ch. 2 "Floating Point Arithmetic", Sec. 2.1 on the floating point number system with the unit roundoff u = beta^(1-t)/2, which is 2^-53, about 1.1e-16, for IEEE double precision; CI checks the DOI's record in Crossref). Cited for: the relative error of a value against its reference (Sec. 1.2); the unit roundoff of a floating-point format and its value for IEEE double precision (Sec. 2.1)}
+}
+
+@article{aprille1972,
+  author  = {Aprille, T. J. and Trick, T. N.},
+  title   = {Steady-State Analysis of Nonlinear Circuits with Periodic Inputs},
+  journal = {Proceedings of the IEEE},
+  volume  = {60},
+  number  = {1},
+  pages   = {108--114},
+  year    = {1972},
+  doi     = {10.1109/PROC.1972.8563},
+  note    = {verified 2026-09-25 (round 1: web searches; a search for this DOI returns the paper, Aprille and Trick, Proceedings of the IEEE 60(1), pp. 108-114, January 1972, and later papers on periodic steady-state analysis cite it for the Newton algorithm on the state-transition function over one period, the shooting method; CI checks the DOI's record in Crossref). Cited for: the periodic steady state as the initial state that one period maps back onto itself, found by Newton's method on that map, with its derivative (the sensitivity of the final state to the initial one)}
+}
+
+@manual{ngspice_manual,
+  title        = {Ngspice User's Manual},
+  organization = {The ngspice team},
+  type         = {Manual (HTML edition of the current release)},
+  note         = {verified 2026-09-25 (round 1: web searches; ngspice.sourceforge.io/docs.html lists the manual of each release, as PDF (e.g. ngspice-46-manual.pdf) and as one HTML page, "Ngspice User's Manual Version 47 (ngspice release version)"; the searches quote its .options sections: "METHOD=name sets the numerical integration method" to Gear or trapezoidal, "The default is trapezoidal", and "RELTOL=x resets the relative error tolerance of the program. The default value is 0.001 (0.1%)"; the host cannot be opened from the sandbox, and the CI URL check opens it and matches urltitle). Cited for: the integration method set by .options method (trapezoidal by default, or Gear) and the default relative tolerance, 0.001},
+  url          = {https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml},
+  urltitle     = {Ngspice User's Manual}
 }

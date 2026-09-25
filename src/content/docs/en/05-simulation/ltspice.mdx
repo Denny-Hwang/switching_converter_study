@@ -1,0 +1,139 @@
+---
+title: The converters in LTspice
+description: How to open and run the SPICE library's LTspice schematics, what their directives do, and how long a simulation from rest must run before its last periods show the steady state.
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Open and run the SPICE library's LTspice schematics, and plot what their READMEs list.
+- Work out how long a simulation from rest must run before its last periods show the steady state.
+- Know which directives the schematics carry, and why.
+
+## Theory
+
+### The library in LTspice
+
+The repository's `sim/ltspice/` folder has the five basic converters as
+LTspice schematics <Cite key="ltspice" />, one folder per converter with a
+README that says what to plot and what to expect. Each schematic is the same
+circuit as the ngspice netlist of the same name in `sim/ngspice/`: the
+library's script reads every schematic back into a netlist and compares it
+part by part and node by node, and the nets carry the netlist's node names.
+Open a schematic and press Run: its directives come with it.
+
+- `.param` sets the values of the synthetic example that the simulator's
+  preset of the same name uses.
+- `.model` gives the near-ideal switch and diode.
+- `.tran` runs from rest, with every capacitor empty and every inductor
+  without current, for several hundred periods, with a time step no longer
+  than a two-hundredth of a period.
+- `.options method=gear reltol=1e-4` chooses the integration method and the
+  tolerance. The [ngspice page](../ngspice/) explains why.
+
+The ngspice netlists also carry `.meas` statements that average each quantity
+and find its extremes over the last period. In LTspice, zoom in on the last
+period, or add the same statements to the schematic.
+
+### How long to run
+
+A run from rest has to pass through the whole start-up before its last period
+shows the steady state. In CCM, the output filter and the load ring after the
+start, and the ring's envelope decays with a time constant set by the load
+and the capacitance alone:
+
+<Eq id="filter.tau_env" />
+
+The error left after the start-up shrinks by the same factor in every
+envelope time constant. To bring it down to a fraction of what it was at
+the start takes:
+
+<Eq id="sim.periods_settle" />
+
+A light load rings longer, and each factor of ten in accuracy adds the same
+number of periods. The library's script checks each run at the end: the
+output's average over the last period must lie within one part in ten
+thousand of its average over the period before, or the case fails as not
+settled. In DCM the inductor current returns to zero in every period, so the
+inductor carries nothing from one period to the next: the filter no longer
+rings as an L-C pair, and the output settles in another way
+<Cite key="erickson2020" where="Ch. 15" />.
+The library's DCM cases run longer than its CCM ones.
+
+### Integration settings
+
+With LTspice's default settings the library's DCM flyback shows dips of the
+drain voltage far below zero that the circuit does not have. The
+`.options` line removes them, as it does in ngspice; the library records a
+one-time check with LTspice 26.1.1, in which LTspice's own netlists matched
+the library's and its results agreed with ngspice's within 0.3 % of each
+quantity's largest magnitude. The [ngspice page](../ngspice/) shows what
+decides this: the factor by which each step multiplies a fast mode
+(<EqRef id="num.gain_tr" label="the trapezoidal rule's factor" />).
+
+## Worked example
+
+The buck example's filter, load and switching frequency, run from rest until
+a millionth of the start-up error is left:
+
+<Worked example="sim-settle" />
+
+Its quality factor, <Val example="sim-settle" name="Q" />, is well above one
+half, so the filter rings. The envelope time constant is
+<Val example="sim-settle" name="tau_env" />, twenty periods, and the output
+needs <Val example="sim-settle" name="N_set" /> periods to settle to a
+millionth. The library's buck case runs 400 periods before it measures the
+last one.
+
+## Try it
+
+<TryIt eq="sim.periods_settle" example="sim-settle" sweep="eps_r" />
+
+Sweep the fraction left: each factor of ten costs the same number of periods.
+
+<TryIt eq="filter.tau_env" example="sim-settle" sweep="R" />
+
+Sweep the load: a lighter load rings longer. The site's simulator finds the
+steady state without a start-up:
+
+<TrySim example="buck-basic" topology="buck" />
+
+## Bench exercise
+
+Start a buck at a fixed duty ratio into a resistor and capture its output
+from the moment it starts switching. Measure the envelope's decay from two
+peaks of the ring a known time apart, and compare the time constant with
+twice the load resistance times the output capacitance. Count the periods
+until the output stays within one percent of its final value, and compare
+with the formula for one percent left. Then run the library's schematic with
+your values and the same start.
+
+## Gotchas
+
+- **A measurement over a period that has not settled** measures the start-up.
+  Check the output's average over the last two periods, as the library does.
+- **The envelope formula holds in CCM, with a ringing filter.** In DCM, or
+  with a filter damped so heavily that it does not ring, the output settles
+  another way (<EqRef id="filter.tau_env" label="envelope time constant" />).
+- **A spike that the circuit cannot make** is often numerical: check the
+  `.options` line before you look for a cause in the circuit.
+
+## Go deeper
+
+<GoDeeper ids={['adi-ltspice-basics', 'ltspice-tool']} />
+
+## Quiz
+
+<Quiz id="05-simulation/ltspice" />

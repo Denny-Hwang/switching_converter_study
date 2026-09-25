@@ -915,6 +915,68 @@
       "title": "CircuitJS1 browser circuit simulator",
       "verified": true,
       "url": "https://www.falstad.com/circuit/"
+    },
+    "hairer1996": {
+      "key": "hairer1996",
+      "type": "book",
+      "label": "Hairer & Wanner 1996",
+      "authors": [
+        "Ernst Hairer",
+        "Gerhard Wanner"
+      ],
+      "title": "Solving Ordinary Differential Equations II: Stiff and Differential-Algebraic Problems",
+      "verified": true,
+      "publisher": "Springer",
+      "address": "Berlin, Heidelberg",
+      "edition": "2",
+      "volume": "14",
+      "year": "1996",
+      "isbn": "978-3-540-60452-5",
+      "doi": "10.1007/978-3-642-05221-7"
+    },
+    "higham2002": {
+      "key": "higham2002",
+      "type": "book",
+      "label": "Higham 2002",
+      "authors": [
+        "Nicholas J. Higham"
+      ],
+      "title": "Accuracy and Stability of Numerical Algorithms",
+      "verified": true,
+      "publisher": "Society for Industrial and Applied Mathematics",
+      "address": "Philadelphia",
+      "edition": "2",
+      "year": "2002",
+      "isbn": "978-0-89871-521-7",
+      "doi": "10.1137/1.9780898718027"
+    },
+    "aprille1972": {
+      "key": "aprille1972",
+      "type": "article",
+      "label": "Aprille & Trick 1972",
+      "authors": [
+        "T. J. Aprille",
+        "T. N. Trick"
+      ],
+      "title": "Steady-State Analysis of Nonlinear Circuits with Periodic Inputs",
+      "verified": true,
+      "journal": "Proceedings of the IEEE",
+      "number": "1",
+      "volume": "60",
+      "pages": "108–114",
+      "year": "1972",
+      "doi": "10.1109/PROC.1972.8563"
+    },
+    "ngspice_manual": {
+      "key": "ngspice_manual",
+      "type": "manual",
+      "label": "The ngspice team, Ngspice User's Manual",
+      "authors": [],
+      "title": "Ngspice User's Manual",
+      "verified": true,
+      "organization": "The ngspice team",
+      "kind": "Manual (HTML edition of the current release)",
+      "url": "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml"
     }
   }
 }

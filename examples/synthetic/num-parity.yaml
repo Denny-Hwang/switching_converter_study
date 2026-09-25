@@ -1,0 +1,13 @@
+synthetic: true
+label: "Cross-check example"
+label_ko: "교차 검사 예제"
+# A simulated conversion ratio against the ideal one, and the unit roundoff of binary64,
+# the double of JavaScript and Python.
+params:
+  x_val: 0.496
+  x_ref: 0.5
+  beta_b: 2
+  p_prec: 53
+steps:
+  - num.rel_diff
+  - num.unit_roundoff

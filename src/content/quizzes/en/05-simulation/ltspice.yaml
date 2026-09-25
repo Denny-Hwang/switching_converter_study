@@ -1,0 +1,51 @@
+# Quiz for 05-simulation/ltspice. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A buck''s output filter rings with a 10 ohm load and a 10 µF capacitor. What is the time constant of the ring''s envelope?'
+    options:
+      - '100 µs'
+      - '200 µs'
+      - '31.6 µs'
+      - 'It depends on the inductance'
+    answer: 1
+    explain: 'The envelope decays with twice the load resistance times the capacitance, whatever the inductance: 2 times 10 ohm times 10 µF is 200 µs.'
+  - q: 'The envelope time constant is twenty switching periods. About how many periods does a run from rest need before a thousandth of the start-up error is left?'
+    options:
+      - '20'
+      - '60'
+      - '140'
+      - '1000'
+    answer: 2
+    explain: 'The error shrinks by a factor e in every envelope time constant. A thousandth takes ln 1000, about 6.9 time constants, so about 138 periods.'
+  - q: 'Going on from a thousandth to a millionth of the start-up error costs how much more?'
+    options:
+      - 'About as much again as the first thousandth took'
+      - 'A thousand times as much'
+      - 'Nothing: the error is already small'
+      - 'A tenth as much'
+    answer: 0
+    explain: 'Each factor of ten costs the same, ln 10 or about 2.3 envelope time constants, so three more factors of ten cost as much as the first three.'
+  - q: 'Why does the envelope formula not say how long a DCM case must run?'
+    options:
+      - 'DCM cases have no steady state'
+      - 'LTspice cannot simulate DCM'
+      - 'In DCM the capacitor is not charged'
+      - 'In DCM the inductor carries nothing from one period to the next, so the filter does not ring as an L-C pair'
+    answer: 3
+    explain: 'The inductor current returns to zero in every period, so the ringing L-C pair that sets the envelope is gone and the output settles in another way.'
+  - q: 'What does the library''s check require before it accepts a run as settled?'
+    options:
+      - 'That the output equals the ideal equation exactly'
+      - 'That two runs with different time steps agree'
+      - 'That the output''s average over the last period lies within one part in ten thousand of its average over the period before'
+      - 'That the run lasted a thousand periods'
+    answer: 2
+    explain: 'A run that is still settling changes from one period to the next; the check compares the last two periods'' averages.'
+  - q: 'A DCM flyback run shows the drain dipping far below zero, which the circuit cannot do. What do you check first?'
+    options:
+      - 'The .options line: the integration method and the tolerance'
+      - 'The turns ratio'
+      - 'The load resistance'
+      - 'The switching frequency'
+    answer: 0
+    explain: 'At their default settings both ngspice and LTspice draw such dips on the library''s DCM flyback; Gear''s method with a tighter tolerance removes them.'

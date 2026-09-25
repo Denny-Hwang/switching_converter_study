@@ -324,6 +324,16 @@ const foundations: Readonly<Record<string, Evaluator>> = {
   'therm.Tj': eq(['T_A', 'P_D', 'theta_JC', 'theta_CS', 'theta_SA'], ({ T_A, P_D, theta_JC, theta_CS, theta_SA }) => T_A + P_D * (theta_JC + theta_CS + theta_SA)),
   'therm.psi': eq(['T_T', 'Psi_JT', 'P_D'], ({ T_T, Psi_JT, P_D }) => T_T + Psi_JT * P_D),
   'bat.v_term': eq(['V_b', 'I_b', 'R_b'], ({ V_b, I_b, R_b }) => V_b + I_b * R_b),
+
+  // --- 05-simulation: stepping a circuit in time, settling, rounding ------------------------
+  'sim.exact_step': eq(['v_inf', 'v_0', 'Delta_t', 'tau'], ({ v_inf, v_0, Delta_t, tau }) => v_inf + (v_0 - v_inf) * Math.exp(-Delta_t / tau)),
+  'num.gain_fe': eq(['Delta_t', 'tau'], ({ Delta_t, tau }) => 1 - Delta_t / tau),
+  'num.gain_tr': eq(['Delta_t', 'tau'], ({ Delta_t, tau }) => (2 * tau - Delta_t) / (2 * tau + Delta_t)),
+  'num.gain_be': eq(['Delta_t', 'tau'], ({ Delta_t, tau }) => tau / (tau + Delta_t)),
+  'filter.tau_env': eq(['R', 'C'], ({ R, C }) => 2 * R * C),
+  'sim.periods_settle': eq(['tau_env', 'T_s', 'eps_r'], ({ tau_env, T_s, eps_r }) => (-tau_env * Math.log(eps_r)) / T_s),
+  'num.rel_diff': eq(['x_val', 'x_ref'], ({ x_val, x_ref }) => Math.abs(x_val - x_ref) / Math.abs(x_ref)),
+  'num.unit_roundoff': eq(['beta_b', 'p_prec'], ({ beta_b, p_prec }) => beta_b ** (1 - p_prec) / 2),
 };
 
 function merge(...groups: Readonly<Record<string, Evaluator>>[]): Readonly<Record<string, Evaluator>> {

@@ -26,4 +26,5 @@ MODULES = (
     "piezo",
     "sensing",
     "bench",
+    "numerics",
 )

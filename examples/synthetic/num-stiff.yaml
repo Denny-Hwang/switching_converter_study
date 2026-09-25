@@ -1,0 +1,11 @@
+synthetic: true
+label: "Stiff-mode example"
+label_ko: "강성 모드 예제"
+# A mode with a time constant of 1 ns, stepped by 20 ns, twenty times its time constant:
+# the factors of the trapezoidal rule and of backward Euler.
+params:
+  tau: 1.0e-9
+  Delta_t: 2.0e-8
+steps:
+  - num.gain_tr
+  - num.gain_be
