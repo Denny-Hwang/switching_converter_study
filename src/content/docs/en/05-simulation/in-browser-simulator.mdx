@@ -40,7 +40,11 @@ resistance, the solution over a step is exact, however long the step:
 A circuit with several states steps them all at once with the exponential of
 its equations' matrix, which the simulator computes by scaling and squaring
 <Cite key="higham2005" />. Within an interval nothing is approximated beyond
-rounding, so the length of a step does not limit its accuracy.
+rounding, so the length of a step does not limit the accuracy of the state it
+reaches. The simulator still takes short sub-steps, a two-thousandth of the
+period or shorter, because it has to find the events: a diode could turn on
+and off again unseen within a long step
+([how it computes](../../simulate/simulator/#how-it-computes)).
 
 ### A simple rule on a fast time constant
 
@@ -70,17 +74,24 @@ interval starts from the right state
 
 ### The periodic steady state
 
-From rest, a converter's output settles with its filter's envelope time
-constant (<EqRef id="filter.tau_env" label="envelope time constant" />), and
-reaching a small fraction of the start-up error takes many periods
+In CCM, with a filter that rings, a converter's output settles from rest with
+its filter's envelope time constant
+(<EqRef id="filter.tau_env" label="envelope time constant" />), and reaching
+a small fraction of the start-up error takes many periods
 (<EqRef id="sim.periods_settle" label="periods to settle" />). The simulator
 looks instead for the state at the start of a period that the period maps
 back onto itself: the periodic steady state, a fixed point of the map from
-one period's initial state to the next. Newton's method finds it with the
-map's derivative, the product of the steps' matrices, in a few iterations
-<Cite key="aprille1972" />. When the switching instants do not depend on the
-state, as in CCM with a fixed duty ratio, the map is linear and a single
-Newton step lands on the steady state.
+one period's initial state to the next. Newton's method finds it in a few
+iterations with the map's derivative, how the state at the end of a period
+depends on the state at its start <Cite key="aprille1972" />. For a
+converter that derivative is the product of the steps' matrices, corrected at
+every event whose instant depends on the state, such as a diode's current
+reaching zero ([how it computes](../../simulate/simulator/#how-it-computes)).
+When neither the switching instants nor the order of the intervals depends
+on the state, as in a buck whose current stays above zero, with no
+capacitance across its switch, the map is affine, a matrix times the state
+plus a constant, and a single Newton step lands on the steady state if there
+is only one.
 
 ## Worked example
 
@@ -122,12 +133,16 @@ the final voltage, while the circuit does not.
 
 ## Gotchas
 
-- **The steady state is not the start-up.** The simulator reports the
-  periodic steady state; a start-up or a load step on the bench passes
-  through transients it does not show.
-- **A small step does not make an explicit rule stable by itself.** It must
-  be shorter than twice the *fastest* time constant, even when that mode is
-  too fast to matter (<EqRef id="num.gain_fe" label="forward Euler's factor" />).
+- **The steady state is not the start-up.** Where a steady state exists,
+  the simulator reports it; a start-up or a load step on the bench passes
+  through transients it does not show. It draws the start-up from rest only
+  for a circuit that has no steady state.
+- **A small step does not make an explicit rule stable by itself.** For a
+  mode that decays without ringing, the step must be shorter than twice the
+  *fastest* time constant, even when that mode is too fast to matter
+  (<EqRef id="num.gain_fe" label="forward Euler's factor" />). A lightly
+  damped ring needs a much shorter step still, and an undamped one grows at
+  any step <Cite key="hairer1996" where="Sec. IV.2" />.
 - **The plots draw samples.** A peak narrower than a sub-step can be in the
   reported numbers but not in the plot.
 

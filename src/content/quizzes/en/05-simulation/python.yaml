@@ -24,7 +24,7 @@ questions:
       - '10 %'
       - '1 %'
     answer: 3
-    explain: 'The difference, 0.005, over the reference, 0.5, is 0.01: one percent, the SPICE library''s limit.'
+    explain: 'The difference, 0.005, over the reference, 0.5, is 0.01: one percent.'
   - q: 'The unit roundoff of binary64 is about 1.1e-16. Why is the parity tolerance one part in a billion and not the unit roundoff?'
     options:
       - 'Because JavaScript has less precision than Python'
@@ -32,7 +32,7 @@ questions:
       - 'Because the equations are only known to a billionth'
       - 'Because YAML cannot hold smaller numbers'
     answer: 1
-    explain: 'A billionth is millions of times the unit roundoff, so rounding passes, while a wrong constant or factor is far larger.'
+    explain: 'A billionth is millions of times the unit roundoff, so rounding passes in an evaluation that does not cancel, while a wrong constant or factor is far larger.'
   - q: 'Why does the relative difference fail near a zero reference?'
     options:
       - 'Dividing by a reference near zero makes a tiny absolute difference look huge'
@@ -41,11 +41,11 @@ questions:
       - 'It does not fail'
     answer: 0
     explain: 'Compare against a scale there, such as the quantity''s largest value over the period, as the library''s checks do.'
-  - q: 'In Python, 0.1 + 0.2 == 0.3 evaluates to:'
+  - q: 'In Python, 0.1 + 0.1 + 0.1 == 0.3 evaluates to:'
     options:
       - 'True'
       - 'An error'
       - 'False: the sum rounds to a different double than 0.3'
       - 'True on some machines only'
     answer: 2
-    explain: 'Neither 0.1 nor 0.2 is exact in binary, and their rounded sum is the double next to 0.3; compare within a tolerance.'
+    explain: '0.1 is not exact in binary, and the rounded sum of three of them, 0.30000000000000004, is the double next to 0.3; compare within a tolerance.'

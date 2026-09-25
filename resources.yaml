@@ -1085,8 +1085,8 @@ resources:
     level: intro
     language: en
     retrieved: 2026-09-25
-    why: "Why 0.1 + 0.2 is not 0.3 in a computer, and why results are compared within a tolerance, not for equality."
-    why_ko: "컴퓨터에서 0.1 + 0.2가 0.3이 아닌 이유, 그리고 결과를 같은지가 아니라 허용오차 안에 드는지로 비교하는 이유."
+    why: "Why 0.1 + 0.1 + 0.1 is not 0.3 in a computer, why each operation can add a rounding error of up to one part in 2**53, and why results are compared within a tolerance, not for equality."
+    why_ko: "컴퓨터에서 0.1 + 0.1 + 0.1이 0.3이 아닌 이유, 연산마다 최대 2**53분의 1의 반올림 오차가 더해질 수 있는 이유, 그리고 결과를 같은지가 아니라 허용오차 안에 드는지로 비교하는 이유."
     title_match: "Floating-Point Arithmetic: Issues and Limitations"
 
   - id: falstad-circuitjs

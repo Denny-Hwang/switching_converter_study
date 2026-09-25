@@ -376,6 +376,7 @@ assumption_labels:
   test_equation: {en: "one decaying mode on its own: its rate of change is minus its deviation over tau (the test equation)", ko: "홀로 감쇠하는 모드 하나: 변화율이 편차를 tau로 나눈 값의 음수임(시험 방정식)"}
   fixed_step: {en: "the same time step every step", ko: "매 스텝 같은 시간 간격"}
   underdamped_filter: {en: "the output filter rings: its quality factor Q is above 1/2", ko: "출력 필터가 진동함: Q가 1/2보다 큼"}
+  open_loop: {en: "fixed duty ratio, no feedback loop (open loop)", ko: "고정 듀티비, 피드백 루프 없음(개루프)"}
   slowest_mode: {en: "the start-up error decays with a single time constant, the slowest mode's", ko: "시작 오차가 가장 느린 모드의 시정수 하나로 감소함"}
   round_to_nearest: {en: "rounding to the nearest number of the format, IEEE 754's default", ko: "형식에서 가장 가까운 수로 반올림(IEEE 754의 기본값)"}
 
@@ -2976,8 +2977,8 @@ equations:
     expr: "v_inf + (v_0 - v_inf)*exp(-Delta_t/tau)"
     symbols: {v_inf: "voltage it tends to", v_0: "voltage at the start of the step", Delta_t: "time step", tau: "time constant"}
     assumptions: [constant_over_step, first_order_response]
-    notes: "each step multiplies the deviation from $v_\\infty$ by $e^{-\\Delta t/\\tau}$, which lies between 0 and 1 however long the step is: the step is exact, and the deviation cannot grow. An inductor's current follows the same law with the time constant L over R. A circuit with several states steps them all at once with the exponential of its equations' matrix"
-    notes_ko: "스텝마다 $v_\\infty$와의 편차에 $e^{-\\Delta t/\\tau}$를 곱한다. 이 값은 스텝이 아무리 길어도 0과 1 사이이므로, 스텝은 정확하고 편차는 커질 수 없다. 인덕터 전류도 시정수 L/R로 같은 법칙을 따른다. 상태가 여럿인 회로는 방정식 행렬의 지수 함수로 모든 상태를 한꺼번에 진행시킨다"
+    notes: "each step multiplies the deviation from $v_\\infty$ by $e^{-\\Delta t/\\tau}$, which lies between 0 and 1 however long the step is: the step is exact, and the deviation cannot grow. An inductor's current follows the same law with the time constant L over R"
+    notes_ko: "스텝마다 $v_\\infty$와의 편차에 $e^{-\\Delta t/\\tau}$를 곱한다. 이 값은 스텝이 아무리 길어도 0과 1 사이이므로, 스텝은 정확하고 편차는 커질 수 없다. 인덕터 전류도 시정수 L/R로 같은 법칙을 따른다"
     cite: {key: alexander2017, where: "Ch. 7 (First-Order Circuits: the complete response); derived here"}
     derived_by: python/pe_core/derive/numerics.py
     tests:
@@ -3023,11 +3024,11 @@ equations:
     expr: "1/(1 + Delta_t/tau)"
     symbols: {Delta_t: "time step", tau: "time constant"}
     assumptions: [test_equation, fixed_step]
-    notes: "the rule takes the slope at the end of the step. Its factor lies between 0 and 1 for any step and tends to zero as the step grows (the rule is L-stable): a mode much faster than the step dies out within the step, without ringing. It is the first of Gear's backward differentiation formulas, the methods ngspice uses with .options method=gear"
-    notes_ko: "스텝이 끝날 때의 기울기를 쓴다. 배율은 스텝 길이와 관계없이 0과 1 사이이고 스텝이 길수록 0에 가까워진다(L-안정). 스텝보다 훨씬 빠른 모드는 링잉 없이 그 스텝 안에서 사라진다. 기어(Gear)의 후진 차분 공식(backward differentiation formula) 가운데 첫 번째이며, ngspice는 .options method=gear로 이 계열을 쓴다"
+    notes: "the rule takes the slope at the end of the step. Its factor lies between 0 and 1 for any step and tends to zero as the step grows (the rule is L-stable): a mode much faster than the step is almost gone after one step, without ringing. It is the first of the backward differentiation formulas, which ngspice uses, up to the second by default, when .options method=gear asks for Gear's method"
+    notes_ko: "스텝이 끝날 때의 기울기를 쓴다. 배율은 스텝 길이와 관계없이 0과 1 사이이고 스텝이 길수록 0에 가까워진다(L-안정). 스텝보다 훨씬 빠른 모드는 링잉 없이 한 스텝 뒤에 거의 사라진다. 후진 차분 공식(backward differentiation formula) 가운데 첫 번째이며, .options method=gear로 기어(Gear) 방법을 지정하면 ngspice는 이 공식들을 기본적으로 두 번째까지 쓴다"
     cite:
       - {key: hairer1996, where: "Sec. IV.3 (implicit Euler is L-stable) and Ch. V (Multistep Methods for Stiff Problems: backward differentiation formulas, the first of which is implicit Euler); derived here"}
-      - {key: ngspice_manual, where: ".options, transient analysis: METHOD=gear"}
+      - {key: ngspice_manual, where: ".options, transient analysis: METHOD=gear, and MAXORD, 2 by default"}
     derived_by: python/pe_core/derive/numerics.py
     tests:
       - {inputs: {Delta_t: 2.0e-8, tau: 1.0e-9}, expect: 0.047619047619047616}
@@ -3039,9 +3040,9 @@ equations:
     lhs: tau_env
     expr: "2*R*C"
     symbols: {R: "load resistance", C: "filter capacitance"}
-    assumptions: [underdamped_filter, resistive_load]
-    notes: "with its source at rest, the filter is the inductance, the capacitance and the load in parallel: a parallel RLC circuit, whose ring decays as $e^{-t/(2RC)}$ whatever the inductance. A lighter load (a larger $R$) rings for longer. In CCM this is how a converter's output settles after a start-up or a step; in DCM the inductance does not store energy from one period to the next, and the output settles differently"
-    notes_ko: "전원이 멈춘 상태에서 필터는 인덕턴스, 커패시턴스, 부하가 병렬로 연결된 병렬 RLC 회로이며, 그 링잉은 인덕턴스와 관계없이 $e^{-t/(2RC)}$로 감쇠한다. 부하가 가벼울수록(R이 클수록) 오래 울린다. CCM에서는 시작이나 계단 변화 뒤 컨버터 출력이 이렇게 정착한다. DCM에서는 인덕턴스가 주기에서 다음 주기로 에너지를 넘기지 않으므로 출력이 다르게 정착한다"
+    assumptions: [ideal, ccm, open_loop, underdamped_filter, resistive_load]
+    notes: "with ideal parts and the buck's source at rest, the filter is the inductance, the capacitance and the load in parallel: a parallel RLC circuit, whose ring decays as $e^{-t/(2RC)}$ whatever the inductance. A lighter load (a larger $R$) rings for longer. The averaged models of the boost and the buck-boost give the same decay rate, $\\omega_0/(2Q) = 1/(2RC)$. Real parts add damping: the winding's resistance, the capacitor's series resistance and the switch's on-resistance make the ring decay faster, and the inductance then matters too. This is how an open-loop converter's output settles in CCM after a start-up or a step; a feedback loop sets its own settling, and in DCM, where the inductance carries no energy from one period to the next, the output settles with a single time constant instead"
+    notes_ko: "이상적인 부품으로 벅의 전원이 멈춘 상태에서 필터는 인덕턴스, 커패시턴스, 부하가 병렬로 연결된 병렬 RLC 회로이며, 그 링잉은 인덕턴스와 관계없이 $e^{-t/(2RC)}$로 감쇠한다. 부하가 가벼울수록(R이 클수록) 오래 울린다. 부스트와 벅-부스트의 평균화 모델도 같은 감쇠율 $\\omega_0/(2Q) = 1/(2RC)$를 준다. 실제 부품은 감쇠를 더한다. 권선 저항, 커패시터의 직렬 저항, 스위치의 온 저항이 링잉을 더 빨리 줄이며, 그때는 인덕턴스도 영향을 준다. CCM에서 개루프 컨버터의 출력은 시작이나 계단 변화 뒤 이렇게 정착한다. 피드백 루프가 있으면 루프가 정착을 정하고, 인덕턴스가 주기에서 다음 주기로 에너지를 넘기지 않는 DCM에서는 출력이 하나의 시정수로 정착한다"
     cite: {key: alexander2017, where: "Ch. 8 (Second-Order Circuits: the source-free parallel RLC circuit); derived here"}
     derived_by: python/pe_core/derive/numerics.py
     tests:
@@ -3069,8 +3070,8 @@ equations:
     expr: "Abs(x_val - x_ref)/Abs(x_ref)"
     symbols: {x_val: "value under test", x_ref: "reference value"}
     assumptions: [definition]
-    notes: "it does not depend on the unit or the scale of the quantity, so one tolerance serves every quantity; it fails near a zero reference, where a small absolute difference becomes a large relative one. The site asks 1e-9 of the TypeScript and Python evaluations of the same equation, and 1 % or 2 % of a simulation against its equation"
-    notes_ko: "물리량의 단위나 크기와 관계없으므로 하나의 허용오차를 모든 물리량에 쓸 수 있다. 다만 기준값이 0에 가까우면 작은 절대 차이가 큰 상대 차이가 되어 쓸 수 없다. 이 사이트는 같은 식의 TypeScript와 Python 계산에 1e-9를, 식에 대한 시뮬레이션에 1 % 또는 2 %를 요구한다"
+    notes: "it does not change when the quantity is scaled, as by a change of unit from volts to millivolts, so one tolerance serves every quantity (a unit whose zero moves, such as degrees Celsius against kelvins, is the exception); at a zero reference it is undefined, and near one a small absolute difference becomes a large relative one. The site asks 1e-9 of the TypeScript and Python evaluations of the same equation, and 1 % or 2 % of a simulation against its equation"
+    notes_ko: "볼트를 밀리볼트로 바꾸듯 물리량의 배율을 바꿔도 달라지지 않으므로 하나의 허용오차를 모든 물리량에 쓸 수 있다(켈빈에 대한 섭씨처럼 영점이 옮겨 가는 단위는 예외). 기준값이 0이면 정의되지 않고, 0에 가까우면 작은 절대 차이가 큰 상대 차이가 된다. 이 사이트는 같은 식의 TypeScript와 Python 계산에 1e-9를, 식에 대한 시뮬레이션에 1 % 또는 2 %를 요구한다"
     cite: {key: higham2002, where: "Sec. 1.2 (Relative Error and Significant Digits)"}
     tests:
       - {inputs: {x_val: 0.4975, x_ref: 0.5}, expect: 0.005}
@@ -3083,9 +3084,9 @@ equations:
     expr: "beta_b**(1 - p_prec)/2"
     symbols: {beta_b: "base", p_prec: "precision (significand digits)"}
     assumptions: [round_to_nearest]
-    notes: "rounding a real number to the nearest number of the format changes it by at most this fraction of itself (in the normal range). For binary64, the double that JavaScript and Python use, the base is 2 and the precision 53 digits, so $u = 2^{-53} \\approx 1.1 \\times 10^{-16}$. Higham writes the precision as $t$"
-    notes_ko: "실수를 형식에서 가장 가까운 수로 반올림하면 (정규 범위에서) 값이 최대 자신의 이 비율만큼 바뀐다. JavaScript와 Python이 쓰는 배정밀도(binary64)는 밑이 2, 정밀도가 53자리이므로 $u = 2^{-53} \\approx 1.1 \\times 10^{-16}$이다. Higham은 정밀도를 $t$로 쓴다"
-    cite: {key: higham2002, where: "Sec. 2.1 (the floating point number system: the unit roundoff)"}
+    notes: "rounding a real number to the nearest number of the format changes it by at most this fraction of itself (in the normal range). For binary64, the IEEE 754 double precision in which the site's TypeScript and Python compute, the base is 2 and the precision 53 digits, so $u = 2^{-53} \\approx 1.1 \\times 10^{-16}$. Higham writes the precision as $t$"
+    notes_ko: "실수를 형식에서 가장 가까운 수로 반올림하면 (정규 범위에서) 값이 최대 자신의 이 비율만큼 바뀐다. 이 사이트의 TypeScript와 Python이 계산에 쓰는 IEEE 754 배정밀도(binary64)는 밑이 2, 정밀도가 53자리이므로 $u = 2^{-53} \\approx 1.1 \\times 10^{-16}$이다. Higham은 정밀도를 $t$로 쓴다"
+    cite: {key: higham2002, where: "Ch. 2 (Floating Point Arithmetic: the unit roundoff, Sec. 2.1, and its value in IEEE double precision)"}
     tests:
       - {inputs: {beta_b: 2.0, p_prec: 53.0}, expect: 1.1102230246251565e-16}
       - {inputs: {beta_b: 10.0, p_prec: 16.0}, expect: 5.0e-16}

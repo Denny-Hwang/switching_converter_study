@@ -50,10 +50,11 @@ Two computations are compared by their relative difference:
 
 <Eq id="num.rel_diff" />
 
-It does not depend on the unit or the scale, so one tolerance serves every
-quantity; near a zero reference it does not work, and an absolute limit is
-needed there <Cite key="higham2002" />. Two correct programs need not produce
-the same bits: each operation rounds its result, and the result depends on
+It does not change when the quantity is scaled, as by a change of unit from
+volts to millivolts, so one tolerance serves every quantity. At a zero
+reference it is undefined <Cite key="higham2002" where="Sec. 1.2" />, and
+near one it exaggerates a small difference, so compare against a scale
+there. Two correct programs need not produce the same bits: each operation rounds its result, and the result depends on
 the order of the operations. One rounding changes a number by at most the
 unit roundoff of the format, relative to its size:
 
@@ -61,23 +62,31 @@ unit roundoff of the format, relative to its size:
 
 The site requires the TypeScript and the Python evaluations of an equation to
 agree within one part in a billion. That is millions of times the unit
-roundoff, so rounding passes, yet far below any real mistake such as a wrong
-constant or a missing factor. A simulation compared with its equation gets a
-looser tolerance, because the circuit it simulates is not exactly the ideal
-one of the equation: the SPICE library's cases must lie within one percent of
-the ideal equations, and the in-browser simulator within two percent.
+roundoff, so rounding passes as long as an evaluation does not subtract
+nearly equal numbers, which magnifies the relative error (cancellation)
+<Cite key="higham2002" where="Sec. 1.7" />; yet it lies far below any real
+mistake, such as a wrong constant or a missing factor. A simulation compared with its equation
+gets a looser tolerance, because the equation idealizes the circuit: it takes
+the ripple as small <Cite key="erickson2020" where="Ch. 2" />, and the SPICE
+library's switch and diodes are only nearly ideal. The SPICE library's values
+must lie within one percent of the ideal equations, measured against each
+quantity's largest magnitude over the period, and the in-browser simulator's
+conversion ratio and ripple within two percent.
 
 ### Checks against another solver
 
 `scripts/spice_crosscheck.py` writes the in-browser simulator's circuits
 again as netlists, from their schematics rather than from the simulator's
 equations, and runs them in ngspice <Cite key="ngspice" />. CI compares the
-simulator with ngspice's results within half a percent.
+simulator with ngspice's results: each value within half a percent of the
+quantity's largest magnitude over the period, with a small allowance for what
+the SPICE parts add, and each peak-to-peak swing within two percent.
 
 ## Worked example
 
 A simulated conversion ratio against the ideal one, and the unit roundoff of
-binary64, the double that JavaScript and Python use:
+binary64, the IEEE 754 double precision in which the site's TypeScript and
+Python compute:
 
 <Worked example="num-parity" />
 
@@ -108,8 +117,8 @@ see which of them grows with the current.
   the library's checks do.
 - **Two implementations that share code share its mistakes.** Generated
   evaluators would agree with the file they come from even where it is wrong.
-- **Floating-point numbers are not compared for equality.** 0.1 + 0.2 is not
-  0.3 in binary64: compare within a tolerance
+- **Floating-point numbers are not compared for equality.** In binary64,
+  0.1 + 0.1 + 0.1 is not 0.3: compare within a tolerance
   (<EqRef id="num.unit_roundoff" label="unit roundoff" />).
 
 ## Go deeper

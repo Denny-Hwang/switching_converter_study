@@ -28,10 +28,12 @@ import Quiz from '../../../../components/Quiz.astro';
 The repository's `sim/ngspice/` folder has each converter case as a netlist
 for ngspice <Cite key="ngspice" />. Run `ngspice -b buck-ccm.cir` and it
 prints the `.meas` results of the last period: averages, largest and smallest
-values of the switch voltage, the inductor current and the output. Run
-`ngspice buck-ccm.cir`, then `run`, to plot what the folder's README lists.
-CI runs every netlist again and requires each value within one percent of the
-ideal equations, and the output settled.
+values of the switch node's voltage, the inductor current (the flyback's
+primary current) and the output voltage. Run `ngspice buck-ccm.cir`, then
+`run`, to plot what the folder's README lists. CI runs every netlist again
+and requires each value within one percent of the ideal equations, measured
+against the quantity's largest magnitude over the period, and the output
+settled.
 
 ### How SPICE steps a circuit
 
@@ -40,14 +42,16 @@ so that the error it estimates for its integration rule stays within its
 tolerances, and the relative tolerance is 0.001 unless the netlist sets
 another <Cite key="ngspice_manual" />. Between two points, every capacitor and
 inductor follows the rule that `.options method` selects: trapezoidal unless
-told otherwise, or Gear's <Cite key="ngspice_manual" />.
+told otherwise, or Gear's method, which uses the backward differentiation
+formulas, by default up to the second <Cite key="ngspice_manual" />.
 
 ### What the rule does to a fast mode
 
 A converter's circuit can have modes far faster than the time step, for
-example where a diode stops conducting. Each rule multiplies such a mode's
-deviation by a fixed factor per step. The trapezoidal rule averages the slopes at both
-ends of the step:
+example where a diode stops conducting. A one-step rule, such as the
+trapezoidal rule or backward Euler, multiplies such a mode's deviation by a
+fixed factor per step. The trapezoidal rule averages the slopes at both ends
+of the step:
 
 <Eq id="num.gain_tr" />
 
@@ -55,13 +59,14 @@ Its factor stays within one in size for any step, so the solution does not
 blow up, but for a step much longer than the mode's time constant it
 approaches minus one: the mode barely decays and flips its sign at every time
 point, a ringing that the circuit does not have <Cite key="hairer1996" />.
-Backward Euler, the first of Gear's methods, takes the slope at the end of
-the step:
+The first of the backward differentiation formulas that Gear's method uses
+is backward Euler, which takes the slope at the end of the step:
 
 <Eq id="num.gain_be" />
 
-Its factor tends to zero instead, so such a mode dies out within the step
-<Cite key="hairer1996" />.
+Its factor tends to zero instead, so such a mode is almost gone after a
+single step <Cite key="hairer1996" />, and the second formula, too, damps it
+away within a few steps <Cite key="hairer1996" where="Ch. V" />.
 
 ### What the library found
 
@@ -102,20 +107,22 @@ Backward Euler's factor falls towards zero instead.
 Capture a DCM converter's switch node on the bench as the diode stops
 conducting. The ring there is real: the inductance rings with the capacitance
 at the switch node, at a frequency those parts set. Simulate the same circuit
-twice, with the trapezoidal rule and a long maximum step, and with Gear's
-method. A ring that alternates at every time point, and moves when you change
-the maximum step, is numerical; one that keeps its frequency is the
-circuit's, and it should match the bench.
+twice: with the trapezoidal rule and a long maximum step, and with Gear's
+method and a maximum step short enough to resolve the real ring, a small
+fraction of its period. A ring that alternates at every time point, and moves
+when you change the maximum step, is numerical; one that keeps its frequency
+is the circuit's, and it should match the bench, apart from the losses the
+bench adds.
 
 ## Gotchas
 
 - **A ring that flips sign at every time point** belongs to the integration
   rule, not to the circuit (<EqRef id="num.gain_tr" label="the trapezoidal rule's factor" />).
-- **Gear's methods also damp real rings they do not resolve.** For an
+- **Gear's method also damps real rings it does not resolve.** For an
   undamped oscillation, backward Euler's factor is below one in size and the
   trapezoidal rule's is exactly one <Cite key="hairer1996" />: a lightly
-  damped L-C ring decays faster in a Gear simulation than on the bench unless
-  the step is short compared with its period.
+  damped L-C ring decays faster in a Gear simulation than in the circuit
+  unless the step is short compared with its period.
 - **A tighter tolerance is not free.** It shortens the steps and lengthens the
   run. The library chose it for the DCM flyback's diode turn-off and applies it
   to every case alike.

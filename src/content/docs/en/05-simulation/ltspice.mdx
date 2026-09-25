@@ -38,8 +38,8 @@ Open a schematic and press Run: its directives come with it.
   preset of the same name uses.
 - `.model` gives the near-ideal switch and diode.
 - `.tran` runs from rest, with every capacitor empty and every inductor
-  without current, for several hundred periods, with a time step no longer
-  than a two-hundredth of a period.
+  without current, for 400 to 2500 periods depending on the case, with a
+  time step no longer than a two-hundredth of a period.
 - `.options method=gear reltol=1e-4` chooses the integration method and the
   tolerance. The [ngspice page](../ngspice/) explains why.
 
@@ -50,9 +50,9 @@ period, or add the same statements to the schematic.
 ### How long to run
 
 A run from rest has to pass through the whole start-up before its last period
-shows the steady state. In CCM, the output filter and the load ring after the
-start, and the ring's envelope decays with a time constant set by the load
-and the capacitance alone:
+shows the steady state. While the converter stays in CCM, its output filter
+and the load ring after the start, and with ideal parts the ring's envelope
+decays with a time constant set by the load and the capacitance alone:
 
 <Eq id="filter.tau_env" />
 
@@ -63,30 +63,50 @@ the start takes:
 <Eq id="sim.periods_settle" />
 
 A light load rings longer, and each factor of ten in accuracy adds the same
-number of periods. The library's script checks each run at the end: the
-output's average over the last period must lie within one part in ten
-thousand of its average over the period before, or the case fails as not
-settled. In DCM the inductor current returns to zero in every period, so the
-inductor carries nothing from one period to the next: the filter no longer
-rings as an L-C pair, and the output settles in another way
+number of periods. Real parts damp the ring a little more: the winding's
+resistance, the capacitor's series resistance and the switch's
+on-resistance. A start-up can also leave CCM for a while: in the library's
+buck, the inductor current falls to zero in several of its first twenty
+periods, after the output's first overshoot. The formula is then an
+estimate, not an exact count. In DCM the inductor current returns to zero in
+every period, so the inductor carries nothing from one period to the next:
+the filter no longer rings as an L-C pair, and near its steady state the
+output settles with a single time constant instead
 <Cite key="erickson2020" where="Ch. 15" />.
-The library's DCM cases run longer than its CCM ones.
+
+The library runs each case for many times its slowest time constant, and its
+script checks each run at the end: the output's average over the last period
+must lie within one part in ten thousand of its average over the period
+before, or the case fails as not settled. The check only catches a run far
+too short. In one period a decaying error shrinks only by a fraction of
+itself about equal to the period over the time constant, so with an envelope
+time constant of a hundred periods, as in the library's CCM flyback and
+forward cases, a change of one part in ten thousand still allows an error of
+about a percent; and near a crest of the ring, where the output's average
+stops rising and starts to fall, two consecutive averages can agree while
+the ring is still large.
+SPICE's own accuracy sets a floor, too: in the library's ngspice runs, the
+average shifts by up to a few parts in ten thousand long after the start-up
+has died away.
 
 ### Integration settings
 
-With LTspice's default settings the library's DCM flyback shows dips of the
-drain voltage far below zero that the circuit does not have. The
-`.options` line removes them, as it does in ngspice; the library records a
-one-time check with LTspice 26.1.1, in which LTspice's own netlists matched
-the library's and its results agreed with ngspice's within 0.3 % of each
-quantity's largest magnitude. The [ngspice page](../ngspice/) shows what
-decides this: the factor by which each step multiplies a fast mode
-(<EqRef id="num.gain_tr" label="the trapezoidal rule's factor" />).
+With LTspice's default settings the library's DCM flyback shows a dip of the
+drain voltage tens of volts below zero that the circuit does not have: about
+as deep as the one ngspice draws with Gear's method at its default
+tolerance, not the kilovolt of ngspice's trapezoidal ringing. The `.options`
+line removes it, as it does in ngspice. The library records a one-time check
+with LTspice 26.1.1, in which LTspice's own netlists matched the library's
+and its results agreed with ngspice's within 0.3 % of each quantity's
+largest magnitude. The [ngspice page](../ngspice/) explains both effects:
+the factor by which each step multiplies a fast mode
+(<EqRef id="num.gain_tr" label="the trapezoidal rule's factor" />), and a
+diode's current overshooting through zero at a loose tolerance.
 
 ## Worked example
 
 The buck example's filter, load and switching frequency, run from rest until
-a millionth of the start-up error is left:
+a thousandth of the start-up error is left:
 
 <Worked example="sim-settle" />
 
@@ -94,8 +114,9 @@ Its quality factor, <Val example="sim-settle" name="Q" />, is well above one
 half, so the filter rings. The envelope time constant is
 <Val example="sim-settle" name="tau_env" />, twenty periods, and the output
 needs <Val example="sim-settle" name="N_set" /> periods to settle to a
-millionth. The library's buck case runs 400 periods before it measures the
-last one.
+thousandth, well inside the library's one percent and above the floor of
+SPICE's own accuracy. The library's buck case runs 400 periods before it
+measures the last one.
 
 ## Try it
 
@@ -112,21 +133,27 @@ steady state without a start-up:
 
 ## Bench exercise
 
-Start a buck at a fixed duty ratio into a resistor and capture its output
-from the moment it starts switching. Measure the envelope's decay from two
-peaks of the ring a known time apart, and compare the time constant with
-twice the load resistance times the output capacitance. Count the periods
-until the output stays within one percent of its final value, and compare
-with the formula for one percent left. Then run the library's schematic with
-your values and the same start.
+Start a buck at a fixed duty ratio, without a feedback loop, into a
+resistor, and capture its output from the moment it starts switching.
+Measure the envelope's decay from two peaks of the ring a known time apart,
+after the inductor current has stopped touching zero if it does in the first
+periods, and compare the time constant with twice the load resistance times
+the output capacitance: the winding's resistance, the capacitor's series
+resistance and the switch's on-resistance damp the ring further, so expect a
+somewhat shorter one. Count the periods until the output stays within one
+percent of its final value, and compare with the formula for one percent
+left. Then run the library's schematic with your values and the same start.
 
 ## Gotchas
 
 - **A measurement over a period that has not settled** measures the start-up.
-  Check the output's average over the last two periods, as the library does.
-- **The envelope formula holds in CCM, with a ringing filter.** In DCM, or
-  with a filter damped so heavily that it does not ring, the output settles
-  another way (<EqRef id="filter.tau_env" label="envelope time constant" />).
+  Run for the periods the formula asks for, then check that the output's
+  average no longer changes from one period to the next, as the library
+  does: a small change alone does not prove that a slow ring has settled.
+- **The envelope formula holds in CCM, with a ringing filter, ideal parts and
+  no feedback loop.** In DCM, with a filter damped so heavily that it does
+  not ring, or under closed-loop control, the output settles another way
+  (<EqRef id="filter.tau_env" label="envelope time constant" />).
 - **A spike that the circuit cannot make** is often numerical: check the
   `.options` line before you look for a cause in the circuit.
 

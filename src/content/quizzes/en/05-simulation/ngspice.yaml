@@ -25,11 +25,11 @@ questions:
       - 'Nothing: the mode is too fast to show'
     answer: 0
     explain: 'A factor near -1 leaves the mode almost undamped and flips it at every point: a ringing of the integration rule, not of the circuit.'
-  - q: 'The same mode is stepped by 20 ns with backward Euler, the first of Gear''s methods. What happens to it?'
+  - q: 'The same mode is stepped by 20 ns with backward Euler, the first of the backward differentiation formulas that Gear''s method uses. What happens to it?'
     options:
       - 'It rings at every time point'
       - 'It grows'
-      - 'It dies out within a step or two'
+      - 'It is almost gone after a step or two'
       - 'It stays undamped'
     answer: 2
     explain: 'The factor is 1/(1 + 20), about 0.05: after two steps less than a four-hundredth of the mode is left.'
@@ -38,7 +38,7 @@ questions:
       - 'It makes the ring grow'
       - 'It doubles the ring''s frequency'
       - 'It cannot simulate inductors'
-      - 'It damps an oscillation its steps do not resolve finely, so the ring decays faster than on the bench'
+      - 'It damps an oscillation its steps do not resolve finely, so the ring decays faster than in the circuit'
     answer: 3
     explain: 'For an undamped oscillation, backward Euler''s factor is below one in size and the trapezoidal rule''s is exactly one; short steps make the difference small.'
   - q: 'What did the library''s DCM flyback show at ngspice''s default settings?'

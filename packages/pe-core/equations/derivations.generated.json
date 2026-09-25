@@ -2459,20 +2459,20 @@
           "result_for": null
         },
         {
-          "text": "With its source at rest (a voltage source is a short), the filter's inductance, its capacitance and the load resistance are in parallel. The natural response of this parallel RLC circuit goes as $e^{st}$, with $s$ a root of its characteristic equation:",
-          "text_ko": "전원이 멈춘 상태에서(전압원은 단락) 필터의 인덕턴스, 커패시턴스, 부하 저항은 병렬이다. 이 병렬 RLC 회로의 자연 응답은 $e^{st}$를 따르며, $s$는 특성 방정식의 근이다.",
+          "text": "Take a buck with ideal parts. With its source at rest (a voltage source is a short), the filter's inductance, its capacitance and the load resistance are in parallel. The natural response of this parallel RLC circuit goes as $e^{st}$, with $s$ a root of its characteristic equation:",
+          "text_ko": "이상적인 부품으로 된 벅을 생각한다. 전원이 멈춘 상태에서(전압원은 단락) 필터의 인덕턴스, 커패시턴스, 부하 저항은 병렬이다. 이 병렬 RLC 회로의 자연 응답은 $e^{st}$를 따르며, $s$는 특성 방정식의 근이다.",
           "latex": "\\frac{1}{C L} + \\frac{s}{C R} + s^{2} = 0",
           "result_for": null
         },
         {
-          "text": "When the filter rings, the roots are a complex-conjugate pair, and their common real part, half their sum, is the decay rate of the ring's envelope (the neper frequency):",
-          "text_ko": "필터가 진동할 때 두 근은 켤레 복소수이며, 공통 실수부, 곧 두 근의 합의 절반이 링잉 포락선의 감쇠율(네퍼 주파수)이다.",
+          "text": "When the filter rings, the roots are a complex-conjugate pair. Their common real part, half their sum, is $-\\alpha$, and $\\alpha$ is the decay rate of the ring's envelope (the neper frequency):",
+          "text_ko": "필터가 진동할 때 두 근은 켤레 복소수이다. 두 근의 합의 절반인 공통 실수부가 $-\\alpha$이며, $\\alpha$가 링잉 포락선의 감쇠율(네퍼 주파수)이다.",
           "latex": "\\alpha = \\frac{1}{2 C R}",
           "result_for": null
         },
         {
-          "text": "The envelope decays as $e^{-\\alpha t}$, with the time constant $1/\\alpha$, whatever the inductance:",
-          "text_ko": "포락선은 $e^{-\\alpha t}$로 감쇠하며, 시정수는 인덕턴스와 관계없이 $1/\\alpha$이다.",
+          "text": "The envelope decays as $e^{-\\alpha t}$, with the time constant $1/\\alpha$, whatever the inductance (with ideal parts):",
+          "text_ko": "포락선은 $e^{-\\alpha t}$로 감쇠하며, 시정수는 (이상적인 부품에서) 인덕턴스와 관계없이 $1/\\alpha$이다.",
           "latex": "\\tau_\\mathrm{env} = 2 R C",
           "result_for": "filter.tau_env"
         },
