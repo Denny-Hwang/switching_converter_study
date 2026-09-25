@@ -52,6 +52,8 @@ jobs:
       - run: python scripts/privacy_scan.py
       - run: python scripts/refcheck.py
       - run: python scripts/resources_check.py
+      - name: The CircuitJS1 circuits (sim/falstad) - current, and wired as the SPICE netlists
+        run: python scripts/falstad_library.py --check
 
   spice:
     name: Simulator — cross-checked against ngspice
@@ -103,6 +105,21 @@ jobs:
           cache-dependency-path: python/pyproject.toml
       - run: pip install -e "python[dev]"
       - run: python scripts/resources_check.py --online
+
+  falstad:
+    name: Falstad — the circuits run in CircuitJS1 on falstad.com
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Open every share link, run it and compare its last periods with the ideal equations
+        run: node scripts/falstad_check.mjs
 
   site:
     name: Site — strict KaTeX build + link check
