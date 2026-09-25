@@ -409,6 +409,9 @@ export const ui = {
     'mag.warn.layerFull': "A layer's turns do not fit in the winding breadth: side by side over their insulation (turns per layer × strands × d_o) they take more than b_w. Use more layers or thinner wire.",
     'trysim.open': 'Open in the simulator',
     'trysim.preset': 'Preset from the example',
+    'sheet.caption':
+      'The operating modes of one steady period of the example {example}, from the site\'s simulator: the key waveforms with the modes\' boundaries $t_0, t_1, \\ldots$, then the circuit in each mode, its current-carrying branches in colour.',
+    'sheet.open': 'Change the values in the simulator',
     'falstad.open': 'Open in CircuitJS1',
     'falstad.case': 'Case',
     'falstad.circuit': 'Circuit',
@@ -860,6 +863,9 @@ export const ui = {
     'mag.warn.layerFull': '한 층의 턴들이 권선 폭 안에 들어가지 않습니다. 절연 피막까지 포함해 나란히 놓으면(층당 턴 수 × 소선 수 × d_o) b_w보다 넓습니다. 층을 늘리거나 더 가는 선을 쓰십시오.',
     'trysim.open': '시뮬레이터에서 열기',
     'trysim.preset': '예제에서 가져온 초기값',
+    'sheet.caption':
+      '예제 {example}의 정상상태 한 주기를 사이트의 시뮬레이터로 계산한 동작 모드입니다. 모드 경계 $t_0, t_1, \\ldots$을 표시한 주요 파형과 각 모드의 회로이며, 전류가 흐르는 가지는 색으로 그립니다.',
+    'sheet.open': '시뮬레이터에서 값을 바꿔 보기',
     'falstad.open': 'CircuitJS1에서 열기',
     'falstad.case': '사례',
     'falstad.circuit': '회로',

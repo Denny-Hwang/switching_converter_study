@@ -33,7 +33,7 @@ export const U = 56;
 export const H = 0.34;
 /** Padding around the drawing, and the legend's height (px). */
 const PAD = 8;
-const LEGEND = 26;
+export const LEGEND = 26;
 
 /** Text sizes (px) and line metrics: a name (with a subscript) and up to two lines of state below it. */
 export const FONT = { name: 14, sub: 10, state: 10.5, legend: 11 } as const;

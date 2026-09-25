@@ -14,6 +14,7 @@ import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
 import TrySim from '../../../../components/TrySim.astro';
+import ModeSheet from '../../../../components/ModeSheet.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -64,6 +65,19 @@ scaled by $1/n_r$, with reversed polarity, and the switch blocks
 More reset turns (larger $n_r$) lower the switch stress but also lower the
 maximum duty ratio, and fewer turns do the opposite. With $n_r = 1$ the duty
 ratio is limited to one half and the switch blocks twice the input voltage.
+
+### Operating modes
+
+The sheet below splits one steady period of the example into its modes, as
+papers on converters do, from the site's simulator; the simulator's [operating-mode view](../../simulate/simulator/#operating-modes) draws the
+same for any values. While the switch conducts, the secondary drives the
+output inductor's current through the rectifier diode and the magnetizing
+current rises. When the switch turns off, the output inductor freewheels
+through the other diode while the magnetizing current flows through the
+reset winding back into the input; once it reaches zero, only the
+freewheeling is left until the period ends <Cite key="erickson2020" where="Ch. 6" />.
+
+<ModeSheet example="forward-basic" topology="forward" />
 
 ## Worked example
 

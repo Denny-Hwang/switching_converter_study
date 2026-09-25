@@ -14,6 +14,7 @@ import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
 import TrySim from '../../../../components/TrySim.astro';
+import ModeSheet from '../../../../components/ModeSheet.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -64,6 +65,17 @@ L-C 필터로 이루어진 벅 형태의 출력단(output stage)에 $n V_g$를 �
 듀티비도 낮아지며, 턴 수를 줄이면 그 반대가 됩니다.
 $n_r = 1$이면 듀티비는 2분의 1 이하로 제한되고, 스위치는 입력 전압의 두 배를
 차단합니다.
+
+### 동작 모드(operating mode)
+
+아래 그림은 예제의 정상상태 한 주기를 컨버터 논문에서처럼 모드별로 나누어 보여 줍니다.
+사이트의 시뮬레이터로 계산했으며, 시뮬레이터의 [동작 모드 보기](../../simulate/simulator/#동작-모드)는 어떤 값에서든 같은 그림을 그립니다.
+스위치가 도통하는 동안 2차 권선이 정류 다이오드를 거쳐 출력 인덕터 전류를 흘리고 자화
+전류가 커집니다. 스위치가 꺼지면 출력 인덕터 전류는 다른 다이오드로 환류(freewheeling)하고,
+자화 전류는 리셋 권선을 거쳐 입력으로 돌아갑니다. 자화 전류가 0에 이르면 주기가 끝날
+때까지 환류만 남습니다 <Cite key="erickson2020" where="Ch. 6" />.
+
+<ModeSheet example="forward-basic" topology="forward" />
 
 ## 풀이 예제
 

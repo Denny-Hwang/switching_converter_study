@@ -36,6 +36,22 @@ function cssVar(name: string, fallback: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
 }
 
+/**
+ * A theme for drawings rendered once at build time (ModeSheet.astro), read in the light and in the dark
+ * theme alike: text and axis lines take the page's text colour (currentColor), traces and the grey use
+ * mid tones legible on either background (as scripts/gen_figures.py does).
+ */
+export const STATIC_THEME: PlotTheme = {
+  dark: false,
+  text: 'currentColor',
+  muted: '#8b919c',
+  grid: '#8b919c',
+  line: '#8b919c',
+  band: 'currentColor',
+  font: 'inherit',
+  colors: ['#3b82f6', '#f97316', '#22a06b', '#e5484d', '#8e6bd8', '#b07d4f', '#12a5a5'],
+};
+
 /** The theme Starlight has applied to the page (data-theme on <html>). */
 export function readTheme(): PlotTheme {
   const dark = typeof document !== 'undefined' && document.documentElement.dataset.theme === 'dark';

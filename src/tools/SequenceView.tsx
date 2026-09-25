@@ -18,7 +18,7 @@ import { useMemo, type ReactNode } from 'react';
 import { sim } from 'pe-core';
 import { fmtValue } from '../lib/format';
 import type { PlotTheme } from '../lib/plot';
-import { FONT, U, layoutCircuit, textWidth, wireSegments, type BranchLayout, type P } from '../lib/seqlayout';
+import { FONT, LEGEND, U, layoutCircuit, textWidth, wireSegments, type BranchLayout, type P } from '../lib/seqlayout';
 import { elementKey, fill, kindKey, modeDescription, stateKey, type SeqText } from '../i18n/sequence';
 import { Rich } from './ToolUi';
 
@@ -45,12 +45,8 @@ export default function SequenceView({ result, modes, text, selected, onSelect, 
   const scale = useMemo(() => sim.currentScale(result, s), [result, s]);
   const k = Math.min(Math.max(selected, 0), modes.length - 1);
   const mode = modes[k];
-  // each branch's states, arrows and zeros are measured against its scale in the mode: the switching
-  // cell's largest current in the mode, or a load's or source's element's own peak (sim.modeScales)
   const peaks = useMemo(() => sim.branchScales(result, s), [result, s]);
-  const scales = useMemo(() => (mode ? sim.modeScales(result, mode, s, peaks) : new Map<string, number>()), [result, mode, s, peaks]);
-  const states = useMemo(() => (mode ? sim.elementStates(result, mode, s, scales) : []), [result, mode, s, scales]);
-  const flow = useMemo(() => (mode ? sim.branchFlow(result, mode, s, scales) : new Map<string, BranchFlow>()), [result, mode, s, scales]);
+  const parts = useMemo(() => (mode ? modeParts(result, s, peaks, modes, k, text) : null), [result, s, peaks, modes, k, mode, text]);
   const rest = useMemo(() => sim.atRest(result, s, scale), [result, s, scale]);
   if (rest) {
     return (
@@ -60,19 +56,12 @@ export default function SequenceView({ result, modes, text, selected, onSelect, 
       </section>
     );
   }
-  if (!mode) return null;
+  if (!mode || !parts) return null;
   const topo = result.params.topology;
   const Ts = 1 / result.params.fs;
-  const byId = new Map(states.map((e) => [e.id, e]));
+  const { byId, flow, rows, description } = parts;
   const t = (x: number) => fmtValue(x, 's', 3);
-  // a start and an end that differ by little still read differently: enough digits for the mode's length
-  const tIn = (x: number) => fmtValue(x, 's', Math.min(9, Math.max(3, Math.ceil(Math.log10(Math.abs(x) / (mode.t1 - mode.t0))) + 2)));
-  // a current below its element's counting threshold is shown as zero (the same threshold as the states)
-  const eps = (id: string) => sim.countingFloor(result, scales.get(id) ?? 0);
-  // each element as the table shows it; the description's voltages are the table's
-  const rows = states.map((e) => ({ e, ...shown(e, flow.get(e.id)?.sign || 1, eps(e.id)) }));
-  const said = rows.map(({ e, volts }) => ({ id: e.id, state: e.state, volts }));
-  const description = modeDescription(topo, mode.kind, modes[k + 1]?.kind, said, text, sim.coreReset(result, mode, states, scales));
+  const tIn = (x: number) => timeIn(x, mode);
   return (
     <section className="pe-seq" aria-labelledby="pe-seq-title">
       <h3 id="pe-seq-title">{text.title}</h3>
@@ -138,6 +127,29 @@ export default function SequenceView({ result, modes, text, selected, onSelect, 
   );
 }
 
+/** An instant within a mode: a start and an end that differ by little still read differently, with enough digits for the mode's length. */
+export function timeIn(x: number, mode: OperatingMode): string {
+  return fmtValue(x, 's', Math.min(9, Math.max(3, Math.ceil(Math.log10(Math.abs(x) / (mode.t1 - mode.t0))) + 2)));
+}
+
+/** What the view shows of mode k: its elements' states and currents, the branches' flow, the table's rows and the description. */
+export function modeParts(result: SimResult, s: Schematic, peaks: Map<string, number>, modes: OperatingMode[], k: number, text: SeqText) {
+  const mode = modes[k]!;
+  // each branch's states, arrows and zeros are measured against its scale in the mode: the switching
+  // cell's largest current in the mode, or a load's or source's element's own peak (sim.modeScales)
+  const scales = sim.modeScales(result, mode, s, peaks);
+  const states = sim.elementStates(result, mode, s, scales);
+  const flow = sim.branchFlow(result, mode, s, scales);
+  const byId = new Map(states.map((e) => [e.id, e]));
+  // a current below its element's counting threshold is shown as zero (the same threshold as the states)
+  const eps = (id: string) => sim.countingFloor(result, scales.get(id) ?? 0);
+  // each element as the table shows it; the description's voltages are the table's
+  const rows = states.map((e) => ({ e, ...shown(e, flow.get(e.id)?.sign || 1, eps(e.id)) }));
+  const said = rows.map(({ e, volts }) => ({ id: e.id, state: e.state, volts }));
+  const description = modeDescription(result.params.topology, mode.kind, modes[k + 1]?.kind, said, text, sim.coreReset(result, mode, states, scales));
+  return { mode, states, flow, byId, rows, description };
+}
+
 /** A quantity's start, end and average over the mode, with values within `zero` of zero shown as zero. */
 function span(a: number, b: number, avg: number, unit: string, zero: number): string {
   const f = (x: number) => fmtValue(Math.abs(x) <= zero ? 0 : x, unit, 3);
@@ -179,9 +191,14 @@ interface CircuitProps {
   theme: PlotTheme;
   /** The mode's number, for the drawing's accessible name. */
   k: number;
+  /** Draw the legend under the circuit (a sheet of every mode draws it once, apart). */
+  legend?: boolean;
 }
 
-function Circuit({ s, flow, states, text, theme, k }: CircuitProps) {
+/** Room under the drawing when it has no legend (px). */
+const PAD_BOTTOM = 6;
+
+export function Circuit({ s, flow, states, text, theme, k, legend = true }: CircuitProps) {
   const l = useMemo(
     () =>
       layoutCircuit(s, (b) => {
@@ -201,7 +218,7 @@ function Circuit({ s, flow, states, text, theme, k }: CircuitProps) {
   const first = textWidth(text.legendActive!, FONT.legend);
   return (
     <svg
-      viewBox={`0 0 ${l.width.toFixed(1)} ${l.height.toFixed(1)}`}
+      viewBox={`0 0 ${l.width.toFixed(1)} ${(legend ? l.height : l.height - LEGEND + PAD_BOTTOM).toFixed(1)}`}
       width="100%"
       role="img"
       aria-label={fill(text.diagram!, { k })}
@@ -221,16 +238,18 @@ function Circuit({ s, flow, states, text, theme, k }: CircuitProps) {
       {l.dots.map((d, j) => (
         <circle key={`dot${j}`} cx={d[0]} cy={d[1]} r={3.2} fill={theme.text} />
       ))}
-      <g className="pe-seq__legend" fontSize={FONT.legend} fill={theme.muted} transform={`translate(8 ${l.legendY.toFixed(1)})`}>
-        <line x1={0} y1={-4} x2={18} y2={-4} stroke={active} strokeWidth={2.6} />
-        <text x={24} y={0}>
-          {text.legendActive}
-        </text>
-        <line x1={48 + first} y1={-4} x2={66 + first} y2={-4} stroke={idle} strokeWidth={1.3} />
-        <text x={72 + first} y={0}>
-          {text.legendIdle}
-        </text>
-      </g>
+      {legend && (
+        <g className="pe-seq__legend" fontSize={FONT.legend} fill={theme.muted} transform={`translate(8 ${l.legendY.toFixed(1)})`}>
+          <line x1={0} y1={-4} x2={18} y2={-4} stroke={active} strokeWidth={2.6} />
+          <text x={24} y={0}>
+            {text.legendActive}
+          </text>
+          <line x1={48 + first} y1={-4} x2={66 + first} y2={-4} stroke={idle} strokeWidth={1.3} />
+          <text x={72 + first} y={0}>
+            {text.legendIdle}
+          </text>
+        </g>
+      )}
     </svg>
   );
 }

@@ -21,7 +21,7 @@ A page is a module page when its frontmatter has `module: true`. For each:
     `numbers: synthetic`;
   * the Korean page mirrors the English one: the same block components
     (Eq, Worked, TryIt, TrySim, GoDeeper, Quiz, Figure, CoreKg, MagWorked,
-    TryMag, TryTool, Mission, FalstadLinks) with the same attributes in the
+    TryMag, TryTool, Mission, FalstadLinks, ModeSheet) with the same attributes in the
     same order, the same inline components (Cite, EqRef, Val, FalstadLink)
     in any order (Korean word order differs),
     and a quiz with the same answer key; a component that is neither (a new
@@ -104,7 +104,7 @@ SECTIONS = {
     "en": ["Intent", "Theory", "Worked example", "Try it", "Bench exercise", "Gotchas", "Go deeper", "Quiz"],
     "ko": ["목표", "이론", "풀이 예제", "직접 해 보기", "벤치 실습", "주의할 점", "더 알아보기", "퀴즈"],
 }
-BLOCK = ("Eq", "Worked", "TryIt", "TrySim", "GoDeeper", "Quiz", "Figure", "CoreKg", "MagWorked", "TryMag", "TryTool", "Mission", "FalstadLinks")
+BLOCK = ("Eq", "Worked", "TryIt", "TrySim", "GoDeeper", "Quiz", "Figure", "CoreKg", "MagWorked", "TryMag", "TryTool", "Mission", "FalstadLinks", "ModeSheet")
 SIM_TOPOLOGIES = ("buck", "boost", "buckboost", "flyback", "forward")
 TOOLS = ("Explorer", "Simulator", "ConverterDesigner", "MagneticsDesigner", "LossBudget", "ClampCheck", "SourceMatcher", "SenseChain")
 TOOL_TAG = re.compile(r"<(" + "|".join(TOOLS) + r")\b")
@@ -596,6 +596,11 @@ def main() -> int:
                 errors.append(f"{where}: <TrySim example=\"{a.get('example')}\"> has no examples/synthetic file")
             if a.get("topology") not in SIM_TOPOLOGIES:
                 errors.append(f"{where}: <TrySim topology=\"{a.get('topology')}\"> is not a simulator topology")
+        for a in [a for c, a in components(body) if c == "ModeSheet"]:
+            if a.get("example") not in examples:
+                errors.append(f"{where}: <ModeSheet example=\"{a.get('example')}\"> has no examples/synthetic file")
+            if a.get("topology") not in SIM_TOPOLOGIES:
+                errors.append(f"{where}: <ModeSheet topology=\"{a.get('topology')}\"> is not a simulator topology")
 
         errors += go_deeper_errors(where, text[name["Go deeper"]], resources)
 

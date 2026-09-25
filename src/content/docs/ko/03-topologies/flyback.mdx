@@ -14,6 +14,7 @@ import Worked from '../../../../components/Worked.astro';
 import Val from '../../../../components/Val.astro';
 import TryIt from '../../../../components/TryIt.astro';
 import TrySim from '../../../../components/TrySim.astro';
+import ModeSheet from '../../../../components/ModeSheet.astro';
 import GoDeeper from '../../../../components/GoDeeper.astro';
 import Quiz from '../../../../components/Quiz.astro';
 
@@ -123,6 +124,22 @@ resistor, LFR)처럼 동작합니다(<EqRef id="dcm.P_in" label="DCM 입력 전�
 스위치가 차단하는 전압은 다음과 같습니다.
 
 <Eq id="flyback.Vds_clamped" />
+
+### 동작 모드(operating mode)
+
+아래 그림들은 각 예제의 정상상태 한 주기를 컨버터 논문에서처럼 모드별로 나누어 보여
+줍니다. 사이트의 시뮬레이터로 계산했으며, 시뮬레이터의 [동작 모드 보기](../../simulate/simulator/#동작-모드)는 어떤 값에서든 같은 그림을
+그립니다.
+CCM에서 한 주기는 두 모드로 이루어집니다. 스위치가 도통하는 동안 자화 인덕턴스가
+입력에서 충전되고 출력 다이오드는 차단됩니다. 스위치가 꺼지면 자화 전류가 2차 권선에서
+다이오드를 거쳐 흘러나갑니다 <Cite key="erickson2020" where="Ch. 6" />.
+
+<ModeSheet example="flyback-ccm" topology="flyback" />
+
+DCM에서는 자화 전류가 주기가 끝나기 전에 0에 이르고, 스위치와 다이오드가 모두
+도통하지 않는 세 번째 모드가 이어집니다 <Cite key="erickson2020" where="Ch. 5" />.
+
+<ModeSheet example="flyback-dcm" topology="flyback" />
 
 ## 풀이 예제
 
