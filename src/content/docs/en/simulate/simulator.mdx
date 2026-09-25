@@ -589,8 +589,9 @@ falstad.com ([the converters in CircuitJS1](../../05-simulation/falstad/)).
 Each folder's README says what to plot and shows the waveforms ngspice
 computes. On every average and extreme listed there, the simulator and
 ngspice agree within 1 % (`packages/pe-core/test/sim-library.test.ts`), and
-ngspice agrees with the equations within 1 % (`scripts/sim_library.py`), as
-does CircuitJS1 over its last two periods (`scripts/falstad_check.mjs`).
+ngspice agrees with the equations within 1 % (`scripts/sim_library.py`).
+CircuitJS1 agrees with them within 1 % too, on the averages and extremes its
+check measures over its last two periods (`scripts/falstad_check.mjs`).
 
 | Preset | LTspice | ngspice | CircuitJS1 |
 | --- | --- | --- | --- |

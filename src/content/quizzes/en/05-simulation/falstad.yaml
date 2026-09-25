@@ -21,19 +21,19 @@ questions:
     options:
       - 'It halves'
       - 'It doubles'
-      - 'It stays about the same size, because the current past zero shrinks with the step'
+      - 'It stays of the same order, because the current past zero shrinks with the step'
       - 'It disappears'
     answer: 2
-    explain: 'The current goes past zero by about its change in one step, which halves with the step, while the shorter step doubles the voltage for a given current. The jump stays near the voltage the inductor had before the diode turned off: in the library''s DCM buck, between about three-quarters of and one and a half times the output voltage.'
-  - q: 'What removes the spike?'
+    explain: 'The current goes past zero by about its change in one step, which halves with the step, while the shorter step doubles the voltage for a given current. The jump stays about as large as the voltage the inductor had across it before the diode turned off: in the library''s DCM buck, between about 0.7 and 1.4 times the output voltage.'
+  - q: 'What do the library''s circuits add so that a node cannot jump far outside the supply when a diode turns off?'
     options:
-      - 'A tighter tolerance'
-      - 'A path for the current, such as a body diode, a snubber or a node capacitance'
-      - 'The trapezoidal rule'
+      - 'A shorter time step'
+      - 'A body diode across each switch'
+      - 'The trapezoidal rule for the inductors'
       - 'A coupling of exactly one'
     answer: 1
-    explain: 'The spike comes from a current that has to stop within one step. A body diode, a snubber or a node capacitance lets it flow on; the library''s circuits give each switch a body diode.'
-  - q: 'With Trapezoidal Approximation ticked on its transformer, the DCM flyback''s drain alternates at every step between about twice its expected level and zero. Why?'
+    explain: 'The current past zero flows through the body diode, so the node goes no further than a diode drop past a rail; a one-step dip within the rails can remain. A shorter step does not help, and a capacitance at the node, stepped by backward Euler, is what takes the current without any jump.'
+  - q: 'With Trapezoidal Approximation ticked on its transformer, the DCM flyback''s drain alternates at every step, while the output diode conducts, between about twice its expected level and zero. Why?'
     options:
       - 'The leakage inductance rings with the switch''s capacitance'
       - 'The trapezoidal rule meets a mode far faster than the step, and its factor per step for that mode is close to minus one'
@@ -48,4 +48,4 @@ questions:
       - 'A coupling of one would slow the simulation down'
       - 'To damp the ringing of the drain'
     answer: 1
-    explain: 'The determinant L1 L2 - M^2 of the inductance matrix vanishes at a coupling of one, so the matrix cannot be inverted. The leakage that 0.99999 leaves adds a one-step spike of less than a volt to the drain at turn-off.'
+    explain: 'The determinant L1 L2 - M^2 of the inductance matrix vanishes at a coupling of one, so the matrix cannot be inverted. The leakage that 0.99999 leaves adds a one-step spike to the drain at turn-off, less than a volt at the library''s step, as the switch stops the leakage inductance''s current within that step.'

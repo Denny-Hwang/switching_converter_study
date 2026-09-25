@@ -517,8 +517,9 @@ falstad.com에서 열리는 CircuitJS1 회로로도 있습니다([CircuitJS1로 
 각 폴더의 README에 무엇을 그릴지와 ngspice가 계산한 파형이 있습니다. 거기에
 적힌 모든 평균값과 최댓값·최솟값에서 이 시뮬레이터와 ngspice는 1 % 안에서
 일치하고(`packages/pe-core/test/sim-library.test.ts`), ngspice는 식과 1 %
-안에서 일치하며(`scripts/sim_library.py`), CircuitJS1도 마지막 두 주기에서
-그렇습니다(`scripts/falstad_check.mjs`).
+안에서 일치합니다(`scripts/sim_library.py`). CircuitJS1도 검사가 마지막 두
+주기에서 측정하는 평균값과 최댓값·최솟값에서 식과 1 % 안에서
+일치합니다(`scripts/falstad_check.mjs`).
 
 | 프리셋 | LTspice | ngspice | CircuitJS1 |
 | --- | --- | --- | --- |
