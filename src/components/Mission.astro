@@ -107,22 +107,9 @@ const items = entry.data.criteria.map((c) => {
 </div>
 
 <script>
-  import { STORE_KEY, checkAnswer, clearMission, doneCount, parseAnswer, readProgress, setDone, type Progress } from '../lib/missionstore';
+  import { STORE_KEY, checkAnswer, clearMission, doneCount, parseAnswer, progressStore, setDone, type Progress } from '../lib/missionstore';
 
-  function load(): Progress {
-    try {
-      return readProgress(window.localStorage.getItem(STORE_KEY));
-    } catch {
-      return {};
-    }
-  }
-  function save(p: Progress): void {
-    try {
-      window.localStorage.setItem(STORE_KEY, JSON.stringify(p));
-    } catch {
-      // storage turned off: the ticks last until the page is left
-    }
-  }
+  const { load, save } = progressStore(() => window.localStorage);
   const pct = (x: number) => `${Number((x * 100).toPrecision(2))} %`;
   const fill = (template: string, values: Record<string, string>) => template.replace(/\{(\w+)\}/g, (_, k: string) => values[k] ?? '');
 

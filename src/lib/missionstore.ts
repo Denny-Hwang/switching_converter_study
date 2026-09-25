@@ -31,6 +31,37 @@ export function readProgress(text: string | null): Progress {
   return out;
 }
 
+/**
+ * The progress kept in `storage()` (localStorage in the page). Once the browser refuses to read it
+ * or to keep it (storage turned off, or full), the store works from the copy it last read or
+ * wrote: the ticks last until the page is left, and a storage that returns nothing does not undo
+ * them. `storage` is a function because merely reading `window.localStorage` can throw.
+ */
+export function progressStore(storage: () => Pick<Storage, 'getItem' | 'setItem'>): { load(): Progress; save(p: Progress): void } {
+  let memory: Progress = {};
+  let stored = true;
+  return {
+    load() {
+      if (!stored) return memory;
+      try {
+        memory = readProgress(storage().getItem(STORE_KEY));
+      } catch {
+        stored = false;
+      }
+      return memory;
+    },
+    save(p) {
+      memory = p;
+      try {
+        storage().setItem(STORE_KEY, JSON.stringify(p));
+        stored = true;
+      } catch {
+        stored = false;
+      }
+    },
+  };
+}
+
 /** The progress with one criterion ticked or cleared (a new object; missions left empty are dropped). */
 export function setDone(p: Progress, mission: string, id: string, done: boolean): Progress {
   const ids = new Set(p[mission] ?? []);

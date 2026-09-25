@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkAnswer, clearMission, doneCount, parseAnswer, readProgress, setDone } from './missionstore';
+import { STORE_KEY, checkAnswer, clearMission, doneCount, parseAnswer, progressStore, readProgress, setDone } from './missionstore';
 
 describe('the stored progress', () => {
   it('reads what setDone writes', () => {
@@ -81,5 +81,73 @@ describe('an answer as typed', () => {
     expect(checkAnswer(12.1, 12, 0.005).ok).toBe(false);
     expect(checkAnswer(-2.99, -3, 0.01).ok).toBe(true);
     expect(checkAnswer(3, -3, 0.01).ok).toBe(false);
+  });
+});
+
+describe('where the progress is kept (progressStore)', () => {
+  /** A localStorage stand-in: `read` and `write` false make getItem and setItem throw. */
+  const fake = (read = true, write = true) => {
+    const data = new Map<string, string>();
+    return {
+      data,
+      storage: {
+        getItem: (k: string) => {
+          if (!read) throw new DOMException('storage turned off', 'SecurityError');
+          return data.get(k) ?? null;
+        },
+        setItem: (k: string, v: string) => {
+          if (!write) throw new DOMException('storage full', 'QuotaExceededError');
+          data.set(k, v);
+        },
+      },
+    };
+  };
+
+  it('keeps the progress in the storage, and reads what another page wrote there', () => {
+    const { data, storage } = fake();
+    const store = progressStore(() => storage);
+    store.save(setDone(store.load(), 'm1', 'a', true));
+    expect(JSON.parse(data.get(STORE_KEY)!)).toEqual({ m1: ['a'] });
+    data.set(STORE_KEY, JSON.stringify({ m1: ['a'], m2: ['b'] })); // the other language's page
+    expect(store.load()).toEqual({ m1: ['a'], m2: ['b'] });
+  });
+
+  for (const [what, read, write] of [
+    ['a storage that refuses to be read', false, true],
+    ['a storage that reads nothing and refuses to keep anything', true, false],
+    ['no storage at all', false, false],
+  ] as const) {
+    it(`keeps every tick until the page is left, with ${what}`, () => {
+      const { storage } = fake(read, write);
+      const store = progressStore(() => storage);
+      store.save(setDone(store.load(), 'm1', 'a', true));
+      store.save(setDone(store.load(), 'm1', 'b', true));
+      store.save(setDone(store.load(), 'm2', 'c', true));
+      expect(store.load()).toEqual({ m1: ['a', 'b'], m2: ['c'] });
+      store.save(setDone(store.load(), 'm1', 'a', false));
+      expect(store.load()).toEqual({ m1: ['b'], m2: ['c'] });
+      store.save(clearMission(store.load(), 'm2'));
+      expect(store.load()).toEqual({ m1: ['b'] });
+    });
+  }
+
+  it('keeps the ticks when window.localStorage itself throws', () => {
+    const store = progressStore(() => {
+      throw new DOMException('denied', 'SecurityError');
+    });
+    store.save(setDone(store.load(), 'm1', 'a', true));
+    store.save(setDone(store.load(), 'm1', 'b', true));
+    expect(store.load()).toEqual({ m1: ['a', 'b'] });
+  });
+
+  it('goes back to the storage once it keeps a write again, with the ticks made meanwhile', () => {
+    const { data, storage } = fake(true, false);
+    const store = progressStore(() => storage);
+    store.save(setDone(store.load(), 'm1', 'a', true));
+    storage.setItem = (k: string, v: string) => void data.set(k, v); // room again
+    store.save(setDone(store.load(), 'm1', 'b', true));
+    expect(JSON.parse(data.get(STORE_KEY)!)).toEqual({ m1: ['a', 'b'] });
+    data.set(STORE_KEY, JSON.stringify({ m1: ['a', 'b'], m3: ['d'] }));
+    expect(store.load()).toEqual({ m1: ['a', 'b'], m3: ['d'] });
   });
 });
