@@ -18,9 +18,13 @@ import FalstadLink from '../../../../components/FalstadLink.astro';
 import shot from '../../../../assets/screenshots/simulator-en.png';
 
 Pick a topology or a preset, choose the load, and set the parameters in SI
-units: type a value, or drag its slider, which spans one decade either side
-of the value (0 to 1 for the duty ratio). The simulator computes one period
-of the periodic steady state and shows:
+units, with or without a prefix (100u and 0.0001 are the same inductance,
+200k and 200000 the same frequency): type a value, or drag its slider, which
+spans one decade either side of the value (0 to 1 for the duty ratio). A
+field that does not hold a number turns red. A new load, or the source
+switched on, fills each field it adds with an example's value, which you can
+then change. The simulator computes one period of the periodic steady state
+and shows:
 
 - the waveforms: inductor current and voltage, diode current, switch voltage
   and output voltage, and the battery's current when there is one;

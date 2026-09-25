@@ -16,10 +16,11 @@ import { fmtValue, formatSI } from '../lib/format';
 import { isToolHash } from '../lib/hash';
 import { PLOT_CONFIG, axis, baseLayout, logTicks, sub, usePlotTheme } from '../lib/plot';
 import { useStateHash } from '../lib/useStateHash';
-import { Choices, FieldLabel, Rich } from './ToolUi';
+import { Choices, FieldLabel, NumInput, Rich } from './ToolUi';
+import { parseSI } from '../lib/siparse';
 
 export interface MagLabels {
-  /** Values are entered in base SI units. */
+  /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
   siHint: string;
   device: string;
   devices: Record<MagDevice, string>;
@@ -172,7 +173,7 @@ const shownFor = (d: MagDevice) => FIELDS.filter((f) => !f.flyback || fly(d));
 /** A number field's value; an empty or non-finite field is NaN, never 0. */
 function num(raw: string | undefined): number {
   const t = (raw ?? '').trim();
-  const v = t === '' ? Number.NaN : Number(t);
+  const v = parseSI(t);
   return Number.isFinite(v) ? v : Number.NaN;
 }
 
@@ -431,7 +432,7 @@ export default function MagneticsDesigner({ labels, presets, symbols, coreSource
     return (
       <div key={f.key} className="pe-row pe-row--full">
         <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} note={note} />
-        <input id={id} type="number" step="any" value={values[f.key] ?? ''} onChange={(e) => edit(f.key, e.target.value)} />
+        <NumInput id={id} value={values[f.key] ?? ''} onChange={(e) => edit(f.key, e.target.value)} />
       </div>
     );
   };

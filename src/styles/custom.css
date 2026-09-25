@@ -153,6 +153,11 @@ html:lang(ko) body {
   color: var(--sl-color-white);
   font: inherit;
 }
+/* a number field whose text is not a number (ToolUi's NumInput) */
+.pe-tool input[aria-invalid='true'] {
+  border-color: var(--sl-color-red);
+  outline-color: var(--sl-color-red);
+}
 .pe-tool input[type='range'] {
   width: 100%;
   min-width: 0;

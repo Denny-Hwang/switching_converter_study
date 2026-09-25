@@ -15,10 +15,11 @@ import { isToolHash } from '../lib/hash';
 import { fmtValue } from '../lib/format';
 import { useStateHash } from '../lib/useStateHash';
 import { PLOT_CONFIG, axis, baseLayout, logTicks, sub, usePlotTheme, type PlotTheme } from '../lib/plot';
-import { Choices, FieldLabel, Rich } from './ToolUi';
+import { Choices, FieldLabel, NumInput, Rich } from './ToolUi';
+import { parseSI } from '../lib/siparse';
 
 export interface SenseLabels {
-  /** Values are entered in base SI units. */
+  /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
   siHint: string;
   kind: string;
   kinds: Record<MonitorKind, string>;
@@ -134,7 +135,7 @@ const shownFor = (kind: MonitorKind) => FIELDS.filter((f) => f.group !== (kind =
 /** A number field's value; an empty or non-finite field is NaN, never 0. */
 function num(raw: string | undefined): number {
   const t = (raw ?? '').trim();
-  const v = t === '' ? Number.NaN : Number(t);
+  const v = parseSI(t);
   return Number.isFinite(v) ? v : Number.NaN;
 }
 
@@ -439,7 +440,7 @@ export default function SenseChain({ labels, presets, symbols }: Props) {
     return (
       <div key={f.key} className="pe-row pe-row--full">
         <FieldLabel htmlFor={id} sym={f.label} meaning={symbols[f.label]} unit={f.unit} note={f.optional ? labels.optional : undefined} />
-        <input id={id} type="number" step="any" value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
+        <NumInput id={id} value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
       </div>
     );
   };

@@ -16,7 +16,8 @@ import { LOADS, loadChoiceOf, type LoadChoice } from '../lib/simload';
 import type { SimReply } from './simulator.worker';
 import SequenceView, { type SeqText } from './SequenceView';
 import ModeSheet from './ModeSheet';
-import { Choices, FieldLabel, Rich, Sym } from './ToolUi';
+import { Choices, FieldLabel, NumInput, Rich, Sym } from './ToolUi';
+import { parseSI } from '../lib/siparse';
 
 /** The sheet of every mode starts open up to this many modes. */
 const SHEET_OPEN_MODES = 6;
@@ -26,7 +27,7 @@ type SimParams = sim.SimParams;
 type SimResult = sim.SimResult;
 
 export interface SimLabels {
-  /** Values are entered in base SI units. */
+  /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
   siHint: string;
   topology: string;
   presets: string;
@@ -267,7 +268,7 @@ function readHash(): URLSearchParams {
 /** A number field's value; an empty or partial field is NaN, never 0. */
 export function parseField(raw: string | undefined): number {
   const t = (raw ?? '').trim();
-  return t === '' ? Number.NaN : Number(t);
+  return parseSI(t);
 }
 
 /** Simulator parameters from the form state, or an error key. */
@@ -547,6 +548,22 @@ export function stateFromHash(h: URLSearchParams, presets: SimPreset[]): { fs: F
     },
     values,
   };
+}
+
+/**
+ * The values a form state needs that the form does not have yet: each field it shows (but a non-ideal
+ * one, whose empty field is an ideal part) that is empty takes an example's value, from the first preset
+ * of the topology that has it, else from any preset's. A new load or a source switched on then shows a
+ * result at once, and each value stays one the user can change.
+ */
+export function fillShown(fs: FieldState, values: Record<string, string>, presets: SimPreset[]): Record<string, string> {
+  const filled: Record<string, string> = {};
+  for (const f of FIELDS) {
+    if (f.group === 'nonideal' || !f.show(fs) || (values[f.key] ?? '').trim() !== '') continue;
+    const from = presets.find((p) => p.topology === fs.topo && p.values[f.key] !== undefined) ?? presets.find((p) => p.values[f.key] !== undefined);
+    if (from) filled[f.key] = String(from.values[f.key]);
+  }
+  return filled;
 }
 
 /** The URL hash of the form: every shown field, an empty one as `key=`. */
@@ -886,6 +903,16 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
     });
   }
 
+  /** A new load, or the source switched on or off: the fields it shows that are still empty get values. */
+  function changeForm(next: FieldState) {
+    const filled = fillShown(next, values, presets);
+    setFstate(next);
+    if (Object.keys(filled).length) {
+      setValues((prev) => ({ ...prev, ...filled }));
+      setAnchors((prev) => ({ ...prev, ...sliderAnchors(filled) }));
+    }
+  }
+
   function changeTopology(t: Topology) {
     const base = presets.find((p) => p.topology === t);
     if (base) applyPreset(base);
@@ -938,10 +965,8 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
     return (
       <div key={f.key} className="pe-row">
         <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} />
-        <input
+        <NumInput
           id={id}
-          type="number"
-          step="any"
           value={values[f.key] ?? ''}
           onChange={(e) => setField(f.key, e.target.value)}
           onBlur={() => commitField(f.key)}
@@ -979,7 +1004,7 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
             <legend>{labels.parameters}</legend>
             <div className="pe-row pe-row--full">
               <label htmlFor="sim-load">{labels.load}</label>
-              <select id="sim-load" value={fstate.load} onChange={(e) => setFstate({ ...fstate, load: e.target.value as LoadChoice })}>
+              <select id="sim-load" value={fstate.load} onChange={(e) => changeForm({ ...fstate, load: e.target.value as LoadChoice })}>
                 {LOADS.map((l) => (
                   <option key={l} value={l}>
                     {labels.loads[l]}
@@ -988,7 +1013,7 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
               </select>
             </div>
             <label className="pe-check" htmlFor="sim-src">
-              <input id="sim-src" type="checkbox" checked={fstate.source} onChange={(e) => setFstate({ ...fstate, source: e.target.checked })} />
+              <input id="sim-src" type="checkbox" checked={fstate.source} onChange={(e) => changeForm({ ...fstate, source: e.target.checked })} />
               <span>
                 <Rich text={labels.source} />
               </span>

@@ -28,13 +28,14 @@ import { isToolHash } from '../lib/hash';
 import { fmtValue } from '../lib/format';
 import { useStateHash } from '../lib/useStateHash';
 import { PLOT_CONFIG, axis, baseLayout, logTicks, sub, usePlotTheme } from '../lib/plot';
-import { ChoiceButtons, Choices, FieldLabel, Rich } from './ToolUi';
+import { ChoiceButtons, Choices, FieldLabel, NumInput, Rich } from './ToolUi';
 import type { EnvelopeReply } from './sourcematch.worker';
+import { parseSI } from '../lib/siparse';
 
 export type EnvelopeKind = 'none' | 'sine' | 'points';
 
 export interface SourceLabels {
-  /** Values are entered in base SI units. */
+  /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
   siHint: string;
   presets: string;
   source: string;
@@ -138,7 +139,7 @@ const ENVELOPES: EnvelopeKind[] = ['none', 'sine', 'points'];
 /** A number field's value; an empty or non-finite field is NaN, never 0. */
 function num(raw: string | undefined): number {
   const t = (raw ?? '').trim();
-  const v = t === '' ? Number.NaN : Number(t);
+  const v = parseSI(t);
   return Number.isFinite(v) ? v : Number.NaN;
 }
 
@@ -536,7 +537,7 @@ export default function SourceMatcher({ labels, presets, simulatorHref, symbols 
     return (
       <div key={f.key} className="pe-row pe-row--full">
         <FieldLabel htmlFor={id} sym={f.label} meaning={symbols[f.label]} unit={f.unit} />
-        <input id={id} type="number" step="any" value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
+        <NumInput id={id} value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
       </div>
     );
   };

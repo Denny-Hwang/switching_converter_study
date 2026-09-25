@@ -12,10 +12,11 @@ import { isToolHash } from '../lib/hash';
 import { PLOT_CONFIG, axis, baseLayout, logTicks, sub, usePlotTheme } from '../lib/plot';
 import { fmtValue } from '../lib/format';
 import { useStateHash } from '../lib/useStateHash';
-import { Choices, FieldLabel, Rich, Sym } from './ToolUi';
+import { Choices, FieldLabel, NumInput, Rich, Sym } from './ToolUi';
+import { parseSI } from '../lib/siparse';
 
 export interface DesignerLabels {
-  /** Values are entered in base SI units. */
+  /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
   siHint: string;
   topology: string;
   presets: string;
@@ -130,7 +131,7 @@ const KEYS = FIELDS.map((f) => f.key);
 /** A number field's value; an empty field is NaN, never 0. */
 function num(raw: string | undefined): number {
   const t = (raw ?? '').trim();
-  return t === '' ? Number.NaN : Number(t);
+  return parseSI(t);
 }
 
 /** The designer's specification from the form, or null when a required field is missing or out of range. */
@@ -428,7 +429,7 @@ export default function ConverterDesigner({ labels, presets, simulatorHref, loss
     return (
       <div key={f.key} className="pe-row pe-row--full">
         <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} note={f.optional ? labels.optional : undefined} />
-        <input id={id} type="number" step="any" value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
+        <NumInput id={id} value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
       </div>
     );
   };

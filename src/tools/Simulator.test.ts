@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { sim } from 'pe-core';
 import { ui } from '../i18n/ui';
 import { fmtValue } from '../lib/format';
-import { compareRows, fromSlider, hashOf, loadRows, nextAnchor, noSteadyText, outsideModelText, parseField, sliderAnchors, stateFromHash, toParams, type SimLabels, type SimPreset } from './Simulator';
+import { compareRows, fillShown, fromSlider, hashOf, loadRows, nextAnchor, noSteadyText, outsideModelText, parseField, sliderAnchors, stateFromHash, toParams, type SimLabels, type SimPreset } from './Simulator';
+import { PRESETS, presetValues } from '../lib/simpresets';
 
 const buck = { topo: 'buck' as const, load: 'res' as const, source: false };
 const values = { Vg: '24', D: '0.5', fs: '100000', L: '0.0001', R: '10', C: '0.00001' };
@@ -42,6 +43,61 @@ describe('simulator form', () => {
     if ('error' in p) return;
     expect(p.source).toEqual({ Voc: 1000, Rs: 10000, Cbus: 0.00001 });
     expect(p.load).toEqual({ kind: 'fixed', V: 5 });
+  });
+});
+
+describe('values as a datasheet writes them', () => {
+  it('SI prefixes and units give the same parameters as base units', () => {
+    const typed = { Vg: '24 V', D: '50 %', fs: '100k', L: '100 µH', R: '10 Ω', C: '10u', Ron: '5m' };
+    const p = toParams(buck, typed);
+    const q = toParams(buck, { ...values, Ron: '0.005' });
+    expect('error' in p).toBe(false);
+    if ('error' in p || 'error' in q) return;
+    expect(p.Vg).toBe(24);
+    expect(p.D).toBeCloseTo(0.5, 15);
+    expect(p.fs).toBeCloseTo(q.fs, 9);
+    expect(p.L / q.L).toBeCloseTo(1, 12);
+    expect(p.Ron! / q.Ron!).toBeCloseTo(1, 12);
+    expect(p.load).toEqual({ kind: 'resistive', R: 10, C: expect.closeTo(1e-5, 18) });
+  });
+
+  it('text that is not a number is invalid, not zero', () => {
+    expect(toParams(buck, { ...values, L: '100 x' })).toEqual({ error: 'invalid' });
+    expect(toParams(buck, { ...values, Ron: 'abc' })).toEqual({ error: 'invalid' });
+  });
+});
+
+describe('a new load or source', () => {
+  const presets: SimPreset[] = PRESETS.map((p) => ({ id: p.id, label: p.en, topology: p.topology, values: presetValues(p.example, p.topology) }));
+
+  it('fills each field it shows that is empty from an example, and leaves typed and non-ideal fields alone', () => {
+    const bat = { topo: 'buck' as const, load: 'batr' as const, source: false };
+    const filled = fillShown(bat, { ...values, R: '22' }, presets);
+    // the battery's two values come from the buck's battery preset; R, typed, and R_on, ideal, stay
+    const from = presets.find((p) => p.topology === 'buck' && p.values.Vb !== undefined)!;
+    expect(filled).toEqual({ Vb: String(from.values.Vb), Rb: String(from.values.Rb) });
+    expect('error' in toParams(bat, { ...values, R: '22', ...filled })).toBe(false);
+  });
+
+  it('switching the source on fills the source from a preset of any topology that has one', () => {
+    const src = { topo: 'buck' as const, load: 'res' as const, source: true };
+    const filled = fillShown(src, values, presets);
+    const from = presets.find((p) => p.values.Voc !== undefined)!;
+    expect(filled).toEqual({ Voc: String(from.values.Voc), Rs: String(from.values.Rs), Cbus: String(from.values.Cbus) });
+    expect('error' in toParams(src, { ...values, ...filled })).toBe(false);
+  });
+
+  it('every load and source of every topology has a complete form after the fill', () => {
+    for (const p of presets) {
+      const base = Object.fromEntries(Object.entries(p.values).map(([k, v]) => [k, String(v)]));
+      for (const load of ['res', 'bat', 'batr', 'cap', 'fixed'] as const) {
+        for (const source of [false, true]) {
+          const fs = { topo: p.topology, load, source };
+          const form = { ...base, ...fillShown(fs, base, presets) };
+          expect(toParams(fs, form), `${p.id} ${load} ${source}`).not.toEqual({ error: 'invalid' });
+        }
+      }
+    }
   });
 });
 

@@ -13,12 +13,13 @@ import { PLOT_CONFIG, axis, baseLayout, sub, usePlotTheme } from '../lib/plot';
 import { fmtValue } from '../lib/format';
 import { useStateHash } from '../lib/useStateHash';
 import type { LossReply } from './lossbudget.worker';
-import { Choices, FieldLabel, Rich } from './ToolUi';
+import { Choices, FieldLabel, NumInput, Rich } from './ToolUi';
+import { parseSI } from '../lib/siparse';
 
 type Topology = sim.Topology;
 
 export interface LossLabels {
-  /** Values are entered in base SI units. */
+  /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
   siHint: string;
   topology: string;
   presets: string;
@@ -127,7 +128,7 @@ const MAY_BE_ZERO = new Set(['Ron', 'Qg', 'Vgs', 'Cnode', 'VF', 'rd', 'RL']);
 
 function num(raw: string | undefined): number {
   const t = (raw ?? '').trim();
-  return t === '' ? Number.NaN : Number(t);
+  return parseSI(t);
 }
 
 /** The loss-budget specification from the form, or null when it is incomplete or out of range. */
@@ -414,7 +415,7 @@ export default function LossBudget({ labels, presets, simulatorHref, symbols }: 
     return (
       <div key={f.key} className="pe-row pe-row--full">
         <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} />
-        <input id={id} type="number" step="any" value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
+        <NumInput id={id} value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
       </div>
     );
   };

@@ -1,7 +1,10 @@
 /**
  * Building blocks shared by the tool islands: symbols with subscripts, input
- * labels that say what a symbol means, and groups of equal-size buttons.
+ * labels that say what a symbol means, number fields, and groups of
+ * equal-size buttons.
  */
+import type { InputHTMLAttributes } from 'react';
+import { parseSI } from '../lib/siparse';
 import { symParts } from '../lib/sym';
 
 /** Single letters (Latin or Greek, after an optional Δ) are variables: italic, as in the equations. */
@@ -126,4 +129,14 @@ export function Choices<T extends string>(props: ChoicesProps<T>) {
       <ChoiceButtons {...props} named={false} />
     </fieldset>
   );
+}
+
+/**
+ * A number field. A text field, not type="number": a browser's number field refuses an SI prefix
+ * ("100u", "200 kHz"), which lib/siparse.ts reads. Text that is not a number is marked invalid
+ * (aria-invalid) as it is typed; an empty field is not.
+ */
+export function NumInput({ value, ...rest }: Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'value'> & { value: string }) {
+  const bad = value.trim() !== '' && Number.isNaN(parseSI(value));
+  return <input {...rest} type="text" autoComplete="off" spellCheck={false} value={value} aria-invalid={bad || undefined} />;
 }
