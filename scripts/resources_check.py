@@ -31,7 +31,12 @@ resources.yaml (when present), then:
       Internet Archive capture of the exact URL (Wayback CDX API; for a PDF,
       the most recent one the archive stored as a PDF), which must pass the
       same title check. Such URLs are reported as "OK
-      (archived YYYY-MM-DD)", never silently as live.
+      (archived YYYY-MM-DD)", never silently as live. A capture the archive
+      found serves every entry with the same URL in the run. A URL for which
+      neither the host nor the archive gave anything to judge (no answer, no
+      capture, or a capture the archive would not serve) is tried once more
+      after the others, after a pause (RETRY_PAUSE): the archive sometimes
+      stops answering for minutes. Only then is it an error.
 
 This complements lychee (which checks every link on the built site): some
 hosts reject lychee's HTTP/2 client, and a title match proves the URL still
@@ -57,6 +62,7 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 import time
 import unicodedata
 import urllib.error
@@ -80,6 +86,8 @@ PDF_CAP = 60_000_000  # bytes kept per response: a PDF is read whole (its cross-
 PAGE1_TOP = 600  # characters (normalised) at the top of page 1 where a document shows its title
 MAX_PAGES = 150  # pages read when a bib entry has urlquotes
 WORKERS = 6  # URLs checked at once: a host that turns the runner away costs minutes of retries and archive lookups
+RETRY_PAUSE = 60  # seconds before the URLs that neither their host nor the archive answered are tried once more
+NO_ANSWER = "no Internet Archive capture found (or the archive did not answer)"
 BROWSER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 # Titles of interstitial pages served instead of content (consent walls, bot
 # checks). Seeing one is inconclusive, not a mismatch.
@@ -426,12 +434,29 @@ def _slow_get(url: str, how: str, tries: int = 3) -> Fetch:
     return f
 
 
+_captures: dict[tuple[str, bool], tuple[str, str]] = {}
+_captures_lock = threading.Lock()
+
+
 def latest_capture(url: str, pdf: bool = False) -> tuple[str, str] | None:
     """(timestamp, original URL) of the most recent HTTP-200 capture, or None.
 
     For a PDF, the most recent capture the archive stored as a PDF comes
     first: a later capture of the same URL can be a web page (a site's
-    download page or bot wall)."""
+    download page or bot wall). A capture found is kept for the rest of the
+    run (a bib entry and a resource often share a URL); a lookup that found
+    nothing is not, so that a later one asks the archive again."""
+    with _captures_lock:
+        if (url, pdf) in _captures:
+            return _captures[(url, pdf)]
+    found = _lookup_capture(url, pdf)
+    if found:
+        with _captures_lock:
+            _captures[(url, pdf)] = found
+    return found
+
+
+def _lookup_capture(url: str, pdf: bool) -> tuple[str, str] | None:
     for mime in (["mimetype:application/pdf"], []) if pdf else ([],):
         q = urllib.parse.urlencode([("url", url), ("output", "json"), ("fl", "timestamp,original"),
                                     ("filter", "statuscode:200"), *[("filter", m) for m in mime], ("limit", "-1")])
@@ -455,26 +480,31 @@ def latest_capture(url: str, pdf: bool = False) -> tuple[str, str] | None:
 
 
 def archived(t: dict) -> tuple[str, str]:
-    """Check the latest Internet Archive capture (HTTP 200) of the exact URL (for a PDF, its latest PDF capture)."""
+    """Check the latest Internet Archive capture (HTTP 200) of the exact URL (for a PDF, its latest PDF capture).
+
+    ('ok' | 'fail' | 'none', detail): 'none' when the archive gave nothing to judge."""
     found = latest_capture(t["url"], pdf=t["kind"] == "pdf")
     if not found:
-        return "fail", "no Internet Archive capture found (or the archive did not answer)"
+        return "none", NO_ANSWER
     stamp, original = found
     snap = _slow_get(f"https://web.archive.org/web/{stamp}id_/{original}", "wayback capture")
     verdict, detail = judge(t, snap)
     when = f"{stamp[0:4]}-{stamp[4:6]}-{stamp[6:8]}"
     if verdict == "ok":
         return "ok", f"archived {when}: {detail}"
+    if verdict == "inconclusive":  # the archive did not serve the capture it listed
+        return "none", f"archive capture {when}: {detail}"
     return "fail", f"archive capture {when}: {detail}"
 
 
 def check_online(t: dict) -> tuple[str, str]:
-    """('OK' | 'OK (archived)' | 'FAIL', detail).
+    """('OK' | 'OK (archived)' | 'FAIL' | 'NO-ANSWER', detail).
 
     OK as soon as one client configuration gets the expected page. A
     conclusive failure (404/410, or a real page with another title) from any
     configuration fails the URL; only when every configuration was
-    inconclusive does the archive decide."""
+    inconclusive does the archive decide. NO-ANSWER: neither the host nor
+    the archive gave anything to judge (main() tries such a URL again)."""
     notes: list[str] = []
     failed = False
     for f in attempts(t["url"]):
@@ -489,7 +519,7 @@ def check_online(t: dict) -> tuple[str, str]:
     verdict, detail = archived(t)
     if verdict == "ok":
         return "OK (archived)", f"{detail}; live: " + " | ".join(notes)
-    return "FAIL", f"{detail}; live: " + " | ".join(notes)
+    return "NO-ANSWER" if verdict == "none" else "FAIL", f"{detail}; live: " + " | ".join(notes)
 
 
 def dump(key: str, targets: list[dict]) -> bool:
@@ -527,14 +557,26 @@ def main() -> int:
         return 0 if all([dump(k, targets) for k in args.dump]) else 1
     archived_ok = []
     if args.online:
+        results: list[tuple[str, str]] = []
         # several URLs at a time (each still tries its clients one after another); the results print in order
         with ThreadPoolExecutor(max_workers=WORKERS) as pool:
             for t, (status, detail) in zip(targets, pool.map(check_online, targets)):
                 print(f"  {status:14s} {t['src']:32s} {t['url']}  {detail[:200]}", flush=True)
-                if status == "FAIL":
-                    errors.append(f"{t['src']}: {detail} ({t['url']})")
-                elif status != "OK":
-                    archived_ok.append(t["src"])
+                results.append((status, detail))
+        again = [i for i, (status, _) in enumerate(results) if status == "NO-ANSWER"]
+        if again:
+            print(f"resources_check: nothing to judge from the host or the archive for {len(again)} URL(s); "
+                  f"trying them once more in {RETRY_PAUSE} s", flush=True)
+            time.sleep(RETRY_PAUSE)
+            with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+                for i, (status, detail) in zip(again, pool.map(check_online, [targets[i] for i in again])):
+                    results[i] = (status, detail)
+                    print(f"  {status:14s} {targets[i]['src']:32s} {targets[i]['url']}  (again) {detail[:200]}", flush=True)
+        for t, (status, detail) in zip(targets, results):
+            if status in ("FAIL", "NO-ANSWER"):
+                errors.append(f"{t['src']}: {detail} ({t['url']})")
+            elif status != "OK":
+                archived_ok.append(t["src"])
         if archived_ok:
             print(f"resources_check: {len(archived_ok)} URL(s) unreachable from this runner, confirmed from their "
                   f"latest Internet Archive capture: {', '.join(archived_ok)}")
