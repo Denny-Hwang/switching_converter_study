@@ -9,7 +9,7 @@
  * The waveforms are the simulated period's own samples; the circuits and
  * descriptions are SequenceView's (modeParts, Circuit).
  */
-import type { ReactNode } from 'react';
+import { memo, type ReactNode } from 'react';
 import { sim } from 'pe-core';
 import { fmtValue } from '../lib/format';
 import type { PlotTheme } from '../lib/plot';
@@ -39,14 +39,16 @@ export interface SheetRow {
 /**
  * The key waveforms of each topology, top to bottom as papers draw them: the
  * gate, the inductor's current (the flyback's magnetizing current), the
- * switch's and the diodes' currents, the switch's voltage and the
- * inductor's voltage. The forward converter adds its magnetizing current and
- * draws both output diodes; its reset current shows in i_M.
+ * switch's net current (its body diode's included, which flows the other
+ * way) and the diode's, the switch's voltage and the inductor's voltage. The forward
+ * converter draws its magnetizing current and both output diodes instead of
+ * the inductor's voltage; its reset current shows in i_M.
  */
 export function sheetRows(topology: sim.Topology): SheetRow[] {
   const gate: SheetRow = { key: 'gate', base: 'v', sub: 'GS', unit: '' };
   const vDS: SheetRow = { key: 'v_sw', base: 'v', sub: 'DS', unit: 'V' };
-  const iS: SheetRow = { key: 'i_sw', base: 'i', sub: 'S', unit: 'A' };
+  // the switch's net current from drain to source, its channel less its body diode (as the cards and the table count it)
+  const iS: SheetRow = { key: 'i_S', base: 'i', sub: 'S', unit: 'A' };
   if (topology === 'forward') {
     return [gate, { key: 'i_L', base: 'i', sub: 'L', unit: 'A' }, { key: 'i_M', base: 'i', sub: 'M', unit: 'A' }, iS, { key: 'i_D1', base: 'i', sub: 'D1', unit: 'A' }, { key: 'i_D2', base: 'i', sub: 'D2', unit: 'A' }, vDS];
   }
@@ -57,7 +59,7 @@ export function sheetRows(topology: sim.Topology): SheetRow[] {
 /** The mode's letter in the sheet: (a), (b), ... */
 export const letter = (k: number) => String.fromCharCode(97 + k);
 
-export default function ModeSheet({ result, modes, text, theme }: Props) {
+function ModeSheet({ result, modes, text, theme }: Props) {
   if (!modes.length) return null;
   const s = sim.schematic(result.params);
   const peaks = sim.branchScales(result, s);
@@ -66,7 +68,7 @@ export default function ModeSheet({ result, modes, text, theme }: Props) {
   const dt = (m: OperatingMode) => fmtValue(m.t1 - m.t0, 's', 3);
   const active = theme.colors[3]!;
   return (
-    <div className="pe-sheet">
+    <div className="pe-sheet not-content">
       <div className="pe-sheet__scroll">
         <KeyWaveforms result={result} modes={modes} text={text} theme={theme} />
       </div>
@@ -105,6 +107,10 @@ export default function ModeSheet({ result, modes, text, theme }: Props) {
   );
 }
 
+// the props (the result, its modes, the texts and the theme) change only with a new result or theme: the
+// simulator's other re-renders (a keystroke, a mode picked in the mode view) reuse the sheet
+export default memo(ModeSheet);
+
 // ---------------------------------------------------------------------------
 // the key waveforms
 // ---------------------------------------------------------------------------
@@ -116,8 +122,11 @@ const TOP = 24;
 const ROW = 50;
 const GAP = 12;
 const BOTTOM = 30;
+/** The boundary labels: another line under the first where two would be closer than LABEL_GAP of the period. */
+const LABEL_LINE = 14;
+const LABEL_GAP = 0.035;
 
-function Symbol({ base, sub, x, y, anchor = 'end', size = 15 }: { base: string; sub: string; x: number; y: number; anchor?: 'start' | 'end' | 'middle'; size?: number }) {
+function SymText({ base, sub, x, y, anchor = 'end', size = 15 }: { base: string; sub: string; x: number; y: number; anchor?: 'start' | 'end' | 'middle'; size?: number }) {
   return (
     <text x={x} y={y} textAnchor={anchor} fontSize={size} fontStyle="italic">
       {base}
@@ -143,29 +152,37 @@ function samples(result: SimResult, modes: OperatingMode[], key: string): { t: n
     }
     return { t: tt, y: yy };
   }
+  if (key === 'i_S') {
+    const sw = (w.i_sw as number[] | undefined) ?? [];
+    const bd = w.i_bd as number[] | undefined;
+    return { t, y: sw.map((v, j) => v - (bd?.[j] ?? 0)) };
+  }
   return { t, y: (w[key] as number[] | undefined) ?? [] };
 }
 
 function KeyWaveforms({ result, modes, text, theme }: Props) {
   const topo = result.params.topology;
-  const rows = sheetRows(topo).filter((r) => r.key === 'gate' || Array.isArray(result.waveforms[r.key]));
+  const rows = sheetRows(topo).filter((r) => r.key === 'gate' || r.key === 'i_S' || Array.isArray(result.waveforms[r.key]));
   const Ts = 1 / result.params.fs;
   const plotW = W - LEFT - RIGHT;
-  const H = TOP + rows.length * ROW + (rows.length - 1) * GAP + BOTTOM;
   const x = (t: number) => LEFT + (t / Ts) * plotW;
-  const bottom = H - BOTTOM;
-  // the boundaries: t_0 = 0 to t_N = T_s; a label only where it keeps 3 % of the period from the last one
+  // the boundaries t_0 = 0 ... t_N = T_s, every one labelled (the cards cite them all): a label goes on the
+  // first line where it keeps LABEL_GAP of the period from the last label there, else on the line with the most room
   const bounds = [...modes.map((m) => m.t0), Ts];
-  const labelled: number[] = [0];
-  for (let j = 1; j < bounds.length; j++) {
-    const last = labelled[labelled.length - 1]!;
-    if (bounds[j]! - bounds[last]! >= 0.03 * Ts) labelled.push(j);
-    else if (j === bounds.length - 1) {
-      // t_N always: it takes the place of a label too close before it (never t_0's)
-      if (last !== 0) labelled.pop();
-      labelled.push(j);
-    }
-  }
+  const lastOn: number[] = [];
+  const lineOf = bounds.map((b) => {
+    let k = lastOn.findIndex((q) => b - q >= LABEL_GAP * Ts);
+    if (k < 0) k = lastOn.length < 3 ? lastOn.length : lastOn.indexOf(Math.min(...lastOn));
+    lastOn[k] = b;
+    return k;
+  });
+  const lines = Math.max(1, ...lineOf.map((k) => k + 1));
+  const H = TOP + rows.length * ROW + (rows.length - 1) * GAP + BOTTOM + (lines - 1) * LABEL_LINE;
+  const bottom = TOP + rows.length * ROW + (rows.length - 1) * GAP;
+  // every row's samples; a value within a billionth of the largest of its unit (rounding) is zero
+  const data = rows.map((r) => samples(result, modes, r.key));
+  const largest = (unit: string) => Math.max(0, ...rows.flatMap((r, i) => (r.unit === unit ? data[i]!.y.map(Math.abs) : [])));
+  const floor: Record<string, number> = { A: 1e-9 * largest('A'), V: 1e-9 * largest('V'), '': 0 };
   const out: ReactNode[] = [];
   // every other mode lightly shaded, so that each reads as a band
   modes.forEach((m, j) => {
@@ -182,7 +199,8 @@ function KeyWaveforms({ result, modes, text, theme }: Props) {
   }
   rows.forEach((r, i) => {
     const top = TOP + i * (ROW + GAP);
-    const { t, y } = samples(result, modes, r.key);
+    const t = data[i]!.t;
+    const y = data[i]!.y.map((v) => (Math.abs(v) <= floor[r.unit]! ? 0 : v));
     let lo = Math.min(0, ...y);
     let hi = Math.max(0, ...y);
     if (hi - lo <= 0) hi = lo + 1;
@@ -197,14 +215,14 @@ function KeyWaveforms({ result, modes, text, theme }: Props) {
     out.push(<path key={`p${i}`} d={d} fill="none" stroke={color} strokeWidth={1.8} strokeLinejoin="round" />);
     out.push(
       <g key={`s${i}`} fill={theme.text}>
-        <Symbol base={r.base} sub={r.sub} x={LEFT - 10} y={top + ROW / 2 + 5} />
+        <SymText base={r.base} sub={r.sub} x={LEFT - 10} y={top + ROW / 2 + 5} />
       </g>,
     );
     if (r.unit) {
-      // the row's largest and smallest values, at its right
+      // the row's largest value at its right, and its smallest where the two do not overlap
       const max = Math.max(...y);
       const min = Math.min(...y);
-      const f = (v: number) => fmtValue(Math.abs(v) < 1e-9 * Math.max(Math.abs(max), Math.abs(min), 1e-30) ? 0 : v, r.unit, 3);
+      const f = (v: number) => fmtValue(v, r.unit, 3);
       out.push(
         <text key={`hi${i}`} x={LEFT + plotW + 6} y={yOf(max) + 4} fontSize={10.5} fill={theme.muted}>
           {f(max)}
@@ -229,13 +247,13 @@ function KeyWaveforms({ result, modes, text, theme }: Props) {
   bounds.forEach((b, j) => {
     out.push(<line key={`b${j}`} x1={x(b)} x2={x(b)} y1={TOP - 4} y2={bottom + 4} stroke={theme.line} strokeWidth={0.8} strokeDasharray="3 3" />);
   });
-  for (const j of labelled) {
+  bounds.forEach((b, j) => {
     out.push(
       <g key={`t${j}`} fill={theme.text}>
-        <Symbol base="t" sub={String(j)} x={x(bounds[j]!)} y={bottom + 20} anchor="middle" size={13} />
+        <SymText base="t" sub={String(j)} x={x(b)} y={bottom + 20 + lineOf[j]! * LABEL_LINE} anchor="middle" size={13} />
       </g>,
     );
-  }
+  });
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={fill(text.sheetWaves!, { n: modes.length, Ts: fmtValue(Ts, 's', 3) })} className="pe-sheet__waves" style={{ maxWidth: `${W}px` }}>
       {out}

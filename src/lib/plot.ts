@@ -37,19 +37,19 @@ function cssVar(name: string, fallback: string): string {
 }
 
 /**
- * A theme for drawings rendered once at build time (ModeSheet.astro), read in the light and in the dark
- * theme alike: text and axis lines take the page's text colour (currentColor), traces and the grey use
- * mid tones legible on either background (as scripts/gen_figures.py does).
+ * A theme for drawings rendered once at build time (ModeSheet.astro), which follows the page's light or
+ * dark theme by itself: the colours are CSS variables (Starlight's greys, and the trace colours above as
+ * --pe-trace-0 ... in custom.css), which SVG presentation attributes resolve like any other property.
  */
 export const STATIC_THEME: PlotTheme = {
   dark: false,
   text: 'currentColor',
-  muted: '#8b919c',
-  grid: '#8b919c',
-  line: '#8b919c',
+  muted: 'var(--sl-color-gray-3)',
+  grid: 'var(--sl-color-gray-5)',
+  line: 'var(--sl-color-gray-4)',
   band: 'currentColor',
   font: 'inherit',
-  colors: ['#3b82f6', '#f97316', '#22a06b', '#e5484d', '#8e6bd8', '#b07d4f', '#12a5a5'],
+  colors: LIGHT.map((_, j) => `var(--pe-trace-${j})`),
 };
 
 /** The theme Starlight has applied to the page (data-theme on <html>). */

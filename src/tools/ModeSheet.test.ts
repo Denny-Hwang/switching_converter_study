@@ -6,6 +6,7 @@ import ModeSheet, { letter, sheetRows } from './ModeSheet';
 import { stateFromHash, toParams } from './Simulator';
 import { SEQ_TEXT } from '../i18n/sequence';
 import { STATIC_THEME } from '../lib/plot';
+import { fmtValue } from '../lib/format';
 import { PRESETS, presetValues, simulatorHash } from '../lib/simpresets';
 
 /**
@@ -62,7 +63,7 @@ describe('ModeSheet', () => {
     const r = run(example, topology);
     const ms = sim.modes(r);
     const rows = sheetRows(topology);
-    for (const row of rows) if (row.key !== 'gate') expect(Array.isArray(r.waveforms[row.key]), row.key).toBe(true);
+    for (const row of rows) if (row.key !== 'gate') expect(Array.isArray(r.waveforms[row.key === 'i_S' ? 'i_sw' : row.key]), row.key).toBe(true);
     const html = render(r, ms, 'en');
     const waves = /<svg viewBox="0 0 (\d+) (\d+)"[^>]*class="pe-sheet__waves"[^>]*>(.*?)<\/svg>/s.exec(html);
     expect(waves).not.toBeNull();
@@ -75,6 +76,9 @@ describe('ModeSheet', () => {
     const want = [...ms.map((m) => m.t0), Ts].map((t) => 58 + (t / Ts) * (720 - 58 - 78));
     expect(xs.length).toBe(want.length);
     xs.forEach((x, j) => expect(x).toBeCloseTo(want[j]!, 6));
+    // every boundary labelled t_0 ... t_N: the cards cite them all
+    const labels = [...body.matchAll(/font-style="italic">t<tspan[^>]*>(\d+)<\/tspan>/g)].map((m) => Number(m[1]));
+    expect(labels).toEqual(want.map((_, j) => j));
   });
 
   it.each(CASES)('%s: the gate is on exactly in the modes whose gate is on', (example, topology) => {
@@ -92,6 +96,24 @@ describe('ModeSheet', () => {
     // and it is on for D T_s from the start of the period (the modes are the period's own)
     const on = ms.filter((m) => m.gate).reduce((a, m) => a + (m.t1 - m.t0), 0);
     expect(on * r.params.fs).toBeCloseTo(r.params.D, 9);
+  });
+
+  it('the switch row is the switch\'s net current, its body diode\'s included, as the circuit cards count it', () => {
+    // a buck into a battery above its input: the inductor's current flows back through the body diode,
+    // while the channel (i_sw) carries nothing
+    const st = stateFromHash(new URLSearchParams(simulatorHash('sim-buck-battery', 'buck')), presets);
+    const params = toParams(st.fs, { ...st.values, Vb: String(2 * Number(st.values.Vg)) });
+    if ('error' in params) throw new Error('battery');
+    const r = sim.simulate(params);
+    const w = r.waveforms;
+    const net = (w.i_sw as number[]).map((v, j) => v - (w.i_bd as number[])[j]!);
+    expect(Math.max(...(w.i_sw as number[]).map(Math.abs))).toBe(0);
+    expect(Math.min(...net)).toBeLessThan(0);
+    const html = render(r, sim.modes(r), 'en');
+    // the third row (i_S) is drawn below its zero line and labels the net current's extremes
+    const waves = /class="pe-sheet__waves"[^>]*>(.*?)<\/svg>/s.exec(html)![1]!;
+    const labels = [...waves.matchAll(/<text x="[\d.]+" y="[\d.]+" font-size="10.5"[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]!);
+    expect(labels).toContain(fmtValue(Math.min(...net), 'A', 3));
   });
 
   it('draws nothing without modes', () => {

@@ -28,7 +28,7 @@ const en: Text = {
     'The whole period as a paper draws it: the key waveforms, with the boundaries t_0, t_1, … of the modes, then the circuit in each mode. It follows the values above.',
   sheetRange: '(t_{a} to t_{b}: {t0} to {t1}, {dt})',
   sheetOn: 'on',
-  sheetWaves: 'Key waveforms over one period (T_s = {Ts}), in {n} modes',
+  sheetWaves: 'Key waveforms over one switching period of {Ts}, in {n} modes',
   rest: 'Nothing moves in this steady state: every current is zero (to rounding), so there are no operating modes to show.',
   tableNote:
     "Each current is positive along its element's arrow on the circuit (the direction of its average current in the mode); a negative value flows against it. An inductor's voltage is taken along its arrow too, and includes the drop across its winding resistance; every other voltage keeps the element's own direction. A current below a thousandth of its scale counts as none and is shown as zero. The scale is the largest current in the mode among the elements it flows with: the switching cell (a transformer's primary side and secondary side apart), the output capacitor with the load, the bus capacitor with the source. An inductor's scale is at most its own largest current over the period; a capacitor's at least what the load or the source draws; the load's and the source's own elements use their own largest current over the period. Rounding, below a billionth of the circuit's natural current, is never a current.",
@@ -221,7 +221,7 @@ const ko: Text = {
   sheetIntro: '논문에서 그리듯 한 주기 전체를 보여 줍니다. 모드의 경계 t_0, t_1, …을 표시한 주요 파형과 각 모드의 회로입니다. 위의 값을 따릅니다.',
   sheetRange: '(t_{a}에서 t_{b}까지: {t0}에서 {t1}까지, {dt})',
   sheetOn: '켜짐',
-  sheetWaves: '한 주기(T_s = {Ts})의 주요 파형, 모드 {n}개',
+  sheetWaves: '스위칭 주기 {Ts} 한 주기의 주요 파형, 모드 {n}개',
   rest: '이 정상상태에서는 아무것도 움직이지 않습니다. 모든 전류가 (반올림 오차 수준에서) 0이므로 보여 줄 동작 모드가 없습니다.',
   tableNote:
     '각 전류는 회로도에서 그 소자의 화살표 방향(모드 안 평균 전류의 방향)이 양수이고, 음수는 화살표 반대로 흐르는 전류입니다. 인덕터 전압도 화살표 방향으로 잡으며 권선 저항의 전압 강하를 포함합니다. 다른 전압은 소자 자신의 방향을 따릅니다. 기준값(scale)의 1000분의 1보다 작은 전류는 흐르지 않는 것으로 보고 0으로 표시합니다. 기준값은 그 모드에서 함께 흐르는 소자들의 가장 큰 전류입니다: 스위칭 셀(변압기는 1차 측과 2차 측을 따로), 부하와 함께인 출력 커패시터, 전원과 함께인 버스 커패시터. 인덕터의 기준값은 한 주기 동안 자신의 최대 전류를 넘지 않고, 커패시터의 기준값은 부하나 전원이 끌어가는 전류보다 작지 않습니다. 부하와 전원 자체의 소자는 한 주기 동안 자신의 최대 전류를 기준값으로 씁니다. 회로 고유 전류의 10억분의 1보다 작은 값은 반올림 오차로, 전류로 보지 않습니다.',
