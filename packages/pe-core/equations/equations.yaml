@@ -283,6 +283,24 @@ symbol_table:
   P_avg: {latex: "\\bar{P}", unit: "W", desc: "power averaged over a period of the source's envelope", meaning: "power averaged over the envelope", meaning_ko: "포락선 주기에 걸친 평균 전력", range: [1.0e-6, 100], scale: log}
   P_std_max: {latex: "P_\\mathrm{std,max}", unit: "W", desc: "largest power a full-wave bridge onto a DC voltage takes from a vibrating piezoelectric element, at the best DC voltage", meaning: "largest power of the standard interface", meaning_ko: "표준 인터페이스의 최대 전력"}
   P_sshi_max: {latex: "P_\\mathrm{SSHI,max}", unit: "W", desc: "largest power parallel SSHI takes from a vibrating piezoelectric element, at the best DC voltage", meaning: "largest power of parallel SSHI", meaning_ko: "병렬 SSHI의 최대 전력"}
+  # --- 05-simulation (Phase 5c): stepping a circuit in time, settling, rounding
+  tau: {latex: "\\tau", unit: "s", desc: "time constant of a decaying mode: R C for a capacitor, L/R for an inductor", meaning: "time constant", meaning_ko: "시정수(time constant)", range: [1.0e-10, 1.0e-3], scale: log}
+  Delta_t: {latex: "\\Delta t", unit: "s", desc: "time step of a numerical integration", meaning: "time step", meaning_ko: "시간 간격(time step)", range: [1.0e-10, 1.0e-3], scale: log}
+  v_0: {latex: "v_0", unit: "V", desc: "capacitor voltage at the start of a time step", meaning: "voltage at the start of the step", meaning_ko: "스텝을 시작할 때의 전압", range: [-100, 100]}
+  v_inf: {latex: "v_\\infty", unit: "V", desc: "voltage the capacitor would settle to if the step's conditions lasted", meaning: "voltage it tends to", meaning_ko: "수렴하려는 전압", range: [-100, 100]}
+  v_1: {latex: "v_1", unit: "V", desc: "capacitor voltage at the end of the time step", meaning: "voltage after the step", meaning_ko: "스텝이 끝날 때의 전압"}
+  g_FE: {latex: "g_\\mathrm{FE}", unit: "1", desc: "factor by which the forward Euler rule multiplies a decaying mode's deviation in each step", meaning: "forward Euler's factor per step", meaning_ko: "전진 오일러의 스텝당 배율"}
+  g_TR: {latex: "g_\\mathrm{TR}", unit: "1", desc: "factor by which the trapezoidal rule multiplies a decaying mode's deviation in each step", meaning: "trapezoidal rule's factor per step", meaning_ko: "사다리꼴 규칙의 스텝당 배율"}
+  g_BE: {latex: "g_\\mathrm{BE}", unit: "1", desc: "factor by which the backward Euler rule (Gear's method of order one) multiplies a decaying mode's deviation in each step", meaning: "backward Euler's factor per step", meaning_ko: "후진 오일러의 스텝당 배율"}
+  tau_env: {latex: "\\tau_\\mathrm{env}", unit: "s", desc: "time constant of the envelope of the output filter's ring", meaning: "envelope time constant", meaning_ko: "포락선 시정수", range: [1.0e-6, 1.0], scale: log}
+  eps_r: {latex: "\\varepsilon_r", unit: "1", desc: "fraction of the start-up error still left when the measurement starts", meaning: "start-up error left (fraction)", meaning_ko: "남은 시작 오차의 비율", range: [1.0e-9, 0.1], scale: log}
+  N_set: {latex: "N_\\mathrm{set}", unit: "1", desc: "switching periods until the start-up error has fallen to the fraction eps_r", meaning: "periods to settle", meaning_ko: "정착까지의 주기 수"}
+  x_val: {latex: "x", unit: "1", desc: "a computed value (a quantity with a unit is divided by that unit first)", meaning: "value under test", meaning_ko: "검사할 값", range: [-1000, 1000]}
+  x_ref: {latex: "x_\\mathrm{ref}", unit: "1", desc: "the reference value the computed one is compared with", meaning: "reference value", meaning_ko: "기준값", range: [1.0e-3, 1000], scale: log}
+  delta_rel: {latex: "\\delta", unit: "1", desc: "relative difference of a value from its reference", meaning: "relative difference", meaning_ko: "상대 차이"}
+  u_r: {latex: "u", unit: "1", desc: "unit roundoff: the largest relative error of rounding a real number to the nearest number of the format", meaning: "unit roundoff", meaning_ko: "단위 반올림 오차(unit roundoff)"}
+  beta_b: {latex: "\\beta", unit: "1", desc: "base of a floating-point format (2 for binary)", meaning: "base (2 for binary)", meaning_ko: "밑(이진수는 2)", range: [2, 16]}
+  p_prec: {latex: "p", unit: "1", desc: "precision of a floating-point format: digits of its significand in base beta (53 for binary64)", meaning: "precision (significand digits)", meaning_ko: "정밀도(가수의 자릿수)", range: [8, 113]}
 
 # Human-readable labels for the `assumptions` tags (shown in the <Eq> expander).
 assumption_labels:
@@ -354,6 +372,13 @@ assumption_labels:
   gate_plateau: {en: "the gate voltage stays at the plateau voltage while the drain voltage makes its transition; the driver switches between V_GS and 0 behind the gate-loop resistance", ko: "드레인 전압이 전이하는 동안 게이트 전압이 플래토 전압에 머묾; 드라이버는 게이트 루프 저항 뒤에서 V_GS와 0 사이를 스위칭함"}
   series_heat_path: {en: "steady state; all of the device's power flows through each part of the path in turn: junction to case, case to heat sink, heat sink to ambient", ko: "정상상태; 소자의 전력 전부가 경로의 각 부분(접합→케이스, 케이스→방열판, 방열판→주위)을 차례로 지나감"}
   characterization_parameter: {en: "the device is mounted and cooled as it was characterized (on a board, without a heat sink on the package); the parameter is not a thermal resistance: only part of the power flows through the package top", ko: "소자가 특성화할 때와 같이 실장·냉각됨(기판 위, 패키지에 방열판 없음). 이 파라미터는 열저항이 아님: 전력의 일부만 패키지 윗면을 지남"}
+  constant_over_step: {en: "the circuit is linear and its sources stay constant during the step", ko: "스텝 동안 회로가 선형이고 전원이 일정함"}
+  test_equation: {en: "one decaying mode on its own: its rate of change is minus its deviation over tau (the test equation)", ko: "홀로 감쇠하는 모드 하나: 변화율이 편차를 tau로 나눈 값의 음수임(시험 방정식)"}
+  fixed_step: {en: "the same time step every step", ko: "매 스텝 같은 시간 간격"}
+  underdamped_filter: {en: "the output filter rings: its quality factor Q is above 1/2", ko: "출력 필터가 진동함: Q가 1/2보다 큼"}
+  open_loop: {en: "fixed duty ratio, no feedback loop (open loop)", ko: "고정 듀티비, 피드백 루프 없음(개루프)"}
+  slowest_mode: {en: "the start-up error decays with a single time constant, the slowest mode's", ko: "시작 오차가 가장 느린 모드의 시정수 하나로 감소함"}
+  round_to_nearest: {en: "rounding to the nearest number of the format, IEEE 754's default", ko: "형식에서 가장 가까운 수로 반올림(IEEE 754의 기본값)"}
 
 equations:
   # =========================================================================
@@ -2941,3 +2966,130 @@ equations:
     tests:
       - {inputs: {V_b: 3.6, I_b: 2.0, R_b: 0.05}, expect: 3.7}
       - {inputs: {V_b: 3.6, I_b: -2.0, R_b: 0.05}, expect: 3.5}
+
+  # =========================================================================
+  # 05-simulation (Phase 5c): stepping a circuit in time, settling, rounding
+  # =========================================================================
+  - id: sim.exact_step
+    title: "One exact time step of a first-order circuit"
+    title_ko: "1차 회로의 정확한 시간 스텝 하나"
+    lhs: v_1
+    expr: "v_inf + (v_0 - v_inf)*exp(-Delta_t/tau)"
+    symbols: {v_inf: "voltage it tends to", v_0: "voltage at the start of the step", Delta_t: "time step", tau: "time constant"}
+    assumptions: [constant_over_step, first_order_response]
+    notes: "each step multiplies the deviation from $v_\\infty$ by $e^{-\\Delta t/\\tau}$, which lies between 0 and 1 however long the step is: the step is exact, and the deviation cannot grow. An inductor's current follows the same law with the time constant L over R"
+    notes_ko: "스텝마다 $v_\\infty$와의 편차에 $e^{-\\Delta t/\\tau}$를 곱한다. 이 값은 스텝이 아무리 길어도 0과 1 사이이므로, 스텝은 정확하고 편차는 커질 수 없다. 인덕터 전류도 시정수 L/R로 같은 법칙을 따른다"
+    cite: {key: alexander2017, where: "Ch. 7 (First-Order Circuits: the complete response); derived here"}
+    derived_by: python/pe_core/derive/numerics.py
+    tests:
+      - {inputs: {v_inf: 10.0, v_0: 0.0, Delta_t: 5.0e-8, tau: 1.0e-8}, expect: 9.932620530009145}
+      - {inputs: {v_inf: 5.0, v_0: 12.0, Delta_t: 1.0e-6, tau: 1.0e-6}, expect: 7.575156088200096}
+
+  - id: num.gain_fe
+    title: "Forward Euler's factor per step on a decaying mode"
+    title_ko: "감쇠 모드에 대한 전진 오일러의 스텝당 배율"
+    lhs: g_FE
+    expr: "1 - Delta_t/tau"
+    symbols: {Delta_t: "time step", tau: "time constant"}
+    assumptions: [test_equation, fixed_step]
+    notes: "the rule takes the slope at the start of the step. Its factor stays between -1 and 1 only while the step is shorter than $2\\tau$; a longer step multiplies the deviation by more than one in size and flips its sign every step, so the solution grows without bound. The circuit's fastest time constant, such as a small node capacitance behind a small resistance, then limits the step for the whole circuit"
+    notes_ko: "스텝을 시작할 때의 기울기를 쓴다. 배율은 스텝이 $2\\tau$보다 짧을 때만 -1과 1 사이에 머문다. 스텝이 더 길면 편차에 크기가 1보다 큰 값을 곱하고 매 스텝 부호를 뒤집으므로, 해가 끝없이 커진다. 그러면 작은 저항 뒤의 작은 노드 커패시턴스처럼 회로에서 가장 짧은 시정수가 회로 전체의 스텝을 제한한다"
+    cite: {key: hairer1996, where: "Sec. IV.2 (Stability Analysis for Explicit RK Methods: explicit Euler); derived here"}
+    derived_by: python/pe_core/derive/numerics.py
+    tests:
+      - {inputs: {Delta_t: 5.0e-8, tau: 1.0e-8}, expect: -4.0}
+      - {inputs: {Delta_t: 1.0e-9, tau: 1.0e-8}, expect: 0.9}
+
+  - id: num.gain_tr
+    title: "Trapezoidal rule's factor per step on a decaying mode"
+    title_ko: "감쇠 모드에 대한 사다리꼴 규칙의 스텝당 배율"
+    lhs: g_TR
+    expr: "(1 - Delta_t/(2*tau))/(1 + Delta_t/(2*tau))"
+    symbols: {Delta_t: "time step", tau: "time constant"}
+    assumptions: [test_equation, fixed_step]
+    notes: "the rule averages the slopes at both ends of the step. Its factor stays between -1 and 1 for any step (the rule is A-stable), but a step much longer than $\\tau$ gives a factor close to -1: the mode is hardly damped and changes sign every step, a ringing from one step to the next that the circuit does not have. ngspice integrates with this rule unless told otherwise"
+    notes_ko: "스텝 양 끝의 기울기를 평균한다. 배율은 스텝 길이와 관계없이 -1과 1 사이에 머물지만(A-안정), 스텝이 $\\tau$보다 훨씬 길면 배율이 -1에 가까워진다. 모드가 거의 감쇠하지 않고 매 스텝 부호를 바꾸어, 회로에는 없는 스텝 간 링잉이 생긴다. ngspice는 따로 지정하지 않으면 이 규칙으로 적분한다"
+    cite:
+      - {key: hairer1996, where: "Sec. IV.3 (Stability Function of Implicit RK-Methods: the trapezoidal rule is A-stable, |R| tends to 1); derived here"}
+      - {key: ngspice_manual, where: ".options, transient analysis: METHOD, trapezoidal by default"}
+    derived_by: python/pe_core/derive/numerics.py
+    tests:
+      - {inputs: {Delta_t: 2.0e-8, tau: 1.0e-9}, expect: -0.8181818181818182}
+      - {inputs: {Delta_t: 1.0e-9, tau: 1.0e-9}, expect: 0.3333333333333333}
+
+  - id: num.gain_be
+    title: "Backward Euler's factor per step on a decaying mode"
+    title_ko: "감쇠 모드에 대한 후진 오일러의 스텝당 배율"
+    lhs: g_BE
+    expr: "1/(1 + Delta_t/tau)"
+    symbols: {Delta_t: "time step", tau: "time constant"}
+    assumptions: [test_equation, fixed_step]
+    notes: "the rule takes the slope at the end of the step. Its factor lies between 0 and 1 for any step and tends to zero as the step grows (the rule is L-stable): a mode much faster than the step is almost gone after one step, without ringing. It is the first of the backward differentiation formulas, which ngspice uses, up to the second by default, when .options method=gear asks for Gear's method"
+    notes_ko: "스텝이 끝날 때의 기울기를 쓴다. 배율은 스텝 길이와 관계없이 0과 1 사이이고 스텝이 길수록 0에 가까워진다(L-안정). 스텝보다 훨씬 빠른 모드는 링잉 없이 한 스텝 뒤에 거의 사라진다. 후진 차분 공식(backward differentiation formula) 가운데 첫 번째이며, .options method=gear로 기어(Gear) 방법을 지정하면 ngspice는 이 공식들을 기본적으로 두 번째까지 쓴다"
+    cite:
+      - {key: hairer1996, where: "Sec. IV.3 (implicit Euler is L-stable) and Ch. V (Multistep Methods for Stiff Problems: backward differentiation formulas, the first of which is implicit Euler); derived here"}
+      - {key: ngspice_manual, where: ".options, transient analysis: METHOD=gear, and MAXORD, 2 by default"}
+    derived_by: python/pe_core/derive/numerics.py
+    tests:
+      - {inputs: {Delta_t: 2.0e-8, tau: 1.0e-9}, expect: 0.047619047619047616}
+      - {inputs: {Delta_t: 1.0e-9, tau: 1.0e-9}, expect: 0.5}
+
+  - id: filter.tau_env
+    title: "Time constant of the envelope of an L-C filter's ring with a resistive load"
+    title_ko: "저항 부하가 달린 L-C 필터 링잉의 포락선 시정수"
+    lhs: tau_env
+    expr: "2*R*C"
+    symbols: {R: "load resistance", C: "filter capacitance"}
+    assumptions: [ideal, ccm, open_loop, underdamped_filter, resistive_load]
+    notes: "with ideal parts and the buck's source at rest, the filter is the inductance, the capacitance and the load in parallel: a parallel RLC circuit, whose ring decays as $e^{-t/(2RC)}$ whatever the inductance. A lighter load (a larger $R$) rings for longer. The averaged models of the boost and the buck-boost give the same decay rate, $\\omega_0/(2Q) = 1/(2RC)$. Real parts change the decay: the winding's and the switch's resistances always make the ring decay faster, the capacitor's series resistance does when Q is above 1, and the inductance then matters too. This is how an open-loop converter's output settles in CCM after a start-up or a step; a feedback loop sets its own settling, and in DCM, where the inductance carries no energy from one period to the next, the output settles near its steady state with a single time constant instead"
+    notes_ko: "이상적인 부품으로 벅의 전원이 멈춘 상태에서 필터는 인덕턴스, 커패시턴스, 부하가 병렬로 연결된 병렬 RLC 회로이며, 그 링잉은 인덕턴스와 관계없이 $e^{-t/(2RC)}$로 감쇠한다. 부하가 가벼울수록(R이 클수록) 오래 울린다. 부스트와 벅-부스트의 평균화 모델도 같은 감쇠율 $\\omega_0/(2Q) = 1/(2RC)$를 준다. 실제 부품은 감쇠를 바꾼다. 권선과 스위치의 저항은 언제나 링잉을 더 빨리 줄이고, 커패시터의 직렬 저항은 Q가 1보다 클 때 그러하며, 그때는 인덕턴스도 영향을 준다. CCM에서 개루프 컨버터의 출력은 시작이나 계단 변화 뒤 이렇게 정착한다. 피드백 루프가 있으면 루프가 정착을 정하고, 인덕턴스가 주기에서 다음 주기로 에너지를 넘기지 않는 DCM에서는 출력이 정상상태 근처에서 하나의 시정수로 정착한다"
+    cite:
+      - {key: alexander2017, where: "Ch. 8 (Second-Order Circuits: the source-free parallel RLC circuit); derived here"}
+      - {key: erickson2020, where: "Ch. 8 (Converter Transfer Functions: the boost and buck-boost resonances, whose omega_0/(2Q) is also 1/(2RC))"}
+      - {key: erickson2020, where: "Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode: a single low-frequency pole)"}
+    derived_by: python/pe_core/derive/numerics.py
+    tests:
+      - {inputs: {R: 10.0, C: 1.0e-5}, expect: 2.0e-4}
+
+  - id: sim.periods_settle
+    title: "Switching periods until the start-up error has decayed"
+    title_ko: "시작 오차가 줄어들 때까지의 스위칭 주기 수"
+    lhs: N_set
+    expr: "tau_env/T_s*log(1/eps_r)"
+    symbols: {tau_env: "envelope time constant", T_s: "switching period", eps_r: "start-up error left (fraction)"}
+    assumptions: [slowest_mode]
+    notes: "an error that decays as $e^{-t/\\tau_\\mathrm{env}}$ falls to the fraction $\\varepsilon_r$ after $\\tau_\\mathrm{env} \\ln(1/\\varepsilon_r)$, and dividing by $T_s$ counts the periods. Each factor of ten in accuracy costs $\\ln 10$, about 2.3 envelope time constants more. A transient simulation from rest must run at least this long before its last periods show the steady state"
+    notes_ko: "$e^{-t/\\tau_\\mathrm{env}}$로 감쇠하는 오차는 $\\tau_\\mathrm{env} \\ln(1/\\varepsilon_r)$ 뒤에 비율 $\\varepsilon_r$까지 줄어들고, 이를 $T_s$로 나누면 주기 수가 된다. 정확도를 10배 높일 때마다 $\\ln 10$, 곧 포락선 시정수의 약 2.3배가 더 든다. 정지 상태에서 시작하는 과도 시뮬레이션은 적어도 이만큼 달려야 마지막 주기들이 정상상태를 보여 준다"
+    cite: {key: alexander2017, where: "Ch. 8 (Second-Order Circuits: the natural response decays as the exponential of minus the neper frequency times t); derived here"}
+    derived_by: python/pe_core/derive/numerics.py
+    tests:
+      - {inputs: {tau_env: 2.0e-4, T_s: 1.0e-5, eps_r: 1.0e-6}, expect: 276.3102111592855}
+      - {inputs: {tau_env: 1.0e-4, T_s: 2.5e-5, eps_r: 1.0e-3}, expect: 27.631021115928547}
+
+  - id: num.rel_diff
+    title: "Relative difference of a value from its reference"
+    title_ko: "기준값에 대한 값의 상대 차이"
+    lhs: delta_rel
+    expr: "Abs(x_val - x_ref)/Abs(x_ref)"
+    symbols: {x_val: "value under test", x_ref: "reference value"}
+    assumptions: [definition]
+    notes: "it does not change when the quantity is scaled, as by a change of unit from volts to millivolts, so one tolerance serves every quantity (a unit whose zero moves, such as degrees Celsius against kelvins, is the exception); at a zero reference it is undefined, and near one a small absolute difference becomes a large relative one. The site asks 1e-9 of the TypeScript and Python evaluations of the same equation, and 1 % or 2 % of a simulation against its equation"
+    notes_ko: "볼트를 밀리볼트로 바꾸듯 물리량의 배율을 바꿔도 달라지지 않으므로 하나의 허용오차를 모든 물리량에 쓸 수 있다(켈빈에 대한 섭씨처럼 영점이 옮겨 가는 단위는 예외). 기준값이 0이면 정의되지 않고, 0에 가까우면 작은 절대 차이가 큰 상대 차이가 된다. 이 사이트는 같은 식의 TypeScript와 Python 계산에 1e-9를, 식에 대한 시뮬레이션에 1 % 또는 2 %를 요구한다"
+    cite: {key: higham2002, where: "Sec. 1.2 (Relative Error and Significant Digits)"}
+    tests:
+      - {inputs: {x_val: 0.4975, x_ref: 0.5}, expect: 0.005}
+      - {inputs: {x_val: -3.0, x_ref: 2.0}, expect: 2.5}
+
+  - id: num.unit_roundoff
+    title: "Unit roundoff of a floating-point format"
+    title_ko: "부동소수점 형식의 단위 반올림 오차"
+    lhs: u_r
+    expr: "beta_b**(1 - p_prec)/2"
+    symbols: {beta_b: "base", p_prec: "precision (significand digits)"}
+    assumptions: [round_to_nearest]
+    notes: "rounding a real number to the nearest number of the format changes it by at most this fraction of itself (in the normal range). For binary64, the IEEE 754 double precision of JavaScript's numbers and Python's floats, the base is 2 and the precision 53 digits, so $u = 2^{-53} \\approx 1.1 \\times 10^{-16}$. Higham writes the precision as $t$"
+    notes_ko: "실수를 형식에서 가장 가까운 수로 반올림하면 (정규 범위에서) 값이 최대 자신의 이 비율만큼 바뀐다. JavaScript의 수와 Python의 float가 쓰는 IEEE 754 배정밀도(binary64)는 밑이 2, 정밀도가 53자리이므로 $u = 2^{-53} \\approx 1.1 \\times 10^{-16}$이다. Higham은 정밀도를 $t$로 쓴다"
+    cite: {key: higham2002, where: "Ch. 2 (Floating Point Arithmetic: the unit roundoff, Sec. 2.1, and its value in IEEE double precision)"}
+    tests:
+      - {inputs: {beta_b: 2.0, p_prec: 53.0}, expect: 1.1102230246251565e-16}
+      - {inputs: {beta_b: 10.0, p_prec: 16.0}, expect: 5.0e-16}

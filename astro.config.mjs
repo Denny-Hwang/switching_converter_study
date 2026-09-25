@@ -69,6 +69,11 @@ export default defineConfig({
               items: [{ autogenerate: { directory: '04-magnetics' } }],
             },
             {
+              label: '05 · Simulation',
+              translations: { ko: '05 · 시뮬레이션' },
+              items: [{ autogenerate: { directory: '05-simulation' } }],
+            },
+            {
               label: '06 · Bench',
               translations: { ko: '06 · 벤치(실험대)' },
               items: [{ autogenerate: { directory: '06-bench' } }],

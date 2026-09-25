@@ -1,0 +1,51 @@
+# Quiz for 05-simulation/ngspice. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'Which integration rule does ngspice use unless the netlist says otherwise?'
+    options:
+      - 'Backward Euler'
+      - 'The trapezoidal rule'
+      - 'Forward Euler'
+      - 'Gear''s method'
+    answer: 1
+    explain: 'The manual gives the trapezoidal rule as the default of .options method; Gear''s method has to be asked for.'
+  - q: 'A mode with a time constant of 1 ns is stepped by 20 ns with the trapezoidal rule. What does each step multiply it by?'
+    options:
+      - 'About 0.05'
+      - 'About 1'
+      - 'About -19'
+      - 'About -0.82'
+    answer: 3
+    explain: 'Half the step over the time constant is 10, and the factor is (1 - 10)/(1 + 10), or -9/11: the mode keeps most of its size and changes sign.'
+  - q: 'What does that factor look like in the simulated waveform?'
+    options:
+      - 'A ring that flips its sign at every time point'
+      - 'A slow exponential decay'
+      - 'A single step'
+      - 'Nothing: the mode is too fast to show'
+    answer: 0
+    explain: 'A factor near -1 leaves the mode almost undamped and flips it at every point: a ringing of the integration rule, not of the circuit.'
+  - q: 'The same mode is stepped by 20 ns with backward Euler, the first of the backward differentiation formulas that Gear''s method uses. What happens to it?'
+    options:
+      - 'It rings at every time point'
+      - 'It grows'
+      - 'It is almost gone after a step or two'
+      - 'It stays undamped'
+    answer: 2
+    explain: 'The factor is 1/(1 + 20), about 0.05: after two steps less than a four-hundredth of the mode is left.'
+  - q: 'Why can a Gear simulation misrepresent a lightly damped L-C ring?'
+    options:
+      - 'It makes the ring grow'
+      - 'It doubles the ring''s frequency'
+      - 'It cannot simulate inductors'
+      - 'It damps an oscillation its steps do not resolve finely, so the ring decays faster than in the circuit'
+    answer: 3
+    explain: 'For an undamped oscillation, backward Euler''s factor is below one in size and the trapezoidal rule''s is exactly one; short steps make the difference small.'
+  - q: 'What did the library''s DCM flyback show at ngspice''s default settings?'
+    options:
+      - 'The secondary current ringing through zero from step to step after the diode stopped conducting, and the drain far below zero'
+      - 'A correct waveform'
+      - 'A higher output voltage than expected'
+      - 'No result at all'
+    answer: 0
+    explain: 'The trapezoidal rule rang on the fast mode left when the diode turned off; Gear''s method with a relative tolerance of 1e-4 removed it.'

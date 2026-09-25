@@ -1,0 +1,51 @@
+# Quiz for 05-simulation/python. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'Where does an equation shown on this site come from?'
+    options:
+      - 'LaTeX typed into each page'
+      - 'One entry in equations.yaml: a SymPy expression with its symbols, tests and citation'
+      - 'The TypeScript engine'
+      - 'The quiz files'
+    answer: 1
+    explain: 'The generator writes the LaTeX and the test vectors from that entry, and CI fails if the committed files differ from what it writes.'
+  - q: 'Why are the TypeScript evaluators written by hand instead of generated from equations.yaml?'
+    options:
+      - 'So that a mistake in one is not copied into the other: two independent implementations must agree'
+      - 'Because TypeScript cannot read YAML'
+      - 'To make the pages load faster'
+      - 'Because SymPy cannot evaluate numbers'
+    answer: 0
+    explain: 'Generated code would agree with its source even where the source is wrong; an independent implementation has to agree with the vectors on its own.'
+  - q: 'A simulated conversion ratio of 0.495 is compared with the ideal 0.5. What is the relative difference?'
+    options:
+      - '0.5 %'
+      - '0.005 %'
+      - '10 %'
+      - '1 %'
+    answer: 3
+    explain: 'The difference, 0.005, over the reference, 0.5, is 0.01: one percent.'
+  - q: 'The unit roundoff of binary64 is about 1.1e-16. Why is the parity tolerance one part in a billion and not the unit roundoff?'
+    options:
+      - 'Because JavaScript has less precision than Python'
+      - 'Two correct evaluations round differently at each operation and may differ by several units of roundoff; a billionth leaves room for that and still catches a real mistake'
+      - 'Because the equations are only known to a billionth'
+      - 'Because YAML cannot hold smaller numbers'
+    answer: 1
+    explain: 'A billionth is millions of times the unit roundoff, so rounding passes in an evaluation that does not magnify it, while a wrong constant or factor is far larger.'
+  - q: 'Why does the relative difference fail near a zero reference?'
+    options:
+      - 'Dividing by a reference near zero makes a tiny absolute difference look huge'
+      - 'Because zero has no unit'
+      - 'Because it is always zero there'
+      - 'It does not fail'
+    answer: 0
+    explain: 'Compare against a scale there, such as the quantity''s largest value over the period, as the library''s checks do.'
+  - q: 'In Python, 0.1 + 0.1 + 0.1 == 0.3 evaluates to:'
+    options:
+      - 'True'
+      - 'An error'
+      - 'False: the sum rounds to a different double than 0.3'
+      - 'True on some machines only'
+    answer: 2
+    explain: '0.1 is not exact in binary, and the rounded sum of three of them, 0.30000000000000004, is the double next to 0.3; compare within a tolerance.'

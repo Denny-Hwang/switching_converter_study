@@ -647,11 +647,11 @@ resources:
     type: app-note
     title: "Understanding Oscilloscope Frequency Response and Its Effect on Rise-Time Accuracy (5988-8008)"
     author: "Keysight Technologies"
-    url: https://www.keysight.com/us/en/assets/7018-01129/application-notes/5988-8008.pdf
+    url: https://helpfiles.keysight.com/sp/PD1000A/Content/PD1500A%20DPT%20Tests/5988-8008en.pdf
     tags: [probes, measurement, bench]
     level: intermediate
     language: en
-    retrieved: 2026-09-24
+    retrieved: 2026-09-25
     why: "Why the rise time an oscilloscope shows depends on the shape of its frequency response, not on its bandwidth alone."
     why_ko: "오실로스코프가 보여 주는 상승 시간이 대역폭뿐 아니라 주파수 응답의 모양에 따라 달라지는 이유."
     title_match: "Oscilloscope Frequency Response"
@@ -1048,6 +1048,46 @@ resources:
     why_ko: "오픈 소스 SPICE 시뮬레이터. 이 사이트의 시뮬레이터를 CI에서 이것과 교차 검증."
     title_match: "Ngspice"
     cite: ngspice
+
+  - id: ngspice-manual
+    type: tool
+    title: "Ngspice User's Manual"
+    author: "the ngspice team"
+    url: https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml
+    tags: [simulation, spice, ngspice]
+    level: intermediate
+    language: en
+    retrieved: 2026-09-25
+    why: "The reference for every netlist line: the .tran and .meas statements, and the .options that set the integration method and the tolerances."
+    why_ko: "넷리스트의 모든 줄에 대한 참고 문서. .tran과 .meas 문, 그리고 적분법과 허용오차를 정하는 .options."
+    title_match: "Ngspice User's Manual"
+    cite: ngspice_manual
+
+  - id: sympy-solving
+    type: tool
+    title: "SymPy: Solve Equations"
+    author: "the SymPy development team"
+    url: https://docs.sympy.org/latest/guides/solving/index.html
+    tags: [python, sympy, derivations]
+    level: intro
+    language: en
+    retrieved: 2026-09-25
+    why: "How SymPy solves an equation or a system for a symbol, as the site's derivation scripts solve the balance equations."
+    why_ko: "SymPy로 방정식이나 연립방정식을 기호에 대해 푸는 방법. 이 사이트의 유도 스크립트가 평형 방정식을 푸는 방식."
+    title_match: "Solve Equations"
+
+  - id: python-floatingpoint
+    type: article
+    title: "Floating-Point Arithmetic: Issues and Limitations"
+    author: "the Python documentation (the tutorial)"
+    url: https://docs.python.org/3/tutorial/floatingpoint.html
+    tags: [python, numerics]
+    level: intro
+    language: en
+    retrieved: 2026-09-25
+    why: "Why 0.1 + 0.1 + 0.1 is not 0.3 in a computer, why each operation can add a rounding error of up to one part in 2**53, and why results are compared within a tolerance, not for equality."
+    why_ko: "컴퓨터에서 0.1 + 0.1 + 0.1이 0.3이 아닌 이유, 연산마다 최대 2**53분의 1의 반올림 오차가 더해질 수 있는 이유, 그리고 결과를 같은지가 아니라 허용오차 안에 드는지로 비교하는 이유."
+    title_match: "Floating-Point Arithmetic: Issues and Limitations"
 
   - id: falstad-circuitjs
     type: tool

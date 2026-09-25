@@ -1,0 +1,51 @@
+# Quiz for 05-simulation/in-browser-simulator. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'Why can the simulator step each switching interval exactly?'
+    options:
+      - 'Because it uses very small steps'
+      - 'Because it runs SPICE in the browser'
+      - 'Within an interval the circuit is linear with constant sources, so its solution is an exponential it can compute'
+      - 'Because converters have no capacitors'
+    answer: 2
+    explain: 'Every switch and diode is on or off within the interval; the exponential of the circuit''s matrix gives the exact solution over any step.'
+  - q: 'A capacitor charges from 0 V towards 10 V with a time constant of 10 ns. Where is it after an exact step of 10 ns?'
+    options:
+      - 'About 6.3 V'
+      - 'About 3.7 V'
+      - '10 V'
+      - '5 V'
+    answer: 0
+    explain: 'The deviation from 10 V shrinks by e in one time constant: 10 V times (1 - 1/e) is about 6.3 V.'
+  - q: 'Forward Euler steps a mode with a time constant of 10 ns by 50 ns. What does each step multiply its deviation by?'
+    options:
+      - 'About 0.007'
+      - '1'
+      - '-4'
+      - '-1'
+    answer: 2
+    explain: 'One minus the step over the time constant is 1 - 5: the deviation grows four times over and changes sign in every step.'
+  - q: 'Up to what step does forward Euler keep a mode that decays without ringing from growing?'
+    options:
+      - 'Half the time constant'
+      - 'The time constant'
+      - 'Any step'
+      - 'Twice the time constant'
+    answer: 3
+    explain: 'The factor, one minus the step over the time constant, stays within one in size only for steps up to twice the time constant; a ringing mode needs a shorter step still.'
+  - q: 'How does the simulator find the periodic steady state?'
+    options:
+      - 'It solves for the state at the start of a period that the period maps back onto itself, with Newton''s method'
+      - 'It simulates from rest until nothing changes'
+      - 'It uses the averaged model'
+      - 'It reads it from ngspice'
+    answer: 0
+    explain: 'The steady state is a fixed point of the map from one period''s start to the next; Newton''s method finds it with the map''s derivative.'
+  - q: 'For a buck whose current stays above zero, with no capacitance across its switch, how many Newton steps does that take in principle?'
+    options:
+      - 'Hundreds'
+      - 'One, because the period map is then affine: a matrix times the state, plus a constant'
+      - 'As many as the envelope time constants'
+      - 'None'
+    answer: 1
+    explain: 'Neither the switching instants nor the order of the intervals depends on the state, and Newton''s method solves an affine equation in one step if its solution is unique. A diode current reaching zero, or a capacitance across the switch that has to swing first, makes an instant depend on the state, and then it takes a few steps.'

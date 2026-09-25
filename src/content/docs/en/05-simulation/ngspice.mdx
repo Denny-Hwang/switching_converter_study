@@ -1,0 +1,136 @@
+---
+title: Running the netlists in ngspice
+description: How the SPICE library's netlists run in ngspice, what their directives do, and why the integration method decides whether a switching waveform rings from one time point to the next.
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Intent
+
+- Run a library netlist in batch mode and read its measurements.
+- See what an integration rule does to a mode much faster than its time step, and why the trapezoidal rule can ring where the circuit does not.
+- Choose the options that make a switching waveform trustworthy.
+
+## Theory
+
+### Running a netlist
+
+The repository's `sim/ngspice/` folder has each converter case as a netlist
+for ngspice <Cite key="ngspice" />. Run `ngspice -b buck-ccm.cir` and it
+prints the `.meas` results of the last period: averages, largest and smallest
+values of the switch node's voltage, the inductor current (the flyback's
+primary current) and the output voltage. Run `ngspice buck-ccm.cir`, then
+`run`, to plot what the folder's README lists. CI runs every netlist again
+and requires each value within one percent of the ideal equations, measured
+against the quantity's largest magnitude over the period, and the output
+settled.
+
+### How SPICE steps a circuit
+
+SPICE computes the circuit at a sequence of time points. It chooses each step
+so that the error it estimates for its integration rule stays within its
+tolerances, and the relative tolerance is 0.001 unless the netlist sets
+another <Cite key="ngspice_manual" />. Between two points, every capacitor and
+inductor follows the rule that `.options method` selects: trapezoidal unless
+told otherwise, or Gear's method, which uses the backward differentiation
+formulas, by default up to the second <Cite key="ngspice_manual" />.
+
+### What the rule does to a fast mode
+
+A converter's circuit can have modes far faster than the time step, for
+example where a diode stops conducting. A one-step rule, such as the
+trapezoidal rule or backward Euler, multiplies such a mode's deviation by a
+fixed factor per step. The trapezoidal rule averages the slopes at both ends
+of the step:
+
+<Eq id="num.gain_tr" />
+
+Its factor stays within one in size for any step, so the solution does not
+blow up, but for a step much longer than the mode's time constant it
+approaches minus one: the mode barely decays and flips its sign at every time
+point, a ringing that the circuit does not have <Cite key="hairer1996" />.
+The first of the backward differentiation formulas that Gear's method uses
+is backward Euler, which takes the slope at the end of the step:
+
+<Eq id="num.gain_be" />
+
+Its factor tends to zero instead, so such a mode is almost gone after a
+single step <Cite key="hairer1996" />, and the second formula, too, damps it
+away within a few steps <Cite key="hairer1996" where="Ch. V" />.
+
+### What the library found
+
+With ngspice's defaults, the trapezoidal rule and a relative tolerance of
+0.001, the library's DCM flyback shows exactly this: once the diode stops
+conducting, the secondary current rings through zero from one step to the
+next, and the drain voltage swings to about a kilovolt below zero. Gear's
+method at the same tolerance removes the ringing, but the diode's current
+still overshoots through zero as its conduction ends, and the drain dips tens
+of volts below zero for that instant. With `.options method=gear reltol=1e-4`,
+the line every netlist and schematic in the library carries, both are gone.
+
+## Worked example
+
+A mode with a time constant of one nanosecond, stepped by twenty:
+
+<Worked example="num-stiff" />
+
+The trapezoidal rule multiplies the mode by
+<Val example="num-stiff" name="g_TR" /> in every step: after ten steps about
+a seventh of it is left, with its sign flipping at every point. Backward
+Euler multiplies it by <Val example="num-stiff" name="g_BE" />: after two
+steps less than a four-hundredth of it is left.
+
+## Try it
+
+<TryIt eq="num.gain_tr" example="num-stiff" sweep="Delta_t" />
+
+Sweep the step: the factor falls through zero at twice the time constant and
+approaches minus one beyond it.
+
+<TryIt eq="num.gain_be" example="num-stiff" sweep="Delta_t" />
+
+Backward Euler's factor falls towards zero instead.
+
+## Bench exercise
+
+Capture a DCM converter's switch node on the bench as the diode stops
+conducting. The ring there is real: the inductance rings with the capacitance
+at the switch node, at a frequency those parts set. Simulate the same circuit
+twice: with the trapezoidal rule and a long maximum step, and with Gear's
+method and a maximum step short enough to resolve the real ring, a small
+fraction of its period. A ring that alternates at every time point, and moves
+when you change the maximum step, is numerical; one that keeps its frequency
+is the circuit's, and it should match the bench, apart from the losses the
+bench adds.
+
+## Gotchas
+
+- **A ring that flips sign at every time point** belongs to the integration
+  rule, not to the circuit (<EqRef id="num.gain_tr" label="the trapezoidal rule's factor" />).
+- **Gear's method also damps real rings it does not resolve.** For an
+  undamped oscillation, backward Euler's factor is below one in size and the
+  trapezoidal rule's is exactly one <Cite key="hairer1996" />: a lightly
+  damped L-C ring decays faster in a Gear simulation than in the circuit
+  unless the step is short compared with its period.
+- **A tighter tolerance is not free.** It shortens the steps and lengthens the
+  run. The library chose it for the DCM flyback's diode turn-off and applies it
+  to every case alike.
+
+## Go deeper
+
+<GoDeeper ids={['ngspice-tool', 'ngspice-manual']} />
+
+## Quiz
+
+<Quiz id="05-simulation/ngspice" />

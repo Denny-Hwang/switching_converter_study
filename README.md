@@ -96,6 +96,7 @@ flowchart LR
 | 02 Theory | switching principle, volt-second and charge balance, CCM and DCM, the K parameter, averaged models, small-signal models, the RHP zero, control basics, derivations |
 | 03 Topologies | buck, boost, buck-boost, flyback, forward, comparison |
 | 04 Magnetics | inductor design procedure, winding loss, leakage inductance, snubbers and clamps, measuring magnetics |
+| 05 Simulation | the SPICE library in LTspice and ngspice (directives, how long to run, integration settings), verifying with Python, how the in-browser simulator works |
 | 06 Bench | PCB layout, gate drive, current sensing, probes and measurement bandwidth, thermal design, protection, low temperature |
 | 07 Harvesting | source models, matching, the DCM flyback as a loss-free resistor, SECE, SSHI and MPPT, a design case |
 | 08 Gotchas | thirteen bench and design mistakes, each from its symptom to its fix |
@@ -154,7 +155,7 @@ node scripts/seq_check.mjs             # the operating-mode drawing's real text 
 | 2 | Core content: foundations, physics, theory, topologies (EN + KO) | done |
 | 3 | Time-domain simulator and design tools: simulator, converter designer, magnetics designer, loss budget, clamp check, source matcher, sense chain | done |
 | 4 | Magnetics, bench, harvesting, gotchas, resources | done |
-| 5 | LTspice/ngspice library and missions (done); CircuitJS circuits, simulation pages, v0.1.0 | in progress |
+| 5 | LTspice/ngspice library, missions and simulation pages (done); CircuitJS circuits, v0.1.0 | in progress |
 
 ### Contributing and licences
 
@@ -237,6 +238,7 @@ flowchart LR
 | 02 이론 | 스위칭 원리, 전압-초 평형과 전하 평형, CCM과 DCM, K 파라미터, 평균 모델, 소신호 모델, 우반평면(RHP) 영점, 제어 기초, 유도 과정 |
 | 03 토폴로지 | 벅, 부스트, 벅-부스트, 플라이백, 포워드, 비교 |
 | 04 자성 부품 | 인덕터 설계 절차, 권선 손실, 누설 인덕턴스, 스너버와 클램프, 자성 부품 측정 |
+| 05 시뮬레이션 | LTspice·ngspice로 보는 SPICE 라이브러리(지시문, 실행 길이, 적분 설정), Python으로 검증하기, 브라우저 시뮬레이터의 동작 원리 |
 | 06 벤치 | PCB 레이아웃, 게이트 구동, 전류 센싱, 프로브와 측정 대역폭, 열 설계, 보호 회로, 저온 |
 | 07 하베스팅 | 전원 모델, 정합, 무손실 저항으로 동작하는 DCM 플라이백, SECE·SSHI·MPPT, 설계 사례 |
 | 08 주의할 점 | 벤치와 설계에서 흔한 열세 가지 실수, 각각 증상부터 해결까지 |
@@ -295,7 +297,7 @@ node scripts/seq_check.mjs             # 동작 모드 회로도의 실제 글�
 | 2 | 핵심 콘텐츠: 기초, 물리, 이론, 토폴로지(영어·한국어) | 완료 |
 | 3 | 시간 영역 시뮬레이터와 설계 도구: 시뮬레이터, 컨버터 설계, 자성 부품 설계, 손실 예산, 클램프 점검, 전원 정합, 센스 체인 | 완료 |
 | 4 | 자성 부품, 벤치, 하베스팅, 주의할 점, 자료 | 완료 |
-| 5 | LTspice/ngspice 라이브러리와 미션(완료), CircuitJS 회로, 시뮬레이션 페이지, v0.1.0 | 진행 중 |
+| 5 | LTspice/ngspice 라이브러리, 미션, 시뮬레이션 페이지(완료), CircuitJS 회로, v0.1.0 | 진행 중 |
 
 ### 기여와 라이선스
 

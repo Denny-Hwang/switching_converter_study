@@ -12551,6 +12551,597 @@
         "V_b": 72.9483
       },
       "value": 72.997493226654
+    },
+    {
+      "id": "sim.exact_step",
+      "source": "yaml",
+      "inputs": {
+        "Delta_t": 5e-08,
+        "tau": 1e-08,
+        "v_0": 0.0,
+        "v_inf": 10.0
+      },
+      "value": 9.932620530009146
+    },
+    {
+      "id": "sim.exact_step",
+      "source": "yaml",
+      "inputs": {
+        "Delta_t": 1e-06,
+        "tau": 1e-06,
+        "v_0": 12.0,
+        "v_inf": 5.0
+      },
+      "value": 7.575156088200096
+    },
+    {
+      "id": "sim.exact_step",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 4.32131e-05,
+        "tau": 0.000100032,
+        "v_0": 35.7576,
+        "v_inf": 3.74894
+      },
+      "value": 24.52941260907542
+    },
+    {
+      "id": "sim.exact_step",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 8.66299e-05,
+        "tau": 1.08711e-08,
+        "v_0": 8.61931,
+        "v_inf": -75.3342
+      },
+      "value": -75.3342
+    },
+    {
+      "id": "sim.exact_step",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 4.34816e-05,
+        "tau": 1.47554e-05,
+        "v_0": 75.0573,
+        "v_inf": -4.89827
+      },
+      "value": -0.7001161936485565
+    },
+    {
+      "id": "sim.exact_step",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 2.50818e-06,
+        "tau": 4.84444e-06,
+        "v_0": -22.0223,
+        "v_inf": -18.899
+      },
+      "value": -20.7600597474901
+    },
+    {
+      "id": "sim.exact_step",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 1.3073e-08,
+        "tau": 2.22864e-10,
+        "v_0": -25.8377,
+        "v_inf": -48.6398
+      },
+      "value": -48.6398
+    },
+    {
+      "id": "sim.exact_step",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 0.000204412,
+        "tau": 0.000103232,
+        "v_0": -94.238,
+        "v_inf": -27.4302
+      },
+      "value": -36.65317263803709
+    },
+    {
+      "id": "num.gain_fe",
+      "source": "yaml",
+      "inputs": {
+        "Delta_t": 5e-08,
+        "tau": 1e-08
+      },
+      "value": -3.9999999999999996
+    },
+    {
+      "id": "num.gain_fe",
+      "source": "yaml",
+      "inputs": {
+        "Delta_t": 1e-09,
+        "tau": 1e-08
+      },
+      "value": 0.9
+    },
+    {
+      "id": "num.gain_fe",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 2.08165e-05,
+        "tau": 0.00039314
+      },
+      "value": 0.9470506689728849
+    },
+    {
+      "id": "num.gain_fe",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 6.58074e-10,
+        "tau": 0.000632656
+      },
+      "value": 0.999998959823348
+    },
+    {
+      "id": "num.gain_fe",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 3.6544e-05,
+        "tau": 0.000946499
+      },
+      "value": 0.9613903448392445
+    },
+    {
+      "id": "num.gain_fe",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 3.15413e-08,
+        "tau": 3.05627e-05
+      },
+      "value": 0.9989679805776323
+    },
+    {
+      "id": "num.gain_fe",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 1.32838e-08,
+        "tau": 3.20455e-05
+      },
+      "value": 0.9995854706589069
+    },
+    {
+      "id": "num.gain_fe",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 3.61612e-08,
+        "tau": 8.49176e-05
+      },
+      "value": 0.9995741613046059
+    },
+    {
+      "id": "num.gain_tr",
+      "source": "yaml",
+      "inputs": {
+        "Delta_t": 2e-08,
+        "tau": 1e-09
+      },
+      "value": -0.8181818181818181
+    },
+    {
+      "id": "num.gain_tr",
+      "source": "yaml",
+      "inputs": {
+        "Delta_t": 1e-09,
+        "tau": 1e-09
+      },
+      "value": 0.3333333333333333
+    },
+    {
+      "id": "num.gain_tr",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 2.83604e-08,
+        "tau": 3.49238e-07
+      },
+      "value": 0.9219620811505863
+    },
+    {
+      "id": "num.gain_tr",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 3.08609e-10,
+        "tau": 1.61189e-08
+      },
+      "value": 0.9810357572781685
+    },
+    {
+      "id": "num.gain_tr",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 6.33084e-07,
+        "tau": 1.09368e-10
+      },
+      "value": -0.9993092213642355
+    },
+    {
+      "id": "num.gain_tr",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 1.26777e-10,
+        "tau": 3.33684e-05
+      },
+      "value": 0.9999962006940948
+    },
+    {
+      "id": "num.gain_tr",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 1.75122e-09,
+        "tau": 3.31154e-05
+      },
+      "value": 0.9999471190534641
+    },
+    {
+      "id": "num.gain_tr",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 2.29569e-05,
+        "tau": 7.57202e-06
+      },
+      "value": -0.20505688311102035
+    },
+    {
+      "id": "num.gain_be",
+      "source": "yaml",
+      "inputs": {
+        "Delta_t": 2e-08,
+        "tau": 1e-09
+      },
+      "value": 0.04761904761904762
+    },
+    {
+      "id": "num.gain_be",
+      "source": "yaml",
+      "inputs": {
+        "Delta_t": 1e-09,
+        "tau": 1e-09
+      },
+      "value": 0.5
+    },
+    {
+      "id": "num.gain_be",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 1.24908e-09,
+        "tau": 2.89491e-05
+      },
+      "value": 0.9999568544062613
+    },
+    {
+      "id": "num.gain_be",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 7.56118e-06,
+        "tau": 1.99229e-06
+      },
+      "value": 0.20854098039769844
+    },
+    {
+      "id": "num.gain_be",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 1.05805e-08,
+        "tau": 6.35086e-09
+      },
+      "value": 0.37509449920148175
+    },
+    {
+      "id": "num.gain_be",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 1.78955e-05,
+        "tau": 1.15523e-07
+      },
+      "value": 0.0064140165719626255
+    },
+    {
+      "id": "num.gain_be",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 1.36146e-06,
+        "tau": 1.71824e-10
+      },
+      "value": 0.00012618976508292892
+    },
+    {
+      "id": "num.gain_be",
+      "source": "random",
+      "inputs": {
+        "Delta_t": 7.25291e-06,
+        "tau": 0.000878788
+      },
+      "value": 0.9918142492991661
+    },
+    {
+      "id": "filter.tau_env",
+      "source": "yaml",
+      "inputs": {
+        "C": 1e-05,
+        "R": 10.0
+      },
+      "value": 0.0002
+    },
+    {
+      "id": "filter.tau_env",
+      "source": "random",
+      "inputs": {
+        "C": 0.000178486,
+        "R": 427.891
+      },
+      "value": 0.152745106052
+    },
+    {
+      "id": "filter.tau_env",
+      "source": "random",
+      "inputs": {
+        "C": 0.00626394,
+        "R": 31.2278
+      },
+      "value": 0.391218131064
+    },
+    {
+      "id": "filter.tau_env",
+      "source": "random",
+      "inputs": {
+        "C": 1.21163e-07,
+        "R": 597.185
+      },
+      "value": 0.00014471345231
+    },
+    {
+      "id": "filter.tau_env",
+      "source": "random",
+      "inputs": {
+        "C": 0.000235317,
+        "R": 6.81068
+      },
+      "value": 0.0032053375711199998
+    },
+    {
+      "id": "filter.tau_env",
+      "source": "random",
+      "inputs": {
+        "C": 2.51854e-05,
+        "R": 0.196561
+      },
+      "value": 9.9009348188e-06
+    },
+    {
+      "id": "filter.tau_env",
+      "source": "random",
+      "inputs": {
+        "C": 1.49955e-07,
+        "R": 9.39728
+      },
+      "value": 2.8183382448e-06
+    },
+    {
+      "id": "sim.periods_settle",
+      "source": "yaml",
+      "inputs": {
+        "T_s": 1e-05,
+        "eps_r": 1e-06,
+        "tau_env": 0.0002
+      },
+      "value": 276.3102111592855
+    },
+    {
+      "id": "sim.periods_settle",
+      "source": "yaml",
+      "inputs": {
+        "T_s": 2.5e-05,
+        "eps_r": 0.001,
+        "tau_env": 0.0001
+      },
+      "value": 27.631021115928547
+    },
+    {
+      "id": "sim.periods_settle",
+      "source": "random",
+      "inputs": {
+        "T_s": 6.73856e-06,
+        "eps_r": 6.53409e-06,
+        "tau_env": 0.0230581
+      },
+      "value": 40851.251212260526
+    },
+    {
+      "id": "sim.periods_settle",
+      "source": "random",
+      "inputs": {
+        "T_s": 0.000724989,
+        "eps_r": 1.35882e-07,
+        "tau_env": 0.000639654
+      },
+      "value": 13.950385139920817
+    },
+    {
+      "id": "sim.periods_settle",
+      "source": "random",
+      "inputs": {
+        "T_s": 8.08678e-05,
+        "eps_r": 5.62911e-09,
+        "tau_env": 0.086354
+      },
+      "value": 20283.986795520308
+    },
+    {
+      "id": "sim.periods_settle",
+      "source": "random",
+      "inputs": {
+        "T_s": 3.95818e-06,
+        "eps_r": 2.89947e-05,
+        "tau_env": 1.08747e-06
+      },
+      "value": 2.87059174492181
+    },
+    {
+      "id": "sim.periods_settle",
+      "source": "random",
+      "inputs": {
+        "T_s": 1.97365e-05,
+        "eps_r": 3.32243e-08,
+        "tau_env": 1.67946e-06
+      },
+      "value": 1.465319323802462
+    },
+    {
+      "id": "sim.periods_settle",
+      "source": "random",
+      "inputs": {
+        "T_s": 0.000106496,
+        "eps_r": 0.00926022,
+        "tau_env": 1.21056e-05
+      },
+      "value": 0.5322148416013721
+    },
+    {
+      "id": "num.rel_diff",
+      "source": "yaml",
+      "inputs": {
+        "x_ref": 0.5,
+        "x_val": 0.4975
+      },
+      "value": 0.0050000000000000044
+    },
+    {
+      "id": "num.rel_diff",
+      "source": "yaml",
+      "inputs": {
+        "x_ref": 2.0,
+        "x_val": -3.0
+      },
+      "value": 2.5
+    },
+    {
+      "id": "num.rel_diff",
+      "source": "random",
+      "inputs": {
+        "x_ref": 0.0146265,
+        "x_val": -858.164
+      },
+      "value": 58672.86271493522
+    },
+    {
+      "id": "num.rel_diff",
+      "source": "random",
+      "inputs": {
+        "x_ref": 64.3767,
+        "x_val": 324.381
+      },
+      "value": 4.038795092013103
+    },
+    {
+      "id": "num.rel_diff",
+      "source": "random",
+      "inputs": {
+        "x_ref": 16.6797,
+        "x_val": -976.891
+      },
+      "value": 59.56766008980976
+    },
+    {
+      "id": "num.rel_diff",
+      "source": "random",
+      "inputs": {
+        "x_ref": 0.0263878,
+        "x_val": -403.958
+      },
+      "value": 15309.513782884516
+    },
+    {
+      "id": "num.rel_diff",
+      "source": "random",
+      "inputs": {
+        "x_ref": 116.584,
+        "x_val": 138.272
+      },
+      "value": 0.18602895766142857
+    },
+    {
+      "id": "num.rel_diff",
+      "source": "random",
+      "inputs": {
+        "x_ref": 0.142709,
+        "x_val": -524.89
+      },
+      "value": 3679.0441317646396
+    },
+    {
+      "id": "num.unit_roundoff",
+      "source": "yaml",
+      "inputs": {
+        "beta_b": 2.0,
+        "p_prec": 53.0
+      },
+      "value": 1.1102230246251565e-16
+    },
+    {
+      "id": "num.unit_roundoff",
+      "source": "yaml",
+      "inputs": {
+        "beta_b": 10.0,
+        "p_prec": 16.0
+      },
+      "value": 5e-16
+    },
+    {
+      "id": "num.unit_roundoff",
+      "source": "random",
+      "inputs": {
+        "beta_b": 12.5341,
+        "p_prec": 96.6494
+      },
+      "value": 4.645351245585673e-106
+    },
+    {
+      "id": "num.unit_roundoff",
+      "source": "random",
+      "inputs": {
+        "beta_b": 12.9246,
+        "p_prec": 110.961
+      },
+      "value": 3.0650181428186976e-123
+    },
+    {
+      "id": "num.unit_roundoff",
+      "source": "random",
+      "inputs": {
+        "beta_b": 8.18588,
+        "p_prec": 30.8374
+      },
+      "value": 2.8541265018920358e-28
+    },
+    {
+      "id": "num.unit_roundoff",
+      "source": "random",
+      "inputs": {
+        "beta_b": 14.9893,
+        "p_prec": 103.95
+      },
+      "value": 4.490346333271286e-122
+    },
+    {
+      "id": "num.unit_roundoff",
+      "source": "random",
+      "inputs": {
+        "beta_b": 3.8395,
+        "p_prec": 61.7922
+      },
+      "value": 1.512262885711398e-36
+    },
+    {
+      "id": "num.unit_roundoff",
+      "source": "random",
+      "inputs": {
+        "beta_b": 15.3139,
+        "p_prec": 106.822
+      },
+      "value": 1.953528516914603e-126
     }
   ]
 }
