@@ -109,6 +109,11 @@ export const ui = {
     'sim.nodeNeedsRon': 'A node capacitance needs a positive R_on (the switch discharges it).',
     'sim.ringsTooFast': 'This circuit rings too fast to simulate: its fastest ring would span fewer than three of the 20000 sub-steps per switching period. Use a larger inductance or capacitance, or a higher switching frequency.',
     'sim.share': 'The URL holds the whole state: copy it to share this simulation.',
+    'sim.falstadOpen': 'Open these values in CircuitJS1',
+    'sim.falstadHint':
+      "The same converter as a CircuitJS1 circuit on falstad.com, built from the values above: near-ideal diodes, a body diode across the switch, the switch's R_on (1 mΩ when its field is empty), starting from this steady state at about one switching period a second.",
+    'sim.falstadLeftOut': 'CircuitJS1\'s circuit leaves out {list}.',
+    'sim.falstadNeeds': 'A CircuitJS1 circuit is made for a resistive load without a source.',
     'sim.time': 'Time',
     'sim.running': 'Simulating…',
     'sim.slider': 'slider',
@@ -563,6 +568,11 @@ export const ui = {
     'sim.nodeNeedsRon': '노드 커패시턴스를 쓰려면 R_on이 양수여야 합니다 (스위치가 이를 방전시킵니다).',
     'sim.ringsTooFast': '이 회로는 너무 빠르게 링잉해 시뮬레이션할 수 없습니다. 가장 빠른 링잉의 한 주기가 스위칭 주기당 하위 스텝 20000개 가운데 3개에도 못 미칩니다. 인덕턴스나 커패시턴스를 키우거나 스위칭 주파수를 높이십시오.',
     'sim.share': 'URL에 전체 상태가 담겨 있으므로 복사하면 이 시뮬레이션을 그대로 공유할 수 있습니다.',
+    'sim.falstadOpen': '이 값으로 CircuitJS1에서 열기',
+    'sim.falstadHint':
+      '위의 값으로 만든 같은 컨버터를 falstad.com의 CircuitJS1 회로로 엽니다. 다이오드는 이상에 가깝고, 스위치에는 바디 다이오드와 R_on(칸이 비어 있으면 1 mΩ)이 있으며, 이 정상상태에서 시작해 1초에 스위칭 주기 하나 정도의 속도로 움직입니다.',
+    'sim.falstadLeftOut': 'CircuitJS1 회로에는 {list}이 빠져 있습니다.',
+    'sim.falstadNeeds': 'CircuitJS1 회로는 전원 없이 저항 부하일 때 만듭니다.',
     'sim.time': '시간',
     'sim.running': '시뮬레이션 중…',
     'sim.slider': '슬라이더',

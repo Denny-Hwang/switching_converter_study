@@ -621,6 +621,16 @@ check measures over its last two periods (`scripts/falstad_check.mjs`).
 | Flyback, DCM | [flyback-dcm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/flyback/flyback-dcm.asc) | [flyback-dcm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/flyback/flyback-dcm.cir) | <FalstadLink id="flyback-dcm" /> |
 | Forward | [forward-ccm.asc](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ltspice/forward/forward-ccm.asc) | [forward-ccm.cir](https://github.com/Denny-Hwang/switching_converter_study/blob/main/sim/ngspice/forward/forward-ccm.cir) | <FalstadLink id="forward-ccm" /> |
 
+For any other values, with a resistive load and no source, the link under
+the charts, **Open these values in CircuitJS1**, builds the same circuit from
+the form: the library's drawing and parts, the switch's $R_{on}$ from its
+field, starting at the simulated steady state where the switch turns on
+(`src/lib/falstadgen.ts`). For the library's seven cases the generator writes
+the library's files character for character (`falstadgen.test.ts`), so the
+wiring check against the netlists holds for it too. CircuitJS1 leaves out a
+winding resistance, a diode drop and a node capacitance; the link says so
+when one is set.
+
 ## Worked example: a flyback that pins its source
 
 A flyback with a fixed duty ratio charges a fixed output from a

@@ -2,8 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { sim } from 'pe-core';
 import { ui } from '../i18n/ui';
 import { fmtValue } from '../lib/format';
-import { compareRows, fillShown, fromSlider, hashOf, loadRows, nextAnchor, noSteadyText, outsideModelText, parseField, sliderAnchors, stateFromHash, toParams, type SimLabels, type SimPreset } from './Simulator';
-import { PRESETS, presetValues } from '../lib/simpresets';
+import { compareRows, falstadFor, fillShown, fromSlider, hashOf, loadRows, nextAnchor, noSteadyText, outsideModelText, parseField, sliderAnchors, stateFromHash, toParams, type SimLabels, type SimPreset } from './Simulator';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { PRESETS, presetValues, simulatorHash } from '../lib/simpresets';
+import { falstadCases } from '../lib/falstad';
 
 const buck = { topo: 'buck' as const, load: 'res' as const, source: false };
 const values = { Vg: '24', D: '0.5', fs: '100000', L: '0.0001', R: '10', C: '0.00001' };
@@ -348,5 +351,53 @@ describe('the load table', () => {
     const cap = loadRows(sim.simulate({ topology: 'buck', Vg: 24, D: 0.5, fs, L: 1e-4, load: { kind: 'network', C: 1e-5, V0: 0 } }));
     expect(cap.map((x) => x.label)).toEqual(['vout']);
     expect(cap[0]!.value).toBeCloseTo(24, 5);
+  });
+});
+
+describe('the form in CircuitJS1 (falstadFor)', () => {
+  const presets: SimPreset[] = PRESETS.map((p) => ({ id: p.id, label: p.en, topology: p.topology, values: presetValues(p.example, p.topology) }));
+  const run = (example: string, topology: sim.Topology, extra: Record<string, string> = {}, fs?: { load?: 'res' | 'batr'; source?: boolean }) => {
+    const st = stateFromHash(new URLSearchParams(simulatorHash(example, topology)), presets);
+    const form = { ...st.fs, ...(fs ?? {}) };
+    const values = { ...st.values, ...fillShown(form, st.values, presets), ...extra };
+    const p = toParams(form, values);
+    if ('error' in p) throw new Error(example);
+    return sim.simulate(p);
+  };
+
+  it.each(falstadCases.map((c) => [c.id, c] as const))('%s: the library\'s circuit, started from the simulated steady state', (_id, c) => {
+    const r = run(c.example, c.topology);
+    const f = falstadFor(r)!;
+    expect(f.leftOut).toEqual([]);
+    const want = readFileSync(resolve(__dirname, '../..', c.file), 'utf8').split('\n');
+    const got = f.text.split('\n');
+    expect(got.length).toBe(want.length);
+    got.forEach((line, j) => {
+      const a = line.split(' ');
+      const b = want[j]!.split(' ');
+      // the start: the simulated steady state at the switch's turn-on against the library's, from the ideal
+      // equations: the capacitor's voltage within its simulated ripple and 1 % (the library takes the
+      // average, the simulator the instant), the currents within 1 % of the largest inductor current
+      const start = { c: [7, 8], l: [7, 8], T: [8] }[a[0] as 'c' | 'l' | 'T'];
+      if (!start) return expect(line).toBe(want[j]);
+      const tol =
+        a[0] === 'c' ? r.max.v_out! - r.min.v_out! + 0.01 * Math.abs(Number(b[7])) : 0.01 * Math.max(r.max.i_L ?? 0, Math.abs(r.min.i_L ?? 0));
+      a.forEach((x, k) => {
+        if (start.includes(k)) expect(Math.abs(Number(x) - Number(b[k]!)), `${c.id} ${line}`).toBeLessThan(tol);
+        else expect(x).toBe(b[k]);
+      });
+    });
+    expect(f.link.startsWith('https://www.falstad.com/circuit/circuitjs.html?ctz=')).toBe(true);
+  });
+
+  it('keeps the switch\'s R_on and names the parts CircuitJS1 leaves out', () => {
+    const f = falstadFor(run('buck-basic', 'buck', { Ron: '0.05', RL: '0.1', VF: '0.7' }))!;
+    expect(f.text).toMatch(/^159 176 176 240 176 0 0\.05 1000000 2\.5$/m);
+    expect(f.leftOut).toEqual(['R_L', 'V_F']);
+  });
+
+  it('has no circuit for another load or with a source', () => {
+    expect(falstadFor(run('buck-basic', 'buck', {}, { load: 'batr' }))).toBeNull();
+    expect(falstadFor(run('buck-basic', 'buck', {}, { source: true }))).toBeNull();
   });
 });

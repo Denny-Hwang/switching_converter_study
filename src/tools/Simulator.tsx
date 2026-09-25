@@ -18,6 +18,7 @@ import SequenceView, { type SeqText } from './SequenceView';
 import ModeSheet from './ModeSheet';
 import { Choices, FieldLabel, NumInput, Rich, Sym } from './ToolUi';
 import { parseSI } from '../lib/siparse';
+import { falstadLink, falstadText, currentBar } from '../lib/falstadgen';
 
 /** The sheet of every mode starts open up to this many modes. */
 const SHEET_OPEN_MODES = 6;
@@ -99,6 +100,11 @@ export interface SimLabels {
   running: string;
   slider: string;
   plotHint: string;
+  /** The CircuitJS1 link for the form's values (lib/falstadgen.ts). */
+  falstadOpen: string;
+  falstadHint: string;
+  falstadLeftOut: string;
+  falstadNeeds: string;
   topologies: Record<Topology, string>;
 }
 
@@ -564,6 +570,41 @@ export function fillShown(fs: FieldState, values: Record<string, string>, preset
     if (from) filled[f.key] = String(from.values[f.key]);
   }
   return filled;
+}
+
+/**
+ * The simulated converter as a CircuitJS1 link (lib/falstadgen.ts), for a resistive load without a
+ * source: the form's values, the switch's R_on (the library's 1 mOhm when empty), and the start at the
+ * simulated steady state when the switch turns on (the output voltage, the inductor's current, the
+ * flyback's magnetizing current), where the ideal equations' values of the library's links are close. `leftOut` names the non-ideal parts CircuitJS1's circuit does not have.
+ * Null for another load or with a source.
+ */
+export function falstadFor(r: SimResult): { text: string; link: string; leftOut: string[] } | null {
+  const p = r.params;
+  if (p.source || p.load.kind !== 'resistive') return null;
+  const w = r.waveforms;
+  const at0 = (k: string) => (w[k] as number[] | undefined)?.[0] ?? 0;
+  const flyback = p.topology === 'flyback';
+  const text = falstadText(
+    {
+      topology: p.topology,
+      Vg: p.Vg,
+      D: p.D,
+      fs: p.fs,
+      L: p.L,
+      C: p.load.C,
+      R: p.load.R,
+      n: p.n,
+      nr: p.nr,
+      Lm: flyback ? p.L : p.LM,
+      Ron: p.Ron && p.Ron > 0 ? p.Ron : undefined,
+    },
+    // the simulator's buck-boost output is the load's voltage, taken positive; the circuit's node sits below ground
+    { vOut: (p.topology === 'buckboost' ? -1 : 1) * at0('v_out'), iL: flyback ? 0 : at0('i_L'), iM: flyback ? at0('i_L') : 0 },
+    { bar: currentBar((r.avg.v_out ?? 0) / p.load.R) },
+  );
+  const leftOut = [...((p.RL ?? 0) > 0 ? ['R_L'] : []), ...((p.VF ?? 0) > 0 ? ['V_F'] : []), ...((p.Cnode ?? 0) > 0 ? ['C_node'] : [])];
+  return { text, link: falstadLink(text), leftOut };
 }
 
 /** The URL hash of the form: every shown field, an empty one as `key=`. */
@@ -1061,6 +1102,7 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
             style={{ height: fstate.source ? 680 : 560, display: error ? 'none' : undefined }}
           />
           {result && <p className="pe-tool__hint">{labels.plotHint}</p>}
+          {result?.converged && <FalstadOpen result={result} labels={labels} />}
         </div>
       </div>
       {result?.converged && <SequenceView result={result} modes={modes} text={seqText} selected={sel} onSelect={setModeSel} theme={theme} />}
@@ -1155,5 +1197,26 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
       )}
       <p className="pe-tool__hint">{labels.share}</p>
     </div>
+  );
+}
+
+/** The link that opens the simulated converter in CircuitJS1, or why there is none. */
+function FalstadOpen({ result, labels }: { result: SimResult; labels: SimLabels }) {
+  const f = useMemo(() => falstadFor(result), [result]);
+  if (!f) return <p className="pe-tool__hint">{labels.falstadNeeds}</p>;
+  return (
+    <p className="pe-tool__hint pe-sim__falstad">
+      <a href={f.link} target="_blank" rel="noopener">
+        ▶ {labels.falstadOpen}
+      </a>
+      <br />
+      <Rich text={labels.falstadHint} />
+      {f.leftOut.length > 0 && (
+        <>
+          {' '}
+          <Rich text={labels.falstadLeftOut.replace('{list}', f.leftOut.join(', '))} />
+        </>
+      )}
+    </p>
   );
 }
