@@ -1,0 +1,19 @@
+# Acceptance criteria of mission M1 (src/content/docs/en/09-missions/m1-derive-buck.mdx).
+# The ids are the same in every language: the progress kept in the browser is shared.
+criteria:
+  - id: by-hand
+    text: 'By hand, the volt-second balance of the inductor gives the output voltage, and $V/V_g$ is the catalogue''s conversion ratio.'
+  - id: sympy
+    text: 'Your sympy script solves the balance for $V$ and gives the same result.'
+  - id: example-v
+    text: 'The buck example''s output voltage, from your conversion ratio.'
+    check: {example: buck-basic, name: V, tol: 0.005}
+  - id: example-ripple
+    text: 'The buck example''s $\Delta i_L$, half the peak-to-peak ripple.'
+    check: {example: buck-basic, name: Delta_i_L, tol: 0.01}
+  - id: checks-pass
+    text: 'In your clone, the generator, `pytest` and `mathlint` pass and leave the equation files unchanged.'
+  - id: wrong-test
+    text: 'The generator refuses a wrong expected value in `buck.ccm.M` and names the entry and the test.'
+  - id: wrong-equation
+    text: '`pytest` fails in `test_derivation_reproduces_yaml[buck.ccm.M]` when the expression and its tests are changed together.'

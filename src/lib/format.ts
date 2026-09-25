@@ -41,6 +41,17 @@ function trim(x: number, sig: number): string {
   return s.includes('e') ? s : s.replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1');
 }
 
+/**
+ * The unit formatSI writes a value in when it is not the SI unit with a prefix: millimetres for a
+ * small length, area or volume, cm⁵ for a small core constant; with the factor from SI. An input
+ * that asks for such a value takes it in the same unit.
+ */
+export function displayUnit(value: number, unit: string): { unit: string; factor: number } {
+  const milli = MILLI[unit];
+  const abs = Math.abs(value);
+  return milli && abs < milli[2] && abs * milli[0] >= 1e-3 ? { unit: milli[1], factor: milli[0] } : { unit, factor: 1 };
+}
+
 export function formatSI(value: number, unit: string, sig = 3): string {
   if (!Number.isFinite(value)) return String(value);
   if (unit === '1' || unit === '') {
@@ -49,8 +60,8 @@ export function formatSI(value: number, unit: string, sig = 3): string {
     return minus(abs >= 1e-3 && abs < 1e6 ? String(Number(decimal(value).toPrecision(sig))) : trim(value, sig));
   }
   const abs = Math.abs(value);
-  const milli = MILLI[unit];
-  if (milli && abs < milli[2] && abs * milli[0] >= 1e-3) return `${minus(String(Number(decimal(value * milli[0]).toPrecision(sig))))} ${milli[1]}`;
+  const shown = displayUnit(value, unit);
+  if (shown.factor !== 1) return `${minus(String(Number(decimal(value * shown.factor).toPrecision(sig))))} ${shown.unit}`;
   if (!PREFIXABLE.has(unit) || abs === 0) {
     const txt = abs !== 0 && (abs < 1e-3 || abs >= 1e5) ? decimal(value).toExponential(sig - 1) : String(Number(decimal(value).toPrecision(sig)));
     return `${minus(txt)} ${unit}`;

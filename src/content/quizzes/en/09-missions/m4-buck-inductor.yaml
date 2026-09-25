@@ -1,0 +1,51 @@
+# Quiz for 09-missions/m4-buck-inductor. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'You allow twice the flux density $B_\mathrm{max}$, all else unchanged. The $K_g$ an inductor needs:'
+    options:
+      - 'Halves'
+      - 'Falls to a quarter'
+      - 'Doubles'
+      - 'Stays the same'
+    answer: 1
+    explain: 'The $K_g$ needed is inversely proportional to the square of $B_\mathrm{max}$.'
+  - q: 'You halve the winding''s resistance budget, to halve its copper loss. The $K_g$ needed:'
+    options:
+      - 'Halves'
+      - 'Doubles'
+      - 'Falls to a quarter'
+      - 'Stays the same'
+    answer: 1
+    explain: 'The $K_g$ needed is inversely proportional to the resistance allowed: less resistance takes more copper and a larger window.'
+  - q: 'Why does the magnetics designer compute the fewest turns at the core''s smallest cross-section $A_\mathrm{min}$?'
+    options:
+      - 'The flux density is highest there, so that is where the core saturates first'
+      - 'The winding sits there'
+      - 'The gap is there'
+      - 'Data sheets give no other area'
+    answer: 0
+    explain: 'The same flux passes through every cross-section, so its density is highest where the area is smallest.'
+  - q: 'The fewest turns come out as 17.2. How many do you wind?'
+    options:
+      - '17: fewer turns, less copper'
+      - '18: rounding up keeps the flux density below $B_\mathrm{max}$'
+      - '17.2, as a partial turn'
+      - 'Any number between 15 and 20'
+    answer: 1
+    explain: 'More turns lower the flux density at the same peak current. Rounding down would let it exceed $B_\mathrm{max}$.'
+  - q: 'The gap estimate ignores fringing. Compared with it, the gap that really gives the inductance is:'
+    options:
+      - 'Shorter'
+      - 'Longer'
+      - 'The same'
+      - 'Zero'
+    answer: 1
+    explain: 'Around the gap the flux spreads beyond the core''s area, so the real gap conducts more flux than the estimate assumes and must be longer.'
+  - q: 'In a CCM filter inductor with a small ripple, how does the flux swing $B_\mathrm{ac}$ compare with the peak flux density?'
+    options:
+      - 'It is a small part of it'
+      - 'It equals it'
+      - 'It is twice it'
+      - 'It is zero'
+    answer: 0
+    explain: 'The flux follows the current. Only the ripple, a small part of the current, swings, so the core loss is small while the peak is set by the dc current.'

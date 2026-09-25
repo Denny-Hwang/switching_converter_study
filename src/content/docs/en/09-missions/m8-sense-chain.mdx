@@ -1,0 +1,91 @@
+---
+title: M8 · A sense chain that does not clip
+description: Take a current-sense chain that misses its error target at the low end, fix it, and keep its output below the amplifier's and the ADC's limits at full current, with a filter that suits the sampling rate.
+sidebar:
+  order: 8
+mission:
+  id: m8
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Cite from '../../../../components/Cite.astro';
+import TryTool from '../../../../components/TryTool.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Goal
+
+- Work out a sense chain's burden, its offset-equivalent current and its filter corner.
+- Find why the example misses its error target at the smallest current, and fix it.
+- Keep the output below the amplifier's largest output and the ADC's full scale at the largest current, in the worst case of the offset and the pad resistance.
+
+## Before you start
+
+- Read the [sense chain](../../design/sense-chain/) and [current sensing](../../06-bench/current-sensing/).
+- Know the two gotchas this mission is about: [pad and solder resistance](../../08-gotchas/shunt-pad-resistance/) and [a current-output amplifier's headroom](../../08-gotchas/current-output-headroom/).
+
+## Steps
+
+### 1. The chain
+
+Open the sense chain with the current-output example:
+
+<TryTool tool="sense-chain" example="sense-current" />
+
+It measures up to <Val example="sense-current" name="I_SENSE" /> with a shunt
+of <Val example="sense-current" name="R_SENSE" /> on pads that add
+<Val example="sense-current" name="R_pad" />, and must read
+<Val example="sense-current" name="I_min" /> within
+<Val example="sense-current" name="eps_max" />.
+
+### 2. Burden and offset
+
+Work out the sense voltage at the largest current
+(<EqRef id="sense.burden" label="sense voltage" />) and the current the
+amplifier's offset looks like (<EqRef id="sense.offset_current" label="offset-equivalent current" />).
+Enter both below. A larger shunt lowers the second and raises the first
+<Cite key="ti_ina181" />.
+
+### 3. Why the low end fails
+
+At the smallest current, add the pad error
+(<EqRef id="sense.pad_error" label="pad error" />) and the offset
+(<EqRef id="sense.rel_error" label="relative error" />). Say which of the two
+is larger, and why a Kelvin connection removes one of them
+<Cite key="osullivan2012" />.
+
+### 4. The fix, and what it costs
+
+Change the chain until the tool reports the error at the smallest current
+within the target: the connection, the shunt or the amplifier's offset. Then
+check the largest current: the worst-case output must stay below the
+amplifier's largest output and the ADC's full scale. If it does not, lower
+the gain. Write down what your fix costs in burden and dissipation.
+
+### 5. The filter
+
+Work out the filter's corner (<EqRef id="rc.fc" label="R-C corner frequency" />)
+and compare it with the Nyquist frequency of the ADC's sampling rate
+(<EqRef id="adc.nyquist" label="Nyquist frequency" />). Enter the corner
+below.
+
+## Acceptance criteria
+
+<Mission id="m8" />
+
+## Gotchas
+
+- A current-output amplifier's output cannot swing to its supply. Its headroom sets the largest output whatever the gain ([headroom](../../08-gotchas/current-output-headroom/)).
+- The data sheet gives the offset's largest magnitude, not its sign: check both signs, the one that raises the output at the top and the one that lowers the reading at the bottom.
+- With a current-output amplifier, the filter's capacitor sees $R_\mathrm{OUT}$ in series with $R_f$ (<EqRef id="sense.filter_R" label="the filter's resistance" />), so the corner is lower than $R_f$ alone gives.
+- A single pole below the Nyquist frequency still passes part of the signal there. Read the filter's gain at the Nyquist frequency, and at the switching frequency if you enter it.
+
+## Go deeper
+
+<GoDeeper ids={['ti-sszta51', 'adi-osullivan2012']} />
+
+## Quiz
+
+<Quiz id="09-missions/m8-sense-chain" />

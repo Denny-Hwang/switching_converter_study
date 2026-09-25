@@ -1,0 +1,86 @@
+---
+title: M6 · DCM 플라이백으로 전원 정합하기
+description: 듀티비를 고정한 DCM 플라이백을 무손실 저항으로 보고 선형 전원에 정합한 뒤, CCM이 넘겨받고 스위치 전압이 오르는, 정합이 끝나는 곳을 찾습니다.
+sidebar:
+  order: 6
+mission:
+  id: m6
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Cite from '../../../../components/Cite.astro';
+import TryTool from '../../../../components/TryTool.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 선형 전원이 줄 수 있는 전력과, 듀티비를 고정한 DCM 플라이백의 입력 저항을 계산합니다.
+- 둘을 정합(matching)하는 자화 인덕턴스(magnetizing inductance)를 고르고, 정합 상태의 버스 전압과 전력을 확인합니다.
+- 정합의 한계를 찾습니다: 맞지 않는 듀티비, 강한 전원에서의 CCM, 그리고 스위치 정격.
+
+## 시작하기 전에
+
+- [전원 모델](../../07-harvesting/source-models/), [정합](../../07-harvesting/matching/), [무손실 저항(loss-free resistor)으로 동작하는 DCM 플라이백](../../07-harvesting/lfr-dcm-flyback/)을 읽습니다.
+- 듀티비를 고정한 DCM에서 플라이백의 평균 입력 전류는 입력 전압에 비례합니다. 곧 입력이 저항이며, 이 저항은 전력을 소산하지 않고 넘겨줍니다 <Cite key="singer1990" />.
+
+## 단계
+
+### 1. 전원
+
+예제 전원은 개방 전압 <Val example="source-lfr" name="V_oc" />이
+<Val example="source-lfr" name="R_s" /> 뒤에 있습니다. 이 전원이 줄 수 있는 최대
+전력을 계산합니다(<EqRef id="src.Pmax" label="선형 전원의 최대 전력" />).
+
+### 2. 플라이백의 입력 저항
+
+플라이백은 $f_s$ = <Val example="source-lfr" name="f_s" />,
+$D$ = <Val example="source-lfr" name="D" />, $L_M$ = <Val example="source-lfr" name="L_M" />로
+동작합니다. 입력 저항(<EqRef id="lfr.R_in" label="무손실 저항" />)을 계산하고
+전원의 저항과 비교합니다.
+
+### 3. 정합을 위한 설계
+
+질문을 거꾸로 돌립니다. 이 듀티비와 스위칭 주파수에서 전원의 저항과 같은 입력
+저항을 주는 자화 인덕턴스는 얼마입니까
+(<EqRef id="lfr.L_M" label="주어진 저항을 위한 자화 인덕턴스" />)?
+
+### 4. 정합 상태의 버스
+
+두 저항이 전원 전압을 나눕니다(<EqRef id="lfr.Vg" label="무손실 저항의 버스 전압" />).
+버스 전압을 계산한 뒤, 예제로 전원 정합 도구를 열고 같은 값들을 읽습니다.
+
+<TryTool tool="source-matcher" example="source-lfr" />
+
+### 5. 맞지 않는 듀티비
+
+도구에서 $D$를 두 배로 합니다. 새 입력 저항과 플라이백이 가져가는 가용 전력의
+비율(<EqRef id="lfr.eta" label="무손실 저항의 추출 비율" />)을 예측한 뒤 도구와
+비교합니다.
+
+### 6. 정합이 끝나는 곳
+
+$D$를 되돌리고 전원의 개방 전압을 올립니다. 버스가 임계 입력 전압(critical
+input voltage, <EqRef id="flyback.V_crit" label="임계 입력 전압" />)에 이르러
+CCM이 버스를 그 전압에 붙잡는 진폭을 찾습니다. 그 지점의 스위치 전압을 스위치
+정격 <Val example="source-lfr" name="V_rating" />과 비교합니다.
+
+## 완료 기준
+
+<Mission id="m6" />
+
+## 주의할 점
+
+- 입력 저항은 듀티비의 제곱에 반비례합니다. $D$의 작은 오차가 정합을 크게 흔듭니다.
+- 플라이백은 DCM에서만 저항입니다. 임계 전압 위에서는 CCM이 버스를 붙잡고, 플라이백은 전력의 비율이 전원 진폭에 따라 달라지는 정전압 싱크(constant-voltage sink)가 됩니다.
+- 같은 저항으로 더 큰 전력을 받으려면 더 높은 버스 전압이 필요하고, 스위치는 버스 전압에 반사된 출력 전압을 더한 전압을 막습니다. 가장 강한 전원에서 정격을 확인합니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['singer1990-ieee', 'erickson-ch15']} />
+
+## 퀴즈
+
+<Quiz id="09-missions/m6-lfr-matching" />

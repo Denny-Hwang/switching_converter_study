@@ -1,0 +1,165 @@
+---
+/**
+ * <Mission id="m1" /> -- a mission's acceptance criteria (src/content/missions/<locale>/<id>.yaml)
+ * as a checklist. The ticks stay in this browser (src/lib/missionstore.ts: localStorage, no
+ * account, nothing sent), under the same criterion ids in every language. A criterion with a
+ * `check` also takes the number the reader works out and ticks itself when it lies within `tol`
+ * of the synthetic example's value, computed here at build time; the value itself waits in a
+ * <details> for a reader who is stuck. Without JavaScript the list shows and the boxes tick, but
+ * nothing is kept and the answers are not checked.
+ */
+import { getEntry } from 'astro:content';
+import { catalog } from 'pe-core';
+import { ui } from '../i18n/ui';
+import { exampleValue, getExample } from '../lib/examples';
+import { displayUnit, formatSI } from '../lib/format';
+import { pageLocale } from '../lib/locale';
+import { renderInlineMath } from '../math/inline';
+
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const entry = await getEntry('missions', `${locale}/${id}`);
+if (!entry) throw new Error(`<Mission id="${id}">: missing src/content/missions/${locale}/${id}.yaml`);
+const pct = (x: number) => `${Number((x * 100).toPrecision(2))} %`;
+const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+/** A criterion's text: `code` and $math$ (strict KaTeX), the rest escaped. */
+const render = (text: string) =>
+  text
+    .split(/(`[^`]+`)/g)
+    .map((part) => (part.length > 2 && part.startsWith('`') && part.endsWith('`') ? `<code>${escapeHtml(part.slice(1, -1))}</code>` : renderInlineMath(part)))
+    .join('');
+const items = entry.data.criteria.map((c) => {
+  if (!c.check) return { id: c.id, text: c.text, answer: undefined };
+  const { value, symbol } = exampleValue(c.check.example, c.check.name);
+  const unit = catalog.symbols[symbol]?.unit;
+  if (unit === undefined) throw new Error(`<Mission id="${id}">: ${c.check.example}.${c.check.name} has no unit`);
+  if (!Number.isFinite(value) || value === 0) throw new Error(`<Mission id="${id}">: ${c.check.example}.${c.check.name} is ${value}`);
+  const shown = displayUnit(value, unit);
+  const ex = getExample(c.check.example);
+  return {
+    id: c.id,
+    text: c.text,
+    answer: {
+      value,
+      unit: shown.unit,
+      factor: shown.factor,
+      tol: c.check.tol,
+      text: formatSI(value, unit, 4),
+      example: c.check.example,
+      label: locale === 'ko' ? ex.label_ko : ex.label,
+    },
+  };
+});
+---
+
+<div
+  class="pe-mission not-content"
+  data-mission={id}
+  data-total={items.length}
+  data-msg-done={t['mission.done']}
+  data-msg-ok={t['mission.ok']}
+  data-msg-off={t['mission.off']}
+  data-msg-nan={t['mission.nan']}
+>
+  <ul class="pe-mission__list">
+    {
+      items.map((c) => (
+        <li class="pe-mission__item">
+          <label class="pe-mission__label">
+            <input type="checkbox" class="pe-mission__box" data-id={c.id} />
+            <span set:html={render(c.text)} />
+          </label>
+          {c.answer && (
+            <form class="pe-mission__form" data-check={c.id} data-expected={c.answer.value} data-factor={c.answer.factor} data-unit={c.answer.unit} data-tol={c.answer.tol} data-tol-text={pct(c.answer.tol)}>
+              <label for={`${id}-${c.id}`}>
+                {t['mission.value']}
+                {c.answer.unit !== '1' && ` (${c.answer.unit})`}
+              </label>
+              <input id={`${id}-${c.id}`} type="text" inputmode="decimal" autocomplete="off" spellcheck="false" />
+              <button type="submit">{t['mission.check']}</button>
+              <output aria-live="polite" />
+            </form>
+          )}
+          {c.answer && (
+            <details class="pe-mission__answer">
+              <summary>{t['mission.answer']}</summary>
+              <p>
+                {c.answer.text}{' '}
+                <small>
+                  ({t['mission.answerFrom']} <code>{c.answer.example}</code>: {c.answer.label})
+                </small>
+              </p>
+            </details>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+  <p class="pe-mission__footer">
+    <span class="pe-mission__count" data-count aria-live="polite"></span>
+    <button type="button" class="pe-mission__reset" data-reset>{t['mission.reset']}</button>
+  </p>
+  <p class="pe-mission__note"><small>{t['mission.stored']}</small></p>
+</div>
+
+<script>
+  import { STORE_KEY, checkAnswer, clearMission, doneCount, parseAnswer, progressStore, setDone, type Progress } from '../lib/missionstore';
+
+  const { load, save } = progressStore(() => window.localStorage);
+  const pct = (x: number) => `${Number((x * 100).toPrecision(2))} %`;
+  const fill = (template: string, values: Record<string, string>) => template.replace(/\{(\w+)\}/g, (_, k: string) => values[k] ?? '');
+
+  for (const root of document.querySelectorAll<HTMLElement>('.pe-mission[data-mission]')) {
+    const mission = root.dataset.mission!;
+    const boxes = [...root.querySelectorAll<HTMLInputElement>('input.pe-mission__box[data-id]')];
+    const ids = boxes.map((b) => b.dataset.id!);
+    const count = root.querySelector<HTMLElement>('[data-count]')!;
+    const show = (p: Progress) => {
+      const done = new Set(p[mission] ?? []);
+      for (const b of boxes) b.checked = done.has(b.dataset.id!);
+      count.textContent = fill(root.dataset.msgDone!, { done: String(doneCount(p, mission, ids)), total: String(ids.length) });
+    };
+    show(load());
+    for (const b of boxes) {
+      b.addEventListener('change', () => {
+        const p = setDone(load(), mission, b.dataset.id!, b.checked);
+        save(p);
+        show(p);
+      });
+    }
+    for (const form of root.querySelectorAll<HTMLFormElement>('form[data-check]')) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const out = form.querySelector('output')!;
+        const x = parseAnswer(form.querySelector('input')!.value, form.dataset.unit!);
+        if (x === null) {
+          out.textContent = root.dataset.msgNan!;
+          return;
+        }
+        const { rel, ok } = checkAnswer(x / Number(form.dataset.factor), Number(form.dataset.expected), Number(form.dataset.tol));
+        if (ok) {
+          const p = setDone(load(), mission, form.dataset.check!, true);
+          save(p);
+          show(p);
+          out.textContent = fill(root.dataset.msgOk!, { tol: form.dataset.tolText! });
+        } else {
+          out.textContent = fill(root.dataset.msgOff!, { rel: pct(rel) });
+        }
+      });
+    }
+    root.querySelector('[data-reset]')!.addEventListener('click', () => {
+      const p = clearMission(load(), mission);
+      save(p);
+      show(p);
+      for (const out of root.querySelectorAll('output')) out.textContent = '';
+    });
+    // another tab (the page in the other language) ticked something
+    window.addEventListener('storage', (e) => {
+      if (e.key === STORE_KEY || e.key === null) show(load());
+    });
+  }
+</script>

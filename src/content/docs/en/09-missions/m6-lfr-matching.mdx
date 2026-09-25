@@ -1,0 +1,90 @@
+---
+title: M6 · Match a source with a DCM flyback
+description: Treat a flyback in DCM with a fixed duty ratio as a loss-free resistor, match it to a linear source, and find where the match ends, when CCM takes over and the switch voltage rises.
+sidebar:
+  order: 6
+mission:
+  id: m6
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Cite from '../../../../components/Cite.astro';
+import TryTool from '../../../../components/TryTool.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Goal
+
+- Work out the power a linear source can give and the input resistance of a flyback in DCM with a fixed duty ratio.
+- Choose the magnetizing inductance that matches the two, and check the bus voltage and the power at the match.
+- Find the limits of the match: a mismatched duty ratio, CCM at a strong source, and the switch's rating.
+
+## Before you start
+
+- Read [source models](../../07-harvesting/source-models/), [matching](../../07-harvesting/matching/) and [the DCM flyback as a loss-free resistor](../../07-harvesting/lfr-dcm-flyback/).
+- In DCM with a fixed duty ratio, the flyback's average input current is proportional to its input voltage: its input is a resistance that passes the power on instead of dissipating it <Cite key="singer1990" />.
+
+## Steps
+
+### 1. The source
+
+The example source has an open-circuit voltage of <Val example="source-lfr" name="V_oc" />
+behind <Val example="source-lfr" name="R_s" />. Work out the most power it
+can deliver (<EqRef id="src.Pmax" label="maximum power from a linear source" />).
+
+### 2. The flyback's input resistance
+
+The flyback runs at $f_s$ = <Val example="source-lfr" name="f_s" /> and
+$D$ = <Val example="source-lfr" name="D" />, with $L_M$ = <Val example="source-lfr" name="L_M" />.
+Work out its input resistance (<EqRef id="lfr.R_in" label="the loss-free resistor" />)
+and compare it with the source's.
+
+### 3. Design for the match
+
+Turn the question round: at this duty ratio and switching frequency, which
+magnetizing inductance gives an input resistance equal to the source's
+(<EqRef id="lfr.L_M" label="magnetizing inductance for a resistance" />)?
+
+### 4. The bus at the match
+
+The two resistances divide the source voltage
+(<EqRef id="lfr.Vg" label="bus voltage of a loss-free resistor" />). Work out
+the bus voltage, then open the source matcher with the example and read the
+same numbers there:
+
+<TryTool tool="source-matcher" example="source-lfr" />
+
+### 5. A mismatched duty ratio
+
+Double $D$ in the tool. Predict the new input resistance and the share of
+the available power the flyback takes
+(<EqRef id="lfr.eta" label="extraction by a loss-free resistor" />), then
+compare with the tool.
+
+### 6. Where the match ends
+
+Set $D$ back and raise the source's open-circuit voltage. Find the amplitude
+at which the bus reaches the critical voltage
+(<EqRef id="flyback.V_crit" label="critical input voltage" />) and CCM holds
+it there. Read the switch voltage at that point against the switch's rating
+of <Val example="source-lfr" name="V_rating" />.
+
+## Acceptance criteria
+
+<Mission id="m6" />
+
+## Gotchas
+
+- The input resistance goes with the inverse square of the duty ratio: a small error in $D$ moves the match a lot.
+- The flyback is a resistor only in DCM. Above the critical voltage CCM holds the bus, and the flyback becomes a constant-voltage sink whose share of the power depends on the source's amplitude.
+- A larger power through the same resistance needs a higher bus voltage, and the switch blocks the bus plus the reflected output voltage. Check the rating at the strongest source.
+
+## Go deeper
+
+<GoDeeper ids={['singer1990-ieee', 'erickson-ch15']} />
+
+## Quiz
+
+<Quiz id="09-missions/m6-lfr-matching" />

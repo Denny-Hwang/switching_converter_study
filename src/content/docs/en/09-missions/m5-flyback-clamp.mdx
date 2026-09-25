@@ -1,0 +1,103 @@
+---
+title: M5 · Flyback voltages and the primary clamp
+description: Work out a flyback's switch and diode voltages, then add leakage inductance and size a primary clamp that keeps the switch within its rating, at a clamp loss you can state.
+sidebar:
+  order: 5
+mission:
+  id: m5
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Cite from '../../../../components/Cite.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import TryTool from '../../../../components/TryTool.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Goal
+
+- Work out the voltages a flyback's switch and output diode block, and check the switch's in the simulator.
+- Add leakage inductance and see why a clamp is needed at all.
+- Size an RCD or a TVS clamp that leaves margin to the switch's rating, and state what it costs in dissipation and in the output voltage it allows without a load.
+
+## Before you start
+
+- Read the [flyback converter](../../03-topologies/flyback/), [leakage inductance](../../04-magnetics/leakage/) and [snubbers and clamps](../../04-magnetics/snubbers-clamps/).
+- The turns ratio is 1:$n$ with $n$ the secondary turns over the primary turns, so the primary sees the output divided by $n$.
+
+## Steps
+
+### 1. The ideal flyback's voltages
+
+The flyback example in CCM has $V_g$ = <Val example="flyback-ccm" name="V_g" />,
+$n$ = <Val example="flyback-ccm" name="n" /> and $D$ = <Val example="flyback-ccm" name="D" />.
+Work out its output voltage, the voltage its switch blocks while off
+(<EqRef id="flyback.Vds_off" label="switch voltage while off" />) and the
+reverse voltage of its output diode while the switch is on
+(<EqRef id="flyback.diode.VR" label="diode reverse voltage" />). Enter the
+two voltages below.
+
+### 2. The same in the simulator
+
+Open the example in the simulator and compare its switch voltage with yours
+in the table under the charts:
+
+<TrySim example="flyback-ccm" topology="flyback" />
+
+The simulator's transformer has no leakage inductance, so the switch voltage
+has no spike at turn-off: it steps straight to the input voltage plus the
+reflected voltage.
+
+### 3. The reflected voltage
+
+With leakage, the leakage inductance still carries the peak primary current
+when the switch opens, and it drives the drain above the input voltage plus
+the reflected voltage until a clamp limits it <Cite key="ti_ssztcv6" />. The clamp examples run the same
+kind of flyback at a higher input voltage. Work out their reflected voltage
+(<EqRef id="flyback.V_OR" label="reflected voltage" />): any clamp must hold
+more than that.
+
+### 4. The RCD clamp
+
+Open the clamp check with the RCD example:
+
+<TryTool tool="clamp-check" example="clamp-rcd" />
+
+Enter the switch voltage it gives below. It leaves little margin to the
+switch's rating of <Val example="clamp-rcd" name="V_rating" />. Change the
+resistor until the margin is at least a tenth of the rating, and write down
+the clamp loss at that value. The clamp trades its voltage against its loss
+<Cite key="ti_ssztcv6" />.
+
+### 5. The TVS clamp and the open load
+
+Open the TVS example at the same operating point:
+
+<TryTool tool="clamp-check" example="clamp-tvs" />
+
+Note its clamp voltage, its loss, and the output voltage it allows without a
+load
+(<EqRef id="flyback.V_ceiling" label="output ceiling set by the clamp" />).
+Enter that ceiling below, and compare it with the RCD clamp's behaviour
+without a load, which the tool warns about.
+
+## Acceptance criteria
+
+<Mission id="m5" />
+
+## Gotchas
+
+- The reflected voltage includes the diode drop: the primary carries the output voltage plus the drop, divided by $n$.
+- A clamp voltage close to the reflected voltage looks safe for the switch, but the leakage current then takes long to reset and the clamp absorbs much more than the leakage energy <Cite key="ti_ssztcv6" />. The tool warns when the reset would take a whole period.
+- Check the switch at the highest input voltage and the highest peak current together, even if they never occur at once: it is conservative.
+- An RCD clamp holds its voltage only while the output takes the power. Without a load its resistor must dissipate everything, and the voltages rise far above the values computed here (the clamp check's [output voltage without a load](../../design/clamp-check/#output-voltage-without-a-load)).
+
+## Go deeper
+
+<GoDeeper ids={['ti-ssztcv6', 'erickson-ch6']} />
+
+## Quiz
+
+<Quiz id="09-missions/m5-flyback-clamp" />

@@ -56,14 +56,14 @@
 | --- | --- |
 | Symbols explained where they appear: under every `<Eq>` (`<dl>` of symbol and meaning) and next to every symbol of a worked example | ✅ every page, EN and KO |
 | Example numbers: each worked example, preset and quiz example is labelled an example; every page's footer states once that example numbers are synthetic (`PRIVACY_RULES.md`, checked by `privacy_scan.py`) | ✅ 64 examples, EN and KO |
-| Wording: filler and repeated statements removed; Korean pages give the English term in parentheses at the first use of a technical term (BUILD_SPEC §8) | ✅ all 150 pages (75 EN, 75 KO) |
+| Wording: filler and repeated statements removed; Korean pages give the English term in parentheses at the first use of a technical term (BUILD_SPEC §8) | ✅ all 170 pages (85 EN, 85 KO) |
 | Figures drawn from code (`scripts/gen_figures.py`): schematics in schemdraw, idealized waveforms in matplotlib, in the site's symbols; inlined in the theme's text colour, with a caption and a text alternative in EN and KO and the source each follows (`src/lib/figures.ts`, tested); CI redraws them and fails on a difference | ✅ 8 figures: buck, boost, buck-boost, flyback and forward schematics; the buck's switch-node voltage, volt-second balance, inductor current in CCM, at the boundary and in DCM |
 
 Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); theory uses only `<Eq>` embeds and each Eq has ≥ 1 test vector; "Try it" links a tool preset; "Go deeper" has ≥ 2 verified resources with retrieval dates; a gotchas subsection exists; quiz with ≥ 5 explained questions; build, tests and all lints green.
 
 Legend: ✅ done · 🟡 partial · ⬜ not started · ➖ not applicable. "Phase" is the build phase that delivers the module (docs/BUILD_SPEC.md §7); "later" = not scheduled in phases 0–5. 00-foundations and 01-physics are compact refreshers (Phase 2 scope).
 
-_Last updated: Phase 5a (SPICE library). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
+_Last updated: Phase 5d (missions). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
 
 "Try it" links open the [equation explorer](../src/content/docs/en/design/explorer.mdx) with a synthetic preset. Pages whose example is a whole converter also open the [simulator](../src/content/docs/en/simulate/simulator.mdx) with it (`<TrySim>`, Phase 3a); design-tool presets come with the design tools.
 
@@ -184,9 +184,24 @@ Gotcha pages are not modules: each follows the template symptom · why · how to
 
 ## 09-missions
 
-| Module | Phase | EN | KO | `<Eq>` only | Try it | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
+Nine missions with acceptance criteria (`<Mission>`: src/content/missions/<locale>/<id>.yaml, the same criterion ids in
+both languages) and a local-only progress tracker: localStorage in the reader's browser (src/lib/missionstore.ts), no
+account, nothing sent; the index lists every mission with its progress (`<MissionProgress>`). A criterion with an answer
+check takes a number and ticks itself within its tolerance of a synthetic example's value. `modulelint.py` checks each
+page: its sections (Goal, Before you start, Steps, Acceptance criteria, Gotchas, Go deeper, Quiz), a tool link in its
+steps, its criteria in both languages, two resources and its quiz.
+
+| Mission | Phase | EN | KO | Criteria ≥ 3 | Tool link | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| m1 … m9 + quizzes | 5 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| m1-derive-buck | 5 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | explorer (`buck.ripple.iL`); checks `buck-basic` V and Δi_L; the catalogue's checks broken on purpose |
+| m2-find-k-crit | 5 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | simulator (buck, boost, light-load buck), explorer (`Kcrit.boost`); checks K_crit, the DCM output |
+| m3-boost-rhp-zero | 5 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | explorer (`boost.ss.wz`); checks ω_z, ω_0 of `boost-basic`, ω_z of `buckboost-basic` |
+| m4-buck-inductor | 5 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | magnetics designer (`mag-kg`); checks K_g and the copper loss of `kg-inductor` |
+| m5-flyback-clamp | 5 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | simulator (`flyback-ccm`), clamp check (RCD, TVS); checks V_DS, V_R, V_OR, the clamped V_DS, the ceiling |
+| m6-lfr-matching | 5 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | source matcher (`source-lfr`); checks P_max, R_in, L_M, V_g |
+| m7-loss-budget | 5 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | loss budget (`loss-buck`, which now computes its gate-drive loss); checks P_gate; a bench plan |
+| m8-sense-chain | 5 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | sense chain (`sense-current`); checks the burden, the offset-equivalent current, the filter corner |
+| m9-write-a-gotcha | 5 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | simulator (`sim-buck-fixed`); the gotcha template and the site's checks |
 
 ## 10-resources
 

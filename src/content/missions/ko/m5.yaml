@@ -1,0 +1,20 @@
+# 미션 M5의 완료 기준 (src/content/docs/ko/09-missions/m5-flyback-clamp.mdx).
+# id는 모든 언어에서 같습니다. 브라우저에 저장되는 진행 상황을 함께 씁니다.
+criteria:
+  - id: switch-voltage
+    text: '누설이 없을 때 CCM 플라이백 예제의 스위치가 꺼져 있는 동안의 전압.'
+    check: {example: flyback-ccm, name: V_DS, tol: 0.02}
+  - id: diode-voltage
+    text: '스위치가 켜져 있는 동안 출력 다이오드의 역전압.'
+    check: {example: flyback-ccm, name: V_R, tol: 0.02}
+  - id: reflected
+    text: '클램프 예제의 반사 전압 $V_\mathrm{OR}$.'
+    check: {example: clamp-rcd, name: V_OR, tol: 0.01}
+  - id: rcd-switch
+    text: 'RCD 예제의 클램프로 제한된 스위치 전압.'
+    check: {example: clamp-rcd, name: V_DS, tol: 0.01}
+  - id: margin
+    text: '정격의 10분의 1 이상을 여유로 남기는 RCD 저항과 그 클램프 손실.'
+  - id: ceiling
+    text: 'TVS 클램프가 부하 없이 허용하는 출력 전압.'
+    check: {example: clamp-tvs, name: V_omax, tol: 0.01}

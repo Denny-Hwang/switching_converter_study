@@ -1,0 +1,86 @@
+---
+title: M3 · Locate the boost's right-half-plane zero
+description: Compute the right-half-plane zero and the double pole of the boost example, watch the zero move with the load and the duty ratio, and find the operating point that limits a feedback loop.
+sidebar:
+  order: 3
+mission:
+  id: m3
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Cite from '../../../../components/Cite.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Goal
+
+- Explain in your own words why a step of the boost's duty ratio first moves its output the wrong way.
+- Compute the right-half-plane (RHP) zero and the double pole of the boost example.
+- Find how the zero moves with the load and the duty ratio, and which operating point limits a feedback loop's crossover frequency.
+
+## Before you start
+
+- Read [the right-half-plane zero](../../02-theory/rhp-zero/) and [small-signal models](../../02-theory/small-signal/).
+- The equations give angular frequencies in rad/s. Divide by $2\pi$ for hertz.
+
+## Steps
+
+### 1. The physical picture
+
+Read how the diode's shorter conduction after a step of $D$ lowers the
+average current into the output before the inductor current has time to
+grow. Write it down in two sentences. Then say why the buck has no such
+zero: its inductor feeds the output in both intervals
+<Cite key="erickson2020" where="Ch. 8" />.
+
+### 2. The zero and the poles of the example
+
+The boost example has $V_g$ = <Val example="boost-basic" name="V_g" />,
+$D$ = <Val example="boost-basic" name="D" />, $L$ = <Val example="boost-basic" name="L" />,
+$C$ = <Val example="boost-basic" name="C" /> and $R$ = <Val example="boost-basic" name="R" />.
+Work out its zero (<EqRef id="boost.ss.wz" label="the boost's RHP zero" />)
+and its double pole (<EqRef id="boost.ss.w0" label="the boost's double pole" />),
+and enter both below.
+
+### 3. How the zero moves
+
+Open the zero in the equation explorer and sweep $R$ towards a heavier load,
+then set $R$ back and sweep $D$:
+
+<TryIt eq="boost.ss.wz" example="boost-basic" sweep="R" />
+
+### 4. The buck-boost
+
+The buck-boost has the same kind of zero
+(<EqRef id="buckboost.ss.wz" label="the buck-boost's RHP zero" />). Work it
+out for the buck-boost example, at the same duty ratio, and enter it below.
+
+### 5. The operating point that limits the loop
+
+Over a range of loads and input voltages, the zero is lowest at the heaviest
+load and the largest duty ratio, that is, at the lowest input voltage. A
+loop's crossover frequency must stay well below that lowest zero
+<Cite key="erickson2020" where="Ch. 8" />. Say which corner of your range
+that is for the example, and why designing at the nominal point would
+overestimate the crossover you may use.
+
+## Acceptance criteria
+
+<Mission id="m3" />
+
+## Gotchas
+
+- $\omega_z$ is in rad/s. Taking it for hertz puts the crossover limit more than six times too high.
+- The zero moves with the operating point. The nominal point is not the worst case: the heaviest load at the lowest input voltage is.
+- A compensator cannot cancel an RHP zero. That would take a pole in the right half-plane, which is unstable <Cite key="erickson2020" where="Ch. 8" />.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch8', 'coursera-converter-control']} />
+
+## Quiz
+
+<Quiz id="09-missions/m3-boost-rhp-zero" />

@@ -1,0 +1,18 @@
+# Acceptance criteria of mission M8 (src/content/docs/en/09-missions/m8-sense-chain.mdx).
+# The ids are the same in every language: the progress kept in the browser is shared.
+criteria:
+  - id: burden
+    text: 'The sense voltage at the largest current, the burden on the measured circuit.'
+    check: {example: sense-current, name: V_SENSE, tol: 0.01}
+  - id: offset
+    text: 'The current the amplifier''s offset looks like.'
+    check: {example: sense-current, name: I_OSeq, tol: 0.01}
+  - id: low-end
+    text: 'Which of the pad error and the offset is larger at the smallest current, and a change that brings the error within the target.'
+  - id: no-clip
+    text: 'At the largest current, the worst-case output below the amplifier''s largest output and the ADC''s full scale.'
+  - id: cost
+    text: 'What your fix costs in burden and dissipation.'
+  - id: filter
+    text: 'The filter''s corner frequency, below the Nyquist frequency.'
+    check: {example: sense-current, name: f_c, tol: 0.01}

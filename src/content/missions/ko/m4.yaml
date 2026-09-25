@@ -1,0 +1,17 @@
+# 미션 M4의 완료 기준 (src/content/docs/ko/09-missions/m4-buck-inductor.mdx).
+# id는 모든 언어에서 같습니다. 브라우저에 저장되는 진행 상황을 함께 씁니다.
+criteria:
+  - id: kg
+    text: '예제 인덕터에 필요한 코어 기하 상수 $K_g$.'
+    check: {example: kg-inductor, name: K_g, tol: 0.02}
+  - id: copper-loss
+    text: '저항 예산이 rms 전류에서 허용하는 동손.'
+    check: {example: kg-inductor, name: P_cu, tol: 0.01}
+  - id: core
+    text: '$K_g$를 만족하는 표의 가장 작은 코어와 그 여유.'
+  - id: turns
+    text: '설계 도구에서 $A_\mathrm{min}$ 기준으로 $B_\mathrm{max}$를 지키는 최소 턴 수, 손으로 확인한 값.'
+  - id: gap-window
+    text: '그 턴 수에서 인덕턴스를 맞추는 공극, 창의 $K_u$ 안에 드는 권선, 예산 안의 저항.'
+  - id: smaller-core
+    text: 'E 25/13/7 코어에서 먼저 실패하는 것과, 이를 고치는 한 가지 변경 및 그 대가.'

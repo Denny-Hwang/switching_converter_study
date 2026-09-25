@@ -1,0 +1,91 @@
+---
+title: M7 · 손실 예산과 측정 계획
+description: 벅 예제의 손실 예산을 세워 전부하와 경부하에서 어느 손실이 지배하는지 찾고, 하나를 손으로 확인한 뒤, 각 손실을 어떻게 측정하고 무엇이 그 측정을 제한하는지 밝히는 벤치 계획을 씁니다.
+sidebar:
+  order: 7
+mission:
+  id: m7
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Cite from '../../../../components/Cite.astro';
+import TryTool from '../../../../components/TryTool.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 컨버터의 손실을 종류별로, 부하와 스위칭 주파수에 걸쳐 읽고, 어디서 어느 손실이 효율을 제한하는지 말합니다.
+- 손실 하나를 손으로 계산해 도구와 비교합니다.
+- 예산을 확인할 벤치 작업을 계획합니다: 손실마다 무엇을 어떤 계측기로 측정하고, 무엇이 그 측정을 제한하는지.
+
+## 시작하기 전에
+
+- [손실 예산](../../design/loss-budget/)과 벤치 페이지의 [프로브와 측정 대역폭](../../06-bench/probes/), [전류 센싱](../../06-bench/current-sensing/), [열 설계](../../06-bench/thermal/)를 읽습니다.
+- 벅 예제는 <Val example="loss-buck" name="P" />, <Val example="loss-buck" name="f_s" />에서 <Val example="loss-buck" name="V_g" />를 <Val example="loss-buck" name="V" />로 변환합니다.
+
+## 단계
+
+### 1. 예산
+
+벅 예제로 손실 예산을 엽니다.
+
+<TryTool tool="loss-budget" example="loss-buck" />
+
+도구는 각 부하에서 출력이 설정값이 될 때까지 듀티비를 조정하며 컨버터를
+시뮬레이션하고, 시뮬레이션한 주기의 손실을 종류별로 나눕니다.
+
+### 2. 손으로 계산하는 손실 하나
+
+게이트 구동 손실은 부하와 무관합니다. 게이트 전하(gate charge)
+<Val example="loss-buck" name="Q_g" />를 <Val example="loss-buck" name="V_GS" />로
+구동할 때의 손실을 계산하고(<EqRef id="loss.gate" label="게이트 구동 전력" />)
+도구의 항목과 비교합니다. 그 값을 아래에 입력합니다. 이 전력은 스위치가 아니라
+드라이버와 게이트 저항에서 소산됩니다.
+
+### 3. 전부하와 경부하
+
+전부하와 부하의 10분의 1에서 가장 큰 손실을 각각 말하고, 왜 다른지
+설명합니다. 어느 손실이 전류의 제곱을 따르고
+(<EqRef id="loss.cond" label="도통 손실" />), 어느 손실이 스위칭 주파수만으로
+정해지는지 봅니다.
+
+### 4. 스위칭 주파수
+
+$f_s$를 두 배로 하고 각 항목과 효율을 봅니다. 어느 항목이 두 배가 되었는지,
+그리고 높은 주파수가 대신 무엇을 주는지(같은 인덕턴스에서 더 작은 리플, 또는
+같은 리플에서 더 작은 인덕턴스) 말합니다.
+
+### 5. 도구가 빠뜨리는 것
+
+시뮬레이션의 전환은 순간적이므로, 하드 스위칭 트랜지스터의 겹침 손실(overlap
+loss)은 예산에 없습니다 <Cite key="erickson2020" where="Ch. 4" />. 코어 손실은
+정현파 여자로 측정한 계수로 낸 추정값입니다
+<Cite key="erickson2020" where="Ch. 10" />. 계획이 이 둘을 어떻게 볼지 정합니다.
+
+### 6. 벤치 계획
+
+손실마다 측정할 양, 계측기, 그리고 중요한 한계를 적습니다: 스위칭 에지와
+비교한 프로브의 상승 시간(<EqRef id="probe.t_rise" label="프로브 상승 시간" />),
+션트의 부담 전압과 패드 저항, 펄스 전류를 평균하는 계측기, 부품의 온도 상승.
+마지막으로 효율 자체를 어떻게 측정할지 적습니다.
+
+## 완료 기준
+
+<Mission id="m7" />
+
+## 주의할 점
+
+- 전부하의 효율은 경부하의 모습을 가립니다. 부하와 함께 줄지 않는 손실이 경부하를 지배하므로 곡선 전체를 읽습니다.
+- 펄스 전류의 피크에서 잘리는 센스 체인은 같은 션트 양단의 계측기보다 낮은 평균을 읽습니다([션트 양단의 멀티미터보다 낮게 읽히는 전류](../../08-gotchas/dmm-true-average/)).
+- 긴 접지 리드를 단 프로브는 자신의 커패시턴스와 공진하며, 측정하는 에지에 자신의 에지를 더합니다([프로브와 측정 대역폭](../../06-bench/probes/)).
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch3', 'adi-an1144']} />
+
+## 퀴즈
+
+<Quiz id="09-missions/m7-loss-budget" />

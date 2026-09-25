@@ -14,6 +14,8 @@ export const collections = {
         module: z.boolean().optional(),
         /** A gotcha page (08-gotchas): its tags, from src/lib/gotchas.json. */
         gotcha: z.object({ tags: z.array(z.enum(GOTCHA_TAG_IDS)).min(1) }).optional(),
+        /** A mission page (09-missions): its id, whose criteria are src/content/missions/<locale>/<id>.yaml. */
+        mission: z.object({ id: z.string().regex(/^m[1-9]$/) }).optional(),
       }),
     }),
   }),
@@ -35,6 +37,23 @@ export const collections = {
           }),
         )
         .min(5),
+    }),
+  }),
+  // One list of acceptance criteria per mission and locale: src/content/missions/<locale>/<id>.yaml.
+  // The ids are the same in every language, so that progress ticked on one is ticked on the other.
+  missions: defineCollection({
+    loader: glob({ pattern: '**/*.yaml', base: './src/content/missions' }),
+    schema: z.object({
+      criteria: z
+        .array(
+          z.object({
+            id: z.string().regex(/^[a-z0-9-]+$/),
+            text: z.string().min(1),
+            /** A number the reader works out, checked against a synthetic example's value within tol (relative). */
+            check: z.object({ example: z.string(), name: z.string(), tol: z.number().gt(0).max(0.2) }).optional(),
+          }),
+        )
+        .min(3),
     }),
   }),
 };

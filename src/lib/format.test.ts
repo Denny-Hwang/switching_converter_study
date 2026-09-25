@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fmtValue, formatSI } from './format';
+import { displayUnit, fmtValue, formatSI } from './format';
 
 describe('formatSI', () => {
   it('attaches SI prefixes to prefixable units', () => {
@@ -87,5 +87,20 @@ describe('prefix of the printed value, signs and plain digits', () => {
     expect(fmtValue(12345, '×')).toBe('12350 ×');
     expect(fmtValue(1234.5, '%', 3)).toBe('1230 %');
     expect(fmtValue(123456, '×')).toBe('1.235e+5 ×');
+  });
+});
+
+describe('displayUnit: the unit formatSI writes a value in', () => {
+  it('is the SI unit, which takes a prefix, for the electrical units', () => {
+    expect(displayUnit(12, 'V')).toEqual({ unit: 'V', factor: 1 });
+    expect(displayUnit(25e-6, 'H')).toEqual({ unit: 'H', factor: 1 });
+  });
+
+  it('is cm⁵ for a small core constant and mm for a small length, as formatSI prints them', () => {
+    expect(displayUnit(5.25e-12, 'm⁵')).toEqual({ unit: 'cm⁵', factor: 1e10 });
+    expect(formatSI(5.25e-12, 'm⁵')).toBe('0.0525 cm⁵');
+    expect(displayUnit(2.5e-4, 'm')).toEqual({ unit: 'mm', factor: 1e3 });
+    expect(formatSI(2.5e-4, 'm')).toBe('0.25 mm');
+    expect(displayUnit(2, 'm')).toEqual({ unit: 'm', factor: 1 });
   });
 });

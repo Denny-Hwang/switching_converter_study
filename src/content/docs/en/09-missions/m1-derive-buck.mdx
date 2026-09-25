@@ -1,0 +1,112 @@
+---
+title: M1 · Derive and verify the buck
+description: Derive the buck's conversion ratio and inductor ripple by volt-second balance, check them against the equation catalogue and the buck example, and watch the catalogue's checks catch a wrong value.
+sidebar:
+  order: 1
+mission:
+  id: m1
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Goal
+
+- Derive the buck converter's conversion ratio in CCM from volt-second balance, by hand and with sympy.
+- Derive its inductor-current ripple from the slope of the current during the on-interval.
+- Follow one equation through the site's checks: its entry in `equations.yaml`, its test values, the sympy derivation that must reproduce it, and the generator. Break each on purpose and see which check fails.
+
+## Before you start
+
+- Read [volt-second and charge balance](../../02-theory/volt-second-charge-balance/) and the [buck converter](../../03-topologies/buck/).
+- Have a clone of the repository with its Python package installed (`pip install -e python`, as the README says). Run the commands below from the clone's root.
+- On this site, $\Delta i_L$ is half the peak-to-peak ripple of the inductor current, as in Erickson.
+
+## Steps
+
+### 1. By hand
+
+In CCM the switch connects the inductor to $V_g$ for $D T_s$, and the diode
+connects it to ground for the rest of the period. Write the inductor voltage
+in each interval, with the output voltage $V$ taken as constant (the
+small-ripple approximation). Average it over one period, set the average to
+zero, and solve for $V$. Compare $V/V_g$ with
+<EqRef id="buck.ccm.M" label="the buck's conversion ratio" />.
+
+### 2. With sympy
+
+Let sympy do the same algebra. Fill in the two inductor voltages:
+
+```python
+import sympy as sp
+
+D, Vg, V = sp.symbols('D V_g V', positive=True)
+v_on = ...   # the inductor voltage while the switch is on
+v_off = ...  # and while the diode conducts
+print(sp.solve(sp.Eq(D * v_on + (1 - D) * v_off, 0), V))
+```
+
+The repository's own derivation is `python/pe_core/derive/ccm_ratios.py`,
+shown step by step on the [derivations page](../../02-theory/derivations/#deriv-ccm_ratios).
+
+### 3. The ripple
+
+During the on-interval the inductor current rises at a constant slope. Its
+rise over $D T_s$ is the peak-to-peak ripple, and half of it is $\Delta i_L$.
+Compare your result with <EqRef id="buck.ripple.iL" label="the buck's inductor ripple" />.
+
+### 4. The example's numbers
+
+The buck example has $V_g$ = <Val example="buck-basic" name="V_g" />,
+$D$ = <Val example="buck-basic" name="D" />, $L$ = <Val example="buck-basic" name="L" />
+and $f_s$ = <Val example="buck-basic" name="f_s" />. Work out its output
+voltage and its $\Delta i_L$, and enter them under Acceptance criteria. Then
+open the ripple in the equation explorer and sweep the inductance: the ripple
+falls as $1/L$.
+
+<TryIt eq="buck.ripple.iL" example="buck-basic" sweep="L" />
+
+### 5. The checks pass
+
+In your clone, run `python scripts/gen_equations.py`, `pytest` and
+`python scripts/mathlint.py`. All three pass, and `git status` shows that the
+generator left `packages/pe-core/equations/` as it was.
+
+### 6. Break a test value
+
+In `packages/pe-core/equations/equations.yaml`, change the first expected
+value in the `tests` of `buck.ccm.M`. Run `python scripts/gen_equations.py`:
+it refuses, and its message names the entry, the test and the value the
+expression gives. Undo the change with
+`git checkout -- packages/pe-core/equations/`.
+
+### 7. Break the equation consistently
+
+Now change the expression of `buck.ccm.M` and both of its expected values so
+that they agree with each other (halve all three, say). The generator accepts
+this, but `pytest` fails in `test_derivation_reproduces_yaml[buck.ccm.M]`: the
+sympy derivation still gives the ratio you found in step 1. Undo the change as
+before; the same checkout also restores the files the generator rewrote.
+
+## Acceptance criteria
+
+<Mission id="m1" />
+
+## Gotchas
+
+- $\Delta i_L$ here is half the peak-to-peak ripple. The full swing of the current is twice the value the check expects.
+- The ratio holds in CCM only. When the inductor current reaches zero before the period ends, the output rises above $D V_g$ ([CCM and DCM](../../02-theory/ccm-dcm/), and mission M2).
+- Run `pytest` with the Python that has `pe_core` installed. Another interpreter fails at import, before any check runs.
+- An experiment that the generator accepted also rewrote its output files. `git checkout -- packages/pe-core/equations/` restores the YAML and those files together.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch2', 'coursera-intro-pe']} />
+
+## Quiz
+
+<Quiz id="09-missions/m1-derive-buck" />

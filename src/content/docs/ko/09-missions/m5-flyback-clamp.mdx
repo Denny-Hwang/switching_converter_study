@@ -1,0 +1,99 @@
+---
+title: M5 · 플라이백 전압과 1차 측 클램프
+description: 플라이백의 스위치와 다이오드 전압을 계산하고, 누설 인덕턴스를 더해 스위치를 정격 안에 두는 1차 측 클램프를 정한 뒤, 그 클램프 손실을 밝힙니다.
+sidebar:
+  order: 5
+mission:
+  id: m5
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Cite from '../../../../components/Cite.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import TryTool from '../../../../components/TryTool.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 플라이백의 스위치와 출력 다이오드가 막는 전압을 계산하고, 스위치 전압을 시뮬레이터에서 확인합니다.
+- 누설 인덕턴스(leakage inductance)를 더해 클램프(clamp)가 왜 필요한지 봅니다.
+- 스위치 정격에 여유를 남기는 RCD 또는 TVS 클램프를 정하고, 그 대가를 손실과 무부하 때 허용하는 출력 전압으로 밝힙니다.
+
+## 시작하기 전에
+
+- [플라이백 컨버터](../../03-topologies/flyback/), [누설 인덕턴스](../../04-magnetics/leakage/), [스너버와 클램프](../../04-magnetics/snubbers-clamps/)를 읽습니다.
+- 권선비는 1:$n$이고 $n$은 2차 턴 수를 1차 턴 수로 나눈 값이므로, 1차 측에는 출력이 $n$으로 나뉘어 보입니다.
+
+## 단계
+
+### 1. 이상적인 플라이백의 전압
+
+CCM 플라이백 예제는 $V_g$ = <Val example="flyback-ccm" name="V_g" />,
+$n$ = <Val example="flyback-ccm" name="n" />, $D$ = <Val example="flyback-ccm" name="D" />입니다.
+출력 전압, 스위치가 꺼져 있는 동안 막는 전압
+(<EqRef id="flyback.Vds_off" label="꺼져 있을 때의 스위치 전압" />), 그리고
+스위치가 켜져 있는 동안 출력 다이오드의 역전압
+(<EqRef id="flyback.diode.VR" label="다이오드 역전압" />)을 계산합니다. 두
+전압을 아래에 입력합니다.
+
+### 2. 시뮬레이터로 확인
+
+시뮬레이터에서 예제를 열고, 차트 아래 표의 스위치 전압을 계산한 값과
+비교합니다.
+
+<TrySim example="flyback-ccm" topology="flyback" />
+
+시뮬레이터의 변압기에는 누설 인덕턴스가 없으므로, 턴오프 때 스위치 전압에
+스파이크가 없고 곧바로 입력 전압과 반사 전압(reflected voltage)의 합으로 올라갑니다.
+
+### 3. 반사 전압
+
+누설이 있으면 스위치가 꺼질 때 누설 인덕턴스가 여전히 피크 1차 전류를 흘리고,
+클램프가 막을 때까지 드레인을 입력 전압과 반사 전압의 합 위로 밀어 올립니다
+<Cite key="ti_ssztcv6" />. 클램프 예제는 같은 종류의 플라이백을 더 높은 입력
+전압에서 동작시킵니다. 그 반사 전압(<EqRef id="flyback.V_OR" label="반사 전압" />)을
+계산합니다. 어떤 클램프든 이보다 높은 전압을 유지해야 합니다.
+
+### 4. RCD 클램프
+
+RCD 예제로 클램프 점검을 엽니다.
+
+<TryTool tool="clamp-check" example="clamp-rcd" />
+
+이 클램프가 주는 스위치 전압을 아래에 입력합니다. 스위치 정격
+<Val example="clamp-rcd" name="V_rating" />에 대한 여유가 거의 없습니다. 여유가
+정격의 10분의 1 이상이 될 때까지 저항을 바꾸고, 그 값에서의 클램프 손실을 적어
+둡니다. 클램프는 전압과 손실을 맞바꿉니다 <Cite key="ti_ssztcv6" />.
+
+### 5. TVS 클램프와 무부하
+
+같은 동작점의 TVS 예제를 엽니다.
+
+<TryTool tool="clamp-check" example="clamp-tvs" />
+
+클램프 전압, 손실, 그리고 부하가 없을 때 허용하는 출력 전압
+(<EqRef id="flyback.V_ceiling" label="클램프가 정하는 출력 전압 상한" />)을 적습니다.
+그 상한을 아래에 입력하고, 도구가 경고하는 RCD 클램프의 무부하 동작과
+비교합니다.
+
+## 완료 기준
+
+<Mission id="m5" />
+
+## 주의할 점
+
+- 반사 전압에는 다이오드 전압 강하가 들어갑니다. 1차 측은 출력 전압에 강하를 더한 값을 $n$으로 나눈 전압을 봅니다.
+- 반사 전압에 가까운 클램프 전압은 스위치에는 안전해 보이지만, 누설 전류의 리셋이 오래 걸리고 클램프가 누설 에너지보다 훨씬 많은 에너지를 흡수합니다 <Cite key="ti_ssztcv6" />. 리셋이 한 주기 전체를 차지하면 도구가 경고합니다.
+- 가장 높은 입력 전압과 가장 큰 피크 전류가 동시에 일어나지 않더라도 둘을 함께 놓고 스위치를 확인합니다. 보수적인 방법입니다.
+- RCD 클램프는 출력이 전력을 가져가는 동안에만 그 전압을 유지합니다. 부하가 없으면 저항이 모든 에너지를 소산해야 하므로 전압들이 여기서 계산한 값보다 훨씬 높이 올라갑니다(클램프 점검의 [부하가 없을 때의 출력 전압](../../design/clamp-check/#부하가-없을-때의-출력-전압)).
+
+## 더 알아보기
+
+<GoDeeper ids={['ti-ssztcv6', 'erickson-ch6']} />
+
+## 퀴즈
+
+<Quiz id="09-missions/m5-flyback-clamp" />

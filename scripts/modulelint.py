@@ -47,6 +47,25 @@ description and no tag twice. The index embeds <GotchaIndex part="list" />,
 then under an h2 of its own <GotchaIndex part="tags" />, which lists the
 pages by their tags.
 
+A page directly under 09-missions/ other than the index is a mission page
+(docs/BUILD_SPEC.md section 5). Each one:
+
+  * has `mission: {id: m<N>}` (its own id) and a one-line description in its
+    frontmatter, and is not a module page;
+  * has exactly the h2 sections, in this order,
+      EN: Goal, Before you start, Steps, Acceptance criteria, Gotchas,
+          Go deeper, Quiz
+      KO: 목표, 시작하기 전에, 단계, 완료 기준, 주의할 점, 더 알아보기, 퀴즈
+  * links a tool in its Steps (<TrySim>, <TryMag>, <TryIt> or <TryTool>);
+  * embeds exactly <Mission id="m<N>" /> in its Acceptance criteria, whose
+    criteria (src/content/missions/<locale>/m<N>.yaml, at least three) have
+    the same ids in the same order in every language, and whose answer
+    checks name an existing synthetic example;
+  * lists at least two resources in Go deeper and has its quiz, as a module;
+  * has a Korean mirror with the same components (as for modules), or
+    docs/STATUS.md marks its KO pending; STATUS has a row for every mission.
+The index embeds <MissionProgress />.
+
 A page under 10-resources/ other than the bibliography lists resources.yaml
 with one <ResourceTable /> (the index with every type; the others with
 types={[...]}, each a type of src/lib/resources.ts); its Korean mirror lists
@@ -84,7 +103,7 @@ SECTIONS = {
     "en": ["Intent", "Theory", "Worked example", "Try it", "Bench exercise", "Gotchas", "Go deeper", "Quiz"],
     "ko": ["목표", "이론", "풀이 예제", "직접 해 보기", "벤치 실습", "주의할 점", "더 알아보기", "퀴즈"],
 }
-BLOCK = ("Eq", "Worked", "TryIt", "TrySim", "GoDeeper", "Quiz", "Figure", "CoreKg", "MagWorked", "TryMag")
+BLOCK = ("Eq", "Worked", "TryIt", "TrySim", "GoDeeper", "Quiz", "Figure", "CoreKg", "MagWorked", "TryMag", "TryTool", "Mission")
 SIM_TOPOLOGIES = ("buck", "boost", "buckboost", "flyback", "forward")
 TOOLS = ("Explorer", "Simulator", "ConverterDesigner", "MagneticsDesigner", "LossBudget", "ClampCheck", "SourceMatcher", "SenseChain")
 TOOL_TAG = re.compile(r"<(" + "|".join(TOOLS) + r")\b")
@@ -99,6 +118,14 @@ GOTCHA_SECTIONS = {
     "en": ["Symptom", "Why", "How to confirm", "Fix", "References"],
     "ko": ["증상", "원인", "확인 방법", "해결", "참고 자료"],
 }
+MISSIONS_DIR = "09-missions"
+MISSIONS = ROOT / "src" / "content" / "missions"
+MISSION_SECTIONS = {
+    "en": ["Goal", "Before you start", "Steps", "Acceptance criteria", "Gotchas", "Go deeper", "Quiz"],
+    "ko": ["목표", "시작하기 전에", "단계", "완료 기준", "주의할 점", "더 알아보기", "퀴즈"],
+}
+MISSION_TOOLS = ("TrySim", "TryMag", "TryIt", "TryTool")
+MISSION_COLUMNS = ("Criteria ≥ 3", "Tool link", "Go deeper ≥ 2", "Gotchas", "Quiz ≥ 5")
 RESOURCES_DIR = "10-resources"
 RESOURCE_TABLE = re.compile(r"<ResourceTable\b([^>]*)/>")
 RESOURCE_LIB = ROOT / "src" / "lib" / "resources.ts"
@@ -297,6 +324,150 @@ def check_gotchas(status: dict[tuple[str, str], dict[str, str]]) -> tuple[list[s
     return errors, sum(1 for (loc, _) in pages if loc == "en")
 
 
+def go_deeper_errors(where: str, section: str, resources: dict[str, dict]) -> list[str]:
+    """Go deeper: at least two resources.yaml ids, each with a retrieval date."""
+    errors = []
+    ids = [i for c, a in components(section) if c == "GoDeeper" for i in quoted_list(a.get("ids", ""))]
+    if len(set(ids)) < 2:
+        errors.append(f"{where}: Go deeper needs at least two resources, found {ids}")
+    for rid in ids:
+        if rid not in resources:
+            errors.append(f"{where}: Go deeper resource {rid!r} is not in resources.yaml")
+        elif not resources[rid].get("retrieved"):
+            errors.append(f"{where}: resource {rid!r} has no retrieval date")
+    return errors
+
+
+def load_criteria(locale: str, mission: str) -> list[dict] | None:
+    path = MISSIONS / locale / f"{mission}.yaml"
+    if not path.exists():
+        return None
+    return (yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get("criteria") or []
+
+
+def check_missions(status: dict[tuple[str, str], dict[str, str]], resources: dict[str, dict], examples: set[str]) -> tuple[list[str], int]:
+    """The mission pages (09-missions): template, criteria, tool link, Korean mirror, STATUS."""
+    errors: list[str] = []
+    pages: dict[tuple[str, str], tuple[str, list[tuple[str, dict[str, str]]]]] = {}
+    for locale in MISSION_SECTIONS:
+        folder = DOCS / locale / MISSIONS_DIR
+        ids: dict[str, str] = {}
+        for path in sorted([*folder.rglob("*.mdx"), *folder.rglob("*.md")]) if folder.exists() else []:
+            where = str(path.relative_to(ROOT))
+            if path.parent != folder or path.suffix != ".mdx":
+                errors.append(f"{where}: a mission page is MDX directly in {MISSIONS_DIR}/")
+                continue
+            meta, body = frontmatter(strip_code(path.read_text(encoding="utf-8")))
+            if meta.get("module"):
+                errors.append(f"{where}: a mission page is not a module page (remove `module: true`)")
+            if path.stem == "index":
+                if not re.search(r"<MissionProgress\s*/>", body):
+                    errors.append(f"{where}: the missions' index embeds <MissionProgress />")
+                continue
+            mission = (meta.get("mission") or {}).get("id") if isinstance(meta.get("mission"), dict) else None
+            if not isinstance(mission, str) or not re.fullmatch(r"m[1-9]", mission):
+                errors.append(f"{where}: frontmatter needs `mission: {{id: m<N>}}`")
+                continue
+            if mission in ids:
+                errors.append(f"{where}: mission id {mission} is also {ids[mission]}'s")
+            ids[mission] = where
+            if not str(meta.get("description") or "").strip():
+                errors.append(f"{where}: frontmatter needs a one-line `description` (the index shows it)")
+            for tag in unknown_components(body):
+                errors.append(f"{where}: <{tag}> is neither a block nor an inline component of modulelint (BLOCK or INLINE)")
+            pages[(locale, path.stem)] = (mission, components(body))
+            found = sections(body)
+            heads = [h for h, _ in found]
+            if heads != MISSION_SECTIONS[locale]:
+                errors.append(f"{where}: h2 sections must be {MISSION_SECTIONS[locale]}, found {heads}")
+                continue
+            text = dict(found)
+            name = dict(zip(MISSION_SECTIONS["en"], MISSION_SECTIONS[locale]))
+            if not any(c in MISSION_TOOLS for c, _ in components(text[name["Steps"]])):
+                errors.append(f"{where}: the Steps section links no tool ({', '.join('<' + t + '>' for t in MISSION_TOOLS)})")
+            for c, a in components(text[name["Steps"]]):
+                if c in MISSION_TOOLS and c != "TryTool" and a.get("example") not in examples:
+                    errors.append(f"{where}: <{c} example=\"{a.get('example')}\"> has no examples/synthetic file")
+            embeds = [a.get("id") for c, a in components(text[name["Acceptance criteria"]]) if c == "Mission"]
+            if embeds != [mission]:
+                errors.append(f"{where}: the Acceptance criteria section must embed exactly <Mission id=\"{mission}\" />, found {embeds}")
+            criteria = load_criteria(locale, mission)
+            cwhere = f"src/content/missions/{locale}/{mission}.yaml"
+            if criteria is None:
+                errors.append(f"{cwhere}: missing (the criteria of {where})")
+            else:
+                cids = [str(c.get("id")) for c in criteria]
+                if len(cids) < 3:
+                    errors.append(f"{cwhere}: a mission needs at least three criteria, found {len(cids)}")
+                if len(set(cids)) != len(cids):
+                    errors.append(f"{cwhere}: a criterion id is used twice")
+                for c in criteria:
+                    check = c.get("check")
+                    if check and check.get("example") not in examples:
+                        errors.append(f"{cwhere}: criterion {c.get('id')!r} checks against {check.get('example')!r}, which has no examples/synthetic file")
+            errors += go_deeper_errors(where, text[name["Go deeper"]], resources)
+            quiz_id = f"{MISSIONS_DIR}/{path.stem}"
+            quizzes = [a.get("id") for c, a in components(text[name["Quiz"]]) if c == "Quiz"]
+            if quizzes != [quiz_id]:
+                errors.append(f"{where}: the Quiz section must embed exactly <Quiz id=\"{quiz_id}\" />, found {quizzes}")
+            else:
+                errors += check_quiz(load_quiz(locale, quiz_id), f"src/content/quizzes/{locale}/{quiz_id}.yaml")
+
+    for (locale, slug), (mission, comps) in pages.items():
+        if locale != "en":
+            continue
+        row = status.get((MISSIONS_DIR, slug))
+        if row is None:
+            errors.append(f"docs/STATUS.md: no row for mission {MISSIONS_DIR}/{slug}")
+            row = {}
+        else:
+            if "✅" not in row.get("EN", ""):
+                errors.append(f"docs/STATUS.md: {MISSIONS_DIR}/{slug} EN must be ✅")
+            for c in MISSION_COLUMNS:
+                if "✅" not in row.get(c, ""):
+                    errors.append(f"docs/STATUS.md: {MISSIONS_DIR}/{slug} column {c!r} must be ✅")
+        ko = pages.get(("ko", slug))
+        if ko is None:
+            if "pending" not in row.get("KO", "").lower():
+                errors.append(f"src/content/docs/en/{MISSIONS_DIR}/{slug}.mdx: no Korean page, and docs/STATUS.md does not mark KO pending")
+            continue
+        if "✅" not in row.get("KO", ""):
+            errors.append(f"docs/STATUS.md: {MISSIONS_DIR}/{slug} KO must be ✅")
+        ko_mission, ko_comps = ko
+        kwhere = f"src/content/docs/ko/{MISSIONS_DIR}/{slug}.mdx"
+        if ko_mission != mission:
+            errors.append(f"{kwhere}: mission id {ko_mission} differs from the English page's {mission}")
+        if signature(comps, BLOCK) != signature(ko_comps, BLOCK):
+            errors.append(f"{kwhere}: block components differ from the English page")
+        en_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(comps, INLINE))
+        ko_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(ko_comps, INLINE))
+        if en_inline != ko_inline:
+            errors.append(f"{kwhere}: inline components differ from the English page (missing {list(en_inline - ko_inline)}, extra {list(ko_inline - en_inline)})")
+        en_c, ko_c = load_criteria("en", mission), load_criteria("ko", mission)
+        if en_c is not None and ko_c is not None:
+            if [c.get("id") for c in en_c] != [c.get("id") for c in ko_c]:
+                errors.append(f"src/content/missions/ko/{mission}.yaml: criterion ids differ from the English file's (the progress is shared)")
+            if [c.get("check") for c in en_c] != [c.get("check") for c in ko_c]:
+                errors.append(f"src/content/missions/ko/{mission}.yaml: answer checks differ from the English file's")
+        quiz_id = f"{MISSIONS_DIR}/{slug}"
+        en_quiz, ko_quiz = load_quiz("en", quiz_id), load_quiz("ko", quiz_id)
+        if en_quiz and ko_quiz:
+            en_key = [(q.get("answer"), len(q.get("options") or [])) for q in en_quiz.get("questions") or []]
+            ko_key = [(q.get("answer"), len(q.get("options") or [])) for q in ko_quiz.get("questions") or []]
+            if en_key != ko_key:
+                errors.append(f"src/content/quizzes/ko/{quiz_id}.yaml: answer key or option counts differ from the English quiz")
+    for (locale, slug) in pages:
+        if locale == "ko" and ("en", slug) not in pages:
+            errors.append(f"src/content/docs/ko/{MISSIONS_DIR}/{slug}.mdx: no English page of that name")
+    for locale in MISSION_SECTIONS:
+        if pages and not (DOCS / locale / MISSIONS_DIR / "index.mdx").exists():
+            errors.append(f"src/content/docs/{locale}/{MISSIONS_DIR}/index.mdx: the missions need their index")
+    for (section, slug) in status:
+        if section == MISSIONS_DIR and ("en", slug) not in pages:
+            errors.append(f"docs/STATUS.md: mission row {slug!r} has no page src/content/docs/en/{MISSIONS_DIR}/{slug}.mdx")
+    return errors, sum(1 for (loc, _) in pages if loc == "en")
+
+
 def check_resource_pages(status: dict[tuple[str, str], dict[str, str]], resources: dict[str, dict]) -> list[str]:
     """The pages under 10-resources that list resources.yaml."""
     errors: list[str] = []
@@ -425,14 +596,7 @@ def main() -> int:
             if a.get("topology") not in SIM_TOPOLOGIES:
                 errors.append(f"{where}: <TrySim topology=\"{a.get('topology')}\"> is not a simulator topology")
 
-        ids = [i for c, a in components(text[name["Go deeper"]]) if c == "GoDeeper" for i in quoted_list(a.get("ids", ""))]
-        if len(set(ids)) < 2:
-            errors.append(f"{where}: Go deeper needs at least two resources, found {ids}")
-        for rid in ids:
-            if rid not in resources:
-                errors.append(f"{where}: Go deeper resource {rid!r} is not in resources.yaml")
-            elif not resources[rid].get("retrieved"):
-                errors.append(f"{where}: resource {rid!r} has no retrieval date")
+        errors += go_deeper_errors(where, text[name["Go deeper"]], resources)
 
         quizzes = [a.get("id") for c, a in components(text[name["Quiz"]]) if c == "Quiz"]
         if quizzes != [slug]:
@@ -488,6 +652,8 @@ def main() -> int:
 
     gotcha_errors, n_gotchas = check_gotchas(status)
     errors += gotcha_errors
+    mission_errors, n_missions = check_missions(status, resources, examples)
+    errors += mission_errors
     errors += check_resource_pages(status, resources)
 
     if errors:
@@ -497,7 +663,7 @@ def main() -> int:
         return 1
     n_en = sum(1 for (loc, _) in pages if loc == "en")
     n_ko = sum(1 for (loc, _) in pages if loc == "ko")
-    print(f"modulelint: OK ({n_en} EN and {n_ko} KO module pages, {n_gotchas} gotcha pages, {n_tools} tool pages with screenshots)")
+    print(f"modulelint: OK ({n_en} EN and {n_ko} KO module pages, {n_gotchas} gotcha pages, {n_missions} missions, {n_tools} tool pages with screenshots)")
     return 0
 
 

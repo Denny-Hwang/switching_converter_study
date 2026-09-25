@@ -1,0 +1,16 @@
+# 미션 M7의 완료 기준 (src/content/docs/ko/09-missions/m7-loss-budget.mdx).
+# id는 모든 언어에서 같습니다. 브라우저에 저장되는 진행 상황을 함께 씁니다.
+criteria:
+  - id: gate
+    text: '손으로 계산한 벅 예제의 게이트 구동 손실.'
+    check: {example: loss-buck, name: P_gate, tol: 0.01}
+  - id: full-load
+    text: '전부하에서 가장 큰 손실과, 그곳에서 가장 큰 이유.'
+  - id: light-load
+    text: '부하의 10분의 1에서 가장 큰 손실과, 전부하와 다른 이유.'
+  - id: frequency
+    text: '$f_s$를 두 배로 했을 때 각 손실과 효율의 변화, 그리고 그 대신 얻는 것.'
+  - id: missing
+    text: '예산이 빠뜨리거나 추정만 하는 손실과, 계획이 이를 보는 방법.'
+  - id: plan
+    text: '손실마다 측정할 양, 계측기, 중요한 한계를 적고, 효율을 측정하는 방법을 담은 벤치 계획.'

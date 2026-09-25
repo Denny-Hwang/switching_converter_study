@@ -1,0 +1,51 @@
+# Quiz for 09-missions/m5-flyback-clamp. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A flyback with $n$ = 0.5 (1:0.5) delivers 12 V through a diode with a 0.5 V drop. What is its reflected voltage?'
+    options:
+      - '6.25 V'
+      - '24 V'
+      - '25 V'
+      - '12.5 V'
+    answer: 2
+    explain: 'The primary carries the output voltage plus the diode drop, divided by $n$: 12.5 V over 0.5 is 25 V.'
+  - q: 'The same flyback runs from 100 V. Without leakage, what does its switch block while it is off?'
+    options:
+      - '100 V'
+      - '125 V'
+      - '75 V'
+      - '112 V'
+    answer: 1
+    explain: 'The input voltage plus the reflected voltage: 100 V plus 25 V.'
+  - q: 'And its output diode, while the switch is on?'
+    options:
+      - '62 V'
+      - '50 V'
+      - '12 V'
+      - '112 V'
+    answer: 0
+    explain: 'The secondary carries $n$ times the input, 50 V, in series with the 12 V output: 62 V.'
+  - q: 'An RCD clamp''s resistor is made larger. What happens?'
+    options:
+      - 'The clamp voltage rises and the clamp dissipates less'
+      - 'The clamp voltage falls and the clamp dissipates less'
+      - 'The clamp voltage rises and the clamp dissipates more'
+      - 'Nothing: the capacitor sets the clamp voltage'
+    answer: 0
+    explain: 'The clamp voltage settles where the resistor dissipates what the clamp absorbs. A larger resistor needs a higher voltage for that, and a clamp voltage further above the reflected voltage absorbs less.'
+  - q: 'Why must the clamp voltage be above the reflected voltage?'
+    options:
+      - 'Otherwise the switch would never turn off'
+      - 'Otherwise the clamp conducts whenever the output diode does and takes the energy meant for the output'
+      - 'Otherwise the output diode would break down'
+      - 'It need not be: any clamp voltage works'
+    answer: 1
+    explain: 'While the output diode conducts, the primary sits at the reflected voltage. A clamp below it would conduct in parallel with the transformer''s output path.'
+  - q: 'A flyback with an RCD clamp loses its load. What happens to the clamp voltage?'
+    options:
+      - 'It stays where it was'
+      - 'It falls to the reflected voltage'
+      - 'It rises far above its design value, because the resistor must now dissipate the whole input power'
+      - 'It falls to zero'
+    answer: 2
+    explain: 'Without a load, all the energy the converter takes ends in the clamp. The RCD clamp''s voltage rises until its resistor dissipates it, and the output and the switch voltage rise with it.'

@@ -1,0 +1,15 @@
+# 미션 M9의 완료 기준 (src/content/docs/ko/09-missions/m9-write-a-gotcha.mdx).
+# id는 모든 언어에서 같습니다. 브라우저에 저장되는 진행 상황을 함께 씁니다.
+criteria:
+  - id: symptom
+    text: '직접 겪은 실수를 처음 본 모습으로 설명하고, 그 일이 일어난 프로젝트의 것은 아무것도 담지 않습니다.'
+  - id: template
+    text: '페이지가 템플릿을 따릅니다: 태그, 그리고 증상, 원인, 확인 방법, 해결, 참고 자료.'
+  - id: numbers
+    text: '모든 수치가 `<Val>`로 표시한 합성 예제에서, 또는 같은 줄에 인용한 출처에서 옵니다.'
+  - id: sources
+    text: '장치나 방법에 대한 모든 주장이 `references.bib`의 검증된 항목을 인용합니다.'
+  - id: checks
+    text: '`modulelint`, `privacy_scan`, `mathlint`, `refcheck`가 통과하고 사이트가 빌드됩니다.'
+  - id: korean
+    text: '한국어 페이지가 있거나, STATUS의 행이 한국어를 보류로 표시합니다.'

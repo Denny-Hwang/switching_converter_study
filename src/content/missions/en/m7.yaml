@@ -1,0 +1,16 @@
+# Acceptance criteria of mission M7 (src/content/docs/en/09-missions/m7-loss-budget.mdx).
+# The ids are the same in every language: the progress kept in the browser is shared.
+criteria:
+  - id: gate
+    text: 'The buck example''s gate-drive loss, worked out by hand.'
+    check: {example: loss-buck, name: P_gate, tol: 0.01}
+  - id: full-load
+    text: 'The largest loss at full load, and why it is the largest there.'
+  - id: light-load
+    text: 'The largest loss at a tenth of the load, and why it differs from the one at full load.'
+  - id: frequency
+    text: 'What doubling $f_s$ does to each loss and to the efficiency, and what it buys.'
+  - id: missing
+    text: 'The losses the budget leaves out or only estimates, and how your plan sees them.'
+  - id: plan
+    text: 'A bench plan with, for each loss, the quantity, the instrument and the limit that matters, and how you would measure the efficiency.'

@@ -1,0 +1,94 @@
+---
+title: M2 · Find the critical K in the simulator
+description: Find the load at which the buck and the boost leave CCM by watching the simulated inductor current, and compare the K there with the critical value the equations give.
+sidebar:
+  order: 2
+mission:
+  id: m2
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## Goal
+
+- Find, by experiment, the load resistance at which a buck and a boost enter DCM.
+- Turn that resistance into the dimensionless $K$ and compare it with the critical value $K_\mathrm{crit}(D)$ of each converter.
+- See what the output voltage does once the converter is in DCM.
+
+## Before you start
+
+- Read [CCM and DCM](../../02-theory/ccm-dcm/) and [the K parameter](../../02-theory/k-parameter/).
+- Know the definition of $K$ (<EqRef id="K.def" label="the K parameter" />) and the critical values of the buck (<EqRef id="Kcrit.buck" label="buck" />) and the boost (<EqRef id="Kcrit.boost" label="boost" />).
+
+## Steps
+
+### 1. The buck's boundary
+
+Open the simulator with the buck example:
+
+<TrySim example="buck-basic" topology="buck" />
+
+It starts in CCM with $R$ = <Val example="buck-basic" name="R" />. Raise $R$
+step by step and watch the detected mode above the charts. It comes from the
+simulated inductor current, which reaches zero within the period in DCM. It
+is not computed from $K$. Close in on the resistance where the mode changes,
+from both sides.
+
+### 2. K at the boundary
+
+With $L$ = <Val example="buck-basic" name="L" /> and $f_s$ =
+<Val example="buck-basic" name="f_s" />, work out $K$ at the resistance you
+found and enter it below. The simulator also prints $K$ and
+$K_\mathrm{crit}$ next to the mode, so you can compare the equation's
+boundary with the one the current shows.
+
+### 3. The boost's boundary
+
+Do the same with the boost example, which starts at
+$R$ = <Val example="boost-ideal" name="R" />:
+
+<TrySim example="boost-ideal" topology="boost" />
+
+At the same duty ratio its critical value is much smaller than the buck's,
+so it stays in CCM up to a much lighter load.
+
+### 4. The output in DCM
+
+Open the buck at a light load, $R$ = <Val example="buck-light-load" name="R" />:
+
+<TrySim example="buck-light-load" topology="buck" />
+
+Read the output voltage in the load table below the charts and enter it
+below. It lies above $D V_g$, because in DCM the conversion ratio depends on
+$K$ too (<EqRef id="buck.dcm.M" label="the buck's DCM ratio" />).
+
+### 5. The boost's worst duty ratio
+
+The boost's critical value is not monotonic in $D$. Sweep $D$ in the
+equation explorer and find where it peaks:
+
+<TryIt eq="Kcrit.boost" example="boost-ideal" sweep="D" />
+
+## Acceptance criteria
+
+<Mission id="m2" />
+
+## Gotchas
+
+- $K$ rises with the switching frequency and the inductance and falls with the resistance, so changing $f_s$ or $L$ moves the boundary as much as changing the load does.
+- Near the boundary the current only just touches zero, and the smallest change can flip the mode. Take the resistance halfway between the last CCM and the first DCM setting.
+- In DCM the output depends on the load. Holding it at a set point then takes a different duty ratio, which a regulator finds by itself.
+
+## Go deeper
+
+<GoDeeper ids={['erickson-ch5', 'coursera-converter-circuits']} />
+
+## Quiz
+
+<Quiz id="09-missions/m2-find-k-crit" />

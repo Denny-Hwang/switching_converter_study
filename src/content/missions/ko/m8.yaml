@@ -1,0 +1,18 @@
+# 미션 M8의 완료 기준 (src/content/docs/ko/09-missions/m8-sense-chain.mdx).
+# id는 모든 언어에서 같습니다. 브라우저에 저장되는 진행 상황을 함께 씁니다.
+criteria:
+  - id: burden
+    text: '가장 큰 전류에서의 센스 전압, 곧 측정 대상 회로에 걸리는 부담 전압.'
+    check: {example: sense-current, name: V_SENSE, tol: 0.01}
+  - id: offset
+    text: '증폭기의 오프셋이 전류로 보이는 값.'
+    check: {example: sense-current, name: I_OSeq, tol: 0.01}
+  - id: low-end
+    text: '가장 작은 전류에서 패드 오차와 오프셋 중 큰 것, 그리고 오차를 목표 안에 넣는 변경.'
+  - id: no-clip
+    text: '가장 큰 전류에서 최악 조건의 출력이 증폭기의 최대 출력과 ADC의 풀스케일 아래에 있습니다.'
+  - id: cost
+    text: '수정이 부담 전압과 손실에서 치르는 대가.'
+  - id: filter
+    text: '나이퀴스트 주파수 아래에 있는 필터의 차단 주파수.'
+    check: {example: sense-current, name: f_c, tol: 0.01}

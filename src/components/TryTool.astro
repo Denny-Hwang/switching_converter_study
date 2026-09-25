@@ -1,0 +1,29 @@
+---
+/**
+ * <TryTool tool="clamp-check" example="clamp-rcd" /> -- deep link into a design tool with one of
+ * its presets (the tool's own URL hash, src/lib/toollinks.ts), as <TrySim /> opens the simulator
+ * and <TryMag /> the magnetics designer.
+ */
+import { ui } from '../i18n/ui';
+import { getExample } from '../lib/examples';
+import { pageLocale } from '../lib/locale';
+import { pageHref } from '../lib/paths';
+import { TOOL_PAGES, toolHash, type ToolId } from '../lib/toollinks';
+
+interface Props {
+  tool: ToolId;
+  example: string;
+}
+const { tool, example } = Astro.props;
+if (!(tool in TOOL_PAGES)) throw new Error(`<TryTool tool="${tool}">: unknown tool (${Object.keys(TOOL_PAGES).join(', ')})`);
+const locale = pageLocale(Astro);
+const t = ui[locale];
+const href = `${pageHref(locale, TOOL_PAGES[tool])}#${toolHash(tool, example)}`;
+const ex = getExample(example);
+const label = locale === 'ko' ? ex.label_ko : ex.label;
+---
+
+<p class="pe-tryit">
+  <a class="pe-tryit__link" href={href}>▶ {t[`trytool.${tool}`]}: {label}</a>
+  <br /><small>{t['trytool.preset']} <code>{example}</code></small>
+</p>

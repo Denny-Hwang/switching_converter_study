@@ -1,0 +1,51 @@
+# Quiz for 09-missions/m6-lfr-matching. Numbers are synthetic exercise values.
+numbers: synthetic
+questions:
+  - q: 'A linear source of 20 V behind 100 ohm. What is the most power it can deliver?'
+    options:
+      - '4 W'
+      - '1 W'
+      - '2 W'
+      - '0.2 W'
+    answer: 1
+    explain: 'Into a load equal to its own resistance: 10 V across 100 ohm, 0.1 A, 1 W. That is $V_\mathrm{oc}^2$ over $4 R_s$.'
+  - q: 'A DCM flyback with a fixed duty ratio has $L_M$ = 1 mH, $f_s$ = 50 kHz and $D$ = 0.5. What is its input resistance, $2 L_M f_s$ over $D^2$?'
+    options:
+      - '100 ohm'
+      - '200 ohm'
+      - '400 ohm'
+      - '800 ohm'
+    answer: 2
+    explain: '2 times 1 mH times 50 kHz is 100 ohm, and over 0.25 that is 400 ohm.'
+  - q: 'The duty ratio of that flyback doubles. Its input resistance:'
+    options:
+      - 'Halves'
+      - 'Falls to a quarter'
+      - 'Doubles'
+      - 'Stays the same'
+    answer: 1
+    explain: 'The input resistance goes with the inverse square of the duty ratio.'
+  - q: 'The flyback''s input resistance matches the source''s. What is the bus voltage?'
+    options:
+      - 'The open-circuit voltage'
+      - 'Half the open-circuit voltage'
+      - 'Twice the open-circuit voltage'
+      - 'The critical voltage'
+    answer: 1
+    explain: 'The two equal resistances divide the source voltage in half, and the source then delivers its most power.'
+  - q: 'The source gets stronger until the bus would exceed the flyback''s critical voltage. What happens?'
+    options:
+      - 'The flyback keeps acting as a resistor'
+      - 'The flyback enters CCM, which holds the bus at the critical voltage: it becomes a constant-voltage sink'
+      - 'The switch turns off'
+      - 'The input resistance doubles'
+    answer: 1
+    explain: 'In CCM the conversion ratio ties the input to the fixed output at this duty ratio, so the bus stays at the critical voltage. The share of the power then depends on the source''s amplitude.'
+  - q: 'Why does a loss-free resistor take the same share of the available power at any source amplitude?'
+    options:
+      - 'Because it is a resistance: the divider ratio does not depend on the amplitude'
+      - 'Because the duty ratio follows the amplitude'
+      - 'Because the switch voltage is constant'
+      - 'It does not: the share grows with the amplitude'
+    answer: 0
+    explain: 'A resistance and the source resistance divide the voltage in a fixed ratio, so the power and the available power scale together with the square of the amplitude.'

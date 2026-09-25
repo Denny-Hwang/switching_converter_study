@@ -191,6 +191,77 @@ def test_resources_check_online_checks_urls_at_once_and_reports_in_order(monkeyp
     assert "bib:k3: HTTP 404 (gone) (https://example.org/3)" in err
 
 
+def test_resources_check_tries_what_nothing_answered_once_more(monkeypatch, capsys) -> None:
+    rc = _script("resources_check")
+    targets = [{"src": f"bib:k{i}", "url": f"https://example.org/{i}", "expect": "x", "kind": "html", "quotes": []}
+               for i in range(4)]
+    monkeypatch.setattr(rc, "collect", lambda: (targets, []))
+    monkeypatch.setattr(rc, "RETRY_PAUSE", 0)
+    calls: dict[str, int] = {}
+
+    def check(t: dict) -> tuple[str, str]:
+        n = calls[t["src"]] = calls.get(t["src"], 0) + 1
+        if t["src"] == "bib:k1":  # the archive answers the second time
+            return ("NO-ANSWER", rc.NO_ANSWER) if n == 1 else ("OK (archived)", "archived 2026-01-02: x")
+        if t["src"] == "bib:k2":  # never answers
+            return "NO-ANSWER", rc.NO_ANSWER
+        if t["src"] == "bib:k3":  # a conclusive failure is not tried again
+            return "FAIL", "HTTP 404 (gone)"
+        return "OK", "x"
+
+    monkeypatch.setattr(rc, "check_online", check)
+    monkeypatch.setattr(sys, "argv", ["resources_check.py", "--online"])
+    assert rc.main() == 1
+    out, err = capsys.readouterr()
+    assert calls == {"bib:k0": 1, "bib:k1": 2, "bib:k2": 2, "bib:k3": 1}
+    assert "trying them once more" in out and "(again)" in out
+    assert "bib:k1:" not in err and "bib:k2: " + rc.NO_ANSWER in err and "bib:k3: HTTP 404 (gone)" in err
+    assert "confirmed from their latest Internet Archive capture: bib:k1" in out
+
+    # nothing left unanswered: no pause, no second round
+    calls.clear()
+    targets[:] = targets[:1]
+    assert rc.main() == 0
+    out, _ = capsys.readouterr()
+    assert calls == {"bib:k0": 1} and "once more" not in out
+
+
+def test_resources_check_asks_the_archive_once_per_url_that_it_answered(monkeypatch) -> None:
+    rc = _script("resources_check")
+    asked: list[str] = []
+    answer = [False]
+
+    def slow_get(url: str, how: str, tries: int = 3):
+        asked.append(url)
+        if not answer[0]:
+            return rc.Fetch(how, 503, url, "text/html", b"busy")
+        return rc.Fetch(how, 200, url, "application/json",
+                        json.dumps([["timestamp", "original"], ["20260102000000", "https://example.org/a"]]).encode())
+
+    monkeypatch.setattr(rc, "_slow_get", slow_get)
+    # nothing found: not kept, so the next entry with the URL asks again
+    assert rc.latest_capture("https://example.org/a") is None
+    assert rc.latest_capture("https://example.org/a") is None
+    assert len(asked) == 4  # the CDX query and the availability query, twice
+    answer[0] = True
+    asked.clear()
+    assert rc.latest_capture("https://example.org/a") == ("20260102000000", "https://example.org/a")
+    assert rc.latest_capture("https://example.org/a") == ("20260102000000", "https://example.org/a")
+    assert len(asked) == 1  # found once, kept for the run
+
+
+def test_resources_check_calls_an_archive_that_does_not_serve_its_capture_no_answer(monkeypatch) -> None:
+    rc = _script("resources_check")
+    target = {"src": "bib:k", "url": "https://example.org/a", "expect": "Title", "kind": "html", "quotes": []}
+    monkeypatch.setattr(rc, "latest_capture", lambda url, pdf=False: ("20260102000000", url))
+    monkeypatch.setattr(rc, "_slow_get", lambda url, how, tries=3: rc.Fetch(how, 503, url, "text/html", b""))
+    verdict, detail = rc.archived(target)
+    assert verdict == "none" and detail.startswith("archive capture 2026-01-02")
+    page = b"<html><head><title>Another page</title></head></html>"
+    monkeypatch.setattr(rc, "_slow_get", lambda url, how, tries=3: rc.Fetch(how, 200, url, "text/html", page))
+    assert rc.archived(target)[0] == "fail"  # a capture that is another page is a real failure
+
+
 def test_resources_check_takes_a_pdf_from_the_archive_before_a_later_web_page(monkeypatch) -> None:
     rc = _script("resources_check")
     asked: list[str] = []
