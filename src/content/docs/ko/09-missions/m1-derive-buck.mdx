@@ -1,0 +1,109 @@
+---
+title: M1 · 벅 컨버터 유도와 검증
+description: 전압-초 평형으로 벅 컨버터의 변환비와 인덕터 리플을 유도하고, 수식 카탈로그와 벅 예제로 확인한 뒤, 카탈로그의 검사가 틀린 값을 잡아내는 것을 직접 봅니다.
+sidebar:
+  order: 1
+mission:
+  id: m1
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 벅 컨버터의 CCM 변환비를 전압-초 평형(volt-second balance)으로, 손으로 그리고 sympy로 유도합니다.
+- 온 구간(on-interval) 동안의 전류 기울기로 인덕터 전류 리플을 유도합니다.
+- 식 하나가 사이트의 검사를 거치는 과정을 따라갑니다: `equations.yaml`의 항목, 그 테스트 값, 그 식을 재현해야 하는 sympy 유도, 그리고 생성기(generator). 각각을 일부러 망가뜨려 어떤 검사가 실패하는지 봅니다.
+
+## 시작하기 전에
+
+- [전압-초 평형과 전하 평형](../../02-theory/volt-second-charge-balance/)과 [벅 컨버터](../../03-topologies/buck/)를 읽습니다.
+- 저장소를 클론하고 Python 패키지를 설치해 둡니다(README에 있는 대로 `pip install -e python`). 아래 명령은 클론의 최상위 폴더에서 실행합니다.
+- 이 사이트에서 $\Delta i_L$은 Erickson과 같이 인덕터 전류의 피크-피크 리플의 절반입니다.
+
+## 단계
+
+### 1. 손으로 풀기
+
+CCM에서 스위치는 $D T_s$ 동안 인덕터를 $V_g$에 연결하고, 주기의 나머지
+동안에는 다이오드가 인덕터를 접지에 연결합니다. 출력 전압 $V$를 일정하다고
+보고(소리플 근사, small-ripple approximation) 각 구간의 인덕터 전압을 씁니다.
+한 주기에 걸쳐 평균하고, 그 평균을 0으로 놓은 뒤 $V$에 대해 풉니다. $V/V_g$를
+<EqRef id="buck.ccm.M" label="벅 변환비" />와 비교합니다.
+
+### 2. sympy로 풀기
+
+같은 계산을 sympy에 맡깁니다. 두 인덕터 전압을 채웁니다.
+
+```python
+import sympy as sp
+
+D, Vg, V = sp.symbols('D V_g V', positive=True)
+v_on = ...   # 스위치가 켜져 있는 동안의 인덕터 전압
+v_off = ...  # 다이오드가 도통하는 동안의 인덕터 전압
+print(sp.solve(sp.Eq(D * v_on + (1 - D) * v_off, 0), V))
+```
+
+저장소의 유도는 `python/pe_core/derive/ccm_ratios.py`에 있고,
+[유도 페이지](../../02-theory/derivations/#deriv-ccm_ratios)에서 단계별로 볼 수 있습니다.
+
+### 3. 리플
+
+온 구간 동안 인덕터 전류는 일정한 기울기로 오릅니다. $D T_s$ 동안 오른 양이
+피크-피크 리플이고, 그 절반이 $\Delta i_L$입니다. 결과를
+<EqRef id="buck.ripple.iL" label="벅 인덕터 리플" />과 비교합니다.
+
+### 4. 예제의 값
+
+벅 예제는 $V_g$ = <Val example="buck-basic" name="V_g" />,
+$D$ = <Val example="buck-basic" name="D" />, $L$ = <Val example="buck-basic" name="L" />,
+$f_s$ = <Val example="buck-basic" name="f_s" />입니다. 이 예제의 출력 전압과
+$\Delta i_L$을 계산해 완료 기준에 입력합니다. 그런 다음 수식 탐색기에서 리플을
+열고 인덕턴스를 바꿔 보면, 리플이 $1/L$에 비례해 줄어듭니다.
+
+<TryIt eq="buck.ripple.iL" example="buck-basic" sweep="L" />
+
+### 5. 검사 통과 확인
+
+클론에서 `python scripts/gen_equations.py`, `pytest`, `python scripts/mathlint.py`를
+실행합니다. 세 가지 모두 통과하고, `git status`를 보면 생성기가
+`packages/pe-core/equations/`를 바꾸지 않았습니다.
+
+### 6. 테스트 값 망가뜨리기
+
+`packages/pe-core/equations/equations.yaml`에서 `buck.ccm.M`의 `tests` 중 첫
+번째 기댓값을 바꿉니다. `python scripts/gen_equations.py`를 실행하면 생성기가
+거부하고, 메시지에 항목과 테스트, 그리고 식이 실제로 주는 값을 밝힙니다.
+`git checkout -- packages/pe-core/equations/`로 되돌립니다.
+
+### 7. 식을 일관되게 망가뜨리기
+
+이번에는 `buck.ccm.M`의 식과 두 기댓값을 서로 맞도록 함께 바꿉니다(예를 들어
+셋 다 절반으로). 생성기는 이것을 받아들이지만, `pytest`는
+`test_derivation_reproduces_yaml[buck.ccm.M]`에서 실패합니다. sympy 유도는
+여전히 1단계에서 구한 변환비를 주기 때문입니다. 앞에서처럼 되돌리면, 같은
+checkout이 생성기가 다시 쓴 파일도 함께 되돌립니다.
+
+## 완료 기준
+
+<Mission id="m1" />
+
+## 주의할 점
+
+- 여기서 $\Delta i_L$은 피크-피크 리플의 절반입니다. 전류가 실제로 흔들리는 폭은 확인 칸이 기대하는 값의 두 배입니다.
+- 이 변환비는 CCM에서만 성립합니다. 주기가 끝나기 전에 인덕터 전류가 0에 닿으면 출력은 $D V_g$보다 올라갑니다([CCM과 DCM](../../02-theory/ccm-dcm/), 그리고 미션 M2).
+- `pytest`는 `pe_core`가 설치된 Python으로 실행합니다. 다른 인터프리터로는 어떤 검사도 돌기 전에 import에서 실패합니다.
+- 생성기가 받아들인 실험은 생성기의 출력 파일도 다시 씁니다. `git checkout -- packages/pe-core/equations/`는 YAML과 그 파일들을 함께 되돌립니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['erickson-ch2', 'coursera-intro-pe']} />
+
+## 퀴즈
+
+<Quiz id="09-missions/m1-derive-buck" />

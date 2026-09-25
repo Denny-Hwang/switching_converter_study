@@ -24,7 +24,9 @@ An open, bilingual learning repository on power electronics for electrical
 engineers, and a web app that puts **learning**, **design** and
 **simulation** in one place. It covers switching-converter theory
 (CCM/DCM), the basic topologies, magnetics and losses, energy-harvesting
-interfaces and bench practice. The SPICE library follows (see the roadmap).
+interfaces and bench practice, with LTspice and ngspice files for the five
+basic converters and nine missions that put the pages and tools to work. The
+CircuitJS1 (Falstad) circuits follow (see the roadmap).
 
 <table>
 <tr>
@@ -93,7 +95,14 @@ flowchart LR
 | 01 Physics | Faraday's law and inductors, transformers, ferrites and B-H, air gap and A_L, core loss |
 | 02 Theory | switching principle, volt-second and charge balance, CCM and DCM, the K parameter, averaged models, small-signal models, the RHP zero, control basics, derivations |
 | 03 Topologies | buck, boost, buck-boost, flyback, forward, comparison |
+| 04 Magnetics | inductor design procedure, winding loss, leakage inductance, snubbers and clamps, measuring magnetics |
+| 06 Bench | PCB layout, gate drive, current sensing, probes and measurement bandwidth, thermal design, protection, low temperature |
+| 07 Harvesting | source models, matching, the DCM flyback as a loss-free resistor, SECE, SSHI and MPPT, a design case |
+| 08 Gotchas | thirteen bench and design mistakes, each from its symptom to its fix |
+| 09 Missions | nine missions with acceptance criteria and a progress tracker kept in the browser |
+| 10 Resources | books, courses, videos, application notes, tools and papers, each opened and checked; the bibliography |
 | Tools | equation explorer, simulator, converter designer, magnetics designer, loss budget, clamp check, source matcher, sense chain |
+| SPICE library | `sim/`: the five converters as LTspice schematics and ngspice netlists, with what to plot and the numbers to expect |
 
 ### Run it locally
 
@@ -132,6 +141,7 @@ node scripts/seq_check.mjs             # the operating-mode drawing's real text 
 | `packages/pe-core/` | TypeScript engine; `equations/` holds the one source of truth |
 | `python/pe_core/` | verification: sympy derivations, LaTeX and vector generation |
 | `examples/synthetic/` | the parameter sets behind every worked example and preset |
+| `sim/` | the SPICE library: LTspice schematics, ngspice netlists, their READMEs and waveforms |
 | `scripts/` | generators, lints, screenshots |
 | `src/` | Astro + Starlight site: pages (`content/docs/en`, `content/docs/ko`), components, tools |
 
@@ -144,7 +154,7 @@ node scripts/seq_check.mjs             # the operating-mode drawing's real text 
 | 2 | Core content: foundations, physics, theory, topologies (EN + KO) | done |
 | 3 | Time-domain simulator and design tools: simulator, converter designer, magnetics designer, loss budget, clamp check, source matcher, sense chain | done |
 | 4 | Magnetics, bench, harvesting, gotchas, resources | done |
-| 5 | LTspice/ngspice/CircuitJS library, missions, v0.1.0 | planned |
+| 5 | LTspice/ngspice library and missions (done); CircuitJS circuits, simulation pages, v0.1.0 | in progress |
 
 ### Contributing and licences
 
@@ -159,7 +169,9 @@ the citation rules. Documentation: CC BY-SA 4.0 (`LICENSE-DOCS`). Code: MIT
 전기공학 엔지니어를 위한 전력전자 공개 학습 저장소(영어 원본, 한국어 미러)이자
 **학습**, **설계**, **시뮬레이션**을 한곳에 모은 웹 앱입니다. 스위칭 컨버터
 이론(CCM/DCM), 기본 토폴로지, 자성 부품, 손실, 에너지 하베스팅 인터페이스, 벤치
-실습을 다룹니다. SPICE 라이브러리는 이어서 추가됩니다(로드맵 참고).
+실습을 다루며, 다섯 가지 기본 컨버터의 LTspice·ngspice 파일과 페이지·도구를 직접
+써 보는 아홉 가지 미션을 함께 제공합니다. CircuitJS1(Falstad) 회로는 이어서
+추가됩니다(로드맵 참고).
 
 <table>
 <tr>
@@ -224,7 +236,14 @@ flowchart LR
 | 01 물리 | 패러데이 법칙과 인덕터, 변압기, 페라이트와 B-H 곡선, 공극과 A_L, 코어 손실 |
 | 02 이론 | 스위칭 원리, 전압-초 평형과 전하 평형, CCM과 DCM, K 파라미터, 평균 모델, 소신호 모델, 우반평면(RHP) 영점, 제어 기초, 유도 과정 |
 | 03 토폴로지 | 벅, 부스트, 벅-부스트, 플라이백, 포워드, 비교 |
+| 04 자성 부품 | 인덕터 설계 절차, 권선 손실, 누설 인덕턴스, 스너버와 클램프, 자성 부품 측정 |
+| 06 벤치 | PCB 레이아웃, 게이트 구동, 전류 센싱, 프로브와 측정 대역폭, 열 설계, 보호 회로, 저온 |
+| 07 하베스팅 | 전원 모델, 정합, 무손실 저항으로 동작하는 DCM 플라이백, SECE·SSHI·MPPT, 설계 사례 |
+| 08 주의할 점 | 벤치와 설계에서 흔한 열세 가지 실수, 각각 증상부터 해결까지 |
+| 09 미션 | 완료 기준과 브라우저에 저장되는 진행 상황을 갖춘 아홉 가지 미션 |
+| 10 자료 | 도서, 강좌, 동영상, 응용 노트, 도구, 논문(모두 열어 확인), 참고문헌 |
 | 도구 | 수식 탐색기, 시뮬레이터, 컨버터 설계 도구, 자성 부품 설계 도구, 손실 예산, 클램프 점검, 전원 정합, 센스 체인 |
+| SPICE 라이브러리 | `sim/`: 다섯 가지 컨버터의 LTspice 회로도와 ngspice 넷리스트, 그릴 것과 기대할 수치 |
 
 ### 로컬에서 실행하기
 
@@ -263,6 +282,7 @@ node scripts/seq_check.mjs             # 동작 모드 회로도의 실제 글�
 | `packages/pe-core/` | TypeScript 엔진; `equations/`가 단일 원본(single source of truth) |
 | `python/pe_core/` | 검증: sympy 유도, LaTeX·벡터 생성 |
 | `examples/synthetic/` | 모든 예제와 프리셋의 파라미터 |
+| `sim/` | SPICE 라이브러리: LTspice 회로도, ngspice 넷리스트, 그 README와 파형 |
 | `scripts/` | 생성기, 린트, 스크린샷 |
 | `src/` | Astro + Starlight 사이트: 페이지(`content/docs/en`, `content/docs/ko`), 컴포넌트, 도구 |
 
@@ -275,7 +295,7 @@ node scripts/seq_check.mjs             # 동작 모드 회로도의 실제 글�
 | 2 | 핵심 콘텐츠: 기초, 물리, 이론, 토폴로지(영어·한국어) | 완료 |
 | 3 | 시간 영역 시뮬레이터와 설계 도구: 시뮬레이터, 컨버터 설계, 자성 부품 설계, 손실 예산, 클램프 점검, 전원 정합, 센스 체인 | 완료 |
 | 4 | 자성 부품, 벤치, 하베스팅, 주의할 점, 자료 | 완료 |
-| 5 | LTspice/ngspice/CircuitJS 라이브러리, 미션, v0.1.0 | 예정 |
+| 5 | LTspice/ngspice 라이브러리와 미션(완료), CircuitJS 회로, 시뮬레이션 페이지, v0.1.0 | 진행 중 |
 
 ### 기여와 라이선스
 

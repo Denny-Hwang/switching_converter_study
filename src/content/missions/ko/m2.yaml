@@ -1,0 +1,16 @@
+# 미션 M2의 완료 기준 (src/content/docs/ko/09-missions/m2-find-k-crit.mdx).
+# id는 모든 언어에서 같습니다. 브라우저에 저장되는 진행 상황을 함께 씁니다.
+criteria:
+  - id: buck-boundary
+    text: '벅 예제의 검출된 모드가 CCM에서 DCM으로 바뀌는 곳의 $K$, 그 저항에서 계산한 값.'
+    check: {example: buck-basic, name: K_crit, tol: 0.05}
+  - id: boost-boundary
+    text: '부스트 예제에서 구한 같은 값.'
+    check: {example: boost-ideal, name: K_crit, tol: 0.05}
+  - id: agree
+    text: '두 경계 모두에서, 시뮬레이션한 전류가 보여 주는 모드가 식이 주는 임계값과 맞습니다.'
+  - id: dcm-output
+    text: '가벼운 부하의 벅 출력 전압, 시뮬레이터의 부하 표에서 읽은 값.'
+    check: {example: buck-light-load, name: V_dcm, tol: 0.02}
+  - id: boost-peak
+    text: '부스트의 $K_\mathrm{crit}$이 가장 큰 듀티비, 수식 탐색기에서 찾은 값.'

@@ -1,0 +1,80 @@
+---
+title: M9 · 주의할 점 페이지 쓰기
+description: 벤치에서 직접 겪은 실수를 증상부터 해결까지 이 사이트의 페이지로 만듭니다. 수치는 예제 값으로, 주장은 검증된 출처로 뒷받침하고, 사이트의 검사를 통과시킵니다.
+sidebar:
+  order: 9
+mission:
+  id: m9
+---
+
+import TrySim from '../../../../components/TrySim.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 목표
+
+- 직접 겪은 실수 하나를, 다음 사람이 증상만 보고도 알아볼 수 있게 씁니다.
+- 그 메커니즘, 다른 원인과 구별하는 확인 방법, 해결 방법을 설명하고 각각을 출처로 뒷받침합니다.
+- 영어와 한국어로, 또는 한국어 페이지를 보류(pending)로 표시한 채 사이트의 검사를 통과시킵니다.
+
+## 시작하기 전에
+
+- [주의할 점](../../08-gotchas/)의 페이지들이 어떻게 쓰였는지 보고, 저장소의 `docs/GOTCHA_TEMPLATE.md` 템플릿을 읽습니다.
+- `PRIVACY_RULES.md`를 읽습니다: 실제 프로젝트의 어떤 것도, 기관·장치·설치 장소의 이름도 쓰지 않습니다.
+
+## 단계
+
+### 1. 실수 고르기
+
+직접 겪은 실수를 하나 고르고, 원인을 알기 전에 처음 본 모습으로 설명합니다.
+그 실수가 일어난 프로젝트에 속한 것은 모두 걷어 냅니다. 페이지는 어떤 설계에도
+맞는 내용이어야 합니다.
+
+### 2. 재현하기
+
+가능하면 사이트의 도구로 메커니즘을 보여 줍니다. 컨버터 수준의 실수는
+[전원의 전압을 고정해 버리는 고정 듀티 플라이백](../../08-gotchas/flyback-source-pinning/)처럼
+시뮬레이터로 보여 줄 수 있는 경우가 많습니다. 예를 들어 고정 전압에 연결된 벅
+프리셋은 끝내 자리 잡지 못하는 인덕터 전류를 보여 줍니다.
+
+<TrySim example="sim-buck-fixed" topology="buck" />
+
+### 3. 페이지 쓰기
+
+템플릿을 따릅니다: 태그, 그리고 증상, 원인, 확인 방법, 해결, 참고 자료. 모든
+수치는 예제(`examples/synthetic/<name>.yaml`, `<Val>`로 표시)에서 가져오거나, 같은
+줄에 인용한 출처에서 가져옵니다. 식은 `<EqRef>`로 연결하고, 새 식은 먼저
+`equations.yaml`에 넣습니다.
+
+### 4. 모든 주장 뒷받침하기
+
+장치나 방법에 대한 모든 서술에 `references.bib`의 출처를 인용합니다. 새 항목은
+DOI나 URL을 열어 확인하기 전까지 `VERIFY` 표시를 달고 있으며, 그동안에는 공개
+페이지에서 인용할 수 없습니다.
+
+### 5. 검사 실행
+
+`python scripts/modulelint.py`, `python scripts/privacy_scan.py`,
+`python scripts/mathlint.py`, `python scripts/refcheck.py`를 실행한 뒤
+`npm run build`를 실행합니다. `docs/STATUS.md`에 페이지의 행을 추가하고, 한국어
+페이지를 쓰거나 그곳에 보류로 표시합니다. 사이트에 올리고 싶다면 풀 리퀘스트를
+엽니다.
+
+## 완료 기준
+
+<Mission id="m9" />
+
+## 주의할 점
+
+- 원인을 이미 염두에 두고 쓴 증상은 아직 원인을 찾지 못한 사람에게 도움이 되지 않습니다. 본 것을 그대로 씁니다.
+- 작업하던 프로젝트의 수치는 반올림해도 쓸 수 없습니다. 같은 효과를 보이는 어림수로 예제를 만듭니다.
+- 확인 방법이 없는 해결은 추측일 뿐입니다. 해결이 효과가 있었는지 어떻게 아는지 씁니다.
+
+## 더 알아보기
+
+<GoDeeper ids={['keysight-imh', 'keithley-llmh']} />
+
+## 퀴즈
+
+<Quiz id="09-missions/m9-write-a-gotcha" />

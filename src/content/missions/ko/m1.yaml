@@ -1,0 +1,19 @@
+# 미션 M1의 완료 기준 (src/content/docs/ko/09-missions/m1-derive-buck.mdx).
+# id는 모든 언어에서 같습니다. 브라우저에 저장되는 진행 상황을 함께 씁니다.
+criteria:
+  - id: by-hand
+    text: '손으로 푼 인덕터의 전압-초 평형에서 출력 전압을 얻고, $V/V_g$가 카탈로그의 변환비와 같습니다.'
+  - id: sympy
+    text: 'sympy 스크립트가 평형을 $V$에 대해 풀어 같은 결과를 줍니다.'
+  - id: example-v
+    text: '구한 변환비로 계산한 벅 예제의 출력 전압.'
+    check: {example: buck-basic, name: V, tol: 0.005}
+  - id: example-ripple
+    text: '벅 예제의 $\Delta i_L$(피크-피크 리플의 절반).'
+    check: {example: buck-basic, name: Delta_i_L, tol: 0.01}
+  - id: checks-pass
+    text: '클론에서 생성기, `pytest`, `mathlint`가 통과하고 수식 파일을 바꾸지 않습니다.'
+  - id: wrong-test
+    text: '`buck.ccm.M`에 틀린 기댓값을 넣으면 생성기가 거부하고 항목과 테스트를 밝힙니다.'
+  - id: wrong-equation
+    text: '식과 기댓값을 함께 바꾸면 `pytest`가 `test_derivation_reproduces_yaml[buck.ccm.M]`에서 실패합니다.'

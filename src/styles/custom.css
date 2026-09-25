@@ -658,6 +658,14 @@ html:lang(ko) body {
 .pe-mprog table {
   width: 100%;
 }
+.pe-mprog th,
+.pe-mprog td {
+  vertical-align: top;
+}
+.pe-mprog tbody th {
+  text-align: left;
+  min-width: 9rem;
+}
 .pe-mprog__cell {
   white-space: nowrap;
 }

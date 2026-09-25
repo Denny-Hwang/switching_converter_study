@@ -1,0 +1,18 @@
+# 미션 M3의 완료 기준 (src/content/docs/ko/09-missions/m3-boost-rhp-zero.mdx).
+# id는 모든 언어에서 같습니다. 브라우저에 저장되는 진행 상황을 함께 씁니다.
+criteria:
+  - id: picture
+    text: '$D$의 계단 변화가 부스트의 출력을 먼저 낮추는 이유와, 벅에는 그런 영점이 없는 이유를 두 문장으로.'
+  - id: omega-z
+    text: '부스트 예제의 RHP 영점 $\omega_z$.'
+    check: {example: boost-basic, name: omega_z, tol: 0.01}
+  - id: omega-0
+    text: '그 이중 극점 $\omega_0$.'
+    check: {example: boost-basic, name: omega_0, tol: 0.01}
+  - id: moves
+    text: '수식 탐색기에서: $R$을 절반으로 하면 $\omega_z$도 절반이 되고, $D$가 커지면 낮아집니다.'
+  - id: buckboost
+    text: '벅-부스트 예제의 RHP 영점.'
+    check: {example: buckboost-basic, name: omega_z, tol: 0.01}
+  - id: worst-case
+    text: '가장 낮은 영점을 정하는 동작점과, 크로스오버가 그보다 충분히 아래여야 하는 이유.'

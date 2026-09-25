@@ -1,0 +1,19 @@
+# 미션 M6의 완료 기준 (src/content/docs/ko/09-missions/m6-lfr-matching.mdx).
+# id는 모든 언어에서 같습니다. 브라우저에 저장되는 진행 상황을 함께 씁니다.
+criteria:
+  - id: available
+    text: '예제 전원이 줄 수 있는 최대 전력.'
+    check: {example: source-lfr, name: P_max, tol: 0.01}
+  - id: input-resistance
+    text: '예제의 $D$, $f_s$, $L_M$에서 플라이백의 입력 저항.'
+    check: {example: source-lfr, name: R_in, tol: 0.01}
+  - id: match-inductance
+    text: '그 $D$와 $f_s$에서 전원과 정합하는 자화 인덕턴스.'
+    check: {example: lfr-flyback, name: L_M, tol: 0.01}
+  - id: bus
+    text: '정합 상태의 버스 전압.'
+    check: {example: source-lfr, name: V_g, tol: 0.01}
+  - id: mismatch
+    text: '$D$를 두 배로 했을 때 예측한 입력 저항과 전력 비율이 전원 정합 도구와 맞습니다.'
+  - id: limit
+    text: 'CCM이 버스를 넘겨받는 전원 진폭과, 그곳의 스위치 전압을 정격과 비교한 결과.'
