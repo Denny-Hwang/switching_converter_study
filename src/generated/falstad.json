@@ -1,0 +1,294 @@
+{
+ "app": "https://www.falstad.com/circuit/circuitjs.html",
+ "steps_per_period": 500,
+ "tol": 0.01,
+ "cases": [
+  {
+   "id": "buck-ccm",
+   "topology": "buck",
+   "title": "Buck converter, CCM",
+   "title_ko": "벅 컨버터, CCM",
+   "example": "buck-basic",
+   "file": "sim/falstad/buck-ccm.txt",
+   "link": "https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCBMCmC0AMAOc9UgKzygFg19cYYAUAMy4B20AhgE6wCWAJjQDYhZhwCcHHAdPHR94xAG4hEWUqQBskzgHZ5YeVmxZIuLDv7piAcwUgZ8qSfSQOxAO7Gwy8I4driYdLxdP5WpWoGoEGCoIZp6tjh+keCQyKJM0WCx3jHIVlR0jCzUrBFeScj5jqISkEhQilZlhdxWmiihUHpNwrr6RtUVVeWxcRG+Kb0p8VCIyKajhY7pNPTMbIaTJnJLpJbW7ENepIi4XnWCgSLWZYpL+2OpfADONsQAxia7KTu4E5xwQiKLr8vyv2s6hFfl5sLI9sViLQQGCIfJYX8+MFFgiJqj1qJTjDwSl0ElhiAxAB7ACuABdiESYpI+IhFF8gtYqWBSDSsHT4CpwOBKU42ZJ6VyIJBiEA",
+   "Ts": 1e-05,
+   "periods": 400,
+   "measure": {
+    "v_out": {
+     "node": "vout"
+    },
+    "v_sw": {
+     "node": "sw"
+    },
+    "i_L": {
+     "element": 12,
+     "sign": 1
+    }
+   },
+   "expected": {
+    "v_out_avg": {
+     "value": 12.0,
+     "from": "buck.ccm.M"
+    },
+    "i_L_avg": {
+     "value": 1.2,
+     "from": "buck.IL"
+    },
+    "i_L_max": {
+     "value": 1.5,
+     "from": "buck.IL + buck.ripple.iL"
+    },
+    "i_L_min": {
+     "value": 0.8999999999999999,
+     "from": "buck.IL - buck.ripple.iL"
+    },
+    "v_sw_max": {
+     "value": 24.0,
+     "from": "V_g"
+    }
+   }
+  },
+  {
+   "id": "buck-dcm",
+   "topology": "buck",
+   "title": "Buck converter, DCM",
+   "title_ko": "벅 컨버터, DCM",
+   "example": "buck-light-load",
+   "file": "sim/falstad/buck-dcm.txt",
+   "link": "https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCBMCmC0AMAOc9UgKzygFg19cYYAUAMy4B20AhgE6wCWAJjQDYhZhwCcHHAdPHR94xAG4hEWUqQBskzgHZ5YeVmxZIuLDv7piAcwUgZ8qSfSQOxAO7Gwy8I4driYdLxdP5WpWoGoEGCoIZp6tjh+keCQyKJM0WCx3jHIVlR0jCzUrBFeScj5jqISkEhQilZlhdxWmiihUHpNwrr6RtUVVeWxcRG+Kb0p8VCIyKajhY7pNPTMbIaTJnJLpJbW7ENepIi4XnWCgSLWZYpL+2OpfADONsQAxia7KTu4E5xwQiKLr8vyv2s6hFfl5sLI9sViLQQGCIfJYX8+MFREYERM0etRKcYeCUugksMQGIAPYAVwALsRiTFJHxEIovkFrNSwKRaVh6fAVOBwFSnOzJAzuRBIMQgA",
+   "Ts": 1e-05,
+   "periods": 1500,
+   "measure": {
+    "v_out": {
+     "node": "vout"
+    },
+    "v_sw": {
+     "node": "sw"
+    },
+    "i_L": {
+     "element": 12,
+     "sign": 1
+    }
+   },
+   "expected": {
+    "v_out_avg": {
+     "value": 15.740852297878794,
+     "from": "buck.dcm.M"
+    },
+    "i_L_avg": {
+     "value": 0.15740852297878793,
+     "from": "buck.IL"
+    },
+    "i_L_max": {
+     "value": 0.4129573851060603,
+     "from": "2 buck.ripple.iL (DCM: from zero)"
+    },
+    "i_L_min": {
+     "value": 0.0,
+     "from": "DCM: zero"
+    },
+    "v_sw_max": {
+     "value": 24.0,
+     "from": "V_g"
+    }
+   }
+  },
+  {
+   "id": "boost-ccm",
+   "topology": "boost",
+   "title": "Boost converter, CCM",
+   "title_ko": "부스트 컨버터, CCM",
+   "example": "boost-ideal",
+   "file": "sim/falstad/boost-ccm.txt",
+   "link": "https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCBMCmC0AMAOc9UgKz3JDX1zDACgBmAFhADtoBDAJ1gEsATWgGxCzDgE5POAdPHT94RAG4hEWEiQBsUrgHYFYBVjJccWHQPREA5opCyF0k+m1EO5sCqhJw97UNQQdnIgHcHyOwsh0VXsxMHQ+QIVTKCCndUE3FFRkqD1DGKj5DIsrSRJ4Cmj8ikj+HDBktEg9VJFdfSNikyymkktPHybSyCUcUrFmX2aAx38oKloGFnZ0yEdoueQ2qzmlIbHF7GQsAGcvIkHSsZJECg2J+iZWGjYiAGMTU7jHwqyuOGFRdJPXqKfljovZ5kORnEJEOggEFghTQ4ZlMRGOHRZHtMSrKGg57oMDlEIgcQAewArgAXIiE8bbKRKT4QdwU8AQamIWmqcDgRlqKT8VnwdkQSBEIA",
+   "Ts": 1e-05,
+   "periods": 800,
+   "measure": {
+    "v_out": {
+     "node": "vout"
+    },
+    "v_sw": {
+     "node": "sw"
+    },
+    "i_L": {
+     "element": 2,
+     "sign": 1
+    }
+   },
+   "expected": {
+    "v_out_avg": {
+     "value": 24.0,
+     "from": "boost.ccm.M"
+    },
+    "i_L_avg": {
+     "value": 2.4,
+     "from": "boost.IL"
+    },
+    "i_L_max": {
+     "value": 2.7,
+     "from": "boost.IL + boost.ripple.iL"
+    },
+    "i_L_min": {
+     "value": 2.0999999999999996,
+     "from": "boost.IL - boost.ripple.iL"
+    },
+    "v_sw_max": {
+     "value": 24.3,
+     "from": "V + boost.ripple.v"
+    }
+   }
+  },
+  {
+   "id": "buckboost-ccm",
+   "topology": "buckboost",
+   "title": "Buck-boost converter (inverting), CCM",
+   "title_ko": "벅-부스트 컨버터(반전형), CCM",
+   "example": "buckboost-basic",
+   "file": "sim/falstad/buckboost-ccm.txt",
+   "link": "https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCBMCmC0AMAOc9UgKz3JDX1zDACgBmAFhADtoBDAJ1gEsATWgGxCzDgE5POAdPHT94RAG4hEWEiQBsUrgHYFYBVjJccWHQPREA5opCyF0k+m1EA7sbArwD++qJh0fZ44WRNX0UPgIMFQQrEg9GyhfTx8tZDFmKLi-MEhkHGp6JlYaNkjPVOQChzFJSCQoJRxyop5tKBRQqD1mkV19IxrK6oq0+MjYvz6-MQ5hmMRkUwb4AMDRTkMoSZN5ZanLRcSSRAoJoocM2gYWdiJypXWhlcL+AGdrIgBjE12-HYpprjhhUSWP1YKAEkTZiWwAzxkOR7EpEOggKEwhSIwH8YJLFHTTGg87wS4ozzoVIjEDiAD2AFcAC5EMkoKT8RBKX5BRZ0sAkBlYJnwVTgcC0xxcqTMvkQSBEIA",
+   "Ts": 1e-05,
+   "periods": 1200,
+   "measure": {
+    "v_out": {
+     "node": "vout"
+    },
+    "v_sw": {
+     "node": "sw"
+    },
+    "i_L": {
+     "element": 10,
+     "sign": 1
+    }
+   },
+   "expected": {
+    "v_out_avg": {
+     "value": -12.0,
+     "from": "buckboost.ccm.M"
+    },
+    "i_L_avg": {
+     "value": 2.4,
+     "from": "buckboost.IL"
+    },
+    "i_L_max": {
+     "value": 2.7,
+     "from": "buckboost.IL + buckboost.ripple.iL"
+    },
+    "i_L_min": {
+     "value": 2.0999999999999996,
+     "from": "buckboost.IL - buckboost.ripple.iL"
+    },
+    "v_sw_max": {
+     "value": 12.0,
+     "from": "V_g"
+    },
+    "v_sw_min": {
+     "value": -12.3,
+     "from": "V - buckboost.ripple.v"
+    }
+   }
+  },
+  {
+   "id": "flyback-ccm",
+   "topology": "flyback",
+   "title": "Flyback converter, CCM",
+   "title_ko": "플라이백 컨버터, CCM",
+   "example": "flyback-ccm",
+   "file": "sim/falstad/flyback-ccm.txt",
+   "link": "https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCBMCmC0AMAOc9UgKzxAFmZjcYYAUAMzYgB20AhgE6wCWAJrQDYhZhwCcnnAOnjp+8YgDcQiLKVIA2KVwDsCsAqzYNyLDoHpiAc0UhZC6SfSROxAO7GwKi1YfriAFSfhH2NVE0h1IVQreAFIER1BHmjo4jB0PlJLPxlk+W1BVAgwVFysSD1DT3TixAoxSVJ4ChKqmur+Zzz8vShW3WwiupM5ZG7SMus7fobTEwaxZnAeKxKwGZSoKloGFnYi+dne6dnBsTtNxaSrSH8xSHglHcWwbApTyOY6GkZKIp8FB5xSE7PiKY+XgU6DAzkcVmo9CYrBobGIAGMMKCgUjZvJREF4BAdEUQWjgcjjkNUSiEmDXHQMAsXFT8fx9EYySZ0UyiedLrSUXJ-DSsOIAPYAVwALsR+TgpPxEEphOA5WJxciMtL4Ko5SRFchlTK1RBIMQgA",
+   "Ts": 1e-05,
+   "periods": 1500,
+   "measure": {
+    "v_out": {
+     "node": "vout"
+    },
+    "v_sw": {
+     "node": "drain"
+    }
+   },
+   "expected": {
+    "v_out_avg": {
+     "value": 8.0,
+     "from": "flyback.ccm.M"
+    },
+    "v_sw_max": {
+     "value": 80.128,
+     "from": "V_g + (V + flyback.ripple.v)/n"
+    }
+   }
+  },
+  {
+   "id": "flyback-dcm",
+   "topology": "flyback",
+   "title": "Flyback converter, DCM",
+   "title_ko": "플라이백 컨버터, DCM",
+   "example": "flyback-dcm",
+   "file": "sim/falstad/flyback-dcm.txt",
+   "link": "https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCBMCmC0AMAOc9UgKzxAFmZjcYYAUAMzYgB20AhgE6wCWAJrQDYhZhwCcnnAOnjp+8YgDcQiLKVIA2KVwDsCsAqzYNyLDoHpiAc0UhZC6SfSROxAO7GwKi1YfriAFSfhH2NVE0gFdDhhQUgRHUEeKKjiMHQ+Uks-GST5bUFUCDBUHKxIPUNPNKLECjFJUngKYsrqqv5nXLy9KBbdUkLakzlkLtJS6zs++tMTerFmcB4rYrBp5KgqWgYWdkK5mZ6pmYGxOw2FxKtIfzFIeCVthbBsChOI5joaRkpCnwV7nFJj0+JJ968gTAzkcVmo9CYrBobGIAGMMMDAQiZvJREJMqJCuhEaNsTMkntkUj4iDXHQMPMXBSUeooGIjCSTKjGUdrOdLoyqXJ-FSsOIAPYAVwALsR+TgpPxEEoQllrOLEelpfBVOBwGLwMglTLVRBIMQgA",
+   "Ts": 1e-05,
+   "periods": 2500,
+   "measure": {
+    "v_out": {
+     "node": "vout"
+    },
+    "v_sw": {
+     "node": "drain"
+    }
+   },
+   "expected": {
+    "v_out_avg": {
+     "value": 20.364675298172564,
+     "from": "flyback.dcm.M"
+    },
+    "v_sw_max": {
+     "value": 129.45870119269026,
+     "from": "V_g + V/n"
+    }
+   }
+  },
+  {
+   "id": "forward-ccm",
+   "topology": "forward",
+   "title": "Forward converter with a reset winding, CCM",
+   "title_ko": "리셋 권선이 있는 포워드 컨버터, CCM",
+   "example": "forward-basic",
+   "file": "sim/falstad/forward-ccm.txt",
+   "link": "https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCBMCmC0AMAOc9UgKzxAFmZjcYYAUAMzYgB20AhgE6wCWAJrQDYhZhwCcnnAOnjp+8YgDcQiLKVIA2KVwDsCsAqzYNyLDoHpiAc0UhZC6SfSROxSPCXGwKh5G0hxjSsQDuDp6UvgTmKaCv5WjgrYaoEKVvBC8BDxPCkp4ABc8egANBCkotZg6HxhUOihAaSIFLqoEGCojViQeoYWVlUUpZo6EibwXdX9Xbb84U3NelBTuthtpAMmQwsUPdY+Kyajplu9zOA8HUNgh2WxVLQMLOxtJ0cUdzhoYj6PkOXtZ9a29m8fYNgKO91CBmHQaB42lFYkgcKQrLZtFDopBIKt4VA0dZ9tCvrj4c0LvQmKwaGwbHYcNECVTQnJXO5PDjohEMGBwk4rNRidcycR9uh2SZ5GyOeduVdSeSjIKOiLZZ8xBwFay5LDWXEEokCmIAMYgNXIVWwna1OqiNqG4UKK2lF4G9VOelGoLEOgGxAum2e638fRGZ2+wN2in2QOspQi1lYcQAewArgAXYixqAQVyIJTCcA5sSpsD5DNZ1Q5kip95SfiZ+AliCQYhAA",
+   "Ts": 1e-05,
+   "periods": 1200,
+   "measure": {
+    "v_out": {
+     "node": "vout"
+    },
+    "v_sw": {
+     "node": "drain"
+    },
+    "i_L": {
+     "element": 21,
+     "sign": 1
+    }
+   },
+   "expected": {
+    "v_out_avg": {
+     "value": 9.600000000000001,
+     "from": "forward.ccm.M"
+    },
+    "i_L_avg": {
+     "value": 1.9200000000000004,
+     "from": "buck.IL"
+    },
+    "i_L_max": {
+     "value": 2.208,
+     "from": "buck.IL + forward.ripple.iL"
+    },
+    "i_L_min": {
+     "value": 1.6320000000000003,
+     "from": "buck.IL - forward.ripple.iL"
+    },
+    "v_sw_max": {
+     "value": 96.0,
+     "from": "V_g (1 + 1/n_r)"
+    }
+   }
+  }
+ ]
+}
