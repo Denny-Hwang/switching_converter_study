@@ -47,16 +47,15 @@ $n$ = <Val example="flyback-ccm" name="n" />, $D$ = <Val example="flyback-ccm" n
 <TrySim example="flyback-ccm" topology="flyback" />
 
 시뮬레이터의 변압기에는 누설 인덕턴스가 없으므로, 턴오프 때 스위치 전압에
-스파이크가 없고 곧바로 입력 전압과 반사 전압의 합으로 올라갑니다.
+스파이크가 없고 곧바로 입력 전압과 반사 전압(reflected voltage)의 합으로 올라갑니다.
 
 ### 3. 반사 전압
 
 누설이 있으면 스위치가 꺼질 때 누설 인덕턴스가 여전히 피크 1차 전류를 흘리고,
 클램프가 막을 때까지 드레인을 입력 전압과 반사 전압의 합 위로 밀어 올립니다
 <Cite key="ti_ssztcv6" />. 클램프 예제는 같은 종류의 플라이백을 더 높은 입력
-전압에서 동작시킵니다. 그 반사 전압(reflected voltage,
-<EqRef id="flyback.V_OR" label="반사 전압" />)을 계산합니다. 어떤 클램프든 이보다
-높은 전압을 유지해야 합니다.
+전압에서 동작시킵니다. 그 반사 전압(<EqRef id="flyback.V_OR" label="반사 전압" />)을
+계산합니다. 어떤 클램프든 이보다 높은 전압을 유지해야 합니다.
 
 ### 4. RCD 클램프
 

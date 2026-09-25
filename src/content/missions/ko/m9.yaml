@@ -6,7 +6,7 @@ criteria:
   - id: template
     text: '페이지가 템플릿을 따릅니다: 태그, 그리고 증상, 원인, 확인 방법, 해결, 참고 자료.'
   - id: numbers
-    text: '모든 수치가 `<Val>`로 표시한 예제에서, 또는 같은 줄에 인용한 출처에서 옵니다.'
+    text: '모든 수치가 `<Val>`로 표시한 합성 예제에서, 또는 같은 줄에 인용한 출처에서 옵니다.'
   - id: sources
     text: '장치나 방법에 대한 모든 주장이 `references.bib`의 검증된 항목을 인용합니다.'
   - id: checks
