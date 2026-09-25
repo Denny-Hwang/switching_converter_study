@@ -7,10 +7,12 @@
 //   node scripts/falstad_check.mjs --case buck-ccm  # one case
 //
 // Each circuit runs from the start state its link carries (the analytic steady state's values) for as
-// many switching periods as the SPICE library's run of the same case, then CircuitJS1's JavaScript interface (window.CircuitJS1) is sampled at every time step over the last
-// PERIODS_MEASURED periods. Each value must lie within TOL of its quantity's scale, its largest magnitude
-// in those periods, as in scripts/sim_library.py. It opens each case's check_link, the same circuit with
-// only the header's simulation speed raised, so that the run takes seconds rather than minutes.
+// many switching periods as the SPICE library's run of the same case, or longer when the page took long
+// to hand over control, then CircuitJS1's JavaScript interface (window.CircuitJS1) is sampled at every
+// time step over the last PERIODS_MEASURED periods. Each value must lie within TOL of its quantity's
+// scale, its largest magnitude in those periods, as in scripts/sim_library.py. It opens each case's
+// check_link, the same circuit with only the header's simulation speed raised, so that the run takes
+// seconds rather than minutes.
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import http from 'node:http';
@@ -56,11 +58,14 @@ async function runCase(browser, c, base) {
   try {
     await page.goto(url, { waitUntil: 'load', timeout: 90000 });
     await page.waitForFunction(() => window.CircuitJS1 && window.CircuitJS1.getTime, null, { timeout: 90000 });
-    const tEnd = c.periods * c.Ts;
     const result = await page.evaluate(
-      ({ tEnd, Ts, n, measure }) =>
+      ({ periods, Ts, n, measure }) =>
         new Promise((resolve) => {
           const sim = window.CircuitJS1;
+          // the circuit runs from the moment the page loads, before this callback is installed: on a slow
+          // runner it may already be near or past the case's run, so the measured periods start one period
+          // after the time found here at the earliest, and every one of them is seen whole
+          const tEnd = Math.max(periods * Ts, (Math.ceil(sim.getTime() / Ts) + n + 1) * Ts);
           const elms = sim.getElements();
           const read = {};
           for (const [k, m] of Object.entries(measure)) {
@@ -110,7 +115,7 @@ async function runCase(browser, c, base) {
           };
           sim.setSimRunning(true);
         }),
-      { tEnd, Ts: c.Ts, n: PERIODS_MEASURED, measure: c.measure },
+      { periods: c.periods, Ts: c.Ts, n: PERIODS_MEASURED, measure: c.measure },
     );
     return { result, problems };
   } finally {
@@ -136,6 +141,10 @@ function compare(c, r) {
   return { errors, rows };
 }
 
+if (only && !data.cases.some((c) => c.id === only)) {
+  console.log(`falstad_check: no case "${only}" (${data.cases.map((c) => c.id).join(', ')})`);
+  process.exit(1);
+}
 const server = serveDir ? await serve(serveDir) : null;
 const base = server ? `http://127.0.0.1:${server.address().port}/circuitjs.html` : null;
 const browser = await chromium.launch();
@@ -161,7 +170,7 @@ try {
     if (result.why !== 'done') errors.push(`${c.id}: the simulation stopped at t = ${result.t} s (${result.why})`);
     for (const p of problems) errors.push(`${c.id}: page error: ${p}`);
     const { errors: e, rows } = compare(c, result);
-    console.log(`  ${c.id}: ${c.periods} periods to t = ${result.t.toPrecision(6)} s`);
+    console.log(`  ${c.id}: ${Math.round(result.t / c.Ts)} periods to t = ${result.t.toPrecision(6)} s`);
     for (const row of rows) console.log(row);
     errors.push(...e);
   }
