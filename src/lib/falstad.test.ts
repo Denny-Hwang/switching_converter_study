@@ -28,6 +28,11 @@ describe('the SPICE library in CircuitJS1 (src/generated/falstad.json)', () => {
     expect(c.link.slice(`${data.app}?ctz=`.length)).toMatch(/^[A-Za-z0-9+\-$]+$/);
   });
 
+  it.each(falstadCases.map((c) => [c.id, c] as const))('%s: a separate link for the CI check', (_id, c) => {
+    expect(c.check_link.startsWith(`${data.app}?ctz=`)).toBe(true);
+    expect(c.check_link).not.toBe(c.link);
+  });
+
   it.each(falstadCases.map((c) => [c.id, c] as const))('%s: its example opens in the simulator', (_id, c) => {
     expect(getExample(c.example).label.toLowerCase()).toContain('example');
     expect(simulatorHash(c.example, c.topology)).toContain(`topo=${c.topology}`);

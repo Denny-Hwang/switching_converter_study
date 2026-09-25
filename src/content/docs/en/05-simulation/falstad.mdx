@@ -40,11 +40,19 @@ values, and checks that each part joins the same nodes as in the netlist.
 <FalstadLinks />
 
 The scopes along the bottom show the inductor current (in the flyback, the
-switch current), the switch node or the drain, and the output. The site's CI
-opens every link on falstad.com in a headless browser, runs it from rest for
-as many periods as the SPICE case, and compares the averages and extremes of
-its last two periods with the ideal values in the table: each must lie within
-one percent of its quantity's largest magnitude over those periods.
+switch current), the switch node or the drain, and the output. A circuit opens
+at about one switching period a second, with current dots slow enough to
+follow; the Simulation Speed slider runs it faster. It starts from the ideal
+steady state's values, the output capacitor at the output voltage and the
+inductor (the flyback's magnetizing inductance) at its current when the switch
+turns on, so the scopes show the steady state within the first periods. Reset
+returns the capacitor and inductor to these values.
+
+The site's CI opens a copy of every link on falstad.com in a headless browser,
+the same circuit with only its speed raised. It runs the copy for as many
+periods as the SPICE case and compares the averages and extremes of its last
+two periods with the ideal values in the table: each must lie within one
+percent of its quantity's largest magnitude over those periods.
 
 ### How CircuitJS1 steps a circuit
 

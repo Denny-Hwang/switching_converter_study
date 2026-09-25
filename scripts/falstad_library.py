@@ -66,6 +66,15 @@ REVERSE = 4  # TransformerElm.FLAG_REVERSE: the second winding's dot at its othe
 GATE_V = 2.5
 # ngspice's values against the ideal equations: within TOL of the quantity's scale, as in the SPICE library
 TOL = 0.01
+# the simulation speed a link opens with, CircuitJS1's "iteration count": it runs 160 times this many
+# time steps a second (SimulationManager), so 500/160 shows about one switching period a second; the
+# CI's copy of each circuit runs at CHECK_SPEED, a hundred-odd periods a second (the slider's top)
+DISPLAY_SPEED = STEPS / 160
+CHECK_SPEED = 1000
+# the current dots: CircuitJS1 moves them by 1.7 exp(c/3.5 - 14.2) pixels per millisecond and ampere for
+# the current bar's position c (UIManager); c is chosen so that the load current moves them about
+# DOT_PX pixels in a 16 ms frame
+DOT_PX = 1.5
 
 
 # ---- numbers ---------------------------------------------------------------------------------------
@@ -370,14 +379,42 @@ def scopes(case: dict, elms: list[Elm]) -> list[str]:
     ]
 
 
-def circuit_text(case: dict) -> str:
+def start_state(case: dict, elms: list[Elm]) -> list[Elm]:
+    """The state a circuit opens in: the output capacitor at the output voltage of the steady state and
+    the inductor's current, or the flyback's magnetizing current, at its value when the switch turns on
+    at the start of the gate's period, all from the ideal equations. The scopes then show the steady state
+    from the first periods, also at a speed slow enough to follow; Reset empties the capacitor to this
+    voltage and sets the inductor to this current, and clears the transformer's currents."""
+    a = {k: float(f"{v:.6g}") for k, v in lib.analytic(case).items()}  # six digits, far finer than the ripple
+    volts = {"0": 0.0, "out": a["v_out_avg"]}
+    for e in elms:
+        if e.kind == "c":
+            # the voltage now and the one Reset returns to: its first post's node less its second's
+            e.values[1] = e.values[2] = num(volts[e.nodes[0]] - volts[e.nodes[1]])
+        elif e.kind == "l":
+            e.values[1] = e.values[2] = num(a["i_L_min"])
+        elif e.kind == "T":
+            # the primary's current (from its first post to its third); the secondary carries none while on
+            e.values[2] = num(a["i_M_min"])
+    return elms
+
+
+def current_bar(case: dict) -> int:
+    """The current bar's position that moves the dots about DOT_PX pixels a frame at the load current."""
+    a = lib.analytic(case)
+    load = abs(a["v_out_avg"]) / lib.case_params(case)["R"]
+    c = 3.5 * (math.log(DOT_PX / (1.7 * 16 * load)) + 14.2)
+    return max(1, min(100, round(c)))
+
+
+def circuit_text(case: dict, speed: float = DISPLAY_SPEED) -> str:
     p = lib.case_params(case)
-    elms = elements(case)
+    elms = start_state(case, elements(case))
     Ts = 1 / p["fs"]
     vmax = max(p["Vg"], 1.0)
     # options: flags 1 (current dots), the time step, the simulation speed, the current and power
     # bars' positions, the voltage range of the colours, and the smallest time step
-    lines = [f"$ 1 {num(Ts / STEPS)} 1000 50 {num(vmax)} 50 5e-11", DIODE_LINE]
+    lines = [f"$ 1 {num(Ts / STEPS)} {num(speed)} {current_bar(case)} {num(vmax)} 50 5e-11", DIODE_LINE]
     lines += [x.line() for x in elms]
     lines += scopes(case, elms)
     return "\n".join(lines) + "\n"
@@ -537,6 +574,8 @@ def generated(results: dict | None = None) -> dict:
             "example": case["example"],
             "file": f"sim/falstad/{case['id']}.txt",
             "link": link(text),
+            # the same circuit at CHECK_SPEED, for scripts/falstad_check.mjs: only the header's speed differs
+            "check_link": link(circuit_text(case, CHECK_SPEED)),
             "Ts": 1 / p["fs"],
             "periods": case["cycles"],
             "measure": measures(case, elms),
@@ -597,6 +636,13 @@ def readme() -> str:
         "The scopes along the bottom show the inductor current (the flyback's switch current), the switch",
         "node and the output. Right-click an element and choose View in New Scope to add another.",
         "",
+        "Each circuit opens at about one switching period a second, with the current dots slow enough to",
+        "follow, and starts from the ideal steady state's values: the output capacitor at the output voltage,",
+        "the inductor (the flyback's magnetizing inductance) at its current when the switch turns on. The",
+        "scopes show the steady state within the first periods. Move the Simulation Speed slider to run",
+        "faster; Reset returns the capacitor and inductor to these values and empties the transformer.",
+        "`scripts/falstad_check.mjs` runs a copy of each circuit that differs only in its speed.",
+        "",
         "# CircuitJS1로 보는 SPICE 라이브러리",
         "",
         "라이브러리의 사례를 Paul Falstad의 회로 시뮬레이터 CircuitJS1용 회로로, 같은 합성 예제(`examples/synthetic/`)의",
@@ -636,6 +682,12 @@ def readme() -> str:
         "",
         "아래쪽의 스코프는 인덕터 전류(플라이백은 스위치 전류), 스위치 노드, 출력을 보여 줍니다. 요소를",
         "오른쪽 클릭하고 View in New Scope를 고르면 스코프를 더할 수 있습니다.",
+        "",
+        "회로는 1초에 스위칭 주기 하나 정도의 속도로 열리고, 전류 점도 눈으로 따라갈 수 있을 만큼 느리게 움직입니다.",
+        "회로는 이상적인 정상상태의 값에서 시작합니다. 출력 커패시터는 출력 전압에, 인덕터(플라이백은 자화",
+        "인덕턴스)는 스위치가 켜질 때의 전류에 둡니다. 그래서 스코프는 처음 몇 주기 안에 정상상태를 보여 줍니다.",
+        "더 빨리 돌리려면 Simulation Speed 슬라이더를 옮깁니다. Reset은 커패시터와 인덕터를 이 값으로 되돌리고",
+        "변압기의 전류를 비웁니다. `scripts/falstad_check.mjs`는 속도만 다른 회로 사본을 실행합니다.",
         "",
     ]
     return "\n".join(en)

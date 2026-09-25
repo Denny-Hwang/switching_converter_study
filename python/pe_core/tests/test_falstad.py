@@ -103,3 +103,39 @@ def test_the_wiring_check_finds_a_miswired_circuit() -> None:
 def test_the_committed_files_are_current() -> None:
     for path, text in fl.files().items():
         assert path.read_text(encoding="utf-8") == text, f"{path.relative_to(ROOT)}: run python scripts/falstad_library.py"
+
+
+@pytest.mark.parametrize("case", fl.lib.CASES, ids=IDS)
+def test_the_check_copy_differs_only_in_its_speed(case) -> None:
+    shown = fl.circuit_text(case).splitlines()
+    check = fl.circuit_text(case, fl.CHECK_SPEED).splitlines()
+    assert shown[1:] == check[1:]
+    a, b = shown[0].split(), check[0].split()
+    assert a[:3] + a[4:] == b[:3] + b[4:]
+    assert float(a[3]) == pytest.approx(fl.STEPS / 160) and float(b[3]) == fl.CHECK_SPEED
+    entry = next(c for c in fl.generated()["cases"] if c["id"] == case["id"])
+    assert entry["check_link"] == fl.link("\n".join(check) + "\n")
+
+
+@pytest.mark.parametrize("case", fl.lib.CASES, ids=IDS)
+def test_the_circuits_start_at_the_ideal_steady_state(case) -> None:
+    a = fl.lib.analytic(case)
+    elms = fl.start_state(case, fl.elements(case))
+    caps = [e for e in elms if e.kind == "c"]
+    assert caps and all(abs(float(e.values[1])) == pytest.approx(abs(a["v_out_avg"]), rel=1e-5) for e in caps if "out" in e.nodes[:2])
+    for e in elms:
+        if e.kind == "l":
+            assert float(e.values[1]) == float(e.values[2]) == pytest.approx(a["i_L_min"], rel=1e-5, abs=1e-12)
+        if e.kind == "T":
+            assert float(e.values[2]) == pytest.approx(a["i_M_min"], rel=1e-5, abs=1e-12)
+
+
+@pytest.mark.parametrize("case", fl.lib.CASES, ids=IDS)
+def test_the_current_dots_move_about_the_chosen_pace(case) -> None:
+    import math
+
+    c = fl.current_bar(case)
+    assert 1 <= c <= 100
+    load = abs(fl.lib.analytic(case)["v_out_avg"]) / fl.lib.case_params(case)["R"]
+    px = 1.7 * 16 * load * math.exp(c / 3.5 - 14.2)
+    assert fl.DOT_PX / 1.2 < px < fl.DOT_PX * 1.2

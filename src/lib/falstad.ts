@@ -18,6 +18,8 @@ export interface FalstadCase {
   example: string;
   file: string;
   link: string;
+  /** the same circuit at the CI's speed (scripts/falstad_check.mjs); only the header's speed differs */
+  check_link: string;
   Ts: number;
   periods: number;
   measure: Record<string, { node?: string; element?: number; sign?: number }>;

@@ -6,10 +6,11 @@
 //   node scripts/falstad_check.mjs --serve DIR      # the same circuits in a CircuitJS1 build served from DIR
 //   node scripts/falstad_check.mjs --case buck-ccm  # one case
 //
-// Each circuit runs from rest for as many switching periods as the SPICE library's run of the same case,
-// then CircuitJS1's JavaScript interface (window.CircuitJS1) is sampled at every time step over the last
+// Each circuit runs from the start state its link carries (the analytic steady state's values) for as
+// many switching periods as the SPICE library's run of the same case, then CircuitJS1's JavaScript interface (window.CircuitJS1) is sampled at every time step over the last
 // PERIODS_MEASURED periods. Each value must lie within TOL of its quantity's scale, its largest magnitude
-// in those periods, as in scripts/sim_library.py.
+// in those periods, as in scripts/sim_library.py. It opens each case's check_link, the same circuit with
+// only the header's simulation speed raised, so that the run takes seconds rather than minutes.
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import http from 'node:http';
@@ -48,7 +49,7 @@ function serve(dir) {
 }
 
 async function runCase(browser, c, base) {
-  const url = base ? c.link.replace(data.app, base) : c.link;
+  const url = base ? c.check_link.replace(data.app, base) : c.check_link;
   const page = await browser.newPage({ viewport: { width: 1200, height: 800 } });
   const problems = [];
   page.on('pageerror', (e) => problems.push(e.message));
