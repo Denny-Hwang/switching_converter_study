@@ -35,9 +35,57 @@ def test_privacy_scan_finds_numbers_with_units_before_korean_particles(text: str
     assert _script("privacy_scan").NUM_UNIT.search(text)
 
 
-@pytest.mark.parametrize("text", ["D = 0.5", "K_crit", "V_g", "the 2nd edition", "Ch. 5", "4/27", "x1e5", "3 Hzx", "2차 고조파"])
+@pytest.mark.parametrize("text", ["在 5 V 时读数", "电容减小到0.33 µF。", "25 °C下", "额定6.3 V的", "超过10 mΩ"])
+def test_privacy_scan_finds_numbers_with_units_in_chinese_prose(text: str) -> None:
+    assert _script("privacy_scan").NUM_UNIT.search(text)
+
+
+@pytest.mark.parametrize("text", ["D = 0.5", "K_crit", "V_g", "the 2nd edition", "Ch. 5", "4/27", "x1e5", "3 Hzx", "2차 고조파", "2次谐波"])
 def test_privacy_scan_ignores_unitless_text(text: str) -> None:
     assert not _script("privacy_scan").NUM_UNIT.search(text)
+
+
+def test_privacy_scan_example_labels() -> None:
+    errors = _script("privacy_scan").example_label_errors
+    ok = {"synthetic": True, "label": "Buck example", "label_ko": "벅 예제"}
+    assert errors(ok) == []
+    assert errors({**ok, "label_zh": "Buck 示例"}) == []
+    assert errors({**ok, "label_ko": "벅"}) == ["label_ko must name it an example ('예제'), shown on Korean pages"]
+    assert errors({**ok, "label_zh": "Buck"}) == ["label_zh must name it an example ('示例'), shown on Chinese pages"]
+    assert errors({**ok, "label_zh": ""}) == ["label_zh must name it an example ('示例'), shown on Chinese pages"]
+    assert errors({**ok, "synthetic": "yes"}) == ["must declare `synthetic: true` and a label naming it an example"]
+
+
+def test_privacy_scan_footer_statement_in_every_language() -> None:
+    errors = _script("privacy_scan").statement_errors
+    en = "    'site.synthetic': 'Example numbers are synthetic.',\n"
+    ko = "    'site.synthetic': '예제의 수치는 합성 값입니다.',\n"
+    zh = "    'site.synthetic': '示例中的数值为合成数据。',\n"
+    assert errors(en + ko + zh) == []
+    assert errors(en + ko) == ["src/i18n/ui.ts: 'site.synthetic' is given 2 times; give it once in each of EN, KO, ZH"]
+    assert errors(en + ko + zh.replace("合成", "")) == [
+        "src/i18n/ui.ts: the ZH 'site.synthetic' must say that example numbers are synthetic ('合成')"
+    ]
+
+
+def test_mathlint_derivation_pages(tmp_path: Path) -> None:
+    ml = _script("mathlint")
+    docs = tmp_path / "src" / "content" / "docs"
+    page = '<Derivation module="a" />\n<Derivation module="b" />\n'
+    for locale in ("en", "ko"):
+        (docs / locale / "02-theory").mkdir(parents=True)
+        (docs / locale / "02-theory" / "derivations.mdx").write_text(page, encoding="utf-8")
+    # the Chinese page may be pending
+    assert ml.derivation_page_errors(docs, ["a", "b"]) == []
+    # once it exists, it renders every module too
+    (docs / "zh" / "02-theory").mkdir(parents=True)
+    (docs / "zh" / "02-theory" / "derivations.mdx").write_text('<Derivation module="a" />\n', encoding="utf-8")
+    assert ml.derivation_page_errors(docs, ["a", "b"]) == [
+        "src/content/docs/zh/02-theory/derivations.mdx: derivation module 'b' is not rendered"
+    ]
+    # the Korean page may not be missing
+    (docs / "ko" / "02-theory" / "derivations.mdx").unlink()
+    assert "missing derivations page src/content/docs/ko/02-theory/derivations.mdx" in ml.derivation_page_errors(docs, ["a"])
 
 
 @pytest.mark.parametrize(
@@ -687,6 +735,11 @@ def test_resources_check_validates_level_tags_and_korean_line(tmp_path: Path) ->
     assert errors() == []
     assert any("level must be one of" in e for e in errors(level="beginner"))
     assert any("missing why_ko" in e for e in errors(why_ko=""))
+    # a Chinese line is optional, but not empty when given; a resource may be in Chinese
+    assert errors(why_zh="说明") == []
+    assert any("why_zh is empty" in e for e in errors(why_zh=""))
+    assert errors(language="zh") == []
+    assert any("language must be en, ko or zh" in e for e in errors(language="fr"))
     assert any("a tag is listed twice" in e for e in errors(tags=["a", "a"]))
     assert any("tags must be a list of names" in e for e in errors(tags="a, b"))
     assert any("tags must be a list of names" in e for e in errors(tags=["a", ""]))

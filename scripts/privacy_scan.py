@@ -14,13 +14,14 @@ Checks every tracked (or new, not ignored) text file:
      rendered by components that read examples/synthetic/*.yaml and never
      appear literally in MDX. The check covers the electrical units a
      design's values come in -- V, A, W, Ω (or ohms), Hz, H, F, J, C and
-     °C, with an SI prefix -- written as symbols, in English or in Korean
-     prose; percentages, times, decibels and units spelt out in words are
+     °C, with an SI prefix -- written as symbols, in English, Korean or
+     Chinese prose; percentages, times, decibels and units spelt out in words are
      outside it.
   4. examples/synthetic/*.yaml must declare `synthetic: true`, and a `label`
-     and `label_ko` that name it as an example ("example", "예제"); every
-     page's footer states once that example numbers are synthetic, so the
-     footer component and that statement (EN and KO) must be in place.
+     and `label_ko` that name it as an example ("example", "예제"), and
+     so must `label_zh` ("示例") where it is given; every page's footer
+     states once that example numbers are synthetic, so the footer
+     component and that statement (EN, KO and ZH) must be in place.
   5. Quizzes (src/content/quizzes/**/*.yaml) may state exercise numbers with
      units, so each must declare `numbers: synthetic` (the footer's
      statement covers them).
@@ -69,6 +70,35 @@ def read_text(path: Path) -> str | None:
         return path.read_text(encoding="utf-8")
     except (UnicodeDecodeError, OSError):
         return None
+
+
+def example_label_errors(data: dict) -> list[str]:
+    """An example file's declaration and labels: English and Korean always, Chinese where given."""
+    errors = []
+    if data.get("synthetic") is not True or "example" not in str(data.get("label", "")).lower():
+        errors.append("must declare `synthetic: true` and a label naming it an example")
+    if "예제" not in str(data.get("label_ko", "")):
+        errors.append("label_ko must name it an example ('예제'), shown on Korean pages")
+    if data.get("label_zh") is not None and "示例" not in str(data["label_zh"]):
+        errors.append("label_zh must name it an example ('示例'), shown on Chinese pages")
+    return errors
+
+
+# The footer's statement in each language, in the order src/i18n/ui.ts lists them, and the word it must use.
+STATEMENT_WORDS = (("EN", "synthetic"), ("KO", "합성"), ("ZH", "合成"))
+
+
+def statement_errors(ui_text: str) -> list[str]:
+    """'site.synthetic' in ui.ts: one statement per language, each saying the numbers are synthetic."""
+    statements = re.findall(r"'site\.synthetic': ['\"](.*)['\"],", ui_text)
+    if len(statements) != len(STATEMENT_WORDS):
+        return [f"src/i18n/ui.ts: 'site.synthetic' is given {len(statements)} times; give it once in each of "
+                f"{', '.join(lang for lang, _ in STATEMENT_WORDS)}"]
+    return [
+        f"src/i18n/ui.ts: the {lang} 'site.synthetic' must say that example numbers are synthetic ({word!r})"
+        for (lang, word), s in zip(STATEMENT_WORDS, statements)
+        if word not in s
+    ]
 
 
 def prose_lines(text: str) -> list[tuple[int, str]]:
@@ -134,20 +164,15 @@ def main() -> int:
 
         for path in sorted(synth.glob("*.yaml")):
             data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-            if data.get("synthetic") is not True or "example" not in str(data.get("label", "")).lower():
-                errors.append(f"{path.relative_to(ROOT)}: must declare `synthetic: true` and a label naming it an example")
-            if "예제" not in str(data.get("label_ko", "")):
-                errors.append(f"{path.relative_to(ROOT)}: label_ko must name it an example ('예제'), shown on Korean pages")
+            errors += [f"{path.relative_to(ROOT)}: {e}" for e in example_label_errors(data)]
 
-    # the one statement every page carries: the footer override, and its text in both languages
+    # the one statement every page carries: the footer override, and its text in every language
     config = read_text(ROOT / "astro.config.mjs") or ""
     footer = read_text(ROOT / "src" / "components" / "Footer.astro") or ""
     ui_text = read_text(ROOT / "src" / "i18n" / "ui.ts") or ""
-    statements = re.findall(r"'site\.synthetic': ['\"](.*)['\"],", ui_text)
     if "Footer: './src/components/Footer.astro'" not in config or "t['site.synthetic']" not in footer:
         errors.append("the page footer (src/components/Footer.astro, overriding Starlight's) must print t['site.synthetic']")
-    if len(statements) != 2 or "synthetic" not in statements[0] or "합성" not in statements[1]:
-        errors.append("src/i18n/ui.ts: 'site.synthetic' must say, in EN and KO, that example numbers are synthetic (합성)")
+    errors += statement_errors(ui_text)
 
     quizzes = ROOT / "src" / "content" / "quizzes"
     if quizzes.exists():
