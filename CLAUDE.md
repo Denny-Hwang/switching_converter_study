@@ -88,7 +88,8 @@ pip install -e "python[figures]" && python scripts/gen_figures.py   # redraw the
 python scripts/mathlint.py            # no hand-typed $$ blocks, all <Eq> ids exist
 python scripts/privacy_scan.py        # category rules + optional .private/denylist.txt
 python scripts/refcheck.py            # cite keys + VERIFY flags
-npx lychee --config lychee.toml dist  # link check after build
+rm -rf _linkcheck && mkdir _linkcheck && cp -r dist _linkcheck/switching_converter_study   # the site under its Pages path
+lychee --config lychee.toml --root-dir "$PWD/_linkcheck" _linkcheck   # link check after build (the lychee binary, not the npm package of that name)
 ```
 
 ## Definition of done — one module
