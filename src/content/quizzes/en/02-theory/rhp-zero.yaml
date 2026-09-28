@@ -40,7 +40,7 @@ questions:
       - 'The zero is above the switching frequency'
       - 'It can be cancelled with a left-half-plane zero'
     answer: 0
-    explain: 'Cancellation places a pole at the same location as the zero. For a right-half-plane zero that pole would be unstable, so the zero has to be lived with by keeping the crossover frequency well below it.'
+    explain: 'Cancellation places a pole at the same location as the zero. For a right-half-plane zero that pole would be unstable, so the crossover frequency has to stay well below the zero instead.'
   - q: 'With the same $L$ and $C$, how does the double-pole frequency of a CCM boost at $D = 0.5$ compare with that of a buck?'
     options:
       - 'It is the same'
