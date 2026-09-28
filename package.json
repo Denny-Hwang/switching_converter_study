@@ -13,7 +13,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/postbuild.mjs",
     "preview": "astro preview",
     "test": "vitest run",
     "gen": "python3 scripts/gen_equations.py",
