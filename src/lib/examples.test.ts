@@ -24,7 +24,7 @@ describe('synthetic examples (examples/synthetic/*.yaml)', () => {
     expect(c.K).toBeCloseTo(2, 12);
     expect(c.K_crit).toBeCloseTo(0.5, 12);
     expect(c.L_crit).toBeCloseTo(2.5e-5, 15);
-    expect(checkResults).toEqual([{ when: 'K > K_crit', ok: true, text: { en: 'CCM', ko: 'CCM' } }]);
+    expect(checkResults).toEqual([{ when: 'K > K_crit', ok: true, text: { en: 'CCM', ko: 'CCM', zh: 'CCM' } }]);
   });
 
   it('buck-light-load is in DCM, with a ratio above D and D + D_2 < 1', () => {

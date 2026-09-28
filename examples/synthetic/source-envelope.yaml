@@ -1,6 +1,7 @@
 synthetic: true
 label: "Example linear source with a rectified-sine envelope, feeding a fixed-duty-ratio flyback"
 label_ko: "정류된 사인파 포락선을 갖는 선형 전원과 고정 듀티비 플라이백 예제"
+label_zh: "具有整流正弦包络、为固定占空比反激变换器供电的线性源示例"
 # Source-matcher preset: the flyback of source-lfr.yaml with a source whose amplitude follows
 # |sin(2 pi f_env t)| up to V_oc: the flyback is a loss-free resistor at low amplitude and holds
 # the bus at V_g,crit near the peaks.

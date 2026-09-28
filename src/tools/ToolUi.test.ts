@@ -44,7 +44,8 @@ describe('symbol meanings (what a symbol stands for, next to it)', () => {
   });
 
   it('a catalogue symbol in a tool says what the catalogue says', () => {
-    expect(TOOL_SYMBOLS.D).toEqual({ en: catalog.symbols.D!.meaning, ko: catalog.symbols.D!.meaning_ko });
+    expect(TOOL_SYMBOLS.D).toEqual({ en: catalog.symbols.D!.meaning, ko: catalog.symbols.D!.meaning_ko, zh: catalog.symbols.D!.meaning_zh });
     expect(toolSymbols('ko').L_M).toBe(catalog.symbols.L_M!.meaning_ko);
+    expect(toolSymbols('zh').L_M).toBe(catalog.symbols.L_M!.meaning_zh);
   });
 });

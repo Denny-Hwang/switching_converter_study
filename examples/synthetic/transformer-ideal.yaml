@@ -1,6 +1,7 @@
 synthetic: true
 label: "Ideal transformer example"
 label_ko: "이상적 변압기 예제"
+label_zh: "理想变压器示例"
 params:
   n: 0.25
   V_1: 48

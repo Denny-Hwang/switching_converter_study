@@ -1,6 +1,7 @@
 synthetic: true
 label: "Flyback example in CCM, ideal diode"
 label_ko: "CCM 플라이백 예제, 이상적 다이오드"
+label_zh: "CCM 反激变换器示例，理想二极管"
 params:
   V_g: 48
   n: 0.25
@@ -21,4 +22,4 @@ steps:
   - flyback.diode.VR
   - util.buckboost
 checks:
-  - {when: "K > K_crit", then: {en: "CCM", ko: "CCM"}, else: {en: "DCM", ko: "DCM"}}
+  - {when: "K > K_crit", then: {en: "CCM", ko: "CCM", zh: "CCM"}, else: {en: "DCM", ko: "DCM", zh: "DCM"}}

@@ -1,6 +1,7 @@
 synthetic: true
 label: "Boost loss-budget example"
 label_ko: "부스트 손실 예산 예제"
+label_zh: "升压变换器损耗预算示例"
 # Loss-budget preset (see loss-buck.yaml).
 params:
   V_g: 12

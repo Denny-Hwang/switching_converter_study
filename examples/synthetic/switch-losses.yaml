@@ -1,6 +1,7 @@
 synthetic: true
 label: "Switch and diode loss example"
 label_ko: "스위치·다이오드 손실 예제"
+label_zh: "开关管与二极管损耗示例"
 params:
   C_node: 1.0e-10
   V_sw: 48

@@ -1,6 +1,7 @@
 synthetic: true
 label: "Forward converter example"
 label_ko: "포워드 컨버터 예제"
+label_zh: "正激变换器示例"
 params:
   V_g: 48
   n: 0.5
@@ -21,4 +22,4 @@ steps:
   - buck.IL
   - util.forward
 checks:
-  - {when: "D < D_max", then: {en: "the transformer resets", ko: "변압기가 리셋됨"}, else: {en: "the transformer cannot reset", ko: "변압기가 리셋되지 못함"}}
+  - {when: "D < D_max", then: {en: "the transformer resets", ko: "변압기가 리셋됨", zh: "变压器能够复位"}, else: {en: "the transformer cannot reset", ko: "변압기가 리셋되지 못함", zh: "变压器无法复位"}}

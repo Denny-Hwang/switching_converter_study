@@ -1,6 +1,7 @@
 synthetic: true
 label: "Flyback transformer example"
 label_ko: "플라이백 변압기 예제"
+label_zh: "反激变压器示例"
 # Magnetics-designer preset, on the ETD 29/16/10 core in N87 (src/lib/magpresets.ts),
 # primary then secondary. The operating point is the converter designer's flyback
 # example (design-flyback.yaml) at its lowest input voltage, 36 V, with

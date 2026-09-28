@@ -6,8 +6,7 @@ resources.yaml (when present), then:
 
   offline (always): each resources.yaml entry has type, title, url, tags
       (no tag twice), level (intro, intermediate, advanced), language,
-      retrieved (YYYY-MM-DD), why and why_ko (and why_zh, where given, is
-      not empty); bib entries with a
+      retrieved (YYYY-MM-DD), why, why_ko and why_zh; bib entries with a
       URL that are verified carry a `urltitle` hint or are PDFs/login pages
       explicitly marked;
   --online (CI): opens every URL and checks that the page title (<title> in
@@ -181,7 +180,7 @@ def collect() -> tuple[list[dict], list[str]]:
     ids: set[str] = set()
     for i, r in enumerate(load_resources()):
         where = f"resources.yaml: resources[{i}] ({r.get('id', '?')})"
-        for field in ("id", "type", "title", "url", "tags", "level", "language", "retrieved", "why", "why_ko", "title_match"):
+        for field in ("id", "type", "title", "url", "tags", "level", "language", "retrieved", "why", "why_ko", "why_zh", "title_match"):
             if not r.get(field):
                 errors.append(f"{where}: missing {field}")
         if r.get("level") and r["level"] not in RESOURCE_LEVELS:
@@ -200,8 +199,6 @@ def collect() -> tuple[list[dict], list[str]]:
             errors.append(f"{where}: retrieved must be YYYY-MM-DD")
         if r.get("language") and r["language"] not in ("en", "ko", "zh"):
             errors.append(f"{where}: language must be en, ko or zh")
-        if "why_zh" in r and not r["why_zh"]:
-            errors.append(f"{where}: why_zh is empty; give the Chinese reason or leave the field out")
         if r.get("urlkind") == "pdf" and (problem := pdf_expect_error(r.get("title_match"))):
             errors.append(f"{where}: title_match {problem}")
         if r.get("url"):

@@ -1,6 +1,7 @@
 synthetic: true
 label: "Gate-drive example"
 label_ko: "게이트 구동 예제"
+label_zh: "栅极驱动示例"
 # A 10 V driver through 5 ohm in all, into a switch whose gate-charge curve
 # plateaus at 4.5 V with 10 nC of gate-drain charge.
 params:

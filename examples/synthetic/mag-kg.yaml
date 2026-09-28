@@ -1,6 +1,7 @@
 synthetic: true
 label: "Inductor on ETD 29 example"
 label_ko: "ETD 29 인덕터 예제"
+label_zh: "ETD 29 磁芯电感示例"
 # Magnetics-designer preset, on the ETD 29/16/10 core in N87 (src/lib/magpresets.ts):
 # the operating point of kg-inductor.yaml (100 µH, 5 A peak, 4.5 A rms, half
 # ripple 0.5 A at 100 kHz, B_max 0.3 T, 100 °C), wound with three 0.8 mm

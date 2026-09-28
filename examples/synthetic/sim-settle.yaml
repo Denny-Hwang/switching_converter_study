@@ -1,6 +1,7 @@
 synthetic: true
 label: "Buck settling example"
 label_ko: "벅 정착 예제"
+label_zh: "降压变换器稳态建立示例"
 # The buck example's filter, load and switching frequency (buck-basic.yaml), simulated from
 # rest until a thousandth of the start-up error is left.
 params:

@@ -19,8 +19,7 @@ export interface Resource {
   retrieved: string;
   why: string;
   why_ko: string;
-  /** Chinese; missing until translated, when the English stands in. */
-  why_zh?: string;
+  why_zh: string;
   title_match: string;
   urlkind?: 'html' | 'pdf' | 'login';
   cite?: string;

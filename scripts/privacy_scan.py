@@ -18,8 +18,8 @@ Checks every tracked (or new, not ignored) text file:
      Chinese prose; percentages, times, decibels and units spelt out in words are
      outside it.
   4. examples/synthetic/*.yaml must declare `synthetic: true`, and a `label`
-     and `label_ko` that name it as an example ("example", "예제"), and
-     so must `label_zh` ("示例") where it is given; every page's footer
+     `label_ko` and `label_zh` that name it as an example ("example", "예제",
+     "示例"); every page's footer
      states once that example numbers are synthetic, so the footer
      component and that statement (EN, KO and ZH) must be in place.
   5. Quizzes (src/content/quizzes/**/*.yaml) may state exercise numbers with
@@ -73,13 +73,13 @@ def read_text(path: Path) -> str | None:
 
 
 def example_label_errors(data: dict) -> list[str]:
-    """An example file's declaration and labels: English and Korean always, Chinese where given."""
+    """An example file's declaration and its label in each language."""
     errors = []
     if data.get("synthetic") is not True or "example" not in str(data.get("label", "")).lower():
         errors.append("must declare `synthetic: true` and a label naming it an example")
     if "예제" not in str(data.get("label_ko", "")):
         errors.append("label_ko must name it an example ('예제'), shown on Korean pages")
-    if data.get("label_zh") is not None and "示例" not in str(data["label_zh"]):
+    if "示例" not in str(data.get("label_zh", "")):
         errors.append("label_zh must name it an example ('示例'), shown on Chinese pages")
     return errors
 

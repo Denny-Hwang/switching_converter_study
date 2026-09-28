@@ -47,12 +47,11 @@ def test_privacy_scan_ignores_unitless_text(text: str) -> None:
 
 def test_privacy_scan_example_labels() -> None:
     errors = _script("privacy_scan").example_label_errors
-    ok = {"synthetic": True, "label": "Buck example", "label_ko": "벅 예제"}
+    ok = {"synthetic": True, "label": "Buck example", "label_ko": "벅 예제", "label_zh": "降压变换器示例"}
     assert errors(ok) == []
-    assert errors({**ok, "label_zh": "Buck 示例"}) == []
     assert errors({**ok, "label_ko": "벅"}) == ["label_ko must name it an example ('예제'), shown on Korean pages"]
-    assert errors({**ok, "label_zh": "Buck"}) == ["label_zh must name it an example ('示例'), shown on Chinese pages"]
-    assert errors({**ok, "label_zh": ""}) == ["label_zh must name it an example ('示例'), shown on Chinese pages"]
+    assert errors({**ok, "label_zh": "降压变换器"}) == ["label_zh must name it an example ('示例'), shown on Chinese pages"]
+    assert errors({k: v for k, v in ok.items() if k != "label_zh"}) == ["label_zh must name it an example ('示例'), shown on Chinese pages"]
     assert errors({**ok, "synthetic": "yes"}) == ["must declare `synthetic: true` and a label naming it an example"]
 
 
@@ -723,7 +722,7 @@ def test_modulelint_resource_page_rules(tmp_path: Path) -> None:
 def test_resources_check_validates_level_tags_and_korean_line(tmp_path: Path) -> None:
     rc = _script("resources_check")
     entry = {"id": "x", "type": "book", "title": "T", "url": "https://example.org/", "tags": ["a"], "level": "intro",
-             "language": "en", "retrieved": "2026-09-24", "why": "w", "why_ko": "w", "title_match": "T"}
+             "language": "en", "retrieved": "2026-09-24", "why": "w", "why_ko": "w", "why_zh": "w", "title_match": "T"}
     import yaml
 
     def errors(**change) -> list[str]:
@@ -735,9 +734,8 @@ def test_resources_check_validates_level_tags_and_korean_line(tmp_path: Path) ->
     assert errors() == []
     assert any("level must be one of" in e for e in errors(level="beginner"))
     assert any("missing why_ko" in e for e in errors(why_ko=""))
-    # a Chinese line is optional, but not empty when given; a resource may be in Chinese
-    assert errors(why_zh="说明") == []
-    assert any("why_zh is empty" in e for e in errors(why_zh=""))
+    # the Chinese line is required too; a resource may be in Chinese
+    assert any("missing why_zh" in e for e in errors(why_zh=""))
     assert errors(language="zh") == []
     assert any("language must be en, ko or zh" in e for e in errors(language="fr"))
     assert any("a tag is listed twice" in e for e in errors(tags=["a", "a"]))

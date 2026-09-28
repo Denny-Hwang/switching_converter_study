@@ -1,6 +1,7 @@
 synthetic: true
 label: "Example flyback specification"
 label_ko: "플라이백 설계 사양 예제"
+label_zh: "反激变换器设计规格示例"
 # Converter-designer preset (see design-buck.yaml); 1:n transformer, n = N_s/N_p.
 params:
   V_gmin: 36

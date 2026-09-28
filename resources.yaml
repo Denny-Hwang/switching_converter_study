@@ -28,6 +28,7 @@ resources:
     retrieved: 2026-09-23
     why: "The standard derivation of volt-second and charge balance, the small-ripple approximation and inductor/capacitor ripple."
     why_ko: "전압-초·전하 평형, 소리플 근사, 인덕터·커패시터 리플을 다루는 표준 유도."
+    why_zh: "伏秒平衡、电荷平衡、小纹波近似以及电感/电容纹波的标准推导。"
     title_match: "Principles of Steady-State Converter Analysis"
     cite: erickson2020
 
@@ -42,6 +43,7 @@ resources:
     retrieved: 2026-09-23
     why: "DC transformer models and how winding and semiconductor resistances limit the conversion ratio and efficiency."
     why_ko: "직류 변압기 모델과, 권선·반도체 저항이 변환비와 효율을 제한하는 방식."
+    why_zh: "直流变压器模型，以及绕组电阻和半导体器件电阻如何限制电压变换比和效率。"
     title_match: "Steady-State Equivalent Circuit Modeling"
     cite: erickson2020
 
@@ -56,6 +58,7 @@ resources:
     retrieved: 2026-09-23
     why: "How transistors and diodes realize the ideal switches, and where the switching losses come from."
     why_ko: "트랜지스터와 다이오드로 이상적인 스위치를 구현하는 방법과 스위칭 손실의 원인."
+    why_zh: "晶体管和二极管如何实现理想开关，以及开关损耗从何而来。"
     title_match: "Switch Realization"
     cite: erickson2020
 
@@ -70,6 +73,7 @@ resources:
     retrieved: 2026-09-23
     why: "Origin of DCM, the K and K_crit boundary and the DCM conversion ratios derived with charge balance."
     why_ko: "DCM의 발생 원리, K와 K_crit 경계, 전하 평형으로 유도한 DCM 변환비."
+    why_zh: "DCM 的成因、以 K 和 K_crit 表示的临界条件，以及用电荷平衡推导出的 DCM 电压变换比。"
     title_match: "The Discontinuous Conduction Mode"
     cite: erickson2020
 
@@ -84,6 +88,7 @@ resources:
     retrieved: 2026-09-23
     why: "How the basic topologies relate, and transformer-isolated versions including the flyback and forward converters."
     why_ko: "기본 토폴로지 사이의 관계와, 플라이백·포워드를 포함한 변압기 절연형 컨버터."
+    why_zh: "各基本拓扑之间的关系，以及包括反激和正激变换器在内的变压器隔离型变换器。"
     title_match: "Converter Circuits"
     cite: erickson2020
 
@@ -98,6 +103,7 @@ resources:
     retrieved: 2026-09-23
     why: "Averaging, perturbation and linearisation of converter equations, and the small-signal model of the PWM modulator."
     why_ko: "컨버터 방정식의 평균화·섭동·선형화와 PWM 변조기의 소신호 모델."
+    why_zh: "变换器方程的平均、扰动与线性化，以及 PWM 调制器的小信号模型。"
     title_match: "AC Equivalent Circuit Modeling"
     cite: erickson2020
 
@@ -112,6 +118,7 @@ resources:
     retrieved: 2026-09-23
     why: "Bode plots of the control-to-output transfer functions, including the right-half-plane zero of the boost and buck-boost."
     why_ko: "제어-출력 전달함수의 보드 선도와 부스트·벅-부스트의 우반평면 영점."
+    why_zh: "控制-输出传递函数的伯德图，包括升压和升降压变换器的右半平面零点。"
     title_match: "Converter Transfer Functions"
     cite: erickson2020
 
@@ -126,6 +133,7 @@ resources:
     retrieved: 2026-09-23
     why: "Loop gain, crossover frequency, phase margin and the design of PD/PI compensators."
     why_ko: "루프 이득, 크로스오버 주파수, 위상 여유, PD/PI 보상기 설계."
+    why_zh: "环路增益、穿越频率、相位裕度，以及 PD/PI 补偿器的设计。"
     title_match: "Controller Design"
     cite: erickson2020
 
@@ -140,6 +148,7 @@ resources:
     retrieved: 2026-09-23
     why: "Magnetic circuits, the transformer model with magnetizing and leakage inductance, and core and winding loss mechanisms."
     why_ko: "자기 회로, 자화·누설 인덕턴스를 포함한 변압기 모델, 코어·권선 손실 메커니즘."
+    why_zh: "磁路、含励磁电感和漏感的变压器模型，以及磁芯损耗和绕组损耗的机理。"
     title_match: "Basic Magnetics Theory"
     cite: erickson2020
 
@@ -154,6 +163,7 @@ resources:
     retrieved: 2026-09-24
     why: "The constraints a filter inductor must meet, the core geometrical constant K_g that turns them into a core size, and a step-by-step design procedure."
     why_ko: "필터 인덕터가 만족해야 할 제약, 이 제약을 코어 크기로 바꾸는 코어 기하 상수 K_g, 단계별 설계 절차."
+    why_zh: "滤波电感必须满足的约束、将这些约束转化为磁芯尺寸的磁芯几何常数 K_g，以及逐步的设计流程。"
     title_match: "Inductor Design"
     cite: erickson2020
 
@@ -168,6 +178,7 @@ resources:
     retrieved: 2026-09-24
     why: "Designing a transformer when core loss, rather than saturation, limits the ac flux density, with copper and core loss traded against each other."
     why_ko: "포화가 아니라 코어 손실이 교류 자속 밀도를 제한할 때의 변압기 설계와, 구리 손실과 코어 손실 사이의 트레이드오프."
+    why_zh: "当限制交流磁通密度的是磁芯损耗而非饱和时的变压器设计，其中铜损与磁芯损耗相互权衡。"
     title_match: "Transformer Design"
     cite: erickson2020
 
@@ -182,6 +193,7 @@ resources:
     retrieved: 2026-09-23
     why: "The DCM averaged switch model, in which the input behaves as a loss-free resistor."
     why_ko: "입력이 무손실 저항처럼 동작하는 DCM 평균 스위치 모델."
+    why_zh: "DCM 平均开关模型，其输入表现为无损电阻。"
     title_match: "Discontinuous Conduction Mode"
     cite: erickson2020
 
@@ -197,6 +209,7 @@ resources:
     retrieved: 2026-09-23
     why: "First course of the CU Boulder specialization: steady-state analysis, losses and efficiency."
     why_ko: "CU Boulder 전문 과정의 첫 강좌: 정상상태 해석, 손실과 효율."
+    why_zh: "CU Boulder 专项课程的第一门课：稳态分析、损耗与效率。"
     title_match: "Introduction to Power Electronics"
 
   - id: coursera-converter-circuits
@@ -210,6 +223,7 @@ resources:
     retrieved: 2026-09-23
     why: "DCM analysis and the isolated converter circuits, following the same textbook."
     why_ko: "같은 교재를 따르는 DCM 해석과 절연형 컨버터 회로."
+    why_zh: "DCM 分析与隔离型变换器电路，沿用同一本教材。"
     title_match: "Converter Circuits"
 
   - id: coursera-converter-control
@@ -223,6 +237,7 @@ resources:
     retrieved: 2026-09-23
     why: "Averaged small-signal models, converter transfer functions and feedback loop design."
     why_ko: "평균 소신호 모델, 컨버터 전달함수, 피드백 루프 설계."
+    why_zh: "平均小信号模型、变换器传递函数与反馈环路设计。"
     title_match: "Converter Control"
 
   - id: coursera-magnetics
@@ -236,6 +251,7 @@ resources:
     retrieved: 2026-09-23
     why: "Magnetic circuits, core and winding losses, and inductor and transformer design."
     why_ko: "자기 회로, 코어·권선 손실, 인덕터·변압기 설계."
+    why_zh: "磁路、磁芯损耗与绕组损耗，以及电感与变压器设计。"
     title_match: "Magnetics for Power Electronic Converters"
 
   - id: mit-6334
@@ -249,6 +265,7 @@ resources:
     retrieved: 2026-09-23
     why: "A complete graduate course with lecture notes and problem sets."
     why_ko: "강의 노트와 연습 문제를 갖춘 대학원 과정 전체."
+    why_zh: "一门完整的研究生课程，附讲义和习题。"
     title_match: "Power Electronics"
 
   - id: mit-6334-notes
@@ -262,6 +279,7 @@ resources:
     retrieved: 2026-09-23
     why: "Chapter-style notes on dc/dc converters, magnetics and isolated converters."
     why_ko: "dc/dc 컨버터, 자성 부품, 절연형 컨버터를 다루는 장 단위 강의 노트."
+    why_zh: "按章节编写的讲义，涵盖 DC/DC 变换器、磁性元件与隔离型变换器。"
     title_match: "Lecture Notes"
 
   - id: mit-6002
@@ -275,6 +293,7 @@ resources:
     retrieved: 2026-09-23
     why: "MIT's first circuits course, with video lectures, notes and problem sets."
     why_ko: "동영상 강의, 강의 노트, 연습 문제를 갖춘 MIT의 첫 회로 과목."
+    why_zh: "MIT 的第一门电路课程，含视频讲座、讲义和习题。"
     title_match: "Circuits and Electronics"
 
   - id: mit-6002-notes
@@ -288,6 +307,7 @@ resources:
     retrieved: 2026-09-23
     why: "Lecture-by-lecture notes (from the Fall 2000 offering) on circuit laws, energy-storage elements and sinusoidal steady state."
     why_ko: "회로 법칙, 에너지 저장 소자, 정현파 정상상태를 다루는 강의별 노트(2000년 가을 학기 자료)."
+    why_zh: "逐讲编写的讲义（取自 2000 年秋季学期），涵盖电路定律、储能元件和正弦稳态。"
     title_match: "Lecture Notes"
 
   - id: mit-6003
@@ -301,6 +321,7 @@ resources:
     retrieved: 2026-09-23
     why: "Signals and systems with video lectures: Laplace transform, frequency response, Bode plots and Fourier series."
     why_ko: "라플라스 변환, 주파수 응답, 보드 선도, 푸리에 급수를 다루는 동영상 강의 과목."
+    why_zh: "配有视频讲座的信号与系统课程：拉普拉斯变换、频率响应、伯德图和傅里叶级数。"
     title_match: "Signals and Systems"
 
   - id: mit-6003-notes
@@ -314,6 +335,7 @@ resources:
     retrieved: 2026-09-23
     why: "Lecture slides: the Laplace transform (lecture 6), frequency response and Bode plots (lectures 9 and 11), Fourier series (lecture 15)."
     why_ko: "강의 슬라이드: 라플라스 변환(6강), 주파수 응답과 보드 선도(9강, 11강), 푸리에 급수(15강)."
+    why_zh: "讲座幻灯片：拉普拉斯变换（第 6 讲）、频率响应与伯德图（第 9 讲和第 11 讲）、傅里叶级数（第 15 讲）。"
     title_match: "Lecture Notes"
 
   # --- application notes -----------------------------------------------------
@@ -328,6 +350,7 @@ resources:
     retrieved: 2026-09-23
     why: "Steady-state and small-signal analysis of the buck power stage in CCM and DCM, with component requirements."
     why_ko: "CCM·DCM 벅 전력단의 정상상태·소신호 해석과 부품 요구 조건."
+    why_zh: "降压功率级在 CCM 和 DCM 下的稳态与小信号分析，以及对元件的要求。"
     # The PDF's title field reads "Understanding Buck Power Stages Mode Power Supplies", and its
     # text uses a font without a Unicode map: match the words that are there.
     title_match: "Understanding Buck Power Stages"
@@ -344,6 +367,7 @@ resources:
     retrieved: 2026-09-23
     why: "The boost counterpart: steady-state and small-signal analysis in CCM and DCM."
     why_ko: "부스트판: CCM·DCM의 정상상태·소신호 해석."
+    why_zh: "对应的升压版本：CCM 和 DCM 下的稳态与小信号分析。"
     title_match: "Understanding Boost Power Stages in Switchmode Power Supplies"
     urlkind: pdf
 
@@ -358,6 +382,7 @@ resources:
     retrieved: 2026-09-23
     why: "The inverting buck-boost power stage analysed the same way."
     why_ko: "같은 방식으로 해석한 반전형 벅-부스트 전력단."
+    why_zh: "以同样方法分析的反相升降压功率级。"
     title_match: "Understanding Inverting Buck-Boost Power Stages in Switch Mode Power Supplies"
     urlkind: pdf
 
@@ -372,6 +397,7 @@ resources:
     retrieved: 2026-09-23
     why: "A compact CCM design-calculation checklist: duty ratio, inductor ripple, capacitors."
     why_ko: "간결한 CCM 설계 계산 점검표: 듀티비, 인덕터 리플, 커패시터."
+    why_zh: "简明的 CCM 设计计算清单：占空比、电感纹波、电容。"
     title_match: "Basic Calculation of a Buck Converter's Power Stage"
     urlkind: pdf
 
@@ -386,6 +412,7 @@ resources:
     retrieved: 2026-09-23
     why: "The boost version of the same checklist."
     why_ko: "같은 점검표의 부스트판."
+    why_zh: "同一清单的升压版本。"
     title_match: "Basic Calculation of a Boost Converter's Power Stage"
     urlkind: pdf
 
@@ -400,6 +427,7 @@ resources:
     retrieved: 2026-09-23
     why: "Buck output ripple with the capacitor's charge, series resistance (ESR) and series inductance (ESL) taken into account."
     why_ko: "커패시터의 전하, 직렬 저항(ESR), 직렬 인덕턴스(ESL)를 모두 고려한 벅 출력 리플."
+    why_zh: "计入电容电荷、串联电阻（ESR）和串联电感（ESL）的降压变换器输出纹波。"
     title_match: "Output Ripple Voltage for Buck Switching Regulator"
     urlkind: pdf
     cite: ti_slva630
@@ -415,6 +443,7 @@ resources:
     retrieved: 2026-09-23
     why: "Written for inductive sensing; its explanation of the capacitance between turns, the self-resonant frequency and how to measure it applies to any wound inductor."
     why_ko: "유도형 센싱용 문서이지만, 턴 사이 커패시턴스와 자기 공진 주파수, 그 측정 방법에 대한 설명은 모든 권선 인덕터에 적용됩니다."
+    why_zh: "面向电感式传感编写；其中对匝间电容、自谐振频率及其测量方法的讲解适用于任何绕线电感。"
     title_match: "Sensor Design for Inductive Sensing Applications Using LDC"
     urlkind: pdf
     cite: ti_snoa930
@@ -430,6 +459,7 @@ resources:
     retrieved: 2026-09-23
     why: "MOSFET switching behaviour, gate charge and gate-drive power, and practical gate-drive circuits."
     why_ko: "MOSFET 스위칭 동작, 게이트 전하와 게이트 구동 전력, 실용적인 게이트 구동 회로."
+    why_zh: "MOSFET 的开关特性、栅极电荷与栅极驱动功率，以及实用的栅极驱动电路。"
     title_match: "Fundamentals of MOSFET and IGBT Gate Driver Circuits"
     urlkind: pdf
     cite: balogh2018
@@ -445,6 +475,7 @@ resources:
     retrieved: 2026-09-23
     why: "Lloyd Dixon's magnetics design handbook, reproduced by TI from the 2001 Unitrode edition. The ti.com copy requires a free myTI login."
     why_ko: "Lloyd Dixon의 자성 부품 설계 핸드북으로, TI가 2001년 Unitrode 판을 재수록했습니다. ti.com 사본을 보려면 무료 myTI 로그인이 필요합니다."
+    why_zh: "Lloyd Dixon 的磁性元件设计手册，由 TI 根据 2001 年的 Unitrode 版本重新发布。ti.com 上的副本需要用免费的 myTI 账户登录。"
     title_match: "Magnetics Design Handbook"
     urlkind: login
     cite: dixon2001
@@ -460,6 +491,7 @@ resources:
     retrieved: 2026-09-24
     why: "How to find a ringing node's parasitic capacitance and inductance with an added capacitor, then choose the RC snubber's capacitor and its resistor from a damping factor, trading peak voltage against loss."
     why_ko: "커패시터를 더해 링잉 노드의 기생 커패시턴스와 인덕턴스를 구한 뒤, 피크 전압과 손실을 맞바꾸며 RC 스너버의 커패시터와 감쇠 계수로 정하는 저항을 고르는 방법."
+    why_zh: "如何借助外加电容求出振铃节点的寄生电容和寄生电感，再根据阻尼系数选择 RC 缓冲电路的电容和电阻，在峰值电压与损耗之间折中。"
     title_match: "Designing RC snubbers"
     urlkind: pdf
     cite: nexperia_an11160
@@ -475,6 +507,7 @@ resources:
     retrieved: 2026-09-24
     why: "How a flyback's leakage inductance drives the switch above the reflected voltage, and how the clamp voltage trades against the clamp's loss."
     why_ko: "플라이백의 누설 인덕턴스가 스위치 전압을 반사 전압보다 높이 밀어 올리는 과정, 그리고 클램프 전압과 클램프 손실 사이의 트레이드오프."
+    why_zh: "反激变换器的漏感如何把开关管电压推高到反射电压之上，以及钳位电压与钳位损耗之间的权衡。"
     title_match: "Snubbing the flyback converter"
     urlkind: pdf
     cite: ti_ssztcv6
@@ -490,6 +523,7 @@ resources:
     retrieved: 2026-09-24
     why: "How LCR meters and impedance analyzers measure, why a component's measured value depends on the test frequency and signal, and how to connect and compensate the test fixture."
     why_ko: "LCR 미터와 임피던스 분석기가 측정하는 원리, 부품의 측정값이 측정 주파수와 신호에 따라 달라지는 이유, 그리고 측정 지그(test fixture)의 연결과 보정 방법."
+    why_zh: "LCR 测试仪和阻抗分析仪的测量原理，元件测量值为何取决于测试频率和测试信号，以及如何连接和补偿测试夹具（test fixture）。"
     title_match: "Impedance Measurement Handbook"
     urlkind: pdf
     cite: keysight_5950_3000
@@ -505,6 +539,7 @@ resources:
     retrieved: 2026-09-24
     why: "Precision dc measurements, among them low resistances with the four-wire (Kelvin) method, which keeps the test leads' resistance out of the reading."
     why_ko: "정밀 직류 측정. 그중에서도 테스트 리드의 저항을 측정값에서 빼 주는 4선식(켈빈) 저저항 측정법."
+    why_zh: "精密直流测量，其中包括用四线（开尔文）法测量低电阻，该方法使测试引线的电阻不计入读数。"
     title_match: "Low Level Measurements Handbook"
     urlkind: pdf
     cite: keithley_llmh7
@@ -521,6 +556,7 @@ resources:
     retrieved: 2026-09-23
     why: "Intuitive, equation-light explanations of converter behaviour."
     why_ko: "수식을 최소화한 직관적인 컨버터 동작 설명."
+    why_zh: "直观讲解变换器的工作特性，很少使用公式。"
     title_match: "Sam Ben-Yaakov"
     cite: benyaakov_youtube
 
@@ -536,6 +572,7 @@ resources:
     retrieved: 2026-09-24
     why: "The hot loop, the layer stack and the switch node of a buck converter's board, step by step."
     why_ko: "벅 컨버터 기판의 핫 루프, 층 구성, 스위치 노드에 대한 단계별 설명."
+    why_zh: "逐步讲解降压变换器电路板上的高 di/dt 回路、叠层结构和开关节点。"
     title_match: "PCB Layout Considerations for Non-Isolated Switching Power Supplies"
     cite: adi_an136
 
@@ -550,6 +587,7 @@ resources:
     retrieved: 2026-09-24
     why: "Five steps to a step-down converter's board, with the input capacitor as its most important component."
     why_ko: "입력 커패시터를 가장 중요한 부품으로 보는, 강압 컨버터 기판 설계의 다섯 단계."
+    why_zh: "降压变换器电路板设计的五个步骤，其中输入电容是最重要的元件。"
     title_match: "Five steps to a great PCB layout for a step-down converter"
     urlkind: pdf
     cite: ti_slyt614
@@ -565,6 +603,7 @@ resources:
     retrieved: 2026-09-24
     why: "Current loops, ground planes, the feedback trace and the input capacitor, in a short note."
     why_ko: "전류 루프, 접지면, 피드백 배선, 입력 커패시터를 짧게 정리한 노트."
+    why_zh: "电流回路、地平面、反馈走线和输入电容，篇幅简短。"
     title_match: "Layout Guidelines for Switching Power Supplies"
     urlkind: pdf
     cite: ti_snva021
@@ -580,6 +619,7 @@ resources:
     retrieved: 2026-09-24
     why: "The gate-charge curve read interval by interval, and what each charge says about the switching times."
     why_ko: "게이트 전하 곡선을 구간별로 읽는 방법과, 각 전하로 알 수 있는 스위칭 시간."
+    why_zh: "逐段解读栅极电荷曲线，以及每段电荷所反映的开关时间。"
     title_match: "Understanding Gate Charge"
     urlkind: pdf
     cite: vishay_an608a
@@ -595,6 +635,7 @@ resources:
     retrieved: 2026-09-24
     why: "Choosing the bootstrap capacitor, diode and resistor of a half-bridge driver, and what goes wrong when they are too small."
     why_ko: "하프 브리지 드라이버의 부트스트랩 커패시터·다이오드·저항 선정과, 값이 너무 작을 때 생기는 문제."
+    why_zh: "半桥驱动器中自举电容、二极管和电阻的选取，以及取值过小时出现的问题。"
     title_match: "Bootstrap Circuitry Selection for Half-Bridge Configurations"
     urlkind: pdf
     cite: ti_slua887
@@ -610,6 +651,7 @@ resources:
     retrieved: 2026-09-24
     why: "A short comparison of placing the shunt in the ground return or on the supply side."
     why_ko: "션트를 접지 귀환 경로에 둘 때와 전원 쪽에 둘 때의 짧은 비교."
+    why_zh: "简要比较将分流电阻置于接地回路与置于电源侧的差异。"
     title_match: "High- and Low-side Current Measurements"
     urlkind: pdf
     cite: ti_sszta51
@@ -625,6 +667,7 @@ resources:
     retrieved: 2026-09-24
     why: "How the solder of a low-value shunt enters the reading, and the four-pad layout that keeps it out."
     why_ko: "저저항 션트의 납땜이 측정값에 끼어드는 방식과, 이를 빼는 4패드 배치."
+    why_zh: "低阻值分流电阻的焊锡如何计入读数，以及将其排除在外的四焊盘布局。"
     title_match: "Optimize High-Current Sensing Accuracy by Improving Pad Layout of Low-Value Shunt Resistors"
     urlkind: pdf
     cite: osullivan2012
@@ -640,6 +683,7 @@ resources:
     retrieved: 2026-09-24
     why: "How a probe's ground lead exaggerates switching transients, and the tip-and-barrel method for output ripple."
     why_ko: "프로브 접지선이 스위칭 과도를 부풀리는 방식과, 출력 리플을 재는 팁-앤-배럴(tip-and-barrel) 방법."
+    why_zh: "探头接地线如何夸大开关瞬态，以及测量输出纹波的探头尖端-接地套筒（tip-and-barrel）法。"
     title_match: "Measuring Output Ripple and Switching Transients"
     cite: adi_an1144
 
@@ -654,6 +698,7 @@ resources:
     retrieved: 2026-09-25
     why: "Why the rise time an oscilloscope shows depends on the shape of its frequency response, not on its bandwidth alone."
     why_ko: "오실로스코프가 보여 주는 상승 시간이 대역폭뿐 아니라 주파수 응답의 모양에 따라 달라지는 이유."
+    why_zh: "示波器显示的上升时间为何取决于其频率响应的形状，而不只取决于带宽。"
     title_match: "Oscilloscope Frequency Response"
     urlkind: pdf
     cite: keysight_5988_8008
@@ -669,6 +714,7 @@ resources:
     retrieved: 2026-09-24
     why: "The 0.35 rule between an oscilloscope's bandwidth and its rise time, and where it holds."
     why_ko: "오실로스코프 대역폭과 상승 시간 사이의 0.35 규칙과 그것이 성립하는 범위."
+    why_zh: "示波器带宽与上升时间之间的 0.35 规则及其适用条件。"
     title_match: "How is bandwidth related to rise time"
     cite: tek_bw_risetime
 
@@ -683,6 +729,7 @@ resources:
     retrieved: 2026-09-24
     why: "What the thermal resistances and characterization parameters on a data sheet mean, how they are measured, and how they are misused."
     why_ko: "데이터시트의 열저항과 특성 파라미터가 뜻하는 것, 측정 방법, 흔한 오용."
+    why_zh: "数据手册上的热阻和特性参数的含义、测量方法，以及它们如何被误用。"
     title_match: "Semiconductor and IC Package Thermal Metrics"
     urlkind: pdf
     cite: ti_spra953
@@ -698,6 +745,7 @@ resources:
     retrieved: 2026-09-24
     why: "The thermal path from a junction to the air, and sizing a heat sink from it."
     why_ko: "접합에서 공기까지의 열 경로와, 이를 바탕으로 방열판 크기를 정하는 법."
+    why_zh: "从结到空气的热路径，以及据此确定散热器尺寸。"
     title_match: "Understanding Thermal Dissipation and Design of a Heatsink"
     urlkind: pdf
 
@@ -712,6 +760,7 @@ resources:
     retrieved: 2026-09-24
     why: "A power MOSFET's structure, its data sheet's parameters and how they change with temperature."
     why_ko: "전력 MOSFET의 구조, 데이터시트 파라미터, 파라미터가 온도에 따라 변하는 방식."
+    why_zh: "功率 MOSFET 的结构、其数据手册参数，以及这些参数随温度的变化。"
     title_match: "Power MOSFET Tutorial"
     urlkind: pdf
     cite: microchip_apt0403
@@ -727,6 +776,7 @@ resources:
     retrieved: 2026-09-24
     why: "Where inrush current comes from when a load's capacitance is switched on, and how a slower voltage rise reduces it."
     why_ko: "부하의 커패시턴스를 연결할 때 돌입 전류가 생기는 이유와, 전압 상승을 늦춰 돌입 전류를 줄이는 방법."
+    why_zh: "接通负载电容时浪涌电流从何而来，以及放慢电压上升如何减小浪涌电流。"
     title_match: "Managing Inrush Current"
     urlkind: pdf
     cite: ti_slva670
@@ -742,6 +792,7 @@ resources:
     retrieved: 2026-09-24
     why: "How a fuse's ratings are defined, and what its current, its pulses and its ambient temperature do to it."
     why_ko: "퓨즈 정격의 정의와, 전류·펄스·주위 온도가 퓨즈에 주는 영향."
+    why_zh: "熔断器额定值如何定义，以及电流、脉冲和环境温度对熔断器的影响。"
     title_match: "Fuse Selection Guide"
     urlkind: pdf
     cite: littelfuse_fuseology
@@ -757,6 +808,7 @@ resources:
     retrieved: 2026-09-24
     why: "Circuits that protect a load against a battery connected backwards, starting from a diode in series with the battery."
     why_ko: "배터리에 직렬로 넣은 다이오드부터 시작해, 거꾸로 연결된 배터리로부터 부하를 보호하는 회로들."
+    why_zh: "保护负载免受电池反接影响的电路，从与电池串联的二极管讲起。"
     title_match: "Reverse Current/Battery Protection Circuits"
     urlkind: pdf
     cite: ti_slva139
@@ -772,6 +824,7 @@ resources:
     retrieved: 2026-09-24
     why: "How a class-2 ceramic capacitor's capacitance changes with temperature and with its dc voltage, and why its code tells only the first."
     why_ko: "2종 세라믹 커패시터의 커패시턴스가 온도와 DC 전압에 따라 변하는 방식과, 특성 코드가 온도에 따른 변화만 알려 주는 이유."
+    why_zh: "2 类陶瓷电容的电容量如何随温度和直流电压变化，以及为何其特性代码只反映前者。"
     title_match: "Temperature and Voltage Variation of Ceramic Capacitors"
     urlkind: html
     cite: adi_ceramic_caps
@@ -787,6 +840,7 @@ resources:
     retrieved: 2026-09-24
     why: "How an aluminum electrolytic capacitor's capacitance, ESR and life change with temperature, ripple current and voltage."
     why_ko: "알루미늄 전해 커패시터의 커패시턴스, ESR, 수명이 온도, 리플 전류, 전압에 따라 변하는 방식."
+    why_zh: "铝电解电容的电容量、ESR 和寿命如何随温度、纹波电流和电压变化。"
     title_match: "Aluminum Electrolytic Capacitor Application Guide"
     urlkind: pdf
     cite: cde_ae_guide
@@ -802,6 +856,7 @@ resources:
     retrieved: 2026-09-24
     why: "Why a lithium-ion cell's charging is limited in temperature, voltage and current, and what a charger must do outside those limits."
     why_ko: "리튬이온 셀의 충전이 온도, 전압, 전류로 제한되는 이유와, 그 한계를 벗어났을 때 충전기가 해야 할 일."
+    why_zh: "锂离子电芯的充电为何在温度、电压和电流上受到限制，以及超出这些限值时充电器必须如何处理。"
     title_match: "A Guide to the Safe Use of Lithium-Ion Secondary Cells"
     urlkind: pdf
     cite: jeita_liion
@@ -818,6 +873,7 @@ resources:
     retrieved: 2026-09-24
     why: "Open access: the cycles for maximized energy output, and the figure of merit that compares triboelectric nanogenerators by the energy a cycle delivers per area and per displacement."
     why_ko: "오픈 액세스 논문: 최대 에너지 출력 사이클과, 한 사이클이 면적과 변위당 내는 에너지로 마찰전기 나노발전기를 비교하는 성능 지수."
+    why_zh: "开放获取：实现最大能量输出的循环，以及按每个循环在单位面积和单位位移上输出的能量来比较摩擦纳米发电机的性能优值。"
     title_match: "Standards and figure-of-merits for quantifying the performance of triboelectric nanogenerators"
     cite: zi2015
 
@@ -832,6 +888,7 @@ resources:
     retrieved: 2026-09-24
     why: "The paper that introduced synchronized switch harvesting on inductor; the PubMed record carries its abstract."
     why_ko: "인덕터 동기 스위치 하베스팅(SSHI)을 처음 제안한 논문. PubMed 기록에 초록이 실려 있습니다."
+    why_zh: "首次提出同步电感开关收集（SSHI）的论文；PubMed 记录中附有其摘要。"
     title_match: "Toward energy harvesting using active materials and conversion improvement by nonlinear processing"
     cite: guyomar2005
 
@@ -846,6 +903,7 @@ resources:
     retrieved: 2026-09-24
     why: "The paper that introduced synchronous electric charge extraction, whose harvested power does not depend on the load."
     why_ko: "수확 전력이 부하와 무관한 동기 전하 추출(SECE)을 처음 제안한 논문."
+    why_zh: "首次提出同步电荷提取（SECE）的论文，该方法收集的功率与负载无关。"
     title_match: "Piezoelectric Energy Harvesting Device Optimization by Synchronous Electric Charge Extraction"
     cite: lefeuvre2005
 
@@ -860,6 +918,7 @@ resources:
     retrieved: 2026-09-24
     why: "A step-down converter in DCM between a piezoelectric element and a battery, run at the duty ratio that harvests the most."
     why_ko: "압전 소자와 배터리 사이에서, 가장 많이 수확하는 듀티비로 동작하는 DCM 강압 컨버터."
+    why_zh: "位于压电元件与电池之间、工作在 DCM 下的降压变换器，以收集能量最多的占空比运行。"
     title_match: "Optimized piezoelectric energy harvesting circuit using step-down converter in discontinuous conduction mode"
     cite: ottman2003
 
@@ -874,6 +933,7 @@ resources:
     retrieved: 2026-09-24
     why: "A survey of maximum power point tracking methods, the fractional open-circuit voltage method among them."
     why_ko: "개방 전압 비율 방식을 포함한 최대 전력점 추종(MPPT) 방법들의 비교."
+    why_zh: "最大功率点跟踪（MPPT）方法综述，其中包括开路电压比例法。"
     title_match: "Comparison of Photovoltaic Array Maximum Power Point Tracking Techniques"
     cite: esram2007
 
@@ -888,6 +948,7 @@ resources:
     retrieved: 2026-09-24
     why: "A harvesting charger that tracks the maximum power point by sampling a fraction of the source's open-circuit voltage."
     why_ko: "전원 개방 전압의 일정 비율을 샘플링해 최대 전력점을 추종하는 하베스팅 충전기."
+    why_zh: "一款能量收集充电器，通过采样电源开路电压的一定比例来跟踪最大功率点。"
     title_match: "bq25570 Nano Power Boost Charger and Buck Converter"
     urlkind: pdf
     cite: ti_bq25570
@@ -905,6 +966,7 @@ resources:
     retrieved: 2026-09-24
     why: "The textbook this site follows for its symbols and derivations: steady state, DCM, averaged models, control and magnetics."
     why_ko: "이 사이트가 기호와 유도의 기준으로 삼는 교과서: 정상상태, DCM, 평균화 모델, 제어, 자성 부품."
+    why_zh: "本站的符号与推导所依据的教材：稳态、DCM、平均模型、控制与磁性元件。"
     title_match: "Fundamentals of Power Electronics"
     cite: erickson2020
 
@@ -919,6 +981,7 @@ resources:
     retrieved: 2026-09-24
     why: "A broad textbook that also covers line-frequency rectifiers, the semiconductor devices, snubbers, drive circuits and heat sinks."
     why_ko: "상용 주파수 정류기, 반도체 소자, 스너버, 구동 회로, 방열판까지 다루는 폭넓은 교과서."
+    why_zh: "内容广泛的教材，还涵盖工频整流器、半导体器件、缓冲电路、驱动电路和散热器。"
     title_match: "Power Electronics: Converters, Applications, and Design"
     cite: mohan2003
 
@@ -933,6 +996,7 @@ resources:
     retrieved: 2026-09-24
     why: "Converters worked through with SPICE: averaged models, loop compensation and practical designs."
     why_ko: "SPICE로 컨버터를 풀어 가는 책: 평균화 모델, 루프 보상, 실제 설계."
+    why_zh: "借助 SPICE 逐步分析变换器：平均模型、环路补偿与实际设计。"
     title_match: "Switch-Mode Power Supplies, Second Edition"
     cite: basso2014
 
@@ -947,6 +1011,7 @@ resources:
     retrieved: 2026-09-24
     why: "An introductory undergraduate textbook, with PSpice simulations beside the circuit analysis."
     why_ko: "회로 해석에 PSpice 시뮬레이션을 곁들인 학부 입문 교과서."
+    why_zh: "本科入门教材，在电路分析之外辅以 PSpice 仿真。"
     title_match: "Power Electronics"
     cite: hart2011
 
@@ -961,6 +1026,7 @@ resources:
     retrieved: 2026-09-24
     why: "A reference guide on magnetic components: basic principles, the components and their applications in EMI filters, switch-mode supplies and RF circuits."
     why_ko: "자성 부품에 관한 참고서: 기본 원리, 부품, 그리고 EMI 필터·스위칭 전원·RF 회로에서의 응용."
+    why_zh: "磁性元件参考指南：基本原理、元件本身，以及它们在 EMI 滤波器、开关电源和 RF 电路中的应用。"
     title_match: "Trilogy of Magnetics"
 
   # Courses
@@ -975,6 +1041,7 @@ resources:
     retrieved: 2026-09-24
     why: "The course series around the textbook, from converter circuits to control and magnetics."
     why_ko: "교과서를 따라가는 강좌 시리즈: 컨버터 회로부터 제어와 자성 부품까지."
+    why_zh: "围绕该教材的系列课程，从变换器电路讲到控制与磁性元件。"
     title_match: "Power Electronics | Coursera"
     cite: cuboulder_pe_coursera
 
@@ -989,6 +1056,7 @@ resources:
     retrieved: 2026-09-24
     why: "Averaged and small-signal modeling of converters and the design of their control loops."
     why_ko: "컨버터의 평균화·소신호 모델링과 제어 루프 설계."
+    why_zh: "变换器的平均建模与小信号建模，以及控制环路的设计。"
     title_match: "Modeling and Control of Power Electronics"
     cite: cuboulder_mcpe_coursera
 
@@ -1004,6 +1072,7 @@ resources:
     retrieved: 2026-09-24
     why: "Short videos on a first schematic, transient and AC simulations, and the waveform viewer in LTspice."
     why_ko: "LTspice에서 첫 회로도, 과도·AC 시뮬레이션, 파형 뷰어를 다루는 짧은 동영상."
+    why_zh: "关于 LTspice 的短视频：第一张原理图、瞬态与 AC 仿真，以及波形查看器。"
     title_match: "LTspice Basics"
 
   - id: ti-psds
@@ -1017,6 +1086,7 @@ resources:
     retrieved: 2026-09-24
     why: "Seminar papers and recordings on topologies, control, magnetics and gate drive; the content needs a free myTI account."
     why_ko: "토폴로지, 제어, 자성 부품, 게이트 구동에 관한 세미나 자료와 녹화 영상. 내용을 보려면 무료 myTI 계정이 필요합니다."
+    why_zh: "关于拓扑、控制、磁性元件和栅极驱动的研讨会论文与录像；查看内容需要免费的 myTI 账户。"
     title_match: "PSDS library"
     cite: ti_psds
 
@@ -1032,6 +1102,7 @@ resources:
     retrieved: 2026-09-24
     why: "A free SPICE simulator from Analog Devices."
     why_ko: "Analog Devices의 무료 SPICE 시뮬레이터."
+    why_zh: "Analog Devices 提供的免费 SPICE 仿真器。"
     title_match: "LTspice"
     cite: ltspice
 
@@ -1046,6 +1117,7 @@ resources:
     retrieved: 2026-09-24
     why: "An open-source SPICE simulator; the site's simulator is cross-checked against it in CI."
     why_ko: "오픈 소스 SPICE 시뮬레이터. 이 사이트의 시뮬레이터를 CI에서 ngspice와 교차 검증합니다."
+    why_zh: "开源 SPICE 仿真器；本站的仿真器在 CI 中与其交叉校验。"
     title_match: "Ngspice"
     cite: ngspice
 
@@ -1060,6 +1132,7 @@ resources:
     retrieved: 2026-09-25
     why: "The reference for every netlist line: the .tran and .meas statements, and the .options that set the integration method and the tolerances."
     why_ko: "넷리스트의 모든 줄에 대한 참고 문서. .tran과 .meas 문, 그리고 적분법과 허용오차를 정하는 .options."
+    why_zh: "网表中每一行的参考文档：.tran 和 .meas 语句，以及设置积分方法和容差的 .options。"
     title_match: "Ngspice User's Manual"
     cite: ngspice_manual
 
@@ -1074,6 +1147,7 @@ resources:
     retrieved: 2026-09-25
     why: "How SymPy solves an equation or a system for a symbol, as the site's derivation scripts solve the balance equations."
     why_ko: "SymPy로 방정식이나 연립방정식을 기호에 대해 푸는 방법. 이 사이트의 유도 스크립트도 이 방법으로 평형 방정식을 풉니다."
+    why_zh: "SymPy 如何针对某个符号求解方程或方程组；本站的推导脚本就是这样求解平衡方程的。"
     title_match: "Solve Equations"
 
   - id: python-floatingpoint
@@ -1087,6 +1161,7 @@ resources:
     retrieved: 2026-09-25
     why: "Why 0.1 + 0.1 + 0.1 is not 0.3 in a computer, why each operation can add a rounding error of up to one part in 2**53, and why results are compared within a tolerance, not for equality."
     why_ko: "컴퓨터에서 0.1 + 0.1 + 0.1이 0.3이 아닌 이유, 연산마다 최대 2**53분의 1의 반올림 오차가 더해질 수 있는 이유, 그리고 결과를 같은지가 아니라 허용오차 안에 드는지로 비교하는 이유."
+    why_zh: "为什么在计算机中 0.1 + 0.1 + 0.1 不等于 0.3，为什么每次运算都可能引入最多 2**53 分之一的舍入误差，以及为什么比较结果时看其是否在容差之内，而不是看是否相等。"
     title_match: "Floating-Point Arithmetic: Issues and Limitations"
 
   - id: falstad-circuitjs
@@ -1100,6 +1175,7 @@ resources:
     retrieved: 2026-09-24
     why: "A circuit simulator in the browser that animates the currents; good for a first look at a converter."
     why_ko: "전류의 흐름을 애니메이션으로 보여 주는 브라우저 회로 시뮬레이터. 컨버터를 처음 살펴보기에 좋습니다."
+    why_zh: "在浏览器中运行、以动画显示电流的电路仿真器；适合初步了解变换器。"
     title_match: "Circuit Simulator"
     cite: falstad_circuitjs
 
@@ -1114,6 +1190,7 @@ resources:
     retrieved: 2026-09-25
     why: "The simulator's source: how it steps in time, and how it models its inductors, transformers and diodes in each step."
     why_ko: "시뮬레이터의 소스 코드. 회로를 한 타임 스텝씩 계산하는 방법과, 스텝마다 인덕터·변압기·다이오드를 모델링하는 방법."
+    why_zh: "该仿真器的源代码：它如何按时间步长逐步计算，以及每一步中如何为电感、变压器和二极管建模。"
     title_match: "pfalstad/circuitjs1"
     cite: circuitjs1_source
 
@@ -1128,6 +1205,7 @@ resources:
     retrieved: 2026-09-25
     why: "How a web page runs the simulator from JavaScript and reads its node voltages and currents after every step, as the site's CI does to check the library's circuits."
     why_ko: "웹 페이지에서 JavaScript로 시뮬레이터를 실행하고 스텝마다 노드 전압과 전류를 읽는 방법. 이 사이트의 CI도 이 방법으로 라이브러리의 회로를 확인합니다."
+    why_zh: "网页如何通过 JavaScript 运行该仿真器，并在每一步后读取其节点电压和电流；本站的 CI 正是这样检查电路库中的电路的。"
     title_match: "Circuit Simulator JavaScript Interface Documentation"
 
   - id: tdk-mdt
@@ -1141,6 +1219,7 @@ resources:
     retrieved: 2026-09-24
     why: "The manufacturer's ferrite material data as curves: permeability, power loss against frequency, flux density and temperature, and core calculations."
     why_ko: "곡선으로 보는 제조사의 페라이트 재료 데이터: 투자율, 주파수·자속 밀도·온도에 따른 전력 손실, 코어 계산."
+    why_zh: "以曲线形式给出的厂商铁氧体材料数据：磁导率，功率损耗随频率、磁通密度和温度的变化，以及磁芯计算。"
     title_match: "Ferrite magnetic design tool"
 
   - id: katex
@@ -1154,6 +1233,7 @@ resources:
     retrieved: 2026-09-24
     why: "The math typesetting library that renders every equation on this site, in strict mode at build time."
     why_ko: "이 사이트의 모든 수식을 빌드 때 엄격 모드로 렌더링하는 수식 조판 라이브러리."
+    why_zh: "数学排版库，本站所有公式都由它在构建时以严格模式渲染。"
     title_match: "KaTeX"
 
   - id: starlight
@@ -1167,6 +1247,7 @@ resources:
     retrieved: 2026-09-24
     why: "The documentation theme for Astro this site is built with."
     why_ko: "이 사이트를 만드는 데 쓴 Astro 문서 테마."
+    why_zh: "构建本站所用的 Astro 文档主题。"
     title_match: "Starlight"
 
   # Papers (the publishers' pages)
@@ -1181,6 +1262,7 @@ resources:
     retrieved: 2026-09-24
     why: "The loss-free resistor: a converter that draws power like a resistor and delivers it instead of dissipating it."
     why_ko: "무손실 저항: 저항처럼 전력을 끌어오되 소산하지 않고 전달하는 컨버터."
+    why_zh: "无损电阻：一种像电阻一样汲取功率、却将功率传递出去而非耗散掉的变换器。"
     title_match: "Realization of loss-free resistive elements"
     cite: singer1990
 
@@ -1195,6 +1277,7 @@ resources:
     retrieved: 2026-09-24
     why: "The 1892 paper behind the Steinmetz equation for core loss (reprinted in the Proceedings of the IEEE in 1984)."
     why_ko: "코어 손실의 스타인메츠 식이 나온 1892년 논문(1984년 Proceedings of the IEEE에 재수록)."
+    why_zh: "磁芯损耗 Steinmetz 公式所依据的 1892 年论文（1984 年重刊于 Proceedings of the IEEE）。"
     title_match: "On the Law of Hysteresis"
 
   - id: dowell1966-iet
@@ -1208,6 +1291,7 @@ resources:
     retrieved: 2026-09-24
     why: "The layer model behind the ac resistance of windings, used on the winding-loss page."
     why_ko: "권선 손실 페이지에서 쓰는, 권선 교류 저항의 층 모델."
+    why_zh: "绕组交流电阻所依据的分层模型，绕组损耗页面采用了这一模型。"
     title_match: "Effects of eddy currents in transformer windings"
     cite: dowell1966
 
@@ -1222,6 +1306,7 @@ resources:
     retrieved: 2026-09-24
     why: "An adaptive dc-dc converter that tracks a piezoelectric element's best operating point."
     why_ko: "압전 소자의 최적 동작점을 추종하는 적응형 DC-DC 컨버터."
+    why_zh: "跟踪压电元件最佳工作点的自适应 DC-DC 变换器。"
     title_match: "Adaptive piezoelectric energy harvesting circuit"
     cite: ottman2002
 
@@ -1236,5 +1321,6 @@ resources:
     retrieved: 2026-09-24
     why: "The standard interface, SECE and the SSHI variants compared for standalone systems."
     why_ko: "독립형 시스템을 위한 표준 인터페이스, SECE, SSHI 변형의 비교."
+    why_zh: "面向独立系统对标准接口电路、SECE 和各种 SSHI 变体的比较。"
     title_match: "A comparison between several vibration-powered piezoelectric generators"
     cite: lefeuvre2006

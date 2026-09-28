@@ -1,6 +1,7 @@
 synthetic: true
 label: "Rectangular pulse-train example"
 label_ko: "직사각형 펄스열 예제"
+label_zh: "矩形脉冲序列示例"
 params:
   V_pk: 12
   D: 0.25

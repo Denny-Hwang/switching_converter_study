@@ -1,6 +1,7 @@
 synthetic: true
 label: "Example fixed-duty-ratio flyback charging a fixed output from a current-limited source"
 label_ko: "전류 제한 전원으로 고정 출력을 충전하는 고정 듀티비 플라이백 예제"
+label_zh: "从限流电源向固定输出充电的固定占空比反激变换器示例"
 params:
   V: 5
   V_D: 0.5

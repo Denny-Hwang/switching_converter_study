@@ -1,6 +1,7 @@
 synthetic: true
 label: "Example Steinmetz parameters"
 label_ko: "스타인메츠 파라미터 예제"
+label_zh: "Steinmetz 参数示例"
 params:
   k: 1
   f: 1.0e5

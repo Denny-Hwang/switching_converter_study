@@ -1,6 +1,7 @@
 synthetic: true
 label: "Cold example"
 label_ko: "저온 예제"
+label_zh: "低温示例"
 # A cell at 3.7 V open-circuit charged at 1 A through 0.1 ohm; and an output
 # capacitor of 0.05 ohm ESR under 2 A peak-to-peak ripple, with its ESR
 # ten times higher at its low-temperature limit.

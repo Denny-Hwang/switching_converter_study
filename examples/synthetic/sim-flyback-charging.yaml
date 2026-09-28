@@ -1,6 +1,7 @@
 synthetic: true
 label: "Example flyback charging a capacitor from 0 V"
 label_ko: "0 V부터 커패시터를 충전하는 플라이백 예제"
+label_zh: "从 0 V 开始为电容充电的反激变换器示例"
 # With nothing across the output capacitor there is no steady state: every
 # period adds energy. While the output is still low the magnetizing current
 # cannot reset (CCM) and grows from period to period.

@@ -1,6 +1,7 @@
 synthetic: true
 label: "Buck loss-budget example"
 label_ko: "벅 손실 예산 예제"
+label_zh: "降压变换器损耗预算示例"
 # Loss-budget preset: operating point, then made-up switch, diode and core data.
 # The Steinmetz coefficients are those of core-loss.yaml.
 params:

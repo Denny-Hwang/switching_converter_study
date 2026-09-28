@@ -1,6 +1,7 @@
 synthetic: true
 label: "Example flyback charging a battery in DCM"
 label_ko: "DCM으로 배터리를 충전하는 플라이백 예제"
+label_zh: "在 DCM 下为电池充电的反激变换器示例"
 # In DCM the magnetizing inductance stores the same energy every period,
 # whatever the battery's voltage: the battery (and the diode) take the power
 # the converter draws.

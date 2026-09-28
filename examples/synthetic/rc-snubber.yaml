@@ -1,6 +1,7 @@
 synthetic: true
 label: "RC snubber example"
 label_ko: "RC 스너버 예제"
+label_zh: "RC 缓冲电路示例"
 # A node that rings at 20 MHz, and at 10 MHz with 150 pF added across it; an
 # RC snubber of 100 pF (twice the node's capacitance) with a damping factor of
 # 0.75, on a node that swings through 100 V at 100 kHz, with 0.5 A in the

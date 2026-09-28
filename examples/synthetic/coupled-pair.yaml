@@ -1,6 +1,7 @@
 synthetic: true
 label: "Coupled windings example"
 label_ko: "결합 권선 예제"
+label_zh: "耦合绕组示例"
 # Two windings as an impedance meter sees them: 404 µH at the primary with the
 # secondary open, 25.25 µH at the secondary with the primary open, 100 µH
 # mutual inductance. They are the transformer model with L_M = 400 µH,

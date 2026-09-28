@@ -17,7 +17,6 @@ export interface Example {
   name: string;
   label: string;
   label_ko: string;
-  /** Chinese; empty until translated, when the English stands in. */
   label_zh: string;
   params: Context;
   steps: (string | StepSpec)[];
@@ -42,10 +41,8 @@ function parse(path: string, text: string): Example {
   const label = String(data.label ?? '');
   const labelKo = String(data.label_ko ?? '');
   const labelZh = String(data.label_zh ?? '');
-  if (data.synthetic !== true || !label.toLowerCase().includes('example') || !labelKo.includes('예제') || (labelZh !== '' && !labelZh.includes('示例'))) {
-    throw new Error(
-      `examples/synthetic/${name}.yaml must declare synthetic: true and labels naming it an example ("example", "예제", and "示例" where a Chinese label is given)`,
-    );
+  if (data.synthetic !== true || !label.toLowerCase().includes('example') || !labelKo.includes('예제') || !labelZh.includes('示例')) {
+    throw new Error(`examples/synthetic/${name}.yaml must declare synthetic: true and labels naming it an example ("example", "예제", "示例")`);
   }
   const params = (data.params ?? {}) as Context;
   for (const [k, v] of Object.entries(params)) {

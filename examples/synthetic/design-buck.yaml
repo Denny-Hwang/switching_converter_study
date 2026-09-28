@@ -1,6 +1,7 @@
 synthetic: true
 label: "Example buck specification"
 label_ko: "벅 설계 사양 예제"
+label_zh: "降压变换器设计规格示例"
 # Converter-designer preset: input range, output, full and lightest CCM load,
 # switching frequency, and ripple targets as half peak-to-peak ratios.
 params:

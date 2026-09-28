@@ -1,6 +1,7 @@
 synthetic: true
 label: "Stiff-mode example"
 label_ko: "강성 모드 예제"
+label_zh: "刚性模态示例"
 # A mode with a time constant of 1 ns, stepped by 20 ns, twenty times its time constant:
 # the factors of the trapezoidal rule and of backward Euler.
 params:

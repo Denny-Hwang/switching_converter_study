@@ -1,6 +1,7 @@
 synthetic: true
 label: "Core-material and inductor example"
 label_ko: "코어 재료·인덕터 예제"
+label_zh: "磁芯材料与电感示例"
 params:
   mu_r: 2000
   H_mag: 100

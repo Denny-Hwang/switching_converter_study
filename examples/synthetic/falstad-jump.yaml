@@ -1,6 +1,7 @@
 synthetic: true
 label: "DCM buck example in CircuitJS1: the jump without a body diode"
 label_ko: "CircuitJS1의 DCM 벅 예제: 바디 다이오드가 없을 때의 점프"
+label_zh: "CircuitJS1 中的 DCM 降压变换器示例：无体二极管时的跳变"
 # The library's DCM buck (buck-light-load.yaml: L = 100 uH, f_s = 100 kHz) in CircuitJS1 with
 # its time step, a five-hundredth of the period. I_os is the current past zero that the
 # circuit's CircuitJS1 run reaches before the freewheeling diode turns off (3.72 mA, rounded).

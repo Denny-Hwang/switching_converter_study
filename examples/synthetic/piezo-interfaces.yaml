@@ -1,6 +1,7 @@
 synthetic: true
 label: "Piezoelectric interfaces example"
 label_ko: "압전 인터페이스 예제"
+label_zh: "压电接口电路示例"
 # The source of piezo-source.yaml behind three interfaces: a full-wave bridge onto V_DC (the standard
 # interface), SECE, and parallel SSHI with an inversion that keeps 80 % of the voltage.
 params:
@@ -16,4 +17,4 @@ steps:
   - {eq: piezo.P_sece, as: P_sece}
   - piezo.P_sshi_max
 checks:
-  - {when: "V_DC < V_p", then: {en: "the bridge conducts", ko: "브리지가 도통함"}, else: {en: "the bridge never conducts", ko: "브리지가 도통하지 않음"}}
+  - {when: "V_DC < V_p", then: {en: "the bridge conducts", ko: "브리지가 도통함", zh: "整流桥导通"}, else: {en: "the bridge never conducts", ko: "브리지가 도통하지 않음", zh: "整流桥始终不导通"}}
