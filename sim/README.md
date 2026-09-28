@@ -34,8 +34,8 @@ The CircuitJS1 circuits, and the links that open them on falstad.com, are writte
 | 플라이백 컨버터, DCM | [flyback-dcm.asc](ltspice/flyback/flyback-dcm.asc) | [flyback-dcm.cir](ngspice/flyback/flyback-dcm.cir) | [flyback-dcm.txt](falstad/flyback-dcm.txt) | [svg](waveforms/flyback-dcm.svg) |
 | 리셋 권선이 있는 포워드 컨버터, CCM | [forward-ccm.asc](ltspice/forward/forward-ccm.asc) | [forward-ccm.cir](ngspice/forward/forward-ccm.cir) | [forward-ccm.txt](falstad/forward-ccm.txt) | [svg](waveforms/forward-ccm.svg) |
 
-LTspice, ngspice, 파형 파일은 모두 `scripts/sim_library.py`가 하나의 부품 목록에서 만듭니다. 그래서 회로도와 넷리스트는 같은 회로입니다. CI는 각 회로도를 넷리스트로 다시 읽어 부품별로 비교하고, ngspice를 다시 돌려 `results.json`과 `packages/pe-core/equations/equations.yaml`의 이상적인 식(1 % 이내)과 비교하며, 파형을 다시 그립니다.
+LTspice, ngspice, 파형 파일은 모두 `scripts/sim_library.py`가 하나의 부품 목록에서 만듭니다. 그래서 회로도와 넷리스트는 같은 회로입니다. CI는 각 회로도를 넷리스트로 다시 읽어 부품별로 비교하고, ngspice를 다시 실행해 `results.json`과 `packages/pe-core/equations/equations.yaml`의 이상적인 식(1 % 이내)과 비교하며, 파형을 다시 그립니다.
 
-LTspice 자체는 CI에서 돌리지 않습니다. wine에서 LTspice 26.1.1로 한 번 돌렸습니다. 각 회로도에서 LTspice가 만든 넷리스트는 `.cir`와 부품이 같고, 결과는 각 양의 최대 크기 대비 0.3 % 안에서 ngspice와 맞습니다.
+LTspice 자체는 CI에서 실행하지 않습니다. wine에서 LTspice 26.1.1로 한 번 실행했습니다. 각 회로도에서 LTspice가 만든 넷리스트는 `.cir`와 부품이 같고, 결과는 각 양의 최대 크기 대비 0.3 % 안에서 ngspice와 맞습니다.
 
 CircuitJS1 회로와 이를 falstad.com에서 여는 링크는 `scripts/falstad_library.py`가 같은 부품 목록에서 만듭니다. [falstad/README.md](falstad/README.md)에 링크와 SPICE 회로와의 차이가 있으며, CI는 모든 링크를 falstad.com에서 실행해 이상적인 식(1 % 이내)과 비교합니다.

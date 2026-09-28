@@ -1065,10 +1065,10 @@ def sim_readme() -> str:
             *rows_ko,
             "",
             "LTspice, ngspice, 파형 파일은 모두 `scripts/sim_library.py`가 하나의 부품 목록에서 만듭니다. 그래서 회로도와 넷리스트는 같은 회로입니다. "
-            "CI는 각 회로도를 넷리스트로 다시 읽어 부품별로 비교하고, ngspice를 다시 돌려 `results.json`과 "
+            "CI는 각 회로도를 넷리스트로 다시 읽어 부품별로 비교하고, ngspice를 다시 실행해 `results.json`과 "
             "`packages/pe-core/equations/equations.yaml`의 이상적인 식(1 % 이내)과 비교하며, 파형을 다시 그립니다.",
             "",
-            "LTspice 자체는 CI에서 돌리지 않습니다. wine에서 LTspice 26.1.1로 한 번 돌렸습니다. 각 회로도에서 LTspice가 만든 넷리스트는 "
+            "LTspice 자체는 CI에서 실행하지 않습니다. wine에서 LTspice 26.1.1로 한 번 실행했습니다. 각 회로도에서 LTspice가 만든 넷리스트는 "
             "`.cir`와 부품이 같고, 결과는 각 양의 최대 크기 대비 0.3 % 안에서 ngspice와 맞습니다.",
             "",
             "CircuitJS1 회로와 이를 falstad.com에서 여는 링크는 `scripts/falstad_library.py`가 같은 부품 목록에서 만듭니다. "
