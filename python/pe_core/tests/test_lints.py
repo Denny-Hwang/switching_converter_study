@@ -191,18 +191,20 @@ def test_resources_check_online_checks_urls_at_once_and_reports_in_order(monkeyp
     assert "bib:k3: HTTP 404 (gone) (https://example.org/3)" in err
 
 
-def test_resources_check_tries_what_nothing_answered_once_more(monkeypatch, capsys) -> None:
+def test_resources_check_tries_what_nothing_answered_again(monkeypatch, capsys) -> None:
     rc = _script("resources_check")
     targets = [{"src": f"bib:k{i}", "url": f"https://example.org/{i}", "expect": "x", "kind": "html", "quotes": []}
                for i in range(4)]
     monkeypatch.setattr(rc, "collect", lambda: (targets, []))
-    monkeypatch.setattr(rc, "RETRY_PAUSE", 0)
+    monkeypatch.setattr(rc, "RETRY_PAUSES", (0, 0, 0))
+    slept: list[float] = []
+    monkeypatch.setattr(rc.time, "sleep", slept.append)
     calls: dict[str, int] = {}
 
     def check(t: dict) -> tuple[str, str]:
         n = calls[t["src"]] = calls.get(t["src"], 0) + 1
-        if t["src"] == "bib:k1":  # the archive answers the second time
-            return ("NO-ANSWER", rc.NO_ANSWER) if n == 1 else ("OK (archived)", "archived 2026-01-02: x")
+        if t["src"] == "bib:k1":  # the archive answers the third time
+            return ("NO-ANSWER", rc.NO_ANSWER) if n < 3 else ("OK (archived)", "archived 2026-01-02: x")
         if t["src"] == "bib:k2":  # never answers
             return "NO-ANSWER", rc.NO_ANSWER
         if t["src"] == "bib:k3":  # a conclusive failure is not tried again
@@ -213,17 +215,19 @@ def test_resources_check_tries_what_nothing_answered_once_more(monkeypatch, caps
     monkeypatch.setattr(sys, "argv", ["resources_check.py", "--online"])
     assert rc.main() == 1
     out, err = capsys.readouterr()
-    assert calls == {"bib:k0": 1, "bib:k1": 2, "bib:k2": 2, "bib:k3": 1}
-    assert "trying them once more" in out and "(again)" in out
+    # k2 is tried after every pause; k1 stops once the archive answers
+    assert calls == {"bib:k0": 1, "bib:k1": 3, "bib:k2": 4, "bib:k3": 1}
+    assert len(slept) == 3 and "trying them again" in out and "(try 4 of 4)" in out and "(again)" in out
     assert "bib:k1:" not in err and "bib:k2: " + rc.NO_ANSWER in err and "bib:k3: HTTP 404 (gone)" in err
     assert "confirmed from their latest Internet Archive capture: bib:k1" in out
 
     # nothing left unanswered: no pause, no second round
     calls.clear()
+    slept.clear()
     targets[:] = targets[:1]
     assert rc.main() == 0
     out, _ = capsys.readouterr()
-    assert calls == {"bib:k0": 1} and "once more" not in out
+    assert calls == {"bib:k0": 1} and not slept and "again" not in out
 
 
 def test_resources_check_asks_the_archive_once_per_url_that_it_answered(monkeypatch) -> None:
