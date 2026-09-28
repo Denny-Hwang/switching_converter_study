@@ -18,7 +18,7 @@ import Quiz from '../../../../components/Quiz.astro';
 ## 목표
 
 - 권선(winding)이나 커패시터의 직렬 저항(series resistance)에서 생기는 도통 손실(conduction loss)을 실효 전류(rms current)로부터 추정합니다.
-- 인덕터의 자기 공진(self-resonance)이 어디에서 생기는지, 그리고 그 근처에서 측정한 인덕턴스가 왜 틀리는지 설명합니다.
+- 인덕터의 자기 공진(self-resonance)이 생기는 원인과, 그 근처에서 측정한 인덕턴스가 틀리는 이유를 설명합니다.
 - 커패시터의 직렬 저항이 더하는 출력 리플을 추정합니다.
 
 ## 이론
@@ -28,12 +28,12 @@ import Quiz from '../../../../components/Quiz.astro';
 실제 인덕터에는 권선의 저항이 있고
 <Cite key="erickson2020" where="Ch. 3" />, 실제 커패시터에는 등가 직렬
 저항(equivalent series resistance, ESR)이 있습니다 <Cite key="ti_slva630" />.
-저항에 전류가 흐르면 그 실효값의 제곱에 비례하는 전력이 소산(dissipation)됩니다
+저항에 전류가 흐르면 전류 실효값의 제곱에 비례하는 전력이 소산(dissipation)됩니다
 <Cite key="erickson2020" where="Ch. 3" />.
 
 <Eq id="loss.cond" />
 
-같은 식은 트랜지스터 온 저항(on-resistance)의 도통 손실도 줍니다
+트랜지스터 온 저항(on-resistance)의 도통 손실도 같은 식으로 구합니다
 ([반도체 페이지](../semiconductors/) 참고). 중요한 것은 평균값이 아니라
 실효값입니다. 평균이 같더라도 펄스 형태의 전류는 일정한 전류보다 손실이
 더 큽니다(<EqRef id="fourier.pulse.rms" label="펄스열의 실효값" />).
@@ -42,7 +42,7 @@ import Quiz from '../../../../components/Quiz.astro';
 
 권선에서 서로 이웃한 턴(turn)은 절연체(insulation)로 분리되어 있으므로, 각 턴
 양단에 작은 커패시턴스가 나타납니다 <Cite key="ti_snoa930" />. 이 커패시턴스들은
-함께 인덕턴스와 병렬인 커패시턴스로 작용하며, 이 둘이 공진합니다.
+합쳐서 인덕턴스와 병렬인 커패시턴스로 작용하며, 둘은 공진합니다.
 
 <Eq id="passive.f_srf" />
 
@@ -103,7 +103,7 @@ $C_p$를 로그 축에서 스윕(sweep)하십시오. 자기 공진 주파수는 
   근처에서의 측정값은 인덕턴스도 커패시턴스도 아니며, 턴 수가 많은 권선에서는
   공진 주파수가 낮을 수 있습니다 <Cite key="ti_snoa930" />.
 - **손실을 정하는 것은 실효 전류입니다.** 펄스 형태의 전류가 흐르는 권선이나
-  직렬 저항은 평균 전류로 짐작되는 것보다 손실이 더 큽니다.
+  직렬 저항은 평균 전류로 짐작한 값보다 손실이 더 큽니다.
 - **스위칭 에지는 자체 리플을 더합니다.** 커패시터의 직렬 인덕턴스는 모든
   스위칭 에지에서 출력 전압에 계단형 변화를 만들며, 용량성 항도 저항성 항도
   이를 예측하지 못합니다 <Cite key="ti_slva630" />.

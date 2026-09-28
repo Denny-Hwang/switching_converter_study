@@ -17,7 +17,7 @@ import Quiz from '../../../../components/Quiz.astro';
 
 ## 목표
 
-- 이 사이트의 1:n 권선비(turns ratio) 규약을 사용하여 이상적 변압기(ideal transformer)의 관계식을 적용합니다.
+- 이 사이트의 1:n 권선비(turns ratio) 규약에 따라 이상적 변압기(ideal transformer)의 관계식을 적용합니다.
 - 자화 인덕턴스(magnetizing inductance)와 누설 인덕턴스(leakage inductance)를 추가하여 실제 변압기를 모델링합니다.
 - 에너지를 통과시키는 변압기와 에너지를 저장하는 결합 인덕터(coupled inductor)를 구별합니다.
 
@@ -28,7 +28,7 @@ import Quiz from '../../../../components/Quiz.astro';
 하나의 코어에 감긴 두 권선이 완전 결합(perfect coupling)되어 있고 자화
 전류(magnetizing current)와 손실이 없으면 이상적 변압기를 이룹니다. 권선비는
 1:n으로 쓰며, 여기서 $n$은 2차(secondary) 턴 수를 1차(primary) 턴 수로 나눈
-값입니다. 이때 전압에는 $n$이 곱해지고 전류는 $n$으로 나누어집니다
+값입니다. 이때 전압은 $n$배가 되고 전류는 $n$으로 나누어집니다
 <Cite key="alexander2017" where="Ch. 13" />, <Cite key="erickson2020" where="Ch. 6" />.
 
 <Eq id="xfmr.V2" />
@@ -44,26 +44,27 @@ import Quiz from '../../../../components/Quiz.astro';
 형성하는 데 전류가 필요합니다. 이 자화 전류는 1차 측으로
 환산한(referred to the primary) 인덕턴스 $L_M$을 이상적 변압기의 1차 측에 병렬로
 두어 모델링합니다 <Cite key="erickson2020" where="Ch. 6" />.
-자화 전류는 권선에 전압이 인가(applied)되는 동안 증가하며, 이 때문에 변압기는 매 주기
+자화 전류는 권선에 전압이 인가되는 동안 증가하며, 이 때문에 변압기는 매 주기
 리셋(reset)되어야 합니다([포워드 컨버터(forward converter)](../../03-topologies/forward/) 참고).
 
 ### 누설 인덕턴스
 
 모든 자속이 두 권선 모두와 쇄교(linkage)하는 것은 아닙니다. 한 권선과만
 쇄교하는 자속은 그 권선에 직렬인 누설 인덕턴스로 나타납니다
-<Cite key="erickson2020" where="Ch. 10" />.
-누설 인덕턴스는 한 권선에서 다른 권선으로 전류가 옮겨 가는 것을 늦추며,
-플라이백(flyback)에서는 턴오프(turn-off)할 때마다 그 에너지가 흡수되어야 합니다([플라이백 페이지](../../03-topologies/flyback/) 참고).
+<Cite key="erickson2020" where="Ch. 10" />. 누설 인덕턴스는 한 권선에서 다른
+권선으로 전류가 옮겨 가는 것을 늦추며, 플라이백(flyback)에서는
+턴오프(turn-off)할 때마다 그 에너지를 흡수해야 합니다
+([플라이백 페이지](../../03-topologies/flyback/) 참고).
 
 ### 변압기인가, 결합 인덕터인가
 
 변압기는 두 권선이 모두 도통(conduction)하는 동안 1차 측에서 2차 측으로
 에너지를 전달하며, 이상적으로는 에너지를 전혀 저장하지 않습니다. 플라이백의
-결합 인덕터는 다르게 동작합니다. 그 자화 인덕턴스는 1차 권선이 도통하는 동안 에너지를 저장했다가, 그
-뒤에 2차 권선을 통해 방출합니다 <Cite key="erickson2020" where="Ch. 6" />. 따라서 두
-부품은 서로 다른 목표로 설계됩니다. 변압기는 작은 자화 전류를, 결합 인덕터는
-지정된 자화 인덕턴스와 저장 에너지(stored energy)를 목표로 합니다
-<Cite key="erickson2020" where="Ch. 10" />.
+결합 인덕터는 다르게 동작합니다. 1차 권선이 도통하는 동안 자화 인덕턴스에
+에너지를 저장했다가, 그 뒤 2차 권선을 통해 방출합니다
+<Cite key="erickson2020" where="Ch. 6" />. 따라서 두 부품은 설계 목표가
+다릅니다. 변압기는 작은 자화 전류를, 결합 인덕터는 지정된 자화 인덕턴스와 저장
+에너지(stored energy)를 목표로 합니다 <Cite key="erickson2020" where="Ch. 10" />.
 
 ## 풀이 예제
 
@@ -87,13 +88,12 @@ $n$을 로그 축 범위에 걸쳐 스윕(sweep)하십시오. 값이 1보다 작
 
 ## 벤치 실습
 
-2차 측을 개방한 채, 함수 발생기(function generator)에서
-정격 주파수 범위(rated frequency range) 안의 정현파(sine wave)를 공급하여 소형
-신호용 변압기(signal transformer)의 1차 측을 구동하십시오. 두 권선의 전압을
-측정하여 권선비를 구하십시오. 그다음 2차 측을 개방한 상태의
-1차 전류(자화 전류)와 2차 측을 단락(short circuit)한 상태의
-1차 전류(누설 인덕턴스로 제한되는 전류)를 측정하고, 전압, 전류, 주파수로부터
-두 인덕턴스를 추정하십시오.
+2차 측을 개방한 채, 소형 신호용 변압기(signal transformer)의 1차 측을 함수
+발생기(function generator)의 정현파(sine wave)로 구동하십시오. 주파수는 정격 주파수
+범위(rated frequency range) 안에서 고릅니다. 두 권선의 전압을 측정하여 권선비를
+구하십시오. 그다음 2차 측을 개방한 상태의 1차 전류(자화 전류)와 2차 측을
+단락(short circuit)한 상태의 1차 전류(누설 인덕턴스로 제한되는 전류)를 측정하고,
+전압, 전류, 주파수로부터 두 인덕턴스를 추정하십시오.
 
 ## 주의할 점
 
