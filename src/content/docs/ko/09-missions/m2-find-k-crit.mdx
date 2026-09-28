@@ -34,15 +34,15 @@ import Quiz from '../../../../components/Quiz.astro';
 
 <TrySim example="buck-basic" topology="buck" />
 
-$R$ = <Val example="buck-basic" name="R" />의 CCM에서 시작합니다. $R$을 조금씩
-올리면서 차트 위의 검출된 모드를 봅니다. 이 모드는 시뮬레이션한 인덕터
-전류에서 나오며, DCM에서는 전류가 주기 안에서 0에 닿습니다. $K$로 계산한
-것이 아닙니다. 모드가 바뀌는 저항을 양쪽에서 좁혀 들어갑니다.
+시뮬레이터는 $R$ = <Val example="buck-basic" name="R" />, CCM 상태에서 시작합니다.
+$R$을 조금씩 올리면서 차트 위에 표시되는 검출 모드를 봅니다. 이 모드는 $K$로 계산한
+것이 아니라 시뮬레이션한 인덕터 전류로 판정한 것입니다. DCM에서는 인덕터 전류가 주기
+안에서 0에 닿습니다. 모드가 바뀌는 저항을 양쪽에서 좁혀 들어갑니다.
 
 ### 2. 경계에서의 K
 
-$L$ = <Val example="buck-basic" name="L" />, $f_s$ = <Val example="buck-basic" name="f_s" />로
-찾은 저항에서 $K$를 계산해 아래에 입력합니다. 시뮬레이터는 모드 옆에 $K$와
+$L$ = <Val example="buck-basic" name="L" />, $f_s$ = <Val example="buck-basic" name="f_s" />일 때
+찾은 저항에서의 $K$를 계산해 아래에 입력합니다. 시뮬레이터는 모드 옆에 $K$와
 $K_\mathrm{crit}$도 보여 주므로, 식이 주는 경계와 전류가 보여 주는 경계를
 비교할 수 있습니다.
 
@@ -57,7 +57,7 @@ CCM에 머뭅니다.
 
 ### 4. DCM에서의 출력
 
-가벼운 부하 $R$ = <Val example="buck-light-load" name="R" />의 벅을 엽니다.
+가벼운 부하 $R$ = <Val example="buck-light-load" name="R" />에서 벅을 엽니다.
 
 <TrySim example="buck-light-load" topology="buck" />
 

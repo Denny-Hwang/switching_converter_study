@@ -1,6 +1,6 @@
 ---
 title: 항복 전압으로 판단한 TVS
-description: 실제로 클램프하는 전류에서 TVS는 항복 전압보다 높은 전압을 유지하고, TVS가 보호하는 스위치는 그 전압을 봅니다.
+description: 실제로 클램프하는 전류에서 TVS는 항복 전압보다 높은 전압을 유지하고, TVS가 보호하는 스위치에는 그 전압이 걸립니다.
 sidebar:
   order: 4
 gotcha:
@@ -18,7 +18,7 @@ import Val from '../../../../components/Val.astro';
 
 플라이백의 스위치가 고장 나거나, 턴오프 때 드레인 전압이 1차 측 클램프를 고를 때
 기준으로 삼은 값보다 높이 치솟습니다. 그런데 TVS의 항복 전압(breakdown voltage)은
-스위치의 정격에 여유를 남겼습니다.
+스위치 정격에 대해 여유가 있었습니다.
 
 ## 원인
 
@@ -28,7 +28,7 @@ TVS는 항복 전압에서 도통하기 시작하지만, 전류를 흘리는 동
 (<EqRef id="tvs.V_clamp" label="클램핑 전압" />). 데이터시트의 클램핑 전압은 표준
 펄스의 피크 전류에서의 최댓값이고, 동저항은 펄스 길이에 따라 달라지며, 항복 전압은
 온도에 따라 올라갑니다 <Cite key="st_an316" />. 플라이백에서 클램프는 턴오프 때 누설
-인덕턴스의 전류를 받고, 스위치는 입력 전압에 클램프 전압을 더한 전압을 봅니다
+인덕턴스의 전류를 받고, 스위치에는 입력 전압에 클램프 전압을 더한 전압이 걸립니다
 (<EqRef id="clamp.Vds" label="클램프가 도통하는 동안의 스위치 전압" />).
 
 클램프 도구의 예제에서, <Val example="clamp-tvs" name="V_BR" />에서 항복하고
@@ -36,9 +36,9 @@ TVS는 항복 전압에서 도통하기 시작하지만, 전류를 흘리는 동
 <Val example="clamp-tvs" name="V_CL" />로 클램프하는 TVS의 동저항은
 <Val example="clamp-tvs" name="R_D" />입니다. 플라이백의
 <Val example="clamp-tvs" name="I_pk" />에서 이 TVS는
-<Val example="clamp-tvs" name="V_clamp" />를 유지하고, 스위치는 정격
-<Val example="clamp-tvs" name="V_rating" />에 대해
-<Val example="clamp-tvs" name="V_DS" />를 봅니다.
+<Val example="clamp-tvs" name="V_clamp" />를 유지하고, 정격이
+<Val example="clamp-tvs" name="V_rating" />인 스위치에는
+<Val example="clamp-tvs" name="V_DS" />가 걸립니다.
 
 ## 확인 방법
 

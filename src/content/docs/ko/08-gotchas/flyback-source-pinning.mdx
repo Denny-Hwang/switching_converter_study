@@ -1,6 +1,6 @@
 ---
 title: 전원의 전압을 고정해 버리는 고정 듀티 플라이백
-description: 전류가 제한된 전원에서 동작하는 고정 듀티비 플라이백은 DCM에서만 저항으로 보이고, 입력이 임계 전압에 이르면 CCM이 입력을 그 전압에 붙잡아 둡니다.
+description: 전류가 제한된 전원에서 동작하는 고정 듀티비 플라이백은 DCM에서만 저항으로 보이고, 입력이 임계 전압에 이르면 CCM이 입력을 그 전압에 고정합니다.
 sidebar:
   order: 11
 gotcha:
@@ -17,9 +17,9 @@ import TrySim from '../../../../components/TrySim.astro';
 
 ## 증상
 
-고임피던스 전원의 저항으로 보이도록 크기를 정한 플라이백이 작은 진폭에서는 전원
-전력의 기대한 몫을 가져갑니다. 그런데 어떤 진폭 위에서는 입력 전압이 전원을 더 따라가지
-않고, 전원이 줄 수 있는 전력보다 적게 가져갑니다.
+고임피던스 전원에 그 전원의 저항과 같은 저항으로 보이도록 설계한 플라이백이 작은
+진폭에서는 기대한 비율의 전원 전력을 가져갑니다. 그런데 어떤 진폭을 넘으면 입력 전압이
+더는 전원을 따라가지 않고, 전원이 줄 수 있는 전력보다 적게 가져갑니다.
 
 ## 원인
 
@@ -29,22 +29,22 @@ DCM에서 고정 듀티비 플라이백은 입력에서 저항, 곧 무손실 �
 DCM은 <EqRef id="flyback.V_crit" label="임계 입력 전압" />보다 낮은 입력에서만
 유지됩니다. 입력을 그 전압까지 올릴 만큼 강한 전원은 플라이백을 CCM으로 몰아넣고,
 출력이 고정되어 있으면 CCM의 변환비는 그 한 입력 전압만 허용합니다
-<Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />. 입력은 거기에
-머뭅니다. 플라이백은 정전압 싱크(constant-voltage sink)가 되었고, 전원 전력 가운데
-가져가는 몫은 전원의 진폭에 따라 달라집니다
+<Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />. 입력은 그 전압에
+머뭅니다. 플라이백은 정전압 싱크(constant-voltage sink)가 되고, 전원 전력 가운데
+가져가는 비율은 전원의 진폭에 따라 달라집니다
 (<EqRef id="src.cv_extraction" label="정전압 추출 비율" />).
 
-예제에서 <Val example="flyback-source" name="R_s" /> 뒤의
-<Val example="flyback-source" name="V_oc" /> 전원은 정합된 저항에
+예제에서 개방 전압 <Val example="flyback-source" name="V_oc" />, 내부 저항
+<Val example="flyback-source" name="R_s" />인 전원은 정합된 저항에
 <Val example="flyback-source" name="P_max" />를 줄 수 있습니다. 플라이백의 입력은
-임계 전압 <Val example="flyback-source" name="V_gcrit" />에 붙잡히고, 거기서 그
+임계 전압 <Val example="flyback-source" name="V_gcrit" />에 고정되고, 거기서 그
 전력의 <Val example="flyback-source" name="eta_ext" />만큼을 가져갑니다.
 
 ## 확인 방법
 
 전원 진폭에 대한 입력 전압을 그려 보십시오. DCM에서는 진폭을 따라가다가 임계 전압에서
-평평해집니다. 또는 자화 전류를 보십시오. CCM에서는 주기마다 0으로 떨어지지 않습니다.
-시뮬레이터의 전류 제한 전원은 입력이 임계 전압에 자리 잡는 것을 보여 줍니다.
+평평해집니다. 또는 자화 전류를 보십시오. CCM에서는 자화 전류가 주기마다 0까지 떨어지지
+않습니다. 시뮬레이터에서 전류 제한 전원으로 입력이 임계 전압에 자리 잡는 것을 볼 수 있습니다.
 
 <TrySim example="flyback-source" topology="flyback" />
 

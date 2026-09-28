@@ -5,7 +5,7 @@ criteria:
     text: '가장 큰 전류에서의 센스 전압, 곧 측정 대상 회로에 걸리는 부담 전압.'
     check: {example: sense-current, name: V_SENSE, tol: 0.01}
   - id: offset
-    text: '증폭기의 오프셋이 전류로 보이는 값.'
+    text: '증폭기의 오프셋을 전류로 환산한 값.'
     check: {example: sense-current, name: I_OSeq, tol: 0.01}
   - id: low-end
     text: '가장 작은 전류에서 패드 오차와 오프셋 중 큰 것, 그리고 오차를 목표 안에 넣는 변경.'
