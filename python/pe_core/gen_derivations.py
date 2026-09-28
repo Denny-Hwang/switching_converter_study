@@ -51,13 +51,16 @@ def build_derivations(catalog: Catalog) -> dict[str, Any]:
                 "source": f"python/pe_core/derive/{mod_name}.py",
                 "title": d.title,
                 "title_ko": d.title_ko,
+                "title_zh": d.title_zh,
                 "intro": d.intro,
                 "intro_ko": d.intro_ko,
+                "intro_zh": d.intro_zh,
                 "results": list(d.results),
                 "steps": [
                     {
                         "text": st.text,
                         "text_ko": st.text_ko,
+                        "text_zh": st.text_zh,
                         "latex": _step_latex(catalog, st, names),
                         "result_for": st.result_for,
                     }

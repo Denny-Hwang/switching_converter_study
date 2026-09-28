@@ -38,6 +38,7 @@ class Step:
     text_ko: str
     expr: Any | None = None
     result_for: str | None = None
+    text_zh: str = ""  # Chinese (Simplified); empty until translated, the page then shows the English
 
 
 @dataclass
@@ -50,6 +51,8 @@ class Derivation:
     steps: list[Step] = field(default_factory=list)
     results: dict[str, sp.Expr] = field(default_factory=dict)
     names: dict[sp.Symbol, str] = field(default_factory=dict)
+    title_zh: str = ""
+    intro_zh: str = ""
 
     def local(self, name: str, latex: str, **assumptions: Any) -> sp.Symbol:
         """A symbol used only inside this derivation, with its display LaTeX."""
@@ -57,16 +60,16 @@ class Derivation:
         self.names[sym] = latex
         return sym
 
-    def step(self, text: str, text_ko: str, expr: Any | None = None) -> None:
-        self.steps.append(Step(text, text_ko, expr))
+    def step(self, text: str, text_ko: str, expr: Any | None = None, *, zh: str = "") -> None:
+        self.steps.append(Step(text, text_ko, expr, text_zh=zh))
 
-    def result(self, eq_id: str, expr: sp.Expr, text: str, text_ko: str, lhs: Any | None = None) -> None:
+    def result(self, eq_id: str, expr: sp.Expr, text: str, text_ko: str, lhs: Any | None = None, *, zh: str = "") -> None:
         """Record the derived expression for ``eq_id`` (and show it as a step)."""
         if eq_id in self.results:
             raise ValueError(f"{self.module}: duplicate result {eq_id}")
         self.results[eq_id] = expr
         shown = sp.Eq(lhs, expr, evaluate=False) if lhs is not None else expr
-        self.steps.append(Step(text, text_ko, shown, result_for=eq_id))
+        self.steps.append(Step(text, text_ko, shown, result_for=eq_id, text_zh=zh))
 
 
 def differs_numerically(a: sp.Expr, b: sp.Expr, points: int = 3) -> bool:

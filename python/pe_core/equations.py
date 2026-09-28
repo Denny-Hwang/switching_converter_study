@@ -53,11 +53,14 @@ TRANSFORMATIONS = standard_transformations + (rationalize,)
 
 REQUIRED_FIELDS = ("id", "title", "title_ko", "lhs", "expr", "symbols", "assumptions", "cite", "tests")
 OPTIONAL_FIELDS = (
+    "title_zh",
     "convention",
     "convention_ko",
+    "convention_zh",
     "derived_by",
     "notes",
     "notes_ko",
+    "notes_zh",
     "relation",
     "ranges",
     "constraints",
@@ -77,6 +80,7 @@ class SymbolInfo:
     range: tuple[float, float] | None
     meaning: str = ""  # a few words for legends and input labels
     meaning_ko: str = ""
+    meaning_zh: str = ""  # Chinese (Simplified); empty until translated, the site then shows the English
     sign: str = "positive"  # "positive" | "real"
     scale: str = "linear"  # random-vector sampling: "linear" | "log"
     value_expr: str | None = None  # physical constant: exact sympy value
@@ -103,6 +107,9 @@ class Equation:
     derived_by: str | None = None
     notes: str = ""
     notes_ko: str = ""
+    title_zh: str = ""  # Chinese (Simplified): empty until translated, the site then shows the English
+    convention_zh: str = ""
+    notes_zh: str = ""
     relation: str = "eq"  # "eq" | "approx"
     ranges: dict[str, tuple[float, float]] = field(default_factory=dict)
     constraints: list[str] = field(default_factory=list)
@@ -310,7 +317,9 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
             raise EquationError(f"symbol_table.{name}: sign must be positive|real")
         if scale not in ("linear", "log"):
             raise EquationError(f"symbol_table.{name}: scale must be linear|log")
-        unknown_keys = set(spec) - {"latex", "unit", "desc", "meaning", "meaning_ko", "range", "sign", "scale", "value_expr"}
+        if "meaning_zh" in spec and not (isinstance(spec["meaning_zh"], str) and spec["meaning_zh"].strip()):
+            raise EquationError(f"symbol_table.{name}: meaning_zh, when given, must be non-empty text")
+        unknown_keys = set(spec) - {"latex", "unit", "desc", "meaning", "meaning_ko", "meaning_zh", "range", "sign", "scale", "value_expr"}
         if unknown_keys:
             raise EquationError(f"symbol_table.{name}: unknown keys {sorted(unknown_keys)}")
         symbols[name] = SymbolInfo(
@@ -320,6 +329,7 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
             desc=str(spec["desc"]),
             meaning=str(spec["meaning"]),
             meaning_ko=str(spec["meaning_ko"]),
+            meaning_zh=str(spec.get("meaning_zh", "")),
             range=_range(spec.get("range"), f"symbol_table.{name}"),
             sign=sign,
             scale=scale,
@@ -378,6 +388,9 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
                 derived_by=raw.get("derived_by"),
                 notes=str(raw.get("notes", "")),
                 notes_ko=str(raw.get("notes_ko", "")),
+                title_zh=str(raw.get("title_zh", "")),
+                convention_zh=str(raw.get("convention_zh", "")),
+                notes_zh=str(raw.get("notes_zh", "")),
                 relation=relation,
                 ranges={k: v for k, v in ranges.items() if v is not None},
                 constraints=[str(c) for c in (raw.get("constraints") or [])],
