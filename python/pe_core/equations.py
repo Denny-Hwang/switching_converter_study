@@ -51,9 +51,8 @@ BUILTINS: dict[str, Any] = {
 
 TRANSFORMATIONS = standard_transformations + (rationalize,)
 
-REQUIRED_FIELDS = ("id", "title", "title_ko", "lhs", "expr", "symbols", "assumptions", "cite", "tests")
+REQUIRED_FIELDS = ("id", "title", "title_ko", "title_zh", "lhs", "expr", "symbols", "assumptions", "cite", "tests")
 OPTIONAL_FIELDS = (
-    "title_zh",
     "convention",
     "convention_ko",
     "convention_zh",
@@ -80,7 +79,7 @@ class SymbolInfo:
     range: tuple[float, float] | None
     meaning: str = ""  # a few words for legends and input labels
     meaning_ko: str = ""
-    meaning_zh: str = ""  # Chinese (Simplified); empty until translated, the site then shows the English
+    meaning_zh: str = ""  # Chinese (Simplified)
     sign: str = "positive"  # "positive" | "real"
     scale: str = "linear"  # random-vector sampling: "linear" | "log"
     value_expr: str | None = None  # physical constant: exact sympy value
@@ -107,7 +106,7 @@ class Equation:
     derived_by: str | None = None
     notes: str = ""
     notes_ko: str = ""
-    title_zh: str = ""  # Chinese (Simplified): empty until translated, the site then shows the English
+    title_zh: str = ""  # Chinese (Simplified)
     convention_zh: str = ""
     notes_zh: str = ""
     relation: str = "eq"  # "eq" | "approx"
@@ -307,18 +306,16 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
             raise EquationError(f"symbol_table: invalid symbol name {name!r}")
         if name in BUILTINS:
             raise EquationError(f"symbol_table: {name!r} shadows a sympy built-in")
-        if not isinstance(spec, dict) or any(k not in spec for k in ("latex", "unit", "desc", "meaning", "meaning_ko")):
-            raise EquationError(f"symbol_table.{name}: needs latex, unit, desc, meaning, meaning_ko")
-        if not all(isinstance(spec[k], str) and spec[k].strip() for k in ("meaning", "meaning_ko")):
-            raise EquationError(f"symbol_table.{name}: meaning and meaning_ko must be non-empty text")
+        if not isinstance(spec, dict) or any(k not in spec for k in ("latex", "unit", "desc", "meaning", "meaning_ko", "meaning_zh")):
+            raise EquationError(f"symbol_table.{name}: needs latex, unit, desc, meaning, meaning_ko, meaning_zh")
+        if not all(isinstance(spec[k], str) and spec[k].strip() for k in ("meaning", "meaning_ko", "meaning_zh")):
+            raise EquationError(f"symbol_table.{name}: meaning, meaning_ko and meaning_zh must be non-empty text")
         sign = spec.get("sign", "positive")
         scale = spec.get("scale", "linear")
         if sign not in ("positive", "real"):
             raise EquationError(f"symbol_table.{name}: sign must be positive|real")
         if scale not in ("linear", "log"):
             raise EquationError(f"symbol_table.{name}: scale must be linear|log")
-        if "meaning_zh" in spec and not (isinstance(spec["meaning_zh"], str) and spec["meaning_zh"].strip()):
-            raise EquationError(f"symbol_table.{name}: meaning_zh, when given, must be non-empty text")
         unknown_keys = set(spec) - {"latex", "unit", "desc", "meaning", "meaning_ko", "meaning_zh", "range", "sign", "scale", "value_expr"}
         if unknown_keys:
             raise EquationError(f"symbol_table.{name}: unknown keys {sorted(unknown_keys)}")
@@ -329,7 +326,7 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
             desc=str(spec["desc"]),
             meaning=str(spec["meaning"]),
             meaning_ko=str(spec["meaning_ko"]),
-            meaning_zh=str(spec.get("meaning_zh", "")),
+            meaning_zh=str(spec["meaning_zh"]),
             range=_range(spec.get("range"), f"symbol_table.{name}"),
             sign=sign,
             scale=scale,
@@ -338,8 +335,8 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
 
     labels = data.get("assumption_labels") or {}
     for tag, lab in labels.items():
-        if not isinstance(lab, dict) or not lab.get("en") or not lab.get("ko"):
-            raise EquationError(f"assumption_labels.{tag}: needs en and ko")
+        if not isinstance(lab, dict) or not lab.get("en") or not lab.get("ko") or not lab.get("zh"):
+            raise EquationError(f"assumption_labels.{tag}: needs en, ko and zh")
 
     equations: list[Equation] = []
     seen: set[str] = set()
@@ -352,6 +349,10 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
         unknown = set(raw) - set(REQUIRED_FIELDS) - set(OPTIONAL_FIELDS)
         if unknown:
             raise EquationError(f"{where}: unknown fields {sorted(unknown)}")
+        for text in ("title", "convention", "notes"):
+            # a text given in English is given in every language, none of them empty
+            if raw.get(text) and not all(str(raw.get(f"{text}_{lang}", "")).strip() for lang in ("ko", "zh")):
+                raise EquationError(f"{where}: {text} needs non-empty {text}_ko and {text}_zh")
         eq_id = str(raw["id"])
         if not ID_RE.match(eq_id):
             raise EquationError(f"{where}: invalid id {eq_id!r}")
@@ -388,7 +389,7 @@ def load(path: Path | str = YAML_PATH) -> Catalog:
                 derived_by=raw.get("derived_by"),
                 notes=str(raw.get("notes", "")),
                 notes_ko=str(raw.get("notes_ko", "")),
-                title_zh=str(raw.get("title_zh", "")),
+                title_zh=str(raw["title_zh"]),
                 convention_zh=str(raw.get("convention_zh", "")),
                 notes_zh=str(raw.get("notes_zh", "")),
                 relation=relation,

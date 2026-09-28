@@ -358,7 +358,7 @@
    "$dP/dV_\\mathrm{DC} = 0$: half the open-circuit amplitude.": "$dP/dV_\\mathrm{DC} = 0$：开路电压幅值的一半。",
    "SECE leaves the element open between extrema, so its voltage climbs from zero to $2 I_p/(\\omega C_0)$; at the extremum all of $\\tfrac12 C_0 v^2$ is taken, whatever the load.": "SECE 在两个极值之间使元件开路，因此其电压从零升到 $2 I_p/(\\omega C_0)$；在极值处取走全部 $\\tfrac12 C_0 v^2$，与负载无关。",
    "Per unit time.": "折算到单位时间。",
-   "Parallel SSHI inverts the element's voltage at each extremum, from $\\mp V_\\mathrm{DC}$ to $\\pm\\gamma V_\\mathrm{DC}$, so the swing to the other rail takes only $(1 - \\gamma) C_0 V_\\mathrm{DC}$.": "并联 SSHI 在每个极值处将元件电压从 $\\mp V_\\mathrm{DC}$ 翻转到 $\\pm\\gamma V_\\mathrm{DC}$，因此摆向另一侧电压轨只需 $(1 - \\gamma) C_0 V_\\mathrm{DC}$ 的电荷。",
+   "Parallel SSHI inverts the element's voltage at each extremum, from $\\mp V_\\mathrm{DC}$ to $\\pm\\gamma V_\\mathrm{DC}$, so the swing to the other rail takes only $(1 - \\gamma) C_0 V_\\mathrm{DC}$.": "并联 SSHI 在每个极值处将元件电压从 $\\mp V_\\mathrm{DC}$ 翻转到 $\\pm\\gamma V_\\mathrm{DC}$，因此摆向另一侧电源轨只需 $(1 - \\gamma) C_0 V_\\mathrm{DC}$ 的电荷。",
    "$dP/dV_\\mathrm{DC} = 0$.": "$dP/dV_\\mathrm{DC} = 0$。"
   }
  },

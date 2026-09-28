@@ -100,7 +100,35 @@ def test_symbol_without_a_meaning_is_rejected(tmp_path: Path, value: str) -> Non
     assert first in text
     p = tmp_path / "equations.yaml"
     p.write_text(text.replace(first, f"meaning: {value},", 1), encoding="utf-8")
-    with pytest.raises(EquationError, match="meaning and meaning_ko must be non-empty text"):
+    with pytest.raises(EquationError, match="meaning, meaning_ko and meaning_zh must be non-empty text"):
+        load(p)
+
+
+def test_symbol_without_its_chinese_meaning_is_rejected(tmp_path: Path) -> None:
+    text = (GENERATED_JSON.parent / "equations.yaml").read_text(encoding="utf-8")
+    first = 'meaning_ko: "듀티비(duty ratio)", meaning_zh: "占空比（duty ratio）",'
+    assert first in text
+    p = tmp_path / "equations.yaml"
+    p.write_text(text.replace(first, 'meaning_ko: "듀티비(duty ratio)", meaning_zh: "",', 1), encoding="utf-8")
+    with pytest.raises(EquationError, match="meaning, meaning_ko and meaning_zh must be non-empty text"):
+        load(p)
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "message"),
+    [
+        # a title, note or convention in English needs its Korean and Chinese
+        ('    title_zh: "降压（buck）变换器的电压变换比，CCM"\n', "", "missing fields"),
+        ('    convention_zh: "$M = V/V_g$"\n', "", "convention needs non-empty convention_ko and convention_zh"),
+        (', zh: "理想（无损）开关器件与无源元件"}', "}", None),
+    ],
+)
+def test_text_without_its_chinese_is_rejected(tmp_path: Path, old: str, new: str, message: str | None) -> None:
+    text = (GENERATED_JSON.parent / "equations.yaml").read_text(encoding="utf-8")
+    assert old in text, old
+    p = tmp_path / "equations.yaml"
+    p.write_text(text.replace(old, new, 1), encoding="utf-8")
+    with pytest.raises(EquationError, match=message or "needs en, ko and zh"):
         load(p)
 
 

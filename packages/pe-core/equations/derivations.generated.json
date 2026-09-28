@@ -2369,7 +2369,7 @@
         {
           "text": "Parallel SSHI inverts the element's voltage at each extremum, from $\\mp V_\\mathrm{DC}$ to $\\pm\\gamma V_\\mathrm{DC}$, so the swing to the other rail takes only $(1 - \\gamma) C_0 V_\\mathrm{DC}$.",
           "text_ko": "병렬 SSHI는 극값마다 소자 전압을 $\\mp V_\\mathrm{DC}$에서 $\\pm\\gamma V_\\mathrm{DC}$로 반전시키므로, 반대쪽 레일까지의 변화에는 $(1 - \\gamma) C_0 V_\\mathrm{DC}$만 듭니다.",
-          "text_zh": "并联 SSHI 在每个极值处将元件电压从 $\\mp V_\\mathrm{DC}$ 翻转到 $\\pm\\gamma V_\\mathrm{DC}$，因此摆向另一侧电压轨只需 $(1 - \\gamma) C_0 V_\\mathrm{DC}$ 的电荷。",
+          "text_zh": "并联 SSHI 在每个极值处将元件电压从 $\\mp V_\\mathrm{DC}$ 翻转到 $\\pm\\gamma V_\\mathrm{DC}$，因此摆向另一侧电源轨只需 $(1 - \\gamma) C_0 V_\\mathrm{DC}$ 的电荷。",
           "latex": "E_{1/2} = V_\\mathrm{DC} \\left(- C_0 V_\\mathrm{DC} \\left(1 - \\gamma\\right) + \\frac{2 I_p}{\\omega}\\right)",
           "result_for": null
         },
