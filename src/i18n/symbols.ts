@@ -35,7 +35,7 @@ export const TOOL_SYMBOLS: Record<string, Meaning> = {
   'I_p,pk': { en: 'peak primary current', ko: '1차 피크 전류' },
   'I_p,rms': { en: 'rms primary current', ko: '1차 전류의 실효값(rms)' },
   'I_s,rms': { en: 'rms secondary current', ko: '2차 전류의 실효값(rms)' },
-  'K_u,max': { en: 'largest window utilization that can be wound', ko: '실제로 감을 수 있는 최대 창 이용률' },
+  'K_u,max': { en: 'largest window utilization that can be wound', ko: '감을 수 있는 최대 창 이용률' },
   K: cat('K'),
   K_crit: cat('K_crit'),
   L: cat('L'),
@@ -114,11 +114,11 @@ export const TOOL_SYMBOLS: Record<string, Meaning> = {
   },
   'Δi_L / I_L': {
     en: 'ripple target: half peak-to-peak over dc',
-    ko: '리플 목표: 피크-피크의 절반 ÷ 직류',
+    ko: '리플 목표: 피크-피크의 절반 ÷ 직류값',
   },
   'Δi_M / I_M': {
     en: 'magnetizing ripple target: half peak-to-peak over dc',
-    ko: '자화 전류 리플 목표: 피크-피크의 절반 ÷ 직류',
+    ko: '자화 전류 리플 목표: 피크-피크의 절반 ÷ 직류값',
   },
   'Δi_L,pp (on)': {
     en: 'inductor current rise while on',
