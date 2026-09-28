@@ -76,8 +76,8 @@ const suffix = (t: Text, s: Text): Text => ({
   // the Chinese label only where both parts are translated; the English stands in otherwise
   zh: t.zh && s.zh ? `${t.zh}（${s.zh}）` : undefined,
 });
-const PRIMARY: Text = { en: 'primary', ko: '1차' };
-const SECONDARY: Text = { en: 'secondary', ko: '2차' };
+const PRIMARY: Text = { en: 'primary', ko: '1차', zh: '一次侧' };
+const SECONDARY: Text = { en: 'secondary', ko: '2차', zh: '二次侧' };
 
 /** The rows of a preset's worked example, and the design they come from. */
 export function magWorked(example: string): { result: MagResult; rows: MagRow[]; cite: string } {
@@ -132,16 +132,16 @@ export function magWorked(example: string): { result: MagResult; rows: MagRow[];
     if (value !== undefined) rows.push({ kind: 'result', latex, meaning, value, unit, eq, note });
   };
   const N = fly ? 'N_p' : 'N';
-  res('N_\\mathrm{min}', { en: 'fewest turns for B_max, at A_min', ko: 'B_max를 지키는 최소 턴 수, A_min 기준' }, r.Nmin, '1', 'mag.N_Bmax');
-  res(N, fly ? tool('N_p') : c('N').meaning, r.N, '1', undefined, { en: 'rounded up', ko: '올림' });
-  res(c('A_L').latex, { en: 'inductance factor the design needs', ko: '설계에 필요한 인덕턴스 계수' }, r.ALreq, 'H', 'mag.L_from_AL');
-  res('\\mu_e', { en: 'effective permeability of the ungapped set', ko: '공극 없는 세트의 유효 투자율' }, r.mue, '1', 'mag.AL_gap');
-  res(c('l_g').latex, { en: 'gap, without fringing', ko: '공극, 프린징 무시' }, r.gap, 'm', 'mag.gap_length');
-  res(c('B_pk').latex, suffix(c('B_pk').meaning, { en: 'at A_min', ko: 'A_min 기준' }), r.BpkMin, 'T', 'mag.B_pk');
+  res('N_\\mathrm{min}', { en: 'fewest turns for B_max, at A_min', ko: 'B_max를 지키는 최소 턴 수, A_min 기준', zh: '满足 B_max 的最少匝数，按 A_min' }, r.Nmin, '1', 'mag.N_Bmax');
+  res(N, fly ? tool('N_p') : c('N').meaning, r.N, '1', undefined, { en: 'rounded up', ko: '올림', zh: '向上取整' });
+  res(c('A_L').latex, { en: 'inductance factor the design needs', ko: '설계에 필요한 인덕턴스 계수', zh: '设计所需的电感系数' }, r.ALreq, 'H', 'mag.L_from_AL');
+  res('\\mu_e', { en: 'effective permeability of the ungapped set', ko: '공극 없는 세트의 유효 투자율', zh: '无气隙磁芯组的有效磁导率' }, r.mue, '1', 'mag.AL_gap');
+  res(c('l_g').latex, { en: 'gap, without fringing', ko: '공극, 프린징 무시', zh: '气隙，忽略边缘磁通' }, r.gap, 'm', 'mag.gap_length');
+  res(c('B_pk').latex, suffix(c('B_pk').meaning, { en: 'at A_min', ko: 'A_min 기준', zh: '按 A_min' }), r.BpkMin, 'T', 'mag.B_pk');
   res(c('B_ac').latex, c('B_ac').meaning, r.Bac, 'T', 'mag.B_ac');
-  if (fly) res('N_s', { en: 'secondary turns', ko: '2차 턴 수' }, r.Ns, '1', undefined, { en: 'n N_p, rounded', ko: 'n N_p를 반올림' });
-  res(c('rho_w').latex, suffix(c('rho_w').meaning, { en: 'at T_w', ko: 'T_w에서' }), r.rho, 'Ω·m', 'wind.rho_T');
-  res(c('delta_s').latex, suffix(c('delta_s').meaning, { en: 'at f_s', ko: 'f_s에서' }), r.delta, 'm', 'wind.skin_depth');
+  if (fly) res('N_s', { en: 'secondary turns', ko: '2차 턴 수', zh: '二次侧匝数' }, r.Ns, '1', undefined, { en: 'n N_p, rounded', ko: 'n N_p를 반올림', zh: 'n N_p 四舍五入' });
+  res(c('rho_w').latex, suffix(c('rho_w').meaning, { en: 'at T_w', ko: 'T_w에서', zh: 'T_w 时' }), r.rho, 'Ω·m', 'wind.rho_T');
+  res(c('delta_s').latex, suffix(c('delta_s').meaning, { en: 'at f_s', ko: 'f_s에서', zh: 'f_s 时' }), r.delta, 'm', 'wind.skin_depth');
   const ws: [WindingResult, Text | undefined][] = [[r.primary, fly ? PRIMARY : undefined]];
   if (r.secondary) ws.push([r.secondary, SECONDARY]);
   for (const [w, which] of ws) {
@@ -150,10 +150,10 @@ export function magWorked(example: string): { result: MagResult; rows: MagRow[];
     res(c('R_dc').latex, m(c('R_dc').meaning), w.Rdc, 'Ω', 'wind.dcr');
     res(c('eta_p').latex, m(c('eta_p').meaning), w.eta, '1', 'wind.porosity');
     res(c('phi_l').latex, m(c('phi_l').meaning), w.phi, '1', 'wind.phi_round');
-    res(c('F_R').latex, m(suffix(c('F_R').meaning, { en: 'at f_s', ko: 'f_s에서' })), w.FR, '1', 'wind.dowell');
-    res('P_\\mathrm{dc}', m({ en: 'loss at the dc resistance', ko: '직류 저항에서의 손실' }), w.Pdc, 'W', 'loss.cond');
+    res(c('F_R').latex, m(suffix(c('F_R').meaning, { en: 'at f_s', ko: 'f_s에서', zh: 'f_s 时' })), w.FR, '1', 'wind.dowell');
+    res('P_\\mathrm{dc}', m({ en: 'loss at the dc resistance', ko: '직류 저항에서의 손실', zh: '直流电阻上的损耗' }), w.Pdc, 'W', 'loss.cond');
   }
-  res(c('K_u').latex, fly ? suffix(c('K_u').meaning, { en: 'both windings', ko: '두 권선' }) : c('K_u').meaning, r.Ku, '1', 'wind.fill');
+  res(c('K_u').latex, fly ? suffix(c('K_u').meaning, { en: 'both windings', ko: '두 권선', zh: '两个绕组' }) : c('K_u').meaning, r.Ku, '1', 'wind.fill');
   if (fly) res(c('L_lk').latex, c('L_lk').meaning, r.Llk, 'H', spec.arrangement === 'psp' ? 'xfmr.leakage.psp' : 'xfmr.leakage.ps');
   return { result: r, rows, cite: entry.cite };
 }

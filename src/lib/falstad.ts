@@ -15,7 +15,7 @@ export interface FalstadCase {
   topology: 'buck' | 'boost' | 'buckboost' | 'flyback' | 'forward';
   title: string;
   title_ko: string;
-  title_zh?: string;
+  title_zh: string;
   example: string;
   file: string;
   link: string;

@@ -80,6 +80,16 @@ DOT_PX = 1.5
 # ---- numbers ---------------------------------------------------------------------------------------
 
 
+# The converters' names on the Chinese pages (src/generated/falstad.json's title_zh)
+TITLES_ZH = {
+    "buck": "降压变换器",
+    "boost": "升压变换器",
+    "buckboost": "升降压变换器（反相）",
+    "flyback": "反激变换器",
+    "forward": "带复位绕组的正激变换器",
+}
+
+
 def num(x: float) -> str:
     """A number as CircuitJS1 reads it: no '+' (its tokenizer splits on '+'), shortest round-trip form."""
     if x == 0:
@@ -571,6 +581,7 @@ def generated(results: dict | None = None) -> dict:
             "topology": case["topology"],
             "title": lib.title(case),
             "title_ko": f"{lib.TITLES[case['topology']][1]}, {'CCM' if case['id'].endswith('-ccm') else 'DCM'}",
+            "title_zh": f"{TITLES_ZH[case['topology']]}，{'CCM' if case['id'].endswith('-ccm') else 'DCM'}",
             "example": case["example"],
             "file": f"sim/falstad/{case['id']}.txt",
             "link": link(text),
