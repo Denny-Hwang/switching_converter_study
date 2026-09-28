@@ -53,6 +53,14 @@ function worst(kind: string, locale: 'en' | 'ko'): string[] {
   return [widest, tallest];
 }
 
+describe('text widths', () => {
+  it('counts a Chinese character, and full-width punctuation, as wide as a Hangul syllable', () => {
+    expect(textWidth('变换器', 10)).toBeCloseTo(textWidth('컨버터', 10));
+    expect(textWidth('（导通）', 10)).toBeCloseTo(4 * 1.1 * 10);
+    expect(textWidth('变换器', 10)).toBeGreaterThan(textWidth('abc', 10));
+  });
+});
+
 describe('the operating-mode drawing: nothing overlaps', () => {
   for (const [name, p] of variants()) {
     for (const locale of ['en', 'ko'] as const) {
