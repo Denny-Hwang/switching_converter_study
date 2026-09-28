@@ -1,6 +1,6 @@
 """docs/STATUS.md's counts are the repository's: the derivations and the equations they leave out, the
-symbols with a meaning, the derivation modules, the references, the example files and the pages. A phase
-that adds any of them updates STATUS in the same change."""
+symbols with a meaning, the derivation modules, the references, the example files, the pages and the
+English/Korean page pairs. A phase that adds any of them updates STATUS in the same change."""
 
 from __future__ import annotations
 
@@ -62,3 +62,8 @@ def test_examples() -> None:
 def test_pages() -> None:
     en, ko = pages("en"), pages("ko")
     assert f"| ✅ all {en + ko} pages ({en} EN, {ko} KO) |" in row("| Wording:")
+    # every English page with its Korean page at the same path (modulelint compares their structure)
+    paths = {loc: {p.relative_to(DOCS / loc) for p in (DOCS / loc).rglob("*") if p.suffix in (".md", ".mdx")} for loc in ("en", "ko")}
+    pairs = len(paths["en"] & paths["ko"])
+    pending = "no Korean page pending" if paths["en"] <= paths["ko"] else f"{len(paths['en'] - paths['ko'])} Korean page(s) pending"
+    assert f"| ✅ {pairs} page pairs; {pending} |" in row("| Korean parity")

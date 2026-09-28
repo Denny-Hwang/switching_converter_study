@@ -1,5 +1,6 @@
 """The release's version is one number everywhere: the npm workspace and its lock file, pe-core, the
-Python package, and the latest release in CHANGELOG.md (whose date is a real date)."""
+Python package, and the latest release in CHANGELOG.md (whose date is a real date and which the Korean
+summary starts with)."""
 
 from __future__ import annotations
 
@@ -38,3 +39,11 @@ def test_one_version_everywhere() -> None:
 def test_the_release_date_is_a_date() -> None:
     _, date = latest_release()
     dt.date.fromisoformat(date)
+
+
+def test_the_korean_summary_has_the_latest_release() -> None:
+    version, date = latest_release()
+    text = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "\n## 한국어 요약\n" in text
+    m = re.search(r"^### \[(\d+\.\d+\.\d+)\] - (\d{4}-\d{2}-\d{2})$", text.split("\n## 한국어 요약\n", 1)[1], re.M)
+    assert m and (m.group(1), m.group(2)) == (version, date), "CHANGELOG.md: the Korean summary must start with the latest release"

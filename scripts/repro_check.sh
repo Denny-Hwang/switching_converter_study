@@ -30,10 +30,9 @@ trap 'rm -rf "$tmp"' EXIT
 copy="$tmp/copy"
 mkdir -p "$copy"
 git archive HEAD | tar -x -C "$copy"
+# chained with &&: set -e does not apply inside a subshell whose status `||` tests
 (
-  cd "$copy"
-  npm ci --no-audit --no-fund --loglevel=error
-  npm run build
+  cd "$copy" && npm ci --no-audit --no-fund --loglevel=error && npm run build
 ) >"$tmp/build.log" 2>&1 || {
   tail -n 40 "$tmp/build.log" >&2
   echo "repro_check: the copy did not build" >&2

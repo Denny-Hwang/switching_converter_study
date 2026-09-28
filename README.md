@@ -133,13 +133,15 @@ python scripts/resources_check.py --online   # every resource URL opened and its
 python scripts/falstad_library.py --check    # the CircuitJS1 circuits: current, and wired as the SPICE netlists
 python scripts/sim_library.py --check        # the SPICE library against ngspice and the equations (needs ngspice)
 python scripts/spice_crosscheck.py --check   # the simulator against ngspice (needs ngspice)
+npx playwright install --with-deps chromium   # the headless browser of the three browser checks
 node scripts/falstad_check.mjs         # every CircuitJS1 share link run on falstad.com
 npm run build                          # strict KaTeX build (fails on a math error), then scripts/postbuild.mjs
 bash scripts/repro_check.sh            # HEAD's files at another path build the same site, byte for byte
 python scripts/anchorcheck.py dist     # every #fragment link lands (after the build)
 node scripts/keyboard_check.mjs        # keyboard focus order of the tool pages (after the build)
 node scripts/seq_check.mjs             # the operating-mode drawing's real text boxes (after the build)
-npx lychee --config lychee.toml dist   # every link of the built site
+rm -rf _linkcheck && mkdir _linkcheck && cp -r dist _linkcheck/switching_converter_study   # the site under its Pages path
+lychee --config lychee.toml --root-dir "$PWD/_linkcheck" _linkcheck   # every link (the lychee binary, not the npm package of that name)
 ```
 
 </details>
@@ -288,13 +290,15 @@ python scripts/resources_check.py --online   # 모든 자료 URL을 열어 제�
 python scripts/falstad_library.py --check    # CircuitJS1 회로: 최신인지, SPICE 넷리스트대로 배선됐는지
 python scripts/sim_library.py --check        # SPICE 라이브러리를 ngspice와 수식에 대조 (ngspice 필요)
 python scripts/spice_crosscheck.py --check   # 시뮬레이터를 ngspice와 대조 (ngspice 필요)
+npx playwright install --with-deps chromium   # 브라우저 검사 세 가지에 쓰는 헤드리스 브라우저
 node scripts/falstad_check.mjs         # 모든 CircuitJS1 공유 링크를 falstad.com에서 실행
 npm run build                          # KaTeX 엄격 빌드 (수식 오류 시 실패), 이어서 scripts/postbuild.mjs
 bash scripts/repro_check.sh            # 다른 경로에 푼 HEAD의 파일이 바이트 단위로 같은 사이트를 빌드하는지
 python scripts/anchorcheck.py dist     # 모든 #fragment 링크의 대상 존재 (빌드 후)
 node scripts/keyboard_check.mjs        # 도구 페이지의 키보드 포커스 순서 (빌드 후)
 node scripts/seq_check.mjs             # 동작 모드 회로도의 실제 글자 상자 (빌드 후)
-npx lychee --config lychee.toml dist   # 빌드된 사이트의 모든 링크
+rm -rf _linkcheck && mkdir _linkcheck && cp -r dist _linkcheck/switching_converter_study   # Pages 경로 아래의 사이트
+lychee --config lychee.toml --root-dir "$PWD/_linkcheck" _linkcheck   # 모든 링크 (npm의 같은 이름 패키지가 아닌 lychee 실행 파일)
 ```
 
 </details>
