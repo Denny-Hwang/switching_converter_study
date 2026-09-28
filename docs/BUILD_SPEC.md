@@ -14,7 +14,8 @@ Build an open learning repository for electrical engineers on power electronics
 that is **verifiable end-to-end**: every equation is derived and tested in code,
 every claim is cited, every link is checked, and every concept can be exercised
 in a browser (calculators + time-domain simulator) or on a bench (LTspice /
-ngspice files + bench exercises). The site is bilingual (EN canonical, KO).
+ngspice files + bench exercises). The site is in English (canonical), Korean and
+Chinese (Simplified).
 
 Audience: senior undergraduates, graduate students, working EEs who need to go
 from "I can quote V = D·V_g" to "I can design, simulate, measure, and explain why
@@ -37,7 +38,8 @@ compact refresher with links out).
 - Parity: TS and Python agree on shared vectors to 1e-9 rel; simulator agrees
   with analytic steady state to ≤ 2 % on ideal parameters.
 - KaTeX strict build; math lint; link check; privacy scan — all in CI.
-- English canonical, Korean mirror; `docs/STATUS.md` tracks translation state.
+- English canonical, Korean and Chinese mirrors; `docs/STATUS.md` tracks translation state
+  (Chinese section by section, in its own table).
 - No fabricated URLs/videos; `resources.yaml` entries carry `retrieved:` dates.
 
 ## 2. Repository layout (create exactly this; add only inside it)
@@ -326,7 +328,7 @@ site) over aggregators. Never link to unauthorized PDF copies of books.
 ## 7. Phases with acceptance criteria
 
 ### Phase 0 — Scaffold and deploy an empty site
-- Astro + Starlight, i18n (en default, ko), MDX, remark-math + rehype-katex
+- Astro + Starlight, i18n (en default, ko, zh), MDX, remark-math + rehype-katex
   strict, React integration, Plotly, npm workspaces with `packages/pe-core`.
 - Python package skeleton, pytest wired; `scripts/*.py` stubs that exit 0.
 - CI: `ci.yml` (node test + pytest + lints), `pages.yml` (build → deploy).

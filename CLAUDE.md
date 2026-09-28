@@ -5,7 +5,7 @@ Long-form build instructions live in `docs/BUILD_SPEC.md` (the build prompt).
 
 ## What this repository is
 
-An open, bilingual (EN canonical, KO translation) learning repository on
+An open learning repository (EN canonical; KO and ZH translations) on
 power electronics for electrical engineers: switching-converter theory
 (CCM/DCM), topologies, magnetics, loss modeling, and energy-harvesting
 interfaces — plus a GitHub Pages web app that combines **learning**
@@ -40,7 +40,10 @@ files) in one place.
    support, no custom macros unless declared in `src/math/macros.ts`).
 6. **Language.** English is canonical (`src/content/docs/en`). Korean
    mirrors the same paths (`src/content/docs/ko`). A module is "done" only
-   when both exist, or KO is listed as pending in `docs/STATUS.md`.
+   when both exist, or KO is listed as pending in `docs/STATUS.md`. Chinese
+   (Simplified, `src/content/docs/zh`) mirrors them too; a folder's Chinese
+   pages are required once the Chinese table of `docs/STATUS.md` marks it
+   done.
 7. **No fabricated links or videos.** A resource is added only with a URL
    that was opened and matched by title; record `retrieved: YYYY-MM-DD` in
    `resources.yaml`. If a specific video cannot be verified, link the
@@ -48,7 +51,7 @@ files) in one place.
 
 ## Stack (do not change without updating BUILD_SPEC.md)
 
-- Site: Astro + Starlight (i18n en/ko, Pagefind search), MDX,
+- Site: Astro + Starlight (i18n en/ko/zh, Pagefind search), MDX,
   `remark-math` + `rehype-katex` (strict), React islands for tools,
   Plotly.js for plots. Deployed to GitHub Pages by GitHub Actions.
 - Figures: `scripts/gen_figures.py` (schemdraw schematics, matplotlib

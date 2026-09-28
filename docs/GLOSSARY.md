@@ -75,6 +75,12 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | open loop · closed loop | 개루프 · 폐루프 | 开环 · 闭环 |
 | quality factor Q · damping | 품질 계수 · 감쇠 | 品质因数 Q · 阻尼 |
 | Bode plot | 보드 선도 | 伯德图 |
+| phasor · impedance · admittance | 페이저 · 임피던스 · 어드미턴스 | 相量 · 阻抗 · 导纳 |
+| Fourier series · harmonic · pulse train | 푸리에 급수 · 고조파 · 펄스열 | 傅里叶级数 · 谐波 · 脉冲序列 |
+| rms value | 실효값(rms) | 有效值（rms） |
+| damping factor ζ | 감쇠 계수 ζ | 阻尼比 ζ |
+| corner frequency · angular frequency | 차단 주파수 · 각주파수 | 转折频率 · 角频率 |
+| rail · bus | 레일 · 버스 | 电源轨 · 母线 |
 
 ## Components and devices
 
@@ -97,6 +103,7 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | load · load resistance | 부하 · 부하 저항 | 负载 · 负载电阻 |
 | battery · internal resistance · state of charge | 배터리 · 내부 저항 · 충전 상태 | 电池 · 内阻 · 荷电状态 |
 | Thevenin source · open-circuit voltage | 테브난 전원 · 개방 전압 | 戴维南电源 · 开路电压 |
+| linear source · source resistance | 선형 전원 · 전원 저항 | 线性源 · 源内阻 |
 | current-limited source · constant-voltage sink | 전류 제한 전원 · 정전압 싱크 | 限流电源 · 恒压负载 |
 | loss-free resistor (LFR) | 무손실 저항(LFR) | 无损电阻（LFR） |
 | linear regulator | 선형 레귤레이터 | 线性稳压器 |
@@ -147,8 +154,12 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | efficiency | 효율 | 效率 |
 | layout · hot loop | 레이아웃 · 핫 루프 | 布局 · 高 di/dt 回路 |
 | gate drive · gate charge · Miller plateau | 게이트 구동 · 게이트 전하 · 밀러 플래토 | 栅极驱动 · 栅极电荷 · 米勒平台 |
+| gate-drain charge · plateau voltage · driver | 게이트-드레인 전하 · 플래토 전압 · 드라이버 | 栅漏电荷 · 平台电压 · 驱动器 |
 | bootstrap capacitor · shoot-through | 부트스트랩 커패시터 · 슛스루 | 自举电容 · 直通 |
 | current sensing · shunt · current-sense amplifier | 전류 센싱 · 션트 · 전류 센스 증폭기 | 电流检测 · 分流电阻 · 电流检测放大器 |
+| high-side · low-side · Kelvin connection · pad | 하이사이드 · 로우사이드 · 켈빈 연결 · 패드 | 高侧 · 低侧 · 开尔文连接 · 焊盘 |
+| sense resistor · sense voltage · full scale | 센스 저항 · 센스 전압 · 풀스케일 | 检测电阻 · 检测电压 · 满量程 |
+| input offset voltage · anti-aliasing filter | 입력 오프셋 전압 · 안티에일리어싱 필터 | 输入失调电压 · 抗混叠滤波器 |
 | burden voltage · offset | 부담 전압 · 오프셋 | 负担电压 · 失调 |
 | four-wire (Kelvin) measurement | 4선식(켈빈) 측정 | 四线（开尔文）测量 |
 | probe · oscilloscope · ground lead | 프로브 · 오실로스코프 · 접지 리드 | 探头 · 示波器 · 接地线 |
@@ -190,4 +201,6 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | Newton's method · bisection | 뉴턴법 · 이분법 | 牛顿法 · 二分法 |
 | event · converge | 이벤트 · 수렴 | 事件 · 收敛 |
 | relative difference · unit roundoff | 상대 차이 · 단위 반올림 오차 | 相对差 · 单位舍入误差 |
+| stiff (equations) · test equation | stiff · 시험 방정식 | 刚性（stiff）· 试验方程 |
+| decaying mode · tolerance · A-stable · L-stable | 감쇠 모드 · 허용오차 · A-안정 · L-안정 | 衰减模态 · 容差 · A 稳定 · L 稳定 |
 | headless browser | 헤드리스 브라우저 | 无头浏览器 |
