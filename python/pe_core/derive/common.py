@@ -2,9 +2,11 @@
 
 A derivation module exposes ``derive() -> Derivation``. It builds the result
 from first principles with sympy, recording readable steps (English and
-Korean text plus a sympy object) along the way. The same steps are exported
-to derivations.generated.json and rendered on the site's derivations page,
-so the page shows exactly what the code computes.
+Korean text plus a sympy object) along the way. The Chinese of each title,
+intro and step is in zh.json, keyed by the English text, and is filled in
+here. The same steps are exported to derivations.generated.json and rendered
+on the site's derivations page, so the page shows exactly what the code
+computes.
 
 pytest checks every ``Derivation.results[eq_id]`` against the expression in
 equations.yaml with :func:`symbolic_equal`.
@@ -12,9 +14,11 @@ equations.yaml with :func:`symbolic_equal`.
 
 from __future__ import annotations
 
+import json
 import math
 from dataclasses import dataclass, field
 from functools import lru_cache
+from pathlib import Path
 from typing import Any
 
 import sympy as sp
@@ -25,6 +29,15 @@ from ..equations import Catalog, load
 @lru_cache(maxsize=1)
 def catalog() -> Catalog:
     return load()
+
+
+ZH_TEXTS = Path(__file__).with_name("zh.json")
+
+
+@lru_cache(maxsize=1)
+def zh_texts() -> dict[str, dict[str, Any]]:
+    """Module -> {"title", "intro", "steps": {English step text: Chinese}} (zh.json)."""
+    return json.loads(ZH_TEXTS.read_text(encoding="utf-8"))
 
 
 def S(name: str) -> sp.Symbol:
@@ -38,7 +51,7 @@ class Step:
     text_ko: str
     expr: Any | None = None
     result_for: str | None = None
-    text_zh: str = ""  # Chinese (Simplified); empty until translated, the page then shows the English
+    text_zh: str = ""  # Chinese (Simplified), from zh.json; empty if missing, and the page shows the English
 
 
 @dataclass
@@ -54,22 +67,30 @@ class Derivation:
     title_zh: str = ""
     intro_zh: str = ""
 
+    def __post_init__(self) -> None:
+        zh = zh_texts().get(self.module, {})
+        self.title_zh = self.title_zh or zh.get("title", "")
+        self.intro_zh = self.intro_zh or zh.get("intro", "")
+
+    def _zh(self, text: str) -> str:
+        return zh_texts().get(self.module, {}).get("steps", {}).get(text, "")
+
     def local(self, name: str, latex: str, **assumptions: Any) -> sp.Symbol:
         """A symbol used only inside this derivation, with its display LaTeX."""
         sym = sp.Symbol(name, **assumptions)
         self.names[sym] = latex
         return sym
 
-    def step(self, text: str, text_ko: str, expr: Any | None = None, *, zh: str = "") -> None:
-        self.steps.append(Step(text, text_ko, expr, text_zh=zh))
+    def step(self, text: str, text_ko: str, expr: Any | None = None) -> None:
+        self.steps.append(Step(text, text_ko, expr, text_zh=self._zh(text)))
 
-    def result(self, eq_id: str, expr: sp.Expr, text: str, text_ko: str, lhs: Any | None = None, *, zh: str = "") -> None:
+    def result(self, eq_id: str, expr: sp.Expr, text: str, text_ko: str, lhs: Any | None = None) -> None:
         """Record the derived expression for ``eq_id`` (and show it as a step)."""
         if eq_id in self.results:
             raise ValueError(f"{self.module}: duplicate result {eq_id}")
         self.results[eq_id] = expr
         shown = sp.Eq(lhs, expr, evaluate=False) if lhs is not None else expr
-        self.steps.append(Step(text, text_ko, shown, result_for=eq_id, text_zh=zh))
+        self.steps.append(Step(text, text_ko, shown, result_for=eq_id, text_zh=self._zh(text)))
 
 
 def differs_numerically(a: sp.Expr, b: sp.Expr, points: int = 3) -> bool:
