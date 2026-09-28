@@ -351,6 +351,47 @@ def test_modulelint_names_components_it_does_not_compare() -> None:
     ml = _script("modulelint")
     assert ml.unknown_components('<Eq id="x" /> <NewTable example="a" /> <Cite key="k" /> <b>bold</b>') == ["NewTable"]
     assert ml.unknown_components('<Eq id="x" /> <Val example="a" name="b" /> <em>text</em>') == []
+def test_modulelint_page_shape_leaves_code_out() -> None:
+    ml = _script("modulelint")
+    page = (
+        "---\ntitle: T\n---\n\nimport Eq from '../Eq.astro';\n\n## Theory\n\n"
+        "The docs embed `<Eq id=\"a\" />`, and ``<Val>`` shows a `value`\nacross a line.\n\n"
+        "<Eq id=\"b\" />\n\n```mdx\n## Not a heading\n<TryIt />\n```\n\n{/* <Quiz /> */}\n\n### Worked\n"
+    )
+    assert ml.page_shape(page) == ([2, 3], ["Eq"])
+
+
+def _mirror_errors(tmp_path: Path, pages: dict[str, str], status: str = "") -> tuple[list[str], int]:
+    ml = _script("modulelint")
+    docs = tmp_path / "src" / "content" / "docs"
+    for rel, text in pages.items():
+        (docs / rel).parent.mkdir(parents=True, exist_ok=True)
+        (docs / rel).write_text(text, encoding="utf-8")
+    (tmp_path / "STATUS.md").write_text(status, encoding="utf-8")
+    ml.DOCS, ml.STATUS = docs, tmp_path / "STATUS.md"
+    return ml.check_mirrors()
+
+
+def test_modulelint_mirror_check(tmp_path: Path) -> None:
+    en = "---\ntitle: T\n---\n\n## Theory\n\nText <Eq id=\"a\" /> and `<Val>` in code.\n\n### Worked\n"
+    ko = "---\ntitle: T\n---\n\n## 이론\n\n본문 <Eq id=\"a\" />.\n\n### 예제\n"
+    # a translation that leaves out a code sample in prose is a mirror; the 404 page outside the locales is no pair
+    assert _mirror_errors(tmp_path / "ok", {"en/x.mdx": en, "ko/x.mdx": ko, "404.md": "# 404\n"}) == ([], 1)
+    # a rendered component missing in Korean is caught, also when the Korean page shows its name in code
+    got, _ = _mirror_errors(tmp_path / "missing", {"en/x.mdx": en.replace(" and `<Val>` in code", ""),
+                                                   "ko/x.mdx": ko.replace('<Eq id="a" />', '`<Eq>`')})
+    assert any("ko/x.mdx: components differ" in e for e in got), got
+    # a heading one level down
+    got, _ = _mirror_errors(tmp_path / "level", {"en/x.mdx": en, "ko/x.mdx": ko.replace("### 예제", "#### 예제")})
+    assert any("ko/x.mdx: heading levels [2, 4] differ from the English page's [2, 3]" in e for e in got), got
+    # a missing Korean page, unless STATUS marks it pending; a Korean page needs its English page
+    got, _ = _mirror_errors(tmp_path / "noko", {"en/x.mdx": en})
+    assert any("en/x.mdx: no KO page" in e for e in got), got
+    assert _mirror_errors(tmp_path / "pending", {"en/x.mdx": en}, "| x | ko/x.mdx pending: translation under way |\n") == ([], 0)
+    got, _ = _mirror_errors(tmp_path / "noen", {"ko/x.mdx": ko})
+    assert any("ko/x.mdx: no EN page" in e for e in got), got
+
+
 _GOTCHA_EN = """---
 title: A gotcha
 description: A reading that is high.

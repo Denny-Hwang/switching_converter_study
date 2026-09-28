@@ -132,6 +132,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: Reproducible build (HEAD's files at another path, npm ci && npm run build, give the same dist/)
+        run: bash scripts/repro_check.sh
       - name: Every internal #fragment link lands on an element id
         run: python3 scripts/anchorcheck.py dist
       - name: Keyboard focus order of the tool pages (headless Chromium)

@@ -80,6 +80,13 @@ that shows an image imported from src/assets/screenshots/<tool>-<locale>.png
 page; `node scripts/screenshots.mjs` takes them).
 
     python scripts/modulelint.py
+
+Every page, module or not (src/content/docs/<locale>/**/*.md[x]): the Korean page mirrors the English
+one's structure: the same heading levels (h2 to h4) in the same order and the same components by name
+(in any order: Korean word order moves the inline ones; code, inline code included, is not compared), so
+that a Korean page is a translation, not a summary (docs/BUILD_SPEC.md section 8). Each page has its
+counterpart at the same path, or docs/STATUS.md has a line naming the missing page's path (ko/<path>) as
+pending.
 """
 
 from __future__ import annotations
@@ -542,6 +549,57 @@ def check_tool_page(path: Path, locale: str, body: str) -> list[str]:
     return errors
 
 
+HEADING = re.compile(r"^(#{2,4})\s", re.M)
+COMPONENT_NAME = re.compile(r"<([A-Z]\w*)\b")
+# an inline code span: a run of backticks, then text up to the next run of the same length, within a paragraph
+INLINE_CODE = re.compile(r"(?<!`)(`+)(?!`)((?:[^\n]|\n(?![ \t]*\n))+?)(?<!`)\1(?!`)")
+
+
+def page_shape(text: str) -> tuple[list[int], list[str]]:
+    """A page's heading levels (h2 to h4) in order and the components it renders, by name. Code is left out:
+    fenced blocks, MDX comments and inline code spans (a sentence may show `<Eq id="..." />`). MDX has no
+    indented code."""
+    _, body = frontmatter(strip_code(text))
+    body = re.sub(r"^import .*$", "", body, flags=re.M)
+    body = INLINE_CODE.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), body)
+    return [len(h) for h in HEADING.findall(body)], sorted(COMPONENT_NAME.findall(body))
+
+
+def check_mirrors() -> tuple[list[str], int]:
+    """Every EN page and its KO page: counterparts at the same path, the same heading levels in order,
+    the same components by name."""
+    errors: list[str] = []
+    status = STATUS.read_text(encoding="utf-8")
+    shape: dict[tuple[str, str], tuple[list[int], list[str]]] = {}
+    for path in sorted(DOCS.rglob("*.md*")):
+        if path.suffix not in (".md", ".mdx"):
+            continue
+        rel = path.relative_to(DOCS)
+        if len(rel.parts) < 2 or rel.parts[0] not in ("en", "ko"):
+            continue  # a page outside the locales (the 404 page)
+        locale, slug = rel.parts[0], "/".join(rel.parts[1:])
+        shape[(locale, slug)] = page_shape(path.read_text(encoding="utf-8"))
+    pairs = 0
+    for (locale, slug), (levels, names) in shape.items():
+        other = "ko" if locale == "en" else "en"
+        mirror = shape.get((other, slug))
+        if mirror is None:
+            pending = any(f"{other}/{slug}" in line and "pending" in line.lower() for line in status.splitlines())
+            if not (other == "ko" and pending):
+                errors.append(f"src/content/docs/{locale}/{slug}: no {other.upper()} page at src/content/docs/{other}/{slug}" + (" (or a docs/STATUS.md line marking it pending)" if other == "ko" else ""))
+            continue
+        if locale != "en":
+            continue
+        pairs += 1
+        if levels != mirror[0]:
+            errors.append(f"src/content/docs/ko/{slug}: heading levels {mirror[0]} differ from the English page's {levels}")
+        if names != mirror[1]:
+            missing = sorted(set(names) - set(mirror[1]))
+            extra = sorted(set(mirror[1]) - set(names))
+            errors.append(f"src/content/docs/ko/{slug}: components differ from the English page's (missing {missing}, extra {extra}, or a different count)")
+    return errors, pairs
+
+
 def main() -> int:
     catalog = json.loads(GENERATED.read_text(encoding="utf-8"))["equations"]
     resources = {r["id"]: r for r in (yaml.safe_load(RESOURCES.read_text(encoding="utf-8")) or {}).get("resources", [])}
@@ -661,6 +719,8 @@ def main() -> int:
     mission_errors, n_missions = check_missions(status, resources, examples)
     errors += mission_errors
     errors += check_resource_pages(status, resources)
+    mirror_errors, n_pairs = check_mirrors()
+    errors += mirror_errors
 
     if errors:
         print(f"modulelint: {len(errors)} error(s)", file=sys.stderr)
@@ -669,7 +729,10 @@ def main() -> int:
         return 1
     n_en = sum(1 for (loc, _) in pages if loc == "en")
     n_ko = sum(1 for (loc, _) in pages if loc == "ko")
-    print(f"modulelint: OK ({n_en} EN and {n_ko} KO module pages, {n_gotchas} gotcha pages, {n_missions} missions, {n_tools} tool pages with screenshots)")
+    print(
+        f"modulelint: OK ({n_en} EN and {n_ko} KO module pages, {n_gotchas} gotcha pages, {n_missions} missions, "
+        f"{n_tools} tool pages with screenshots, {n_pairs} EN/KO page pairs with the same structure)"
+    )
     return 0
 
 
