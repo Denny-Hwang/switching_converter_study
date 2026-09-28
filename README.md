@@ -52,13 +52,15 @@ result names the equation it comes from.
 <tr>
 <td colspan="2" valign="top">
 
-**Simulate.** A time-domain simulator in the browser: pick a topology, move a
-slider and watch the waveforms, the operating mode and the losses change.
+**Simulate.** A time-domain simulator in the browser: pick a topology, type
+your own values as a datasheet writes them (100 µH, 200 kHz, 30 %) or move a
+slider, and watch the waveforms, the operating mode and the losses change.
 Step through the period mode by mode, with the circuit's current paths and
 each element's state, or see every mode at once as a paper draws it: the key
-waveforms with the modes' boundaries, then each mode's circuit. Every result sits next to the formula's value, and the
-simulator is validated against the formulas to within 2 % and against
-ngspice.
+waveforms with the modes' boundaries, then each mode's circuit. Every result
+sits next to the formula's value, the simulator is validated against the
+formulas to within 2 % and against ngspice, and with a resistive load and no
+Thevenin source one link opens the same values in CircuitJS1.
 
 <img src="docs/images/simulate-en.png" alt="The simulator: topology and preset buttons, the detected mode, and the parameter fields beside the stacked waveforms">
 
@@ -119,17 +121,25 @@ npm test                     # vitest: pe-core, simulator validation, TS/Python 
 <summary>All checks, as CI runs them</summary>
 
 ```sh
-npm run build                          # strict KaTeX build (fails on a math error)
-pip install -e "python[dev]" && pytest # sympy derivations and test vectors
-python scripts/gen_equations.py        # regenerate LaTeX, test vectors, derivations, bibliography JSON
-pip install -e "python[figures]" && python scripts/gen_figures.py   # redraw the figures
+npm run typecheck && npm test          # TypeScript types; vitest (pe-core, simulator, tools, TS/Python parity)
+pip install -e "python[dev,figures]" && pytest   # sympy derivations and test vectors
+python scripts/gen_equations.py        # regenerate LaTeX, test vectors, derivations, bibliography JSON (CI fails on a diff)
+python scripts/gen_figures.py --check  # redraw the figures and compare with the committed SVGs
 python scripts/mathlint.py             # no hand-typed equations; every <Eq> id exists
-python scripts/modulelint.py           # module template, EN/KO mirroring, STATUS.md
+python scripts/modulelint.py           # module template, every EN/KO page pair mirrored, STATUS.md
 python scripts/privacy_scan.py         # privacy rules
-python scripts/refcheck.py             # citation keys and VERIFY flags
+python scripts/refcheck.py --online    # citation keys, VERIFY flags, DOIs against Crossref
+python scripts/resources_check.py --online   # every resource URL opened and its title matched
+python scripts/falstad_library.py --check    # the CircuitJS1 circuits: current, and wired as the SPICE netlists
+python scripts/sim_library.py --check        # the SPICE library against ngspice and the equations (needs ngspice)
+python scripts/spice_crosscheck.py --check   # the simulator against ngspice (needs ngspice)
+node scripts/falstad_check.mjs         # every CircuitJS1 share link run on falstad.com
+npm run build                          # strict KaTeX build (fails on a math error), then scripts/postbuild.mjs
+bash scripts/repro_check.sh            # HEAD's files at another path build the same site, byte for byte
 python scripts/anchorcheck.py dist     # every #fragment link lands (after the build)
 node scripts/keyboard_check.mjs        # keyboard focus order of the tool pages (after the build)
 node scripts/seq_check.mjs             # the operating-mode drawing's real text boxes (after the build)
+npx lychee --config lychee.toml dist   # every link of the built site
 ```
 
 </details>
@@ -156,7 +166,9 @@ node scripts/seq_check.mjs             # the operating-mode drawing's real text 
 | 2 | Core content: foundations, physics, theory, topologies (EN + KO) | done |
 | 3 | Time-domain simulator and design tools: simulator, converter designer, magnetics designer, loss budget, clamp check, source matcher, sense chain | done |
 | 4 | Magnetics, bench, harvesting, gotchas, resources | done |
-| 5 | LTspice/ngspice library, CircuitJS1 circuits, missions and simulation pages (done); v0.1.0 | in progress |
+| 5 | LTspice/ngspice library, CircuitJS1 circuits, missions, simulation pages, reproducible build; v0.1.0 | done |
+
+Released as **v0.1.0**; what each release holds is in [`CHANGELOG.md`](CHANGELOG.md).
 
 ### Contributing and licences
 
@@ -198,11 +210,13 @@ the citation rules. Documentation: CC BY-SA 4.0 (`LICENSE-DOCS`). Code: MIT
 <td colspan="2" valign="top">
 
 **시뮬레이션.** 브라우저에서 동작하는 시간 영역(time-domain) 시뮬레이터입니다.
-토폴로지를 고르고 슬라이더를 움직이면 파형, 동작 모드, 손실이 바로 바뀝니다.
-한 주기를 모드별로 따라가며 회로의 전류 경로와 소자마다의 상태를 볼 수 있고,
-논문에서처럼 모든 모드를 한 번에 볼 수도 있습니다. 모드 경계를 표시한 주요 파형과
-각 모드의 회로를 함께 보여 줍니다. 모든 결과가 수식의 값과 나란히 표시되며, 시뮬레이터는 수식과 2 % 이내로
-일치하도록 검증됩니다.
+토폴로지를 고르고 데이터시트에 적힌 그대로 값을 입력하거나(100 µH, 200 kHz,
+30 %) 슬라이더를 움직이면 파형, 동작 모드, 손실이 바로 바뀝니다. 한 주기를
+모드별로 따라가며 회로의 전류 경로와 소자마다의 상태를 볼 수 있고, 논문에서처럼
+모든 모드를 한 번에 볼 수도 있습니다. 모드 경계를 표시한 주요 파형과 각 모드의
+회로를 함께 보여 줍니다. 모든 결과가 수식의 값과 나란히 표시되고, 시뮬레이터는
+수식과 2 % 이내로, 그리고 ngspice와 일치하도록 검증되며, 테브난 전원(Thevenin
+source) 없이 저항 부하라면 링크 하나로 같은 값을 CircuitJS1에서 열 수 있습니다.
 
 <img src="docs/images/simulate-ko.png" alt="시뮬레이터: 토폴로지와 프리셋 버튼, 검출된 동작 모드, 그리고 파형 옆의 파라미터 입력란">
 
@@ -262,17 +276,25 @@ npm test                     # vitest: pe-core, 시뮬레이터 검증, TS/Pytho
 <summary>CI가 실행하는 모든 검사</summary>
 
 ```sh
-npm run build                          # KaTeX 엄격 빌드 (수식 오류 시 실패)
-pip install -e "python[dev]" && pytest # sympy 유도와 테스트 벡터
-python scripts/gen_equations.py        # LaTeX·테스트 벡터·유도·참고문헌 JSON 재생성
-pip install -e "python[figures]" && python scripts/gen_figures.py   # 그림 다시 그리기
+npm run typecheck && npm test          # TypeScript 타입 검사, vitest (pe-core, 시뮬레이터, 도구, TS/Python 패리티)
+pip install -e "python[dev,figures]" && pytest   # sympy 유도와 테스트 벡터
+python scripts/gen_equations.py        # LaTeX·테스트 벡터·유도·참고문헌 JSON 재생성 (차이가 있으면 CI 실패)
+python scripts/gen_figures.py --check  # 그림을 다시 그려 커밋된 SVG와 비교
 python scripts/mathlint.py             # 손으로 쓴 수식 금지, 모든 <Eq> id 존재
-python scripts/modulelint.py           # 모듈 템플릿, 영어·한국어 미러, STATUS.md
+python scripts/modulelint.py           # 모듈 템플릿, 모든 영어·한국어 페이지 쌍의 미러, STATUS.md
 python scripts/privacy_scan.py         # 개인정보 규칙
-python scripts/refcheck.py             # 인용 키와 VERIFY 표시
+python scripts/refcheck.py --online    # 인용 키, VERIFY 표시, Crossref로 DOI 확인
+python scripts/resources_check.py --online   # 모든 자료 URL을 열어 제목 대조
+python scripts/falstad_library.py --check    # CircuitJS1 회로: 최신인지, SPICE 넷리스트대로 배선됐는지
+python scripts/sim_library.py --check        # SPICE 라이브러리를 ngspice와 수식에 대조 (ngspice 필요)
+python scripts/spice_crosscheck.py --check   # 시뮬레이터를 ngspice와 대조 (ngspice 필요)
+node scripts/falstad_check.mjs         # 모든 CircuitJS1 공유 링크를 falstad.com에서 실행
+npm run build                          # KaTeX 엄격 빌드 (수식 오류 시 실패), 이어서 scripts/postbuild.mjs
+bash scripts/repro_check.sh            # 다른 경로에 푼 HEAD의 파일이 바이트 단위로 같은 사이트를 빌드하는지
 python scripts/anchorcheck.py dist     # 모든 #fragment 링크의 대상 존재 (빌드 후)
 node scripts/keyboard_check.mjs        # 도구 페이지의 키보드 포커스 순서 (빌드 후)
 node scripts/seq_check.mjs             # 동작 모드 회로도의 실제 글자 상자 (빌드 후)
+npx lychee --config lychee.toml dist   # 빌드된 사이트의 모든 링크
 ```
 
 </details>
@@ -299,7 +321,9 @@ node scripts/seq_check.mjs             # 동작 모드 회로도의 실제 글�
 | 2 | 핵심 콘텐츠: 기초, 물리, 이론, 토폴로지(영어·한국어) | 완료 |
 | 3 | 시간 영역 시뮬레이터와 설계 도구: 시뮬레이터, 컨버터 설계, 자성 부품 설계, 손실 예산, 클램프 점검, 전원 정합, 센스 체인 | 완료 |
 | 4 | 자성 부품, 벤치, 하베스팅, 주의할 점, 자료 | 완료 |
-| 5 | LTspice/ngspice 라이브러리, CircuitJS1 회로, 미션, 시뮬레이션 페이지(완료), v0.1.0 | 진행 중 |
+| 5 | LTspice/ngspice 라이브러리, CircuitJS1 회로, 미션, 시뮬레이션 페이지, 재현 가능한 빌드, v0.1.0 | 완료 |
+
+**v0.1.0**으로 공개했습니다. 각 릴리스의 내용은 [`CHANGELOG.md`](CHANGELOG.md)에 있습니다.
 
 ### 기여와 라이선스
 
