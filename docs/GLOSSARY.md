@@ -16,7 +16,7 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | Gotchas · Missions · Resources · About | 주의할 점 · 미션 · 자료 · 소개 | 易错点 · 任务 · 资料 · 关于 |
 | Learn · Design · Simulate | 학습 · 설계 · 시뮬레이션 | 学习 · 设计 · 仿真 |
 | Goal (of a page) | 목표 | 目标 |
-| Theory · Worked example | 이론 · 예제 | 理论 · 例题 |
+| Theory · Worked example | 이론 · 풀이 예제 | 理论 · 例题 |
 | Try it · Bench exercise | 직접 해 보기 · 벤치 실습 | 动手试试 · 实验练习 |
 | Gotchas · Go deeper · Quiz | 주의할 점 · 더 알아보기 · 퀴즈 | 易错点 · 延伸阅读 · 测验 |
 | Acceptance criteria | 완료 기준 | 验收标准 |
@@ -57,7 +57,7 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | volt-second balance | 전압-초 평형 | 伏秒平衡 |
 | charge balance | 전하 평형 | 电荷平衡 |
 | small-ripple approximation | 소리플 근사 | 小纹波近似 |
-| ripple · peak-to-peak | 리플 · 피크-투-피크 | 纹波 · 峰峰值 |
+| ripple · peak-to-peak | 리플 · 피크-피크 | 纹波 · 峰峰值 |
 | half the peak-to-peak ripple (Δi_L) | 리플의 절반 | 纹波峰峰值的一半 |
 | switch node | 스위치 노드 | 开关节点 |
 | switch stress | 스위치 스트레스 | 开关应力 |
@@ -66,14 +66,14 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | inductor parameter K | 인덕터 파라미터 K | 电感参数 K |
 | averaged model · state-space averaging | 평균 모델 · 상태 공간 평균화 | 平均模型 · 状态空间平均法 |
 | dc transformer (model) | 직류 변압기 | 直流变压器（模型） |
-| small-signal model · transfer function | 소신호 모델 · 전달 함수 | 小信号模型 · 传递函数 |
-| control-to-output transfer function | 제어-출력 전달 함수 | 控制-输出传递函数 |
-| right-half-plane (RHP) zero | 우반면(RHP) 영점 | 右半平面（RHP）零点 |
+| small-signal model · transfer function | 소신호 모델 · 전달함수 | 小信号模型 · 传递函数 |
+| control-to-output transfer function | 제어-출력 전달함수 | 控制-输出传递函数 |
+| right-half-plane (RHP) zero | 우반평면(RHP) 영점 | 右半平面（RHP）零点 |
 | pole · zero · double pole | 극점 · 영점 · 이중 극점 | 极点 · 零点 · 二重极点 |
-| loop gain · crossover frequency · phase margin | 루프 이득 · 교차 주파수 · 위상 여유 | 环路增益 · 穿越频率 · 相位裕度 |
+| loop gain · crossover frequency · phase margin | 루프 이득 · 크로스오버 주파수 · 위상 여유 | 环路增益 · 穿越频率 · 相位裕度 |
 | compensator · PWM modulator | 보상기 · PWM 변조기 | 补偿器 · PWM 调制器 |
 | open loop · closed loop | 개루프 · 폐루프 | 开环 · 闭环 |
-| quality factor Q · damping | 품질 계수 Q · 감쇠 | 品质因数 Q · 阻尼 |
+| quality factor Q · damping | 품질 계수 · 감쇠 | 品质因数 Q · 阻尼 |
 | Bode plot | 보드 선도 | 伯德图 |
 
 ## Components and devices
@@ -84,7 +84,7 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | diode · switch (transistor) | 다이오드 · 스위치 | 二极管 · 开关管 |
 | body diode | 바디 다이오드 | 体二极管 |
 | freewheeling diode · rectifier diode · reset diode | 환류 다이오드 · 정류 다이오드 · 리셋 다이오드 | 续流二极管 · 整流二极管 · 复位二极管 |
-| on-resistance · forward voltage (drop) | 온저항 · 순방향 전압(강하) | 导通电阻 · 正向压降 |
+| on-resistance · forward voltage (drop) | 온 저항 · 순방향 전압(강하) | 导通电阻 · 正向压降 |
 | conducting · blocking · reverse bias | 도통 · 차단 · 역바이어스 | 导通 · 阻断 · 反偏 |
 | turn-on · turn-off | 턴온 · 턴오프 | 开通 · 关断 |
 | reverse recovery | 역회복 | 反向恢复 |
@@ -92,7 +92,7 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | parasitic (stray) inductance | 기생 인덕턴스 | 寄生（杂散）电感 |
 | equivalent series resistance (ESR) | 등가 직렬 저항(ESR) | 等效串联电阻（ESR） |
 | ceramic · electrolytic capacitor | 세라믹 · 전해 커패시터 | 陶瓷 · 电解电容 |
-| dc bias | DC 바이어스 | 直流偏置 |
+| dc bias | 직류 바이어스 | 直流偏置 |
 | self-resonance · self-resonant frequency | 자기 공진 · 자기 공진 주파수 | 自谐振 · 自谐振频率 |
 | load · load resistance | 부하 · 부하 저항 | 负载 · 负载电阻 |
 | battery · internal resistance · state of charge | 배터리 · 내부 저항 · 충전 상태 | 电池 · 内阻 · 荷电状态 |
@@ -114,25 +114,25 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | saturation | 포화 | 饱和 |
 | magnetic field intensity · magnetomotive force | 자계 세기 · 기자력 | 磁场强度 · 磁动势 |
 | permeability · relative · of free space | 투자율 · 비투자율 · 진공 투자율 | 磁导率 · 相对磁导率 · 真空磁导率 |
-| reluctance · magnetic circuit | 자기 저항 · 자기 회로 | 磁阻 · 磁路 |
+| reluctance · magnetic circuit | 자기저항 · 자기 회로 | 磁阻 · 磁路 |
 | B-H loop · hysteresis · eddy current | B-H 루프 · 히스테리시스 · 와전류 | B-H 回线 · 磁滞 · 涡流 |
 | core loss · Steinmetz equation | 코어 손실 · 스타인메츠 식 | 磁芯损耗 · Steinmetz 公式 |
 | inductance factor A_L | 인덕턴스 계수 A_L | 电感系数 A_L |
 | effective area · effective path length · effective volume | 유효 단면적 · 유효 자로 길이 · 유효 체적 | 有效截面积 · 有效磁路长度 · 有效体积 |
 | core geometrical constant K_g | 코어 기하 상수 K_g | 磁芯几何常数 K_g |
-| window · window utilization | 권선창 · 권선창 이용률 | 窗口 · 窗口利用率 |
+| window · window utilization | 창 · 창 이용률 | 窗口 · 窗口利用率 |
 | winding · turns · turns ratio | 권선 · 턴 수 · 권선비 | 绕组 · 匝数 · 匝比 |
 | primary · secondary winding | 1차 권선 · 2차 권선 | 一次绕组 · 二次绕组 |
 | reset winding | 리셋 권선 | 复位绕组 |
-| referred to the primary · reflected voltage | 1차 환산 · 반사 전압 | 折算到一次侧 · 反射电压 |
+| referred to the primary · reflected voltage | 1차 측으로 환산 · 반사 전압 | 折算到一次侧 · 反射电压 |
 | magnetizing inductance · magnetizing current | 자화 인덕턴스 · 자화 전류 | 励磁电感 · 励磁电流 |
 | leakage inductance · coupling coefficient | 누설 인덕턴스 · 결합 계수 | 漏感 · 耦合系数 |
 | coupled inductor · mutual inductance | 결합 인덕터 · 상호 인덕턴스 | 耦合电感 · 互感 |
-| short-circuit inductance · open-circuit test | 단락 인덕턴스 · 개방 시험 | 短路电感 · 开路测试 |
+| short-circuit inductance · short-circuit test | 단락 인덕턴스 · 단락 시험 | 短路电感 · 短路测试 |
 | winding resistance · winding loss · copper loss | 권선 저항 · 권선 손실 · 동손 | 绕组电阻 · 绕组损耗 · 铜损 |
 | skin effect · skin depth · proximity effect | 표피 효과 · 표피 깊이 · 근접 효과 | 集肤效应 · 集肤深度 · 邻近效应 |
-| Dowell's factor · porosity | Dowell 계수 · 공극률 | Dowell 系数 · 孔隙率 |
-| round wire · foil · litz wire | 둥근 선 · 포일 · 리츠선 | 圆导线 · 铜箔 · 利兹线 |
+| Dowell's factor · porosity | Dowell 계수 · 층의 점유율 | Dowell 系数 · 孔隙率 |
+| round wire · foil · litz wire | 둥근 선 · 박판 · 리츠선 | 圆导线 · 铜箔 · 利兹线 |
 | interleaving (P-S-P) | 인터리빙(P-S-P) | 交错绕制（P-S-P） |
 | snubber · clamp · RCD clamp | 스너버 · 클램프 · RCD 클램프 | 缓冲电路 · 钳位 · RCD 钳位 |
 | clamping voltage · breakdown voltage | 클램프 전압 · 항복 전압 | 钳位电压 · 击穿电压 |
@@ -148,7 +148,7 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | layout · hot loop | 레이아웃 · 핫 루프 | 布局 · 高 di/dt 回路 |
 | gate drive · gate charge · Miller plateau | 게이트 구동 · 게이트 전하 · 밀러 플래토 | 栅极驱动 · 栅极电荷 · 米勒平台 |
 | bootstrap capacitor · shoot-through | 부트스트랩 커패시터 · 슛스루 | 自举电容 · 直通 |
-| current sensing · shunt · current-sense amplifier | 전류 감지 · 션트 · 전류 감지 증폭기 | 电流检测 · 分流电阻 · 电流检测放大器 |
+| current sensing · shunt · current-sense amplifier | 전류 센싱 · 션트 · 전류 센스 증폭기 | 电流检测 · 分流电阻 · 电流检测放大器 |
 | burden voltage · offset | 부담 전압 · 오프셋 | 负担电压 · 失调 |
 | four-wire (Kelvin) measurement | 4선식(켈빈) 측정 | 四线（开尔文）测量 |
 | probe · oscilloscope · ground lead | 프로브 · 오실로스코프 · 접지 리드 | 探头 · 示波器 · 接地线 |
@@ -168,9 +168,9 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | --- | --- | --- |
 | energy harvesting | 에너지 하베스팅 | 能量收集 |
 | piezoelectric element · source | 압전 소자 · 압전 전원 | 压电元件 · 压电源 |
-| maximum power transfer · matched load | 최대 전력 전달 · 정합 부하 | 最大功率传输 · 匹配负载 |
-| maximum power point tracking (MPPT) | 최대 전력점 추적(MPPT) | 最大功率点跟踪（MPPT） |
-| synchronous electric charge extraction (SECE) | 동기식 전하 추출(SECE) | 同步电荷提取（SECE） |
+| maximum power transfer · matched load | 최대 전력 전달 · 정합된 부하 | 最大功率传输 · 匹配负载 |
+| maximum power point tracking (MPPT) | 최대 전력점 추종(MPPT) | 最大功率点跟踪（MPPT） |
+| synchronous electric charge extraction (SECE) | 동기 전하 추출(SECE) | 同步电荷提取（SECE） |
 | synchronized switch harvesting on inductor (SSHI) | SSHI | 同步电感开关收集（SSHI） |
 | standard interface (bridge onto a dc voltage) | 표준 인터페이스 | 标准接口电路 |
 | envelope | 포락선 | 包络 |
@@ -185,8 +185,8 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | time step · sub-step | 타임 스텝 · 하위 스텝 | 时间步长 · 子步 |
 | schematic · netlist · directive | 회로도 · 넷리스트 · 지시문 | 原理图 · 网表 · 仿真指令 |
 | transient analysis | 과도 해석 | 瞬态分析 |
-| trapezoidal rule · backward Euler · forward Euler · Gear | 사다리꼴 법칙 · 후진 오일러 · 전진 오일러 · Gear | 梯形法 · 后向欧拉法 · 前向欧拉法 · Gear 法 |
-| piecewise-linear · matrix exponential · eigenvalue | 구간 선형 · 행렬 지수 함수 · 고윳값 | 分段线性 · 矩阵指数 · 特征值 |
+| trapezoidal rule · backward Euler · forward Euler · Gear | 사다리꼴 규칙 · 후진 오일러 · 전진 오일러 · Gear | 梯形法 · 后向欧拉法 · 前向欧拉法 · Gear 法 |
+| piecewise-linear · matrix exponential · eigenvalue | 구간별 선형 · 행렬 지수 함수 · 고윳값 | 分段线性 · 矩阵指数 · 特征值 |
 | Newton's method · bisection | 뉴턴법 · 이분법 | 牛顿法 · 二分法 |
 | event · converge | 이벤트 · 수렴 | 事件 · 收敛 |
 | relative difference · unit roundoff | 상대 차이 · 단위 반올림 오차 | 相对差 · 单位舍入误差 |
