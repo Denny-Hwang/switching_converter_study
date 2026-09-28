@@ -40,7 +40,7 @@ winding)의 턴 수를 1차 권선(primary winding)의 턴 수로 나눈 값입�
 
 <Eq id="flyback.ccm.M" />
 
-$K$는 $L_M$과 실제 부하 저항(load resistance)으로 구성하며, 그러면 권선비는
+$K$는 $L_M$과 실제 부하 저항(load resistance)으로 계산하며, 이때 권선비는
 임계값(critical value)에 나타납니다(<EqRef id="Kcrit.flyback" label="플라이백 임계 K" />).
 DCM에서는 변환비가 더 이상 권선비에 의존하지 않습니다 <Cite key="erickson2020" where="Ch. 5" />.
 
@@ -55,8 +55,8 @@ CCM에서 플라이백은 2차 측 양을 1차 측으로 환산한 벅-부스트
 
 <Eq id="flyback.IM" />
 
-스위치가 켜져 있는 동안에는 $L_M$ 양단의 $V_g$가 자화 전류 리플을 정하고, 출력
-커패시터 혼자 부하를 공급하므로 이것이 출력 리플을 정합니다.
+스위치가 켜져 있는 동안에는 $L_M$ 양단에 걸리는 $V_g$가 자화 전류 리플을 정하고,
+출력 커패시터 혼자 부하에 전류를 공급하므로 이 구간이 출력 리플을 정합니다.
 
 <Eq id="flyback.ripple.iM" />
 
@@ -69,7 +69,7 @@ CCM에서 플라이백은 2차 측 양을 1차 측으로 환산한 벅-부스트
 
 스위치가 꺼져 있는 동안 2차 측 전압은 출력 전압에 다이오드 전압 강하(diode drop)를
 더한 값으로 클램프되며, 이 전압은 $n$으로 나누어져 1차 측에 나타납니다. 따라서
-스위치는 입력 전압에 이 반사 전압(reflected voltage)을 더한 값을 차단(blocking)합니다
+스위치는 입력 전압에 이 반사 전압(reflected voltage)을 더한 값을 차단(block)합니다
 <Cite key="erickson2020" where="Ch. 6" />.
 
 <Eq id="flyback.Vds_off" />
@@ -127,9 +127,8 @@ resistor, LFR)처럼 동작합니다(<EqRef id="dcm.P_in" label="DCM 입력 전�
 
 ### 동작 모드(operating mode)
 
-아래 그림들은 각 예제의 정상상태 한 주기를 컨버터 논문에서처럼 모드별로 나누어 보여
-줍니다. 사이트의 시뮬레이터로 계산했으며, 시뮬레이터의 [동작 모드 보기](../../simulate/simulator/#동작-모드)는 어떤 값에서든 같은 그림을
-그립니다.
+각 예제의 정상상태 한 주기를 모드별로 살펴봅니다. 파형은 사이트의 시뮬레이터로 계산했으며,
+시뮬레이터의 [동작 모드 보기](../../simulate/simulator/#동작-모드)는 임의의 값에 대해 같은 그림을 그립니다.
 CCM에서 한 주기는 두 모드로 이루어집니다. 스위치가 도통하는 동안 자화 인덕턴스가
 입력에서 충전되고 출력 다이오드는 차단됩니다. 스위치가 꺼지면 자화 전류가 2차 권선에서
 다이오드를 거쳐 흘러나갑니다 <Cite key="erickson2020" where="Ch. 6" />.
@@ -152,8 +151,8 @@ DCM에서는 자화 전류가 주기가 끝나기 전에 0에 이르고, 스위�
 
 <Worked example="flyback-battery" />
 
-CCM 예제에서는 반사 전압이 입력 전압에 더해지므로, 스위치가 차단하는 전압은
-<Val example="flyback-ccm" name="V_DS" />인 반면 입력은 <Val example="flyback-ccm" name="V_g" />입니다.
+CCM 예제에서는 반사 전압이 입력 전압에 더해지므로, 입력은 <Val example="flyback-ccm" name="V_g" />인데
+스위치가 차단하는 전압은 <Val example="flyback-ccm" name="V_DS" />입니다.
 DCM 예제에서는 <Val example="flyback-dcm" name="L_lk" />의 누설 인덕턴스만으로도
 소산형 클램프의 손실이 최소 <Val example="flyback-dcm" name="P_lk" />입니다.
 
@@ -179,10 +178,10 @@ DCM에서는 2차 측 전류가 0에 도달한 뒤의 링잉(ringing)이 나타�
 ## 주의할 점
 
 - **누설 에너지는 어딘가로 가야 합니다.** 클램프나 스너버가 없으면 턴오프
-  스파이크는 무언가가 항복(breakdown)할 때까지 상승합니다. 소산형 클램프는 적어도
-  앞에서 구한 누설 전력을 잃으며, 에너지를 회수하는 클램프도 이 전력을 처리할 수
-  있는 정격(rating)을 갖추어야 합니다 <Cite key="erickson2020" where="Ch. 4" />.
-- **개루프(open-loop) 플라이백은 부하를 잃어서는 안 됩니다.** DCM에서는 부하가
+  스파이크는 무언가가 항복(breakdown)할 때까지 상승합니다. 소산형 클램프에서는
+  적어도 앞에서 구한 누설 전력만큼 손실이 생기며, 에너지를 회수하는 클램프도 이
+  전력을 처리할 수 있는 정격(rating)을 갖추어야 합니다 <Cite key="erickson2020" where="Ch. 4" />.
+- **개루프(open-loop) 플라이백에서는 부하가 끊어지면 안 됩니다.** DCM에서는 부하가
   제거되면 출력이 상승하고(<EqRef id="flyback.dcm.M" label="DCM 변환비" />는 $K$가
   작아질수록 커집니다), 그와 함께 반사 전압도 상승하며, 이 상승은 클램프가 스위치
   전압을 제한할 때까지 계속됩니다.

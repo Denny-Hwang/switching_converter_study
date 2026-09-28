@@ -70,7 +70,7 @@
     },
     "uniform_flux_volume": {
       "en": "flux density uniform over the effective volume V_e",
-      "ko": "유효 부피 V_e 전체에서 균일한 자속 밀도"
+      "ko": "유효 체적 V_e 전체에서 균일한 자속 밀도"
     },
     "sinusoidal_excitation": {
       "en": "sinusoidal excitation (empirical fit)",
@@ -282,11 +282,11 @@
     },
     "test_equation": {
       "en": "one decaying mode on its own: its rate of change is minus its deviation over tau (the test equation)",
-      "ko": "홀로 감쇠하는 모드 하나: 변화율이 편차를 tau로 나눈 값의 음수임(시험 방정식)"
+      "ko": "감쇠 모드 하나만 따로 봄: 변화율이 편차를 tau로 나눈 값의 음수와 같음(시험 방정식)"
     },
     "fixed_step": {
       "en": "the same time step every step",
-      "ko": "매 스텝 같은 시간 간격"
+      "ko": "모든 스텝에서 같은 타임 스텝"
     },
     "backward_euler_step": {
       "en": "backward Euler: the inductor's voltage at the end of the step is its inductance times the change of its current, divided by the step",
@@ -294,7 +294,7 @@
     },
     "current_blocked": {
       "en": "the current's path opens within the step, and nothing else (a body diode, a snubber, a node capacitance) takes the current",
-      "ko": "스텝 안에서 전류 경로가 열리고, 다른 것(바디 다이오드, 스너버, 노드 커패시턴스)이 전류를 받지 않음"
+      "ko": "스텝 안에서 전류 경로가 열리고, 다른 소자(바디 다이오드, 스너버, 노드 커패시턴스)가 전류를 받지 않음"
     },
     "underdamped_filter": {
       "en": "the output filter rings: its quality factor Q is above 1/2",
@@ -652,7 +652,7 @@
       "unit": "s",
       "desc": "time step of a numerical integration",
       "meaning": "time step",
-      "meaning_ko": "시간 간격(time step)",
+      "meaning_ko": "타임 스텝",
       "range": [
         1e-10,
         0.001
@@ -709,7 +709,7 @@
       "unit": "J",
       "desc": "energy stored in the leakage inductance at turn-off",
       "meaning": "leakage energy per turn-off",
-      "meaning_ko": "턴오프마다의 누설 에너지",
+      "meaning_ko": "턴오프당 누설 에너지",
       "range": [
         1e-09,
         0.01
@@ -1219,7 +1219,7 @@
       "unit": "H",
       "desc": "inductance of the loop a switched current flows around (traces, vias, component leads)",
       "meaning": "loop inductance",
-      "meaning_ko": "루프 인덕턴스(loop inductance)",
+      "meaning_ko": "루프 인덕턴스",
       "range": [
         1e-10,
         1e-07
@@ -1389,8 +1389,8 @@
       "latex": "P/P_\\delta",
       "unit": "1",
       "desc": "loss of a layer relative to that of a layer one skin depth thick carrying the same current as dc",
-      "meaning": "loss relative to one skin depth of dc",
-      "meaning_ko": "두께 한 표피 깊이 층의 직류 손실에 대한 손실 비",
+      "meaning": "loss relative to a one-skin-depth layer at dc",
+      "meaning_ko": "두께가 표피 깊이인 층의 직류 손실에 대한 비",
       "range": null,
       "scale": "linear"
     },
@@ -1441,7 +1441,7 @@
       "unit": "1",
       "desc": "quality factor of the LC poles",
       "meaning": "quality factor",
-      "meaning_ko": "Q 계수(quality factor)",
+      "meaning_ko": "품질 계수(quality factor)",
       "range": null,
       "scale": "linear"
     },
@@ -2554,7 +2554,7 @@
       "unit": "Hz",
       "desc": "ringing frequency",
       "meaning": "ringing frequency",
-      "meaning_ko": "링잉 주파수(ringing)",
+      "meaning_ko": "링잉 주파수",
       "range": null,
       "scale": "linear"
     },
@@ -2854,7 +2854,7 @@
       "unit": "rad/s",
       "desc": "angular frequency of the right-half-plane zero",
       "meaning": "RHP-zero frequency (rad/s)",
-      "meaning_ko": "우반면 영점(RHP zero) 각주파수",
+      "meaning_ko": "우반평면 영점(RHP zero) 각주파수",
       "range": null,
       "scale": "linear"
     },
@@ -3130,7 +3130,7 @@
       "unit": "V",
       "desc": "voltage the capacitor would settle to if the step's conditions lasted",
       "meaning": "voltage it tends to",
-      "meaning_ko": "수렴하려는 전압",
+      "meaning_ko": "다가가는 최종 전압",
       "range": [
         -100.0,
         100.0
@@ -3291,7 +3291,7 @@
         "small_ripple"
       ],
       "convention": "$M = V/V_g$; the output is inverted, so $M < 0$",
-      "convention_ko": "$M = V/V_g$; 출력 극성이 반전되므로 $M < 0$",
+      "convention_ko": "$M = V/V_g$. 출력 극성이 반전되므로 $M < 0$입니다",
       "notes": "",
       "notes_ko": "",
       "cites": [
@@ -3365,7 +3365,7 @@
         "small_ripple"
       ],
       "convention": "$M = V/V_g$; $n = N_s/N_p$; valid only while $D \\le D_\\mathrm{max}$ (reset limit)",
-      "convention_ko": "$M = V/V_g$; $n = N_s/N_p$; 리셋 한계 $D \\le D_\\mathrm{max}$ 안에서만 성립",
+      "convention_ko": "$M = V/V_g$, $n = N_s/N_p$. 리셋 한계 $D \\le D_\\mathrm{max}$ 안에서만 성립합니다",
       "notes": "",
       "notes_ko": "",
       "cites": [
@@ -3398,7 +3398,7 @@
         "steady_state"
       ],
       "convention": "reset winding with $N_r$ turns returns the magnetizing energy to $V_g$; $n_r = 1$ gives $D_\\mathrm{max} = 0.5$",
-      "convention_ko": "$N_r$ 턴의 리셋 권선이 자화 에너지를 $V_g$로 돌려보냄; $n_r = 1$이면 $D_\\mathrm{max} = 0.5$",
+      "convention_ko": "$N_r$ 턴의 리셋 권선이 자화 에너지를 $V_g$로 되돌려 보냅니다. $n_r = 1$이면 $D_\\mathrm{max} = 0.5$입니다",
       "notes": "",
       "notes_ko": "",
       "cites": [
@@ -3441,7 +3441,7 @@
         "small_ripple"
       ],
       "convention": "$\\Delta i_L$ is HALF the peak-to-peak ripple (Erickson)",
-      "convention_ko": "$\\Delta i_L$은 피크-피크 리플의 절반(Erickson 규약)",
+      "convention_ko": "$\\Delta i_L$은 피크-피크 리플의 절반입니다(Erickson 규약)",
       "notes": "",
       "notes_ko": "",
       "cites": [
@@ -3484,7 +3484,7 @@
         "small_ripple"
       ],
       "convention": "peak-to-peak; twice the Erickson $\\Delta i_L$",
-      "convention_ko": "피크-피크 값; Erickson의 $\\Delta i_L$의 두 배",
+      "convention_ko": "피크-피크 값으로, Erickson의 $\\Delta i_L$의 두 배입니다",
       "notes": "",
       "notes_ko": "",
       "cites": [
@@ -3520,7 +3520,7 @@
         "definition"
       ],
       "convention": "the converter operates in CCM when $K > K_\\mathrm{crit}(D)$",
-      "convention_ko": "$K > K_\\mathrm{crit}(D)$이면 CCM으로 동작",
+      "convention_ko": "$K > K_\\mathrm{crit}(D)$이면 CCM으로 동작합니다",
       "notes": "",
       "notes_ko": "",
       "cites": [
@@ -3594,7 +3594,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "maximum $4/27$ at $D = 1/3$",
-      "notes_ko": "$D = 1/3$에서 최댓값 $4/27$",
+      "notes_ko": "최댓값은 $D = 1/3$에서 $4/27$입니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -3666,7 +3666,7 @@
         "resistive_load"
       ],
       "convention": "$K = 2L_M/(R T_s)$ with $L_M$ referred to the primary and the actual (secondary-side) load $R$; 1:n, $n = N_s/N_p$",
-      "convention_ko": "$K = 2L_M/(R T_s)$, $L_M$은 1차측 환산값, $R$은 실제(2차측) 부하; 1:n, $n = N_s/N_p$",
+      "convention_ko": "$K = 2L_M/(R T_s)$이며, $L_M$은 1차 측으로 환산한 값, $R$은 실제(2차 측) 부하입니다. 권선비는 1:n, $n = N_s/N_p$입니다",
       "notes": "",
       "notes_ko": "",
       "cites": [
@@ -3708,7 +3708,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the converter stays in CCM for $L > L_\\mathrm{crit}$; check the largest $R$ (lightest load) and the duty ratio that maximises $K_\\mathrm{crit}$ over the input range",
-      "notes_ko": "$L > L_\\mathrm{crit}$이면 CCM을 유지한다; 가장 큰 $R$(가장 가벼운 부하)과 입력 범위에서 $K_\\mathrm{crit}$을 최대로 만드는 듀티비에서 확인한다",
+      "notes_ko": "$L > L_\\mathrm{crit}$이면 CCM을 유지합니다. 가장 큰 $R$(가장 가벼운 부하)과, 입력 범위에서 $K_\\mathrm{crit}$을 최대로 만드는 듀티비에서 확인합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -3744,7 +3744,7 @@
         "resistive_load"
       ],
       "convention": "$M = V/V_g$; valid for $K < K_\\mathrm{crit} = 1 - D$",
-      "convention_ko": "$M = V/V_g$; $K < K_\\mathrm{crit} = 1 - D$에서 성립",
+      "convention_ko": "$M = V/V_g$. $K < K_\\mathrm{crit} = 1 - D$에서 성립합니다",
       "notes": "",
       "notes_ko": "",
       "cites": [
@@ -3782,7 +3782,7 @@
         "resistive_load"
       ],
       "convention": "$M = V/V_g$; valid for $K < K_\\mathrm{crit} = D(1 - D)^2$",
-      "convention_ko": "$M = V/V_g$; $K < K_\\mathrm{crit} = D(1 - D)^2$에서 성립",
+      "convention_ko": "$M = V/V_g$. $K < K_\\mathrm{crit} = D(1 - D)^2$에서 성립합니다",
       "notes": "",
       "notes_ko": "",
       "cites": [
@@ -3820,7 +3820,7 @@
         "resistive_load"
       ],
       "convention": "$M = V/V_g < 0$ (inverting); valid for $K < K_\\mathrm{crit} = (1 - D)^2$",
-      "convention_ko": "$M = V/V_g < 0$(반전); $K < K_\\mathrm{crit} = (1 - D)^2$에서 성립",
+      "convention_ko": "$M = V/V_g < 0$(반전)입니다. $K < K_\\mathrm{crit} = (1 - D)^2$에서 성립합니다",
       "notes": "",
       "notes_ko": "",
       "cites": [
@@ -3858,9 +3858,9 @@
         "resistive_load"
       ],
       "convention": "1:n transformer, $n = N_s/N_p$; $K$ uses $L_M$ (primary-referred) and the actual load $R$",
-      "convention_ko": "1:n 변압기, $n = N_s/N_p$; $K$는 $L_M$(1차측 환산)과 실제 부하 $R$로 계산",
+      "convention_ko": "1:n 변압기, $n = N_s/N_p$. $K$는 $L_M$(1차 측 환산)과 실제 부하 $R$로 계산합니다",
       "notes": "independent of $n$: the turns ratio only enters $K_\\mathrm{crit}$ and the stresses",
-      "notes_ko": "$n$과 무관: 권선비는 $K_\\mathrm{crit}$와 스트레스에만 들어감",
+      "notes_ko": "$n$과 무관합니다. 권선비는 $K_\\mathrm{crit}$와 스트레스에만 나타납니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -3900,7 +3900,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the energy $\\tfrac12 L_M I_\\mathrm{pk}^2$ is stored once per cycle, independent of the load",
-      "notes_ko": "부하와 무관하게 매 주기 $\\tfrac12 L_M I_\\mathrm{pk}^2$의 에너지를 저장",
+      "notes_ko": "부하와 무관하게 매 주기 $\\tfrac12 L_M I_\\mathrm{pk}^2$의 에너지가 저장됩니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -3942,7 +3942,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the average input current is proportional to $V_g$; the power is passed on, not dissipated",
-      "notes_ko": "평균 입력 전류가 $V_g$에 비례; 전력은 소산되지 않고 출력으로 전달됨",
+      "notes_ko": "평균 입력 전류가 $V_g$에 비례합니다. 전력은 소산되지 않고 출력으로 전달됩니다",
       "cites": [
         {
           "key": "singer1990",
@@ -3988,7 +3988,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "below $V_{g,\\mathrm{crit}}$ the converter is in DCM; a source-driven bus that rises to $V_{g,\\mathrm{crit}}$ is pinned there by CCM volt-second balance",
-      "notes_ko": "$V_{g,\\mathrm{crit}}$ 아래에서는 DCM; 전원 구동 버스가 $V_{g,\\mathrm{crit}}$에 도달하면 CCM 전압-초 평형에 의해 그 값에 고정됨",
+      "notes_ko": "$V_{g,\\mathrm{crit}}$ 아래에서는 DCM으로 동작합니다. 전원이 구동하는 버스가 $V_{g,\\mathrm{crit}}$까지 올라가면 CCM의 전압-초 평형이 버스 전압을 그 값에 고정합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -4028,7 +4028,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the leakage-inductance spike adds on top; see $E_\\mathrm{lk}$",
-      "notes_ko": "누설 인덕턴스 스파이크가 여기에 더해짐; $E_\\mathrm{lk}$ 참고",
+      "notes_ko": "누설 인덕턴스 스파이크가 여기에 더해집니다($E_\\mathrm{lk}$ 참고)",
       "cites": [
         {
           "key": "erickson2020",
@@ -4068,7 +4068,7 @@
         "diode_drop"
       ],
       "convention": "evaluated at $V_g = V_{g,\\mathrm{crit}}$",
-      "convention_ko": "$V_g = V_{g,\\mathrm{crit}}$에서 계산",
+      "convention_ko": "$V_g = V_{g,\\mathrm{crit}}$에서 계산합니다",
       "notes": "",
       "notes_ko": "",
       "cites": [
@@ -4147,9 +4147,9 @@
         "resistive_load"
       ],
       "convention": "1:n transformer, $n = N_s/N_p$; the secondary carries $I_M/n$ while the diode conducts",
-      "convention_ko": "1:n 변압기, $n = N_s/N_p$; 다이오드가 도통하는 동안 2차 측에는 $I_M/n$이 흐른다",
+      "convention_ko": "1:n 변압기, $n = N_s/N_p$. 다이오드가 도통하는 동안 2차 측에는 $I_M/n$이 흐릅니다",
       "notes": "with $n = 1$ this is the buck-boost's inductor current",
-      "notes_ko": "$n = 1$이면 벅-부스트의 인덕터 전류와 같다",
+      "notes_ko": "$n = 1$이면 벅-부스트의 인덕터 전류와 같습니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -4187,7 +4187,7 @@
         "steady_state"
       ],
       "convention": "$\\Delta i_M$ is HALF the peak-to-peak ripple (Erickson)",
-      "convention_ko": "$\\Delta i_M$은 피크-피크 리플의 절반(Erickson)",
+      "convention_ko": "$\\Delta i_M$은 피크-피크 리플의 절반입니다(Erickson)",
       "notes": "",
       "notes_ko": "",
       "cites": [
@@ -4231,9 +4231,9 @@
         "resistive_load"
       ],
       "convention": "$\\Delta v$ is HALF the peak-to-peak ripple (Erickson)",
-      "convention_ko": "$\\Delta v$는 피크-피크 리플의 절반(Erickson)",
+      "convention_ko": "$\\Delta v$는 피크-피크 리플의 절반입니다(Erickson)",
       "notes": "while the switch is on the diode is off and the capacitor alone supplies the load, as in the buck-boost",
-      "notes_ko": "스위치가 켜져 있는 동안 다이오드는 꺼져 있어 벅-부스트와 마찬가지로 커패시터 혼자 부하를 공급한다",
+      "notes_ko": "스위치가 켜져 있는 동안에는 다이오드가 꺼져 있으므로, 벅-부스트와 마찬가지로 커패시터 혼자 부하에 전류를 공급합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -4273,7 +4273,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "in DCM the magnetizing current starts every cycle from zero",
-      "notes_ko": "DCM에서는 자화 전류가 매 주기 0에서 시작",
+      "notes_ko": "DCM에서는 자화 전류가 매 주기 0에서 시작합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -4307,7 +4307,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "this energy cannot reach the secondary; a clamp or snubber must absorb it",
-      "notes_ko": "이 에너지는 2차측으로 전달되지 못하므로 클램프나 스너버가 흡수해야 함",
+      "notes_ko": "이 에너지는 2차 측으로 전달되지 못하므로 클램프나 스너버가 흡수해야 합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -4342,7 +4342,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "a lower bound for the loss of a dissipative clamp, which also absorbs energy from the reflected voltage and so dissipates more; a clamp that returns the energy to the input or the output processes this power instead of dissipating it",
-      "notes_ko": "소산형 클램프 손실의 하한이다. 소산형 클램프는 반사 전압의 에너지도 흡수하므로 더 많이 소산한다. 에너지를 입력이나 출력으로 되돌리는 클램프는 이 전력을 소산하지 않고 처리한다",
+      "notes_ko": "소산형 클램프 손실의 하한입니다. 소산형 클램프는 반사 전압의 에너지도 흡수하므로 이보다 더 많이 소산합니다. 에너지를 입력이나 출력으로 되돌리는 클램프는 이 전력을 소산하지 않고 처리합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -4379,7 +4379,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the primary winding voltage while the output diode conducts; the switch then blocks $V_g$ plus this voltage",
-      "notes_ko": "출력 다이오드가 도통하는 동안의 1차 권선 전압; 이때 스위치는 $V_g$에 이 전압을 더한 값을 차단한다",
+      "notes_ko": "출력 다이오드가 도통하는 동안의 1차 권선 전압입니다. 이때 스위치는 $V_g$에 이 전압을 더한 값을 차단합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -4413,7 +4413,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "after turn-off the leakage inductance drives the drain above $V_g + V_\\mathrm{OR}$ until the clamp conducts and holds it at $V_g + V_\\mathrm{clamp}$",
-      "notes_ko": "턴오프 후 누설 인덕턴스가 드레인을 $V_g + V_\\mathrm{OR}$ 위로 밀어 올리고, 클램프가 도통하면 $V_g + V_\\mathrm{clamp}$에 묶인다",
+      "notes_ko": "턴오프 후 누설 인덕턴스가 드레인을 $V_g + V_\\mathrm{OR}$ 위로 밀어 올리고, 클램프가 도통하면 드레인은 $V_g + V_\\mathrm{clamp}$에 묶입니다",
       "cites": [
         {
           "key": "ti_ssztcv6",
@@ -4451,7 +4451,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the leakage inductance sees $V_\\mathrm{clamp} - V_\\mathrm{OR}$ while the clamp conducts; the closer the clamp voltage is to $V_\\mathrm{OR}$, the longer the reset, which must fit in the off-time",
-      "notes_ko": "클램프가 도통하는 동안 누설 인덕턴스에는 $V_\\mathrm{clamp} - V_\\mathrm{OR}$가 걸린다; 클램프 전압이 $V_\\mathrm{OR}$에 가까울수록 리셋이 길어지며, 이 시간은 오프 시간 안에 들어가야 한다",
+      "notes_ko": "클램프가 도통하는 동안 누설 인덕턴스에는 $V_\\mathrm{clamp} - V_\\mathrm{OR}$가 걸립니다. 클램프 전압이 $V_\\mathrm{OR}$에 가까울수록 리셋이 길어지며, 리셋은 오프 시간 안에 끝나야 합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -4492,7 +4492,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the leakage energy per cycle times $V_\\mathrm{clamp}/(V_\\mathrm{clamp} - V_\\mathrm{OR})$: while the leakage current falls, the reflected voltage keeps driving energy into the clamp, the more so the closer the clamp voltage is to $V_\\mathrm{OR}$",
-      "notes_ko": "주기당 누설 에너지에 $V_\\mathrm{clamp}/(V_\\mathrm{clamp} - V_\\mathrm{OR})$를 곱한 값: 누설 전류가 감소하는 동안에도 반사 전압이 클램프로 에너지를 계속 밀어 넣으며, 클램프 전압이 $V_\\mathrm{OR}$에 가까울수록 더 많이 밀어 넣는다",
+      "notes_ko": "주기당 누설 에너지에 $V_\\mathrm{clamp}/(V_\\mathrm{clamp} - V_\\mathrm{OR})$를 곱한 값입니다. 누설 전류가 감소하는 동안에도 반사 전압이 클램프로 에너지를 계속 밀어 넣으며, 클램프 전압이 $V_\\mathrm{OR}$에 가까울수록 더 많이 밀어 넣습니다",
       "cites": [
         {
           "key": "ti_ssztcv6",
@@ -4534,7 +4534,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the resistor dissipates the clamp power, $V_\\mathrm{clamp}^2/R_\\mathrm{clamp}$; a larger resistor gives a higher clamp voltage and a lower dissipation",
-      "notes_ko": "저항이 클램프 전력 $V_\\mathrm{clamp}^2/R_\\mathrm{clamp}$를 소산한다; 저항이 클수록 클램프 전압은 높아지고 소산 전력은 줄어든다",
+      "notes_ko": "저항이 클램프 전력 $V_\\mathrm{clamp}^2/R_\\mathrm{clamp}$를 소산합니다. 저항이 클수록 클램프 전압은 높아지고 소산 전력은 줄어듭니다",
       "cites": [
         {
           "key": "ti_ssztcv6",
@@ -4548,7 +4548,7 @@
     "tvs.R_D": {
       "id": "tvs.R_D",
       "title": "Dynamic resistance of a TVS from its datasheet",
-      "title_ko": "데이터시트로부터 구한 TVS의 동저항",
+      "title_ko": "데이터시트로 구한 TVS의 동저항",
       "latex": "R_D = \\frac{V_\\mathrm{CL} - V_\\mathrm{BR}}{I_\\mathrm{PP}}",
       "lhs": "R_D",
       "expr": "(V_CL - V_BR)/I_PP",
@@ -4570,7 +4570,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the resistance that, in series with the breakdown voltage, gives the datasheet's clamping voltage at its peak pulse current; it applies to the datasheet's pulse, since the dynamic resistance depends on the pulse duration",
-      "notes_ko": "항복 전압과 직렬로 두었을 때 데이터시트의 피크 펄스 전류에서의 클램핑 전압을 주는 저항; 동저항은 펄스 폭에 따라 달라지므로 데이터시트의 그 펄스에 해당한다",
+      "notes_ko": "항복 전압과 직렬로 두었을 때 피크 펄스 전류에서 데이터시트의 클램핑 전압을 주는 저항입니다. 동저항은 펄스 폭에 따라 달라지므로 이 값은 데이터시트의 펄스에만 해당합니다",
       "cites": [
         {
           "key": "st_an316",
@@ -4606,7 +4606,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "a TVS clamps above its breakdown voltage: judge it by its clamping voltage at the actual peak current",
-      "notes_ko": "TVS는 항복 전압보다 높은 전압에서 클램프한다: 실제 피크 전류에서의 클램핑 전압으로 판단해야 한다",
+      "notes_ko": "TVS는 항복 전압보다 높은 전압에서 클램프합니다. 실제 피크 전류에서의 클램핑 전압으로 판단해야 합니다",
       "cites": [
         {
           "key": "st_an316",
@@ -4645,7 +4645,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "without a load and without regulation the output charges until its reflected voltage reaches the clamp voltage; from then on the clamp takes all of the input power, which it must be rated for. An RCD clamp's voltage rises with that power (the resistor must dissipate it), so this bound does not hold for it",
-      "notes_ko": "부하와 레귤레이션이 없으면 출력은 반사 전압이 클램프 전압에 도달할 때까지 충전되고, 그 뒤에는 클램프가 입력 전력을 모두 가져가므로 클램프는 그 전력을 견뎌야 한다. RCD 클램프의 전압은 그 전력에 따라 올라가므로(저항이 그 전력을 소산해야 함) 이 한계가 성립하지 않는다",
+      "notes_ko": "부하와 레귤레이션이 없으면 출력은 반사 전압이 클램프 전압에 도달할 때까지 충전되고, 그 뒤에는 클램프가 입력 전력을 모두 흡수하므로 클램프는 그 전력을 견딜 수 있는 정격이어야 합니다. RCD 클램프의 전압은 그 전력에 따라 올라가므로(저항이 그 전력을 소산해야 하므로) 이 한계가 성립하지 않습니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -4682,7 +4682,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "an added capacitance comparable to $C_\\mathrm{par}$ lowers the frequency clearly (adding three times $C_\\mathrm{par}$ halves it); a much smaller one changes it too little to measure",
-      "notes_ko": "$C_\\mathrm{par}$와 비슷한 크기의 커패시턴스를 더하면 주파수가 분명히 내려간다($C_\\mathrm{par}$의 세 배를 더하면 절반). 훨씬 작은 값은 측정할 수 있을 만큼 바꾸지 못한다",
+      "notes_ko": "$C_\\mathrm{par}$와 비슷한 크기의 커패시턴스를 더하면 주파수가 뚜렷이 내려갑니다($C_\\mathrm{par}$의 세 배를 더하면 절반이 됩니다). 훨씬 작은 커패시턴스는 주파수를 측정할 수 있을 만큼 바꾸지 못합니다",
       "cites": [
         {
           "key": "nexperia_an11160",
@@ -4752,7 +4752,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "AN11160 takes the damping factor of the parasitic inductance, the resistor and the snubber capacitor in series, and sets it between 0.5 and 1 for the least peak voltage: the resistor lies between $\\sqrt{L_\\mathrm{par}/C_\\mathrm{snub}}$ and twice that, and the best value in that range is found by trials. The node's own capacitance is left out of this damping factor",
-      "notes_ko": "AN11160은 기생 인덕턴스, 저항, 스너버 커패시터를 직렬로 본 감쇠 계수를 쓰며, 피크 전압이 가장 낮도록 이를 0.5에서 1 사이로 잡는다. 저항은 $\\sqrt{L_\\mathrm{par}/C_\\mathrm{snub}}$와 그 두 배 사이에 있고, 그 범위에서 가장 좋은 값은 몇 번 시험해 찾는다. 노드 자체의 커패시턴스는 이 감쇠 계수에 들어가지 않는다",
+      "notes_ko": "AN11160은 기생 인덕턴스, 저항, 스너버 커패시터를 직렬로 본 감쇠 계수를 쓰며, 피크 전압이 가장 낮도록 이를 0.5에서 1 사이로 잡습니다. 저항은 $\\sqrt{L_\\mathrm{par}/C_\\mathrm{snub}}$와 그 두 배 사이에 있고, 그 범위에서 가장 좋은 값은 시험을 반복해 찾습니다. 노드 자체의 커패시턴스는 이 감쇠 계수에 들어가지 않습니다",
       "cites": [
         {
           "key": "nexperia_an11160",
@@ -4788,7 +4788,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "charging the snubber capacitor through its resistor loses as much energy as it stores, ½ C V², and the next edge discharges it, through the resistor and the switch that turns on, losing the stored energy: C V² per period, whatever the resistance. The parasitic inductance's energy is lost with or without a snubber. A larger snubber capacitor lowers the peak voltage the best resistor can reach, and loses more",
-      "notes_ko": "저항을 통해 스너버 커패시터를 충전하면 저장되는 만큼(½ C V²)의 에너지를 잃고, 다음 에지에서 저항과 켜지는 스위치를 통해 방전하면서 저장된 에너지를 잃는다. 저항값과 무관하게 한 주기에 C V²이다. 기생 인덕턴스의 에너지는 스너버가 있든 없든 잃는다. 스너버 커패시터가 클수록 가장 좋은 저항으로 얻을 수 있는 피크 전압은 낮아지지만 손실은 커진다",
+      "notes_ko": "저항을 통해 스너버 커패시터를 충전하면 저장되는 만큼(½ C V²)의 에너지를 잃고, 다음 에지에서 저항과 켜지는 스위치를 통해 방전하면서 저장된 에너지를 잃습니다. 저항값과 무관하게 한 주기에 C V²입니다. 기생 인덕턴스의 에너지는 스너버가 있든 없든 손실됩니다. 스너버 커패시터가 클수록 가장 좋은 저항으로 얻을 수 있는 피크 전압은 낮아지지만 손실은 커집니다",
       "cites": [
         {
           "key": "nexperia_an11160",
@@ -4832,7 +4832,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "AN11160 rates the resistor from this edge: the resistor takes as much energy as the capacitor stores and the parasitic inductance's energy. That can exceed the loss the snubber adds (`snub.P`), which leaves out the inductance's energy because it is lost with or without a snubber. Where the switch that turns on discharges the capacitor through the resistor, that edge heats the resistor too, with up to the capacitor's stored energy, and its rating must allow for it",
-      "notes_ko": "AN11160은 이 에지로 저항의 정격을 정한다. 저항은 커패시터가 저장하는 만큼의 에너지와 기생 인덕턴스의 에너지를 받는다. 이 값은 스너버가 더하는 손실(`snub.P`)보다 클 수 있다. 그 손실은 인덕턴스의 에너지를 빼는데, 그 에너지는 스너버가 있든 없든 잃기 때문이다. 켜지는 스위치가 저항을 통해 커패시터를 방전하는 회로에서는 그 에지도 저항을 가열하며(최대 커패시터에 저장된 에너지만큼), 정격에 이를 넣어야 한다",
+      "notes_ko": "AN11160은 이 에지를 기준으로 저항의 정격을 정합니다. 저항은 커패시터가 저장하는 만큼의 에너지와 기생 인덕턴스의 에너지를 받습니다. 이 값은 스너버가 더하는 손실(`snub.P`)보다 클 수 있습니다. 그 손실에는 인덕턴스의 에너지가 빠져 있는데, 이 에너지는 스너버가 있든 없든 손실되기 때문입니다. 켜지는 스위치가 저항을 통해 커패시터를 방전하는 회로에서는 그 에지도 저항을 가열하므로(최대 커패시터에 저장된 에너지만큼) 정격에 이를 반영해야 합니다",
       "cites": [
         {
           "key": "nexperia_an11160",
@@ -4866,7 +4866,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "after the diode current reaches zero, $L_M$ rings with the switch-node capacitance",
-      "notes_ko": "다이오드 전류가 0이 된 뒤 $L_M$이 스위치 노드 커패시턴스와 공진함",
+      "notes_ko": "다이오드 전류가 0이 된 뒤 $L_M$이 스위치 노드 커패시턴스와 링잉합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -4974,7 +4974,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "dissipated in the driver and gate resistances, not in the power switch channel",
-      "notes_ko": "전력 스위치 채널이 아니라 드라이버와 게이트 저항에서 소산됨",
+      "notes_ko": "전력 스위치 채널이 아니라 드라이버와 게이트 저항에서 소산됩니다",
       "cites": [
         {
           "key": "balogh2018",
@@ -5050,9 +5050,9 @@
         "sinusoidal_excitation"
       ],
       "convention": "$B_\\mathrm{ac}$ is the peak AC amplitude, half the peak-to-peak swing $\\Delta B$; $k$, $\\alpha$, $\\beta$ are fitted per material and valid only over the fitted range",
-      "convention_ko": "$B_\\mathrm{ac}$는 피크 교류 진폭(피크-피크 $\\Delta B$의 절반); $k$, $\\alpha$, $\\beta$는 재료별 피팅값이며 피팅 범위 안에서만 유효",
+      "convention_ko": "$B_\\mathrm{ac}$는 피크 교류 진폭으로, 피크-피크 변화폭 $\\Delta B$의 절반입니다. $k$, $\\alpha$, $\\beta$는 재료별 피팅값이며 피팅 범위 안에서만 유효합니다",
       "notes": "Steinmetz's original law gives loss per cycle proportional to $B^{1.6}$; the frequency term is the empirical extension used with ferrite data",
-      "notes_ko": "스타인메츠의 원래 법칙은 주기당 손실이 $B^{1.6}$에 비례; 주파수 항은 페라이트 데이터에 쓰이는 경험적 확장",
+      "notes_ko": "스타인메츠의 원래 법칙에서는 주기당 손실이 $B^{1.6}$에 비례합니다. 주파수 항은 페라이트 데이터에 쓰는 경험적 확장입니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -5069,7 +5069,7 @@
     },
     "loss.core": {
       "id": "loss.core",
-      "title": "Core loss of a core",
+      "title": "Core loss of a whole core",
       "title_ko": "코어 전체의 코어 손실",
       "latex": "P = P_v V_e",
       "lhs": "P",
@@ -5090,7 +5090,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the flux density is taken as uniform over the effective volume $V_e = A_e l_e$",
-      "notes_ko": "자속 밀도가 유효 부피 $V_e = A_e l_e$ 전체에서 균일하다고 본다",
+      "notes_ko": "자속 밀도가 유효 체적 $V_e = A_e l_e$ 전체에서 균일하다고 봅니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -5104,7 +5104,7 @@
     "mag.L_from_AL": {
       "id": "mag.L_from_AL",
       "title": "Inductance from the inductance factor",
-      "title_ko": "인덕턴스 계수로부터 인덕턴스",
+      "title_ko": "인덕턴스 계수로 구한 인덕턴스",
       "latex": "L = A_L N^{2}",
       "lhs": "L",
       "expr": "A_L*N**2",
@@ -5171,7 +5171,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "fringing makes the real $A_L$ larger than this estimate; use the manufacturer's $A_L$ for a specified gap",
-      "notes_ko": "프린징 때문에 실제 $A_L$은 이 추정보다 큼; 공극이 지정된 코어는 제조사 $A_L$ 사용",
+      "notes_ko": "프린징 때문에 실제 $A_L$은 이 추정값보다 큽니다. 공극이 지정된 코어에는 제조사의 $A_L$을 사용합니다",
       "cites": [
         {
           "key": "dixon2001",
@@ -5189,7 +5189,7 @@
     "mag.B_pk": {
       "id": "mag.B_pk",
       "title": "Peak flux density from inductance and peak current",
-      "title_ko": "인덕턴스와 피크 전류로부터 피크 자속 밀도",
+      "title_ko": "인덕턴스와 피크 전류로 구한 피크 자속 밀도",
       "latex": "B_\\mathrm{pk} = \\frac{L I_\\mathrm{pk}}{N A_e}",
       "lhs": "B_pk",
       "expr": "L*I_pk/(N*A_e)",
@@ -5232,7 +5232,7 @@
     "mag.B_ac": {
       "id": "mag.B_ac",
       "title": "AC flux-density amplitude from the current ripple",
-      "title_ko": "전류 리플로부터 교류 자속 밀도 진폭",
+      "title_ko": "전류 리플로 구한 교류 자속 밀도 진폭",
       "latex": "B_\\mathrm{ac} = \\frac{L \\Delta i_L}{N A_e}",
       "lhs": "B_ac",
       "expr": "L*Delta_i_L/(N*A_e)",
@@ -5255,9 +5255,9 @@
         "uniform_flux"
       ],
       "convention": "$\\Delta i_L$ is half the peak-to-peak ripple (Erickson), so $B_\\mathrm{ac}$ is half the peak-to-peak swing $\\Delta B$: the amplitude that core-loss data take",
-      "convention_ko": "$\\Delta i_L$은 피크-피크 리플의 절반(Erickson)이므로 $B_\\mathrm{ac}$는 피크-피크 변화폭 $\\Delta B$의 절반, 곧 코어 손실 데이터가 쓰는 진폭이다",
+      "convention_ko": "$\\Delta i_L$은 피크-피크 리플의 절반(Erickson)이므로 $B_\\mathrm{ac}$는 피크-피크 변화폭 $\\Delta B$의 절반, 곧 코어 손실 데이터가 쓰는 진폭입니다",
       "notes": "the flux density follows the current, so the ripple alone sets its swing, the quantity core-loss data are given for; the dc current sets where the swing lies, and with it the margin to saturation ($B_\\mathrm{pk}$)",
-      "notes_ko": "자속 밀도는 전류를 따르므로 변화폭은 리플만으로 정해지며, 코어 손실 데이터는 이 변화폭에 대해 주어진다; 직류 전류는 변화폭의 위치와 그에 따른 포화까지의 여유($B_\\mathrm{pk}$)를 정한다",
+      "notes_ko": "자속 밀도는 전류를 따르므로 변화폭은 리플만으로 정해지며, 코어 손실 데이터는 이 변화폭에 대해 주어집니다. 직류 전류는 변화폭의 위치와, 그에 따른 포화까지의 여유($B_\\mathrm{pk}$)를 정합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -5293,7 +5293,7 @@
         "uniform_flux"
       ],
       "convention": "$\\Delta B$ is the peak-to-peak swing; the AC amplitude used in core-loss formulas is $\\Delta B/2$",
-      "convention_ko": "$\\Delta B$는 피크-피크 변화폭; 코어 손실식의 교류 진폭은 $\\Delta B/2$",
+      "convention_ko": "$\\Delta B$는 피크-피크 변화폭입니다. 코어 손실 식의 교류 진폭은 $\\Delta B/2$입니다",
       "notes": "",
       "notes_ko": "",
       "cites": [
@@ -5338,7 +5338,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "more turns lower the peak flux density at the same inductance and current, but lengthen the winding and raise its resistance",
-      "notes_ko": "같은 인덕턴스와 전류에서 턴 수를 늘리면 피크 자속 밀도가 낮아지지만, 권선이 길어져 저항이 커진다",
+      "notes_ko": "같은 인덕턴스와 전류에서 턴 수를 늘리면 피크 자속 밀도가 낮아지지만, 권선이 길어져 저항이 커집니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -5383,7 +5383,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "a negative result means the ungapped core already gives less than this inductance with N turns: more turns are needed; fringing lets a real gap be somewhat longer than this estimate",
-      "notes_ko": "결과가 음수이면 공극 없는 코어로도 N 턴에서 이 인덕턴스보다 작다는 뜻이므로 턴 수를 늘려야 한다; 프린징 때문에 실제 공극은 이 추정보다 조금 길어도 된다",
+      "notes_ko": "결과가 음수이면 공극이 없는 코어로도 N 턴에서 얻는 인덕턴스가 이 값보다 작다는 뜻이므로 턴 수를 늘려야 합니다. 프린징 때문에 실제 공극은 이 추정값보다 조금 길어도 됩니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -5427,7 +5427,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the specification's side of the four constraints (flux density, inductance, window, resistance) with the turns and the wire eliminated; any core whose own $K_g$ is at least this large can meet them, and its gap then sets the inductance. SI units, m⁵ (tables often give cm⁵: 1 m⁵ = 10¹⁰ cm⁵)",
-      "notes_ko": "네 가지 제약(자속 밀도, 인덕턴스, 창, 저항)에서 턴 수와 선재를 소거하고 남은 사양 쪽 값이다. 코어 자체의 $K_g$가 이 값 이상인 코어는 모든 제약을 만족할 수 있으며, 인덕턴스는 공극으로 맞춘다. SI 단위 m⁵(표는 흔히 cm⁵로 준다: 1 m⁵ = 10¹⁰ cm⁵)",
+      "notes_ko": "네 가지 제약(자속 밀도, 인덕턴스, 창, 저항)에서 턴 수와 선재를 소거하고 남은 사양 쪽 값입니다. 자체 $K_g$가 이 값 이상인 코어는 모든 제약을 만족할 수 있으며, 인덕턴스는 공극으로 맞춥니다. SI 단위 m⁵입니다(표는 흔히 cm⁵로 줍니다: 1 m⁵ = 10¹⁰ cm⁵)",
       "cites": [
         {
           "key": "erickson2020",
@@ -5463,7 +5463,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the core's side: it grows as the fifth power of the core's linear size, so a core with twice the $K_g$ is only about 15 % larger in each dimension",
-      "notes_ko": "코어 쪽 값이다. 코어 선형 크기의 5제곱으로 커지므로, $K_g$가 두 배인 코어는 각 치수가 약 15 %만 크다",
+      "notes_ko": "코어 쪽 값입니다. 코어 치수의 5제곱에 비례해 커지므로, $K_g$가 두 배인 코어는 각 치수가 약 15 %만 큽니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -5499,7 +5499,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "insulation, the bobbin and the gaps between round wires leave only part of the window to copper; a design keeps K_u below what it can wind",
-      "notes_ko": "절연, 보빈, 둥근 선 사이의 틈 때문에 창의 일부만 구리가 차지한다; 설계는 K_u를 실제로 감을 수 있는 값 아래로 유지한다",
+      "notes_ko": "절연, 보빈, 둥근 선 사이의 틈 때문에 창의 일부만 구리가 차지합니다. 설계에서는 K_u를 실제로 감을 수 있는 값보다 작게 잡습니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -5537,7 +5537,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the winding is a conductor $N \\cdot \\mathrm{MLT}$ long; the resistivity of copper rises with temperature",
-      "notes_ko": "권선은 길이 $N \\cdot \\mathrm{MLT}$인 도체이다; 구리의 저항률은 온도와 함께 커진다",
+      "notes_ko": "권선은 길이가 $N \\cdot \\mathrm{MLT}$인 도체입니다. 구리의 저항률은 온도가 오르면 커집니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -5574,7 +5574,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the current density falls by a factor $e$ for every skin depth into the conductor; conductors much thicker than $\\delta$ carry the current in a surface layer",
-      "notes_ko": "전류 밀도는 도체 안으로 표피 깊이 하나만큼 들어갈 때마다 $e$배 줄어든다; $\\delta$보다 훨씬 두꺼운 도체에서는 전류가 표면층으로만 흐른다",
+      "notes_ko": "전류 밀도는 도체 안으로 표피 깊이만큼 들어갈 때마다 $e$분의 1로 줄어듭니다. $\\delta$보다 훨씬 두꺼운 도체에서는 전류가 표면층으로만 흐릅니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -5588,7 +5588,7 @@
     "wind.dowell": {
       "id": "wind.dowell",
       "title": "AC resistance factor of a foil winding (Dowell)",
-      "title_ko": "박판 권선의 교류 저항 계수 (Dowell)",
+      "title_ko": "박판 권선의 교류 저항 계수(Dowell)",
       "latex": "F_R = \\varphi \\left(\\frac{\\sinh{\\left(2 \\varphi \\right)} + \\sin{\\left(2 \\varphi \\right)}}{\\cosh{\\left(2 \\varphi \\right)} - \\cos{\\left(2 \\varphi \\right)}} + \\frac{2 \\left(M_\\ell^{2} - 1\\right) \\left(\\sinh{\\left(\\varphi \\right)} - \\sin{\\left(\\varphi \\right)}\\right)}{3 \\left(\\cosh{\\left(\\varphi \\right)} + \\cos{\\left(\\varphi \\right)}\\right)}\\right)",
       "lhs": "F_R",
       "expr": "phi_l*((sinh(2*phi_l) + sin(2*phi_l))/(cosh(2*phi_l) - cos(2*phi_l)) + 2*(M_l**2 - 1)/3*(sinh(phi_l) - sin(phi_l))/(cosh(phi_l) + cos(phi_l)))",
@@ -5608,7 +5608,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the first term is the skin effect in each layer, the second the proximity effect of the layers' fields on each other, growing as $M_\\ell^2$; with $\\varphi$ well below 1 the factor tends to 1",
-      "notes_ko": "첫째 항은 각 층의 표피 효과, 둘째 항은 층들의 자계가 서로에게 주는 근접 효과로 $M_\\ell^2$에 따라 커진다; $\\varphi$가 1보다 충분히 작으면 계수는 1에 가까워진다",
+      "notes_ko": "첫째 항은 각 층의 표피 효과이고, 둘째 항은 층들의 자계가 서로에게 주는 근접 효과로 $M_\\ell^2$에 비례해 커집니다. $\\varphi$가 1보다 충분히 작으면 계수는 1에 가까워집니다",
       "cites": [
         {
           "key": "dowell1966",
@@ -5646,7 +5646,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "for round wire, `wind.phi_round` gives the equivalent foil's $\\varphi$",
-      "notes_ko": "둥근 선에서는 `wind.phi_round`가 등가 박판의 $\\varphi$를 준다",
+      "notes_ko": "둥근 선에는 `wind.phi_round`가 등가 박판의 $\\varphi$를 줍니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -5660,7 +5660,7 @@
     "wind.dowell_low": {
       "id": "wind.dowell_low",
       "title": "AC resistance factor of thin layers (Dowell's series)",
-      "title_ko": "얇은 층의 교류 저항 계수 (Dowell 식의 급수)",
+      "title_ko": "얇은 층의 교류 저항 계수(Dowell 식의 급수)",
       "latex": "F_R \\approx 1 + \\frac{\\left(5 M_\\ell^{2} - 1\\right) \\varphi^{4}}{45}",
       "lhs": "F_R",
       "expr": "1 + (5*M_l**2 - 1)*phi_l**4/45",
@@ -5681,7 +5681,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the first terms of Dowell's factor in powers of $\\varphi$: the excess loss grows as $\\varphi^4$ and, through the proximity effect, as $M_\\ell^2$. For $\\varphi \\le 1$ it lies above the exact factor by at most about 4 %",
-      "notes_ko": "Dowell 계수를 $\\varphi$의 거듭제곱으로 전개한 첫 항들이다. 초과 손실은 $\\varphi^4$에 비례하고, 근접 효과 때문에 $M_\\ell^2$에 비례해 커진다. $\\varphi \\le 1$에서는 정확한 계수보다 최대 약 4 % 크다",
+      "notes_ko": "Dowell 계수를 $\\varphi$의 거듭제곱으로 전개한 첫 항들입니다. 초과 손실은 $\\varphi^4$에 비례하고, 근접 효과 때문에 $M_\\ell^2$에 비례해 커집니다. $\\varphi \\le 1$에서는 정확한 계수보다 최대 약 4 % 큽니다",
       "cites": [
         {
           "key": "dowell1966",
@@ -5720,7 +5720,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the loss relative to that of a layer one skin depth thick carrying the same current as dc: a thicker layer lowers the dc resistance ($1/\\varphi$) and raises $F_R$",
-      "notes_ko": "같은 전류가 직류로 흐르는 두께 한 표피 깊이 층의 손실에 대한 비이다. 층이 두꺼우면 직류 저항($1/\\varphi$)은 줄고 $F_R$는 커진다",
+      "notes_ko": "두께가 표피 깊이인 층에 같은 전류가 직류로 흐를 때의 손실에 대한 비입니다. 층이 두꺼우면 직류 저항($1/\\varphi$)은 줄고 $F_R$는 커집니다",
       "cites": [
         {
           "key": "dowell1966",
@@ -5758,7 +5758,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "at a given frequency a thicker layer has less dc resistance but a larger $F_R$; their product, the loss, is least at this thickness, where $F_R = 4/3$. The more layers, the thinner the best layer. From the series of Dowell's factor: within 2 % of the exact optimum for two or more layers; for one layer the exact optimum is $\\varphi = \\pi/2$",
-      "notes_ko": "주파수가 같을 때 층이 두꺼우면 직류 저항은 작아지지만 $F_R$가 커진다. 둘의 곱인 손실은 이 두께에서 가장 작고, 이때 $F_R = 4/3$이다. 층이 많을수록 최적 층은 얇다. Dowell 계수의 급수에서 나온 값으로, 층이 두 개 이상이면 정확한 최적값과 2 % 이내로 맞고, 층이 하나이면 정확한 최적값은 $\\varphi = \\pi/2$이다",
+      "notes_ko": "주파수가 같을 때 층이 두꺼우면 직류 저항은 작아지지만 $F_R$가 커집니다. 둘의 곱인 손실은 이 두께에서 가장 작고, 이때 $F_R = 4/3$입니다. 층이 많을수록 최적 층은 얇아집니다. Dowell 계수의 급수에서 나온 값으로, 층이 두 개 이상이면 정확한 최적값과 2 % 이내로 맞고, 층이 하나이면 정확한 최적값은 $\\varphi = \\pi/2$입니다",
       "cites": [
         {
           "key": "dowell1966",
@@ -5807,7 +5807,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "referred to the primary; each winding counts with a third of its height and the spacing in full, and a broad, low window gives the least leakage",
-      "notes_ko": "1차 측으로 환산한 값; 각 권선은 높이의 1/3이, 권선 사이 간격은 전부가 들어가며, 폭이 넓고 높이가 낮은 창일수록 누설이 작다",
+      "notes_ko": "1차 측으로 환산한 값입니다. 각 권선은 높이의 1/3이, 권선 사이 간격은 전부가 들어가며, 폭이 넓고 높이가 낮은 창일수록 누설이 작습니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -5852,7 +5852,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "splitting the primary halves the peak MMF, so the stored energy, and with it the leakage, falls to about a quarter",
-      "notes_ko": "1차 권선을 나누면 최대 기자력이 절반이 되므로 저장 에너지와 누설이 약 1/4로 줄어든다",
+      "notes_ko": "1차 권선을 나누면 최대 기자력이 절반이 되므로 저장 에너지와 누설이 약 1/4로 줄어듭니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -5888,7 +5888,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "1 for perfect coupling; the leakage inductances make it smaller",
-      "notes_ko": "완전 결합이면 1이고, 누설 인덕턴스가 있으면 1보다 작다",
+      "notes_ko": "완전 결합이면 1이고, 누설 인덕턴스가 있으면 1보다 작습니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -5926,7 +5926,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the short holds the second winding's voltage, the rate of change of its flux linkage, at zero, so its current cancels most of the flux the two windings share; what is left is mainly the two windings' leakage (`xfmr.L_sc_T`): 1 − k² is small for a well-coupled transformer",
-      "notes_ko": "단락하면 둘째 권선의 전압, 즉 쇄교 자속의 변화율이 0으로 묶이므로 그 전류가 두 권선이 공유하는 자속의 대부분을 상쇄한다. 남는 것은 주로 두 권선의 누설이다(`xfmr.L_sc_T`). 결합이 좋은 변압기에서는 1 − k²가 작다",
+      "notes_ko": "단락하면 둘째 권선의 전압, 즉 쇄교 자속의 변화율이 0으로 묶이므로 그 전류가 두 권선이 공유하는 자속의 대부분을 상쇄합니다. 남는 것은 주로 두 권선의 누설입니다(`xfmr.L_sc_T`). 결합이 좋은 변압기에서는 1 − k²가 작습니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -5967,7 +5967,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "with $L_M$ much larger than the leakage inductances, $L_\\mathrm{sc} \\approx L_{\\ell 1} + L_{\\ell 2}'$: the short-circuit test measures the total leakage referred to the primary, not how it divides between the windings",
-      "notes_ko": "$L_M$가 누설 인덕턴스보다 훨씬 크면 $L_\\mathrm{sc} \\approx L_{\\ell 1} + L_{\\ell 2}'$이다. 단락 시험은 1차 기준으로 환산한 전체 누설을 잴 뿐, 그것이 두 권선에 어떻게 나뉘는지는 알려 주지 않는다",
+      "notes_ko": "$L_M$이 누설 인덕턴스보다 훨씬 크면 $L_\\mathrm{sc} \\approx L_{\\ell 1} + L_{\\ell 2}'$입니다. 단락 시험은 1차 기준으로 환산한 전체 누설을 잴 뿐, 누설이 두 권선에 어떻게 나뉘는지는 알려 주지 않습니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -6004,7 +6004,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the primary's leakage and the magnetizing inductance divide the applied voltage, so the ratio reads below the turns ratio by about $L_{\\ell 1}/L_M$ (1 % for a leakage of 1 % of $L_M$). Driven from the secondary, $V_1/V_2$ reads below $1/n$ by about the secondary's leakage over $L_M$, both referred to the primary. A driven winding whose resistance is not small against its reactance lowers the ratio further",
-      "notes_ko": "1차 누설 인덕턴스와 자화 인덕턴스가 인가 전압을 나누어 가지므로, 전압비는 권선비보다 약 $L_{\\ell 1}/L_M$만큼 낮게 읽힌다(누설이 $L_M$의 1 %이면 1 %). 2차 쪽에서 구동하면 $V_1/V_2$가 $1/n$보다 약 2차 누설을 $L_M$으로 나눈 비율만큼(둘 다 1차 기준) 낮게 읽힌다. 구동하는 권선의 저항이 그 리액턴스에 비해 작지 않으면 전압비는 더 낮아진다",
+      "notes_ko": "1차 누설 인덕턴스와 자화 인덕턴스가 인가 전압을 나누어 가지므로, 전압비는 권선비보다 약 $L_{\\ell 1}/L_M$만큼 낮게 읽힙니다(누설이 $L_M$의 1 %이면 1 %). 2차 쪽에서 구동하면 $V_1/V_2$가 $1/n$보다 약 2차 누설을 $L_M$으로 나눈 비율만큼(둘 다 1차 기준) 낮게 읽힙니다. 구동하는 권선의 저항이 그 리액턴스에 비해 작지 않으면 전압비는 더 낮아집니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -6040,7 +6040,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "for annealed copper $\\rho_{20} = 1.7241 \\times 10^{-8}\\,\\Omega\\,\\mathrm{m}$ and $\\alpha_{20} = 0.00393$ per kelvin; a winding at 100 °C has about 31 % more resistance than at 20 °C",
-      "notes_ko": "풀림 구리는 $\\rho_{20} = 1.7241 \\times 10^{-8}\\,\\Omega\\,\\mathrm{m}$, $\\alpha_{20} = 0.00393$ (켈빈당); 100 °C의 권선은 20 °C일 때보다 저항이 약 31 % 크다",
+      "notes_ko": "연동(annealed copper)은 $\\rho_{20} = 1.7241 \\times 10^{-8}\\,\\Omega\\,\\mathrm{m}$, $\\alpha_{20} = 0.00393$(켈빈당)입니다. 100 °C의 권선은 20 °C일 때보다 저항이 약 31 % 큽니다",
       "cites": [
         {
           "key": "nbs_hb100",
@@ -6074,7 +6074,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the bare diameter, without the insulation; wire tables give both",
-      "notes_ko": "절연을 뺀 나선 지름; 전선 표에는 두 지름이 모두 나온다",
+      "notes_ko": "지름은 절연을 뺀 나선 지름입니다. 전선 표에는 두 지름이 모두 나옵니다",
       "cites": [
         {
           "key": "nbs_hb100",
@@ -6112,7 +6112,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "a square of side $\\sqrt{\\pi/4}\\,d_w$ has the strand's area; a layer whose squares fill the whole breadth has porosity 1, and a value above 1 means the turns do not fit in the layer",
-      "notes_ko": "한 변이 $\\sqrt{\\pi/4}\\,d_w$인 정사각형이 소선과 같은 면적이다; 정사각형들이 폭 전체를 채우면 점유율은 1이며, 1보다 크면 그 턴들이 한 층에 들어가지 않는다",
+      "notes_ko": "한 변이 $\\sqrt{\\pi/4}\\,d_w$인 정사각형은 소선과 면적이 같습니다. 정사각형들이 폭 전체를 채우면 점유율은 1이며, 1보다 크면 그 턴들이 한 층에 들어가지 않습니다",
       "cites": [
         {
           "key": "dowell1966",
@@ -6152,7 +6152,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the equivalent foil is $\\sqrt{\\pi/4}\\,d_w$ thick; its gaps lower its effective conductivity by the porosity, which enters as $\\sqrt{\\eta}$",
-      "notes_ko": "등가 박판의 두께는 $\\sqrt{\\pi/4}\\,d_w$이다; 도체 사이의 틈은 유효 전도율을 점유율만큼 낮추며, 이는 $\\sqrt{\\eta}$로 들어간다",
+      "notes_ko": "등가 박판의 두께는 $\\sqrt{\\pi/4}\\,d_w$입니다. 도체 사이의 틈은 유효 전도율을 점유율만큼 낮추며, 점유율은 식에 $\\sqrt{\\eta}$로 들어갑니다",
       "cites": [
         {
           "key": "dowell1966",
@@ -6190,7 +6190,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "delivered into a matched load $R_L = R_s$",
-      "notes_ko": "정합 부하 $R_L = R_s$에 전달될 때",
+      "notes_ko": "정합 부하 $R_L = R_s$에 전달될 때의 값입니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -6226,7 +6226,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the source current $(V_\\mathrm{oc} - V_c)/R_s$ times the sink voltage; negative when $V_c > V_\\mathrm{oc}$, when the sink returns energy to the source",
-      "notes_ko": "전원 전류 $(V_\\mathrm{oc} - V_c)/R_s$에 싱크 전압을 곱한 값; $V_c > V_\\mathrm{oc}$이면 음수이며 싱크가 전원으로 에너지를 되돌려 보냄",
+      "notes_ko": "전원 전류 $(V_\\mathrm{oc} - V_c)/R_s$에 싱크 전압을 곱한 값입니다. $V_c > V_\\mathrm{oc}$이면 음수이며, 이때 싱크가 전원으로 에너지를 되돌려 보냅니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -6260,7 +6260,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "power into the sink as a fraction of $P_\\mathrm{max}$; equals 1 only at $V_c = V_\\mathrm{oc}/2$",
-      "notes_ko": "싱크로 들어가는 전력의 $P_\\mathrm{max}$ 대비 비율; $V_c = V_\\mathrm{oc}/2$에서만 1",
+      "notes_ko": "싱크로 들어가는 전력을 $P_\\mathrm{max}$에 대한 비율로 나타낸 값입니다. $V_c = V_\\mathrm{oc}/2$에서만 1이 됩니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -6298,7 +6298,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "a converter whose input is a resistance divides the source voltage with the source resistance",
-      "notes_ko": "입력이 저항으로 보이는 컨버터는 전원 전압을 전원 저항과 분압한다",
+      "notes_ko": "입력이 저항으로 보이는 컨버터는 전원 전압을 전원 저항과 분압합니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -6334,7 +6334,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "power into the loss-free resistor as a fraction of $P_\\mathrm{max}$; independent of the source amplitude, and 1 when $R_\\mathrm{in} = R_s$",
-      "notes_ko": "무손실 저항으로 들어가는 전력의 $P_\\mathrm{max}$ 대비 비율; 전원 진폭과 무관하며 $R_\\mathrm{in} = R_s$일 때 1",
+      "notes_ko": "무손실 저항으로 들어가는 전력을 $P_\\mathrm{max}$에 대한 비율로 나타낸 값입니다. 전원 진폭과 무관하며 $R_\\mathrm{in} = R_s$일 때 1이 됩니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -6370,7 +6370,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "more power through the same input resistance needs a higher input voltage, which the switch must also block",
-      "notes_ko": "같은 입력 저항으로 더 많은 전력을 끌어오려면 입력 전압이 높아야 하며, 스위치도 그만큼 높은 전압을 차단해야 한다",
+      "notes_ko": "같은 입력 저항으로 더 많은 전력을 끌어오려면 입력 전압이 높아야 하며, 스위치도 그만큼 높은 전압을 차단해야 합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -6412,7 +6412,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the loss-free resistor $R_\\mathrm{in} = 2 L_M f_s / D^2$ solved for $L_M$; to match a linear source, $R_\\mathrm{in} = R_s$",
-      "notes_ko": "무손실 저항 $R_\\mathrm{in} = 2 L_M f_s / D^2$를 $L_M$에 대해 푼 식; 선형 전원에 정합하려면 $R_\\mathrm{in} = R_s$",
+      "notes_ko": "무손실 저항 $R_\\mathrm{in} = 2 L_M f_s / D^2$를 $L_M$에 대해 푼 식입니다. 선형 전원에 정합하려면 $R_\\mathrm{in} = R_s$로 잡습니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -6453,7 +6453,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the power $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$ follows the square of the envelope, and the square of a sine (or of a rectified sine) averages to half its peak's",
-      "notes_ko": "전력 $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$는 포락선의 제곱을 따르며, 사인(또는 정류된 사인)의 제곱은 평균이 최댓값 제곱의 절반이다",
+      "notes_ko": "전력 $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$는 포락선의 제곱을 따르며, 사인(또는 정류된 사인)의 제곱은 평균이 최댓값 제곱의 절반입니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -6489,7 +6489,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "with nothing connected, the whole current charges and discharges $C_0$",
-      "notes_ko": "아무것도 연결하지 않으면 전류 전부가 $C_0$를 충방전한다",
+      "notes_ko": "아무것도 연결하지 않으면 전류 전부가 $C_0$를 충방전합니다",
       "cites": [
         {
           "key": "guyomar2005",
@@ -6523,7 +6523,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the reactance of the clamped capacitance at the vibration's frequency",
-      "notes_ko": "진동 주파수에서 클램프 커패시턴스의 리액턴스",
+      "notes_ko": "진동 주파수에서 클램프 커패시턴스의 리액턴스와 같습니다",
       "cites": [
         {
           "key": "guyomar2005",
@@ -6559,7 +6559,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "a resistor $R$ across the element takes $I_p^2 R/(2(1 + (\\omega R C_0)^2))$, largest at $R = 1/(\\omega C_0)$",
-      "notes_ko": "소자 양단의 저항 $R$은 $I_p^2 R/(2(1 + (\\omega R C_0)^2))$를 받으며, $R = 1/(\\omega C_0)$에서 최대이다",
+      "notes_ko": "소자 양단의 저항 $R$은 $I_p^2 R/(2(1 + (\\omega R C_0)^2))$를 받으며, $R = 1/(\\omega C_0)$에서 최대입니다",
       "cites": [
         {
           "key": "guyomar2005",
@@ -6598,7 +6598,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "each half period the element's voltage swings from $-V_\\mathrm{DC}$ to $V_\\mathrm{DC}$ before the bridge conducts, which takes $2 C_0 V_\\mathrm{DC}$ of the $2 I_p/\\omega$ the source drives; from $V_\\mathrm{DC} = V_p$ on the bridge never conducts",
-      "notes_ko": "반주기마다 소자 전압이 $-V_\\mathrm{DC}$에서 $V_\\mathrm{DC}$까지 바뀐 뒤에야 브리지가 도통하며, 이 변화가 전원이 흘리는 $2 I_p/\\omega$ 가운데 $2 C_0 V_\\mathrm{DC}$를 가져간다; $V_\\mathrm{DC} = V_p$부터는 브리지가 도통하지 않는다",
+      "notes_ko": "반주기마다 소자 전압이 $-V_\\mathrm{DC}$에서 $V_\\mathrm{DC}$까지 바뀐 뒤에야 브리지가 도통하며, 이 변화가 전원이 흘리는 전하 $2 I_p/\\omega$ 가운데 $2 C_0 V_\\mathrm{DC}$를 가져갑니다. $V_\\mathrm{DC} = V_p$부터는 브리지가 도통하지 않습니다",
       "cites": [
         {
           "key": "guyomar2005",
@@ -6639,7 +6639,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "at $V_\\mathrm{DC} = V_p/2$, half the open-circuit amplitude",
-      "notes_ko": "$V_\\mathrm{DC} = V_p/2$, 즉 개방 전압 진폭의 절반에서",
+      "notes_ko": "$V_\\mathrm{DC} = V_p/2$, 즉 개방 전압 진폭의 절반에서 최대가 됩니다",
       "cites": [
         {
           "key": "guyomar2005",
@@ -6680,7 +6680,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the element is left open and its whole charge is taken at each extremum of its voltage, $\\tfrac12 C_0 (2 V_p)^2$ twice a period whatever the load: four times the standard interface's largest power",
-      "notes_ko": "소자를 개방해 두고 전압이 극값일 때마다 전하 전부를 꺼내므로, 부하와 관계없이 한 주기에 두 번 $\\tfrac12 C_0 (2 V_p)^2$를 얻는다: 표준 인터페이스 최대 전력의 네 배",
+      "notes_ko": "소자를 개방해 두고 전압이 극값일 때마다 전하 전부를 꺼내므로, 부하와 관계없이 한 주기에 두 번 $\\tfrac12 C_0 (2 V_p)^2$를 얻습니다. 표준 인터페이스 최대 전력의 네 배입니다",
       "cites": [
         {
           "key": "lefeuvre2005",
@@ -6725,7 +6725,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "at each extremum of the displacement a switch and an inductor invert the element's voltage from $V_\\mathrm{DC}$ to $-\\gamma V_\\mathrm{DC}$, so the swing to the other rail takes only $(1 - \\gamma) C_0 V_\\mathrm{DC}$",
-      "notes_ko": "변위가 극값일 때마다 스위치와 인덕터가 소자 전압을 $V_\\mathrm{DC}$에서 $-\\gamma V_\\mathrm{DC}$로 반전시키므로, 반대쪽 레일까지의 변화에는 $(1 - \\gamma) C_0 V_\\mathrm{DC}$만 든다",
+      "notes_ko": "변위가 극값일 때마다 스위치와 인덕터가 소자 전압을 $V_\\mathrm{DC}$에서 $-\\gamma V_\\mathrm{DC}$로 반전시키므로, 반대쪽 레일까지의 변화에는 $(1 - \\gamma) C_0 V_\\mathrm{DC}$만 듭니다",
       "cites": [
         {
           "key": "guyomar2005",
@@ -6768,7 +6768,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "at $V_\\mathrm{DC} = V_p/(1 - \\gamma)$: $2/(1 - \\gamma)$ times the standard interface's largest power",
-      "notes_ko": "$V_\\mathrm{DC} = V_p/(1 - \\gamma)$에서: 표준 인터페이스 최대 전력의 $2/(1 - \\gamma)$배",
+      "notes_ko": "$V_\\mathrm{DC} = V_p/(1 - \\gamma)$에서 최대이며, 표준 인터페이스 최대 전력의 $2/(1 - \\gamma)$배입니다",
       "cites": [
         {
           "key": "guyomar2005",
@@ -6810,7 +6810,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the amplifier forces $I_\\mathrm{SENSE} R_\\mathrm{SENSE}$ across $R_\\mathrm{IN}$ and sends that current through $R_\\mathrm{OUT}$; the output headroom limit is set by the supply, not by the gain",
-      "notes_ko": "증폭기가 $I_\\mathrm{SENSE} R_\\mathrm{SENSE}$를 $R_\\mathrm{IN}$ 양단에 걸고 그 전류를 $R_\\mathrm{OUT}$으로 흘림; 출력 헤드룸 한계는 이득이 아니라 전원 전압이 정함",
+      "notes_ko": "증폭기가 $I_\\mathrm{SENSE} R_\\mathrm{SENSE}$를 $R_\\mathrm{IN}$ 양단에 걸고, 그 전류를 $R_\\mathrm{OUT}$으로 흘립니다. 출력 헤드룸 한계는 이득이 아니라 전원 전압이 정합니다",
       "cites": [
         {
           "key": "adi_ltc6101",
@@ -6844,7 +6844,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the signal the amplifier sees, and the burden: the voltage the shunt takes from the circuit it measures; the shunt dissipates the current times this voltage",
-      "notes_ko": "증폭기가 보는 신호이자, 션트가 측정 대상 회로에서 빼앗는 전압(부담 전압); 션트는 전류와 이 전압의 곱만큼 소산한다",
+      "notes_ko": "증폭기가 보는 신호이자, 션트가 측정 대상 회로에서 가져가는 전압(부담 전압)입니다. 션트는 전류와 이 전압의 곱만큼 소산합니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -6882,7 +6882,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the amplifier multiplies the sense voltage by its gain and adds the REF voltage, so a current of either sign swings the output either side of $V_\\mathrm{REF}$; the output cannot quite reach the supply rails",
-      "notes_ko": "증폭기가 센스 전압에 이득을 곱하고 REF 전압을 더하므로, 전류의 부호에 따라 출력이 $V_\\mathrm{REF}$ 위아래로 움직인다; 출력은 전원 레일까지 완전히 올라가지 못한다",
+      "notes_ko": "증폭기가 센스 전압에 이득을 곱하고 REF 전압을 더하므로, 전류의 부호에 따라 출력이 $V_\\mathrm{REF}$ 위아래로 움직입니다. 출력은 전원 레일까지 완전히 도달하지 못합니다",
       "cites": [
         {
           "key": "ti_ina181",
@@ -6916,7 +6916,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the offset adds directly to the sense voltage, so the output reads it as this current: the error floor at small currents; a larger sense resistor lowers it",
-      "notes_ko": "오프셋이 센스 전압에 그대로 더해지므로 출력은 이를 이 전류로 읽는다: 작은 전류에서의 오차 하한; 센스 저항이 클수록 작아진다",
+      "notes_ko": "오프셋이 센스 전압에 그대로 더해지므로 출력은 오프셋을 이만큼의 전류로 읽습니다. 작은 전류에서는 이것이 오차의 하한이 되며, 센스 저항이 클수록 작아집니다",
       "cites": [
         {
           "key": "adi_ltc6101",
@@ -6954,7 +6954,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the sense connections see the current through $R_\\mathrm{SENSE} + R_\\mathrm{pad}$, so the reading is high by this fraction, which grows as the shunt's value falls; a Kelvin connection takes $R_\\mathrm{pad}$ out of the sense path",
-      "notes_ko": "센스 연결이 $R_\\mathrm{SENSE} + R_\\mathrm{pad}$에 흐르는 전류를 보므로 측정값이 이 비율만큼 크게 나오며, 션트 값이 작을수록 커진다; 켈빈 연결은 $R_\\mathrm{pad}$를 센스 경로에서 뺀다",
+      "notes_ko": "센스 연결이 $R_\\mathrm{SENSE} + R_\\mathrm{pad}$에 흐르는 전류를 보므로 측정값이 이 비율만큼 크게 나오며, 이 비율은 션트 값이 작을수록 커집니다. 켈빈 연결은 $R_\\mathrm{pad}$를 센스 경로에서 뺍니다",
       "cites": [
         {
           "key": "osullivan2012",
@@ -6996,7 +6996,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the amplifier sees $I_\\mathrm{SENSE} (R_\\mathrm{SENSE} + R_\\mathrm{pad}) + V_\\mathrm{OS}$ and treats it as $I_\\mathrm{meas} R_\\mathrm{SENSE}$, so its output is the output equation taken at $I_\\mathrm{meas}$; with the offset's sign that raises it, this bounds the output from above, with the other sign from below",
-      "notes_ko": "증폭기는 $I_\\mathrm{SENSE} (R_\\mathrm{SENSE} + R_\\mathrm{pad}) + V_\\mathrm{OS}$를 보고 이를 $I_\\mathrm{meas} R_\\mathrm{SENSE}$로 취급하므로, 출력은 $I_\\mathrm{meas}$에서의 출력 식이다; 출력을 높이는 부호의 오프셋이면 출력의 상한을, 반대 부호면 하한을 준다",
+      "notes_ko": "증폭기는 $I_\\mathrm{SENSE} (R_\\mathrm{SENSE} + R_\\mathrm{pad}) + V_\\mathrm{OS}$를 보고 이를 $I_\\mathrm{meas} R_\\mathrm{SENSE}$로 취급하므로, 출력은 출력 식을 $I_\\mathrm{meas}$에서 계산한 값입니다. 출력을 높이는 부호의 오프셋이면 출력의 상한을, 반대 부호면 하한을 줍니다",
       "cites": [
         {
           "key": "adi_ltc6101",
@@ -7038,7 +7038,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the two errors add exactly: the offset's share falls in inverse proportion to the current, so it sets the error at the smallest current, while the pad's share is the same at every current",
-      "notes_ko": "두 오차는 정확히 더해진다: 오프셋에 의한 몫은 전류에 반비례하여 줄어 가장 작은 전류에서의 오차를 정하고, 패드에 의한 몫은 모든 전류에서 같다",
+      "notes_ko": "두 오차는 정확히 더해집니다. 오프셋에 의한 몫은 전류에 반비례해 줄어들므로 가장 작은 전류에서의 오차를 정하고, 패드에 의한 몫은 모든 전류에서 같습니다",
       "cites": [
         {
           "key": "adi_ltc6101",
@@ -7077,7 +7077,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the amplifier's output is a current source loaded by $R_\\mathrm{OUT}$; its Thevenin equivalent puts $R_\\mathrm{OUT}$ in series with $R_f$, so the capacitor sees both and the corner frequency is lower than $R_f C_f$ alone gives; with no load on the filter the dc output stays $I_\\mathrm{OUT} R_\\mathrm{OUT}$",
-      "notes_ko": "증폭기 출력은 $R_\\mathrm{OUT}$이 부하로 걸린 전류원이다; 테브난 등가로 바꾸면 $R_\\mathrm{OUT}$이 $R_f$와 직렬이 되므로 커패시터는 둘을 함께 보며, 차단 주파수는 $R_f C_f$만으로 계산한 값보다 낮다; 필터에 부하가 없으면 직류 출력은 그대로 $I_\\mathrm{OUT} R_\\mathrm{OUT}$이다",
+      "notes_ko": "증폭기 출력은 $R_\\mathrm{OUT}$이 부하로 걸린 전류원입니다. 테브난 등가로 바꾸면 $R_\\mathrm{OUT}$이 $R_f$와 직렬이 되므로 커패시터는 둘을 함께 보며, 차단 주파수는 $R_f C_f$만으로 계산한 값보다 낮습니다. 필터에 부하가 없으면 직류 출력은 그대로 $I_\\mathrm{OUT} R_\\mathrm{OUT}$입니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -7110,7 +7110,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the Nyquist bandwidth runs from dc to $f_N$; any component above it aliases back into that band, so an anti-aliasing filter removes it before the ADC",
-      "notes_ko": "나이퀴스트 대역폭은 직류부터 $f_N$까지이다; 그보다 높은 성분은 이 대역으로 되접혀 들어오므로(에일리어싱) ADC 앞의 안티에일리어싱 필터가 제거한다",
+      "notes_ko": "나이퀴스트 대역폭은 직류부터 $f_N$까지입니다. 그보다 높은 성분은 이 대역으로 되접혀 들어오므로(에일리어싱) ADC 앞의 안티에일리어싱 필터로 제거합니다",
       "cites": [
         {
           "key": "kester_mt002",
@@ -7156,7 +7156,7 @@
     "def.V": {
       "id": "def.V",
       "title": "Output voltage from the conversion ratio",
-      "title_ko": "변환비로부터 출력 전압",
+      "title_ko": "변환비로 구한 출력 전압",
       "latex": "V = M V_g",
       "lhs": "V",
       "expr": "M*V_g",
@@ -7211,7 +7211,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the switch node sits at $V_g$ for $D T_s$ and at $0$ for the rest of the period; the LC filter passes this average",
-      "notes_ko": "스위치 노드는 $D T_s$ 동안 $V_g$, 나머지 구간에는 $0$; LC 필터는 이 평균값을 통과시킨다",
+      "notes_ko": "스위치 노드 전압은 $D T_s$ 동안 $V_g$이고 나머지 구간에는 $0$입니다. LC 필터는 이 평균값을 통과시킵니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -7246,7 +7246,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "two-interval form of $\\langle v_L \\rangle = 0$",
-      "notes_ko": "$\\langle v_L \\rangle = 0$의 두 구간 형태",
+      "notes_ko": "$\\langle v_L \\rangle = 0$을 두 구간으로 나누어 쓴 형태입니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -7282,7 +7282,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "zero in a periodic steady state (volt-second balance); while the average is not zero, the current changes from one period to the next, as in a start-up or after a load step",
-      "notes_ko": "주기적 정상상태에서는 0이다(전압-초 평형); 평균이 0이 아닌 동안에는 기동이나 부하 변화 직후처럼 전류가 주기마다 변한다",
+      "notes_ko": "주기적 정상상태에서는 0입니다(전압-초 평형). 평균이 0이 아닌 동안에는 기동이나 부하 변화 직후처럼 전류가 주기마다 변합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -7317,7 +7317,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "two-interval form of $\\langle i_C \\rangle = 0$",
-      "notes_ko": "$\\langle i_C \\rangle = 0$의 두 구간 형태",
+      "notes_ko": "$\\langle i_C \\rangle = 0$을 두 구간으로 나누어 쓴 형태입니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -7354,7 +7354,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the idle interval is $D_3 = 1 - D - D_2$; $D_2 \\le 1 - D$ holds exactly when $M \\ge D$, so a DCM buck always has $M > D$",
-      "notes_ko": "휴지 구간은 $D_3 = 1 - D - D_2$; $D_2 \\le 1 - D$는 $M \\ge D$일 때에만 성립하므로 DCM 벅은 언제나 $M > D$",
+      "notes_ko": "휴지 구간은 $D_3 = 1 - D - D_2$입니다. $D_2 \\le 1 - D$는 $M \\ge D$일 때에만 성립하므로 DCM 벅은 언제나 $M > D$입니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -7394,7 +7394,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the second factor collapses the ratio at high $D$: $M$ has a maximum instead of growing without bound",
-      "notes_ko": "두 번째 인자 때문에 높은 $D$에서 변환비가 무너진다: $M$은 무한히 커지지 않고 최댓값을 가진다",
+      "notes_ko": "두 번째 인자 때문에 높은 $D$에서 변환비가 급격히 떨어집니다. $M$은 무한히 커지지 않고 최댓값을 가집니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -7469,7 +7469,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "equals $\\partial V/\\partial D$ of the static characteristic",
-      "notes_ko": "정적 특성 곡선의 $\\partial V/\\partial D$와 같다",
+      "notes_ko": "정적 특성 곡선의 $\\partial V/\\partial D$와 같습니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -7520,7 +7520,7 @@
     "buck.ss.Q": {
       "id": "buck.ss.Q",
       "title": "Buck: quality factor of the LC poles",
-      "title_ko": "벅: LC 극점의 Q",
+      "title_ko": "벅: LC 극점의 품질 계수",
       "latex": "Q = R \\sqrt{\\frac{C}{L}}",
       "lhs": "Q",
       "expr": "R*sqrt(C/L)",
@@ -7582,7 +7582,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "equals $\\partial V/\\partial D$; with $V = V_g/(1 - D)$ this is also $V/(1 - D)$",
-      "notes_ko": "$\\partial V/\\partial D$와 같다; $V = V_g/(1 - D)$이므로 $V/(1 - D)$로도 쓴다",
+      "notes_ko": "$\\partial V/\\partial D$와 같습니다. $V = V_g/(1 - D)$이므로 $V/(1 - D)$로도 쓸 수 있습니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -7635,7 +7635,7 @@
     "boost.ss.Q": {
       "id": "boost.ss.Q",
       "title": "Boost: quality factor of the LC poles",
-      "title_ko": "부스트: LC 극점의 Q",
+      "title_ko": "부스트: LC 극점의 품질 계수",
       "latex": "Q = \\left(1 - D\\right) R \\sqrt{\\frac{C}{L}}",
       "lhs": "Q",
       "expr": "(1 - D)*R*sqrt(C/L)",
@@ -7701,7 +7701,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "moves down as the load gets heavier (smaller $R$) and as $D$ increases",
-      "notes_ko": "부하가 무거울수록(작은 $R$), $D$가 클수록 낮은 주파수로 내려온다",
+      "notes_ko": "부하가 무거울수록($R$이 작을수록), $D$가 클수록 낮은 주파수로 내려옵니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -7738,7 +7738,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "magnitude of $\\partial V/\\partial D$; the inverting output makes the gain itself negative",
-      "notes_ko": "$\\partial V/\\partial D$의 크기; 출력이 반전되므로 이득 자체는 음수",
+      "notes_ko": "$\\partial V/\\partial D$의 크기입니다. 출력이 반전되므로 이득 자체는 음수입니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -7791,7 +7791,7 @@
     "buckboost.ss.Q": {
       "id": "buckboost.ss.Q",
       "title": "Buck-boost: quality factor of the LC poles",
-      "title_ko": "벅-부스트: LC 극점의 Q",
+      "title_ko": "벅-부스트: LC 극점의 품질 계수",
       "latex": "Q = \\left(1 - D\\right) R \\sqrt{\\frac{C}{L}}",
       "lhs": "Q",
       "expr": "(1 - D)*R*sqrt(C/L)",
@@ -7891,7 +7891,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "so the small-signal modulator gain is $1/V_M$",
-      "notes_ko": "따라서 소신호 변조기 이득은 $1/V_M$",
+      "notes_ko": "따라서 소신호 변조기 이득은 $1/V_M$입니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -7928,8 +7928,8 @@
       ],
       "convention": "",
       "convention_ko": "",
-      "notes": "magnitudes at one frequency; the phases add in the same way",
-      "notes_ko": "한 주파수에서의 크기; 위상도 같은 방식으로 더해진다",
+      "notes": "magnitudes at one frequency; the phases of the factors add",
+      "notes_ko": "한 주파수에서의 크기입니다. 위상은 각 요소의 위상을 더한 값입니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -7962,7 +7962,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "at frequencies where $T \\gg 1$ a disturbance is divided by roughly $T$",
-      "notes_ko": "$T \\gg 1$인 주파수에서 외란은 대략 $T$로 나누어진다",
+      "notes_ko": "$T \\gg 1$인 주파수에서 외란은 대략 $T$로 나누어집니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -8000,7 +8000,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "charge balance: the output capacitor carries no dc current, so the inductor supplies the whole load current",
-      "notes_ko": "전하 평형: 출력 커패시터에는 직류 전류가 흐르지 않으므로 인덕터가 부하 전류 전체를 공급한다",
+      "notes_ko": "전하 평형: 출력 커패시터에는 직류 전류가 흐르지 않으므로 인덕터가 부하 전류 전체를 공급합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -8035,7 +8035,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the switch and the diode carry this peak current in turn",
-      "notes_ko": "스위치와 다이오드가 번갈아 이 피크 전류를 흘린다",
+      "notes_ko": "스위치와 다이오드가 번갈아 이 피크 전류를 흘립니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -8072,9 +8072,9 @@
         "capacitor_takes_ripple"
       ],
       "convention": "$\\Delta v$ is HALF the peak-to-peak ripple, like $\\Delta i_L$ (Erickson)",
-      "convention_ko": "$\\Delta v$는 $\\Delta i_L$과 마찬가지로 피크-피크 리플의 절반(Erickson 규약)",
+      "convention_ko": "$\\Delta v$는 $\\Delta i_L$과 마찬가지로 피크-피크 리플의 절반입니다(Erickson 규약)",
       "notes": "ideal capacitor; a capacitor's series resistance adds a ripple term of its own",
-      "notes_ko": "이상적 커패시터; 커패시터의 직렬 저항은 별도의 리플 항을 더한다",
+      "notes_ko": "이상적인 커패시터로 계산합니다. 커패시터의 직렬 저항은 별도의 리플 항을 더합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -8114,7 +8114,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the inductor carries the input current, larger than the load current by the factor $1/(1 - D)$",
-      "notes_ko": "인덕터는 입력 전류를 흘리며, 이는 부하 전류보다 $1/(1 - D)$배 크다",
+      "notes_ko": "인덕터에는 입력 전류가 흐르며, 이 전류는 부하 전류의 $1/(1 - D)$배입니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -8199,7 +8199,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "while the switch is on, the capacitor alone supplies the load",
-      "notes_ko": "스위치가 켜져 있는 동안에는 커패시터 혼자 부하에 전류를 공급한다",
+      "notes_ko": "스위치가 켜져 있는 동안에는 커패시터 혼자 부하에 전류를 공급합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -8234,7 +8234,7 @@
         "small_ripple"
       ],
       "convention": "magnitude of the inverted output; $V$ is positive",
-      "convention_ko": "반전된 출력의 크기; $V$는 양수",
+      "convention_ko": "반전된 출력의 크기이며, $V$는 양수입니다",
       "notes": "",
       "notes_ko": "",
       "cites": [
@@ -8276,7 +8276,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the inductor delivers current to the output only during the off-interval",
-      "notes_ko": "인덕터는 오프 구간에만 출력으로 전류를 보낸다",
+      "notes_ko": "인덕터는 오프 구간에만 출력으로 전류를 보냅니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -8361,7 +8361,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "while the switch is on, the capacitor alone supplies the load",
-      "notes_ko": "스위치가 켜져 있는 동안에는 커패시터 혼자 부하에 전류를 공급한다",
+      "notes_ko": "스위치가 켜져 있는 동안에는 커패시터 혼자 부하에 전류를 공급합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -8502,7 +8502,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the reset winding clamps the primary at $-V_g/n_r$; with $n_r = 1$ the switch blocks twice the input voltage",
-      "notes_ko": "리셋 권선이 1차 측을 $-V_g/n_r$로 클램프한다; $n_r = 1$이면 스위치는 입력 전압의 두 배를 차단한다",
+      "notes_ko": "리셋 권선이 1차 측을 $-V_g/n_r$로 클램프합니다. $n_r = 1$이면 스위치는 입력 전압의 두 배를 차단합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -8547,7 +8547,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the output stage is a buck converter fed with $n V_g$ while the switch is on",
-      "notes_ko": "출력단은 스위치가 켜져 있는 동안 $n V_g$를 공급받는 벅 컨버터다",
+      "notes_ko": "출력단은 스위치가 켜져 있는 동안 $n V_g$를 공급받는 벅 컨버터입니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -8582,7 +8582,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "load power over the transistor's peak voltage $V_g$ times its rms current",
-      "notes_ko": "부하 전력을 트랜지스터의 피크 전압 $V_g$와 실효 전류의 곱으로 나눈 값",
+      "notes_ko": "부하 전력을 트랜지스터의 피크 전압 $V_g$와 실효 전류의 곱으로 나눈 값입니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -8617,7 +8617,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the transistor blocks $V$ and carries the inductor current during $D T_s$",
-      "notes_ko": "트랜지스터는 $V$를 차단하고 $D T_s$ 동안 인덕터 전류를 흘린다",
+      "notes_ko": "트랜지스터는 $V$를 차단하고 $D T_s$ 동안 인덕터 전류를 흘립니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -8652,7 +8652,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the transistor blocks $V_g + V$ (flyback: $V_g + V/n$); the turns ratio cancels, and the maximum is at $D = 1/3$",
-      "notes_ko": "트랜지스터는 $V_g + V$(플라이백: $V_g + V/n$)를 차단한다; 권선비는 상쇄되며, 최댓값은 $D = 1/3$에서",
+      "notes_ko": "트랜지스터는 $V_g + V$(플라이백: $V_g + V/n$)를 차단합니다. 권선비는 상쇄되며, 최댓값은 $D = 1/3$에서 나옵니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -8689,7 +8689,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "magnetizing current neglected; the duty ratio must stay below the reset limit",
-      "notes_ko": "자화 전류는 무시; 듀티비는 리셋 한계 아래로 유지되어야 한다",
+      "notes_ko": "자화 전류는 무시합니다. 듀티비는 리셋 한계 아래로 유지해야 합니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -8726,7 +8726,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "integrates the inductor law; the current changes linearly while the voltage is constant. This is the full change, not the half-ripple $\\Delta i_L$ of the converter pages",
-      "notes_ko": "인덕터 법칙을 적분한 결과이며, 전압이 일정한 동안 전류는 직선으로 변한다. 컨버터 페이지의 리플 절반 $\\Delta i_L$이 아니라 전체 변화량이다",
+      "notes_ko": "인덕터 법칙을 적분한 결과이며, 전압이 일정한 동안 전류는 직선으로 변합니다. 컨버터 페이지의 $\\Delta i_L$(리플의 절반)이 아니라 전체 변화량입니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -8763,7 +8763,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "integrates the capacitor law, the dual of the inductor law",
-      "notes_ko": "커패시터 법칙을 적분한 결과로, 인덕터 법칙의 쌍대이다",
+      "notes_ko": "커패시터 법칙을 적분한 결과로, 인덕터 법칙의 쌍대입니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -8867,7 +8867,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the impedance is $j 2\\pi f L$: its magnitude grows in proportion to the frequency and the current lags the voltage by 90°",
-      "notes_ko": "임피던스는 $j 2\\pi f L$이다. 크기는 주파수에 비례하여 커지고, 전류는 전압보다 90° 뒤진다",
+      "notes_ko": "임피던스는 $j 2\\pi f L$입니다. 크기는 주파수에 비례해 커지고, 전류는 전압보다 위상이 90° 늦습니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -8902,7 +8902,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the impedance is $1/(j 2\\pi f C)$: its magnitude falls in inverse proportion to the frequency and the current leads the voltage by 90°",
-      "notes_ko": "임피던스는 $1/(j 2\\pi f C)$이다. 크기는 주파수에 반비례하여 작아지고, 전류는 전압보다 90° 앞선다",
+      "notes_ko": "임피던스는 $1/(j 2\\pi f C)$입니다. 크기는 주파수에 반비례해 작아지고, 전류는 전압보다 위상이 90° 앞섭니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -8936,7 +8936,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "at $f_c$ the output magnitude is $1/\\sqrt{2}$ of the input (the -3 dB point)",
-      "notes_ko": "$f_c$에서 출력 크기는 입력의 $1/\\sqrt{2}$(-3 dB 지점)이다",
+      "notes_ko": "$f_c$에서 출력 크기는 입력의 $1/\\sqrt{2}$(-3 dB 지점)입니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -8971,7 +8971,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "well above $f_c$ the gain falls in inverse proportion to the frequency: -20 dB per decade on a Bode plot",
-      "notes_ko": "$f_c$보다 충분히 높은 주파수에서 이득은 주파수에 반비례하여 줄어든다. 보드 선도에서는 디케이드당 -20 dB이다",
+      "notes_ko": "$f_c$보다 충분히 높은 주파수에서 이득은 주파수에 반비례해 줄어듭니다. 보드 선도에서는 디케이드당 -20 dB입니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -9008,7 +9008,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the dc component is $D V_\\mathrm{pk}$; the harmonic amplitudes fall as $1/h$ and vanish where $h D$ is an integer",
-      "notes_ko": "직류 성분은 $D V_\\mathrm{pk}$이다. 고조파 진폭은 $1/h$에 비례하여 줄어들며, $h D$가 정수이면 0이 된다",
+      "notes_ko": "직류 성분은 $D V_\\mathrm{pk}$입니다. 고조파 진폭은 $1/h$에 비례해 줄어들며, $h D$가 정수이면 0이 됩니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -9076,7 +9076,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "above $f_\\mathrm{srf}$ the component behaves as a capacitor; near it, an impedance measurement reads neither $L$ nor $C_p$",
-      "notes_ko": "$f_\\mathrm{srf}$보다 높은 주파수에서 이 부품은 커패시터처럼 동작한다. 그 근처에서 임피던스를 측정하면 $L$도 $C_p$도 얻을 수 없다",
+      "notes_ko": "$f_\\mathrm{srf}$보다 높은 주파수에서 이 부품은 커패시터처럼 동작합니다. 그 근처에서 임피던스를 측정하면 $L$도 $C_p$도 얻을 수 없습니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -9113,7 +9113,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the winding's capacitance in parallel makes the reading rise with the test frequency: 1 % high at a tenth of $f_\\mathrm{srf}$, twice the inductance at 0.71 $f_\\mathrm{srf}$; above $f_\\mathrm{srf}$ the part is capacitive",
-      "notes_ko": "권선의 병렬 커패시턴스 때문에 측정값이 측정 주파수와 함께 커진다. $f_\\mathrm{srf}$의 1/10에서 1 % 크고, 0.71 $f_\\mathrm{srf}$에서 두 배가 된다. $f_\\mathrm{srf}$보다 높으면 부품은 용량성이다",
+      "notes_ko": "권선의 병렬 커패시턴스 때문에 측정 주파수가 높을수록 측정값이 커집니다. $f_\\mathrm{srf}$의 1/10에서 1 % 크고, 0.71 $f_\\mathrm{srf}$에서 두 배가 됩니다. $f_\\mathrm{srf}$보다 높으면 부품은 용량성입니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -9147,7 +9147,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "peak-to-peak and in phase with the ripple current; it adds to the capacitive ripple",
-      "notes_ko": "피크-피크 값이며 리플 전류와 같은 위상이다. 용량성 리플에 더해진다",
+      "notes_ko": "피크-피크 값이며 리플 전류와 위상이 같습니다. 용량성 리플에 더해집니다",
       "cites": [
         {
           "key": "ti_slva630",
@@ -9220,7 +9220,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "valid below saturation; a ferrite is close to linear only over part of its B-H curve",
-      "notes_ko": "포화 이하에서만 유효하다. 페라이트는 B-H 곡선의 일부 구간에서만 선형에 가깝다",
+      "notes_ko": "포화 이하에서만 유효합니다. 페라이트는 B-H 곡선의 일부 구간에서만 선형에 가깝습니다",
       "cites": [
         {
           "key": "erickson2020",
@@ -9252,7 +9252,7 @@
         "ideal_transformer"
       ],
       "convention": "turns ratio 1:n with $n$ the secondary turns divided by the primary turns (site convention)",
-      "convention_ko": "권선비는 1:n이며 $n$은 2차 턴 수를 1차 턴 수로 나눈 값이다(사이트 규약)",
+      "convention_ko": "권선비는 1:n이며 $n$은 2차 턴 수를 1차 턴 수로 나눈 값입니다(사이트 규약)",
       "notes": "",
       "notes_ko": "",
       "cites": [
@@ -9290,9 +9290,9 @@
         "ideal_transformer"
       ],
       "convention": "turns ratio 1:n; the secondary current is taken as flowing out of the secondary's dotted terminal",
-      "convention_ko": "권선비는 1:n이며, 2차 전류는 2차 권선의 점 표시 단자에서 흘러나오는 방향을 양으로 한다",
+      "convention_ko": "권선비는 1:n이며, 2차 전류는 2차 권선의 점 표시 단자에서 흘러나오는 방향을 양으로 합니다",
       "notes": "the power is conserved: the product of the secondary voltage and current equals that of the primary",
-      "notes_ko": "전력이 보존된다. 2차 전압과 전류의 곱은 1차 측의 곱과 같다",
+      "notes_ko": "전력이 보존됩니다. 2차 전압과 전류의 곱은 1차 측의 곱과 같습니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -9332,7 +9332,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the battery charges when its terminals are above its open-circuit voltage and discharges below it; the open-circuit voltage and the resistance depend on the state of charge, the state of health and the temperature, which the simulator holds constant over the periods it computes",
-      "notes_ko": "단자 전압이 개방 전압보다 높으면 배터리가 충전되고 낮으면 방전된다; 개방 전압과 저항은 충전 상태, 건강 상태, 온도에 따라 달라지며, 시뮬레이터는 계산하는 주기 동안 이를 상수로 둔다",
+      "notes_ko": "단자 전압이 개방 전압보다 높으면 배터리가 충전되고 낮으면 방전됩니다. 개방 전압과 저항은 충전 상태(state of charge), 건강 상태(state of health), 온도에 따라 달라지며, 시뮬레이터는 계산하는 주기 동안 이 값들을 상수로 둡니다",
       "cites": [
         {
           "key": "he2011",
@@ -9368,7 +9368,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "for the same edge the voltage is proportional to the loop's inductance, and a faster edge raises it in proportion: 10 nH carrying 10 A that stops in 10 ns develops 10 V",
-      "notes_ko": "같은 에지라면 전압은 루프 인덕턴스에 비례하고, 에지가 빨라지면 그만큼 커진다. 10 A가 흐르던 10 nH 루프에서 전류가 10 ns 만에 멈추면 10 V가 생긴다",
+      "notes_ko": "같은 에지라면 전압은 루프 인덕턴스에 비례하고, 에지가 빨라지면 그에 비례해 커집니다. 10 A가 흐르던 10 nH 루프에서 전류가 10 ns 만에 멈추면 10 V가 생깁니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -9402,7 +9402,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "after the turn-off edge the loop's inductance rings with the switch node's capacitance; the ring's frequency, read on an oscilloscope, gives the inductance without a current probe in the loop. The ring counts every capacitance at the node, the probe's included: leaving one out overstates the inductance",
-      "notes_ko": "턴오프 에지 뒤에 루프 인덕턴스는 스위치 노드 커패시턴스와 링잉한다. 오실로스코프로 읽은 링잉 주파수로 루프에 전류 프로브를 넣지 않고 인덕턴스를 구한다. 링잉에는 프로브를 포함해 노드의 모든 커패시턴스가 들어가므로, 하나라도 빼면 인덕턴스를 크게 어림한다",
+      "notes_ko": "턴오프 에지 뒤에 루프 인덕턴스는 스위치 노드 커패시턴스와 링잉합니다. 오실로스코프로 읽은 링잉 주파수로, 루프에 전류 프로브를 넣지 않고 인덕턴스를 구할 수 있습니다. 링잉에는 프로브를 포함해 노드의 모든 커패시턴스가 관여하므로, 하나라도 빠뜨리면 인덕턴스를 실제보다 크게 계산합니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -9436,7 +9436,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the capacitor's voltage falls by the charge it supplies divided by its capacitance; halving the allowed droop doubles the capacitance needed",
-      "notes_ko": "커패시터 전압은 공급한 전하를 커패시턴스로 나눈 만큼 떨어진다. 허용 강하를 절반으로 줄이면 필요한 커패시턴스는 두 배가 된다",
+      "notes_ko": "커패시터 전압은 공급한 전하를 커패시턴스로 나눈 만큼 떨어집니다. 허용 강하를 절반으로 줄이면 필요한 커패시턴스는 두 배가 됩니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -9468,7 +9468,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "ln 9/(2π) = 0.350, so a 100 MHz single-pole system shows an ideal step rising in 3.5 ns; a response of another shape has another constant",
-      "notes_ko": "ln 9/(2π) = 0.350이므로, 100 MHz 단일 극점 시스템은 이상적인 계단이 3.5 ns에 걸쳐 오르는 것으로 보여 준다. 응답의 모양이 다르면 상수도 달라진다",
+      "notes_ko": "ln 9/(2π) = 0.350이므로, 100 MHz 단일 극점 시스템에서는 이상적인 계단이 3.5 ns에 걸쳐 오르는 것으로 보입니다. 응답의 모양이 다르면 상수도 달라집니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -9502,7 +9502,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the loop's inductance and the probe's input capacitance form a series L-C that every fast edge excites: a ringing of the probe, not of the circuit. A shorter ground makes the inductance smaller and the ring faster",
-      "notes_ko": "루프 인덕턴스와 프로브 입력 커패시턴스가 직렬 L-C를 이루어, 빠른 에지마다 여기된다. 회로가 아니라 프로브의 링잉이다. 접지를 짧게 하면 인덕턴스가 작아져 링잉 주파수가 높아진다",
+      "notes_ko": "루프 인덕턴스와 프로브 입력 커패시턴스가 직렬 L-C를 이루며, 빠른 에지마다 이 L-C가 여기됩니다. 회로가 아니라 프로브의 링잉입니다. 접지를 짧게 하면 인덕턴스가 작아져 링잉 주파수가 높아집니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -9536,7 +9536,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "at the step the empty capacitor has no voltage across it, so the whole step falls across the series resistance, and the current then decays with the time constant $R_\\mathrm{ser} C_\\mathrm{in}$. In this R-C model the capacitance does not limit the peak; inductance in the leads slows the rise, lowers the peak (which then depends on the capacitance too) and, with little resistance, makes the capacitor's voltage overshoot the supply",
-      "notes_ko": "계단이 인가되는 순간 빈 커패시터 양단 전압은 0이므로 계단 전압 전체가 직렬 저항에 걸리고, 이후 전류는 시정수 $R_\\mathrm{ser} C_\\mathrm{in}$으로 감소한다. 이 R-C 모델에서는 커패시턴스가 최댓값을 제한하지 않는다. 리드의 인덕턴스는 상승을 늦추고 최댓값을 낮추며(그때는 커패시턴스도 최댓값에 영향을 준다), 저항이 작으면 커패시터 전압이 전원 전압을 넘어 오버슈트하게 만든다",
+      "notes_ko": "계단이 인가되는 순간 빈 커패시터 양단 전압은 0이므로 계단 전압 전체가 직렬 저항에 걸리고, 이후 전류는 시정수 $R_\\mathrm{ser} C_\\mathrm{in}$으로 감소합니다. 이 R-C 모델에서는 커패시턴스가 최댓값을 제한하지 않습니다. 리드에 인덕턴스가 있으면 상승이 느려지고 최댓값이 낮아지며, 이 최댓값은 커패시턴스에도 좌우됩니다. 저항이 작으면 이 인덕턴스 때문에 커패시터 전압이 전원 전압을 넘어 오버슈트합니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -9572,7 +9572,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the integral of the decaying current squared; times $R_\\mathrm{ser}$ it is the energy the resistance dissipates while the capacitor charges, $C_\\mathrm{in} V_g^2/2$, as much as the capacitor stores whatever the resistance. Inductance in the leads does not change it: the source still delivers $C_\\mathrm{in} V_g^2$ and the capacitor keeps half",
-      "notes_ko": "감소하는 전류의 제곱을 적분한 값이다. 여기에 $R_\\mathrm{ser}$를 곱하면 커패시터가 충전되는 동안 저항이 소산하는 에너지 $C_\\mathrm{in} V_g^2/2$가 되며, 저항값과 관계없이 커패시터에 저장되는 에너지와 같다. 리드의 인덕턴스는 이 값을 바꾸지 않는다. 전원은 여전히 $C_\\mathrm{in} V_g^2$를 내보내고 커패시터는 그 절반을 저장한다",
+      "notes_ko": "감소하는 전류의 제곱을 적분한 값입니다. 여기에 $R_\\mathrm{ser}$를 곱하면 커패시터가 충전되는 동안 저항이 소산하는 에너지 $C_\\mathrm{in} V_g^2/2$가 되며, 저항값과 관계없이 커패시터에 저장되는 에너지와 같습니다. 리드의 인덕턴스는 이 값을 바꾸지 않습니다. 전원은 여전히 $C_\\mathrm{in} V_g^2$를 내보내고 커패시터는 그 절반을 저장합니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -9609,7 +9609,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "a capacitor's current is $C \\, dv/dt$, so a constant slope draws a constant current, inversely proportional to the ramp time. With no other resistance in the path, the element that sets the ramp in series with the supply drops $V_g - v_C$ while carrying it and dissipates $C_\\mathrm{in} V_g^2/2$ over the ramp, as much as a series resistance would from a step: the ramp lowers the current and spreads the energy over time, but does not remove it. A source that ramps its own output (a converter's soft start) has no such element: its path loses only the resistance's share, $2 R_\\mathrm{ser} C_\\mathrm{in}/t_\\mathrm{ramp}$ of the stored energy",
-      "notes_ko": "커패시터 전류는 $C \\, dv/dt$이므로, 기울기가 일정하면 전류도 일정하고 램프 시간에 반비례한다. 경로에 다른 저항이 없으면, 전원과 직렬로 램프를 만드는 소자는 이 전류를 흘리는 동안 $V_g - v_C$를 떠안아 램프 동안 $C_\\mathrm{in} V_g^2/2$를 소산한다. 계단 입력 때 직렬 저항이 소산하는 양과 같다. 램프는 전류를 낮추고 에너지를 시간에 걸쳐 나눌 뿐, 에너지를 없애지는 않는다. 컨버터의 소프트 스타트처럼 전원 자신이 출력을 램프로 올리면 그런 소자가 없으며, 경로는 저항의 몫, 곧 저장 에너지의 $2 R_\\mathrm{ser} C_\\mathrm{in}/t_\\mathrm{ramp}$만 잃는다",
+      "notes_ko": "커패시터 전류는 $C \\, dv/dt$이므로, 기울기가 일정하면 전류도 일정하고 램프 시간에 반비례합니다. 경로에 다른 저항이 없으면, 전원과 직렬로 램프를 만드는 소자에는 이 전류가 흐르는 동안 $V_g - v_C$가 걸리므로 램프 동안 $C_\\mathrm{in} V_g^2/2$를 소산합니다. 계단 입력 때 직렬 저항이 소산하는 양과 같습니다. 램프는 전류를 낮추고 에너지를 시간에 걸쳐 나눌 뿐, 에너지를 없애지는 않습니다. 컨버터의 소프트 스타트처럼 전원 자신이 출력을 램프로 올리면 그런 소자가 없으며, 경로는 저항의 몫, 곧 저장 에너지의 $2 R_\\mathrm{ser} C_\\mathrm{in}/t_\\mathrm{ramp}$만 잃습니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -9645,7 +9645,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "with the gate held at the plateau, what the driver's voltage exceeds it by drives the current through the gate loop's resistance; a plateau close to the drive voltage leaves little current, and a slow turn-on",
-      "notes_ko": "게이트가 플래토에 묶여 있는 동안에는 드라이버 전압이 플래토 전압을 넘는 만큼이 게이트 루프 저항에 전류를 흘린다. 플래토가 구동 전압에 가까우면 전류가 작아 턴온이 느리다",
+      "notes_ko": "게이트가 플래토에 묶여 있는 동안에는 드라이버 전압이 플래토 전압을 넘는 만큼이 게이트 루프 저항에 전류를 흘립니다. 플래토가 구동 전압에 가까우면 전류가 작아 턴온이 느립니다",
       "cites": [
         {
           "key": "balogh2018",
@@ -9683,7 +9683,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the driver pulls the gate to zero, so the plateau voltage itself drives the current out; with the same gate-loop resistance at both edges and a plateau below half the drive voltage, turn-off draws less current than turn-on and takes longer (a driver that sinks more strongly than it sources, or a turn-off diode across the gate resistor, changes that)",
-      "notes_ko": "드라이버가 게이트를 0으로 끌어내리므로 플래토 전압 자체가 전류를 빼낸다. 두 에지에서 게이트 루프 저항이 같고 플래토가 구동 전압의 절반보다 낮으면 턴오프 전류가 턴온보다 작아 더 오래 걸린다(끌어내리는 능력이 공급 능력보다 강한 드라이버나 게이트 저항에 병렬로 넣은 턴오프 다이오드는 이를 바꾼다)",
+      "notes_ko": "드라이버가 게이트를 0으로 끌어내리므로 플래토 전압 자체가 전류를 빼냅니다. 두 에지에서 게이트 루프 저항이 같고 플래토가 구동 전압의 절반보다 낮으면 턴오프 전류가 턴온보다 작아 더 오래 걸립니다(싱크 능력이 소스 능력보다 큰 드라이버나, 게이트 저항에 병렬로 넣은 턴오프 다이오드는 이를 바꿉니다)",
       "cites": [
         {
           "key": "balogh2018",
@@ -9721,7 +9721,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the plateau lasts while the gate delivers the gate-drain charge at a constant current, and the drain voltage makes its transition meanwhile; a larger gate current shortens it in proportion",
-      "notes_ko": "플래토는 게이트가 일정한 전류로 게이트-드레인 전하를 전달하는 동안 지속되며, 그동안 드레인 전압이 전이한다. 게이트 전류가 커지면 그에 비례해 짧아진다",
+      "notes_ko": "플래토는 게이트가 일정한 전류로 게이트-드레인 전하를 전달하는 동안 지속되며, 그동안 드레인 전압이 전이합니다. 게이트 전류가 클수록 그에 반비례해 짧아집니다",
       "cites": [
         {
           "key": "vishay_an608a",
@@ -9765,7 +9765,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "each part of the path raises the temperature by its thermal resistance times the power through it, and the rises add; the largest resistance in the chain takes the largest share of the junction's rise, so lowering it helps most",
-      "notes_ko": "경로의 각 부분은 그 열저항과 지나가는 전력의 곱만큼 온도를 올리고, 이 상승분이 더해진다. 사슬에서 가장 큰 열저항이 접합 온도 상승에서 가장 큰 몫을 차지하므로, 그것을 낮추는 것이 가장 효과적이다",
+      "notes_ko": "경로의 각 부분은 그 열저항과 지나가는 전력의 곱만큼 온도를 올리고, 이 상승분이 더해집니다. 경로에서 가장 큰 열저항이 접합 온도 상승의 가장 큰 몫을 차지하므로, 이 열저항을 낮추는 것이 가장 효과적입니다",
       "cites": [
         {
           "key": "ti_spra953",
@@ -9801,7 +9801,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "only part of the power flows through the package top, so the parameter is not a true thermal resistance and is not added into a series path; it relates the measured top to the junction for the device's whole power, in the conditions it was characterized in: with a heat sink on the package it no longer applies",
-      "notes_ko": "전력의 일부만 패키지 윗면을 지나므로 이 파라미터는 진정한 열저항이 아니며 직렬 경로에 더하지 않는다. 측정한 윗면 온도와 접합 온도를 소자 전체 전력에 대해, 특성화한 조건에서만 이어 준다. 패키지에 방열판을 붙이면 더 이상 맞지 않는다",
+      "notes_ko": "전력의 일부만 패키지 윗면을 지나므로 이 파라미터는 진정한 열저항이 아니며 직렬 경로에 더하지 않습니다. 이 파라미터는 특성화한 조건에서만, 측정한 윗면 온도와 접합 온도를 소자 전체 전력에 대해 이어 줍니다. 패키지에 방열판을 붙이면 더 이상 성립하지 않습니다",
       "cites": [
         {
           "key": "ti_spra953",
@@ -9837,7 +9837,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "charging lifts the terminals above the open-circuit voltage by the current times the internal resistance, and discharging pulls them below; a charger that holds the terminals at a voltage limit delivers less current when the resistance is higher",
-      "notes_ko": "충전하면 단자 전압이 개방 전압보다 전류와 내부 저항의 곱만큼 높아지고, 방전하면 그만큼 낮아진다. 단자를 전압 한계에 묶어 두는 충전기는 저항이 클수록 전류를 적게 흘린다",
+      "notes_ko": "충전하면 단자 전압이 개방 전압보다 전류와 내부 저항의 곱만큼 높아지고, 방전하면 그만큼 낮아집니다. 단자를 전압 한계에 묶어 두는 충전기는 저항이 클수록 전류를 적게 흘립니다",
       "cites": [
         {
           "key": "he2011",
@@ -9851,7 +9851,7 @@
     "sim.exact_step": {
       "id": "sim.exact_step",
       "title": "One exact time step of a first-order circuit",
-      "title_ko": "1차 회로의 정확한 시간 스텝 하나",
+      "title_ko": "1차 회로의 정확한 타임 스텝 하나",
       "latex": "v_1 = v_\\infty + \\left(v_0 - v_\\infty\\right) e^{- \\frac{\\Delta t}{\\tau}}",
       "lhs": "v_1",
       "expr": "v_inf + (v_0 - v_inf)*exp(-Delta_t/tau)",
@@ -9876,7 +9876,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "each step multiplies the deviation from $v_\\infty$ by $e^{-\\Delta t/\\tau}$, which lies between 0 and 1 however long the step is: the step is exact, and the deviation cannot grow. An inductor's current follows the same law with the time constant L over R",
-      "notes_ko": "스텝마다 $v_\\infty$와의 편차에 $e^{-\\Delta t/\\tau}$를 곱한다. 이 값은 스텝이 아무리 길어도 0과 1 사이이므로, 스텝은 정확하고 편차는 커질 수 없다. 인덕터 전류도 시정수 L/R로 같은 법칙을 따른다",
+      "notes_ko": "스텝마다 $v_\\infty$와의 편차에 $e^{-\\Delta t/\\tau}$를 곱합니다. 이 값은 스텝이 아무리 길어도 0과 1 사이이므로, 스텝은 정확하고 편차는 커질 수 없습니다. 인덕터 전류도 시정수 L/R로 같은 법칙을 따릅니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -9911,7 +9911,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the rule takes the slope at the start of the step. Its factor stays between -1 and 1 only while the step is shorter than $2\\tau$; a longer step multiplies the deviation by more than one in size and flips its sign every step, so the solution grows without bound. The circuit's fastest time constant, such as a small node capacitance behind a small resistance, then limits the step for the whole circuit",
-      "notes_ko": "스텝을 시작할 때의 기울기를 쓴다. 배율은 스텝이 $2\\tau$보다 짧을 때만 -1과 1 사이에 머문다. 스텝이 더 길면 편차에 크기가 1보다 큰 값을 곱하고 매 스텝 부호를 뒤집으므로, 해가 끝없이 커진다. 그러면 작은 저항 뒤의 작은 노드 커패시턴스처럼 회로에서 가장 짧은 시정수가 회로 전체의 스텝을 제한한다",
+      "notes_ko": "이 규칙은 스텝 시작점의 기울기를 씁니다. 배율은 스텝이 $2\\tau$보다 짧을 때만 -1과 1 사이에 머뭅니다. 스텝이 더 길면 편차에 크기가 1보다 큰 값을 곱하고 매 스텝 부호를 뒤집으므로, 해가 한없이 커집니다. 그러면 작은 저항 뒤의 작은 노드 커패시턴스처럼 회로에서 가장 짧은 시정수가 회로 전체의 스텝을 제한합니다",
       "cites": [
         {
           "key": "hairer1996",
@@ -9946,7 +9946,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the rule averages the slopes at both ends of the step. Its factor stays between -1 and 1 for any step (the rule is A-stable), but a step much longer than $\\tau$ gives a factor close to -1: the mode is hardly damped and changes sign every step, a ringing from one step to the next that the circuit does not have. ngspice integrates with this rule unless told otherwise",
-      "notes_ko": "스텝 양 끝의 기울기를 평균한다. 배율은 스텝 길이와 관계없이 -1과 1 사이에 머물지만(A-안정), 스텝이 $\\tau$보다 훨씬 길면 배율이 -1에 가까워진다. 모드가 거의 감쇠하지 않고 매 스텝 부호를 바꾸어, 회로에는 없는 스텝 간 링잉이 생긴다. ngspice는 따로 지정하지 않으면 이 규칙으로 적분한다",
+      "notes_ko": "이 규칙은 스텝 양 끝의 기울기를 평균합니다. 배율은 스텝 길이와 관계없이 -1과 1 사이에 머물지만(A-안정), 스텝이 $\\tau$보다 훨씬 길면 배율이 -1에 가까워집니다. 그러면 모드가 거의 감쇠하지 않고 스텝마다 부호를 바꾸는, 회로에는 없는 링잉이 생깁니다. ngspice는 따로 지정하지 않으면 이 규칙으로 적분합니다",
       "cites": [
         {
           "key": "hairer1996",
@@ -9985,7 +9985,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "the rule takes the slope at the end of the step. Its factor lies between 0 and 1 for any step and tends to zero as the step grows (the rule is L-stable): a mode much faster than the step is almost gone after one step, without ringing. It is the first of the backward differentiation formulas, which ngspice uses, up to the second by default, when .options method=gear asks for Gear's method",
-      "notes_ko": "스텝이 끝날 때의 기울기를 쓴다. 배율은 스텝 길이와 관계없이 0과 1 사이이고 스텝이 길수록 0에 가까워진다(L-안정). 스텝보다 훨씬 빠른 모드는 링잉 없이 한 스텝 뒤에 거의 사라진다. 후진 차분 공식(backward differentiation formula) 가운데 첫 번째이며, .options method=gear로 기어(Gear) 방법을 지정하면 ngspice는 이 공식들을 기본적으로 두 번째까지 쓴다",
+      "notes_ko": "이 규칙은 스텝 끝의 기울기를 씁니다. 배율은 스텝 길이와 관계없이 0과 1 사이이고 스텝이 길수록 0에 가까워집니다(L-안정). 스텝보다 훨씬 빠른 모드는 링잉 없이 한 스텝 뒤에 거의 사라집니다. 후진 차분 공식(backward differentiation formula) 가운데 첫 번째이며, .options method=gear로 기어(Gear) 방법을 지정하면 ngspice는 이 공식들을 기본적으로 두 번째까지 씁니다",
       "cites": [
         {
           "key": "hairer1996",
@@ -10027,7 +10027,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "a step can end with an inductor's current past zero through a diode, as when the iteration accepts the diode's straight-line model before its current has settled. When the diode then turns off and nothing else takes the current, the next step has to bring the current from $-I_\\mathrm{os}$ back to zero, and backward Euler puts this voltage across the inductor for that step: the node the current leaves ends up this far from the inductor's other end. The circuit has no such spike, and a shorter step does not remove it: the overshoot shrinks with the step, so the jump stays about as large as the voltage the inductor had across it before. The same step stops a leakage inductance's current when a switch opens with nothing to take its current (a body diode across the switch is reverse-biased then); that current does not shrink with the step, so that spike grows as the step shrinks. A diode across the node bounds the jump to a diode drop past a rail; a capacitance at the node, stepped by backward Euler, takes the current without a jump",
-      "notes_ko": "다이오드를 지나는 인덕터 전류가 0을 지나친 채로 스텝이 끝날 수 있다. 반복 계산이 다이오드 전류가 자리 잡기 전에 다이오드를 대신하는 직선 모델을 받아들이는 경우가 그렇다. 그 다음 다이오드가 꺼지고 다른 것이 전류를 받지 않으면, 다음 스텝은 전류를 $-I_\\mathrm{os}$에서 0으로 되돌려야 하고, 후진 오일러는 그 스텝 동안 인덕터에 이 전압을 건다. 전류가 떠난 노드는 인덕터의 반대쪽 끝에서 이만큼 떨어진 곳에 놓인다. 회로에는 이런 스파이크가 없으며, 스텝을 줄여도 사라지지 않는다. 초과 전류가 스텝과 함께 줄어들므로, 점프의 크기는 그 전에 인덕터에 걸려 있던 전압의 크기 정도로 남는다. 스위치가 열릴 때 그 전류를 받을 것이 없으면(스위치에 걸친 바디 다이오드는 그때 역바이어스) 누설 인덕턴스의 전류를 멈추는 것도 같은 스텝이다. 이 전류는 스텝과 함께 줄지 않으므로 이 스파이크는 스텝이 짧을수록 커진다. 노드에 걸친 다이오드는 점프를 레일에서 다이오드 강하 이내로 묶고, 후진 오일러로 진행시키는 노드 커패시턴스는 점프 없이 전류를 받는다",
+      "notes_ko": "다이오드를 지나는 인덕터 전류가 0을 지나친 채로 스텝이 끝날 수 있습니다. 반복 계산이 다이오드 전류가 자리 잡기 전에 다이오드를 대신하는 직선 모델을 받아들이는 경우가 그렇습니다. 이어서 다이오드가 꺼지고 다른 소자가 전류를 받지 않으면, 다음 스텝은 전류를 $-I_\\mathrm{os}$에서 0으로 되돌려야 하고, 후진 오일러는 그 스텝 동안 인덕터에 이 전압을 겁니다. 전류가 빠져나간 노드의 전압은 인덕터 반대쪽 끝의 전압과 이만큼 차이 납니다. 회로에는 이런 스파이크가 없으며, 스텝을 줄여도 사라지지 않습니다. 0을 지나친 전류가 스텝과 함께 줄어들므로, 점프의 크기는 그 전에 인덕터에 걸려 있던 전압 정도로 남습니다. 스위치가 열릴 때 그 전류를 받을 소자가 없으면(스위치에 걸친 바디 다이오드는 그때 역바이어스) 같은 스텝이 누설 인덕턴스의 전류도 멈춥니다. 이 전류는 스텝과 함께 줄지 않으므로 이 스파이크는 스텝이 짧을수록 커집니다. 노드에 걸친 다이오드는 점프를 레일에서 다이오드 강하 이내로 묶고, 후진 오일러로 계산하는 노드 커패시턴스는 점프 없이 전류를 받습니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -10049,7 +10049,7 @@
     "filter.tau_env": {
       "id": "filter.tau_env",
       "title": "Time constant of the envelope of an L-C filter's ring with a resistive load",
-      "title_ko": "저항 부하가 달린 L-C 필터 링잉의 포락선 시정수",
+      "title_ko": "저항 부하가 연결된 L-C 필터 진동의 포락선 시정수",
       "latex": "\\tau_\\mathrm{env} = 2 R C",
       "lhs": "tau_env",
       "expr": "2*R*C",
@@ -10073,7 +10073,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "with ideal parts and the buck's source at rest, the filter is the inductance, the capacitance and the load in parallel: a parallel RLC circuit, whose ring decays as $e^{-t/(2RC)}$ whatever the inductance. A lighter load (a larger $R$) rings for longer. The averaged models of the boost and the buck-boost give the same decay rate, $\\omega_0/(2Q) = 1/(2RC)$. Real parts change the decay: the winding's and the switch's resistances always make the ring decay faster, the capacitor's series resistance does when Q is above 1, and the inductance then matters too. This is how an open-loop converter's output settles in CCM after a start-up or a step; a feedback loop sets its own settling, and in DCM, where the inductance carries no energy from one period to the next, the output settles near its steady state with a single time constant instead",
-      "notes_ko": "이상적인 부품으로 벅의 전원이 멈춘 상태에서 필터는 인덕턴스, 커패시턴스, 부하가 병렬로 연결된 병렬 RLC 회로이며, 그 링잉은 인덕턴스와 관계없이 $e^{-t/(2RC)}$로 감쇠한다. 부하가 가벼울수록(R이 클수록) 오래 울린다. 부스트와 벅-부스트의 평균화 모델도 같은 감쇠율 $\\omega_0/(2Q) = 1/(2RC)$를 준다. 실제 부품은 감쇠를 바꾼다. 권선과 스위치의 저항은 언제나 링잉을 더 빨리 줄이고, 커패시터의 직렬 저항은 Q가 1보다 클 때 그러하며, 그때는 인덕턴스도 영향을 준다. CCM에서 개루프 컨버터의 출력은 시작이나 계단 변화 뒤 이렇게 정착한다. 피드백 루프가 있으면 루프가 정착을 정하고, 인덕턴스가 주기에서 다음 주기로 에너지를 넘기지 않는 DCM에서는 출력이 정상상태 근처에서 하나의 시정수로 정착한다",
+      "notes_ko": "이상적인 부품에서 벅의 전원 전압이 일정하면 필터는 인덕턴스, 커패시턴스, 부하가 병렬로 연결된 병렬 RLC 회로이며, 그 진동은 인덕턴스와 관계없이 $e^{-t/(2RC)}$로 감쇠합니다. 부하가 가벼울수록($R$이 클수록) 오래 진동합니다. 부스트와 벅-부스트의 평균화 모델도 같은 감쇠율 $\\omega_0/(2Q) = 1/(2RC)$를 줍니다. 실제 부품은 감쇠를 바꿉니다. 권선과 스위치의 저항은 언제나 진동을 더 빨리 감쇠시키고, 커패시터의 직렬 저항은 Q가 1보다 클 때 그렇게 하며, 그때는 인덕턴스도 영향을 줍니다. CCM에서 개루프 컨버터의 출력은 기동이나 계단 변화 뒤 이렇게 정착합니다. 피드백 루프가 있으면 루프가 정착을 정하고, 인덕턴스가 한 주기에서 다음 주기로 에너지를 넘기지 않는 DCM에서는 출력이 정상상태 근처에서 하나의 시정수로 정착합니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -10117,7 +10117,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "an error that decays as $e^{-t/\\tau_\\mathrm{env}}$ falls to the fraction $\\varepsilon_r$ after $\\tau_\\mathrm{env} \\ln(1/\\varepsilon_r)$, and dividing by $T_s$ counts the periods. Each factor of ten in accuracy costs $\\ln 10$, about 2.3 envelope time constants more. A transient simulation from rest must run at least this long before its last periods show the steady state",
-      "notes_ko": "$e^{-t/\\tau_\\mathrm{env}}$로 감쇠하는 오차는 $\\tau_\\mathrm{env} \\ln(1/\\varepsilon_r)$ 뒤에 비율 $\\varepsilon_r$까지 줄어들고, 이를 $T_s$로 나누면 주기 수가 된다. 정확도를 10배 높일 때마다 $\\ln 10$, 곧 포락선 시정수의 약 2.3배가 더 든다. 정지 상태에서 시작하는 과도 시뮬레이션은 적어도 이만큼 달려야 마지막 주기들이 정상상태를 보여 준다",
+      "notes_ko": "$e^{-t/\\tau_\\mathrm{env}}$로 감쇠하는 오차는 $\\tau_\\mathrm{env} \\ln(1/\\varepsilon_r)$ 뒤에 비율 $\\varepsilon_r$까지 줄어들고, 이를 $T_s$로 나누면 주기 수가 됩니다. 정확도를 10배 높일 때마다 $\\ln 10$, 곧 포락선 시정수의 약 2.3배가 더 듭니다. 정지 상태에서 시작하는 과도 시뮬레이션은 적어도 이만큼 실행해야 마지막 주기들이 정상상태를 보여 줍니다",
       "cites": [
         {
           "key": "alexander2017",
@@ -10151,7 +10151,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "it does not change when the quantity is scaled, as by a change of unit from volts to millivolts, so one tolerance serves every quantity (a unit whose zero moves, such as degrees Celsius against kelvins, is the exception); at a zero reference it is undefined, and near one a small absolute difference becomes a large relative one. The site asks 1e-9 of the TypeScript and Python evaluations of the same equation, and 1 % or 2 % of a simulation against its equation",
-      "notes_ko": "볼트를 밀리볼트로 바꾸듯 물리량의 배율을 바꿔도 달라지지 않으므로 하나의 허용오차를 모든 물리량에 쓸 수 있다(켈빈에 대한 섭씨처럼 영점이 옮겨 가는 단위는 예외). 기준값이 0이면 정의되지 않고, 0에 가까우면 작은 절대 차이가 큰 상대 차이가 된다. 이 사이트는 같은 식의 TypeScript와 Python 계산에 1e-9를, 식에 대한 시뮬레이션에 1 % 또는 2 %를 요구한다",
+      "notes_ko": "볼트를 밀리볼트로 바꾸듯 물리량의 배율을 바꿔도 상대 차이는 달라지지 않으므로, 하나의 허용오차를 모든 물리량에 쓸 수 있습니다(켈빈에 대한 섭씨처럼 영점이 옮겨 가는 단위는 예외). 기준값이 0이면 정의되지 않고, 0에 가까우면 작은 절대 차이가 큰 상대 차이가 됩니다. 이 사이트는 같은 식의 TypeScript와 Python 계산에 1e-9를, 식에 대한 시뮬레이션에 1 % 또는 2 %를 요구합니다",
       "cites": [
         {
           "key": "higham2002",
@@ -10185,7 +10185,7 @@
       "convention": "",
       "convention_ko": "",
       "notes": "rounding a real number to the nearest number of the format changes it by at most this fraction of itself (in the normal range). For binary64, the IEEE 754 double precision of JavaScript's numbers and Python's floats, the base is 2 and the precision 53 digits, so $u = 2^{-53} \\approx 1.1 \\times 10^{-16}$. Higham writes the precision as $t$",
-      "notes_ko": "실수를 형식에서 가장 가까운 수로 반올림하면 (정규 범위에서) 값이 최대 자신의 이 비율만큼 바뀐다. JavaScript의 수와 Python의 float가 쓰는 IEEE 754 배정밀도(binary64)는 밑이 2, 정밀도가 53자리이므로 $u = 2^{-53} \\approx 1.1 \\times 10^{-16}$이다. Higham은 정밀도를 $t$로 쓴다",
+      "notes_ko": "실수를 형식에서 가장 가까운 수로 반올림하면 값은 (정규 범위에서) 최대 원래 값의 이 비율만큼 바뀝니다. JavaScript의 수와 Python의 float가 쓰는 IEEE 754 배정밀도(binary64)는 밑이 2, 정밀도가 53자리이므로 $u = 2^{-53} \\approx 1.1 \\times 10^{-16}$입니다. Higham은 정밀도를 $t$로 씁니다",
       "cites": [
         {
           "key": "higham2002",

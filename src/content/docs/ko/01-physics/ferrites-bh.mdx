@@ -17,7 +17,7 @@ import Quiz from '../../../../components/Quiz.astro';
 
 ## 목표
 
-- 투자율(permeability)을 통해 자속 밀도(flux density)와 자계 세기(field intensity)를 관련짓습니다.
+- 투자율(permeability)로 자속 밀도(flux density)와 자계 세기(field intensity)의 관계를 나타냅니다.
 - 포화(saturation)와, 인덕터를 피크 전류(peak current)에서 점검해야 하는 이유를 설명합니다.
 - 인덕턴스, 피크 전류, 턴 수, 코어 단면적(core area)으로부터 인덕터의 피크 자속 밀도(peak flux density)를 계산합니다.
 
@@ -42,8 +42,8 @@ import Quiz from '../../../../components/Quiz.astro';
 
 ### 페라이트와 철 합금
 
-페라이트(ferrite)는 철 합금(iron alloy)보다 낮은 자속 밀도에서 포화되지만, 높은
-비저항(resistivity)이 와전류 손실(eddy-current loss)을 낮게 유지하므로 높은 스위칭
+페라이트(ferrite)는 철 합금(iron alloy)보다 낮은 자속 밀도에서 포화되지만,
+비저항(resistivity)이 높아 와전류 손실(eddy-current loss)이 작으므로 높은 스위칭
 주파수(switching frequency)에 적합합니다 <Cite key="erickson2020" where="Ch. 10" />.
 
 ### 인덕터의 피크 자속 밀도
@@ -64,8 +64,8 @@ import Quiz from '../../../../components/Quiz.astro';
 <Worked example="ferrite-bh" />
 
 주어진 비투자율을 갖는 재료에서 <Val example="ferrite-bh" name="H_mag" />의 자계는
-<Val example="ferrite-bh" name="B" />의 자속 밀도를 만듭니다. 인덕터는 피크
-전류에서 <Val example="ferrite-bh" name="B_pk" />에 도달합니다. 이 값을 코어 재료
+<Val example="ferrite-bh" name="B" />의 자속 밀도를 만듭니다. 피크 전류에서
+인덕터의 자속 밀도는 <Val example="ferrite-bh" name="B_pk" />입니다. 이 값을 코어 재료
 데이터시트(data sheet)의 포화 자속 밀도와 비교하십시오.
 
 ## 직접 해 보기
@@ -75,8 +75,8 @@ import Quiz from '../../../../components/Quiz.astro';
 인덕턴스를 고정한 채 $N$을 스윕(sweep)하십시오. 턴 수가 많을수록 피크 자속 밀도는
 낮아집니다. 그러나 주어진 코어에서는 인덕턴스 자체가 턴 수의 제곱에 비례하여
 커집니다(<EqRef id="mag.L_from_AL" label="인덕턴스 계수(inductance factor)로 구한 인덕턴스" />).
-[공극(에어 갭, air gap) 페이지](../gap-and-al/)는 공극이 이 문제를 어떻게 해결하는지
-보여 줍니다.
+공극(에어 갭, air gap)으로 이 문제를 해결하는 방법은 [공극 페이지](../gap-and-al/)에서
+다룹니다.
 
 ## 벤치 실습
 
@@ -91,8 +91,8 @@ import Quiz from '../../../../components/Quiz.astro';
 - **포화는 급격하게 일어납니다.** 포화를 넘어서면 인덕턴스가 급락하고 전류가
   가파르게 상승합니다 <Cite key="erickson2020" where="Ch. 10" />. 평균 전류가 아니라
   최악 조건(worst case)의 피크 전류를 기준으로 설계하십시오.
-- **코어의 투자율은 정밀한 값이 아닙니다.** 공극이 있으면 인덕턴스는 재료 대신
-  주로 공극 길이에 의해 정해집니다 <Cite key="erickson2020" where="Ch. 10" /> ([공극 페이지](../gap-and-al/) 참고).
+- **코어의 투자율은 정밀한 값이 아닙니다.** 공극이 있으면 인덕턴스는 재료보다
+  주로 공극 길이로 정해집니다 <Cite key="erickson2020" where="Ch. 10" /> ([공극 페이지](../gap-and-al/) 참고).
 
 ## 더 알아보기
 

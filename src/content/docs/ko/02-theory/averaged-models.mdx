@@ -20,7 +20,7 @@ import Quiz from '../../../../components/Quiz.astro';
 
 - 컨버터의 평균 직류 모델(averaged dc model)을 세우고, 여기에 인덕터의 권선 저항(winding resistance)을 추가합니다.
 - 그 저항이 부스트 컨버터의 변환비(conversion ratio)와 효율(efficiency)을 어떻게 제한하는지 예측합니다.
-- DCM 스위치 네트워크를 무손실 저항(loss-free resistor, LFR)으로 기술하고, 그 입력 저항을 계산합니다.
+- DCM 스위치 네트워크를 무손실 저항(loss-free resistor, LFR)으로 나타내고, 그 입력 저항을 계산합니다.
 
 ## 이론
 
@@ -33,22 +33,22 @@ import Quiz from '../../../../components/Quiz.astro';
 갖는 이상적인 **직류 변압기**(dc transformer)로 동작합니다. 이 변압기는
 입력에서 출력으로 전력을 손실 없이 전달하며, 모든 손실 메커니즘은 그 주위의
 일반 저항이나 전압 강하로 나타납니다 <Cite key="erickson2020" where="Ch. 3" />.
-그러면 모델 하나로 출력 전압, 전류, 효율을 구할 수 있습니다.
+이 모델 하나로 출력 전압, 전류, 효율을 구할 수 있습니다.
 
 ### 인덕터 권선 저항이 있는 부스트
 
 부스트에 인덕터의 권선 저항 $R_L$을 추가합니다. 전압-초 평형(volt-second balance)에는
 두 구간 모두에서 $R_L$에 걸리는 전압 강하가 더해지고, 전하 평형(charge balance)은
 변하지 않습니다. 두 식을 함께 풀면 다음을 얻습니다
-<Cite key="erickson2020" where="Ch. 3" />:
+<Cite key="erickson2020" where="Ch. 3" />.
 
 <Eq id="boost.ccm.M_RL" />
 
-<EqRef id="boost.ccm.M" label="이상적인 부스트 변환비" />에는, $D$가 1에
+<EqRef id="boost.ccm.M" label="이상적인 부스트 변환비" />에 $D$가 1에
 가까워질수록 0을 향해 줄어드는 인자가 곱해집니다. 인덕터에는 입력 전류가 흐르고, 입력 전류는
 $D$가 커질수록 출력 전류보다 훨씬 빠르게 증가하므로, 결국 $R_L$에서의 손실이
 추가 입력 전력을 모두 차지하게 됩니다. 변환비는 한없이 커지지 않고 최댓값에
-도달한 뒤 감소합니다. 효율도 같은 모델에서 구할 수 있습니다:
+도달한 뒤 감소합니다. 효율도 같은 모델에서 구할 수 있습니다.
 
 <Eq id="boost.ccm.eta_RL" />
 
@@ -59,28 +59,28 @@ $R_L$은 $(1 - D)^2 R$, 즉 직류 변압기를 거쳐 인덕터 쪽으로 환�
 
 ### DCM: 무손실 저항
 
-DCM에서는 인덕터 전류가 매 주기 0에서 시작합니다. 그러면 온 구간(on-interval)
-동안 저장되는 에너지, 그리고 그에 따라 입력에서 끌어오는 전력은 입력 전압,
+DCM에서는 인덕터 전류가 매 주기 0에서 시작하므로, 온 구간(on-interval) 동안
+저장되는 에너지와 이에 따라 입력에서 끌어오는 전력은 입력 전압,
 듀티비(duty ratio), 인덕턴스, 스위칭 주파수(switching frequency)에만
 의존합니다. 벅-부스트와 플라이백에서는 자화 인덕턴스(magnetizing inductance)
-$L_M$을 사용하여 다음과 같이 나타냅니다:
+$L_M$을 사용하여 다음과 같이 나타냅니다.
 
 <Eq id="dcm.P_in" />
 
 따라서 평균 입력 전류는 입력 전압에 비례하며, 입력 포트는 저항처럼 동작합니다
-<Cite key="singer1990" /> <Cite key="erickson2020" where="Ch. 15" />:
+<Cite key="singer1990" /> <Cite key="erickson2020" where="Ch. 15" />.
 
 <Eq id="lfr.R_in" />
 
 이 저항은 흡수한 전력을 소모하지 않고 출력으로 전달합니다. 따라서 평균화한
 DCM 스위치 네트워크는 **무손실 저항**으로 모델링되며, 에너지 하베스팅
-인터페이스는 이 성질을 이용해 소스에서 볼 때 저항성 부하가 되도록 합니다.
+인터페이스는 이 성질을 이용해 전원에 저항성 부하로 보이도록 합니다.
 [전원 정합 도구(source matcher)](../../design/source-matcher/)는 플라이백의 무손실
 저항을 선형 전원(linear source)에 정합합니다.
 
 ## 풀이 예제
 
-권선 저항이 있는 부스트 예제입니다:
+권선 저항이 있는 부스트 예제입니다.
 
 <Worked example="boost-basic" show={['V_g', 'D', 'R', 'R_L', 'M_ideal', 'M', 'eta', 'V']} checks={false} />
 
@@ -90,7 +90,7 @@ DCM 스위치 네트워크는 **무손실 저항**으로 모델링되며, 에너
 <Val example="boost-basic" name="eta" />까지 낮춥니다. 이 듀티비에서는 권선
 저항이 부하 저항의 4분의 1과 비교되기 때문입니다.
 
-DCM으로 동작하는 벅-부스트 예제를 입력 쪽에서 보면 다음과 같습니다:
+DCM으로 동작하는 벅-부스트 예제를 입력 쪽에서 보면 다음과 같습니다.
 
 <Worked example="lfr-basic" />
 

@@ -41,7 +41,7 @@ resources:
     language: en
     retrieved: 2026-09-23
     why: "DC transformer models and how winding and semiconductor resistances limit the conversion ratio and efficiency."
-    why_ko: "직류 변압기 모델, 그리고 권선·반도체 저항이 변환비와 효율을 어떻게 제한하는지."
+    why_ko: "직류 변압기 모델과, 권선·반도체 저항이 변환비와 효율을 제한하는 방식."
     title_match: "Steady-State Equivalent Circuit Modeling"
     cite: erickson2020
 
@@ -55,7 +55,7 @@ resources:
     language: en
     retrieved: 2026-09-23
     why: "How transistors and diodes realize the ideal switches, and where the switching losses come from."
-    why_ko: "트랜지스터와 다이오드가 이상적인 스위치를 어떻게 구현하는지, 그리고 스위칭 손실이 어디에서 생기는지."
+    why_ko: "트랜지스터와 다이오드로 이상적인 스위치를 구현하는 방법과 스위칭 손실의 원인."
     title_match: "Switch Realization"
     cite: erickson2020
 
@@ -153,7 +153,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "The constraints a filter inductor must meet, the core geometrical constant K_g that turns them into a core size, and a step-by-step design procedure."
-    why_ko: "필터 인덕터가 지켜야 할 제약, 그것을 코어 크기로 바꾸는 코어 기하 상수 K_g, 그리고 단계별 설계 절차."
+    why_ko: "필터 인덕터가 만족해야 할 제약, 이 제약을 코어 크기로 바꾸는 코어 기하 상수 K_g, 단계별 설계 절차."
     title_match: "Inductor Design"
     cite: erickson2020
 
@@ -167,7 +167,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "Designing a transformer when core loss, rather than saturation, limits the ac flux density, with copper and core loss traded against each other."
-    why_ko: "포화가 아니라 코어 손실이 교류 자속 밀도를 제한할 때의 변압기 설계와, 구리 손실과 코어 손실의 맞교환."
+    why_ko: "포화가 아니라 코어 손실이 교류 자속 밀도를 제한할 때의 변압기 설계와, 구리 손실과 코어 손실 사이의 트레이드오프."
     title_match: "Transformer Design"
     cite: erickson2020
 
@@ -274,7 +274,7 @@ resources:
     language: en
     retrieved: 2026-09-23
     why: "MIT's first circuits course, with video lectures, notes and problem sets."
-    why_ko: "MIT의 첫 회로 과목으로, 동영상 강의, 강의 노트, 연습 문제를 제공."
+    why_ko: "동영상 강의, 강의 노트, 연습 문제를 갖춘 MIT의 첫 회로 과목."
     title_match: "Circuits and Electronics"
 
   - id: mit-6002-notes
@@ -357,7 +357,7 @@ resources:
     language: en
     retrieved: 2026-09-23
     why: "The inverting buck-boost power stage analysed the same way."
-    why_ko: "반전형 벅-부스트 전력단을 같은 방식으로 해석."
+    why_ko: "같은 방식으로 해석한 반전형 벅-부스트 전력단."
     title_match: "Understanding Inverting Buck-Boost Power Stages in Switch Mode Power Supplies"
     urlkind: pdf
 
@@ -414,7 +414,7 @@ resources:
     language: en
     retrieved: 2026-09-23
     why: "Written for inductive sensing; its explanation of the capacitance between turns, the self-resonant frequency and how to measure it applies to any wound inductor."
-    why_ko: "유도형 센싱을 위한 문서. 턴 사이 커패시턴스, 자기 공진 주파수, 그 측정 방법에 대한 설명은 모든 권선 인덕터에 해당."
+    why_ko: "유도형 센싱용 문서이지만, 턴 사이 커패시턴스와 자기 공진 주파수, 그 측정 방법에 대한 설명은 모든 권선 인덕터에 적용됩니다."
     title_match: "Sensor Design for Inductive Sensing Applications Using LDC"
     urlkind: pdf
     cite: ti_snoa930
@@ -444,7 +444,7 @@ resources:
     language: en
     retrieved: 2026-09-23
     why: "Lloyd Dixon's magnetics design handbook, reproduced by TI from the 2001 Unitrode edition. The ti.com copy requires a free myTI login."
-    why_ko: "Lloyd Dixon의 자성 부품 설계 핸드북으로, TI가 2001년 Unitrode 판을 재수록한 것. ti.com 사본은 무료 myTI 로그인이 필요."
+    why_ko: "Lloyd Dixon의 자성 부품 설계 핸드북으로, TI가 2001년 Unitrode 판을 재수록했습니다. ti.com 사본을 보려면 무료 myTI 로그인이 필요합니다."
     title_match: "Magnetics Design Handbook"
     urlkind: login
     cite: dixon2001
@@ -474,7 +474,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "How a flyback's leakage inductance drives the switch above the reflected voltage, and how the clamp voltage trades against the clamp's loss."
-    why_ko: "플라이백의 누설 인덕턴스가 스위치 전압을 반사 전압보다 높이 밀어 올리는 과정, 그리고 클램프 전압과 클램프 손실의 맞교환."
+    why_ko: "플라이백의 누설 인덕턴스가 스위치 전압을 반사 전압보다 높이 밀어 올리는 과정, 그리고 클램프 전압과 클램프 손실 사이의 트레이드오프."
     title_match: "Snubbing the flyback converter"
     urlkind: pdf
     cite: ti_ssztcv6
@@ -519,8 +519,8 @@ resources:
     level: intro
     language: en
     retrieved: 2026-09-23
-    why: "Intuitive, equation-light explanations of converter behaviour; linked as a channel until specific videos are verified."
-    why_ko: "수식을 최소화한 직관적 설명; 개별 영상이 검증될 때까지 채널로 연결."
+    why: "Intuitive, equation-light explanations of converter behaviour."
+    why_ko: "수식을 최소화한 직관적인 컨버터 동작 설명."
     title_match: "Sam Ben-Yaakov"
     cite: benyaakov_youtube
 
@@ -535,7 +535,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "The hot loop, the layer stack and the switch node of a buck converter's board, step by step."
-    why_ko: "벅 컨버터 기판의 핫 루프, 층 구성, 스위치 노드를 단계별로 설명."
+    why_ko: "벅 컨버터 기판의 핫 루프, 층 구성, 스위치 노드에 대한 단계별 설명."
     title_match: "PCB Layout Considerations for Non-Isolated Switching Power Supplies"
     cite: adi_an136
 
@@ -549,7 +549,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "Five steps to a step-down converter's board, with the input capacitor as its most important component."
-    why_ko: "입력 커패시터를 가장 중요한 부품으로 두는, 강압 컨버터 기판을 위한 다섯 단계."
+    why_ko: "입력 커패시터를 가장 중요한 부품으로 보는, 강압 컨버터 기판 설계의 다섯 단계."
     title_match: "Five steps to a great PCB layout for a step-down converter"
     urlkind: pdf
     cite: ti_slyt614
@@ -579,7 +579,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "The gate-charge curve read interval by interval, and what each charge says about the switching times."
-    why_ko: "게이트 전하 곡선을 구간별로 읽고, 각 전하가 스위칭 시간에 대해 말해 주는 것."
+    why_ko: "게이트 전하 곡선을 구간별로 읽는 방법과, 각 전하로 알 수 있는 스위칭 시간."
     title_match: "Understanding Gate Charge"
     urlkind: pdf
     cite: vishay_an608a
@@ -609,7 +609,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "A short comparison of placing the shunt in the ground return or on the supply side."
-    why_ko: "션트를 접지 귀환 경로에 둘지 전원 쪽에 둘지를 짧게 비교."
+    why_ko: "션트를 접지 귀환 경로에 둘 때와 전원 쪽에 둘 때의 짧은 비교."
     title_match: "High- and Low-side Current Measurements"
     urlkind: pdf
     cite: ti_sszta51
@@ -711,7 +711,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "A power MOSFET's structure, its data sheet's parameters and how they change with temperature."
-    why_ko: "전력 MOSFET의 구조, 데이터시트 파라미터, 그리고 그것들이 온도에 따라 변하는 방식."
+    why_ko: "전력 MOSFET의 구조, 데이터시트 파라미터, 파라미터가 온도에 따라 변하는 방식."
     title_match: "Power MOSFET Tutorial"
     urlkind: pdf
     cite: microchip_apt0403
@@ -726,7 +726,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "Where inrush current comes from when a load's capacitance is switched on, and how a slower voltage rise reduces it."
-    why_ko: "부하의 커패시턴스를 연결할 때 돌입 전류가 생기는 이유와, 전압 상승을 늦춰 그것을 줄이는 방법."
+    why_ko: "부하의 커패시턴스를 연결할 때 돌입 전류가 생기는 이유와, 전압 상승을 늦춰 돌입 전류를 줄이는 방법."
     title_match: "Managing Inrush Current"
     urlkind: pdf
     cite: ti_slva670
@@ -741,7 +741,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "How a fuse's ratings are defined, and what its current, its pulses and its ambient temperature do to it."
-    why_ko: "퓨즈의 정격이 정의되는 방식, 그리고 전류, 펄스, 주위 온도가 퓨즈에 주는 영향."
+    why_ko: "퓨즈 정격의 정의와, 전류·펄스·주위 온도가 퓨즈에 주는 영향."
     title_match: "Fuse Selection Guide"
     urlkind: pdf
     cite: littelfuse_fuseology
@@ -771,7 +771,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "How a class-2 ceramic capacitor's capacitance changes with temperature and with its dc voltage, and why its code tells only the first."
-    why_ko: "2종 세라믹 커패시터의 커패시턴스가 온도와 DC 전압에 따라 변하는 방식, 그리고 그 코드가 앞의 것만 알려 주는 이유."
+    why_ko: "2종 세라믹 커패시터의 커패시턴스가 온도와 DC 전압에 따라 변하는 방식과, 특성 코드가 온도에 따른 변화만 알려 주는 이유."
     title_match: "Temperature and Voltage Variation of Ceramic Capacitors"
     urlkind: html
     cite: adi_ceramic_caps
@@ -817,7 +817,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "Open access: the cycles for maximized energy output, and the figure of merit that compares triboelectric nanogenerators by the energy a cycle delivers per area and per displacement."
-    why_ko: "공개 논문: 최대 에너지 출력 사이클, 그리고 한 사이클이 면적과 변위당 내는 에너지로 마찰전기 나노발전기를 비교하는 성능 지수."
+    why_ko: "오픈 액세스 논문: 최대 에너지 출력 사이클과, 한 사이클이 면적과 변위당 내는 에너지로 마찰전기 나노발전기를 비교하는 성능 지수."
     title_match: "Standards and figure-of-merits for quantifying the performance of triboelectric nanogenerators"
     cite: zi2015
 
@@ -831,7 +831,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "The paper that introduced synchronized switch harvesting on inductor; the PubMed record carries its abstract."
-    why_ko: "인덕터 동기 스위치 하베스팅(SSHI)을 처음 제안한 논문. PubMed 기록에 초록이 실림."
+    why_ko: "인덕터 동기 스위치 하베스팅(SSHI)을 처음 제안한 논문. PubMed 기록에 초록이 실려 있습니다."
     title_match: "Toward energy harvesting using active materials and conversion improvement by nonlinear processing"
     cite: guyomar2005
 
@@ -904,7 +904,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "The textbook this site follows for its symbols and derivations: steady state, DCM, averaged models, control and magnetics."
-    why_ko: "이 사이트가 기호와 유도의 기준으로 삼는 교과서: 정상 상태, DCM, 평균화 모델, 제어, 자성 부품."
+    why_ko: "이 사이트가 기호와 유도의 기준으로 삼는 교과서: 정상상태, DCM, 평균화 모델, 제어, 자성 부품."
     title_match: "Fundamentals of Power Electronics"
     cite: erickson2020
 
@@ -946,7 +946,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "An introductory undergraduate textbook, with PSpice simulations beside the circuit analysis."
-    why_ko: "회로 해석 옆에 PSpice 시뮬레이션을 곁들인 학부 입문 교과서."
+    why_ko: "회로 해석에 PSpice 시뮬레이션을 곁들인 학부 입문 교과서."
     title_match: "Power Electronics"
     cite: hart2011
 
@@ -973,8 +973,8 @@ resources:
     level: intermediate
     language: en
     retrieved: 2026-09-24
-    why: "The course series around the textbook, from converter circuits to control and magnetics; its courses are listed one by one as well."
-    why_ko: "교과서를 따라가는 강좌 시리즈: 컨버터 회로부터 제어와 자성 부품까지. 개별 강좌도 따로 실림."
+    why: "The course series around the textbook, from converter circuits to control and magnetics."
+    why_ko: "교과서를 따라가는 강좌 시리즈: 컨버터 회로부터 제어와 자성 부품까지."
     title_match: "Power Electronics | Coursera"
     cite: cuboulder_pe_coursera
 
@@ -1016,7 +1016,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "Seminar papers and recordings on topologies, control, magnetics and gate drive; the content needs a free myTI account."
-    why_ko: "토폴로지, 제어, 자성 부품, 게이트 구동에 관한 세미나 자료와 녹화 영상. 내용을 보려면 무료 myTI 계정이 필요."
+    why_ko: "토폴로지, 제어, 자성 부품, 게이트 구동에 관한 세미나 자료와 녹화 영상. 내용을 보려면 무료 myTI 계정이 필요합니다."
     title_match: "PSDS library"
     cite: ti_psds
 
@@ -1045,7 +1045,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "An open-source SPICE simulator; the site's simulator is cross-checked against it in CI."
-    why_ko: "오픈 소스 SPICE 시뮬레이터. 이 사이트의 시뮬레이터를 CI에서 이것과 교차 검증."
+    why_ko: "오픈 소스 SPICE 시뮬레이터. 이 사이트의 시뮬레이터를 CI에서 ngspice와 교차 검증합니다."
     title_match: "Ngspice"
     cite: ngspice
 
@@ -1073,7 +1073,7 @@ resources:
     language: en
     retrieved: 2026-09-25
     why: "How SymPy solves an equation or a system for a symbol, as the site's derivation scripts solve the balance equations."
-    why_ko: "SymPy로 방정식이나 연립방정식을 기호에 대해 푸는 방법. 이 사이트의 유도 스크립트가 평형 방정식을 푸는 방식."
+    why_ko: "SymPy로 방정식이나 연립방정식을 기호에 대해 푸는 방법. 이 사이트의 유도 스크립트도 이 방법으로 평형 방정식을 풉니다."
     title_match: "Solve Equations"
 
   - id: python-floatingpoint
@@ -1099,7 +1099,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "A circuit simulator in the browser that animates the currents; good for a first look at a converter."
-    why_ko: "전류를 움직임으로 보여 주는 브라우저 회로 시뮬레이터. 컨버터를 처음 살펴보기에 좋음."
+    why_ko: "전류의 흐름을 애니메이션으로 보여 주는 브라우저 회로 시뮬레이터. 컨버터를 처음 살펴보기에 좋습니다."
     title_match: "Circuit Simulator"
     cite: falstad_circuitjs
 
@@ -1113,7 +1113,7 @@ resources:
     language: en
     retrieved: 2026-09-25
     why: "The simulator's source: how it steps in time, and how it models its inductors, transformers and diodes in each step."
-    why_ko: "시뮬레이터의 소스 코드. 시간 스텝을 진행하는 방법과, 스텝마다 인덕터·변압기·다이오드를 모델링하는 방법."
+    why_ko: "시뮬레이터의 소스 코드. 회로를 한 타임 스텝씩 계산하는 방법과, 스텝마다 인덕터·변압기·다이오드를 모델링하는 방법."
     title_match: "pfalstad/circuitjs1"
     cite: circuitjs1_source
 
@@ -1127,7 +1127,7 @@ resources:
     language: en
     retrieved: 2026-09-25
     why: "How a web page runs the simulator from JavaScript and reads its node voltages and currents after every step, as the site's CI does to check the library's circuits."
-    why_ko: "웹 페이지에서 JavaScript로 시뮬레이터를 돌리고 스텝마다 노드 전압과 전류를 읽는 방법. 이 사이트의 CI가 라이브러리의 회로를 확인하는 방식이기도 함."
+    why_ko: "웹 페이지에서 JavaScript로 시뮬레이터를 실행하고 스텝마다 노드 전압과 전류를 읽는 방법. 이 사이트의 CI도 이 방법으로 라이브러리의 회로를 확인합니다."
     title_match: "Circuit Simulator JavaScript Interface Documentation"
 
   - id: tdk-mdt
@@ -1140,7 +1140,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "The manufacturer's ferrite material data as curves: permeability, power loss against frequency, flux density and temperature, and core calculations."
-    why_ko: "제조사의 페라이트 재료 데이터를 곡선으로: 투자율, 주파수·자속 밀도·온도에 따른 전력 손실, 코어 계산."
+    why_ko: "곡선으로 보는 제조사의 페라이트 재료 데이터: 투자율, 주파수·자속 밀도·온도에 따른 전력 손실, 코어 계산."
     title_match: "Ferrite magnetic design tool"
 
   - id: katex
@@ -1180,7 +1180,7 @@ resources:
     language: en
     retrieved: 2026-09-24
     why: "The loss-free resistor: a converter that draws power like a resistor and delivers it instead of dissipating it."
-    why_ko: "무손실 저항: 저항처럼 전력을 끌어오되 소비하지 않고 전달하는 컨버터."
+    why_ko: "무손실 저항: 저항처럼 전력을 끌어오되 소산하지 않고 전달하는 컨버터."
     title_match: "Realization of loss-free resistive elements"
     cite: singer1990
 

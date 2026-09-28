@@ -10,7 +10,7 @@ criteria:
   - id: core
     text: '$K_g$를 만족하는 표의 가장 작은 코어와 그 여유.'
   - id: turns
-    text: '설계 도구에서 $A_\mathrm{min}$ 기준으로 $B_\mathrm{max}$를 지키는 최소 턴 수, 손으로 확인한 값.'
+    text: '설계 도구에서 $A_\mathrm{min}$ 기준으로 $B_\mathrm{max}$를 지키는 최소 턴 수(손으로 확인).'
   - id: gap-window
     text: '그 턴 수에서 인덕턴스를 맞추는 공극, 창의 $K_u$ 안에 드는 권선, 예산 안의 저항.'
   - id: smaller-core

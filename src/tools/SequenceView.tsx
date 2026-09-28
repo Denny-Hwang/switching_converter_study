@@ -1,6 +1,6 @@
 /**
- * The simulator's operating modes (docs/BUILD_SPEC.md section 5, "Simulate";
- * the maintainer's request for a paper-style, mode-by-mode explanation):
+ * The simulator's operating modes, one at a time (docs/BUILD_SPEC.md section 5,
+ * "Simulate"):
  * - a strip of the period's modes, each a button, as wide as it lasts;
  * - the circuit in the selected mode: the branches that carry current in it
  *   coloured, an arrow in the direction the current flows (two heads when it

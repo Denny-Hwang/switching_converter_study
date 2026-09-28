@@ -11,7 +11,7 @@ type Text = Record<string, string>;
 const en: Text = {
   title: 'Operating modes',
   intro:
-    'One switching period, mode by mode, the way papers describe a converter. Pick a mode, or click on the charts: the circuit shows which parts carry current and which way it flows (two arrowheads where it reverses within the mode), the table what every element does, and the shaded band on the charts where the mode lies.',
+    'One switching period, mode by mode. Pick a mode, or click on the charts: the circuit shows which parts carry current and which way it flows (two arrowheads where it reverses within the mode), the table what every element does, and the shaded band on the charts where the mode lies.',
   mode: 'Mode {k}',
   modeShort: 'M{k}',
   modeRange: 'Mode {k}: {t0} to {t1} ({dt})',
@@ -25,13 +25,13 @@ const en: Text = {
   legendIdle: 'no current',
   sheetTitle: 'All modes at once',
   sheetIntro:
-    'The whole period as a paper draws it: the key waveforms, with the boundaries t_0, t_1, … of the modes, then the circuit in each mode. It follows the values above.',
+    'The whole period: the key waveforms with the modes\' boundaries t_0, t_1, …, then the circuit in each mode, for the values above.',
   sheetRange: '(t_{a} to t_{b}: {t0} to {t1}, {dt})',
   sheetOn: 'on',
   sheetWaves: 'Key waveforms over one switching period of {Ts}, in {n} modes',
   rest: 'Nothing moves in this steady state: every current is zero (to rounding), so there are no operating modes to show.',
   tableNote:
-    "Each current is positive along its element's arrow on the circuit (the direction of its average current in the mode); a negative value flows against it. An inductor's voltage is taken along its arrow too, and includes the drop across its winding resistance; every other voltage keeps the element's own direction. A current below a thousandth of its scale counts as none and is shown as zero. The scale is the largest current in the mode among the elements it flows with: the switching cell (a transformer's primary side and secondary side apart), the output capacitor with the load, the bus capacitor with the source. An inductor's scale is at most its own largest current over the period; a capacitor's at least what the load or the source draws; the load's and the source's own elements use their own largest current over the period. Rounding, below a billionth of the circuit's natural current, is never a current.",
+    "Each current is positive along its element's arrow on the circuit (the direction of its average current in the mode); a negative value flows against it. An inductor's voltage is taken along its arrow too and includes the drop across its winding resistance; every other voltage keeps the element's own direction. A current below a thousandth of the currents it flows with in the mode is shown as zero.",
 
   // what each mode is, in the mode strip
   'kind.on': 'switch on',
@@ -205,7 +205,7 @@ const en: Text = {
 const ko: Text = {
   title: '동작 모드',
   intro:
-    '논문이 컨버터를 설명하듯 한 스위칭 주기를 모드별로 나누어 보여 줍니다. 모드를 고르거나 그래프를 클릭하면, 회로도는 어느 부분에 전류가 흐르고 어느 방향으로 흐르는지(모드 안에서 방향이 바뀌면 양쪽 화살표)를, 표는 각 소자가 하는 일을, 그래프의 음영은 그 모드의 구간을 보여 줍니다.',
+    '한 스위칭 주기를 모드별로 살펴봅니다. 모드를 고르거나 그래프를 클릭하면 회로도에는 전류가 흐르는 부분과 방향(모드 안에서 방향이 바뀌면 양쪽 화살표)이, 표에는 각 소자의 상태가, 그래프에는 그 모드의 구간이 음영으로 표시됩니다.',
   mode: '모드 {k}',
   modeShort: 'M{k}',
   modeRange: '모드 {k}: {t0} ~ {t1} ({dt})',
@@ -218,13 +218,13 @@ const ko: Text = {
   legendActive: '전류가 흐름',
   legendIdle: '전류 없음',
   sheetTitle: '모든 모드 한눈에 보기',
-  sheetIntro: '논문에서 그리듯 한 주기 전체를 보여 줍니다. 모드의 경계 t_0, t_1, …을 표시한 주요 파형과 각 모드의 회로입니다. 위의 값을 따릅니다.',
+  sheetIntro: '한 주기 전체의 주요 파형과 모드 경계 t_0, t_1, …, 그리고 각 모드의 회로입니다. 위에 입력한 값으로 그립니다.',
   sheetRange: '(t_{a}에서 t_{b}까지: {t0}에서 {t1}까지, {dt})',
   sheetOn: '켜짐',
-  sheetWaves: '스위칭 주기 {Ts} 한 주기의 주요 파형, 모드 {n}개',
+  sheetWaves: '한 스위칭 주기({Ts})의 주요 파형, 모드 {n}개',
   rest: '이 정상상태에서는 아무것도 움직이지 않습니다. 모든 전류가 (반올림 오차 수준에서) 0이므로 보여 줄 동작 모드가 없습니다.',
   tableNote:
-    '각 전류는 회로도에서 그 소자의 화살표 방향(모드 안 평균 전류의 방향)이 양수이고, 음수는 화살표 반대로 흐르는 전류입니다. 인덕터 전압도 화살표 방향으로 잡으며 권선 저항의 전압 강하를 포함합니다. 다른 전압은 소자 자신의 방향을 따릅니다. 기준값(scale)의 1000분의 1보다 작은 전류는 흐르지 않는 것으로 보고 0으로 표시합니다. 기준값은 그 모드에서 함께 흐르는 소자들의 가장 큰 전류입니다: 스위칭 셀(변압기는 1차 측과 2차 측을 따로), 부하와 함께인 출력 커패시터, 전원과 함께인 버스 커패시터. 인덕터의 기준값은 한 주기 동안 자신의 최대 전류를 넘지 않고, 커패시터의 기준값은 부하나 전원이 끌어가는 전류보다 작지 않습니다. 부하와 전원 자체의 소자는 한 주기 동안 자신의 최대 전류를 기준값으로 씁니다. 회로 고유 전류의 10억분의 1보다 작은 값은 반올림 오차로, 전류로 보지 않습니다.',
+    '각 전류는 회로도에서 그 소자의 화살표 방향(모드 안 평균 전류의 방향)을 양수로 잡으며, 음수는 화살표 반대로 흐르는 전류입니다. 인덕터 전압도 화살표 방향으로 잡고 권선 저항의 전압 강하를 포함합니다. 다른 전압은 소자 자신의 방향을 따릅니다. 모드 안에서 함께 흐르는 전류의 1000분의 1보다 작은 전류는 0으로 표시합니다.',
 
   'kind.on': '스위치 온',
   'kind.off': '스위치 오프',
@@ -252,7 +252,7 @@ const ko: Text = {
   'el.D3': '리셋 다이오드 D_3',
   'el.C': '출력 커패시터 C',
   'el.R': '부하 저항 R',
-  'el.B': '배터리(R_b 뒤의 V_b)',
+  'el.B': '배터리(V_b, 내부 저항 R_b)',
   'el.V': '고정 출력 V',
   'el.Vg': '입력 V_g',
   'el.Voc': '전원 V_oc',
@@ -320,15 +320,15 @@ const ko: Text = {
   'desc.buckboost.idle': 'L의 전류가 0입니다(DCM). S와 D가 모두 꺼져 있습니다.',
   'desc.twoSwitch.rev': 'S가 꺼져 있고 L의 전류가 음수입니다. 이 전류는 0 V에서 도통하는 S의 바디 다이오드를 통해 입력으로 되돌아갑니다.',
   'desc.twoSwitch.onRev':
-    'S가 켜져 있지만 L의 전류가 음수입니다. 이 전류는 S의 바디 다이오드를 통해 입력으로 되돌아가는데, 바디 다이오드는 0 V에서 도통하므로 스위치의 저항 대신 전류를 넘겨받습니다.',
+    'S가 켜져 있지만 L의 전류가 음수입니다. 바디 다이오드가 0 V에서 도통하므로 이 전류는 스위치의 저항 대신 바디 다이오드를 통해 입력으로 되돌아갑니다.',
   'desc.buck.rev': 'S가 꺼져 있고 L의 전류가 음수입니다. 이 전류는 0 V에서 도통하는 S의 바디 다이오드를 통해 출력에서 입력으로 되돌아갑니다.',
   'desc.buck.onRev':
-    'S가 켜져 있지만 L의 전류가 음수입니다. 이 전류는 S의 바디 다이오드를 통해 출력에서 입력으로 되돌아가는데, 바디 다이오드는 0 V에서 도통하므로 스위치의 저항 대신 전류를 넘겨받습니다.',
+    'S가 켜져 있지만 L의 전류가 음수입니다. 바디 다이오드가 0 V에서 도통하므로 이 전류는 스위치의 저항 대신 바디 다이오드를 통해 출력에서 입력으로 되돌아갑니다.',
   'desc.twoSwitch.rise': 'S가 막 꺼졌습니다. L의 전류가 S 양단의 커패시턴스 C_node를 충전하므로, D가 전류를 넘겨받을 때까지 스위치 전압이 올라갑니다.',
   'desc.twoSwitch.riseRing':
     'S가 막 꺼졌습니다. L의 전류가 S 양단의 커패시턴스 C_node를 충전하여 스위치 전압이 올라갑니다. 스위치 전압이 D의 도통 전압에 이르기 전에 전류가 0까지 떨어지므로 D는 꺼진 채로 있습니다.',
   'desc.twoSwitch.riseCut': 'S가 막 꺼졌습니다. L의 전류가 S 양단의 커패시턴스 C_node를 충전하므로, S가 다시 켜질 때까지 스위치 전압이 올라갑니다.',
-  'desc.twoSwitch.ring': 'D가 꺼져 있습니다. L이 C_node와 함께 링잉합니다. 링잉이 스위치 전압을 0 아래로 끌어내리려 할 때마다 S의 바디 다이오드가 그 자리에서 클램프합니다.',
+  'desc.twoSwitch.ring': 'D가 꺼져 있습니다. L이 C_node와 함께 링잉합니다. 링잉이 스위치 전압을 0 아래로 끌어내리려 할 때마다 S의 바디 다이오드가 0 V로 클램프합니다.',
   'desc.flyback.on': 'S가 도통하여 1차 권선을 입력 양단에 연결합니다. 2차 권선의 점(dot)이 아래쪽 끝에 있으므로 D는 역바이어스되어 2차에는 전류가 흐르지 않습니다.',
   'desc.flyback.off': 'S가 꺼져 있습니다. 자화 전류가 2차로 옮겨 가, D가 그 전류를 n으로 나눈 값을 출력으로 흘립니다.',
   'desc.flyback.idle': '자화 전류가 0입니다(DCM). S와 D가 모두 꺼져 있습니다.',
@@ -338,7 +338,7 @@ const ko: Text = {
   'desc.flyback.riseRing':
     'S가 막 꺼졌습니다. 자화 전류가 C_node를 충전하여 스위치 전압이 올라갑니다. 스위치 전압이 D의 도통 전압에 이르기 전에 전류가 0까지 떨어지므로 D는 꺼진 채로 있습니다.',
   'desc.flyback.riseCut': 'S가 막 꺼졌습니다. 자화 전류가 C_node를 충전하므로, S가 다시 켜질 때까지 스위치 전압이 올라갑니다.',
-  'desc.flyback.ring': 'D가 꺼져 있습니다. L_M이 C_node와 함께 링잉합니다. 스위치 전압이 0 아래로 내려가려 할 때마다 S의 바디 다이오드가 그 자리에서 클램프합니다.',
+  'desc.flyback.ring': 'D가 꺼져 있습니다. L_M이 C_node와 함께 링잉합니다. 스위치 전압이 0 아래로 내려가려 할 때마다 S의 바디 다이오드가 0 V로 클램프합니다.',
   'desc.forward.on': 'S가 도통하여 1차 권선을 입력 양단에 연결하고, 2차 권선이 D_1과 L을 통해 출력으로 전류를 흘립니다. D_2와 리셋 다이오드 D_3는 차단합니다.',
   'desc.forward.off':
     'S가 꺼져 있습니다. 자화 전류가 리셋 권선과 D_3를 통해 입력으로 되돌아가고, S는 입력 전압에 1차로 반사된 리셋 권선 전압을 더한 전압을 차단합니다. L은 D_2를 통해 환류(freewheeling)합니다.',
@@ -350,13 +350,13 @@ const ko: Text = {
   'src.Vg': '입력이',
   'src.Voc': '전원이',
   'say.volts': '{L} 양단 전압은 평균 {v}입니다.',
-  'say.voltsR': '{L} 양단 전압은 평균 {v}입니다: 권선 저항에 {vr}, 인덕턴스에 {vl}.',
-  'say.reset': 'L_M의 전류가 0에 이릅니다: 코어의 리셋이 끝났습니다.',
-  'say.noReset': 'S가 켜질 때까지 L_M의 전류가 0에 이르지 못합니다: 코어가 리셋되지 않습니다.',
+  'say.voltsR': '{L} 양단 전압은 평균 {v}이며, 권선 저항에 {vr}, 인덕턴스에 {vl}가 걸립니다.',
+  'say.reset': 'L_M의 전류가 0에 이르러 코어가 리셋됩니다.',
+  'say.noReset': 'S가 켜질 때까지 L_M의 전류가 0에 이르지 못해 코어가 리셋되지 않습니다.',
   'say.inductor.storing': '{L}의 전류가 커집니다: 에너지를 저장합니다.',
-  'say.inductor.releasing': '{L}의 전류가 줄어듭니다: 에너지를 내줍니다.',
-  'say.inductor.storeRelease': '{L}의 전류가 커졌다가 줄어듭니다: 에너지를 저장했다가 내줍니다.',
-  'say.inductor.releaseStore': '{L}의 전류가 줄었다가 다시 커집니다: 에너지를 내줬다가 다시 저장합니다.',
+  'say.inductor.releasing': '{L}의 전류가 줄어듭니다: 에너지를 방출합니다.',
+  'say.inductor.storeRelease': '{L}의 전류가 커졌다가 줄어듭니다: 에너지를 저장했다가 방출합니다.',
+  'say.inductor.releaseStore': '{L}의 전류가 줄었다가 다시 커집니다: 에너지를 방출했다가 다시 저장합니다.',
   'say.inductor.steady': '{L}의 전류가 일정합니다.',
   'say.inductor.reversing': '{L}의 전류 방향이 바뀝니다.',
   'say.inductor.ringing': '{L}의 전류가 방향을 바꾸며 링잉합니다.',

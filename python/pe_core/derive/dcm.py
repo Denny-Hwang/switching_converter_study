@@ -25,10 +25,10 @@ def derive() -> Derivation:
             "current must equal what the load draws)."
         ),
         intro_ko=(
-            "인덕터 전류 리플이 커져 전류가 0에 닿으면 CCM을 벗어난다. 경계에서는 리플의 절반 $\\Delta i_L$이 "
-            "인덕터 직류 전류와 같다. DCM에서는 스위치와 다이오드가 모두 꺼진 세 번째 구간 $D_3 T_s$가 생기고 "
-            "그 길이를 모르므로, 전압-초 평형에 커패시터 전하 평형(평균 다이오드 또는 인덕터 전류가 "
-            "부하 전류와 같음)을 함께 쓴다."
+            "인덕터 전류 리플이 커져 전류가 0에 닿으면 컨버터는 CCM을 벗어납니다. 경계에서는 리플의 절반 "
+            "$\\Delta i_L$이 인덕터 직류 전류와 같습니다. DCM에서는 스위치와 다이오드가 모두 꺼진 세 번째 구간 "
+            "$D_3 T_s$가 생기고 그 길이를 모르므로, 전압-초 평형에 커패시터 전하 평형(평균 다이오드 전류 또는 평균 "
+            "인덕터 전류가 부하 전류와 같음)을 함께 씁니다."
         ),
     )
     D, Vg, V, R, L, Ts, K = S("D"), S("V_g"), S("V"), S("R"), S("L"), S("T_s"), S("K")
@@ -42,7 +42,7 @@ def derive() -> Derivation:
 
     d.step(
         "Definition used throughout: $K = 2L/(R T_s)$, i.e. $L = K R T_s/2$.",
-        "전 과정에서 쓰는 정의: $K = 2L/(R T_s)$, 즉 $L = K R T_s/2$.",
+        "이 유도 전체에서 쓰는 정의: $K = 2L/(R T_s)$, 즉 $L = K R T_s/2$.",
         sp.Eq(K, 2 * L / (R * Ts)),
     )
 
@@ -62,28 +62,28 @@ def derive() -> Derivation:
             eq_id,
             sp.simplify(sol[0]),
             "Boundary $\\Delta i_L = I_L$, with $L = K R T_s/2$, solved for $K$.",
-            "경계 조건 $\\Delta i_L = I_L$에 $L = K R T_s/2$를 넣고 $K$에 대해 푼다.",
+            "경계 조건 $\\Delta i_L = I_L$에 $L = K R T_s/2$를 넣고 $K$에 대해 풉니다.",
             S("K_crit"),
         )
 
     kcrit(
         "Kcrit.buck",
         "Buck: the dc inductor current equals the load current $V/R$, with $V = D V_g$ in CCM.",
-        "벅: 인덕터 직류 전류는 부하 전류 $V/R$이며, CCM에서 $V = D V_g$.",
+        "벅: 인덕터 직류 전류는 부하 전류 $V/R$이며, CCM에서 $V = D V_g$입니다.",
         D * Vg / R,
         (Vg - D * Vg) * D * Ts / (2 * L),
     )
     kcrit(
         "Kcrit.boost",
         "Boost: the inductor carries the input current, $V/((1 - D)R)$, with $V = V_g/(1 - D)$.",
-        "부스트: 인덕터는 입력 전류 $V/((1 - D)R)$를 흘리며, $V = V_g/(1 - D)$.",
+        "부스트: 인덕터에는 입력 전류 $V/((1 - D)R)$가 흐르며, $V = V_g/(1 - D)$입니다.",
         Vg / ((1 - D) ** 2 * R),
         Vg * D * Ts / (2 * L),
     )
     kcrit(
         "Kcrit.buckboost",
         "Buck-boost: the inductor current is $|V|/((1 - D)R)$, with $|V| = D V_g/(1 - D)$.",
-        "벅-부스트: 인덕터 전류는 $|V|/((1 - D)R)$이며, $|V| = D V_g/(1 - D)$.",
+        "벅-부스트: 인덕터 전류는 $|V|/((1 - D)R)$이며, $|V| = D V_g/(1 - D)$입니다.",
         D * Vg / ((1 - D) ** 2 * R),
         Vg * D * Ts / (2 * L),
     )
@@ -93,7 +93,7 @@ def derive() -> Derivation:
         "L.crit",
         sp.solve(sp.Eq(Kc, 2 * L / (R * Ts)), L)[0],
         "At the boundary $K$ equals $K_\\mathrm{crit}$; solve the definition of $K$ for $L$.",
-        "경계에서 $K$는 $K_\\mathrm{crit}$과 같다; $K$의 정의를 $L$에 대해 푼다.",
+        "경계에서 $K$는 $K_\\mathrm{crit}$과 같으므로, $K$의 정의를 $L$에 대해 풉니다.",
         S("L_crit"),
     )
 
@@ -111,7 +111,7 @@ def derive() -> Derivation:
         "buck.dcm.D2",
         sp.simplify(D2_sol.subs(M, S("M"))),
         "Solve for $D_2$.",
-        "$D_2$를 구한다.",
+        "$D_2$를 구합니다.",
         S("D_2"),
     )
     pk = (Vg - M * Vg) * D * Ts / L
@@ -120,7 +120,8 @@ def derive() -> Derivation:
     d.step(
         "Charge balance: the average inductor current (a triangle of height $i_\\mathrm{pk}$ and base $(D + D_2)T_s$) "
         "equals the load current $V/R$.",
-        "전하 평형: 평균 인덕터 전류(높이 $i_\\mathrm{pk}$, 밑변 $(D + D_2)T_s$인 삼각형)가 부하 전류 $V/R$과 같다.",
+        "전하 평형: 평균 인덕터 전류(높이 $i_\\mathrm{pk}$, 밑변 $(D + D_2)T_s$인 삼각형)가 부하 전류 $V/R$과 "
+        "같습니다.",
         cb,
     )
     quad = sp.simplify(cb.lhs.subs(L, L_of_K) - cb.rhs)
@@ -129,7 +130,7 @@ def derive() -> Derivation:
         "buck.dcm.M",
         sp.simplify(positive_root(roots, sample)),
         "Substitute $L = K R T_s/2$ and take the positive root of the quadratic in $M$.",
-        "$L = K R T_s/2$를 대입하고 $M$에 대한 2차식의 양의 근을 택한다.",
+        "$L = K R T_s/2$를 대입하고 $M$에 대한 2차식의 양의 근을 택합니다.",
         S("M"),
     )
 
@@ -141,13 +142,14 @@ def derive() -> Derivation:
         vs,
     )
     D2_sol = sp.solve(vs, D2)[0]
-    d.step("Solve for $D_2$.", "$D_2$를 구한다.", sp.Eq(D2, D2_sol))
+    d.step("Solve for $D_2$.", "$D_2$를 구합니다.", sp.Eq(D2, D2_sol))
     pk = Vg * D * Ts / L
     cb = sp.Eq(pk * D2_sol / 2, M * Vg / R)
     d.step(
         "Charge balance at the output: the average diode current (a triangle of height $i_\\mathrm{pk}$ over $D_2 T_s$) "
         "equals the load current.",
-        "출력의 전하 평형: 평균 다이오드 전류($D_2 T_s$ 동안 높이 $i_\\mathrm{pk}$인 삼각형)가 부하 전류와 같다.",
+        "출력의 전하 평형: 평균 다이오드 전류($D_2 T_s$ 동안 높이 $i_\\mathrm{pk}$인 삼각형)가 부하 전류와 "
+        "같습니다.",
         cb,
     )
     eqn = sp.Eq(sp.simplify(cb.lhs.subs(L, L_of_K)), cb.rhs)
@@ -156,7 +158,7 @@ def derive() -> Derivation:
         "boost.dcm.M",
         sp.simplify(positive_root(roots, sample, lo=1.0)),
         "Substitute $L = K R T_s/2$ and keep the root with $M > 1$.",
-        "$L = K R T_s/2$를 대입하고 $M > 1$인 근을 택한다.",
+        "$L = K R T_s/2$를 대입하고 $M > 1$인 근을 택합니다.",
         S("M"),
     )
 
@@ -168,12 +170,12 @@ def derive() -> Derivation:
         vs,
     )
     D2_sol = sp.solve(vs, D2)[0]
-    d.step("Solve for $D_2$.", "$D_2$를 구한다.", sp.Eq(D2, D2_sol))
+    d.step("Solve for $D_2$.", "$D_2$를 구합니다.", sp.Eq(D2, D2_sol))
     pk = Vg * D * Ts / L
     cb = sp.Eq(pk * D2_sol / 2, -Mneg * Vg / R)
     d.step(
         "Charge balance: the average diode current equals the load current $|V|/R$.",
-        "전하 평형: 평균 다이오드 전류가 부하 전류 $|V|/R$과 같다.",
+        "전하 평형: 평균 다이오드 전류가 부하 전류 $|V|/R$과 같습니다.",
         cb,
     )
     eqn = sp.Eq(sp.simplify(cb.lhs.subs(L, L_of_K)), cb.rhs)
@@ -184,7 +186,7 @@ def derive() -> Derivation:
         "buckboost.dcm.M",
         sp.simplify(roots[0]),
         "Substitute $L = K R T_s/2$ and solve ($M < 0$).",
-        "$L = K R T_s/2$를 대입해 푼다($M < 0$).",
+        "$L = K R T_s/2$를 대입해 풉니다($M < 0$).",
         S("M"),
     )
     return d

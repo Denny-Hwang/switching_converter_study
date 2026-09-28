@@ -55,7 +55,7 @@ function saidVolts(description: string, locale: 'en' | 'ko'): Map<string, { v: n
   const re =
     locale === 'en'
       ? /The voltage across (\w+) averages (.+?)(?:: (.+?) across its winding resistance, (.+?) across its inductance)?\.(?: |$)/g
-      : /(\w+) 양단 전압은 평균 (.+?)입니다(?:: 권선 저항에 (.+?), 인덕턴스에 (.+?)\.(?: |$))?/g;
+      : /(\w+) 양단 전압은 평균 (.+?)(?:입니다|이며, 권선 저항에 (.+?), 인덕턴스에 (.+?)가 걸립니다)\.(?: |$)/g;
   for (const m of description.matchAll(re)) out.set(m[1]!, { v: parse(m[2]!), vr: m[3] ? parse(m[3]) : undefined, vl: m[4] ? parse(m[4]) : undefined });
   return out;
 }

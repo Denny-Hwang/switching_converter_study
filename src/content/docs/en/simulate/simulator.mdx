@@ -189,9 +189,8 @@ periodic steady state.
 
 ## Operating modes
 
-Below the charts the steady-state period is split into its modes, the way
-converter papers describe a circuit mode by mode: each mode is a stretch of
-the period in which one linear circuit holds (the switch on, the diode
+Below the charts the steady-state period is split into its modes: each mode
+is a stretch of the period in which one linear circuit holds (the switch on, the diode
 conducting, the idle interval of DCM <Cite key="erickson2020" where="Ch. 5" />,
 the node capacitance's rise and ringing, the forward converter's reset).
 Pick a mode with its button, or click on the charts; the charts shade it.
@@ -288,8 +287,8 @@ instant that current last falls through 5 % of its average in the period
 agrees with ngspice within 3 ns (2.1 ns at worst) in every circuit of the
 SPICE comparison below.
 
-Under the mode view, **All modes at once** draws the whole period the way a
-paper lays it out. First the key waveforms, stacked on one time axis: the
+Under the mode view, **All modes at once** draws the whole period. First the
+key waveforms, stacked on one time axis: the
 gate, the inductor's current, the switch's current (its body diode's
 included, negative) and the diode's, the switch's voltage and the inductor's voltage;
 for the forward converter, the magnetizing current and both output diodes'
@@ -509,7 +508,7 @@ against the equations:
   diode forward-biased by less would take changes the results by about as
   little, below the four digits the page shows.
 
-Two further suites check the simulator by other means:
+Further suites check the simulator by other means:
 
 - **Against SPICE** (`packages/pe-core/test/sim-spice.test.ts`). Thirty-four
   circuits are written again as netlists from their schematics and run from

@@ -33,8 +33,8 @@ import Quiz from '../../../../components/Quiz.astro';
 ### 근접 효과
 
 여러 층으로 된 권선에서는 각 층이 이웃한 층들의 자계 안에 놓이며, 이 자계가 그
-층에 와전류(eddy current)를 유도합니다. 와전류에 의한 손실은 그 층 자체의 전류에
-의한 손실에 더해지며, 층 수가 늘어날수록 빠르게 커집니다
+층에 와전류(eddy current)를 유도합니다. 와전류 손실은 그 층 자체의 전류로 생기는
+손실에 더해지며, 층 수가 늘어날수록 빠르게 커집니다
 <Cite key="erickson2020" where="Ch. 10" />.
 
 ### Dowell 계수
@@ -72,17 +72,17 @@ Dowell은 각 층을 창의 폭 전체에 걸친 박판(foil)으로 보고, 층�
 
 <Eq id="wind.phi_opt" />
 
-이 두께에서는 층 수와 관계없이 $F_R = 4/3$입니다. 층이 많을수록 최적의 층은
+이 두께에서는 층 수와 관계없이 $F_R = 4/3$입니다. 층이 많을수록 최적 두께가
 얇아집니다. Hurley, Gath, Breslin은 전류와 그 도함수의 실효값으로부터 임의의 주기
 전류에 대한 최적값을 제시합니다 <Cite key="hurley2000" />.
 
 ### 컨버터의 전류
 
-컨버터의 권선 전류는 정현파가 아닙니다. 직류 성분은 직류 저항을 겪고, 각
-고조파(harmonic)는 그 고조파 자신의 주파수에서의 Dowell 계수를 겪으며, 손실은 모든 고조파에
-대한 손실을 더한 값입니다 <Cite key="erickson2020" where="Ch. 10" />. 리플이 작은
-인덕터는 대부분 직류를 흘리므로 $F_R$의 영향이 작습니다. 플라이백 권선은 펄스를
-흘리며, 그 고조파는 큽니다.
+컨버터의 권선 전류는 정현파가 아닙니다. 직류 성분에는 직류 저항이 적용되고, 각
+고조파(harmonic)에는 그 고조파 주파수에서의 Dowell 계수가 적용되며, 손실은 모든 고조파의
+손실을 더한 값입니다 <Cite key="erickson2020" where="Ch. 10" />. 리플이 작은
+인덕터는 대부분 직류를 흘리므로 $F_R$의 영향이 작습니다. 플라이백 권선에는 펄스 전류가
+흐르며, 그 고조파 성분이 큽니다.
 
 ### 인터리빙(interleaving)
 
@@ -96,8 +96,8 @@ Dowell은 각 층을 창의 폭 전체에 걸친 박판(foil)으로 보고, 층�
 
 <Worked example="dowell-foil" />
 
-구리의 표피 깊이는 <Val example="dowell-foil" name="f" />,
-<Val example="dowell-foil" name="T_w" />에서 <Val example="dowell-foil" name="delta_s" />이므로,
+<Val example="dowell-foil" name="f" />, <Val example="dowell-foil" name="T_w" />에서
+구리의 표피 깊이는 <Val example="dowell-foil" name="delta_s" />이므로,
 두께 <Val example="dowell-foil" name="h_l" />의 박판은 표피 깊이의
 <Val example="dowell-foil" name="phi_l" />배 두께입니다. 세 층이면 $F_R$은
 <Val example="dowell-foil" name="F_R" />입니다. 급수로 구하면
@@ -113,7 +113,7 @@ Dowell은 각 층을 창의 폭 전체에 걸친 박판(foil)으로 보고, 층�
 
 <TryIt eq="wind.dowell" example="dowell-foil" sweep="phi_l" />
 
-$\varphi$를 스윕(sweep)하십시오. 예제의 세 층에서는 표피 깊이의 약 절반까지
+$\varphi$를 스윕(sweep)하십시오. 예제처럼 세 층이면 표피 깊이의 약 절반까지
 계수가 1에 가깝게 유지되고, 표피 깊이 하나에서는 거의 두 배가 되며, 그보다
 두꺼우면 가파르게 커집니다. $M_\ell$을 3에서 1로, 그리고 6으로 바꾸어 비교하십시오.
 
@@ -127,7 +127,7 @@ $\varphi$를 스윕(sweep)하십시오. 예제의 세 층에서는 표피 깊이
 것입니다. 낮은 주파수 쪽에서, 단락이 이미 전류를 가져가지만([자성 부품
 측정](../measurement/#누설-결합-권선비) 참고) 어느 저항도 아직 커지기 시작하지 않은
 곳의 측정값이 이렇게 합친 두 직류 저항입니다. 측정값을 1차 권선의 직류 저항만으로
-나누지 말고 이 값으로 나누십시오. 그리고 그 증가를, 두 권선의 Dowell 계수(각각 그
+나누지 말고 이 값으로 나누십시오. 그다음 이 비가 커지는 정도를, 두 권선의 Dowell 계수(각각 그
 권선의 층 수에 대한 값)를 이 값에서 각 권선이 차지하는 몫으로 가중 평균한 값과
 비교하십시오.
 

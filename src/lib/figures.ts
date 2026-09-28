@@ -103,7 +103,7 @@ export const FIGURES: Record<string, FigureInfo> = {
     },
     alt: {
       en: 'Two stacked plots over two periods. Top: inductor voltage, positive V_g minus V during D T_s and negative V for the rest, with the positive and negative areas shaded. Bottom: inductor current, a triangle wave around its dc value I, with an arrow marking the half-ripple Delta i_L.',
-      ko: '두 주기에 걸친 두 개의 그래프. 위: D T_s 동안 V_g − V, 나머지 동안 −V인 인덕터 전압과 그 양·음의 면적. 아래: 직류값 I를 중심으로 한 삼각파 인덕터 전류와, 리플의 절반 Δi_L을 표시한 화살표.',
+      ko: '두 주기에 걸쳐 위아래로 놓인 그래프 두 개. 위: D T_s 동안 V_g − V, 나머지 동안 −V인 인덕터 전압과 그 양·음의 면적. 아래: 직류값 I를 중심으로 한 삼각파 인덕터 전류와, 리플의 절반 Δi_L을 표시한 화살표.',
     },
     cite: { key: 'erickson2020', where: 'Ch. 2' },
   },

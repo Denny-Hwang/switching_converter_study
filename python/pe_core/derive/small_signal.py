@@ -57,9 +57,9 @@ def derive() -> Derivation:
         ),
         intro_ko=(
             "평균화로 스위칭 리플을 없앤 뒤, 평균 방정식을 동작점 주변에서 섭동($d = D + \\hat d$, "
-            "$v = V + \\hat v$, $i = I + \\hat i$)하고 2차 곱을 버리면 선형 방정식이 되며, 이를 라플라스 변환하면 "
-            "$\\hat v/\\hat d$를 얻는다. 아래 각 컨버터는 이득 $G_{d0}$, 품질계수 $Q$인 $\\omega_0$의 극점, "
-            "그리고 부스트와 벅-부스트의 경우 우반평면 영점 $\\omega_z$를 갖는 표준 2차 형태로 정리된다."
+            "$v = V + \\hat v$, $i = I + \\hat i$)하고 2차 항을 버리면 선형 방정식이 되며, 이를 라플라스 변환하면 "
+            "$\\hat v/\\hat d$를 얻습니다. 아래 각 컨버터는 이득 $G_{d0}$, 품질계수 $Q$인 $\\omega_0$의 극점, "
+            "그리고 부스트와 벅-부스트의 경우 우반평면 영점 $\\omega_z$를 갖는 표준 2차 형태로 정리됩니다."
         ),
     )
     D, Vg, R, L, C = S("D"), S("V_g"), S("R"), S("L"), S("C")
@@ -85,11 +85,12 @@ def derive() -> Derivation:
     d.step(
         "Buck, linearised averaged equations ($\\hat v_g = 0$): the inductor sees $d\\,v_g - v$, "
         "the capacitor carries $i - v/R$.",
-        "벅의 선형화된 평균 방정식($\\hat v_g = 0$): 인덕터에는 $d\\,v_g - v$가 걸리고 커패시터에는 $i - v/R$이 흐른다.",
+        "벅의 선형화된 평균 방정식($\\hat v_g = 0$): 인덕터에는 $d\\,v_g - v$가 걸리고 커패시터에는 $i - v/R$이 "
+        "흐릅니다.",
         sp.Tuple(e1, e2),
     )
     G = solve_tf([e1, e2])
-    d.step("Solve for $\\hat v/\\hat d$.", "$\\hat v/\\hat d$를 구한다.", sp.Eq(Gvd, G))
+    d.step("Solve for $\\hat v/\\hat d$.", "$\\hat v/\\hat d$를 구합니다.", sp.Eq(Gvd, G))
     f = _standard_form(G, s)
     d.result("buck.ss.Gd0", f["Gd0"], "DC gain: the value at $s = 0$.", "직류 이득: $s = 0$에서의 값.", S("G_d0"))
     d.result("buck.ss.w0", f["w0"], "Poles: $\\omega_0 = 1/\\sqrt{a_2}$ from the $s^2$ coefficient $a_2$.", "극점: $s^2$ 계수 $a_2$로부터 $\\omega_0 = 1/\\sqrt{a_2}$.", S("omega_0"))
@@ -103,7 +104,7 @@ def derive() -> Derivation:
     d.step(
         "Boost: the averaged inductor voltage is $v_g - d' v$ and the capacitor current $d' i - v/R$ "
         "($d' = 1 - d$). Perturbing $d' = D' - \\hat d$ and linearising:",
-        "부스트: 평균 인덕터 전압은 $v_g - d' v$, 커패시터 전류는 $d' i - v/R$이다($d' = 1 - d$). "
+        "부스트: 평균 인덕터 전압은 $v_g - d' v$, 커패시터 전류는 $d' i - v/R$입니다($d' = 1 - d$). "
         "$d' = D' - \\hat d$로 섭동하고 선형화하면:",
         sp.Tuple(e1, e2),
     )
@@ -113,16 +114,16 @@ def derive() -> Derivation:
         sp.Tuple(sp.Eq(V, V_op), sp.Eq(I, I_op)),
     )
     G = sp.simplify(solve_tf([e1, e2]).subs({V: V_op, I: I_op}))
-    d.step("Solve for $\\hat v/\\hat d$.", "$\\hat v/\\hat d$를 구한다.", sp.Eq(Gvd, G))
+    d.step("Solve for $\\hat v/\\hat d$.", "$\\hat v/\\hat d$를 구합니다.", sp.Eq(Gvd, G))
     f = _standard_form(G, s)
-    d.result("boost.ss.Gd0", f["Gd0"].subs(back), "DC gain (results are written back with $D' = 1 - D$).", "직류 이득(결과는 $D' = 1 - D$로 되돌려 씀).", S("G_d0"))
+    d.result("boost.ss.Gd0", f["Gd0"].subs(back), "DC gain (results are written back with $D' = 1 - D$).", "직류 이득(결과는 $D' = 1 - D$를 대입한 형태로 나타냄).", S("G_d0"))
     d.result("boost.ss.w0", f["w0"].subs(back), "Pole frequency.", "극점 주파수.", S("omega_0"))
     d.result("boost.ss.Q", f["Q"].subs(back), "Quality factor.", "품질계수.", S("Q"))
     d.result(
         "boost.ss.wz",
         f["wz"].subs(back),
         "The numerator vanishes at a positive real $s$: a right-half-plane zero.",
-        "분자가 양의 실수 $s$에서 0이 된다: 우반평면 영점.",
+        "분자가 양의 실수 $s$에서 0이 되므로 우반평면 영점입니다.",
         S("omega_z"),
     )
 
@@ -135,7 +136,8 @@ def derive() -> Derivation:
     d.step(
         "Buck-boost: averaged inductor voltage $d\\,v_g + d' v$ and capacitor current $-d' i - v/R$, with the "
         "output $v$ negative. Linearised:",
-        "벅-부스트: 평균 인덕터 전압 $d\\,v_g + d' v$, 커패시터 전류 $-d' i - v/R$이며 출력 $v$는 음수이다. 선형화하면:",
+        "벅-부스트: 평균 인덕터 전압은 $d\\,v_g + d' v$, 커패시터 전류는 $-d' i - v/R$이며 출력 $v$는 음수입니다. "
+        "선형화하면:",
         sp.Tuple(e1, e2),
     )
     d.step(
@@ -144,13 +146,13 @@ def derive() -> Derivation:
         sp.Tuple(sp.Eq(Vn, Vn_op), sp.Eq(I, Ibb_op)),
     )
     G = sp.simplify(solve_tf([e1, e2]).subs({Vn: Vn_op, I: Ibb_op}))
-    d.step("Solve for $\\hat v/\\hat d$.", "$\\hat v/\\hat d$를 구한다.", sp.Eq(Gvd, G))
+    d.step("Solve for $\\hat v/\\hat d$.", "$\\hat v/\\hat d$를 구합니다.", sp.Eq(Gvd, G))
     f = _standard_form(G, s)
     d.result(
         "buckboost.ss.Gd0",
         sp.simplify(-f["Gd0"]).subs(back),
         "The dc gain is negative (inverting output); its magnitude is:",
-        "직류 이득은 음수(반전 출력)이며, 그 크기는:",
+        "직류 이득은 음수(반전 출력)이며, 그 크기는 다음과 같습니다.",
         S("G_d0"),
     )
     d.result("buckboost.ss.w0", f["w0"].subs(back), "Pole frequency.", "극점 주파수.", S("omega_0"))
