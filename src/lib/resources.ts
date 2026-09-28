@@ -34,7 +34,7 @@ export const resources: readonly Resource[] = data.resources.map((r) => ({ ...r,
 /** Labels of the resource types, and the order the resource pages list them in. */
 export const RESOURCE_TYPES = {
   book: { en: 'Book', ko: '도서' },
-  chapter: { en: 'Book chapter', ko: '도서 장' },
+  chapter: { en: 'Book chapter', ko: '도서 챕터' },
   course: { en: 'Course', ko: '강좌' },
   lecture: { en: 'Lecture notes', ko: '강의 노트' },
   video: { en: 'Video', ko: '동영상' },
