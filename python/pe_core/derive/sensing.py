@@ -27,7 +27,7 @@ def derive() -> Derivation:
         ),
         intro_ko=(
             "전류 출력형 하이사이드 모니터는 션트 양단의 작은 전압을 전류로 바꾸고, 출력 저항이 이를 다시 "
-            "접지 기준 전압으로 바꾼다."
+            "접지 기준 전압으로 바꿉니다."
         ),
     )
     I, Rs, Rin, Rout = S("I_SENSE"), S("R_SENSE"), S("R_IN"), S("R_OUT")
@@ -37,19 +37,20 @@ def derive() -> Derivation:
         "sense.burden",
         I * Rs,
         "Ohm's law across the shunt: the signal, and the voltage the shunt takes from the measured circuit.",
-        "션트 양단에 옴의 법칙을 적용한다: 신호이자 션트가 측정 대상 회로에서 빼앗는 전압.",
+        "션트 양단의 옴의 법칙입니다. 이 전압은 신호이면서, 션트가 측정 대상 회로에서 빼앗는 전압이기도 합니다.",
         Vs,
     )
     d.step(
         "The ideal amplifier forces the same voltage across $R_\\mathrm{IN}$, so the current through $R_\\mathrm{IN}$ is $V_\\mathrm{SENSE}/R_\\mathrm{IN}$.",
-        "이상적 증폭기는 같은 전압을 $R_\\mathrm{IN}$ 양단에 걸어, $R_\\mathrm{IN}$을 흐르는 전류가 $V_\\mathrm{SENSE}/R_\\mathrm{IN}$이 된다.",
+        "이상적 증폭기는 같은 전압을 $R_\\mathrm{IN}$ 양단에 걸므로, $R_\\mathrm{IN}$을 흐르는 전류는 "
+        "$V_\\mathrm{SENSE}/R_\\mathrm{IN}$입니다.",
         sp.Eq(Iout, Vs / Rin),
     )
     d.result(
         "sense.current_out_monitor",
         I * Rs * Rout / Rin,
         "That current flows out through $R_\\mathrm{OUT}$: $V_\\mathrm{OUT} = I_\\mathrm{OUT} R_\\mathrm{OUT}$.",
-        "그 전류가 $R_\\mathrm{OUT}$으로 흘러 나간다: $V_\\mathrm{OUT} = I_\\mathrm{OUT} R_\\mathrm{OUT}$.",
+        "그 전류가 $R_\\mathrm{OUT}$으로 흘러 나가므로 $V_\\mathrm{OUT} = I_\\mathrm{OUT} R_\\mathrm{OUT}$입니다.",
         S("V_OUT"),
     )
 
@@ -59,7 +60,8 @@ def derive() -> Derivation:
         G * I * Rs + Vref,
         "A voltage-output amplifier multiplies the sense voltage by its fixed gain $G$ and adds the voltage on its "
         "REF pin, which sets the output at zero current.",
-        "전압 출력형 증폭기는 센스 전압에 고정 이득 $G$를 곱하고, 전류가 0일 때의 출력을 정하는 REF 핀 전압을 더한다.",
+        "전압 출력형 증폭기는 센스 전압에 고정 이득 $G$를 곱하고, 전류가 0일 때의 출력을 정하는 REF 핀 전압을 "
+        "더합니다.",
         S("V_OUT"),
     )
 
@@ -68,14 +70,14 @@ def derive() -> Derivation:
     d.step(
         "An input offset voltage adds directly to the sense voltage, so the output of either amplifier reads the "
         "current",
-        "입력 오프셋 전압은 센스 전압에 그대로 더해지므로, 두 증폭기 모두 출력이 다음 전류를 읽는다.",
+        "입력 오프셋 전압은 센스 전압에 그대로 더해지므로, 두 증폭기 모두 출력이 나타내는 전류는 다음과 같습니다.",
         sp.Eq(Imeas, (I * Rs + Vos) / Rs),
     )
     d.result(
         "sense.offset_current",
         sp.expand((I * Rs + Vos) / Rs) - I,
         "The reading exceeds the current by the offset over the sense resistor, whatever the current.",
-        "측정값은 전류와 관계없이 오프셋을 센스 저항으로 나눈 만큼 실제 전류보다 크다.",
+        "측정값은 전류와 관계없이 오프셋을 센스 저항으로 나눈 만큼 실제 전류보다 큽니다.",
         S("I_OSeq"),
     )
 
@@ -83,15 +85,15 @@ def derive() -> Derivation:
     d.step(
         "Without a Kelvin connection the sense connections sit beyond the pads and solder joints, whose resistance "
         "$R_\\mathrm{pad}$ carries the same current; the reading, scaled by $R_\\mathrm{SENSE}$, is",
-        "켈빈 연결이 없으면 센스 연결이 같은 전류가 흐르는 패드와 납땜 저항 $R_\\mathrm{pad}$ 너머에 있으므로, "
-        "$R_\\mathrm{SENSE}$로 환산한 측정값은 다음과 같다.",
+        "켈빈 연결이 없으면 센스 연결점이 패드와 납땜부 너머에 있고, 그 저항 $R_\\mathrm{pad}$에도 같은 전류가 "
+        "흐릅니다. $R_\\mathrm{SENSE}$로 환산한 측정값은 다음과 같습니다.",
         sp.Eq(Imeas, I * (Rs + Rpad) / Rs),
     )
     d.result(
         "sense.pad_error",
         sp.simplify((I * (Rs + Rpad) / Rs - I) / I),
         "Its relative error: independent of the current, and larger the smaller the shunt.",
-        "상대 오차: 전류와 무관하며, 션트가 작을수록 커진다.",
+        "상대 오차는 전류와 무관하며, 션트가 작을수록 커집니다.",
         S("eps_pad"),
     )
     reading = (I * (Rs + Rpad) + Vos) / Rs
@@ -102,8 +104,8 @@ def derive() -> Derivation:
         "reads it as a current through $R_\\mathrm{SENSE}$. The output is the output equation at this current; the "
         "offset's sign that raises it bounds the output from above, the other sign from below.",
         "둘이 함께 있으면 증폭기는 $I_\\mathrm{SENSE} (R_\\mathrm{SENSE} + R_\\mathrm{pad}) + V_\\mathrm{OS}$를 보고 "
-        "이를 $R_\\mathrm{SENSE}$에 흐르는 전류로 읽는다. 출력은 이 전류에서의 출력 식이며, 출력을 높이는 부호의 "
-        "오프셋이 출력의 상한을, 반대 부호가 하한을 준다.",
+        "이를 $R_\\mathrm{SENSE}$에 흐르는 전류로 읽습니다. 출력은 이 전류를 출력 식에 넣은 값이며, 출력을 높이는 "
+        "부호의 오프셋이 출력의 상한을, 반대 부호의 오프셋이 하한을 줍니다.",
         Imeas,
     )
     d.result(
@@ -111,7 +113,8 @@ def derive() -> Derivation:
         sp.simplify((reading - I) / I),
         "Its relative error is the sum of the two, with no cross term: the offset's share falls as $1/I_\\mathrm{SENSE}$, "
         "the pad's share stays.",
-        "상대 오차는 교차 항 없이 두 몫의 합이다: 오프셋의 몫은 $1/I_\\mathrm{SENSE}$로 줄고 패드의 몫은 그대로다.",
+        "상대 오차는 교차 항 없이 두 몫의 합입니다. 오프셋의 몫은 $1/I_\\mathrm{SENSE}$에 비례해 줄고, 패드의 몫은 "
+        "그대로입니다.",
         S("eps_I"),
     )
 
@@ -125,17 +128,17 @@ def derive() -> Derivation:
         "A current-output amplifier drives its current $I_\\mathrm{OUT}$ into $R_\\mathrm{OUT}$ at node A. An R-C filter "
         "follows: $R_f$ from node A to node B, and $C_f$ from node B to ground, with nothing else loading node B. "
         "The current balance at node A (Laplace domain):",
-        "전류 출력형 증폭기는 노드 A에서 전류 $I_\\mathrm{OUT}$을 $R_\\mathrm{OUT}$으로 흘린다. 그 뒤에 R-C 필터가 "
-        "이어진다: $R_f$가 노드 A와 노드 B 사이에, $C_f$가 노드 B와 접지 사이에 있고, 노드 B에는 다른 부하가 없다. "
-        "노드 A의 전류 평형(라플라스 영역):",
+        "전류 출력형 증폭기는 노드 A에서 전류 $I_\\mathrm{OUT}$을 $R_\\mathrm{OUT}$으로 흘립니다. 그 뒤에 R-C 필터가 "
+        "이어집니다. $R_f$는 노드 A와 노드 B 사이에, $C_f$는 노드 B와 접지 사이에 있고, 노드 B에는 다른 부하가 "
+        "없습니다. 노드 A의 전류 평형(라플라스 영역)은 다음과 같습니다.",
         node_a,
     )
-    d.step("and at node B:", "노드 B에서는 다음과 같다.", node_b)
+    d.step("and at node B:", "노드 B에서는 다음과 같습니다.", node_b)
     sol = sp.solve([node_a, node_b], [VA, VB], dict=True)[0]
     H = sp.factor(sol[VB] / Iout)
     d.step(
         "Solving for the capacitor's voltage gives a single pole; at dc the output is still $I_\\mathrm{OUT} R_\\mathrm{OUT}$:",
-        "커패시터 전압에 대해 풀면 극점이 하나이며, 직류에서 출력은 그대로 $I_\\mathrm{OUT} R_\\mathrm{OUT}$이다.",
+        "커패시터 전압에 대해 풀면 극점이 하나이며, 직류에서 출력은 그대로 $I_\\mathrm{OUT} R_\\mathrm{OUT}$입니다.",
         sp.Eq(VB / Iout, H),
     )
     # the pole's time constant, divided by the capacitance, is the resistance the capacitor sees
@@ -145,8 +148,8 @@ def derive() -> Derivation:
         sp.simplify(-1 / (pole * Cf)),
         "The pole's time constant is $C_f (R_\\mathrm{OUT} + R_f)$: the capacitor sees $R_\\mathrm{OUT}$ in series with "
         "$R_f$. $R_\\mathrm{OUT}$ is the Thevenin resistance of the current source it loads.",
-        "그 극점의 시정수는 $C_f (R_\\mathrm{OUT} + R_f)$이다: 커패시터는 $R_f$와 직렬인 $R_\\mathrm{OUT}$을 본다. "
-        "$R_\\mathrm{OUT}$은 자신이 부하로 걸린 전류원의 테브난 저항이다.",
+        "그 극점의 시정수는 $C_f (R_\\mathrm{OUT} + R_f)$입니다. 커패시터는 $R_f$와 직렬인 $R_\\mathrm{OUT}$을 봅니다. "
+        "$R_\\mathrm{OUT}$은 자신이 부하로 걸린 전류원의 테브난 저항입니다.",
         S("R_filt"),
     )
     return d

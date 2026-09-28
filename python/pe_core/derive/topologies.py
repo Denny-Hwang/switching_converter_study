@@ -33,10 +33,10 @@ def derive() -> Derivation:
             "transistor's peak voltage and rms current."
         ),
         intro_ko=(
-            "출력 커패시터의 전하 평형으로 각 컨버터의 인덕터 직류 전류를 구한다. 온 구간 동안 인덕터에는 "
-            "일정한 전압이 걸리므로 전류는 리플 절반 $\\Delta i_L$의 두 배만큼 직선으로 변하며, 한 주기 동안 "
-            "커패시터가 주고받는 전하로부터 같은 방식으로 전압 리플 $\\Delta v$를 구한다. 트랜지스터 이용률 $U$는 "
-            "부하 전력을 트랜지스터의 피크 전압과 실효 전류의 곱과 비교한 값이다."
+            "출력 커패시터의 전하 평형으로 각 컨버터의 인덕터 직류 전류를 구합니다. 온 구간 동안 인덕터에는 "
+            "일정한 전압이 걸리므로 전류는 리플 절반 $\\Delta i_L$의 두 배만큼 선형으로 변하며, 같은 방식으로 한 "
+            "주기 동안 커패시터가 주고받는 전하에서 전압 리플 $\\Delta v$를 구합니다. 트랜지스터 이용률 $U$는 "
+            "부하 전력을 트랜지스터의 피크 전압과 실효 전류의 곱과 비교한 값입니다."
         ),
     )
     D, Vg, V, R, L, C, Ts = S("D"), S("V_g"), S("V"), S("R"), S("L"), S("C"), S("T_s")
@@ -50,25 +50,25 @@ def derive() -> Derivation:
     # ------------------------------------------------------------ buck
     d.step(
         "Buck, charge balance: the capacitor current is $I_L - V/R$ in both intervals (small ripple).",
-        "벅, 전하 평형: 커패시터 전류는 두 구간 모두에서 $I_L - V/R$이다(소리플 근사).",
+        "벅, 전하 평형: 커패시터 전류는 두 구간 모두에서 $I_L - V/R$입니다(소리플 근사).",
         sp.Eq(iC, IL - V / R),
     )
-    d.result("buck.IL", sp.solve(sp.Eq(IL - V / R, 0), IL)[0], "Set the average to zero.", "평균을 0으로 놓는다.", IL)
+    d.result("buck.IL", sp.solve(sp.Eq(IL - V / R, 0), IL)[0], "Set the average to zero.", "평균을 0으로 놓습니다.", IL)
 
     d.step(
         "Buck output ripple: the capacitor takes the triangular ac part of the inductor current. Its positive "
         "half lasts $T_s/2$ and peaks at $\\Delta i_L$, so it delivers the charge $q$.",
-        "벅 출력 리플: 커패시터는 인덕터 전류의 삼각파 교류 성분을 받는다. 그 양의 절반은 $T_s/2$ 동안 "
-        "지속되고 최댓값이 $\\Delta i_L$이므로, 전하 $q$를 전달한다.",
+        "벅 출력 리플: 커패시터는 인덕터 전류의 삼각파 교류 성분을 받습니다. 그중 양의 부분은 $T_s/2$ 동안 "
+        "이어지고 최댓값이 $\\Delta i_L$이므로 전하 $q$를 전달합니다.",
         sp.Eq(q, sp.Rational(1, 2) * (Ts / 2) * dI),
     )
     ripple_v = sp.Eq(C * 2 * dv, sp.Rational(1, 2) * (Ts / 2) * dI)
     d.step(
         "That charge raises the capacitor voltage from its minimum to its maximum, $2\\Delta v$.",
-        "그 전하가 커패시터 전압을 최솟값에서 최댓값까지, 즉 $2\\Delta v$만큼 올린다.",
+        "그 전하가 커패시터 전압을 최솟값에서 최댓값까지, 즉 $2\\Delta v$만큼 올립니다.",
         ripple_v,
     )
-    d.result("buck.ripple.v", sp.solve(ripple_v, dv)[0], "Solve for $\\Delta v$.", "$\\Delta v$에 대해 푼다.", dv)
+    d.result("buck.ripple.v", sp.solve(ripple_v, dv)[0], "Solve for $\\Delta v$.", "$\\Delta v$에 대해 풉니다.", dv)
 
     # ------------------------------------------------------------ boost
     cb = sp.Eq(D * (-V / R) + (1 - D) * (IL - V / R), 0)
@@ -77,55 +77,56 @@ def derive() -> Derivation:
         "부스트, 전하 평형: 스위치 온 구간에 $-V/R$, 다이오드 도통 구간에 $I_L - V/R$.",
         cb,
     )
-    d.result("boost.IL", sp.solve(cb, IL)[0], "Solve for $I_L$.", "$I_L$에 대해 푼다.", IL)
+    d.result("boost.IL", sp.solve(cb, IL)[0], "Solve for $I_L$.", "$I_L$에 대해 풉니다.", IL)
     rip = sp.Eq(2 * dI, Vg * D * Ts / L)
     d.step(
         "Boost current ripple: the inductor sees $V_g$ for $D T_s$, so its current rises by $V_g D T_s/L$, "
         "which is $2\\Delta i_L$.",
-        "부스트 전류 리플: 인덕터에 $D T_s$ 동안 $V_g$가 걸리므로 전류는 $V_g D T_s/L$, 즉 $2\\Delta i_L$만큼 증가한다.",
+        "부스트 전류 리플: 인덕터에 $D T_s$ 동안 $V_g$가 걸리므로 전류는 $V_g D T_s/L$, 즉 $2\\Delta i_L$만큼 "
+        "증가합니다.",
         rip,
     )
-    d.result("boost.ripple.iL", sp.solve(rip, dI)[0], "Solve for $\\Delta i_L$.", "$\\Delta i_L$에 대해 푼다.", dI)
+    d.result("boost.ripple.iL", sp.solve(rip, dI)[0], "Solve for $\\Delta i_L$.", "$\\Delta i_L$에 대해 풉니다.", dI)
     ripv = sp.Eq(2 * dv, (V / R) * D * Ts / C)
     d.step(
         "Boost voltage ripple: while the switch is on, the capacitor alone feeds the load current $V/R$ for "
         "$D T_s$, so its voltage falls by $2\\Delta v$.",
-        "부스트 전압 리플: 스위치가 켜져 있는 $D T_s$ 동안 커패시터 혼자 부하 전류 $V/R$을 공급하므로 전압이 "
-        "$2\\Delta v$만큼 떨어진다.",
+        "부스트 전압 리플: 스위치가 켜져 있는 $D T_s$ 동안 커패시터만이 부하 전류 $V/R$을 공급하므로 전압이 "
+        "$2\\Delta v$만큼 떨어집니다.",
         ripv,
     )
-    d.result("boost.ripple.v", sp.solve(ripv, dv)[0], "Solve for $\\Delta v$.", "$\\Delta v$에 대해 푼다.", dv)
+    d.result("boost.ripple.v", sp.solve(ripv, dv)[0], "Solve for $\\Delta v$.", "$\\Delta v$에 대해 풉니다.", dv)
 
     # ------------------------------------------------------------ buck-boost
     vsb = sp.Eq(D * Vg + (1 - D) * (-V), 0)
     d.step(
         "Buck-boost with the output magnitude $V$: the inductor sees $V_g$ while the switch is on and $-V$ "
         "while the diode conducts.",
-        "출력 크기 $V$로 쓴 벅-부스트: 인덕터에는 스위치 온 구간에 $V_g$, 다이오드 도통 구간에 $-V$가 걸린다.",
+        "출력 크기 $V$로 쓴 벅-부스트: 인덕터에는 스위치 온 구간에 $V_g$, 다이오드 도통 구간에 $-V$가 걸립니다.",
         vsb,
     )
-    d.result("buckboost.V", sp.solve(vsb, V)[0], "Solve for $V$.", "$V$에 대해 푼다.", V)
+    d.result("buckboost.V", sp.solve(vsb, V)[0], "Solve for $V$.", "$V$에 대해 풉니다.", V)
     d.result(
         "buckboost.IL",
         sp.solve(cb, IL)[0],
         "Charge balance is the boost's: the capacitor feeds the load while the switch is on and receives "
         "$I_L$ while the diode conducts.",
-        "전하 평형은 부스트와 같다: 스위치 온 구간에는 커패시터가 부하를 공급하고, 다이오드 도통 구간에는 "
-        "$I_L$을 받는다.",
+        "전하 평형은 부스트와 같습니다. 스위치 온 구간에는 커패시터가 부하에 전류를 공급하고, 다이오드 도통 "
+        "구간에는 $I_L$을 받습니다.",
         IL,
     )
     d.result(
         "buckboost.ripple.iL",
         sp.solve(rip, dI)[0],
         "The inductor sees $V_g$ during $D T_s$, as in the boost.",
-        "부스트와 마찬가지로 인덕터에는 $D T_s$ 동안 $V_g$가 걸린다.",
+        "부스트와 마찬가지로 인덕터에는 $D T_s$ 동안 $V_g$가 걸립니다.",
         dI,
     )
     d.result(
         "buckboost.ripple.v",
         sp.solve(ripv, dv)[0],
         "The capacitor alone feeds the load during $D T_s$, as in the boost.",
-        "부스트와 마찬가지로 $D T_s$ 동안 커패시터 혼자 부하를 공급한다.",
+        "부스트와 마찬가지로 $D T_s$ 동안 커패시터만이 부하에 전류를 공급합니다.",
         dv,
     )
     d.result(
@@ -134,7 +135,7 @@ def derive() -> Derivation:
         "Buck: while the diode conducts, the switch node sits at ground (ideal diode); the switch between the input "
         "and that node blocks $V_g$.",
         "벅: 다이오드가 도통하는 동안 스위치 노드는 접지 전위에 있으므로(이상적 다이오드), 입력과 그 노드 사이의 "
-        "스위치는 $V_g$를 차단한다.",
+        "스위치는 $V_g$를 차단합니다.",
         S("V_DS"),
     )
     d.result(
@@ -142,14 +143,16 @@ def derive() -> Derivation:
         V - 0,
         "Boost: while the diode conducts, the switch node is connected to the output; the switch from that node to "
         "ground blocks $V$.",
-        "부스트: 다이오드가 도통하는 동안 스위치 노드는 출력에 연결되므로, 그 노드와 접지 사이의 스위치는 $V$를 차단한다.",
+        "부스트: 다이오드가 도통하는 동안 스위치 노드는 출력에 연결되므로, 그 노드와 접지 사이의 스위치는 $V$를 "
+        "차단합니다.",
         S("V_DS"),
     )
     d.result(
         "buckboost.Vds",
         Vg - (-V),
         "While the diode conducts, the switch's far end sits at the output, $-V$; the switch blocks $V_g - (-V)$.",
-        "다이오드가 도통하는 동안 스위치의 반대쪽 단자는 출력 전위 $-V$에 있으므로, 스위치는 $V_g - (-V)$를 차단한다.",
+        "다이오드가 도통하는 동안 스위치의 반대쪽 단자는 출력 전위 $-V$에 있으므로, 스위치는 $V_g - (-V)$를 "
+        "차단합니다.",
         S("V_DS"),
     )
 
@@ -158,15 +161,15 @@ def derive() -> Derivation:
     d.step(
         "Forward, reset interval: the reset winding ($N_r$ turns) connects to $V_g$ with reversed polarity, so "
         "the primary ($N_p$ turns) sees $-V_g N_p/N_r$.",
-        "포워드, 리셋 구간: 리셋 권선($N_r$턴)이 극성이 반대로 $V_g$에 연결되므로 1차 권선($N_p$턴)에는 "
-        "$-V_g N_p/N_r$이 걸린다.",
+        "포워드, 리셋 구간: 리셋 권선($N_r$턴)이 반대 극성으로 $V_g$에 연결되므로 1차 권선($N_p$턴)에는 "
+        "$-V_g N_p/N_r$이 걸립니다.",
         reset,
     )
     d.result(
         "forward.Vds",
         sp.factor(Vg - reset.rhs),
         "The switch blocks the input voltage minus the primary voltage.",
-        "스위치는 입력 전압에서 1차 전압을 뺀 값을 차단한다.",
+        "스위치는 입력 전압에서 1차 전압을 뺀 값을 차단합니다.",
         S("V_DS"),
     )
     frip = sp.Eq(2 * dI, (n * Vg - V) * D * Ts / L)
@@ -174,10 +177,10 @@ def derive() -> Derivation:
         "Forward output inductor: while the switch is on, the secondary applies $n V_g$, so the inductor sees "
         "$n V_g - V$ for $D T_s$.",
         "포워드 출력 인덕터: 스위치가 켜져 있는 동안 2차 권선이 $n V_g$를 인가하므로 인덕터에는 $D T_s$ 동안 "
-        "$n V_g - V$가 걸린다.",
+        "$n V_g - V$가 걸립니다.",
         frip,
     )
-    d.result("forward.ripple.iL", sp.solve(frip, dI)[0], "Solve for $\\Delta i_L$.", "$\\Delta i_L$에 대해 푼다.", dI)
+    d.result("forward.ripple.iL", sp.solve(frip, dI)[0], "Solve for $\\Delta i_L$.", "$\\Delta i_L$에 대해 풉니다.", dI)
 
     # ------------------------------------------------------------ utilization
     Ul = d.local("U_", "U", positive=True)
@@ -185,33 +188,33 @@ def derive() -> Derivation:
         "Transistor utilization: the load power $P = V I$ over the transistor's peak voltage times its rms "
         "current. With small ripple the transistor current is a flat pulse of height $I_Q$ for $D T_s$, whose "
         "rms value is $I_Q \\sqrt{D}$.",
-        "트랜지스터 이용률: 부하 전력 $P = V I$를 트랜지스터의 피크 전압과 실효 전류의 곱으로 나눈 값. "
+        "트랜지스터 이용률은 부하 전력 $P = V I$를 트랜지스터의 피크 전압과 실효 전류의 곱으로 나눈 값입니다. "
         "소리플 근사에서 트랜지스터 전류는 $D T_s$ 동안 높이 $I_Q$인 평평한 펄스이며, 그 실효값은 "
-        "$I_Q \\sqrt{D}$이다.",
+        "$I_Q \\sqrt{D}$입니다.",
     )
 
     def util(eq_id: str, text: str, text_ko: str, v_out: sp.Expr, v_peak: sp.Expr, i_pulse: sp.Expr) -> sp.Expr:
         u = sp.simplify(v_out * I / (v_peak * i_pulse * sp.sqrt(D)))
         d.step(text, text_ko, sp.Eq(Ul, (v_out * I) / (v_peak * i_pulse * sp.sqrt(D)), evaluate=False))
-        d.result(eq_id, u, "Simplify.", "정리한다.", S("U"))
+        d.result(eq_id, u, "Simplify.", "정리합니다.", S("U"))
         return u
 
     util(
         "util.buck",
         "Buck: $V = D V_g$, the transistor blocks $V_g$ and carries the inductor current $I$.",
-        "벅: $V = D V_g$, 트랜지스터는 $V_g$를 차단하고 인덕터 전류 $I$를 흘린다.",
+        "벅: $V = D V_g$이고, 트랜지스터는 $V_g$를 차단하며 인덕터 전류 $I$를 흘립니다.",
         D * Vg, Vg, I,
     )
     util(
         "util.boost",
         "Boost: the transistor blocks $V$ and carries the inductor current $I/(1 - D)$.",
-        "부스트: 트랜지스터는 $V$를 차단하고 인덕터 전류 $I/(1 - D)$를 흘린다.",
+        "부스트: 트랜지스터는 $V$를 차단하고 인덕터 전류 $I/(1 - D)$를 흘립니다.",
         V, V, I / (1 - D),
     )
     u_bb = util(
         "util.buckboost",
         "Buck-boost: $V = D V_g/(1 - D)$, the transistor blocks $V_g + V$ and carries $I/(1 - D)$.",
-        "벅-부스트: $V = D V_g/(1 - D)$, 트랜지스터는 $V_g + V$를 차단하고 $I/(1 - D)$를 흘린다.",
+        "벅-부스트: $V = D V_g/(1 - D)$이고, 트랜지스터는 $V_g + V$를 차단하며 $I/(1 - D)$를 흘립니다.",
         D * Vg / (1 - D), Vg + D * Vg / (1 - D), I / (1 - D),
     )
     V_fly = n * D * Vg / (1 - D)
@@ -221,16 +224,16 @@ def derive() -> Derivation:
     d.step(
         "Flyback: $V = n D V_g/(1 - D)$, the transistor blocks $V_g + V/n$ and carries the primary-referred "
         "magnetizing current $n I/(1 - D)$; the turns ratio cancels and the result equals the buck-boost's.",
-        "플라이백: $V = n D V_g/(1 - D)$, 트랜지스터는 $V_g + V/n$을 차단하고 1차 측 환산 자화 전류 "
-        "$n I/(1 - D)$를 흘린다; 권선비가 상쇄되어 벅-부스트와 같은 결과가 된다.",
+        "플라이백: $V = n D V_g/(1 - D)$이고, 트랜지스터는 $V_g + V/n$을 차단하며 1차 측 환산 자화 전류 "
+        "$n I/(1 - D)$를 흘립니다. 권선비가 상쇄되어 벅-부스트와 같은 결과가 됩니다.",
         sp.Eq(Ul, u_fly),
     )
     util(
         "util.forward",
         "Forward: $V = n D V_g$, the transistor blocks $V_g(1 + 1/n_r)$ and carries the reflected inductor "
         "current $n I$ (magnetizing current neglected).",
-        "포워드: $V = n D V_g$, 트랜지스터는 $V_g(1 + 1/n_r)$를 차단하고 반사된 인덕터 전류 $n I$를 흘린다"
-        "(자화 전류 무시).",
+        "포워드: $V = n D V_g$이고, 트랜지스터는 $V_g(1 + 1/n_r)$를 차단하며 반사된 인덕터 전류 $n I$를 "
+        "흘립니다(자화 전류 무시).",
         n * D * Vg, Vg * (1 + 1 / n_r), n * I,
     )
     return d
