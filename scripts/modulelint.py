@@ -83,9 +83,10 @@ page; `node scripts/screenshots.mjs` takes them).
 
 Every page, module or not (src/content/docs/<locale>/**/*.md[x]): the Korean page mirrors the English
 one's structure: the same heading levels (h2 to h4) in the same order and the same components by name
-(in any order: Korean word order moves the inline ones), so that a Korean page is a translation, not a
-summary (docs/BUILD_SPEC.md section 8). Each page has its counterpart at the same path, or
-docs/STATUS.md has a line naming the missing page's path (ko/<path>) as pending.
+(in any order: Korean word order moves the inline ones; code, inline code included, is not compared), so
+that a Korean page is a translation, not a summary (docs/BUILD_SPEC.md section 8). Each page has its
+counterpart at the same path, or docs/STATUS.md has a line naming the missing page's path (ko/<path>) as
+pending.
 """
 
 from __future__ import annotations
@@ -550,6 +551,18 @@ def check_tool_page(path: Path, locale: str, body: str) -> list[str]:
 
 HEADING = re.compile(r"^(#{2,4})\s", re.M)
 COMPONENT_NAME = re.compile(r"<([A-Z]\w*)\b")
+# an inline code span: a run of backticks, then text up to the next run of the same length, within a paragraph
+INLINE_CODE = re.compile(r"(?<!`)(`+)(?!`)((?:[^\n]|\n(?![ \t]*\n))+?)(?<!`)\1(?!`)")
+
+
+def page_shape(text: str) -> tuple[list[int], list[str]]:
+    """A page's heading levels (h2 to h4) in order and the components it renders, by name. Code is left out:
+    fenced blocks, MDX comments and inline code spans (a sentence may show `<Eq id="..." />`). MDX has no
+    indented code."""
+    _, body = frontmatter(strip_code(text))
+    body = re.sub(r"^import .*$", "", body, flags=re.M)
+    body = INLINE_CODE.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), body)
+    return [len(h) for h in HEADING.findall(body)], sorted(COMPONENT_NAME.findall(body))
 
 
 def check_mirrors() -> tuple[list[str], int]:
@@ -565,11 +578,7 @@ def check_mirrors() -> tuple[list[str], int]:
         if len(rel.parts) < 2 or rel.parts[0] not in ("en", "ko"):
             continue  # a page outside the locales (the 404 page)
         locale, slug = rel.parts[0], "/".join(rel.parts[1:])
-        _, body = frontmatter(strip_code(path.read_text(encoding="utf-8")))
-        body = re.sub(r"^import .*$", "", body, flags=re.M)
-        levels = [len(h) for h in HEADING.findall(body)]
-        names = sorted(COMPONENT_NAME.findall(body))
-        shape[(locale, slug)] = (levels, names)
+        shape[(locale, slug)] = page_shape(path.read_text(encoding="utf-8"))
     pairs = 0
     for (locale, slug), (levels, names) in shape.items():
         other = "ko" if locale == "en" else "en"
