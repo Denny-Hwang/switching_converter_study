@@ -52,15 +52,15 @@ result names the equation it comes from.
 <tr>
 <td colspan="2" valign="top">
 
-**Simulate.** A time-domain simulator in the browser: pick a topology, type
-your own values as a datasheet writes them (100 µH, 200 kHz, 30 %) or move a
-slider, and watch the waveforms, the operating mode and the losses change.
-Step through the period mode by mode, with the circuit's current paths and
-each element's state, or see every mode at once as a paper draws it: the key
-waveforms with the modes' boundaries, then each mode's circuit. Every result
-sits next to the formula's value, the simulator is validated against the
-formulas to within 2 % and against ngspice, and with a resistive load and no
-Thevenin source one link opens the same values in CircuitJS1.
+**Simulate.** A time-domain simulator in the browser: pick a topology, enter
+values with SI prefixes and units (100 µH, 200 kHz, 30 %) or move a slider,
+and the waveforms, the operating mode and the losses follow. Step through the
+period mode by mode, with the circuit's current paths and each element's
+state, or see every mode at once: the key waveforms with the modes'
+boundaries, then each mode's circuit. Every result sits next to the formula's
+value; the simulator is validated against the formulas to within 2 % and
+against ngspice. With a resistive load and no Thevenin source, one link opens
+the same values in CircuitJS1.
 
 <img src="docs/images/simulate-en.png" alt="The simulator: topology and preset buttons, the detected mode, and the parameter fields beside the stacked waveforms">
 
@@ -212,13 +212,13 @@ the citation rules. Documentation: CC BY-SA 4.0 (`LICENSE-DOCS`). Code: MIT
 <td colspan="2" valign="top">
 
 **시뮬레이션.** 브라우저에서 동작하는 시간 영역(time-domain) 시뮬레이터입니다.
-토폴로지를 고르고 데이터시트에 적힌 그대로 값을 입력하거나(100 µH, 200 kHz,
-30 %) 슬라이더를 움직이면 파형, 동작 모드, 손실이 바로 바뀝니다. 한 주기를
-모드별로 따라가며 회로의 전류 경로와 소자마다의 상태를 볼 수 있고, 논문에서처럼
-모든 모드를 한 번에 볼 수도 있습니다. 모드 경계를 표시한 주요 파형과 각 모드의
-회로를 함께 보여 줍니다. 모든 결과가 수식의 값과 나란히 표시되고, 시뮬레이터는
-수식과 2 % 이내로, 그리고 ngspice와 일치하도록 검증되며, 테브난 전원(Thevenin
-source) 없이 저항 부하라면 링크 하나로 같은 값을 CircuitJS1에서 열 수 있습니다.
+토폴로지를 고르고 값을 SI 접두어와 단위로 입력하거나(100 µH, 200 kHz, 30 %)
+슬라이더를 움직이면 파형, 동작 모드, 손실이 바로 바뀝니다. 한 주기를 모드별로
+따라가며 회로의 전류 경로와 소자의 상태를 볼 수 있고, 모든 모드를 한 번에 볼
+수도 있습니다(모드 경계를 표시한 주요 파형과 각 모드의 회로). 모든 결과는 수식의
+값과 나란히 표시되며, 시뮬레이터는 수식과 2 % 이내로, 그리고 ngspice와
+일치하도록 검증되었습니다. 테브난 전원(Thevenin source) 없이 저항 부하라면 링크
+하나로 같은 값을 CircuitJS1에서 열 수 있습니다.
 
 <img src="docs/images/simulate-ko.png" alt="시뮬레이터: 토폴로지와 프리셋 버튼, 검출된 동작 모드, 그리고 파형 옆의 파라미터 입력란">
 

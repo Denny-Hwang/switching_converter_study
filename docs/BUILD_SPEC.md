@@ -388,6 +388,20 @@ site) over aggregators. Never link to unauthorized PDF copies of books.
 - Korean pages are full translations, not summaries; keep symbols and equation
   ids identical; keep English technical terms in parentheses on first use.
 - Do not editorialize about vendors or parts; state datasheet facts with citation.
+- Write as a textbook does: say what a thing is and what it does ("One period
+  of the example, mode by mode"). Do not frame the text with how or why it is
+  presented: no "as papers describe a converter", "as a datasheet writes
+  them", "as requested". No filler: no sentence or parenthesis that repeats
+  the one before it, no "note that", no aside the reader does not need there.
+- Korean: natural engineering Korean in the formal -ㅂ니다 style. Use the terms
+  Korean engineers use, often the English word itself (스위칭, 듀티비,
+  인덕터, 커패시터, 링잉, 클램프, 시뮬레이션, 타임 스텝), rather than a literal
+  coinage. A simulation is 실행 (never 달리다 or 돌리다), and a simulator
+  시뮬레이션한다 or 계산한다 a circuit (never 진행시킨다).
+- Chinese (Simplified, zh-CN): the same rules, in written technical Chinese;
+  full-width punctuation in Chinese text, half-width in code, math and units;
+  the established terms of the field (降压变换器, 连续导通模式, 占空比, 仿真);
+  the English term in parentheses on first use.
 
 ## 9. PRIVACY_RULES.md (create verbatim)
 
