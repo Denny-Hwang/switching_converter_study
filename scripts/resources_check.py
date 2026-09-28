@@ -34,9 +34,10 @@ resources.yaml (when present), then:
       (archived YYYY-MM-DD)", never silently as live. A capture the archive
       found serves every entry with the same URL in the run. A URL for which
       neither the host nor the archive gave anything to judge (no answer, no
-      capture, or a capture the archive would not serve) is tried once more
-      after the others, after a pause (RETRY_PAUSE): the archive sometimes
-      stops answering for minutes. Only then is it an error.
+      capture, or a capture the archive would not serve) is tried again after
+      the others, after longer and longer pauses (RETRY_PAUSES): the archive
+      rate-limits a runner for minutes at a time (HTTP 418 or 429). Only when
+      it still has nothing to judge after the last pause is it an error.
 
 This complements lychee (which checks every link on the built site): some
 hosts reject lychee's HTTP/2 client, and a title match proves the URL still
@@ -86,7 +87,7 @@ PDF_CAP = 60_000_000  # bytes kept per response: a PDF is read whole (its cross-
 PAGE1_TOP = 600  # characters (normalised) at the top of page 1 where a document shows its title
 MAX_PAGES = 150  # pages read when a bib entry has urlquotes
 WORKERS = 6  # URLs checked at once: a host that turns the runner away costs minutes of retries and archive lookups
-RETRY_PAUSE = 60  # seconds before the URLs that neither their host nor the archive answered are tried once more
+RETRY_PAUSES = (60, 180, 300)  # seconds before each new try of the URLs that neither their host nor the archive answered
 NO_ANSWER = "no Internet Archive capture found (or the archive did not answer)"
 BROWSER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 # Titles of interstitial pages served instead of content (consent walls, bot
@@ -563,11 +564,13 @@ def main() -> int:
             for t, (status, detail) in zip(targets, pool.map(check_online, targets)):
                 print(f"  {status:14s} {t['src']:32s} {t['url']}  {detail[:200]}", flush=True)
                 results.append((status, detail))
-        again = [i for i, (status, _) in enumerate(results) if status == "NO-ANSWER"]
-        if again:
+        for k, pause in enumerate(RETRY_PAUSES, 1):
+            again = [i for i, (status, _) in enumerate(results) if status == "NO-ANSWER"]
+            if not again:
+                break
             print(f"resources_check: nothing to judge from the host or the archive for {len(again)} URL(s); "
-                  f"trying them once more in {RETRY_PAUSE} s", flush=True)
-            time.sleep(RETRY_PAUSE)
+                  f"trying them again in {pause} s (try {k + 1} of {len(RETRY_PAUSES) + 1})", flush=True)
+            time.sleep(pause)
             with ThreadPoolExecutor(max_workers=WORKERS) as pool:
                 for i, (status, detail) in zip(again, pool.map(check_online, [targets[i] for i in again])):
                     results[i] = (status, detail)
