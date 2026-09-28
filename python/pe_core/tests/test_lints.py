@@ -380,7 +380,7 @@ def test_modulelint_mirror_check(tmp_path: Path) -> None:
     en = "---\ntitle: T\n---\n\n## Theory\n\nText <Eq id=\"a\" /> and `<Val>` in code.\n\n### Worked\n"
     ko = "---\ntitle: T\n---\n\n## 이론\n\n본문 <Eq id=\"a\" />.\n\n### 예제\n"
     # a translation that leaves out a code sample in prose is a mirror; the 404 page outside the locales is no pair
-    assert _mirror_errors(tmp_path / "ok", {"en/x.mdx": en, "ko/x.mdx": ko, "404.md": "# 404\n"}) == ([], 1)
+    assert _mirror_errors(tmp_path / "ok", {"en/x.mdx": en, "ko/x.mdx": ko, "404.md": "# 404\n"}) == ([], {"ko": 1, "zh": 0})
     # a rendered component missing in Korean is caught, also when the Korean page shows its name in code
     got, _ = _mirror_errors(tmp_path / "missing", {"en/x.mdx": en.replace(" and `<Val>` in code", ""),
                                                    "ko/x.mdx": ko.replace('<Eq id="a" />', '`<Eq>`')})
@@ -391,9 +391,42 @@ def test_modulelint_mirror_check(tmp_path: Path) -> None:
     # a missing Korean page, unless STATUS marks it pending; a Korean page needs its English page
     got, _ = _mirror_errors(tmp_path / "noko", {"en/x.mdx": en})
     assert any("en/x.mdx: no KO page" in e for e in got), got
-    assert _mirror_errors(tmp_path / "pending", {"en/x.mdx": en}, "| x | ko/x.mdx pending: translation under way |\n") == ([], 0)
+    assert _mirror_errors(tmp_path / "pending", {"en/x.mdx": en}, "| x | ko/x.mdx pending: translation under way |\n") == ([], {"ko": 0, "zh": 0})
     got, _ = _mirror_errors(tmp_path / "noen", {"ko/x.mdx": ko})
     assert any("ko/x.mdx: no EN page" in e for e in got), got
+
+    # Chinese: a missing page is pending until STATUS's Chinese table marks its folder ✅; a page there is checked
+    zh = "---\ntitle: T\n---\n\n## 理论\n\n正文 <Eq id=\"a\" />。\n\n### 例题\n"
+    done = "## Chinese (zh-CN)\n\n| Folder | ZH | Notes |\n| --- | --- | --- |\n| x | ✅ | |\n"
+    both = {"en/x.mdx": en, "ko/x.mdx": ko}
+    assert _mirror_errors(tmp_path / "zh-pending", both) == ([], {"ko": 1, "zh": 0})
+    assert _mirror_errors(tmp_path / "zh-done", {**both, "zh/x.mdx": zh}, done) == ([], {"ko": 1, "zh": 1})
+    got, _ = _mirror_errors(tmp_path / "zh-missing", both, done)
+    assert any("en/x.mdx: no ZH page" in e for e in got), got
+    got, _ = _mirror_errors(tmp_path / "zh-level", {**both, "zh/x.mdx": zh.replace("### 例题", "## 例题")})
+    assert any("zh/x.mdx: heading levels [2, 2] differ from the English page's [2, 3]" in e for e in got), got
+    got, _ = _mirror_errors(tmp_path / "zh-noen", {"zh/x.mdx": zh})
+    assert any("zh/x.mdx: no EN page" in e for e in got), got
+
+
+def test_modulelint_chinese_table_covers_every_folder(tmp_path: Path) -> None:
+    ml = _script("modulelint")
+    docs = tmp_path / "src" / "content" / "docs"
+    for rel in ("en/index.mdx", "en/02-theory/ccm-dcm.mdx", "en/design/explorer.mdx"):
+        (docs / rel).parent.mkdir(parents=True, exist_ok=True)
+        (docs / rel).write_text("---\ntitle: T\n---\n", encoding="utf-8")
+    ml.DOCS = docs
+
+    def errors(rows: str) -> list[str]:
+        (tmp_path / "STATUS.md").write_text("## Chinese (zh-CN)\n\n| Folder | ZH | Notes |\n| --- | --- | --- |\n" + rows, encoding="utf-8")
+        ml.STATUS = tmp_path / "STATUS.md"
+        return ml.check_zh_table(ml.status_rows())
+
+    assert errors("| index | ⬜ | |\n| 02-theory | ✅ | |\n| design | ⬜ | |\n") == []
+    got = errors("| index | ⬜ | |\n| 02-theory | done | |\n| tools | ⬜ | |\n")
+    assert any("no row for design" in e for e in got), got
+    assert any("row 'tools' names no folder" in e for e in got), got
+    assert any("02-theory must be ✅ or ⬜" in e for e in got), got
 
 
 _GOTCHA_EN = """---

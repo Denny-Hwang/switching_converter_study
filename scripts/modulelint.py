@@ -110,12 +110,16 @@ GENERATED = ROOT / "packages" / "pe-core" / "equations" / "equations.generated.j
 SECTIONS = {
     "en": ["Intent", "Theory", "Worked example", "Try it", "Bench exercise", "Gotchas", "Go deeper", "Quiz"],
     "ko": ["목표", "이론", "풀이 예제", "직접 해 보기", "벤치 실습", "주의할 점", "더 알아보기", "퀴즈"],
+    "zh": ["目标", "理论", "例题", "动手试试", "实验练习", "易错点", "延伸阅读", "测验"],
 }
+TRANSLATIONS = ("ko", "zh")
+LANGUAGE = {"en": "English", "ko": "Korean", "zh": "Chinese"}
+ZH_TABLE = "Chinese"  # docs/STATUS.md "## Chinese (zh-CN)": a row per folder of pages, ZH ✅ once every page in it is translated
 BLOCK = ("Eq", "Worked", "TryIt", "TrySim", "GoDeeper", "Quiz", "Figure", "CoreKg", "MagWorked", "TryMag", "TryTool", "Mission", "FalstadLinks", "ModeSheet")
 SIM_TOPOLOGIES = ("buck", "boost", "buckboost", "flyback", "forward")
 TOOLS = ("Explorer", "Simulator", "ConverterDesigner", "MagneticsDesigner", "LossBudget", "ClampCheck", "SourceMatcher", "SenseChain")
 TOOL_TAG = re.compile(r"<(" + "|".join(TOOLS) + r")\b")
-SHOT_SECTION = {"en": "Screenshot", "ko": "스크린샷"}
+SHOT_SECTION = {"en": "Screenshot", "ko": "스크린샷", "zh": "截图"}
 SHOT_IMPORT = re.compile(r"^import\s+(\w+)\s+from\s+'((?:\.\./)+assets/screenshots/([\w-]+)\.png)';", re.M)
 INLINE = ("Cite", "EqRef", "Val", "FalstadLink")
 COMPONENT = re.compile(r"<(" + "|".join(BLOCK + INLINE) + r")\b((?:[^>\"'{}]|\"[^\"]*\"|'[^']*'|\{(?:[^{}]|\{[^{}]*\})*\})*)/?>")
@@ -125,12 +129,14 @@ GOTCHA_TAGS = set(json.loads((ROOT / "src" / "lib" / "gotchas.json").read_text(e
 GOTCHA_SECTIONS = {
     "en": ["Symptom", "Why", "How to confirm", "Fix", "References"],
     "ko": ["증상", "원인", "확인 방법", "해결", "참고 자료"],
+    "zh": ["现象", "原因", "如何确认", "解决方法", "参考资料"],
 }
 MISSIONS_DIR = "09-missions"
 MISSIONS = ROOT / "src" / "content" / "missions"
 MISSION_SECTIONS = {
     "en": ["Goal", "Before you start", "Steps", "Acceptance criteria", "Gotchas", "Go deeper", "Quiz"],
     "ko": ["목표", "시작하기 전에", "단계", "완료 기준", "주의할 점", "더 알아보기", "퀴즈"],
+    "zh": ["目标", "开始之前", "步骤", "验收标准", "易错点", "延伸阅读", "测验"],
 }
 MISSION_TOOLS = ("TrySim", "TryMag", "TryIt", "TryTool")
 MISSION_COLUMNS = ("Criteria ≥ 3", "Tool link", "Go deeper ≥ 2", "Gotchas", "Quiz ≥ 5")
@@ -242,6 +248,42 @@ def status_rows() -> dict[tuple[str, str], dict[str, str]]:
     return rows
 
 
+def page_folder(slug: str) -> str:
+    """The folder of a page under its locale (its first path part); a page at the locale's root is its own."""
+    first = slug.split("/", 1)[0]
+    return first if "/" in slug else first.rsplit(".", 1)[0]
+
+
+def zh_required(slug: str, status: dict[tuple[str, str], dict[str, str]]) -> bool:
+    """A Chinese page must exist once docs/STATUS.md's Chinese table marks its folder ✅ (until then, a missing
+    Chinese page is pending and Starlight serves the English one)."""
+    return "✅" in status.get((ZH_TABLE, page_folder(slug)), {}).get("ZH", "")
+
+
+def mirror_errors(en: list[tuple[str, dict[str, str]]], tr: list[tuple[str, dict[str, str]]], where: str,
+                  list_block: bool = True) -> list[str]:
+    """A translated page has the English page's block components in order and its inline components as a set."""
+    errors = []
+    if signature(en, BLOCK) != signature(tr, BLOCK):
+        errors.append(f"{where}: block components differ from the English page" + (f" ({', '.join(BLOCK)})" if list_block else ""))
+    en_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(en, INLINE))
+    tr_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(tr, INLINE))
+    if en_inline != tr_inline:
+        errors.append(f"{where}: inline components differ from the English page (missing {list(en_inline - tr_inline)}, extra {list(tr_inline - en_inline)})")
+    return errors
+
+
+def quiz_key_errors(locale: str, quiz_id: str) -> list[str]:
+    """A translated quiz keeps the English quiz's answers and option counts."""
+    en_quiz, tr_quiz = load_quiz("en", quiz_id), load_quiz(locale, quiz_id)
+    if en_quiz and tr_quiz:
+        en_key = [(q.get("answer"), len(q.get("options") or [])) for q in en_quiz.get("questions") or []]
+        tr_key = [(q.get("answer"), len(q.get("options") or [])) for q in tr_quiz.get("questions") or []]
+        if en_key != tr_key:
+            return [f"src/content/quizzes/{locale}/{quiz_id}.yaml: answer key or option counts differ from the English quiz"]
+    return []
+
+
 def check_gotcha_index(where: str, body: str) -> list[str]:
     """The gotcha index: the list of pages, then, under an h2 of its own, the pages by tag."""
     listed = re.search(r'<GotchaIndex\s+part="list"\s*/>', body)
@@ -304,27 +346,27 @@ def check_gotchas(status: dict[tuple[str, str], dict[str, str]]) -> tuple[list[s
             row = {}
         elif "✅" not in row.get("EN", ""):
             errors.append(f"docs/STATUS.md: {GOTCHAS_DIR}/{slug} EN must be ✅")
-        ko = pages.get(("ko", slug))
-        if ko is None:
-            if "pending" not in row.get("KO", "").lower():
-                errors.append(f"src/content/docs/en/{GOTCHAS_DIR}/{slug}.mdx: no Korean page, and docs/STATUS.md does not mark KO pending")
-            continue
-        if "✅" not in row.get("KO", ""):
-            errors.append(f"docs/STATUS.md: {GOTCHAS_DIR}/{slug} KO must be ✅")
-        ko_tags, ko_comps = ko
-        if ko_tags != tags:
-            errors.append(f"src/content/docs/ko/{GOTCHAS_DIR}/{slug}.mdx: tags {ko_tags} differ from the English page's {tags}")
-        if signature(comps, BLOCK) != signature(ko_comps, BLOCK):
-            errors.append(f"src/content/docs/ko/{GOTCHAS_DIR}/{slug}.mdx: block components differ from the English page")
-        en_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(comps, INLINE))
-        ko_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(ko_comps, INLINE))
-        if en_inline != ko_inline:
-            errors.append(f"src/content/docs/ko/{GOTCHAS_DIR}/{slug}.mdx: inline components differ from the English page (missing {list(en_inline - ko_inline)}, extra {list(ko_inline - en_inline)})")
+        for tl in TRANSLATIONS:
+            tr = pages.get((tl, slug))
+            twhere = f"src/content/docs/{tl}/{GOTCHAS_DIR}/{slug}.mdx"
+            if tr is None:
+                if tl == "ko" and "pending" not in row.get("KO", "").lower():
+                    errors.append(f"src/content/docs/en/{GOTCHAS_DIR}/{slug}.mdx: no Korean page, and docs/STATUS.md does not mark KO pending")
+                elif tl == "zh" and zh_required(f"{GOTCHAS_DIR}/{slug}", status):
+                    errors.append(f"src/content/docs/en/{GOTCHAS_DIR}/{slug}.mdx: no Chinese page, while docs/STATUS.md's Chinese table marks {GOTCHAS_DIR} ✅")
+                continue
+            if tl == "ko" and "✅" not in row.get("KO", ""):
+                errors.append(f"docs/STATUS.md: {GOTCHAS_DIR}/{slug} KO must be ✅")
+            tr_tags, tr_comps = tr
+            if tr_tags != tags:
+                errors.append(f"{twhere}: tags {tr_tags} differ from the English page's {tags}")
+            errors += mirror_errors(comps, tr_comps, twhere, list_block=False)
     for (locale, slug) in pages:
-        if locale == "ko" and ("en", slug) not in pages:
-            errors.append(f"src/content/docs/ko/{GOTCHAS_DIR}/{slug}.mdx: no English page of that name")
+        if locale in TRANSLATIONS and ("en", slug) not in pages:
+            errors.append(f"src/content/docs/{locale}/{GOTCHAS_DIR}/{slug}.mdx: no English page of that name")
     for locale in SECTIONS:
-        if pages and not (DOCS / locale / GOTCHAS_DIR / "index.mdx").exists():
+        needed = locale in ("en", "ko") or any(loc == locale for loc, _ in pages) or zh_required(f"{GOTCHAS_DIR}/index", status)
+        if pages and needed and not (DOCS / locale / GOTCHAS_DIR / "index.mdx").exists():
             errors.append(f"src/content/docs/{locale}/{GOTCHAS_DIR}/index.mdx: the gotcha pages need their index")
     for (section, slug) in status:
         if section == GOTCHAS_DIR and slug != "index" and ("en", slug) not in pages:
@@ -434,41 +476,34 @@ def check_missions(status: dict[tuple[str, str], dict[str, str]], resources: dic
             for c in MISSION_COLUMNS:
                 if "✅" not in row.get(c, ""):
                     errors.append(f"docs/STATUS.md: {MISSIONS_DIR}/{slug} column {c!r} must be ✅")
-        ko = pages.get(("ko", slug))
-        if ko is None:
-            if "pending" not in row.get("KO", "").lower():
-                errors.append(f"src/content/docs/en/{MISSIONS_DIR}/{slug}.mdx: no Korean page, and docs/STATUS.md does not mark KO pending")
-            continue
-        if "✅" not in row.get("KO", ""):
-            errors.append(f"docs/STATUS.md: {MISSIONS_DIR}/{slug} KO must be ✅")
-        ko_mission, ko_comps = ko
-        kwhere = f"src/content/docs/ko/{MISSIONS_DIR}/{slug}.mdx"
-        if ko_mission != mission:
-            errors.append(f"{kwhere}: mission id {ko_mission} differs from the English page's {mission}")
-        if signature(comps, BLOCK) != signature(ko_comps, BLOCK):
-            errors.append(f"{kwhere}: block components differ from the English page")
-        en_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(comps, INLINE))
-        ko_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(ko_comps, INLINE))
-        if en_inline != ko_inline:
-            errors.append(f"{kwhere}: inline components differ from the English page (missing {list(en_inline - ko_inline)}, extra {list(ko_inline - en_inline)})")
-        en_c, ko_c = load_criteria("en", mission), load_criteria("ko", mission)
-        if en_c is not None and ko_c is not None:
-            if [c.get("id") for c in en_c] != [c.get("id") for c in ko_c]:
-                errors.append(f"src/content/missions/ko/{mission}.yaml: criterion ids differ from the English file's (the progress is shared)")
-            if [c.get("check") for c in en_c] != [c.get("check") for c in ko_c]:
-                errors.append(f"src/content/missions/ko/{mission}.yaml: answer checks differ from the English file's")
-        quiz_id = f"{MISSIONS_DIR}/{slug}"
-        en_quiz, ko_quiz = load_quiz("en", quiz_id), load_quiz("ko", quiz_id)
-        if en_quiz and ko_quiz:
-            en_key = [(q.get("answer"), len(q.get("options") or [])) for q in en_quiz.get("questions") or []]
-            ko_key = [(q.get("answer"), len(q.get("options") or [])) for q in ko_quiz.get("questions") or []]
-            if en_key != ko_key:
-                errors.append(f"src/content/quizzes/ko/{quiz_id}.yaml: answer key or option counts differ from the English quiz")
+        for tl in TRANSLATIONS:
+            tr = pages.get((tl, slug))
+            if tr is None:
+                if tl == "ko" and "pending" not in row.get("KO", "").lower():
+                    errors.append(f"src/content/docs/en/{MISSIONS_DIR}/{slug}.mdx: no Korean page, and docs/STATUS.md does not mark KO pending")
+                elif tl == "zh" and zh_required(f"{MISSIONS_DIR}/{slug}", status):
+                    errors.append(f"src/content/docs/en/{MISSIONS_DIR}/{slug}.mdx: no Chinese page, while docs/STATUS.md's Chinese table marks {MISSIONS_DIR} ✅")
+                continue
+            if tl == "ko" and "✅" not in row.get("KO", ""):
+                errors.append(f"docs/STATUS.md: {MISSIONS_DIR}/{slug} KO must be ✅")
+            tr_mission, tr_comps = tr
+            twhere = f"src/content/docs/{tl}/{MISSIONS_DIR}/{slug}.mdx"
+            if tr_mission != mission:
+                errors.append(f"{twhere}: mission id {tr_mission} differs from the English page's {mission}")
+            errors += mirror_errors(comps, tr_comps, twhere, list_block=False)
+            en_c, tr_c = load_criteria("en", mission), load_criteria(tl, mission)
+            if en_c is not None and tr_c is not None:
+                if [c.get("id") for c in en_c] != [c.get("id") for c in tr_c]:
+                    errors.append(f"src/content/missions/{tl}/{mission}.yaml: criterion ids differ from the English file's (the progress is shared)")
+                if [c.get("check") for c in en_c] != [c.get("check") for c in tr_c]:
+                    errors.append(f"src/content/missions/{tl}/{mission}.yaml: answer checks differ from the English file's")
+            errors += quiz_key_errors(tl, f"{MISSIONS_DIR}/{slug}")
     for (locale, slug) in pages:
-        if locale == "ko" and ("en", slug) not in pages:
-            errors.append(f"src/content/docs/ko/{MISSIONS_DIR}/{slug}.mdx: no English page of that name")
+        if locale in TRANSLATIONS and ("en", slug) not in pages:
+            errors.append(f"src/content/docs/{locale}/{MISSIONS_DIR}/{slug}.mdx: no English page of that name")
     for locale in MISSION_SECTIONS:
-        if pages and not (DOCS / locale / MISSIONS_DIR / "index.mdx").exists():
+        needed = locale in ("en", "ko") or any(loc == locale for loc, _ in pages) or zh_required(f"{MISSIONS_DIR}/index", status)
+        if pages and needed and not (DOCS / locale / MISSIONS_DIR / "index.mdx").exists():
             errors.append(f"src/content/docs/{locale}/{MISSIONS_DIR}/index.mdx: the missions need their index")
     for (section, slug) in status:
         if section == MISSIONS_DIR and ("en", slug) not in pages:
@@ -514,8 +549,11 @@ def check_resource_pages(status: dict[tuple[str, str], dict[str, str]], resource
                 errors.append(f"docs/STATUS.md: {RESOURCES_DIR}/{slug} needs a row with EN and KO ✅")
             if ("ko", slug) not in listed:
                 errors.append(f"{paths[(locale, slug)]}: no Korean page")
-            elif listed[("ko", slug)] != types:
-                errors.append(f"{paths[('ko', slug)]}: lists types {listed[('ko', slug)]}, the English page {types}")
+            if ("zh", slug) not in listed and zh_required(f"{RESOURCES_DIR}/{slug}", status):
+                errors.append(f"{paths[(locale, slug)]}: no Chinese page, while docs/STATUS.md's Chinese table marks {RESOURCES_DIR} ✅")
+            for tl in TRANSLATIONS:
+                if (tl, slug) in listed and listed[(tl, slug)] != types:
+                    errors.append(f"{paths[(tl, slug)]}: lists types {listed[(tl, slug)]}, the English page {types}")
         elif ("en", slug) not in listed:
             errors.append(f"{paths[(locale, slug)]}: no English page of that name")
     covered = {ty for (loc, _), types in listed.items() if loc == "en" and types for ty in types}
@@ -565,39 +603,60 @@ def page_shape(text: str) -> tuple[list[int], list[str]]:
     return [len(h) for h in HEADING.findall(body)], sorted(COMPONENT_NAME.findall(body))
 
 
-def check_mirrors() -> tuple[list[str], int]:
-    """Every EN page and its KO page: counterparts at the same path, the same heading levels in order,
-    the same components by name."""
+def check_mirrors() -> tuple[list[str], dict[str, int]]:
+    """Every EN page and its KO and ZH pages: counterparts at the same path, the same heading levels in order,
+    the same components by name. Returns the errors and, per translation, the pairs compared."""
     errors: list[str] = []
     status = STATUS.read_text(encoding="utf-8")
+    rows = status_rows()
     shape: dict[tuple[str, str], tuple[list[int], list[str]]] = {}
     for path in sorted(DOCS.rglob("*.md*")):
         if path.suffix not in (".md", ".mdx"):
             continue
         rel = path.relative_to(DOCS)
-        if len(rel.parts) < 2 or rel.parts[0] not in ("en", "ko"):
+        if len(rel.parts) < 2 or rel.parts[0] not in ("en", *TRANSLATIONS):
             continue  # a page outside the locales (the 404 page)
         locale, slug = rel.parts[0], "/".join(rel.parts[1:])
         shape[(locale, slug)] = page_shape(path.read_text(encoding="utf-8"))
-    pairs = 0
+    pairs = {tl: 0 for tl in TRANSLATIONS}
     for (locale, slug), (levels, names) in shape.items():
-        other = "ko" if locale == "en" else "en"
-        mirror = shape.get((other, slug))
-        if mirror is None:
-            pending = any(f"{other}/{slug}" in line and "pending" in line.lower() for line in status.splitlines())
-            if not (other == "ko" and pending):
-                errors.append(f"src/content/docs/{locale}/{slug}: no {other.upper()} page at src/content/docs/{other}/{slug}" + (" (or a docs/STATUS.md line marking it pending)" if other == "ko" else ""))
-            continue
         if locale != "en":
+            if ("en", slug) not in shape:
+                errors.append(f"src/content/docs/{locale}/{slug}: no EN page at src/content/docs/en/{slug}")
             continue
-        pairs += 1
-        if levels != mirror[0]:
-            errors.append(f"src/content/docs/ko/{slug}: heading levels {mirror[0]} differ from the English page's {levels}")
-        if names != mirror[1]:
-            missing = sorted(set(names) - set(mirror[1]))
-            extra = sorted(set(mirror[1]) - set(names))
-            errors.append(f"src/content/docs/ko/{slug}: components differ from the English page's (missing {missing}, extra {extra}, or a different count)")
+        for tl in TRANSLATIONS:
+            mirror = shape.get((tl, slug))
+            if mirror is None:
+                if tl == "ko" and not any(f"ko/{slug}" in line and "pending" in line.lower() for line in status.splitlines()):
+                    errors.append(f"src/content/docs/en/{slug}: no KO page at src/content/docs/ko/{slug} (or a docs/STATUS.md line marking it pending)")
+                elif tl == "zh" and zh_required(slug, rows):
+                    errors.append(f"src/content/docs/en/{slug}: no ZH page at src/content/docs/zh/{slug}, while docs/STATUS.md's Chinese table marks its folder ✅")
+                continue
+            pairs[tl] += 1
+            if levels != mirror[0]:
+                errors.append(f"src/content/docs/{tl}/{slug}: heading levels {mirror[0]} differ from the English page's {levels}")
+            if names != mirror[1]:
+                missing = sorted(set(names) - set(mirror[1]))
+                extra = sorted(set(mirror[1]) - set(names))
+                errors.append(f"src/content/docs/{tl}/{slug}: components differ from the English page's (missing {missing}, extra {extra}, or a different count)")
     return errors, pairs
+
+
+def check_zh_table(status: dict[tuple[str, str], dict[str, str]]) -> list[str]:
+    """docs/STATUS.md's Chinese table has a row (ZH ✅ or ⬜) for every folder of English pages, and no other."""
+    errors = []
+    folders = {page_folder("/".join(p.relative_to(DOCS / "en").parts)) for p in (DOCS / "en").rglob("*.md*")
+               if p.suffix in (".md", ".mdx")}
+    listed = {slug for (section, slug) in status if section == ZH_TABLE}
+    for folder in sorted(folders - listed):
+        errors.append(f"docs/STATUS.md: the Chinese table has no row for {folder}")
+    for folder in sorted(listed - folders):
+        errors.append(f"docs/STATUS.md: the Chinese table's row {folder!r} names no folder of English pages")
+    for folder in sorted(listed & folders):
+        state = status[(ZH_TABLE, folder)].get("ZH", "")
+        if not ("✅" in state or "⬜" in state):
+            errors.append(f"docs/STATUS.md: the Chinese table's {folder} must be ✅ or ⬜, found {state!r}")
+    return errors
 
 
 def main() -> int:
@@ -680,58 +739,50 @@ def main() -> int:
         if row is None:
             errors.append(f"docs/STATUS.md: no row for module {section}/{module}")
         else:
-            col = "EN" if locale == "en" else "KO"
-            if "✅" not in row.get(col, ""):
+            col = {"en": "EN", "ko": "KO"}.get(locale)  # a Chinese page is counted by the Chinese table
+            if col and "✅" not in row.get(col, ""):
                 errors.append(f"docs/STATUS.md: {section}/{module} {col} must be ✅ (the page exists and passes modulelint)")
             if locale == "en":
                 for c in DOD_COLUMNS[2:]:
                     if "✅" not in row.get(c, ""):
                         errors.append(f"docs/STATUS.md: {section}/{module} column {c!r} must be ✅")
 
-    # Korean mirrors English
+    # the translations mirror English
     for (locale, slug), comps in pages.items():
         if locale != "en":
             continue
         section, module = slug.split("/", 1) if "/" in slug else ("", slug)
-        ko = pages.get(("ko", slug))
-        if ko is None:
-            row = status.get((section, module), {})
-            if "pending" not in row.get("KO", "").lower():
-                errors.append(f"src/content/docs/en/{slug}.mdx: no Korean page, and docs/STATUS.md does not mark KO pending")
-            continue
-        if signature(comps, BLOCK) != signature(ko, BLOCK):
-            errors.append(f"src/content/docs/ko/{slug}.mdx: block components differ from the English page ({', '.join(BLOCK)})")
-        en_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(comps, INLINE))
-        ko_inline = Counter(json.dumps(x, sort_keys=True) for x in signature(ko, INLINE))
-        if en_inline != ko_inline:
-            missing = en_inline - ko_inline
-            extra = ko_inline - en_inline
-            errors.append(f"src/content/docs/ko/{slug}.mdx: inline components differ from the English page (missing {list(missing)}, extra {list(extra)})")
-        en_quiz, ko_quiz = load_quiz("en", slug), load_quiz("ko", slug)
-        if en_quiz and ko_quiz:
-            en_key = [(q.get("answer"), len(q.get("options") or [])) for q in en_quiz.get("questions") or []]
-            ko_key = [(q.get("answer"), len(q.get("options") or [])) for q in ko_quiz.get("questions") or []]
-            if en_key != ko_key:
-                errors.append(f"src/content/quizzes/ko/{slug}.yaml: answer key or option counts differ from the English quiz")
+        for tl in TRANSLATIONS:
+            tr = pages.get((tl, slug))
+            if tr is None:
+                row = status.get((section, module), {})
+                if tl == "ko" and "pending" not in row.get("KO", "").lower():
+                    errors.append(f"src/content/docs/en/{slug}.mdx: no Korean page, and docs/STATUS.md does not mark KO pending")
+                elif tl == "zh" and zh_required(slug, status):
+                    errors.append(f"src/content/docs/en/{slug}.mdx: no Chinese page, while docs/STATUS.md's Chinese table marks {section} ✅")
+                continue
+            errors += mirror_errors(comps, tr, f"src/content/docs/{tl}/{slug}.mdx")
+            errors += quiz_key_errors(tl, slug)
 
     gotcha_errors, n_gotchas = check_gotchas(status)
     errors += gotcha_errors
     mission_errors, n_missions = check_missions(status, resources, examples)
     errors += mission_errors
     errors += check_resource_pages(status, resources)
-    mirror_errors, n_pairs = check_mirrors()
-    errors += mirror_errors
+    pair_errors, n_pairs = check_mirrors()
+    errors += pair_errors
+    errors += check_zh_table(status)
 
     if errors:
         print(f"modulelint: {len(errors)} error(s)", file=sys.stderr)
         for e in errors:
             print("  " + e, file=sys.stderr)
         return 1
-    n_en = sum(1 for (loc, _) in pages if loc == "en")
-    n_ko = sum(1 for (loc, _) in pages if loc == "ko")
+    n = {loc: sum(1 for (lc, _) in pages if lc == loc) for loc in SECTIONS}
     print(
-        f"modulelint: OK ({n_en} EN and {n_ko} KO module pages, {n_gotchas} gotcha pages, {n_missions} missions, "
-        f"{n_tools} tool pages with screenshots, {n_pairs} EN/KO page pairs with the same structure)"
+        f"modulelint: OK ({n['en']} EN, {n['ko']} KO and {n['zh']} ZH module pages, {n_gotchas} gotcha pages, "
+        f"{n_missions} missions, {n_tools} tool pages with screenshots, {n_pairs['ko']} EN/KO and {n_pairs['zh']} EN/ZH "
+        "page pairs with the same structure)"
     )
     return 0
 

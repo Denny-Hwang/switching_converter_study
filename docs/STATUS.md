@@ -74,6 +74,30 @@
 | STATUS's counts (derivations and the equations they leave out, symbols, references, examples, pages) equal the repository's (`test_status.py`) | ✅ |
 | Release | ✅ v0.1.0 (`CHANGELOG.md`), tagged on the commit that merges it; one version in `package.json` and its lock file, `packages/pe-core` and the Python package, equal to the changelog's latest release (`test_release.py`) |
 
+## Chinese (zh-CN)
+
+The Chinese pages mirror the English ones under `src/content/docs/zh/`, one folder at a time. ✅: every page of
+the folder is translated and checked like its Korean page (`modulelint.py`); ⬜: pending, and Starlight serves
+the English page in its place.
+
+| Folder | ZH | Notes |
+| --- | --- | --- |
+| index | ⬜ | the landing page |
+| about | ⬜ | |
+| 00-foundations | ⬜ | |
+| 01-physics | ⬜ | |
+| 02-theory | ⬜ | |
+| 03-topologies | ⬜ | |
+| 04-magnetics | ⬜ | |
+| 05-simulation | ⬜ | |
+| 06-bench | ⬜ | |
+| 07-harvesting | ⬜ | |
+| 08-gotchas | ⬜ | |
+| 09-missions | ⬜ | |
+| 10-resources | ⬜ | |
+| design | ⬜ | |
+| simulate | ⬜ | |
+
 Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); theory uses only `<Eq>` embeds and each Eq has ≥ 1 test vector; "Try it" links a tool preset; "Go deeper" has ≥ 2 verified resources with retrieval dates; a gotchas subsection exists; quiz with ≥ 5 explained questions; build, tests and all lints green.
 
 Legend: ✅ done · 🟡 partial · ⬜ not started · ➖ not applicable. "Phase" is the build phase that delivers the module (docs/BUILD_SPEC.md §7); "later" = not scheduled in phases 0–5. 00-foundations and 01-physics are compact refreshers (Phase 2 scope).
