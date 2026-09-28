@@ -3,7 +3,7 @@
  * <GoDeeper ids={['erickson-ch5', 'coursera-converter-circuits']} /> --
  * verified external resources with retrieval dates (from resources.yaml).
  */
-import { ui } from '../i18n/ui';
+import { fieldIn, ui } from '../i18n/ui';
 import { getResource, typeLabel } from '../lib/resources';
 import { pageLocale } from '../lib/locale';
 
@@ -27,7 +27,7 @@ const t = ui[locale];
           — {r.author} · {t['godeeper.retrieved']} {r.retrieved}
         </span>
         <br />
-        <span class="pe-godeeper__why">{locale === 'ko' ? r.why_ko : r.why}</span>
+        <span class="pe-godeeper__why">{fieldIn(r, 'why', locale)}</span>
       </li>
     ))
   }

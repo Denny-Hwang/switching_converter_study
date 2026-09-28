@@ -7,7 +7,7 @@
  */
 import katex from 'katex';
 import { catalog } from 'pe-core';
-import { ui } from '../i18n/ui';
+import { fieldIn, ui } from '../i18n/ui';
 import { katexOptions } from '../math/katex-options';
 import { getExample } from '../lib/examples';
 import { coreKg } from '../lib/corekg';
@@ -43,7 +43,7 @@ const rows = coreKg(need).map((r) => {
     fits: r.margin >= 1,
   };
 });
-const label = locale === 'ko' ? ex.label_ko : ex.label;
+const label = fieldIn(ex, 'label', locale);
 ---
 
 <figure class="pe-worked not-content">

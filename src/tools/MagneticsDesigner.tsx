@@ -18,6 +18,7 @@ import { PLOT_CONFIG, axis, baseLayout, logTicks, sub, usePlotTheme } from '../l
 import { useStateHash } from '../lib/useStateHash';
 import { Choices, FieldLabel, NumInput, Rich } from './ToolUi';
 import { parseSI } from '../lib/siparse';
+import type { Locale } from '../i18n/ui';
 
 export interface MagLabels {
   /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
@@ -103,7 +104,7 @@ export interface MagPreset {
 }
 
 interface Props {
-  locale: 'en' | 'ko';
+  locale: Locale;
   labels: MagLabels;
   presets: MagPreset[];
   /** What each symbol means (i18n/symbols.ts). */

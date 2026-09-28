@@ -4,7 +4,7 @@
  * circuit file, the same example in the site's simulator, and the ideal values the CI's
  * falstad job (scripts/falstad_check.mjs) compares its last periods with.
  */
-import { ui } from '../i18n/ui';
+import { fieldIn, ui } from '../i18n/ui';
 import { REPO_BLOB } from '../config';
 import { pageHref } from '../lib/paths';
 import { pageLocale } from '../lib/locale';
@@ -48,7 +48,7 @@ function lines(c: FalstadCase): { label: string; values: string[] }[] {
         falstadCases.map((c) => (
           <tr>
             <th scope="row">
-              {locale === 'ko' ? c.title_ko : c.title}
+              {fieldIn(c, 'title', locale)}
               <div class="pe-falstad__sub">
                 {t['falstad.sim']}:{' '}
                 <a href={`${pageHref(locale, 'simulate/simulator')}#${simulatorHash(c.example, c.topology)}`}>

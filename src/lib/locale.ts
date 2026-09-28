@@ -3,9 +3,9 @@ import { localeOf, type Locale } from '../i18n/ui';
 
 /**
  * Locale of the content being rendered ('en' outside Starlight pages).
- * A Korean page that is not translated yet is served with the English
- * content (Starlight fallback); its components then render in English too,
- * so links, quizzes and equation homes match the text around them.
+ * A Korean or Chinese page that is not translated yet is served with the
+ * English content (Starlight fallback); its components then render in English
+ * too, so links, quizzes and equation homes match the text around them.
  */
 export function pageLocale(astro: AstroGlobal): Locale {
   try {

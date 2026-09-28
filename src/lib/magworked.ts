@@ -9,8 +9,9 @@ import { catalog, magnetics, type MagResult, type MagSpec, type WindingResult } 
 import { TOOL_SYMBOLS } from '../i18n/symbols';
 import { coreById } from './cores';
 import { MAG_PRESETS, magValues } from './magpresets';
+import type { Texts } from '../i18n/ui';
 
-type Text = { en: string; ko: string };
+type Text = Texts;
 
 export interface MagRow {
   kind: 'given' | 'core' | 'result';
@@ -60,7 +61,7 @@ export function presetSpec(example: string): MagSpec {
 function cat(key: string): { latex: string; meaning: Text; unit: string } {
   const s = catalog.symbols[key];
   if (!s) throw new Error(`magworked: ${key} is not a catalogue symbol`);
-  return { latex: s.latex, meaning: { en: s.meaning, ko: s.meaning_ko }, unit: s.unit };
+  return { latex: s.latex, meaning: { en: s.meaning, ko: s.meaning_ko, zh: s.meaning_zh }, unit: s.unit };
 }
 
 function tool(label: string): Text {
@@ -69,7 +70,12 @@ function tool(label: string): Text {
   return m;
 }
 
-const suffix = (t: Text, s: Text): Text => ({ en: `${t.en} (${s.en})`, ko: `${t.ko} (${s.ko})` });
+const suffix = (t: Text, s: Text): Text => ({
+  en: `${t.en} (${s.en})`,
+  ko: `${t.ko} (${s.ko})`,
+  // the Chinese label only where both parts are translated; the English stands in otherwise
+  zh: t.zh && s.zh ? `${t.zh}（${s.zh}）` : undefined,
+});
 const PRIMARY: Text = { en: 'primary', ko: '1차' };
 const SECONDARY: Text = { en: 'secondary', ko: '2차' };
 

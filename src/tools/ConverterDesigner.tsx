@@ -14,6 +14,7 @@ import { fmtValue } from '../lib/format';
 import { useStateHash } from '../lib/useStateHash';
 import { Choices, FieldLabel, NumInput, Rich, Sym } from './ToolUi';
 import { parseSI } from '../lib/siparse';
+import type { Locale } from '../i18n/ui';
 
 export interface DesignerLabels {
   /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
@@ -63,7 +64,7 @@ export interface DesignerPreset {
 }
 
 interface Props {
-  locale: 'en' | 'ko';
+  locale: Locale;
   labels: DesignerLabels;
   presets: DesignerPreset[];
   simulatorHref: string;

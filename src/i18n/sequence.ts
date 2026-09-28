@@ -1,10 +1,11 @@
 /**
  * The simulator's operating-mode view (SequenceView): what each mode is,
  * what each element is called and what its state means, and a description of
- * each mode per topology, in English and Korean. `{x}` placeholders are
- * filled in by the view. A test (src/i18n/sequence.test.ts) requires a text
- * for every mode, element and state the simulator can produce.
+ * each mode per topology, in each of the site's languages. `{x}` placeholders
+ * are filled in by the view. A test (src/i18n/sequence.test.ts) requires a
+ * text for every mode, element and state the simulator can produce.
  */
+import type { Locale } from './ui';
 
 type Text = Record<string, string>;
 
@@ -383,7 +384,8 @@ const ko: Text = {
   'say.vsource.idle': '{src} 아무것도 공급하지 않습니다.',
 };
 
-export const SEQ_TEXT: Record<'en' | 'ko', Text> = { en, ko };
+/** The Chinese texts come with the Chinese pages; until then the English stands in. */
+export const SEQ_TEXT: Record<Locale, Text> = { en, ko, zh: en };
 
 export type SeqText = Text;
 

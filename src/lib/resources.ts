@@ -5,6 +5,7 @@
  */
 import yaml from 'js-yaml';
 import raw from '../../resources.yaml?raw';
+import { textIn, type Locale } from '../i18n/ui';
 
 export interface Resource {
   id: string;
@@ -14,10 +15,12 @@ export interface Resource {
   url: string;
   tags: string[];
   level: 'intro' | 'intermediate' | 'advanced';
-  language: 'en' | 'ko';
+  language: Locale;
   retrieved: string;
   why: string;
   why_ko: string;
+  /** Chinese; missing until translated, when the English stands in. */
+  why_zh?: string;
   title_match: string;
   urlkind?: 'html' | 'pdf' | 'login';
   cite?: string;
@@ -53,8 +56,9 @@ export const RESOURCE_LEVELS = {
   advanced: { en: 'Advanced', ko: '고급' },
 } as const;
 
-export function typeLabel(type: string, locale: 'en' | 'ko'): string {
-  return RESOURCE_TYPES[type as ResourceType]?.[locale] ?? type;
+export function typeLabel(type: string, locale: Locale): string {
+  const label = RESOURCE_TYPES[type as ResourceType];
+  return label ? textIn(label, locale) : type;
 }
 
 export function getResource(id: string): Resource {

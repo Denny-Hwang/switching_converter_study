@@ -3,7 +3,7 @@
  * <TryMag example="mag-kg" /> -- deep link into the magnetics designer with
  * the design of a preset (its device, core and fields in the URL hash).
  */
-import { ui } from '../i18n/ui';
+import { fieldIn, ui } from '../i18n/ui';
 import { pageHref } from '../lib/paths';
 import { pageLocale } from '../lib/locale';
 import { getExample } from '../lib/examples';
@@ -17,7 +17,7 @@ const locale = pageLocale(Astro);
 const t = ui[locale];
 const href = `${pageHref(locale, 'design/magnetics-designer')}#${magHash(example)}`;
 const ex = getExample(example);
-const label = locale === 'ko' ? ex.label_ko : ex.label;
+const label = fieldIn(ex, 'label', locale);
 ---
 
 <p class="pe-tryit">

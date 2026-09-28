@@ -5,17 +5,20 @@
  */
 import yaml from 'js-yaml';
 import { catalog, checkCondition, runSteps, type Context, type StepResult, type StepSpec } from 'pe-core';
+import type { Texts } from '../i18n/ui';
 
 export interface ExampleCheck {
   when: string;
-  then: { en: string; ko: string };
-  else: { en: string; ko: string };
+  then: Texts;
+  else: Texts;
 }
 
 export interface Example {
   name: string;
   label: string;
   label_ko: string;
+  /** Chinese; empty until translated, when the English stands in. */
+  label_zh: string;
   params: Context;
   steps: (string | StepSpec)[];
   checks: ExampleCheck[];
@@ -24,7 +27,7 @@ export interface Example {
 export interface EvaluatedExample extends Example {
   context: Context;
   results: StepResult[];
-  checkResults: { when: string; ok: boolean; text: { en: string; ko: string } }[];
+  checkResults: { when: string; ok: boolean; text: Texts }[];
 }
 
 const raw = import.meta.glob('/examples/synthetic/*.yaml', { query: '?raw', import: 'default', eager: true }) as Record<
@@ -38,8 +41,11 @@ function parse(path: string, text: string): Example {
   // PRIVACY_RULES.md: an example says so where it appears; the page footer says that its numbers are synthetic
   const label = String(data.label ?? '');
   const labelKo = String(data.label_ko ?? '');
-  if (data.synthetic !== true || !label.toLowerCase().includes('example') || !labelKo.includes('예제')) {
-    throw new Error(`examples/synthetic/${name}.yaml must declare synthetic: true and labels naming it an example ("example", "예제")`);
+  const labelZh = String(data.label_zh ?? '');
+  if (data.synthetic !== true || !label.toLowerCase().includes('example') || !labelKo.includes('예제') || (labelZh !== '' && !labelZh.includes('示例'))) {
+    throw new Error(
+      `examples/synthetic/${name}.yaml must declare synthetic: true and labels naming it an example ("example", "예제", and "示例" where a Chinese label is given)`,
+    );
   }
   const params = (data.params ?? {}) as Context;
   for (const [k, v] of Object.entries(params)) {
@@ -49,6 +55,7 @@ function parse(path: string, text: string): Example {
     name,
     label: String(data.label),
     label_ko: String(data.label_ko ?? data.label),
+    label_zh: labelZh,
     params,
     steps: (data.steps ?? []) as (string | StepSpec)[],
     checks: (data.checks ?? []) as ExampleCheck[],

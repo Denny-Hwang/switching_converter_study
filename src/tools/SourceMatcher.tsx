@@ -31,6 +31,7 @@ import { PLOT_CONFIG, axis, baseLayout, logTicks, sub, usePlotTheme } from '../l
 import { ChoiceButtons, Choices, FieldLabel, NumInput, Rich } from './ToolUi';
 import type { EnvelopeReply } from './sourcematch.worker';
 import { parseSI } from '../lib/siparse';
+import type { Locale } from '../i18n/ui';
 
 export type EnvelopeKind = 'none' | 'sine' | 'points';
 
@@ -103,7 +104,7 @@ export interface SourcePreset {
 }
 
 interface Props {
-  locale: 'en' | 'ko';
+  locale: Locale;
   labels: SourceLabels;
   presets: SourcePreset[];
   simulatorHref: string;

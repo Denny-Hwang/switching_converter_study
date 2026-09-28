@@ -17,6 +17,7 @@ import { useStateHash } from '../lib/useStateHash';
 import { PLOT_CONFIG, axis, baseLayout, logTicks, sub, usePlotTheme, type PlotTheme } from '../lib/plot';
 import { Choices, FieldLabel, NumInput, Rich } from './ToolUi';
 import { parseSI } from '../lib/siparse';
+import type { Locale } from '../i18n/ui';
 
 export interface SenseLabels {
   /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
@@ -87,7 +88,7 @@ export interface SensePreset {
 }
 
 interface Props {
-  locale: 'en' | 'ko';
+  locale: Locale;
   labels: SenseLabels;
   presets: SensePreset[];
   /** What each symbol means (i18n/symbols.ts). */

@@ -11,6 +11,7 @@ import { catalog } from 'pe-core';
 import { REPO_BLOB } from '../config';
 import { katexOptions } from '../math/katex-options';
 import { renderInlineMath } from '../math/inline';
+import { fieldIn } from '../i18n/ui';
 import { pageLocale } from '../lib/locale';
 
 interface Props {
@@ -20,19 +21,20 @@ const { module } = Astro.props;
 const d = derivations.derivations.find((x) => x.module === module);
 if (!d) throw new Error(`<Derivation module="${module}">: no such module in derivations.generated.json`);
 const locale = pageLocale(Astro);
-const ko = locale === 'ko';
-const t = ko
-  ? { reproduces: '재현하는 수식', source: '유도 스크립트', checked: 'pytest가 sympy로 일치를 검증함' }
-  : { reproduces: 'reproduces', source: 'Derivation script', checked: 'equality checked symbolically by pytest' };
+const t = {
+  en: { reproduces: 'reproduces', source: 'Derivation script', checked: 'equality checked symbolically by pytest' },
+  ko: { reproduces: '재현하는 수식', source: '유도 스크립트', checked: 'pytest가 sympy로 일치를 검증함' },
+  zh: { reproduces: '复现的公式', source: '推导脚本', checked: 'pytest 用 sympy 验证两者相等' },
+}[locale];
 ---
 
 <div class="pe-deriv not-content" id={`deriv-${d.module}`}>
-  <p class="pe-deriv__intro" set:html={renderInlineMath(ko ? d.intro_ko : d.intro)} />
+  <p class="pe-deriv__intro" set:html={renderInlineMath(fieldIn(d, 'intro', locale))} />
   <ol class="pe-deriv__steps">
     {
       d.steps.map((st) => (
         <li class={st.result_for ? 'pe-deriv__step is-result' : 'pe-deriv__step'}>
-          <p set:html={renderInlineMath(ko ? st.text_ko : st.text)} />
+          <p set:html={renderInlineMath(fieldIn(st, 'text', locale))} />
           {st.latex && <div class="pe-deriv__math" set:html={katex.renderToString(st.latex, katexOptions(true))} />}
           {st.result_for && (
             <p class="pe-deriv__match">

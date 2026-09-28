@@ -4,7 +4,7 @@
  * its presets (the tool's own URL hash, src/lib/toollinks.ts), as <TrySim /> opens the simulator
  * and <TryMag /> the magnetics designer.
  */
-import { ui } from '../i18n/ui';
+import { fieldIn, ui } from '../i18n/ui';
 import { getExample } from '../lib/examples';
 import { pageLocale } from '../lib/locale';
 import { pageHref } from '../lib/paths';
@@ -20,7 +20,7 @@ const locale = pageLocale(Astro);
 const t = ui[locale];
 const href = `${pageHref(locale, TOOL_PAGES[tool])}#${toolHash(tool, example)}`;
 const ex = getExample(example);
-const label = locale === 'ko' ? ex.label_ko : ex.label;
+const label = fieldIn(ex, 'label', locale);
 ---
 
 <p class="pe-tryit">

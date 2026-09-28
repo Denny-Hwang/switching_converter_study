@@ -10,7 +10,7 @@
  */
 import { getEntry } from 'astro:content';
 import { catalog } from 'pe-core';
-import { ui } from '../i18n/ui';
+import { fieldIn, ui } from '../i18n/ui';
 import { exampleValue, getExample } from '../lib/examples';
 import { displayUnit, formatSI } from '../lib/format';
 import { pageLocale } from '../lib/locale';
@@ -50,7 +50,7 @@ const items = entry.data.criteria.map((c) => {
       tol: c.check.tol,
       text: formatSI(value, unit, 4),
       example: c.check.example,
-      label: locale === 'ko' ? ex.label_ko : ex.label,
+      label: fieldIn(ex, 'label', locale),
     },
   };
 });

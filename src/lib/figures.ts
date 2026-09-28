@@ -1,10 +1,12 @@
 /**
  * The site's figures, drawn by scripts/gen_figures.py into
- * src/assets/figures/<name>.svg: caption and text alternative in both
+ * src/assets/figures/<name>.svg: caption and text alternative in the site's
  * languages, and the source each figure follows. <Figure name="…" /> renders
  * them; every figure file needs an entry here and every entry a file
  * (figures.test.ts).
  */
+
+import type { Texts } from '../i18n/ui';
 
 const files = import.meta.glob<string>('../assets/figures/*.svg', { query: '?raw', import: 'default', eager: true });
 
@@ -23,9 +25,9 @@ export function figureSvg(name: string): string {
 }
 
 export interface FigureInfo {
-  caption: { en: string; ko: string };
+  caption: Texts;
   /** What the figure shows, for readers who cannot see it. */
-  alt: { en: string; ko: string };
+  alt: Texts;
   cite: { key: string; where: string };
 }
 

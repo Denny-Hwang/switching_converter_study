@@ -1,5 +1,5 @@
 /** UI strings for custom components (Starlight's own UI is translated upstream). */
-export const ui = {
+const strings = {
   en: {
     'eq.details': 'Assumptions, convention and source',
     'eq.where': 'What the symbols mean',
@@ -920,8 +920,38 @@ export const ui = {
   },
 } as const;
 
+/**
+ * The Chinese strings come with the Chinese pages (docs/STATUS.md); until then
+ * a Chinese page shows the English ones.
+ */
+export const ui = { ...strings, zh: strings.en };
+
 export type Locale = keyof typeof ui;
 
+/** The site's languages, English (canonical) first. */
+export const LOCALES = Object.keys(ui) as Locale[];
+
+/** The locale of a Starlight locale key or a BCP 47 tag ('ko', 'zh', 'zh-CN'); English otherwise. */
 export function localeOf(value: string | undefined): Locale {
-  return value === 'ko' ? 'ko' : 'en';
+  if (value === 'ko') return 'ko';
+  if (value === 'zh' || value?.startsWith('zh-')) return 'zh';
+  return 'en';
+}
+
+/** A short text in the site's languages. The Chinese may be missing while it is written; the English stands in for it. */
+export type Texts = { en: string; ko: string; zh?: string };
+
+/** The text in a locale, or the English where that language's is missing or empty. */
+export function textIn(texts: { en: string } & Partial<Record<Locale, string>>, locale: Locale): string {
+  return texts[locale] || texts.en;
+}
+
+/**
+ * A record's text field in a locale: `name` in English, `name_ko` in Korean,
+ * `name_zh` in Chinese; the English where the translation is missing or empty.
+ */
+export function fieldIn(record: object, name: string, locale: Locale): string {
+  const r = record as Record<string, unknown>;
+  const v = locale === 'en' ? undefined : r[`${name}_${locale}`];
+  return typeof v === 'string' && v !== '' ? v : String(r[name] ?? '');
 }

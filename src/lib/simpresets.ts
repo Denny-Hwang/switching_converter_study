@@ -36,6 +36,7 @@ export interface PresetSpec {
   topology: Topology;
   en: string;
   ko: string;
+  zh?: string;
 }
 
 export const PRESETS: PresetSpec[] = [

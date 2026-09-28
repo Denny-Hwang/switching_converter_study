@@ -19,6 +19,7 @@ import ModeSheet from './ModeSheet';
 import { Choices, FieldLabel, NumInput, Rich, Sym } from './ToolUi';
 import { parseSI } from '../lib/siparse';
 import { falstadLink, falstadText, currentBar } from '../lib/falstadgen';
+import type { Locale } from '../i18n/ui';
 
 /** The sheet of every mode starts open up to this many modes. */
 const SHEET_OPEN_MODES = 6;
@@ -116,7 +117,7 @@ export interface SimPreset {
 }
 
 interface Props {
-  locale: 'en' | 'ko';
+  locale: Locale;
   labels: SimLabels;
   presets: SimPreset[];
   /** What each symbol means (i18n/symbols.ts). */

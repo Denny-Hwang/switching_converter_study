@@ -1,17 +1,18 @@
 /**
  * What each symbol in the tools' input labels and tables means, in a few
- * words (EN and KO). A symbol of the equation catalogue takes the catalogue's
+ * words, in each of the site's languages. A symbol of the equation catalogue takes the catalogue's
  * own `meaning`, so the tools and the equations say the same thing; the
  * others are the tools' own quantities (limits, targets, ratings).
  */
 import { catalog } from 'pe-core';
+import { textIn, type Locale, type Texts } from './ui';
 
-type Meaning = { en: string; ko: string };
+type Meaning = Texts;
 
 function cat(key: string): Meaning {
   const s = catalog.symbols[key];
   if (!s) throw new Error(`symbols.ts: ${key} is not a catalogue symbol`);
-  return { en: s.meaning, ko: s.meaning_ko };
+  return { en: s.meaning, ko: s.meaning_ko, zh: s.meaning_zh };
 }
 
 export const TOOL_SYMBOLS: Record<string, Meaning> = {
@@ -136,6 +137,6 @@ export const TOOL_SYMBOLS: Record<string, Meaning> = {
 };
 
 /** Every tool symbol's meaning in one language, for an island's props. */
-export function toolSymbols(locale: 'en' | 'ko'): Record<string, string> {
-  return Object.fromEntries(Object.entries(TOOL_SYMBOLS).map(([k, m]) => [k, m[locale]]));
+export function toolSymbols(locale: Locale): Record<string, string> {
+  return Object.fromEntries(Object.entries(TOOL_SYMBOLS).map(([k, m]) => [k, textIn(m, locale)]));
 }
