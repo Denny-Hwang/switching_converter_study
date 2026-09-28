@@ -1,13 +1,12 @@
 /**
- * Every operating mode of one steady period at once, the way a converter
- * paper lays them out: the key waveforms over the period with the modes'
- * boundaries t_0, t_1, ... marked, then the circuit of each mode, "(a) Mode 1"
- * to the last, with the branches that carry current in colour and a line on
- * what happens. It draws nothing interactive, so the page can also render it
- * at build time (components/ModeSheet.astro) as a static figure of an
- * example, and the simulator shows it for whatever values are in its form.
- * The waveforms are the simulated period's own samples; the circuits and
- * descriptions are SequenceView's (modeParts, Circuit).
+ * Every operating mode of one steady period at once: the key waveforms over the
+ * period with the modes' boundaries t_0, t_1, ... marked, then the circuit of
+ * each mode, "(a) Mode 1" to the last, with the branches that carry current in
+ * colour and a line on what happens. It draws nothing interactive, so the page
+ * can also render it at build time (components/ModeSheet.astro) as a static
+ * figure of an example, and the simulator shows it for whatever values are in
+ * its form. The waveforms are the simulated period's own samples; the circuits
+ * and descriptions are SequenceView's (modeParts, Circuit).
  */
 import { memo, type ReactNode } from 'react';
 import { sim } from 'pe-core';
