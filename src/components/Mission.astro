@@ -162,7 +162,7 @@ const items = entry.data.criteria.map((c) => {
       show(p);
       for (const out of root.querySelectorAll('output')) out.textContent = '';
     });
-    // another tab (the page in the other language) ticked something
+    // another tab (the page in another language) ticked something
     window.addEventListener('storage', (e) => {
       if (e.key === STORE_KEY || e.key === null) show(load());
     });

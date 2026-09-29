@@ -450,6 +450,12 @@ def test_modulelint_mirror_check(tmp_path: Path) -> None:
     assert _mirror_errors(tmp_path / "zh-done", {**both, "zh/x.mdx": zh}, done) == ([], {"ko": 1, "zh": 1})
     got, _ = _mirror_errors(tmp_path / "zh-missing", both, done)
     assert any("en/x.mdx: no ZH page" in e for e in got), got
+    # one page of a done folder, pending on its own row
+    sub = {"en/f/x.mdx": en, "ko/f/x.mdx": ko, "en/f/y.mdx": en, "ko/f/y.mdx": ko, "zh/f/y.mdx": zh}
+    folder_done = done.replace("| x | ✅ | |", "| f | ✅ | |")
+    got, _ = _mirror_errors(tmp_path / "zh-page-missing", sub, folder_done)
+    assert any("en/f/x.mdx: no ZH page" in e for e in got), got
+    assert _mirror_errors(tmp_path / "zh-page-pending", sub, folder_done + "| f/x | ⬜ | translation under way |\n") == ([], {"ko": 2, "zh": 1})
     got, _ = _mirror_errors(tmp_path / "zh-level", {**both, "zh/x.mdx": zh.replace("### 例题", "## 例题")})
     assert any("zh/x.mdx: heading levels [2, 2] differ from the English page's [2, 3]" in e for e in got), got
     got, _ = _mirror_errors(tmp_path / "zh-noen", {"zh/x.mdx": zh})
@@ -473,6 +479,11 @@ def test_modulelint_chinese_table_covers_every_folder(tmp_path: Path) -> None:
     got = errors("| index | ⬜ | |\n| 02-theory | done | |\n| tools | ⬜ | |\n")
     assert any("no row for design" in e for e in got), got
     assert any("row 'tools' names no folder" in e for e in got), got
+    # a page of a ✅ folder pending on its own row; not a page that does not exist, nor one of a pending folder
+    assert errors("| index | ⬜ | |\n| 02-theory | ✅ | |\n| 02-theory/ccm-dcm | ⬜ | under way |\n| design | ⬜ | |\n") == []
+    pages = errors("| index | ⬜ | |\n| 02-theory | ✅ | |\n| 02-theory/nope | ⬜ | |\n| design | ⬜ | |\n| design/explorer | ⬜ | |\n")
+    assert any("row '02-theory/nope' names no English page" in e for e in pages), pages
+    assert any("row 'design/explorer' must be ⬜ in a ✅ folder" in e for e in pages), pages
     assert any("02-theory must be ✅ or ⬜" in e for e in got), got
 
 

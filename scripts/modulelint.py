@@ -114,7 +114,8 @@ SECTIONS = {
 }
 TRANSLATIONS = ("ko", "zh")
 LANGUAGE = {"en": "English", "ko": "Korean", "zh": "Chinese"}
-ZH_TABLE = "Chinese"  # docs/STATUS.md "## Chinese (zh-CN)": a row per folder of pages, ZH ✅ once every page in it is translated
+ZH_TABLE = "Chinese"  # docs/STATUS.md "## Chinese (zh-CN)": a row per folder of pages, ZH ✅ once every page in it is translated;
+# a row naming one page of a ✅ folder (e.g. 08-gotchas/new-page) marks that page ⬜ pending on its own
 BLOCK = ("Eq", "Worked", "TryIt", "TrySim", "GoDeeper", "Quiz", "Figure", "CoreKg", "MagWorked", "TryMag", "TryTool", "Mission", "FalstadLinks", "ModeSheet")
 SIM_TOPOLOGIES = ("buck", "boost", "buckboost", "flyback", "forward")
 TOOLS = ("Explorer", "Simulator", "ConverterDesigner", "MagneticsDesigner", "LossBudget", "ClampCheck", "SourceMatcher", "SenseChain")
@@ -255,9 +256,11 @@ def page_folder(slug: str) -> str:
 
 
 def zh_required(slug: str, status: dict[tuple[str, str], dict[str, str]]) -> bool:
-    """A Chinese page must exist once docs/STATUS.md's Chinese table marks its folder ✅ (until then, a missing
-    Chinese page is pending and Starlight serves the English one)."""
-    return "✅" in status.get((ZH_TABLE, page_folder(slug)), {}).get("ZH", "")
+    """A Chinese page must exist once docs/STATUS.md's Chinese table marks its folder ✅, unless a row of its own
+    marks the page pending (until then, a missing Chinese page is pending and Starlight serves the English one)."""
+    page = re.sub(r"\.mdx?$", "", slug)
+    row = status.get((ZH_TABLE, page)) if "/" in page else None
+    return "✅" in (row or status.get((ZH_TABLE, page_folder(slug)), {})).get("ZH", "")
 
 
 def mirror_errors(en: list[tuple[str, dict[str, str]]], tr: list[tuple[str, dict[str, str]]], where: str,
@@ -643,11 +646,20 @@ def check_mirrors() -> tuple[list[str], dict[str, int]]:
 
 
 def check_zh_table(status: dict[tuple[str, str], dict[str, str]]) -> list[str]:
-    """docs/STATUS.md's Chinese table has a row (ZH ✅ or ⬜) for every folder of English pages, and no other."""
+    """docs/STATUS.md's Chinese table has a row (ZH ✅ or ⬜) for every folder of English pages, and no other;
+    besides, a ⬜ row may name one English page of a ✅ folder, pending on its own."""
     errors = []
-    folders = {page_folder("/".join(p.relative_to(DOCS / "en").parts)) for p in (DOCS / "en").rglob("*.md*")
-               if p.suffix in (".md", ".mdx")}
+    en_pages = ["/".join(p.relative_to(DOCS / "en").with_suffix("").parts) for p in (DOCS / "en").rglob("*.md*")
+                if p.suffix in (".md", ".mdx")]
+    folders = {page_folder(p) for p in en_pages}
     listed = {slug for (section, slug) in status if section == ZH_TABLE}
+    for page in sorted(x for x in listed if "/" in x):
+        listed.discard(page)
+        state = status[(ZH_TABLE, page)].get("ZH", "")
+        if page not in en_pages:
+            errors.append(f"docs/STATUS.md: the Chinese table's row {page!r} names no English page")
+        elif "⬜" not in state or "✅" not in status.get((ZH_TABLE, page_folder(page)), {}).get("ZH", ""):
+            errors.append(f"docs/STATUS.md: the Chinese table's row {page!r} must be ⬜ in a ✅ folder (a page's own row marks it pending)")
     for folder in sorted(folders - listed):
         errors.append(f"docs/STATUS.md: the Chinese table has no row for {folder}")
     for folder in sorted(listed - folders):

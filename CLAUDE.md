@@ -43,7 +43,7 @@ files) in one place.
    when both exist, or KO is listed as pending in `docs/STATUS.md`. Chinese
    (Simplified, `src/content/docs/zh`) mirrors them too; a folder's Chinese
    pages are required once the Chinese table of `docs/STATUS.md` marks it
-   done.
+   done, except a page that a ⬜ row of its own there marks pending.
 7. **No fabricated links or videos.** A resource is added only with a URL
    that was opened and matched by title; record `retrieved: YYYY-MM-DD` in
    `resources.yaml`. If a specific video cannot be verified, link the

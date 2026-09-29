@@ -78,7 +78,8 @@
 
 The Chinese pages mirror the English ones under `src/content/docs/zh/`, one folder at a time. ✅: every page of
 the folder is translated and checked like its Korean page (`modulelint.py`); ⬜: pending, and Starlight serves
-the English page in its place.
+the English page in its place. A ⬜ row naming one page of a ✅ folder (e.g. `08-gotchas/new-page`) keeps that
+page pending on its own.
 
 | Folder | ZH | Notes |
 | --- | --- | --- |
