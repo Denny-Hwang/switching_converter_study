@@ -34,7 +34,7 @@ const PAGES = [
   { path: 'design/source-matcher/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: sourceAction },
   { path: 'design/sense-chain/', ready: [`${TOOL} .pe-sim__table`, `${TOOL} .main-svg`], action: senseAction },
 ];
-const LOCALES = ['en', 'ko'];
+const LOCALES = ['en', 'ko', 'zh'];
 
 /**
  * Wait until the tool is on screen and its set of focusable controls stops

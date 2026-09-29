@@ -11,7 +11,8 @@
  *
  *     npm run build && node scripts/screenshots.mjs && npm run build
  *
- * Name tools to shoot only those: `node scripts/screenshots.mjs magnetics`.
+ * Name tools to shoot only those: `node scripts/screenshots.mjs magnetics`, and
+ * languages with --locale: `node scripts/screenshots.mjs --locale=zh`.
  */
 import { mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -35,8 +36,9 @@ const SHOTS = [
   { name: 'sourcematcher', page: 'design/source-matcher/', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
   { name: 'sensechain', page: 'design/sense-chain/', ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
 ];
-const LOCALES = ['en', 'ko'];
-const ONLY = process.argv.slice(2);
+const ARGS = process.argv.slice(2);
+const LOCALES = ARGS.find((a) => a.startsWith('--locale='))?.slice('--locale='.length).split(',') ?? ['en', 'ko', 'zh'];
+const ONLY = ARGS.filter((a) => !a.startsWith('--'));
 for (const name of ONLY) if (!SHOTS.some((s) => s.name === name)) throw new Error(`no tool named ${name}: ${SHOTS.map((s) => s.name).join(', ')}`);
 
 async function main() {
