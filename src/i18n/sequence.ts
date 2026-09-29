@@ -434,7 +434,7 @@ const zh: Text = {
   'el.V': '固定输出 V',
   'el.Vg': '输入电源 V_g',
   'el.Voc': '电源 V_oc',
-  'el.Rs': '电源内阻 R_s',
+  'el.Rs': '源内阻 R_s',
   'el.Cbus': '母线电容 C_bus',
   'st.on': '导通',
   'st.onBodyDiode': '导通；电流经其体二极管流过',

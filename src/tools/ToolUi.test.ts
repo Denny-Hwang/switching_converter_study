@@ -26,20 +26,24 @@ function labels(): Set<string> {
 }
 
 describe('symbol meanings (what a symbol stands for, next to it)', () => {
-  it('every input label of every tool has a meaning in English and Korean', () => {
-    const missing = [...labels()].filter((l) => !TOOL_SYMBOLS[l]?.en || !TOOL_SYMBOLS[l]?.ko);
+  it('every input label of every tool has a meaning in English, Korean and Chinese', () => {
+    const missing = [...labels()].filter((l) => !TOOL_SYMBOLS[l]?.en || !TOOL_SYMBOLS[l]?.ko || !TOOL_SYMBOLS[l]?.zh);
     expect(missing).toEqual([]);
   });
 
   it("the simulator's comparison rows have meanings too", () => {
-    for (const l of ['|M|', 'I_L', 'Δi_L,pp (on)', 'V_DS,max', 'R_in', 'V_g,crit']) expect(TOOL_SYMBOLS[l]?.ko).toBeTruthy();
+    for (const l of ['|M|', 'I_L', 'Δi_L,pp (on)', 'V_DS,max', 'R_in', 'V_g,crit']) {
+      expect(TOOL_SYMBOLS[l]?.ko, l).toBeTruthy();
+      expect(TOOL_SYMBOLS[l]?.zh, l).toBeTruthy();
+    }
   });
 
-  it('every catalogue symbol has a short meaning in both languages, and the Korean one is Korean', () => {
+  it('every catalogue symbol has a short meaning in every language, the Korean one Korean and the Chinese one Chinese', () => {
     for (const [name, s] of Object.entries(catalog.symbols)) {
       expect(s.meaning.length, name).toBeGreaterThan(0);
       expect(s.meaning.length, name).toBeLessThanOrEqual(60);
       expect(s.meaning_ko, name).toMatch(/[가-힣]/);
+      expect(s.meaning_zh, name).toMatch(/[\u4e00-\u9fff]/);
     }
   });
 
