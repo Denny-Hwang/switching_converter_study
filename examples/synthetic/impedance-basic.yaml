@@ -1,6 +1,7 @@
 synthetic: true
 label: "Impedance and R-C filter example"
 label_ko: "임피던스·R-C 필터 예제"
+label_zh: "阻抗与 R-C 滤波器示例"
 params:
   f: 1.0e5
   L: 1.0e-4

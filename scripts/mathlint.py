@@ -14,7 +14,8 @@ Scans src/content/docs/**/*.md(x) except **/scratch/** (unpublished) and fails o
     may show an equation to demonstrate the pipeline without counting as
     its home
   * <Derivation module="..."> naming an unknown module, and a derivations page
-    that does not render every derivation module
+    that does not render every derivation module (English and Korean always;
+    Chinese once its page exists)
   * in quizzes (src/content/quizzes/**/*.yaml): hand-typed display math and
     hand-typed inline equations in questions, options and explanations
 
@@ -35,7 +36,10 @@ GENERATED = ROOT / "packages" / "pe-core" / "equations" / "equations.generated.j
 DERIVATIONS = ROOT / "packages" / "pe-core" / "equations" / "derivations.generated.json"
 DERIVATIONS_PAGE = "02-theory/derivations.mdx"
 QUIZZES = ROOT / "src" / "content" / "quizzes"
-LOCALES = ("en", "ko")
+LOCALES = ("en", "ko", "zh")
+# The Chinese pages come section by section (docs/STATUS.md, modulelint), so the Chinese
+# derivations page is checked once it exists.
+REQUIRED_LOCALES = ("en", "ko")
 
 RELATIONS = re.compile(r"=|\\approx|\\equiv|\\triangleq|\\coloneqq|\\simeq|\\doteq")
 LETTER = re.compile(r"[A-Za-z\\]")
@@ -64,7 +68,7 @@ UNIT_MARKUP = re.compile(r"\\mathrm\{[^}]*\}|\\(?:Omega|mu|circ|times|cdot|[,;: 
 
 
 def is_hand_equation(body: str) -> bool:
-    """True if at least two sides of a relation contain symbols; a side that is
+    r"""True if at least two sides of a relation contain symbols; a side that is
     a number with a unit ($R = 10\,\Omega$) is a value, not a symbol."""
     parts = RELATIONS.split(body)
     if len(parts) < 2:
@@ -97,6 +101,21 @@ def quiz_errors() -> tuple[int, list[str]]:
             for field, text in fields:
                 errors += math_errors(str(text or ""), f"{rel}: question {i} {field}")
     return len(files), errors
+
+
+def derivation_page_errors(docs: Path, modules: list[str]) -> list[str]:
+    """Each locale's derivations page renders every derivation module."""
+    errors = []
+    for locale in LOCALES:
+        page = docs / locale / DERIVATIONS_PAGE
+        rel = page.relative_to(docs.parents[2])
+        if not page.exists():
+            if locale in REQUIRED_LOCALES:
+                errors.append(f"missing derivations page {rel}")
+            continue
+        shown = set(re.findall(r"<Derivation\b[^>]*\bmodule\s*=\s*\"([^\"]+)\"", page.read_text(encoding="utf-8")))
+        errors += [f"{rel}: derivation module '{mod}' is not rendered" for mod in modules if mod not in shown]
+    return errors
 
 
 def main() -> int:
@@ -149,15 +168,7 @@ def main() -> int:
                 "embed it once and link to it elsewhere"
             )
 
-    for locale in LOCALES:
-        page = DOCS / locale / DERIVATIONS_PAGE
-        if not page.exists():
-            errors.append(f"missing derivations page {page.relative_to(ROOT)}")
-            continue
-        shown = set(re.findall(r"<Derivation\b[^>]*\bmodule\s*=\s*\"([^\"]+)\"", page.read_text(encoding="utf-8")))
-        for mod in modules:
-            if mod not in shown:
-                errors.append(f"{page.relative_to(ROOT)}: derivation module '{mod}' is not rendered")
+    errors += derivation_page_errors(DOCS, modules)
 
     n_quizzes, qerr = quiz_errors()
     errors += qerr

@@ -13,3 +13,5 @@ criteria:
     text: '`modulelint`, `privacy_scan`, `mathlint`, `refcheck`가 통과하고 사이트가 빌드됩니다.'
   - id: korean
     text: '한국어 페이지가 있거나, STATUS의 행이 한국어를 보류로 표시합니다.'
+  - id: chinese
+    text: '중국어 페이지가 있거나, STATUS의 중국어 표에 있는 행이 중국어를 보류로 표시합니다.'

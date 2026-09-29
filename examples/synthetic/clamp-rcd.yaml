@@ -1,6 +1,7 @@
 synthetic: true
 label: "Example flyback with an RCD primary clamp"
 label_ko: "RCD 1차 측 클램프를 쓰는 플라이백 예제"
+label_zh: "带 RCD 一次侧钳位的反激变换器示例"
 # Clamp-check preset: the operating point of clamp-tvs.yaml with an RCD clamp.
 params:
   V_g: 72

@@ -1,6 +1,7 @@
 synthetic: true
 label: "Example forward specification"
 label_ko: "포워드 설계 사양 예제"
+label_zh: "正激变换器设计规格示例"
 # Converter-designer preset (see design-buck.yaml); n = N_s/N_p, n_r = N_r/N_p.
 # L_M is only passed on to the simulator link (the designer does not size it).
 params:

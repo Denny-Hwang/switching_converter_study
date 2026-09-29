@@ -1,6 +1,7 @@
 synthetic: true
 label: "Example flyback charging a fixed output at a fixed duty ratio"
 label_ko: "고정 듀티비로 고정 출력을 충전하는 플라이백 예제"
+label_zh: "以固定占空比向固定输出充电的反激变换器示例"
 params:
   V: 12
   V_D: 0.5

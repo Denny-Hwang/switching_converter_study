@@ -35,9 +35,56 @@ def test_privacy_scan_finds_numbers_with_units_before_korean_particles(text: str
     assert _script("privacy_scan").NUM_UNIT.search(text)
 
 
-@pytest.mark.parametrize("text", ["D = 0.5", "K_crit", "V_g", "the 2nd edition", "Ch. 5", "4/27", "x1e5", "3 Hzx", "2차 고조파"])
+@pytest.mark.parametrize("text", ["在 5 V 时读数", "电容减小到0.33 µF。", "25 °C下", "额定6.3 V的", "超过10 mΩ"])
+def test_privacy_scan_finds_numbers_with_units_in_chinese_prose(text: str) -> None:
+    assert _script("privacy_scan").NUM_UNIT.search(text)
+
+
+@pytest.mark.parametrize("text", ["D = 0.5", "K_crit", "V_g", "the 2nd edition", "Ch. 5", "4/27", "x1e5", "3 Hzx", "2차 고조파", "2次谐波"])
 def test_privacy_scan_ignores_unitless_text(text: str) -> None:
     assert not _script("privacy_scan").NUM_UNIT.search(text)
+
+
+def test_privacy_scan_example_labels() -> None:
+    errors = _script("privacy_scan").example_label_errors
+    ok = {"synthetic": True, "label": "Buck example", "label_ko": "벅 예제", "label_zh": "降压变换器示例"}
+    assert errors(ok) == []
+    assert errors({**ok, "label_ko": "벅"}) == ["label_ko must name it an example ('예제'), shown on Korean pages"]
+    assert errors({**ok, "label_zh": "降压变换器"}) == ["label_zh must name it an example ('示例'), shown on Chinese pages"]
+    assert errors({k: v for k, v in ok.items() if k != "label_zh"}) == ["label_zh must name it an example ('示例'), shown on Chinese pages"]
+    assert errors({**ok, "synthetic": "yes"}) == ["must declare `synthetic: true` and a label naming it an example"]
+
+
+def test_privacy_scan_footer_statement_in_every_language() -> None:
+    errors = _script("privacy_scan").statement_errors
+    en = "    'site.synthetic': 'Example numbers are synthetic.',\n"
+    ko = "    'site.synthetic': '예제의 수치는 합성 값입니다.',\n"
+    zh = "    'site.synthetic': '示例中的数值为合成数据。',\n"
+    assert errors(en + ko + zh) == []
+    assert errors(en + ko) == ["src/i18n/ui.ts: 'site.synthetic' is given 2 times; give it once in each of EN, KO, ZH"]
+    assert errors(en + ko + zh.replace("合成", "")) == [
+        "src/i18n/ui.ts: the ZH 'site.synthetic' must say that example numbers are synthetic ('合成')"
+    ]
+
+
+def test_mathlint_derivation_pages(tmp_path: Path) -> None:
+    ml = _script("mathlint")
+    docs = tmp_path / "src" / "content" / "docs"
+    page = '<Derivation module="a" />\n<Derivation module="b" />\n'
+    for locale in ("en", "ko"):
+        (docs / locale / "02-theory").mkdir(parents=True)
+        (docs / locale / "02-theory" / "derivations.mdx").write_text(page, encoding="utf-8")
+    # the Chinese page may be pending
+    assert ml.derivation_page_errors(docs, ["a", "b"]) == []
+    # once it exists, it renders every module too
+    (docs / "zh" / "02-theory").mkdir(parents=True)
+    (docs / "zh" / "02-theory" / "derivations.mdx").write_text('<Derivation module="a" />\n', encoding="utf-8")
+    assert ml.derivation_page_errors(docs, ["a", "b"]) == [
+        "src/content/docs/zh/02-theory/derivations.mdx: derivation module 'b' is not rendered"
+    ]
+    # the Korean page may not be missing
+    (docs / "ko" / "02-theory" / "derivations.mdx").unlink()
+    assert "missing derivations page src/content/docs/ko/02-theory/derivations.mdx" in ml.derivation_page_errors(docs, ["a"])
 
 
 @pytest.mark.parametrize(
@@ -380,7 +427,7 @@ def test_modulelint_mirror_check(tmp_path: Path) -> None:
     en = "---\ntitle: T\n---\n\n## Theory\n\nText <Eq id=\"a\" /> and `<Val>` in code.\n\n### Worked\n"
     ko = "---\ntitle: T\n---\n\n## 이론\n\n본문 <Eq id=\"a\" />.\n\n### 예제\n"
     # a translation that leaves out a code sample in prose is a mirror; the 404 page outside the locales is no pair
-    assert _mirror_errors(tmp_path / "ok", {"en/x.mdx": en, "ko/x.mdx": ko, "404.md": "# 404\n"}) == ([], 1)
+    assert _mirror_errors(tmp_path / "ok", {"en/x.mdx": en, "ko/x.mdx": ko, "404.md": "# 404\n"}) == ([], {"ko": 1, "zh": 0})
     # a rendered component missing in Korean is caught, also when the Korean page shows its name in code
     got, _ = _mirror_errors(tmp_path / "missing", {"en/x.mdx": en.replace(" and `<Val>` in code", ""),
                                                    "ko/x.mdx": ko.replace('<Eq id="a" />', '`<Eq>`')})
@@ -391,9 +438,53 @@ def test_modulelint_mirror_check(tmp_path: Path) -> None:
     # a missing Korean page, unless STATUS marks it pending; a Korean page needs its English page
     got, _ = _mirror_errors(tmp_path / "noko", {"en/x.mdx": en})
     assert any("en/x.mdx: no KO page" in e for e in got), got
-    assert _mirror_errors(tmp_path / "pending", {"en/x.mdx": en}, "| x | ko/x.mdx pending: translation under way |\n") == ([], 0)
+    assert _mirror_errors(tmp_path / "pending", {"en/x.mdx": en}, "| x | ko/x.mdx pending: translation under way |\n") == ([], {"ko": 0, "zh": 0})
     got, _ = _mirror_errors(tmp_path / "noen", {"ko/x.mdx": ko})
     assert any("ko/x.mdx: no EN page" in e for e in got), got
+
+    # Chinese: a missing page is pending until STATUS's Chinese table marks its folder ✅; a page there is checked
+    zh = "---\ntitle: T\n---\n\n## 理论\n\n正文 <Eq id=\"a\" />。\n\n### 例题\n"
+    done = "## Chinese (zh-CN)\n\n| Folder | ZH | Notes |\n| --- | --- | --- |\n| x | ✅ | |\n"
+    both = {"en/x.mdx": en, "ko/x.mdx": ko}
+    assert _mirror_errors(tmp_path / "zh-pending", both) == ([], {"ko": 1, "zh": 0})
+    assert _mirror_errors(tmp_path / "zh-done", {**both, "zh/x.mdx": zh}, done) == ([], {"ko": 1, "zh": 1})
+    got, _ = _mirror_errors(tmp_path / "zh-missing", both, done)
+    assert any("en/x.mdx: no ZH page" in e for e in got), got
+    # one page of a done folder, pending on its own row
+    sub = {"en/f/x.mdx": en, "ko/f/x.mdx": ko, "en/f/y.mdx": en, "ko/f/y.mdx": ko, "zh/f/y.mdx": zh}
+    folder_done = done.replace("| x | ✅ | |", "| f | ✅ | |")
+    got, _ = _mirror_errors(tmp_path / "zh-page-missing", sub, folder_done)
+    assert any("en/f/x.mdx: no ZH page" in e for e in got), got
+    assert _mirror_errors(tmp_path / "zh-page-pending", sub, folder_done + "| f/x | ⬜ | translation under way |\n") == ([], {"ko": 2, "zh": 1})
+    got, _ = _mirror_errors(tmp_path / "zh-level", {**both, "zh/x.mdx": zh.replace("### 例题", "## 例题")})
+    assert any("zh/x.mdx: heading levels [2, 2] differ from the English page's [2, 3]" in e for e in got), got
+    got, _ = _mirror_errors(tmp_path / "zh-noen", {"zh/x.mdx": zh})
+    assert any("zh/x.mdx: no EN page" in e for e in got), got
+
+
+def test_modulelint_chinese_table_covers_every_folder(tmp_path: Path) -> None:
+    ml = _script("modulelint")
+    docs = tmp_path / "src" / "content" / "docs"
+    for rel in ("en/index.mdx", "en/02-theory/ccm-dcm.mdx", "en/design/explorer.mdx"):
+        (docs / rel).parent.mkdir(parents=True, exist_ok=True)
+        (docs / rel).write_text("---\ntitle: T\n---\n", encoding="utf-8")
+    ml.DOCS = docs
+
+    def errors(rows: str) -> list[str]:
+        (tmp_path / "STATUS.md").write_text("## Chinese (zh-CN)\n\n| Folder | ZH | Notes |\n| --- | --- | --- |\n" + rows, encoding="utf-8")
+        ml.STATUS = tmp_path / "STATUS.md"
+        return ml.check_zh_table(ml.status_rows())
+
+    assert errors("| index | ⬜ | |\n| 02-theory | ✅ | |\n| design | ⬜ | |\n") == []
+    got = errors("| index | ⬜ | |\n| 02-theory | done | |\n| tools | ⬜ | |\n")
+    assert any("no row for design" in e for e in got), got
+    assert any("row 'tools' names no folder" in e for e in got), got
+    # a page of a ✅ folder pending on its own row; not a page that does not exist, nor one of a pending folder
+    assert errors("| index | ⬜ | |\n| 02-theory | ✅ | |\n| 02-theory/ccm-dcm | ⬜ | under way |\n| design | ⬜ | |\n") == []
+    pages = errors("| index | ⬜ | |\n| 02-theory | ✅ | |\n| 02-theory/nope | ⬜ | |\n| design | ⬜ | |\n| design/explorer | ⬜ | |\n")
+    assert any("row '02-theory/nope' names no English page" in e for e in pages), pages
+    assert any("row 'design/explorer' must be ⬜ in a ✅ folder" in e for e in pages), pages
+    assert any("02-theory must be ✅ or ⬜" in e for e in got), got
 
 
 _GOTCHA_EN = """---
@@ -642,7 +733,7 @@ def test_modulelint_resource_page_rules(tmp_path: Path) -> None:
 def test_resources_check_validates_level_tags_and_korean_line(tmp_path: Path) -> None:
     rc = _script("resources_check")
     entry = {"id": "x", "type": "book", "title": "T", "url": "https://example.org/", "tags": ["a"], "level": "intro",
-             "language": "en", "retrieved": "2026-09-24", "why": "w", "why_ko": "w", "title_match": "T"}
+             "language": "en", "retrieved": "2026-09-24", "why": "w", "why_ko": "w", "why_zh": "w", "title_match": "T"}
     import yaml
 
     def errors(**change) -> list[str]:
@@ -654,6 +745,10 @@ def test_resources_check_validates_level_tags_and_korean_line(tmp_path: Path) ->
     assert errors() == []
     assert any("level must be one of" in e for e in errors(level="beginner"))
     assert any("missing why_ko" in e for e in errors(why_ko=""))
+    # the Chinese line is required too; a resource may be in Chinese
+    assert any("missing why_zh" in e for e in errors(why_zh=""))
+    assert errors(language="zh") == []
+    assert any("language must be en, ko or zh" in e for e in errors(language="fr"))
     assert any("a tag is listed twice" in e for e in errors(tags=["a", "a"]))
     assert any("tags must be a list of names" in e for e in errors(tags="a, b"))
     assert any("tags must be a list of names" in e for e in errors(tags=["a", ""]))

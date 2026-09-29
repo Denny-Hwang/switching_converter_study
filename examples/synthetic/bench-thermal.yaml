@@ -1,6 +1,7 @@
 synthetic: true
 label: "Thermal example"
 label_ko: "열 예제"
+label_zh: "热设计示例"
 # 2 W dissipated in a switch on a heat sink, in 40 C air; and, apart from
 # it, a device without a heat sink, 2 W too, whose package top reads 70 C.
 params:

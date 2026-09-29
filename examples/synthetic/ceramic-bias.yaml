@@ -1,6 +1,7 @@
 synthetic: true
 label: "Ceramic output capacitor example"
 label_ko: "세라믹 출력 커패시터 예제"
+label_zh: "陶瓷输出电容示例"
 # A buck's output capacitor rated 10 uF that keeps 4 uF at its working dc
 # voltage (a round fraction for the example, not a part's data), under an
 # inductor ripple of 0.5 A (half peak-to-peak) at a 2 us switching period.

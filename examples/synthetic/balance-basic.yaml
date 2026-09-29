@@ -1,6 +1,7 @@
 synthetic: true
 label: "Balance example"
 label_ko: "평형 예제"
+label_zh: "平衡示例"
 params:
   D: 0.25
   v_Lon: 12

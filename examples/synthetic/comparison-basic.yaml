@@ -1,6 +1,7 @@
 synthetic: true
 label: "Comparison example at one duty ratio"
 label_ko: "한 듀티비에서의 비교 예제"
+label_zh: "同一占空比下的比较示例"
 params:
   D: 0.4
   n_r: 1

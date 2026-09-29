@@ -1,0 +1,51 @@
+# 00-foundations/circuit-laws 的测验。数值为合成的练习值。
+numbers: synthetic
+questions:
+  - q: '一个 $100\,\mu\mathrm{H}$ 电感两端在 $4\,\mu\mathrm{s}$ 内加有恒定的 $5\,\mathrm{V}$ 电压。其电流变化多少？'
+    options:
+      - '$0.02\,\mathrm{A}$'
+      - '$0.2\,\mathrm{A}$'
+      - '$2\,\mathrm{A}$'
+      - '$20\,\mathrm{A}$'
+    answer: 1
+    explain: '电流以电压除以电感量所得的变化率 $5 \times 10^4\,\mathrm{A/s}$ 变化，持续 $4\,\mu\mathrm{s}$。'
+  - q: '用恒定的 $2\,\mathrm{mA}$ 电流给 $10\,\mu\mathrm{F}$ 电容充电 $1\,\mathrm{ms}$。其电压上升多少？'
+    options:
+      - '$0.02\,\mathrm{V}$'
+      - '$0.2\,\mathrm{V}$'
+      - '$2\,\mathrm{V}$'
+      - '$20\,\mathrm{V}$'
+    answer: 1
+    explain: '送入的电荷等于电流乘以时间，即 $2\,\mu\mathrm{C}$；除以电容量即得电压变化量。'
+  - q: '$1\,\mathrm{mH}$ 电感在 $3\,\mathrm{A}$ 电流下储存多少能量？'
+    options:
+      - '$1.5\,\mathrm{mJ}$'
+      - '$3\,\mathrm{mJ}$'
+      - '$4.5\,\mathrm{mJ}$'
+      - '$9\,\mathrm{mJ}$'
+    answer: 2
+    explain: '电感量的一半乘以电流的平方：$0.5 \times 10^{-3} \times 9$。'
+  - q: '理想电感的哪个量不能瞬间改变？'
+    options:
+      - '电压'
+      - '电流'
+      - '电压和电流两者'
+      - '两者都不是'
+    answer: 1
+    explain: '储能取决于电流，而电流跳变需要无穷大的电压。相反，电压可以跳变，在每个开关边沿都是如此。'
+  - q: '电感两端的恒定电压加倍。其电流的变化率如何变化？'
+    options:
+      - '减半'
+      - '不变'
+      - '加倍'
+      - '变为四倍'
+    answer: 2
+    explain: '电流的变化率等于电压除以电感量。'
+  - q: '在降压变换器中，电感电流在导通区间内上升 $0.4\,\mathrm{A}$。变换器各页使用的纹波峰峰值的一半 $\Delta i_L$ 是多少？'
+    options:
+      - '$0.1\,\mathrm{A}$'
+      - '$0.2\,\mathrm{A}$'
+      - '$0.4\,\mathrm{A}$'
+      - '$0.8\,\mathrm{A}$'
+    answer: 1
+    explain: '导通区间内的上升量就是纹波峰峰值，$\Delta i_L$ 是它的一半（Erickson 的约定）。'

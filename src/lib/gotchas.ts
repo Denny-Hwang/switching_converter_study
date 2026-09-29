@@ -6,7 +6,7 @@
  * gotchas.json, which scripts/modulelint.py reads too.
  */
 import data from './gotchas.json';
-import type { Locale } from '../i18n/ui';
+import { textIn, type Locale } from '../i18n/ui';
 
 export const GOTCHA_TAGS = data.tags;
 export type GotchaTag = keyof typeof GOTCHA_TAGS;
@@ -15,7 +15,7 @@ export const GOTCHA_TAG_IDS = Object.keys(GOTCHA_TAGS) as [GotchaTag, ...GotchaT
 export const GOTCHAS_DIR = '08-gotchas';
 
 export function tagLabel(tag: GotchaTag, locale: Locale): string {
-  return GOTCHA_TAGS[tag][locale];
+  return textIn(GOTCHA_TAGS[tag], locale);
 }
 
 /** Anchor of a tag's list on the index page. */

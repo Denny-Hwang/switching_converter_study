@@ -4,9 +4,9 @@
  * Pages under about/ document the site itself; an equation they show to
  * demonstrate the pipeline never counts as its home.
  *
- * A Korean page that is still pending (docs/STATUS.md) is served by Starlight
- * at its Korean URL with the English content, anchors included, so an
- * equation whose home exists only in English resolves to that same slug.
+ * A Korean or Chinese page that is still pending (docs/STATUS.md) is served
+ * by Starlight at its own URL with the English content, anchors included, so
+ * an equation whose home exists only in English resolves to that same slug.
  */
 import { getCollection } from 'astro:content';
 

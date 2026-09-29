@@ -1,0 +1,84 @@
+---
+title: 电路定律与储能
+description: 基尔霍夫定律、恒定电压或电流作用下的电感和电容、它们储存的能量，以及电感电流和电容电压不能突变的原因。
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 对开关电路（switched circuit）逐个区间应用基尔霍夫电流定律和电压定律（Kirchhoff's current and voltage laws）。
+- 计算在恒定电压或电流作用下，电感电流和电容电压的变化量。
+- 解释电感电流和电容电压为何不能瞬间改变，以及这对开关意味着什么。
+
+## 理论
+
+### 基尔霍夫定律
+
+流入一个节点（node）的电流之和为零（基尔霍夫电流定律），沿闭合回路（loop）的电压之和为零（基尔霍夫电压定律）<Cite key="alexander2017" where="Ch. 2" />。开关变换器在开关周期（switching period）的每个区间内都是一个不同的线性电路。在一个区间内，两条定律都成立，而下面的元件特性方程（element law）把各个区间衔接起来 <Cite key="erickson2020" where="Ch. 2" />。
+
+### 恒定电压作用下的电感
+
+电感两端的电压等于其电感量乘以其电流的变化率 <Cite key="alexander2017" where="Ch. 6" />。两端电压恒定时，电流随时间线性变化：
+
+<Eq id="ind.di" />
+
+这是该区间内的全部变化量；变换器各页使用纹波峰峰值的一半（half-ripple）$\Delta i_L$，即峰峰值（peak-to-peak）变化量的一半（Erickson 的约定）。
+
+### 恒定电流作用下的电容
+
+对偶（dual）的定律是：流入电容的电流等于其电容量乘以其电压的变化率，因此恒定电流使电压线性变化 <Cite key="alexander2017" where="Ch. 6" />：
+
+<Eq id="cap.dv" />
+
+### 储能
+
+电感把能量储存在磁场（magnetic field）中，电容把能量储存在电场（electric field）中 <Cite key="alexander2017" where="Ch. 6" />：
+
+<Eq id="ind.E" />
+
+<Eq id="cap.E" />
+
+电感电流和电容电压不能瞬间改变：跳变意味着储能（stored energy）在零时间内发生变化 <Cite key="alexander2017" where="Ch. 6" />。因此，晶体管关断时，电感电流必须继续流向某处，变换器通过二极管或第二个开关管为它提供通路 <Cite key="erickson2020" where="Ch. 4" />。在稳态（steady state）下，电流在每个周期结束时还回到起始值，这就是[伏秒平衡（volt-second balance）](../../02-theory/volt-second-charge-balance/)。
+
+## 例题
+
+一个示例电感和一个示例电容，各自受恒定激励：
+
+<Worked example="lc-elements" />
+
+在该区间内，电感电流上升 <Val example="lc-elements" name="Delta_i" />，电容电压上升 <Val example="lc-elements" name="Delta_v_C" />。在给定电流下，电感储存 <Val example="lc-elements" name="E_L" />；在给定电压下，电容储存 <Val example="lc-elements" name="E_C" />。
+
+## 动手试试
+
+<TryIt eq="ind.di" example="lc-elements" sweep="L" />
+
+在对数范围内扫描（sweep）$L$：电流变化量与电感量成反比地减小。这就是在电压和开关频率（switching frequency）相同时，电感越大电流纹波（current ripple）越小的原因。
+
+## 实验练习
+
+用函数发生器（function generator）输出的方波（square wave）驱动电阻与电感的串联电路，方波周期远小于电感量除以电阻。这时用电流探头（current probe）观察到的电感电流接近三角波：在每个半周期内，电感两端的电压几乎恒定。测量每段斜坡（ramp）的斜率，并与电感方程在实测电感两端电压下给出的值比较。用电容代替电感，使周期远小于电阻与电容量之积，对电容两端的电压重复上述测量。
+
+## 易错点
+
+- **纹波峰峰值的一半就是一半**。本页的变化量是区间内的全部变化量；变换器各页的 $\Delta i_L$ 是纹波峰峰值的一半。混用两种约定会使结果加倍或减半。
+- **不要让电感电流失去通路**。电感电流不能瞬间停止 <Cite key="alexander2017" where="Ch. 6" />，因此断开唯一的通路会迫使开关两端出现很高的电压，直到某处开始导通（conduction）为止。
+- **已放电的电容接到低内阻电源（stiff source）上会产生浪涌电流（surge）**。电容电压不能突变 <Cite key="alexander2017" where="Ch. 6" />，因此把它直接接到电压源上时，电流只受回路中电阻的限制。
+
+## 延伸阅读
+
+<GoDeeper ids={['mit-6002', 'mit-6002-notes']} />
+
+## 测验
+
+<Quiz id="00-foundations/circuit-laws" />

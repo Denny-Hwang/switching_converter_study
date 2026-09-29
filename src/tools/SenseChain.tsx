@@ -17,6 +17,7 @@ import { useStateHash } from '../lib/useStateHash';
 import { PLOT_CONFIG, axis, baseLayout, logTicks, sub, usePlotTheme, type PlotTheme } from '../lib/plot';
 import { Choices, FieldLabel, NumInput, Rich } from './ToolUi';
 import { parseSI } from '../lib/siparse';
+import { PUNCT, type Locale } from '../i18n/ui';
 
 export interface SenseLabels {
   /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
@@ -87,7 +88,7 @@ export interface SensePreset {
 }
 
 interface Props {
-  locale: 'en' | 'ko';
+  locale: Locale;
   labels: SenseLabels;
   presets: SensePreset[];
   /** What each symbol means (i18n/symbols.ts). */
@@ -245,7 +246,8 @@ function draw(el: HTMLDivElement | null, traces: Record<string, unknown>[] | nul
   };
 }
 
-export default function SenseChain({ labels, presets, symbols }: Props) {
+export default function SenseChain({ locale, labels, presets, symbols }: Props) {
+  const punct = PUNCT[locale];
   const init = useMemo(() => stateFromHash(readHash(), presets), [presets]);
   const [kind, setKind] = useState<MonitorKind>(init.kind);
   const [values, setValues] = useState<Record<string, string>>(init.values);
@@ -441,7 +443,7 @@ export default function SenseChain({ labels, presets, symbols }: Props) {
     const id = `sense-${f.key}`;
     return (
       <div key={f.key} className="pe-row pe-row--full">
-        <FieldLabel htmlFor={id} sym={f.label} meaning={symbols[f.label]} unit={f.unit} note={f.optional ? labels.optional : undefined} />
+        <FieldLabel htmlFor={id} sym={f.label} meaning={symbols[f.label]} unit={f.unit} note={f.optional ? labels.optional : undefined} punct={punct} />
         <NumInput id={id} unit={f.unit} value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
       </div>
     );
@@ -539,7 +541,8 @@ export default function SenseChain({ labels, presets, symbols }: Props) {
                   {row(
                     labels.ifs,
                     <>
-                      <strong>{fmt(r.Ifs, 'A')}</strong> ({r.limit === 'amp' ? labels.limitAmp : labels.limitAdc})
+                      <strong>{fmt(r.Ifs, 'A')}</strong>
+                      {punct.open + (r.limit === 'amp' ? labels.limitAmp : labels.limitAdc) + punct.close}
                     </>,
                     'sense.reading',
                     outputEq,

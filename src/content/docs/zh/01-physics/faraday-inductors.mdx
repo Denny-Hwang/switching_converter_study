@@ -1,0 +1,73 @@
+---
+title: 法拉第定律与电感
+description: 安培环路定律和法拉第定律在绕有绕组的磁芯上的应用：由绕组电流决定的磁场，以及由所加伏秒积决定的磁通摆幅。
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 用安培环路定律（Ampère's law）建立绕组（winding）电流与磁芯中磁场强度（magnetic field intensity）的关系。
+- 用法拉第定律（Faraday's law），由施加在绕组上的电压及其持续时间计算磁通密度摆幅（flux-density swing）。
+- 解释为什么变换器中磁性元件（magnetic component）的磁通摆幅（flux swing）由伏秒积（volt-seconds）决定，而不是由负载电流决定。
+
+## 理论
+
+### 安培环路定律
+
+磁场强度沿闭合路径的积分等于该路径所包围的电流。在无气隙（air gap）的磁芯上绕 $N$ 匝，且磁场沿有效磁路长度（effective path length）均匀分布时，由此得到 <Cite key="erickson2020" where="Ch. 10" />：
+
+<Eq id="mag.H_ampere" />
+
+### 法拉第定律
+
+穿过绕组的磁通变化时，绕组中感应（induction）出的电压等于匝数乘以磁通的变化率。若磁通密度在磁芯的有效截面积（effective area）上均匀分布，则在导通时间（on-time）内对绕组施加恒定电压时，磁通密度线性变化 <Cite key="erickson2020" where="Ch. 10" />、<Cite key="dixon2001" />：
+
+<Eq id="mag.dB_faraday" />
+
+这是[电路定律页面](../../00-foundations/circuit-laws/)中电感伏安关系在磁学上的对应：恒定电压在那里使电流线性变化，在这里使磁通密度线性变化。
+
+### 伏秒积决定磁通摆幅
+
+磁通摆幅只取决于所加的伏秒积、匝数和磁芯截面积，而与负载电流无关。变压器中没有直流励磁电流（dc magnetizing current），磁通仅由伏秒积决定。滤波电感中，直流电流决定平均磁通密度，伏秒积决定围绕该平均值的摆幅（<EqRef id="mag.B_pk" label="峰值磁通密度" />）。稳态（steady state）下，伏秒平衡（volt-second balance）使磁通在每个周期都回到起始值（<EqRef id="vsb.v_off" label="伏秒平衡" />）。
+
+## 例题
+
+一个绕在无气隙磁芯上的示例绕组：
+
+<Worked example="inductor-core" />
+
+绕组电流在磁芯中产生 <Val example="inductor-core" name="H_mag" /> 的磁场强度，所加伏秒积使磁通密度产生峰峰值（peak-to-peak）为 <Val example="inductor-core" name="Delta_B" /> 的摆幅。
+
+## 动手试试
+
+<TryIt eq="mag.dB_faraday" example="inductor-core" sweep="N" />
+
+扫描（sweep）$N$：磁通摆幅与匝数成反比地减小。但在相同的绕组面积（winding area）内绕更多匝，会使绕组电阻（winding resistance）增大 <Cite key="erickson2020" where="Ch. 11" />。
+
+## 实验练习
+
+用函数发生器（function generator）输出的方波（square wave），经一个小的串联电阻驱动铁氧体（ferrite）磁芯上的绕组，并在同一磁芯上绕一个几匝的第二绕组作为检测绕组（sense winding）。用示波器对检测绕组电压积分，再除以其匝数和磁芯截面积，即得磁通密度。检查其峰峰值摆幅是否符合上式，然后将驱动频率加倍，检查摆幅是否减半。
+
+## 易错点
+
+- **匝数是一把双刃剑**。电压一定时，匝数越多，磁通摆幅越小；电流一定时，匝数越多，磁场强度和磁通密度越大（<EqRef id="mag.H_ampere" label="安培环路定律" />）。
+- **净伏秒积（net volt-seconds）使磁通一步步走向饱和（saturation）**。若绕组电压在一个周期内的平均值不为零，其磁通每个周期都会增大，直到磁芯饱和 <Cite key="erickson2020" where="Ch. 6" />。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch10', 'coursera-magnetics', 'mit-6334-notes']} />
+
+## 测验
+
+<Quiz id="01-physics/faraday-inductors" />

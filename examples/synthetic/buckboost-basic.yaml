@@ -1,6 +1,7 @@
 synthetic: true
 label: "Buck-boost example"
 label_ko: "벅-부스트 예제"
+label_zh: "升降压变换器示例"
 params:
   V_g: 12
   D: 0.5
@@ -24,4 +25,4 @@ steps:
   - buckboost.ss.Q
   - buckboost.ss.wz
 checks:
-  - {when: "K > K_crit", then: {en: "CCM", ko: "CCM"}, else: {en: "DCM", ko: "DCM"}}
+  - {when: "K > K_crit", then: {en: "CCM", ko: "CCM", zh: "CCM"}, else: {en: "DCM", ko: "DCM", zh: "DCM"}}

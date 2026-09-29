@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { sim } from 'pe-core';
 import { SEQ_TEXT, stateKey } from '../i18n/sequence';
+import { LOCALES, type Locale } from '../i18n/ui';
 import { collisions, layoutCircuit, stateLines, textWidth, FONT, U, type BranchView } from './seqlayout';
 
 /**
@@ -39,13 +40,13 @@ function variants(): [string, Params][] {
 }
 
 /** The short states a kind can show, in a language. */
-function shorts(kind: string, locale: 'en' | 'ko'): string[] {
+function shorts(kind: string, locale: Locale): string[] {
   const text = SEQ_TEXT[locale];
   return sim.STATES[kind as keyof typeof sim.STATES].map((st) => text[stateKey(kind, st, 'short')]!);
 }
 
 /** The widest and the tallest state of a kind as drawn. */
-function worst(kind: string, locale: 'en' | 'ko'): string[] {
+function worst(kind: string, locale: Locale): string[] {
   const all = shorts(kind, locale);
   const width = (s: string) => Math.max(0, ...stateLines(s).map((l) => textWidth(l, FONT.state)));
   const widest = all.reduce((a, b) => (width(b) > width(a) ? b : a));
@@ -53,9 +54,17 @@ function worst(kind: string, locale: 'en' | 'ko'): string[] {
   return [widest, tallest];
 }
 
+describe('text widths', () => {
+  it('counts a Chinese character, and full-width punctuation, as wide as a Hangul syllable', () => {
+    expect(textWidth('变换器', 10)).toBeCloseTo(textWidth('컨버터', 10));
+    expect(textWidth('（导通）', 10)).toBeCloseTo(4 * 1.1 * 10);
+    expect(textWidth('变换器', 10)).toBeGreaterThan(textWidth('abc', 10));
+  });
+});
+
 describe('the operating-mode drawing: nothing overlaps', () => {
   for (const [name, p] of variants()) {
-    for (const locale of ['en', 'ko'] as const) {
+    for (const locale of LOCALES) {
       it(`${name} (${locale})`, () => {
         const s = sim.schematic(p);
         for (const pick of [0, 1]) {

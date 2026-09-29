@@ -1,6 +1,7 @@
 synthetic: true
 label: "Inductor and capacitor example"
 label_ko: "인덕터·커패시터 예제"
+label_zh: "电感与电容示例"
 params:
   V_L: 12
   t: 5.0e-6

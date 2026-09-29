@@ -48,13 +48,13 @@ function jobs() {
         const s = src ? '&src=1&Voc=60&Rs=1&Cbus=0.0001' : '&src=0';
         const load = l === 'fixed' ? `load=fixed&V=${FIXED[t]}` : lh;
         const hash = `${th}&${load}${s}&Ron=0.1&RL=&VF=0.5${cn}`;
-        for (const locale of ['en', 'ko']) out.push({ name: `${t}, ${l}${src ? ', source' : ''} (${locale})`, hash, locale });
+        for (const locale of ['en', 'ko', 'zh']) out.push({ name: `${t}, ${l}${src ? ', source' : ''} (${locale})`, hash, locale });
       }
     }
   }
   for (const t of ['boost', 'flyback']) {
     const hash = `${TOPOLOGIES[t]}&${LOADS.res}&src=0&Ron=0.1&RL=&VF=0.5&Cnode=1e-11`;
-    for (const locale of ['en', 'ko']) out.push({ name: `${t}, res, 10 pF (${locale})`, hash, locale });
+    for (const locale of ['en', 'ko', 'zh']) out.push({ name: `${t}, res, 10 pF (${locale})`, hash, locale });
   }
   return out;
 }

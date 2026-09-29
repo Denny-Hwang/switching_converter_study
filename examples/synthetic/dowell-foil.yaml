@@ -1,6 +1,7 @@
 synthetic: true
 label: "Foil winding example"
 label_ko: "박판 권선 예제"
+label_zh: "铜箔绕组示例"
 # A copper foil winding at 100 kHz and 100 °C: three layers of 0.3 mm foil
 # from zero MMF to its peak.
 params:

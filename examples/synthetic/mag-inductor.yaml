@@ -1,6 +1,7 @@
 synthetic: true
 label: "Buck inductor example"
 label_ko: "벅 인덕터 예제"
+label_zh: "降压变换器电感示例"
 # Magnetics-designer preset, on the E 25/13/7 core in N87 (src/lib/magpresets.ts):
 # a 100 µH output inductor carrying 2 A dc with a 0.2 A half ripple at 100 kHz,
 # wound in one layer of round wire.

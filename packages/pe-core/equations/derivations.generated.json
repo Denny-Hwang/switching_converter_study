@@ -6,8 +6,10 @@
       "source": "python/pe_core/derive/foundations.py",
       "title": "Refreshers: reactive elements, impedance, Fourier series, magnetics, the ideal transformer",
       "title_ko": "기초 복습: 리액티브 소자, 임피던스, 푸리에 급수, 자기학, 이상적 변압기",
+      "title_zh": "基础回顾：电抗元件、阻抗、傅里叶级数、磁学、理想变压器",
       "intro": "The element laws are integrated for constant excitation, impedances follow from the phasor form of the same laws, the Fourier coefficients and the rms value of a pulse train are computed over one period, and the ideal transformer follows from Faraday's and Ampère's laws with a lossless core of zero reluctance.",
       "intro_ko": "소자 법칙을 일정한 전압 또는 전류에 대해 적분하고, 같은 법칙의 페이저 형태에서 임피던스를 구하며, 펄스열의 푸리에 계수와 실효값을 한 주기에 걸쳐 계산합니다. 이상적 변압기는 자기저항이 0인 무손실 코어를 가정하고 패러데이 법칙과 앙페르 법칙에서 얻습니다.",
+      "intro_zh": "在恒定激励下对元件的伏安关系积分；由这些关系的相量形式得到阻抗；在一个周期内计算脉冲序列的傅里叶系数和有效值；理想变压器则在磁芯无损、磁阻为零的条件下由法拉第定律和安培环路定律导出。",
       "results": [
         "ind.di",
         "cap.dv",
@@ -29,198 +31,231 @@
         {
           "text": "Inductor law: $v = L\\,\\mathrm{d}i/\\mathrm{d}t$. With a constant voltage $V_L$ the slope of the current is constant; integrate it over the interval $t$.",
           "text_ko": "인덕터 법칙은 $v = L\\,\\mathrm{d}i/\\mathrm{d}t$입니다. 전압 $V_L$이 일정하면 전류의 기울기도 일정하므로, 구간 $t$에 걸쳐 적분합니다.",
+          "text_zh": "电感的伏安关系：$v = L\\,\\mathrm{d}i/\\mathrm{d}t$。电压 $V_L$ 恒定时，电流的斜率恒定；在区间 $t$ 上对其积分。",
           "latex": "\\int\\limits_{0}^{t} \\frac{V_L}{L}\\, d\\tau",
           "result_for": null
         },
         {
           "text": "Evaluate the integral.",
           "text_ko": "적분을 계산합니다.",
+          "text_zh": "计算该积分。",
           "latex": "\\Delta i = \\frac{V_L t}{L}",
           "result_for": "ind.di"
         },
         {
           "text": "Capacitor law, the dual: $i = C\\,\\mathrm{d}v/\\mathrm{d}t$, integrated for a constant current $I_C$.",
           "text_ko": "인덕터 법칙의 쌍대인 커패시터 법칙 $i = C\\,\\mathrm{d}v/\\mathrm{d}t$를 일정한 전류 $I_C$에 대해 적분합니다.",
+          "text_zh": "与之对偶的电容伏安关系：$i = C\\,\\mathrm{d}v/\\mathrm{d}t$，在电流 $I_C$ 恒定时积分。",
           "latex": "\\int\\limits_{0}^{t} \\frac{I_C}{C}\\, d\\tau",
           "result_for": null
         },
         {
           "text": "Evaluate the integral.",
           "text_ko": "적분을 계산합니다.",
+          "text_zh": "计算该积分。",
           "latex": "\\Delta v_C = \\frac{I_C t}{C}",
           "result_for": "cap.dv"
         },
         {
           "text": "Energy delivered to an inductor: $\\int v\\,i\\,\\mathrm{d}t = \\int L\\,i\\,\\mathrm{d}i$, from zero current to $I_L$.",
           "text_ko": "인덕터에 전달되는 에너지는 $\\int v\\,i\\,\\mathrm{d}t = \\int L\\,i\\,\\mathrm{d}i$이며, 전류 0에서 $I_L$까지 적분합니다.",
+          "text_zh": "送入电感的能量：$\\int v\\,i\\,\\mathrm{d}t = \\int L\\,i\\,\\mathrm{d}i$，从电流为零积分到 $I_L$。",
           "latex": "\\int\\limits_{0}^{I_L} L i\\, di",
           "result_for": null
         },
         {
           "text": "Evaluate the integral.",
           "text_ko": "적분을 계산합니다.",
+          "text_zh": "计算该积分。",
           "latex": "E_L = \\frac{L I_L^{2}}{2}",
           "result_for": "ind.E"
         },
         {
           "text": "Energy delivered to a capacitor: $\\int v\\,i\\,\\mathrm{d}t = \\int C\\,v\\,\\mathrm{d}v$, from zero voltage to $V_C$.",
           "text_ko": "커패시터에 전달되는 에너지는 $\\int v\\,i\\,\\mathrm{d}t = \\int C\\,v\\,\\mathrm{d}v$이며, 전압 0에서 $V_C$까지 적분합니다.",
+          "text_zh": "送入电容的能量：$\\int v\\,i\\,\\mathrm{d}t = \\int C\\,v\\,\\mathrm{d}v$，从电压为零积分到 $V_C$。",
           "latex": "\\int\\limits_{0}^{V_C} C v\\, dv",
           "result_for": null
         },
         {
           "text": "Evaluate the integral.",
           "text_ko": "적분을 계산합니다.",
+          "text_zh": "计算该积分。",
           "latex": "E_C = \\frac{C V_C^{2}}{2}",
           "result_for": "cap.E"
         },
         {
           "text": "In sinusoidal steady state $\\mathrm{d}/\\mathrm{d}t$ becomes multiplication by $j\\omega$, with $\\omega = 2\\pi f$. The inductor law gives the inductor's impedance.",
           "text_ko": "정현파 정상상태에서는 $\\mathrm{d}/\\mathrm{d}t$가 $j\\omega$를 곱하는 연산이 되며, $\\omega = 2\\pi f$입니다. 인덕터 법칙에서 인덕터의 임피던스를 얻습니다.",
+          "text_zh": "在正弦稳态下，$\\mathrm{d}/\\mathrm{d}t$ 变为乘以 $j\\omega$，其中 $\\omega = 2\\pi f$。由电感的伏安关系得到电感的阻抗。",
           "latex": "Z_L = 2 \\pi i L f",
           "result_for": null
         },
         {
           "text": "Its magnitude.",
           "text_ko": "그 크기.",
+          "text_zh": "其模值。",
           "latex": "|Z_L| = 2 \\pi f L",
           "result_for": "imp.ZL"
         },
         {
           "text": "The capacitor law gives the capacitor's impedance.",
           "text_ko": "커패시터 법칙에서 커패시터의 임피던스를 얻습니다.",
+          "text_zh": "由电容的伏安关系得到电容的阻抗。",
           "latex": "Z_C = - \\frac{i}{2 \\pi C f}",
           "result_for": null
         },
         {
           "text": "Its magnitude.",
           "text_ko": "그 크기.",
+          "text_zh": "其模值。",
           "latex": "|Z_C| = \\frac{1}{2 \\pi f C}",
           "result_for": "imp.ZC"
         },
         {
           "text": "Unloaded R-C low-pass filter: the output is the capacitor's share of the divider formed by $R_f$ and the capacitor's impedance.",
           "text_ko": "부하가 없는 R-C 저역통과 필터에서 출력은 $R_f$와 커패시터 임피던스로 이루어진 분압기에서 커패시터에 걸리는 몫입니다.",
+          "text_zh": "空载 R-C 低通滤波器：输出为 $R_f$ 与电容阻抗构成的分压器中电容上分得的电压。",
           "latex": "G(j\\omega) = - \\frac{i}{2 \\pi C_f R_f f - i}",
           "result_for": null
         },
         {
           "text": "Squared magnitude.",
           "text_ko": "크기의 제곱.",
+          "text_zh": "模值的平方。",
           "latex": "\\left|{G(j\\omega)}\\right|^{2} = \\frac{1}{1 + 4 \\pi^{2} C_f^{2} R_f^{2} f^{2}}",
           "result_for": null
         },
         {
           "text": "The corner (-3 dB) frequency is where the squared magnitude falls to one half.",
           "text_ko": "차단(-3 dB) 주파수는 크기의 제곱이 1/2로 떨어지는 주파수입니다.",
+          "text_zh": "转折（-3 dB）频率是模值平方降为一半时的频率。",
           "latex": "f_c = \\frac{1}{2 \\pi R_f C_f}",
           "result_for": "rc.fc"
         },
         {
           "text": "Write the magnitude with $f_c$ in place of $R_f C_f$.",
           "text_ko": "크기를 $R_f C_f$ 대신 $f_c$로 나타냅니다.",
+          "text_zh": "用 $f_c$ 代替 $R_f C_f$ 表示模值。",
           "latex": "|G| = \\frac{f_c}{\\sqrt{f^{2} + f_c^{2}}} = \\frac{1}{\\sqrt{1 + \\left(\\frac{f}{f_c}\\right)^{2}}}",
           "result_for": "rc.gain"
         },
         {
           "text": "An inductance with a parasitic capacitance in parallel: the admittances add.",
           "text_ko": "기생 커패시턴스가 병렬로 붙은 인덕턴스에서는 어드미턴스가 더해집니다.",
+          "text_zh": "并联寄生电容的电感：导纳相加。",
           "latex": "Y = 2 \\pi i C_p f - \\frac{i}{2 \\pi L f}",
           "result_for": null
         },
         {
           "text": "At resonance the admittance is zero (the impedance is infinite for the lossless model).",
           "text_ko": "공진에서 어드미턴스는 0입니다(무손실 모델에서는 임피던스가 무한대).",
+          "text_zh": "谐振时导纳为零（对无损模型，阻抗为无穷大）。",
           "latex": "f_\\mathrm{srf} = \\frac{1}{2 \\pi \\sqrt{L C_p}}",
           "result_for": "passive.f_srf"
         },
         {
           "text": "A pulse train of height $V_\\mathrm{pk}$ and width $D T$ in every period $T$. Its cosine coefficient for the harmonic $h$:",
           "text_ko": "주기 $T$마다 높이 $V_\\mathrm{pk}$, 폭 $D T$인 펄스열을 생각합니다. $h$차 고조파의 코사인 계수는 다음과 같습니다.",
+          "text_zh": "高度为 $V_\\mathrm{pk}$、宽度为 $D T$、每个周期 $T$ 出现一次的脉冲序列。其第 $h$ 次谐波的余弦系数：",
           "latex": "a_{h,\\cos} = \\frac{V_\\mathrm{pk} \\sin{\\left(2 \\pi D h \\right)}}{\\pi h}",
           "result_for": null
         },
         {
           "text": "and its sine coefficient:",
           "text_ko": "사인 계수는 다음과 같습니다.",
+          "text_zh": "以及正弦系数：",
           "latex": "a_{h,\\sin} = \\frac{2 V_\\mathrm{pk} \\sin^{2}{\\left(\\pi D h \\right)}}{\\pi h}",
           "result_for": null
         },
         {
           "text": "The squared amplitude of the harmonic is the sum of their squares; with $1 - \\cos 2x = 2\\sin^2 x$ it is a perfect square.",
           "text_ko": "고조파 진폭의 제곱은 두 계수의 제곱의 합이며, $1 - \\cos 2x = 2\\sin^2 x$를 쓰면 완전제곱이 됩니다.",
+          "text_zh": "谐波幅值的平方等于两系数的平方和；利用 $1 - \\cos 2x = 2\\sin^2 x$，可化为完全平方式。",
           "latex": "a_h^{2} = \\frac{4 V_\\mathrm{pk}^{2} \\sin^{2}{\\left(\\pi D h \\right)}}{\\pi^{2} h^{2}}",
           "result_for": null
         },
         {
           "text": "Take the non-negative root.",
           "text_ko": "음이 아닌 제곱근을 취합니다.",
+          "text_zh": "取非负的平方根。",
           "latex": "a_h = \\frac{2 V_\\mathrm{pk} \\left|{\\sin{\\left(\\pi h D \\right)}}\\right|}{\\pi h}",
           "result_for": "fourier.pulse.harm"
         },
         {
           "text": "The mean square over one period: the pulse contributes $V_\\mathrm{pk}^2$ during $D T$.",
           "text_ko": "한 주기에 걸친 제곱 평균에는 펄스가 $D T$ 동안 $V_\\mathrm{pk}^2$를 기여합니다.",
+          "text_zh": "一个周期内的均方值：脉冲贡献 $V_\\mathrm{pk}^2$，持续 $D T$。",
           "latex": "V_\\mathrm{rms}^{2} = D V_\\mathrm{pk}^{2}",
           "result_for": null
         },
         {
           "text": "The rms value is its square root.",
           "text_ko": "실효값은 그 제곱근입니다.",
+          "text_zh": "有效值为其平方根。",
           "latex": "V_\\mathrm{rms} = V_\\mathrm{pk} \\sqrt{D}",
           "result_for": "fourier.pulse.rms"
         },
         {
           "text": "The ripple current flows through the capacitor's series resistance, whose voltage follows the current at every instant. The difference between its extremes:",
           "text_ko": "리플 전류는 커패시터의 직렬 저항을 흐르며, 이 저항의 전압은 매 순간 전류를 따릅니다. 최댓값과 최솟값의 차는 다음과 같습니다.",
+          "text_zh": "纹波电流流过电容的串联电阻，该电阻上的电压每一时刻都随电流变化。其最大值与最小值之差：",
           "latex": "\\Delta v_\\mathrm{ESR} = i_{C,\\mathrm{max}} R_\\mathrm{ESR} - i_{C,\\mathrm{min}} R_\\mathrm{ESR}",
           "result_for": null
         },
         {
           "text": "The current's peak-to-peak value is its maximum minus its minimum.",
           "text_ko": "전류의 피크-피크 값은 최댓값에서 최솟값을 뺀 값입니다.",
+          "text_zh": "电流的峰峰值等于其最大值减去最小值。",
           "latex": "\\Delta v_\\mathrm{ESR} = R_\\mathrm{ESR} \\Delta i_{L,\\mathrm{pp}}",
           "result_for": "cap.esr.ripple"
         },
         {
           "text": "Ampère's law around the core: the line integral of $H$ equals the enclosed current, $N$ turns each carrying $I_w$. In an ungapped core with a uniform field it is $H$ times the path length.",
           "text_ko": "코어를 한 바퀴 도는 경로에 앙페르 법칙을 적용하면, $H$의 선적분은 감싸인 전류, 즉 각각 $I_w$가 흐르는 $N$턴의 전류와 같습니다. 공극이 없고 자계가 균일한 코어에서 이 선적분은 $H$와 자로 길이의 곱입니다.",
+          "text_zh": "绕磁芯一周应用安培环路定律：$H$ 的线积分等于所包围的电流，即 $N$ 匝、每匝流过 $I_w$。在磁场均匀的无气隙磁芯中，该线积分等于 $H$ 乘以磁路长度。",
           "latex": "H l_e = I_w N",
           "result_for": null
         },
         {
           "text": "Solve for $H$.",
           "text_ko": "$H$에 대해 풉니다.",
+          "text_zh": "解出 $H$。",
           "latex": "H = \\frac{N I_w}{l_e}",
           "result_for": "mag.H_ampere"
         },
         {
           "text": "Faraday's law for two windings on one core: each winding voltage is its number of turns times the rate of change of the common flux. For the primary:",
           "text_ko": "한 코어에 감긴 두 권선에 패러데이 법칙을 적용하면, 각 권선 전압은 턴 수에 공통 자속의 변화율을 곱한 값입니다. 1차 권선에서는 다음과 같습니다.",
+          "text_zh": "对同一磁芯上的两个绕组应用法拉第定律：每个绕组的电压等于其匝数乘以公共磁通的变化率。一次绕组：",
           "latex": "V_1 = N_p \\mathrm{d}\\Phi/\\mathrm{d}t",
           "result_for": null
         },
         {
           "text": "and for the secondary:",
           "text_ko": "2차 권선에서는 다음과 같습니다.",
+          "text_zh": "以及二次绕组：",
           "latex": "V_2 = N_s \\mathrm{d}\\Phi/\\mathrm{d}t",
           "result_for": null
         },
         {
           "text": "Divide the two: the flux term cancels, and the ratio of the turns is $n$ (1:n convention).",
           "text_ko": "두 식을 나누면 자속 항이 소거되며, 턴 수의 비는 $n$입니다(1:n 규약).",
+          "text_zh": "两式相除：磁通项消去，匝数之比为 $n$（1:n 约定）。",
           "latex": "V_2 = n V_1",
           "result_for": "xfmr.V2"
         },
         {
           "text": "Ampère's law with a core of zero reluctance (ideal): the net magnetomotive force is zero.",
           "text_ko": "자기저항이 0인 이상적인 코어에 앙페르 법칙을 적용하면 순 기자력은 0입니다.",
+          "text_zh": "磁芯磁阻为零（理想）时的安培环路定律：净磁动势为零。",
           "latex": "I_1 N_p - I_2 N_s = 0",
           "result_for": null
         },
         {
           "text": "Solve for the secondary current, with $N_s = n N_p$.",
           "text_ko": "$N_s = n N_p$로 놓고 2차 전류에 대해 풉니다.",
+          "text_zh": "代入 $N_s = n N_p$，解出二次侧电流。",
           "latex": "I_2 = \\frac{I_1}{n}",
           "result_for": "xfmr.I2"
         }
@@ -231,8 +266,10 @@
       "source": "python/pe_core/derive/averaging.py",
       "title": "Averaging, balance, and losses in the averaged model",
       "title_ko": "평균화, 평형 조건, 평균 모델의 손실",
+      "title_zh": "平均法、平衡条件与平均模型中的损耗",
       "intro": "A switching converter chops a dc input into a pulse train; a low-pass filter keeps its average. Averaging each circuit equation over one period turns the switched circuit into a dc model in which losses such as the inductor winding resistance $R_L$ appear as ordinary resistors.",
       "intro_ko": "스위칭 컨버터는 직류 입력을 스위칭해 펄스열로 만들고, 저역통과 필터가 그 평균을 남깁니다. 각 회로 방정식을 한 주기에 걸쳐 평균하면 스위칭 회로가 직류 모델이 되며, 인덕터 권선 저항 $R_L$ 같은 손실은 일반 저항으로 나타납니다.",
+      "intro_zh": "开关变换器将直流输入斩波为脉冲序列，低通滤波器保留其平均值。将每个电路方程在一个周期内取平均，开关电路即变为直流模型，其中电感绕组电阻 $R_L$ 等损耗表现为普通电阻。",
       "results": [
         "sw.v_avg",
         "vsb.drift",
@@ -245,78 +282,91 @@
         {
           "text": "The buck switch node is at $V_g$ for $0 < t < D T_s$ and at $0$ for $D T_s < t < T_s$; average it over one period.",
           "text_ko": "벅의 스위치 노드는 $0 < t < D T_s$ 동안 $V_g$, $D T_s < t < T_s$ 동안 $0$입니다. 이를 한 주기에 걸쳐 평균합니다.",
+          "text_zh": "降压变换器的开关节点电压为 $V_g$（$0 < t < D T_s$）或 $0$（$D T_s < t < T_s$）；在一个周期内对其取平均。",
           "latex": "\\langle v_s \\rangle = \\frac{\\int\\limits_{0}^{T_s} v_s\\, dt}{T_s}",
           "result_for": null
         },
         {
           "text": "Evaluate the two pieces.",
           "text_ko": "두 구간의 적분을 계산합니다.",
+          "text_zh": "计算两段积分。",
           "latex": "\\langle v_s \\rangle = D V_g",
           "result_for": "sw.v_avg"
         },
         {
           "text": "The inductor obeys $v_L = L \\, di/dt$. Integrated over one period, the current's change is the integral of the voltage over $L$.",
           "text_ko": "인덕터는 $v_L = L \\, di/dt$를 따릅니다. 한 주기에 걸쳐 적분하면 전류의 변화는 전압의 적분을 $L$로 나눈 값입니다.",
+          "text_zh": "电感满足 $v_L = L \\, di/dt$。在一个周期内积分，电流的变化量等于电压的积分除以 $L$。",
           "latex": "\\Delta i = \\frac{\\int\\limits_{0}^{T_s} v_L\\, dt}{L}",
           "result_for": null
         },
         {
           "text": "For a voltage $v_{L,\\mathrm{on}}$ during $D T_s$ and $v_{L,\\mathrm{off}}$ for the rest, the integral is $T_s$ times the average over the period.",
           "text_ko": "$D T_s$ 동안 $v_{L,\\mathrm{on}}$, 나머지 시간 동안 $v_{L,\\mathrm{off}}$인 전압이라면 적분은 한 주기 평균에 $T_s$를 곱한 값입니다.",
+          "text_zh": "若电压为 $v_{L,\\mathrm{on}}$，持续 $D T_s$，其余时间为 $v_{L,\\mathrm{off}}$，则该积分等于 $T_s$ 乘以一个周期内的平均值。",
           "latex": "\\langle v_L \\rangle = v_{L,\\mathrm{off}} + v_{L,\\mathrm{on}} D - v_{L,\\mathrm{off}} D",
           "result_for": null
         },
         {
           "text": "So the change over one period is the average voltage times $T_s$ over $L$; it is zero only when the average is (volt-second balance).",
           "text_ko": "따라서 한 주기 동안의 변화는 평균 전압에 $T_s$를 곱해 $L$로 나눈 값이며, 평균이 0일 때만 0입니다(전압-초 평형).",
+          "text_zh": "因此一个周期内的变化量等于平均电压乘以 $T_s$ 再除以 $L$；只有平均电压为零时，变化量才为零（伏秒平衡）。",
           "latex": "\\Delta i = \\frac{\\langle v_L \\rangle T_s}{L}",
           "result_for": "vsb.drift"
         },
         {
           "text": "With the small-ripple approximation the inductor voltage (or capacitor current) takes one value $x_\\mathrm{on}$ for $D T_s$ and another value $x_\\mathrm{off}$ for $(1 - D) T_s$; its average must be zero.",
           "text_ko": "소리플 근사를 쓰면 인덕터 전압(또는 커패시터 전류)은 $D T_s$ 동안 $x_\\mathrm{on}$, $(1 - D) T_s$ 동안 $x_\\mathrm{off}$ 값을 가지며, 그 평균은 0이어야 합니다.",
+          "text_zh": "在小纹波近似下，电感电压（或电容电流）先取值 $x_\\mathrm{on}$，持续 $D T_s$，再取值 $x_\\mathrm{off}$，持续 $(1 - D) T_s$；其平均值必须为零。",
           "latex": "x_\\mathrm{off} \\left(1 - D\\right) + x_\\mathrm{on} D = 0",
           "result_for": null
         },
         {
           "text": "For the inductor voltage ($x = v_L$): volt-second balance.",
           "text_ko": "인덕터 전압($x = v_L$)에 대해서는 전압-초 평형입니다.",
+          "text_zh": "对电感电压（$x = v_L$）：伏秒平衡。",
           "latex": "v_{L,\\mathrm{off}} = \\frac{D v_{L,\\mathrm{on}}}{-1 + D} = - \\frac{D v_{L,\\mathrm{on}}}{1 - D}",
           "result_for": "vsb.v_off"
         },
         {
           "text": "For the capacitor current ($x = i_C$): charge balance.",
           "text_ko": "커패시터 전류($x = i_C$)에 대해서는 전하 평형입니다.",
+          "text_zh": "对电容电流（$x = i_C$）：电荷平衡。",
           "latex": "i_{C,\\mathrm{off}} = \\frac{D i_{C,\\mathrm{on}}}{-1 + D} = - \\frac{D i_{C,\\mathrm{on}}}{1 - D}",
           "result_for": "csb.i_off"
         },
         {
           "text": "Boost with inductor winding resistance $R_L$, volt-second balance: the inductor sees $V_g - I R_L$ while the switch is on and $V_g - I R_L - V$ while the diode conducts ($I$ = dc inductor current).",
           "text_ko": "인덕터 권선 저항 $R_L$이 있는 부스트의 전압-초 평형: 인덕터에는 스위치 온 구간에 $V_g - I R_L$, 다이오드 도통 구간에 $V_g - I R_L - V$가 걸립니다($I$ = 인덕터 직류 전류).",
+          "text_zh": "含电感绕组电阻 $R_L$ 的升压变换器，伏秒平衡：开关管导通期间电感电压为 $V_g - I R_L$，二极管导通期间为 $V_g - I R_L - V$（$I$ 为电感直流电流）。",
           "latex": "D \\left(V_g - I R_L\\right) + \\left(1 - D\\right) \\left(V_g - V - I R_L\\right) = 0",
           "result_for": null
         },
         {
           "text": "Charge balance on the output capacitor: $-V/R$ while the switch is on, $I - V/R$ while the diode conducts.",
           "text_ko": "출력 커패시터의 전하 평형: 커패시터 전류는 스위치 온 구간에 $-V/R$, 다이오드 도통 구간에 $I - V/R$입니다.",
+          "text_zh": "输出电容的电荷平衡：开关管导通期间为 $-V/R$，二极管导通期间为 $I - V/R$。",
           "latex": "\\left(1 - D\\right) \\left(I - \\frac{V}{R}\\right) - \\frac{D V}{R} = 0",
           "result_for": null
         },
         {
           "text": "Solve the two linear equations for $I$.",
           "text_ko": "두 1차 방정식을 $I$에 대해 풉니다.",
+          "text_zh": "由这两个线性方程解出 $I$。",
           "latex": "I = \\frac{V_g}{R + R_L - 2 D R + R D^{2}}",
           "result_for": null
         },
         {
           "text": "and for $M = V/V_g$.",
           "text_ko": "$M = V/V_g$에 대해서도 풉니다.",
+          "text_zh": "并解出 $M = V/V_g$。",
           "latex": "M = \\frac{R \\left(1 - D\\right)}{R + R_L - 2 D R + R D^{2}} = \\frac{1}{\\left(1 - D\\right) \\left(1 + \\frac{R_L}{\\left(1 - D\\right)^{2} R}\\right)}",
           "result_for": "boost.ccm.M_RL"
         },
         {
           "text": "Efficiency is the output power $V^2/R$ over the input power $V_g I$.",
           "text_ko": "효율은 출력 전력 $V^2/R$을 입력 전력 $V_g I$로 나눈 값입니다.",
+          "text_zh": "效率等于输出功率 $V^2/R$ 除以输入功率 $V_g I$。",
           "latex": "\\eta = \\frac{R \\left(-1 + D\\right)^{2}}{R + R_L - 2 D R + R D^{2}} = \\frac{1}{1 + \\frac{R_L}{\\left(1 - D\\right)^{2} R}}",
           "result_for": "boost.ccm.eta_RL"
         }
@@ -327,8 +377,10 @@
       "source": "python/pe_core/derive/ccm_ratios.py",
       "title": "CCM conversion ratios and ripple by volt-second balance",
       "title_ko": "전압-초 평형으로 구하는 CCM 변환비와 리플",
+      "title_zh": "由伏秒平衡求 CCM 电压变换比与纹波",
       "intro": "In periodic steady state every inductor current ends a switching period where it started, so the average inductor voltage over the period is zero. With the small-ripple approximation each interval applies a constant voltage, and the balance becomes a linear equation in the output voltage $V$.",
       "intro_ko": "주기적 정상상태에서는 모든 인덕터 전류가 한 스위칭 주기의 끝에서 시작값으로 돌아오므로 한 주기 동안의 평균 인덕터 전압은 0입니다. 소리플 근사를 쓰면 각 구간에 걸리는 전압이 일정하므로 이 평형 조건은 출력 전압에 대한 1차 방정식이 됩니다.",
+      "intro_zh": "在周期稳态下，每个电感电流在一个开关周期结束时都回到起始值，因此一个周期内电感电压的平均值为零。在小纹波近似下，每个区间施加的电压恒定，平衡条件成为关于输出电压 $V$ 的线性方程。",
       "results": [
         "buck.ccm.M",
         "boost.ccm.M",
@@ -343,102 +395,119 @@
         {
           "text": "Volt-second balance: the inductor voltage averaged over one switching period is zero.",
           "text_ko": "전압-초 평형: 한 스위칭 주기 동안 평균한 인덕터 전압은 0입니다.",
+          "text_zh": "伏秒平衡：电感电压在一个开关周期内的平均值为零。",
           "latex": "\\langle v_L \\rangle = 0",
           "result_for": null
         },
         {
           "text": "Buck: the inductor sees $V_g - V$ while the switch is on (fraction $D$) and $-V$ while the diode conducts ($1 - D$).",
           "text_ko": "벅: 인덕터에는 스위치 온 구간(비율 $D$)에 $V_g - V$, 다이오드 도통 구간($1 - D$)에 $-V$가 걸립니다.",
+          "text_zh": "降压变换器：开关管导通期间电感电压为 $V_g - V$（占比 $D$），二极管导通期间为 $-V$（$1 - D$）。",
           "latex": "D \\left(V_g - V\\right) - V \\left(1 - D\\right) = 0",
           "result_for": null
         },
         {
           "text": "Solve for $V$ and divide by $V_g$.",
           "text_ko": "$V$에 대해 풀고 $V_g$로 나눕니다.",
+          "text_zh": "解出 $V$，再除以 $V_g$。",
           "latex": "M = D",
           "result_for": "buck.ccm.M"
         },
         {
           "text": "Boost: $V_g$ while the switch is on, $V_g - V$ while the diode conducts.",
           "text_ko": "부스트: 스위치 온 구간에는 $V_g$, 다이오드 도통 구간에는 $V_g - V$가 걸립니다.",
+          "text_zh": "升压变换器：开关管导通期间为 $V_g$，二极管导通期间为 $V_g - V$。",
           "latex": "D V_g + \\left(1 - D\\right) \\left(V_g - V\\right) = 0",
           "result_for": null
         },
         {
           "text": "Solve for $V$.",
           "text_ko": "$V$에 대해 풉니다.",
+          "text_zh": "解出 $V$。",
           "latex": "M = - \\frac{1}{-1 + D} = \\frac{1}{1 - D}",
           "result_for": "boost.ccm.M"
         },
         {
           "text": "Buck-boost: $V_g$ while the switch is on, the (negative) output voltage $V$ while the diode conducts.",
           "text_ko": "벅-부스트: 스위치 온 구간에는 $V_g$, 다이오드 도통 구간에는 (음의) 출력 전압 $V$가 걸립니다.",
+          "text_zh": "升降压变换器：开关管导通期间为 $V_g$，二极管导通期间为（负的）输出电压 $V$。",
           "latex": "V \\left(1 - D\\right) + D V_g = 0",
           "result_for": null
         },
         {
           "text": "Solve for $V$; the output is inverted.",
           "text_ko": "$V$에 대해 풉니다. 출력 극성은 반전됩니다.",
+          "text_zh": "解出 $V$；输出反相。",
           "latex": "M = \\frac{D}{-1 + D} = - \\frac{D}{1 - D}",
           "result_for": "buckboost.ccm.M"
         },
         {
           "text": "Flyback (1:$n$, magnetizing inductance on the primary): $V_g$ while the switch is on; while the diode conducts the secondary is clamped at $V$, which reflects to $-V/n$ on the primary.",
           "text_ko": "플라이백(1:$n$, 1차 측 자화 인덕턴스): 스위치 온 구간에는 $V_g$가 걸리고, 다이오드 도통 구간에는 2차 측이 $V$로 클램프되어 1차 측에 $-V/n$으로 반사됩니다.",
+          "text_zh": "反激变换器（1:$n$，励磁电感在一次侧）：开关管导通期间为 $V_g$；二极管导通期间二次侧被钳位在 $V$，反射到一次侧为 $-V/n$。",
           "latex": "D V_g - \\frac{V \\left(1 - D\\right)}{n} = 0",
           "result_for": null
         },
         {
           "text": "Solve for $V$.",
           "text_ko": "$V$에 대해 풉니다.",
+          "text_zh": "解出 $V$。",
           "latex": "M = - \\frac{D n}{-1 + D} = \\frac{n D}{1 - D}",
           "result_for": "flyback.ccm.M"
         },
         {
           "text": "Forward: the secondary applies $nV_g$ to the output filter while the switch is on, so the output inductor sees $nV_g - V$, then $-V$ while the freewheeling diode conducts.",
           "text_ko": "포워드: 스위치 온 구간에 2차 측이 출력 필터에 $nV_g$를 인가하므로 출력 인덕터에는 $nV_g - V$가 걸리고, 환류 다이오드 도통 구간에는 $-V$가 걸립니다.",
+          "text_zh": "正激变换器：开关管导通期间，二次侧向输出滤波器施加 $nV_g$，因此输出电感电压为 $nV_g - V$；随后在续流二极管导通期间为 $-V$。",
           "latex": "D \\left(- V + V_g n\\right) - V \\left(1 - D\\right) = 0",
           "result_for": null
         },
         {
           "text": "Solve for $V$.",
           "text_ko": "$V$에 대해 풉니다.",
+          "text_zh": "解出 $V$。",
           "latex": "M = n D",
           "result_for": "forward.ccm.M"
         },
         {
           "text": "Forward reset: the magnetizing inductance sees $V_g$ for $D T_s$, then the reset winding ($N_r$ turns) clamps it to $-V_g/n_r$ for $D_2 T_s$ until the magnetizing current is back to zero.",
           "text_ko": "포워드 리셋: 자화 인덕턴스에는 $D T_s$ 동안 $V_g$가 걸리고, 이후 자화 전류가 0으로 돌아올 때까지 $D_2 T_s$ 동안 리셋 권선($N_r$ 턴)이 이 전압을 $-V_g/n_r$로 클램프합니다.",
+          "text_zh": "正激变换器的复位：励磁电感电压为 $V_g$，持续 $D T_s$；随后复位绕组（$N_r$ 匝）将其钳位在 $-V_g/n_r$，持续 $D_2 T_s$，直到励磁电流回到零。",
           "latex": "D V_g - \\frac{D_2 V_g}{n_r} = 0",
           "result_for": null
         },
         {
           "text": "Solve for the reset interval.",
           "text_ko": "리셋 구간을 구합니다.",
+          "text_zh": "解出复位区间。",
           "latex": "D_2 = D n_r",
           "result_for": null
         },
         {
           "text": "The reset must finish within the period, $D + D_2 \\le 1$; the equality gives the largest duty ratio.",
           "text_ko": "리셋은 한 주기 안에 끝나야 하므로 $D + D_2 \\le 1$이며, 등호일 때 듀티비가 최대입니다.",
+          "text_zh": "复位必须在一个周期内完成，即 $D + D_2 \\le 1$；取等号得到最大占空比。",
           "latex": "D_\\mathrm{max} = \\frac{1}{1 + n_r}",
           "result_for": "forward.reset.Dmax"
         },
         {
           "text": "Buck ripple: during the on-interval the inductor current rises with slope $(V_g - V)/L$ for $D T_s$, which is the full peak-to-peak ripple, i.e. $2\\Delta i_L$.",
           "text_ko": "벅 리플: 온 구간 $D T_s$ 동안 인덕터 전류가 기울기 $(V_g - V)/L$로 증가하며, 이 증가량이 피크-피크 리플, 즉 $2\\Delta i_L$입니다.",
+          "text_zh": "降压变换器的纹波：导通区间内电感电流以斜率 $(V_g - V)/L$ 上升，持续 $D T_s$，上升量即整个纹波峰峰值，也就是 $2\\Delta i_L$。",
           "latex": "2 \\Delta i_L = \\frac{D T_s \\left(V_g - V\\right)}{L}",
           "result_for": null
         },
         {
           "text": "Half of it is Erickson's $\\Delta i_L$.",
           "text_ko": "그 절반이 Erickson의 $\\Delta i_L$입니다.",
+          "text_zh": "其一半即 Erickson 的 $\\Delta i_L$。",
           "latex": "\\Delta i_L = \\frac{\\left(V_g - V\\right) D T_s}{2 L}",
           "result_for": "buck.ripple.iL"
         },
         {
           "text": "The peak-to-peak value, with $T_s = 1/f_s$.",
           "text_ko": "$T_s = 1/f_s$로 쓴 피크-피크 값.",
+          "text_zh": "代入 $T_s = 1/f_s$ 后的峰峰值。",
           "latex": "\\Delta i_{L,\\mathrm{pp}} = \\frac{\\left(V_g - V\\right) D}{L f_s}",
           "result_for": "buck.ripple.iL_pp"
         }
@@ -449,8 +518,10 @@
       "source": "python/pe_core/derive/dcm.py",
       "title": "CCM/DCM boundary and DCM conversion ratios (buck, boost, buck-boost)",
       "title_ko": "CCM/DCM 경계와 DCM 변환비(벅, 부스트, 벅-부스트)",
+      "title_zh": "CCM/DCM 临界与 DCM 电压变换比（降压、升压、升降压）",
       "intro": "The converter leaves CCM when the inductor current ripple is large enough for the current to reach zero: at the boundary the half-ripple $\\Delta i_L$ equals the dc inductor current. In DCM a third interval $D_3 T_s$ appears in which both switch and diode are off; its length is unknown, so volt-second balance is combined with capacitor charge balance (the average diode or inductor current must equal what the load draws).",
       "intro_ko": "인덕터 전류 리플이 커져 전류가 0에 닿으면 컨버터는 CCM을 벗어납니다. 경계에서는 리플의 절반 $\\Delta i_L$이 인덕터 직류 전류와 같습니다. DCM에서는 스위치와 다이오드가 모두 꺼진 세 번째 구간 $D_3 T_s$가 생기고 그 길이를 모르므로, 전압-초 평형에 커패시터 전하 평형(평균 다이오드 전류 또는 평균 인덕터 전류가 부하 전류와 같음)을 함께 씁니다.",
+      "intro_zh": "当电感电流纹波大到使电流降至零时，变换器退出 CCM：临界时，纹波峰峰值的一半 $\\Delta i_L$ 等于电感直流电流。DCM 中出现第三个区间 $D_3 T_s$，其间开关管和二极管均关断；该区间长度未知，因此须将伏秒平衡与电容电荷平衡联立（二极管或电感的平均电流必须等于负载所取的电流）。",
       "results": [
         "Kcrit.buck",
         "Kcrit.boost",
@@ -465,144 +536,168 @@
         {
           "text": "Definition used throughout: $K = 2L/(R T_s)$, i.e. $L = K R T_s/2$.",
           "text_ko": "이 유도 전체에서 쓰는 정의: $K = 2L/(R T_s)$, 즉 $L = K R T_s/2$.",
+          "text_zh": "通篇采用的定义：$K = 2L/(R T_s)$，即 $L = K R T_s/2$。",
           "latex": "K = \\frac{2 L}{R T_s}",
           "result_for": null
         },
         {
           "text": "Buck: the dc inductor current equals the load current $V/R$, with $V = D V_g$ in CCM.",
           "text_ko": "벅: 인덕터 직류 전류는 부하 전류 $V/R$이며, CCM에서 $V = D V_g$입니다.",
+          "text_zh": "降压变换器：电感直流电流等于负载电流 $V/R$，CCM 下 $V = D V_g$。",
           "latex": "I_L = \\frac{D V_g}{R}",
           "result_for": null
         },
         {
           "text": "The half-ripple over the on-interval, with the CCM operating point substituted.",
           "text_ko": "CCM 동작점을 대입한 온 구간의 리플 절반.",
+          "text_zh": "代入 CCM 工作点后，由导通区间得到的纹波峰峰值的一半。",
           "latex": "\\Delta i_L = \\frac{D T_s \\left(V_g - D V_g\\right)}{2 L}",
           "result_for": null
         },
         {
           "text": "Boundary $\\Delta i_L = I_L$, with $L = K R T_s/2$, solved for $K$.",
           "text_ko": "경계 조건 $\\Delta i_L = I_L$에 $L = K R T_s/2$를 넣고 $K$에 대해 풉니다.",
+          "text_zh": "临界条件 $\\Delta i_L = I_L$，代入 $L = K R T_s/2$，解出 $K$。",
           "latex": "K_\\mathrm{crit} = 1 - D",
           "result_for": "Kcrit.buck"
         },
         {
           "text": "Boost: the inductor carries the input current, $V/((1 - D)R)$, with $V = V_g/(1 - D)$.",
           "text_ko": "부스트: 인덕터에는 입력 전류 $V/((1 - D)R)$가 흐르며, $V = V_g/(1 - D)$입니다.",
+          "text_zh": "升压变换器：电感流过输入电流 $V/((1 - D)R)$，其中 $V = V_g/(1 - D)$。",
           "latex": "I_L = \\frac{V_g}{R \\left(1 - D\\right)^{2}}",
           "result_for": null
         },
         {
           "text": "The half-ripple over the on-interval, with the CCM operating point substituted.",
           "text_ko": "CCM 동작점을 대입한 온 구간의 리플 절반.",
+          "text_zh": "代入 CCM 工作点后，由导通区间得到的纹波峰峰值的一半。",
           "latex": "\\Delta i_L = \\frac{D T_s V_g}{2 L}",
           "result_for": null
         },
         {
           "text": "Boundary $\\Delta i_L = I_L$, with $L = K R T_s/2$, solved for $K$.",
           "text_ko": "경계 조건 $\\Delta i_L = I_L$에 $L = K R T_s/2$를 넣고 $K$에 대해 풉니다.",
+          "text_zh": "临界条件 $\\Delta i_L = I_L$，代入 $L = K R T_s/2$，解出 $K$。",
           "latex": "K_\\mathrm{crit} = D \\left(-1 + D\\right)^{2} = D \\left(1 - D\\right)^{2}",
           "result_for": "Kcrit.boost"
         },
         {
           "text": "Buck-boost: the inductor current is $|V|/((1 - D)R)$, with $|V| = D V_g/(1 - D)$.",
           "text_ko": "벅-부스트: 인덕터 전류는 $|V|/((1 - D)R)$이며, $|V| = D V_g/(1 - D)$입니다.",
+          "text_zh": "升降压变换器：电感电流为 $|V|/((1 - D)R)$，其中 $|V| = D V_g/(1 - D)$。",
           "latex": "I_L = \\frac{D V_g}{R \\left(1 - D\\right)^{2}}",
           "result_for": null
         },
         {
           "text": "The half-ripple over the on-interval, with the CCM operating point substituted.",
           "text_ko": "CCM 동작점을 대입한 온 구간의 리플 절반.",
+          "text_zh": "代入 CCM 工作点后，由导通区间得到的纹波峰峰值的一半。",
           "latex": "\\Delta i_L = \\frac{D T_s V_g}{2 L}",
           "result_for": null
         },
         {
           "text": "Boundary $\\Delta i_L = I_L$, with $L = K R T_s/2$, solved for $K$.",
           "text_ko": "경계 조건 $\\Delta i_L = I_L$에 $L = K R T_s/2$를 넣고 $K$에 대해 풉니다.",
+          "text_zh": "临界条件 $\\Delta i_L = I_L$，代入 $L = K R T_s/2$，解出 $K$。",
           "latex": "K_\\mathrm{crit} = \\left(-1 + D\\right)^{2} = \\left(1 - D\\right)^{2}",
           "result_for": "Kcrit.buckboost"
         },
         {
           "text": "At the boundary $K$ equals $K_\\mathrm{crit}$; solve the definition of $K$ for $L$.",
           "text_ko": "경계에서 $K$는 $K_\\mathrm{crit}$과 같으므로, $K$의 정의를 $L$에 대해 풉니다.",
+          "text_zh": "临界时 $K$ 等于 $K_\\mathrm{crit}$；由 $K$ 的定义解出 $L$。",
           "latex": "L_\\mathrm{crit} = \\frac{K_\\mathrm{crit} R T_s}{2}",
           "result_for": "L.crit"
         },
         {
           "text": "Buck DCM, volt-second balance with $V = M V_g$: $V_g - V$ for $D T_s$, $-V$ for $D_2 T_s$, $0$ for $D_3 T_s$.",
           "text_ko": "벅 DCM, $V = M V_g$로 쓴 전압-초 평형: $D T_s$ 동안 $V_g - V$, $D_2 T_s$ 동안 $-V$, $D_3 T_s$ 동안 $0$.",
+          "text_zh": "DCM 降压变换器，以 $V = M V_g$ 表示的伏秒平衡：$V_g - V$ 持续 $D T_s$，$-V$ 持续 $D_2 T_s$，$0$ 持续 $D_3 T_s$。",
           "latex": "D \\left(V_g - M V_g\\right) - D_2 M V_g = 0",
           "result_for": null
         },
         {
           "text": "Solve for $D_2$.",
           "text_ko": "$D_2$를 구합니다.",
+          "text_zh": "解出 $D_2$。",
           "latex": "D_2 = - D + \\frac{D}{M} = \\frac{D \\left(1 - M\\right)}{M}",
           "result_for": "buck.dcm.D2"
         },
         {
           "text": "Peak inductor current at the end of the on-interval.",
           "text_ko": "온 구간 끝의 인덕터 피크 전류.",
+          "text_zh": "导通区间结束时的电感峰值电流。",
           "latex": "i_\\mathrm{pk} = \\frac{D T_s \\left(V_g - M V_g\\right)}{L}",
           "result_for": null
         },
         {
           "text": "Charge balance: the average inductor current (a triangle of height $i_\\mathrm{pk}$ and base $(D + D_2)T_s$) equals the load current $V/R$.",
           "text_ko": "전하 평형: 평균 인덕터 전류(높이 $i_\\mathrm{pk}$, 밑변 $(D + D_2)T_s$인 삼각형)가 부하 전류 $V/R$과 같습니다.",
+          "text_zh": "电荷平衡：电感平均电流（高为 $i_\\mathrm{pk}$、底为 $(D + D_2)T_s$ 的三角形）等于负载电流 $V/R$。",
           "latex": "\\frac{T_s D^{2} \\left(V_g - M V_g\\right)}{2 L M} = \\frac{M V_g}{R}",
           "result_for": null
         },
         {
           "text": "Substitute $L = K R T_s/2$ and take the positive root of the quadratic in $M$.",
           "text_ko": "$L = K R T_s/2$를 대입하고 $M$에 대한 2차식의 양의 근을 택합니다.",
+          "text_zh": "代入 $L = K R T_s/2$，取关于 $M$ 的二次方程的正根。",
           "latex": "M = \\frac{D \\left(- D + \\sqrt{4 K + D^{2}}\\right)}{2 K} = \\frac{2}{1 + \\sqrt{1 + \\frac{4 K}{D^{2}}}}",
           "result_for": "buck.dcm.M"
         },
         {
           "text": "Boost DCM, volt-second balance: $V_g$ for $D T_s$, $V_g - V$ for $D_2 T_s$.",
           "text_ko": "부스트 DCM 전압-초 평형: $D T_s$ 동안 $V_g$, $D_2 T_s$ 동안 $V_g - V$.",
+          "text_zh": "DCM 升压变换器，伏秒平衡：$V_g$ 持续 $D T_s$，$V_g - V$ 持续 $D_2 T_s$。",
           "latex": "D V_g + D_2 \\left(V_g - M V_g\\right) = 0",
           "result_for": null
         },
         {
           "text": "Solve for $D_2$.",
           "text_ko": "$D_2$를 구합니다.",
+          "text_zh": "解出 $D_2$。",
           "latex": "D_2 = \\frac{D}{-1 + M}",
           "result_for": null
         },
         {
           "text": "Charge balance at the output: the average diode current (a triangle of height $i_\\mathrm{pk}$ over $D_2 T_s$) equals the load current.",
           "text_ko": "출력의 전하 평형: 평균 다이오드 전류($D_2 T_s$ 동안 높이 $i_\\mathrm{pk}$인 삼각형)가 부하 전류와 같습니다.",
+          "text_zh": "输出端的电荷平衡：二极管平均电流（高为 $i_\\mathrm{pk}$、底为 $D_2 T_s$ 的三角形）等于负载电流。",
           "latex": "\\frac{T_s V_g D^{2}}{2 L \\left(-1 + M\\right)} = \\frac{M V_g}{R}",
           "result_for": null
         },
         {
           "text": "Substitute $L = K R T_s/2$ and keep the root with $M > 1$.",
           "text_ko": "$L = K R T_s/2$를 대입하고 $M > 1$인 근을 택합니다.",
+          "text_zh": "代入 $L = K R T_s/2$，保留 $M > 1$ 的根。",
           "latex": "M = \\frac{1}{2} + \\frac{\\sqrt{K + 4 D^{2}}}{2 \\sqrt{K}} = \\frac{1 + \\sqrt{1 + \\frac{4 D^{2}}{K}}}{2}",
           "result_for": "boost.dcm.M"
         },
         {
           "text": "Buck-boost DCM, volt-second balance with the negative output $V = M V_g$: $V_g$ for $D T_s$, $V$ for $D_2 T_s$.",
           "text_ko": "벅-부스트 DCM, 음의 출력 $V = M V_g$로 쓴 전압-초 평형: $D T_s$ 동안 $V_g$, $D_2 T_s$ 동안 $V$.",
+          "text_zh": "DCM 升降压变换器，以负输出 $V = M V_g$ 表示的伏秒平衡：$V_g$ 持续 $D T_s$，$V$ 持续 $D_2 T_s$。",
           "latex": "D V_g + D_2 V_g M = 0",
           "result_for": null
         },
         {
           "text": "Solve for $D_2$.",
           "text_ko": "$D_2$를 구합니다.",
+          "text_zh": "解出 $D_2$。",
           "latex": "D_2 = - \\frac{D}{M}",
           "result_for": null
         },
         {
           "text": "Charge balance: the average diode current equals the load current $|V|/R$.",
           "text_ko": "전하 평형: 평균 다이오드 전류가 부하 전류 $|V|/R$과 같습니다.",
+          "text_zh": "电荷平衡：二极管平均电流等于负载电流 $|V|/R$。",
           "latex": "- \\frac{T_s V_g D^{2}}{2 L M} = - \\frac{V_g M}{R}",
           "result_for": null
         },
         {
           "text": "Substitute $L = K R T_s/2$ and solve ($M < 0$).",
           "text_ko": "$L = K R T_s/2$를 대입해 풉니다($M < 0$).",
+          "text_zh": "代入 $L = K R T_s/2$ 并求解（$M < 0$）。",
           "latex": "M = - \\frac{D}{\\sqrt{K}}",
           "result_for": "buckboost.dcm.M"
         }
@@ -613,8 +708,10 @@
       "source": "python/pe_core/derive/flyback.py",
       "title": "Flyback: DCM ratio, boundaries, stresses and the loss-free resistor",
       "title_ko": "플라이백: DCM 변환비, 경계, 스트레스, 무손실 저항",
+      "title_zh": "反激变换器：DCM 电压变换比、临界条件、应力与无损电阻",
       "intro": "The flyback stores energy in the magnetizing inductance $L_M$ while the switch is on and releases it to the output through the diode while the switch is off. With a 1:$n$ transformer ($n = N_s/N_p$) the secondary voltage reflects to the primary divided by $n$, and the secondary current is the primary-referred magnetizing current divided by $n$.",
       "intro_ko": "플라이백은 스위치 온 구간에 자화 인덕턴스 $L_M$에 에너지를 저장하고, 오프 구간에 다이오드를 통해 출력으로 내보냅니다. 1:$n$ 변압기($n = N_s/N_p$)에서 2차 측 전압은 $n$으로 나뉘어 1차 측에 반사되고, 2차 측 전류는 1차 측 환산 자화 전류를 $n$으로 나눈 값입니다.",
+      "intro_zh": "反激变换器在开关管导通期间将能量储存在励磁电感 $L_M$ 中，在开关管关断期间经二极管将其释放到输出。对于 1:$n$ 变压器（$n = N_s/N_p$），二次侧电压除以 $n$ 后反射到一次侧，二次侧电流等于折算到一次侧的励磁电流除以 $n$。",
       "results": [
         "flyback.dcm.M",
         "Kcrit.flyback",
@@ -633,132 +730,154 @@
         {
           "text": "On-interval: $V_g$ across $L_M$, so the magnetizing current rises from zero (DCM) to $i_\\mathrm{pk}$.",
           "text_ko": "온 구간: $L_M$ 양단에 $V_g$가 걸려 자화 전류가 0(DCM)에서 $i_\\mathrm{pk}$까지 증가합니다.",
+          "text_zh": "导通区间：$V_g$ 加在 $L_M$ 两端，因此励磁电流从零（DCM）上升到 $i_\\mathrm{pk}$。",
           "latex": "i_\\mathrm{pk} = \\frac{D T_s V_g}{L_M}",
           "result_for": null
         },
         {
           "text": "Volt-second balance on $L_M$: $V_g$ for $D T_s$, then the reflected output $-V/n$ for $D_2 T_s$.",
           "text_ko": "$L_M$의 전압-초 평형: $D T_s$ 동안 $V_g$, 이후 $D_2 T_s$ 동안 반사된 출력 $-V/n$.",
+          "text_zh": "$L_M$ 的伏秒平衡：$V_g$ 持续 $D T_s$，随后反射的输出电压 $-V/n$ 持续 $D_2 T_s$。",
           "latex": "D V_g - \\frac{D_2 V}{n} = 0",
           "result_for": null
         },
         {
           "text": "Solve for $D_2$.",
           "text_ko": "$D_2$를 구합니다.",
+          "text_zh": "解出 $D_2$。",
           "latex": "D_2 = \\frac{D V_g n}{V}",
           "result_for": null
         },
         {
           "text": "Charge balance: the secondary current starts at $i_\\mathrm{pk}/n$ and falls to zero over $D_2 T_s$; its average equals the load current $V/R$.",
           "text_ko": "전하 평형: 2차 측 전류는 $i_\\mathrm{pk}/n$에서 시작해 $D_2 T_s$ 동안 0으로 감소하며, 그 평균이 부하 전류 $V/R$과 같습니다.",
+          "text_zh": "电荷平衡：二次侧电流从 $i_\\mathrm{pk}/n$ 开始，在 $D_2 T_s$ 内降到零；其平均值等于负载电流 $V/R$。",
           "latex": "\\frac{T_s D^{2} V_g^{2}}{2 L_M V} = \\frac{V}{R}",
           "result_for": null
         },
         {
           "text": "Substitute $L_M = K R T_s/2$ and solve for $V/V_g$; $n$ cancels.",
           "text_ko": "$L_M = K R T_s/2$를 대입해 $V/V_g$를 구합니다. $n$은 소거됩니다.",
+          "text_zh": "代入 $L_M = K R T_s/2$，解出 $V/V_g$；$n$ 被消去。",
           "latex": "M = \\frac{D}{\\sqrt{K}}",
           "result_for": "flyback.dcm.M"
         },
         {
           "text": "The DCM demagnetizing interval, with the DCM output voltage substituted.",
           "text_ko": "DCM 출력 전압을 대입한 DCM 감자(demagnetizing) 구간.",
+          "text_zh": "代入 DCM 输出电压后的 DCM 去磁（demagnetizing）区间。",
           "latex": "D_2 = n \\sqrt{K}",
           "result_for": null
         },
         {
           "text": "The boundary is reached when the demagnetizing interval fills the rest of the period, $D + D_2 = 1$.",
           "text_ko": "감자 구간이 주기의 나머지를 모두 채울 때, 즉 $D + D_2 = 1$일 때 경계에 도달합니다.",
+          "text_zh": "当去磁区间占满周期的其余部分，即 $D + D_2 = 1$ 时，达到临界。",
           "latex": "K_\\mathrm{crit} = \\frac{\\left(-1 + D\\right)^{2}}{n^{2}} = \\frac{\\left(1 - D\\right)^{2}}{n^{2}}",
           "result_for": "Kcrit.flyback"
         },
         {
           "text": "Output held at $V$ (battery or regulated bus) and the diode dropping $V_D$: the reflected voltage is $-(V + V_D)/n$ during demagnetization.",
           "text_ko": "출력이 $V$로 고정되고(배터리 또는 정전압 버스) 다이오드 강하가 $V_D$이면, 감자 구간의 반사 전압은 $-(V + V_D)/n$입니다.",
+          "text_zh": "输出保持在 $V$（电池或稳压母线），二极管压降为 $V_D$：去磁期间反射电压为 $-(V + V_D)/n$。",
           "latex": "D V_g + \\frac{D_2 \\left(- V - V_D\\right)}{n} = 0",
           "result_for": null
         },
         {
           "text": "Setting $D + D_2 = 1$ gives the input voltage at which the converter enters CCM; above it CCM volt-second balance holds $V_g$ at this value.",
           "text_ko": "$D + D_2 = 1$로 두면 컨버터가 CCM에 들어가는 입력 전압을 얻습니다. 그 이상에서는 CCM 전압-초 평형이 $V_g$를 이 값에 묶어 둡니다.",
+          "text_zh": "令 $D + D_2 = 1$，得到变换器进入 CCM 时的输入电压；高于该电压时，CCM 伏秒平衡使 $V_g$ 保持在这一数值。",
           "latex": "V_{g,\\mathrm{crit}} = \\frac{V + V_D - D \\left(V + V_D\\right)}{D n} = \\frac{\\left(V + V_D\\right) \\left(1 - D\\right)}{n D}",
           "result_for": "flyback.V_crit"
         },
         {
           "text": "While the diode conducts, the primary winding carries the reflected $(V + V_D)/n$ on top of $V_g$, so the off-state switch voltage is their sum (the leakage spike comes on top of this).",
           "text_ko": "다이오드가 도통하는 동안 1차 권선의 반사 전압 $(V + V_D)/n$이 $V_g$에 더해지므로, 오프 상태의 스위치 전압은 그 합입니다(누설 스파이크는 이 위에 더해집니다).",
+          "text_zh": "二极管导通期间，一次绕组上的反射电压 $(V + V_D)/n$ 叠加在 $V_g$ 上，因此开关管关断时的电压为两者之和（漏感尖峰再叠加在此之上）。",
           "latex": "V_\\mathrm{DS} = V_g + \\frac{V + V_D}{n}",
           "result_for": "flyback.Vds_off"
         },
         {
           "text": "With the input pinned at $V_{g,\\mathrm{crit}}$ the off-state switch voltage simplifies.",
           "text_ko": "입력이 $V_{g,\\mathrm{crit}}$에 묶이면 오프 상태의 스위치 전압이 간단해집니다.",
+          "text_zh": "输入被固定在 $V_{g,\\mathrm{crit}}$ 时，开关管关断电压可以化简。",
           "latex": "V_\\mathrm{DS} = \\frac{V + V_D}{n D}",
           "result_for": "flyback.Vds_clamped"
         },
         {
           "text": "While the switch is on the secondary winding voltage $n V_g$ adds to the output voltage across the reverse-biased diode.",
           "text_ko": "스위치 온 구간에는 2차 권선 전압 $n V_g$가 출력 전압에 더해져 역바이어스된 다이오드에 걸립니다.",
+          "text_zh": "开关管导通期间，二次绕组电压 $n V_g$ 与输出电压叠加，共同加在反偏的二极管两端。",
           "latex": "V_R = V + n V_g",
           "result_for": "flyback.diode.VR"
         },
         {
           "text": "CCM charge balance: while the diode conducts, for $(1 - D) T_s$, the secondary carries $I_M/n$ (small ripple); its average equals the load current $V/R$.",
           "text_ko": "CCM 전하 평형: 다이오드가 도통하는 $(1 - D) T_s$ 동안 2차 측에는 $I_M/n$이 흐르며(소리플 근사), 그 평균이 부하 전류 $V/R$과 같습니다.",
+          "text_zh": "CCM 电荷平衡：二极管导通期间，即 $(1 - D) T_s$ 内，二次侧流过 $I_M/n$（小纹波）；其平均值等于负载电流 $V/R$。",
           "latex": "\\frac{I_M \\left(1 - D\\right)}{n} = \\frac{V}{R}",
           "result_for": null
         },
         {
           "text": "Solve for $I_M$.",
           "text_ko": "$I_M$에 대해 풉니다.",
+          "text_zh": "解出 $I_M$。",
           "latex": "I_M = - \\frac{V n}{R \\left(-1 + D\\right)} = \\frac{n V}{\\left(1 - D\\right) R}",
           "result_for": "flyback.IM"
         },
         {
           "text": "On-interval: $V_g$ across $L_M$ for $D T_s$, so the magnetizing current rises by twice the half-ripple $\\Delta i_M$.",
           "text_ko": "온 구간: $D T_s$ 동안 $L_M$ 양단에 $V_g$가 걸리므로 자화 전류는 리플 절반 $\\Delta i_M$의 두 배만큼 증가합니다.",
+          "text_zh": "导通区间：$V_g$ 加在 $L_M$ 两端，持续 $D T_s$，因此励磁电流的上升量为 $\\Delta i_M$（纹波峰峰值的一半）的两倍。",
           "latex": "2 \\Delta i_M = \\frac{D T_s V_g}{L_M}",
           "result_for": null
         },
         {
           "text": "Solve for $\\Delta i_M$.",
           "text_ko": "$\\Delta i_M$에 대해 풉니다.",
+          "text_zh": "解出 $\\Delta i_M$。",
           "latex": "\\Delta i_M = \\frac{V_g D T_s}{2 L_M}",
           "result_for": "flyback.ripple.iM"
         },
         {
           "text": "While the switch is on the diode is off, so the capacitor alone supplies the load current $V/R$ for $D T_s$ and its voltage falls by twice the half-ripple $\\Delta v$.",
           "text_ko": "스위치가 켜져 있는 동안 다이오드는 꺼져 있으므로 $D T_s$ 동안 커패시터만이 부하 전류 $V/R$을 공급하고, 그 전압은 리플 절반 $\\Delta v$의 두 배만큼 떨어집니다.",
+          "text_zh": "开关管导通期间二极管关断，因此负载电流 $V/R$ 完全由电容提供，持续 $D T_s$，电容电压的下降量为 $\\Delta v$（纹波峰峰值的一半）的两倍。",
           "latex": "2 \\Delta v = \\frac{D T_s V}{C R}",
           "result_for": null
         },
         {
           "text": "Solve for $\\Delta v$.",
           "text_ko": "$\\Delta v$에 대해 풉니다.",
+          "text_zh": "解出 $\\Delta v$。",
           "latex": "\\Delta v = \\frac{V D T_s}{2 R C}",
           "result_for": "flyback.ripple.v"
         },
         {
           "text": "The DCM peak magnetizing current, with $T_s = 1/f_s$.",
           "text_ko": "$T_s = 1/f_s$로 쓴 DCM 피크 자화 전류.",
+          "text_zh": "代入 $T_s = 1/f_s$ 后的 DCM 励磁电流峰值。",
           "latex": "I_\\mathrm{pk} = \\frac{V_g D}{L_M f_s}",
           "result_for": "flyback.Ipk.dcm"
         },
         {
           "text": "Energy stored in $L_M$ at the end of each on-interval (all of it is delivered every cycle in DCM).",
           "text_ko": "매 온 구간이 끝날 때 $L_M$에 저장된 에너지입니다(DCM에서는 매 주기 이 에너지가 모두 전달됩니다).",
+          "text_zh": "每个导通区间结束时 $L_M$ 中储存的能量（DCM 下每个周期全部传递出去）。",
           "latex": "E = \\frac{D^{2} T_s^{2} V_g^{2}}{2 L_M}",
           "result_for": null
         },
         {
           "text": "Power = energy per cycle × switching frequency; it depends on $V_g$, $D$, $L_M$, $f_s$ but not on the load.",
           "text_ko": "전력은 주기당 에너지 × 스위칭 주파수입니다. $V_g$, $D$, $L_M$, $f_s$로 정해지며 부하와는 무관합니다.",
+          "text_zh": "功率 = 每周期能量 × 开关频率；它取决于 $V_g$、$D$、$L_M$、$f_s$，而与负载无关。",
           "latex": "P = \\frac{V_g^{2} D^{2}}{2 L_M f_s}",
           "result_for": "dcm.P_in"
         },
         {
           "text": "Since $P = V_g^2/R_\\mathrm{in}$ the input behaves as a resistance that dissipates nothing (a loss-free resistor).",
           "text_ko": "$P = V_g^2/R_\\mathrm{in}$이므로 입력은 아무것도 소산하지 않는 저항(무손실 저항)처럼 동작합니다.",
+          "text_zh": "由于 $P = V_g^2/R_\\mathrm{in}$，输入端表现为一个不耗散任何功率的电阻（无损电阻）。",
           "latex": "R_\\mathrm{in} = \\frac{2 L_M f_s}{D^{2}}",
           "result_for": "lfr.R_in"
         }
@@ -769,8 +888,10 @@
       "source": "python/pe_core/derive/clamp.py",
       "title": "Flyback clamp: reflected voltage, clamp dissipation, output ceiling",
       "title_ko": "플라이백 클램프: 반사 전압, 클램프 손실, 출력 상한",
+      "title_zh": "反激变换器钳位电路：反射电压、钳位损耗、输出电压上限",
       "intro": "When the flyback's switch turns off, the magnetizing current passes to the secondary, but the current in the leakage inductance $L_\\mathrm{lk}$ has nowhere to go except a clamp across the primary. The clamp holds the primary at $V_\\mathrm{clamp}$ until that current has fallen to zero.",
       "intro_ko": "플라이백의 스위치가 꺼지면 자화 전류는 2차 측으로 넘어가지만, 누설 인덕턴스 $L_\\mathrm{lk}$의 전류는 1차 측에 연결된 클램프 외에는 흐를 곳이 없습니다. 클램프는 이 전류가 0으로 줄어들 때까지 1차 측을 $V_\\mathrm{clamp}$에 묶어 둡니다.",
+      "intro_zh": "反激变换器的开关管关断时，励磁电流转移到二次侧，但漏感 $L_\\mathrm{lk}$ 中的电流除了跨接在一次绕组两端的钳位电路外无处可去。钳位电路将一次绕组电压钳在 $V_\\mathrm{clamp}$，直到该电流降到零。",
       "results": [
         "flyback.V_OR",
         "clamp.Vds",
@@ -783,66 +904,77 @@
         {
           "text": "While the output diode conducts, the secondary winding carries the output voltage plus the diode drop.",
           "text_ko": "출력 다이오드가 도통하는 동안 2차 권선에는 출력 전압과 다이오드 전압 강하의 합이 걸립니다.",
+          "text_zh": "输出二极管导通期间，二次绕组上的电压为输出电压加二极管压降。",
           "latex": "v_s = V + V_D",
           "result_for": null
         },
         {
           "text": "An ideal 1:$n$ transformer divides a secondary voltage by $n$ on the primary.",
           "text_ko": "이상적인 1:$n$ 변압기에서 2차 측 전압은 1차 측에서 $n$으로 나뉩니다.",
+          "text_zh": "理想 1:$n$ 变压器将二次侧电压除以 $n$ 折算到一次侧。",
           "latex": "V_\\mathrm{OR} = \\frac{V + V_D}{n}",
           "result_for": "flyback.V_OR"
         },
         {
           "text": "The switch lies between the input and the primary winding, which the clamp holds at $V_\\mathrm{clamp}$ while it conducts.",
           "text_ko": "스위치는 입력과 1차 권선 사이에 있으며, 클램프가 도통하는 동안 1차 권선은 $V_\\mathrm{clamp}$에 묶입니다.",
+          "text_zh": "开关管位于输入与一次绕组之间，钳位电路导通期间将一次绕组电压钳在 $V_\\mathrm{clamp}$。",
           "latex": "V_\\mathrm{DS} = V_g + V_\\mathrm{clamp}",
           "result_for": "clamp.Vds"
         },
         {
           "text": "The magnetizing inductance holds $V_\\mathrm{OR}$ while the output diode conducts, so the leakage inductance sees $V_\\mathrm{clamp} - V_\\mathrm{OR}$ and its current falls linearly from $I_\\mathrm{pk}$.",
           "text_ko": "출력 다이오드가 도통하는 동안 자화 인덕턴스 양단은 $V_\\mathrm{OR}$이므로, 누설 인덕턴스에는 $V_\\mathrm{clamp} - V_\\mathrm{OR}$가 걸려 전류가 $I_\\mathrm{pk}$에서 선형으로 감소합니다.",
+          "text_zh": "输出二极管导通期间励磁电感两端电压保持为 $V_\\mathrm{OR}$，因此漏感两端电压为 $V_\\mathrm{clamp} - V_\\mathrm{OR}$，其电流从 $I_\\mathrm{pk}$ 线性下降。",
           "latex": "i_\\mathrm{lk} = I_\\mathrm{pk} - \\frac{t \\left(V_\\mathrm{clamp} - V_\\mathrm{OR}\\right)}{L_\\mathrm{lk}}",
           "result_for": null
         },
         {
           "text": "It reaches zero after this time, which must fit in the off-time.",
           "text_ko": "전류는 이 시간 뒤에 0이 되며, 이 시간은 오프 시간 안에 들어가야 합니다.",
+          "text_zh": "电流经过这段时间降到零，这段时间不能超过关断时间。",
           "latex": "t_r = \\frac{L_\\mathrm{lk} I_\\mathrm{pk}}{V_\\mathrm{clamp} - V_\\mathrm{OR}}",
           "result_for": "clamp.t_reset"
         },
         {
           "text": "The clamp absorbs its voltage times this falling current: more than the leakage energy $\\tfrac12 L_\\mathrm{lk} I_\\mathrm{pk}^2$, because the reflected voltage keeps driving the current meanwhile.",
           "text_ko": "클램프는 클램프 전압과 감소하는 이 전류의 곱을 흡수합니다. 그동안 반사 전압이 전류를 계속 밀어 주므로 흡수하는 에너지는 누설 에너지 $\\tfrac12 L_\\mathrm{lk} I_\\mathrm{pk}^2$보다 많습니다.",
+          "text_zh": "钳位电路吸收其电压与这一下降电流之积对应的能量：大于漏感能量 $\\tfrac12 L_\\mathrm{lk} I_\\mathrm{pk}^2$，因为在此期间反射电压仍在推动电流。",
           "latex": "E_\\mathrm{clamp} = \\frac{L_\\mathrm{lk} V_\\mathrm{clamp} I_\\mathrm{pk}^{2}}{2 \\left(V_\\mathrm{clamp} - V_\\mathrm{OR}\\right)}",
           "result_for": null
         },
         {
           "text": "Once per switching period.",
           "text_ko": "스위칭 주기마다 한 번씩.",
+          "text_zh": "每个开关周期一次。",
           "latex": "P_\\mathrm{clamp} = \\frac{L_\\mathrm{lk} V_\\mathrm{clamp} f_s I_\\mathrm{pk}^{2}}{2 \\left(V_\\mathrm{clamp} - V_\\mathrm{OR}\\right)} = \\frac{L_\\mathrm{lk} I_\\mathrm{pk}^{2} f_s V_\\mathrm{clamp}}{2 \\left(V_\\mathrm{clamp} - V_\\mathrm{OR}\\right)}",
           "result_for": "clamp.P"
         },
         {
           "text": "In an RCD clamp the capacitor holds $V_\\mathrm{clamp}$ and the resistor dissipates the clamp power.",
           "text_ko": "RCD 클램프에서는 커패시터가 $V_\\mathrm{clamp}$를 유지하고 저항이 클램프 전력을 소산합니다.",
+          "text_zh": "在 RCD 钳位电路中，电容保持 $V_\\mathrm{clamp}$，电阻消耗钳位功率。",
           "latex": "\\frac{V_\\mathrm{clamp}^{2}}{R_\\mathrm{clamp}} = \\frac{L_\\mathrm{lk} V_\\mathrm{clamp} f_s I_\\mathrm{pk}^{2}}{2 \\left(V_\\mathrm{clamp} - V_\\mathrm{OR}\\right)}",
           "result_for": null
         },
         {
           "text": "The root above $V_\\mathrm{OR}$.",
           "text_ko": "$V_\\mathrm{OR}$보다 큰 근.",
+          "text_zh": "大于 $V_\\mathrm{OR}$ 的根。",
           "latex": "V_\\mathrm{clamp} = \\frac{V_\\mathrm{OR} + \\sqrt{V_\\mathrm{OR}^{2} + 2 R_\\mathrm{clamp} L_\\mathrm{lk} I_\\mathrm{pk}^{2} f_s}}{2}",
           "result_for": "clamp.rcd.V"
         },
         {
           "text": "With the load removed and no regulation, the output keeps charging and its reflected voltage rises until it reaches the clamp voltage; from then on the clamp takes all of the input power. This holds for a clamp whose voltage does not depend on that power (a TVS); an RCD clamp's voltage rises with it.",
           "text_ko": "부하를 제거하고 레귤레이션이 없으면 출력은 계속 충전되고, 반사 전압은 클램프 전압에 도달할 때까지 오릅니다. 그 뒤에는 클램프가 입력 전력을 모두 가져갑니다. 이는 전압이 그 전력에 따라 변하지 않는 클램프(TVS)에 해당하며, RCD 클램프의 전압은 그 전력에 따라 올라갑니다.",
+          "text_zh": "负载断开且无稳压控制时，输出持续充电，其反射电压不断升高，直至达到钳位电压；此后钳位电路吸收全部输入功率。这适用于电压与该功率无关的钳位器件（TVS）；RCD 钳位电路的电压随该功率升高。",
           "latex": "\\frac{V_D + V_\\mathrm{o,max}}{n} = V_\\mathrm{clamp}",
           "result_for": null
         },
         {
           "text": "Solve for the output voltage.",
           "text_ko": "출력 전압에 대해 풉니다.",
+          "text_zh": "解出输出电压。",
           "latex": "V_\\mathrm{o,max} = n V_\\mathrm{clamp} - V_D",
           "result_for": "flyback.V_ceiling"
         }
@@ -853,8 +985,10 @@
       "source": "python/pe_core/derive/snubbers.py",
       "title": "Snubbers: parasitics from the ringing, damping resistance and loss",
       "title_ko": "스너버: 링잉에서 구한 기생 성분, 감쇠 저항, 손실",
+      "title_zh": "缓冲电路：由振铃求寄生参数、阻尼电阻与损耗",
       "intro": "A switching edge makes a node's parasitic inductance and capacitance ring. Their values, which cannot be read from the layout, follow from the ringing frequency measured twice: as built, and with a known capacitor added.",
       "intro_ko": "스위칭 에지는 노드의 기생 인덕턴스와 커패시턴스를 링잉시킵니다. 레이아웃에서 읽을 수 없는 이 값들은 링잉 주파수를 두 번, 즉 원래 회로에서 한 번, 값을 아는 커패시터를 추가해서 한 번 재면 구할 수 있습니다.",
+      "intro_zh": "开关边沿使节点的寄生电感和寄生电容产生振铃。它们的数值无法从布局中读出，但可由两次测得的振铃频率求出：一次在原电路上测量，一次在并入一个已知电容后测量。",
       "results": [
         "snub.C_par",
         "snub.L_par",
@@ -866,84 +1000,98 @@
         {
           "text": "As built, the node rings at the resonance of its inductance and capacitance:",
           "text_ko": "원래 회로에서 노드는 인덕턴스와 커패시턴스의 공진 주파수로 링잉합니다.",
+          "text_zh": "原电路中，节点以其电感与电容的谐振频率振铃：",
           "latex": "f_{r0} = \\frac{1}{2 \\pi \\sqrt{C_\\mathrm{par}} \\sqrt{L_\\mathrm{par}}}",
           "result_for": null
         },
         {
           "text": "A known capacitor across the node adds to the capacitance but leaves the inductance as it is:",
           "text_ko": "노드에 값을 아는 커패시터를 달면 커패시턴스는 그만큼 늘고 인덕턴스는 그대로입니다.",
+          "text_zh": "在节点上并联一个已知电容，电容随之增大，而电感不变：",
           "latex": "f_{r1} = \\frac{1}{2 \\pi \\sqrt{L_\\mathrm{par}} \\sqrt{C_\\mathrm{add} + C_\\mathrm{par}}}",
           "result_for": null
         },
         {
           "text": "The inductance cancels from the ratio of the two frequencies, $x = f_{r0}/f_{r1}$:",
           "text_ko": "두 주파수의 비 $x = f_{r0}/f_{r1}$에서 인덕턴스가 소거됩니다.",
+          "text_zh": "在两频率之比 $x = f_{r0}/f_{r1}$ 中，电感被消去：",
           "latex": "x^{2} = \\frac{C_\\mathrm{add} + C_\\mathrm{par}}{C_\\mathrm{par}}",
           "result_for": null
         },
         {
           "text": "Solved for the node's capacitance:",
           "text_ko": "노드의 커패시턴스에 대해 풀면:",
+          "text_zh": "解出节点电容：",
           "latex": "C_\\mathrm{par} = \\frac{C_\\mathrm{add} f_{r1}^{2}}{f_{r0}^{2} - f_{r1}^{2}} = \\frac{C_\\mathrm{add}}{\\left(\\frac{f_{r0}}{f_{r1}}\\right)^{2} - 1}",
           "result_for": "snub.C_par"
         },
         {
           "text": "and the first resonance then gives the inductance:",
           "text_ko": "그러면 첫 번째 공진에서 인덕턴스가 나옵니다.",
+          "text_zh": "再由第一个谐振频率得到电感：",
           "latex": "L_\\mathrm{par} = \\frac{1}{4 \\pi^{2} f_{r0}^{2} C_\\mathrm{par}}",
           "result_for": "snub.L_par"
         },
         {
           "text": "AN11160 takes the damping factor of the parasitic inductance, the snubber resistor and the snubber capacitor in series, leaving the node's own capacitance out. That loop's natural frequencies solve",
           "text_ko": "AN11160은 기생 인덕턴스, 스너버 저항, 스너버 커패시터를 직렬로 본 루프의 감쇠 계수를 쓰며, 노드 자체의 커패시턴스는 넣지 않습니다. 이 루프의 고유 주파수는 다음 식을 만족합니다.",
+          "text_zh": "AN11160 取寄生电感、缓冲电阻与缓冲电容串联回路的阻尼比，不计节点自身的电容。该回路的固有频率满足",
           "latex": "1 + s C_\\mathrm{snub} R_\\mathrm{snub} + C_\\mathrm{snub} L_\\mathrm{par} s^{2} = 0",
           "result_for": null
         },
         {
           "text": "Divided by $L_\\mathrm{par} C_\\mathrm{snub}$ and written as $s^2 + 2\\zeta\\omega_0 s + \\omega_0^2 = 0$, with $\\omega_0 = 1/\\sqrt{L_\\mathrm{par} C_\\mathrm{snub}}$, its damping factor is",
           "text_ko": "$L_\\mathrm{par} C_\\mathrm{snub}$로 나누어 $\\omega_0 = 1/\\sqrt{L_\\mathrm{par} C_\\mathrm{snub}}$인 $s^2 + 2\\zeta\\omega_0 s + \\omega_0^2 = 0$ 꼴로 쓰면, 감쇠 계수는 다음과 같습니다.",
+          "text_zh": "除以 $L_\\mathrm{par} C_\\mathrm{snub}$ 并写成 $s^2 + 2\\zeta\\omega_0 s + \\omega_0^2 = 0$ 的形式，其中 $\\omega_0 = 1/\\sqrt{L_\\mathrm{par} C_\\mathrm{snub}}$，其阻尼比为",
           "latex": "\\zeta = \\frac{R_\\mathrm{snub} \\sqrt{C_\\mathrm{snub}}}{2 \\sqrt{L_\\mathrm{par}}}",
           "result_for": null
         },
         {
           "text": "Solved for the resistance:",
           "text_ko": "저항에 대해 풀면:",
+          "text_zh": "解出电阻：",
           "latex": "R_\\mathrm{snub} = 2 \\zeta \\sqrt{\\frac{L_\\mathrm{par}}{C_\\mathrm{snub}}}",
           "result_for": "snub.R"
         },
         {
           "text": "At an edge the node steps by $V_\\mathrm{snub}$ and the snubber capacitor charges through the resistor, $i = (V_\\mathrm{snub}/R)\\,e^{-t/(R C_\\mathrm{snub})}$; the energy the resistor takes does not depend on $R$:",
           "text_ko": "에지에서 노드 전압이 $V_\\mathrm{snub}$만큼 바뀌면 스너버 커패시터가 저항을 통해 충전되며, 전류는 $i = (V_\\mathrm{snub}/R)\\,e^{-t/(R C_\\mathrm{snub})}$입니다. 저항이 가져가는 에너지는 $R$과 무관합니다.",
+          "text_zh": "在一个边沿，节点电压跳变 $V_\\mathrm{snub}$，缓冲电容经电阻充电，$i = (V_\\mathrm{snub}/R)\\,e^{-t/(R C_\\mathrm{snub})}$；电阻吸收的能量与 $R$ 无关：",
           "latex": "E_R = \\frac{C_\\mathrm{snub} V_\\mathrm{snub}^{2}}{2}",
           "result_for": null
         },
         {
           "text": "The next edge discharges the capacitor, through the resistor and the switch that turns on, and loses its stored energy, as much again, so each period loses",
           "text_ko": "다음 에지에서는 커패시터가 저항과 켜지는 스위치를 통해 방전하며 저장된 에너지, 즉 같은 양을 다시 잃습니다. 따라서 한 주기에 잃는 에너지는 다음과 같습니다.",
+          "text_zh": "下一个边沿，电容经电阻和正在开通的开关管放电，失去其储存的能量，即又损失同样多，因此每个周期损失",
           "latex": "2 E_R = C_\\mathrm{snub} V_\\mathrm{snub}^{2}",
           "result_for": null
         },
         {
           "text": "At $f_s$ periods per second:",
           "text_ko": "초당 $f_s$ 주기이므로:",
+          "text_zh": "每秒 $f_s$ 个周期：",
           "latex": "P = C_\\mathrm{snub} V_\\mathrm{snub}^{2} f_s",
           "result_for": "snub.P"
         },
         {
           "text": "AN11160 rates the resistor from the edge that charges the capacitor while the parasitic inductance carries a current $I_\\mathrm{ring}$. The source delivers the capacitor's charge $C_\\mathrm{snub} V_\\mathrm{snub}$ at $V_\\mathrm{snub}$:",
           "text_ko": "AN11160은 기생 인덕턴스에 전류 $I_\\mathrm{ring}$이 흐르는 동안 커패시터를 충전하는 에지로 저항의 정격을 정합니다. 전원은 커패시터의 전하 $C_\\mathrm{snub} V_\\mathrm{snub}$을 전압 $V_\\mathrm{snub}$에서 공급합니다.",
+          "text_zh": "AN11160 依据给电容充电、且寄生电感中流过电流 $I_\\mathrm{ring}$ 的那个边沿来确定电阻的额定功率。电源提供电容的电荷 $C_\\mathrm{snub} V_\\mathrm{snub}$，电压为 $V_\\mathrm{snub}$：",
           "latex": "E_s = C_\\mathrm{snub} V_\\mathrm{snub}^{2}",
           "result_for": null
         },
         {
           "text": "The capacitor keeps half of that energy and the inductance gives up all of its own, $L_\\mathrm{par} I_\\mathrm{ring}^2/2$; the resistor takes the rest, whatever its value:",
           "text_ko": "커패시터는 그 에너지의 절반을 저장하고 인덕턴스는 자신의 에너지 $L_\\mathrm{par} I_\\mathrm{ring}^2/2$를 모두 내놓습니다. 나머지는 저항값과 관계없이 저항이 가져갑니다.",
+          "text_zh": "电容保留其中一半能量，电感释放其全部储能 $L_\\mathrm{par} I_\\mathrm{ring}^2/2$；其余能量由电阻吸收，与其阻值无关：",
           "latex": "W_R = \\frac{C_\\mathrm{snub} V_\\mathrm{snub}^{2}}{2} + \\frac{L_\\mathrm{par} I_\\mathrm{ring}^{2}}{2}",
           "result_for": null
         },
         {
           "text": "Once per period:",
           "text_ko": "한 주기에 한 번이므로:",
+          "text_zh": "每个周期一次：",
           "latex": "P_{R,\\mathrm{snub}} = \\frac{f_s \\left(C_\\mathrm{snub} V_\\mathrm{snub}^{2} + L_\\mathrm{par} I_\\mathrm{ring}^{2}\\right)}{2}",
           "result_for": "snub.P_R"
         }
@@ -954,8 +1102,10 @@
       "source": "python/pe_core/derive/topologies.py",
       "title": "Topology details: dc currents, ripple, switch stress, utilization (CCM)",
       "title_ko": "토폴로지 세부: 직류 전류, 리플, 스위치 스트레스, 이용률(CCM)",
+      "title_zh": "拓扑细节：直流电流、纹波、开关应力、利用率（CCM）",
       "intro": "Charge balance on the output capacitor gives each converter's dc inductor current. During the on-interval the inductor sees a constant voltage, so its current changes linearly by twice the half-ripple $\\Delta i_L$; the capacitor's charge per period gives the voltage ripple $\\Delta v$ in the same way. The transistor utilization $U$ compares the load power with the product of the transistor's peak voltage and rms current.",
       "intro_ko": "출력 커패시터의 전하 평형으로 각 컨버터의 인덕터 직류 전류를 구합니다. 온 구간 동안 인덕터에는 일정한 전압이 걸리므로 전류는 리플 절반 $\\Delta i_L$의 두 배만큼 선형으로 변하며, 같은 방식으로 한 주기 동안 커패시터가 주고받는 전하에서 전압 리플 $\\Delta v$를 구합니다. 트랜지스터 이용률 $U$는 부하 전력을 트랜지스터의 피크 전압과 실효 전류의 곱과 비교한 값입니다.",
+      "intro_zh": "由输出电容的电荷平衡得到各变换器的电感直流电流。导通区间内电感电压恒定，因此电流线性变化，变化量为 $\\Delta i_L$（纹波峰峰值的一半）的两倍；同理，由电容每周期的电荷得到电压纹波 $\\Delta v$。开关管利用率 $U$ 将负载功率与开关管峰值电压和电流有效值之积相比较。",
       "results": [
         "buck.IL",
         "buck.ripple.v",
@@ -980,198 +1130,231 @@
         {
           "text": "Buck, charge balance: the capacitor current is $I_L - V/R$ in both intervals (small ripple).",
           "text_ko": "벅, 전하 평형: 커패시터 전류는 두 구간 모두에서 $I_L - V/R$입니다(소리플 근사).",
+          "text_zh": "降压变换器，电荷平衡：两个区间内电容电流均为 $I_L - V/R$（小纹波）。",
           "latex": "\\langle i_C \\rangle = I_L - \\frac{V}{R}",
           "result_for": null
         },
         {
           "text": "Set the average to zero.",
           "text_ko": "평균을 0으로 놓습니다.",
+          "text_zh": "令平均值为零。",
           "latex": "I_L = \\frac{V}{R}",
           "result_for": "buck.IL"
         },
         {
           "text": "Buck output ripple: the capacitor takes the triangular ac part of the inductor current. Its positive half lasts $T_s/2$ and peaks at $\\Delta i_L$, so it delivers the charge $q$.",
           "text_ko": "벅 출력 리플: 커패시터는 인덕터 전류의 삼각파 교류 성분을 받습니다. 그중 양의 부분은 $T_s/2$ 동안 이어지고 최댓값이 $\\Delta i_L$이므로 전하 $q$를 전달합니다.",
+          "text_zh": "降压变换器的输出纹波：电容流过电感电流中的三角波交流分量。其正半部分持续 $T_s/2$，峰值为 $\\Delta i_L$，因此输送电荷 $q$。",
           "latex": "q = \\frac{\\Delta i_L T_s}{4}",
           "result_for": null
         },
         {
           "text": "That charge raises the capacitor voltage from its minimum to its maximum, $2\\Delta v$.",
           "text_ko": "그 전하가 커패시터 전압을 최솟값에서 최댓값까지, 즉 $2\\Delta v$만큼 올립니다.",
+          "text_zh": "该电荷使电容电压从最小值升到最大值，即升高 $2\\Delta v$。",
           "latex": "2 C \\Delta v = \\frac{\\Delta i_L T_s}{4}",
           "result_for": null
         },
         {
           "text": "Solve for $\\Delta v$.",
           "text_ko": "$\\Delta v$에 대해 풉니다.",
+          "text_zh": "解出 $\\Delta v$。",
           "latex": "\\Delta v = \\frac{\\Delta i_L T_s}{8 C}",
           "result_for": "buck.ripple.v"
         },
         {
           "text": "Boost, charge balance: $-V/R$ while the switch is on, $I_L - V/R$ while the diode conducts.",
           "text_ko": "부스트, 전하 평형: 스위치 온 구간에 $-V/R$, 다이오드 도통 구간에 $I_L - V/R$.",
+          "text_zh": "升压变换器，电荷平衡：开关管导通期间为 $-V/R$，二极管导通期间为 $I_L - V/R$。",
           "latex": "\\left(1 - D\\right) \\left(I_L - \\frac{V}{R}\\right) - \\frac{D V}{R} = 0",
           "result_for": null
         },
         {
           "text": "Solve for $I_L$.",
           "text_ko": "$I_L$에 대해 풉니다.",
+          "text_zh": "解出 $I_L$。",
           "latex": "I_L = - \\frac{V}{R \\left(-1 + D\\right)} = \\frac{V}{\\left(1 - D\\right) R}",
           "result_for": "boost.IL"
         },
         {
           "text": "Boost current ripple: the inductor sees $V_g$ for $D T_s$, so its current rises by $V_g D T_s/L$, which is $2\\Delta i_L$.",
           "text_ko": "부스트 전류 리플: 인덕터에 $D T_s$ 동안 $V_g$가 걸리므로 전류는 $V_g D T_s/L$, 즉 $2\\Delta i_L$만큼 증가합니다.",
+          "text_zh": "升压变换器的电流纹波：电感电压为 $V_g$，持续 $D T_s$，因此电流上升 $V_g D T_s/L$，即 $2\\Delta i_L$。",
           "latex": "2 \\Delta i_L = \\frac{D T_s V_g}{L}",
           "result_for": null
         },
         {
           "text": "Solve for $\\Delta i_L$.",
           "text_ko": "$\\Delta i_L$에 대해 풉니다.",
+          "text_zh": "解出 $\\Delta i_L$。",
           "latex": "\\Delta i_L = \\frac{V_g D T_s}{2 L}",
           "result_for": "boost.ripple.iL"
         },
         {
           "text": "Boost voltage ripple: while the switch is on, the capacitor alone feeds the load current $V/R$ for $D T_s$, so its voltage falls by $2\\Delta v$.",
           "text_ko": "부스트 전압 리플: 스위치가 켜져 있는 $D T_s$ 동안 커패시터만이 부하 전류 $V/R$을 공급하므로 전압이 $2\\Delta v$만큼 떨어집니다.",
+          "text_zh": "升压变换器的电压纹波：开关管导通期间，负载电流 $V/R$ 仅由电容提供，持续 $D T_s$，因此电容电压下降 $2\\Delta v$。",
           "latex": "2 \\Delta v = \\frac{D T_s V}{C R}",
           "result_for": null
         },
         {
           "text": "Solve for $\\Delta v$.",
           "text_ko": "$\\Delta v$에 대해 풉니다.",
+          "text_zh": "解出 $\\Delta v$。",
           "latex": "\\Delta v = \\frac{V D T_s}{2 R C}",
           "result_for": "boost.ripple.v"
         },
         {
           "text": "Buck-boost with the output magnitude $V$: the inductor sees $V_g$ while the switch is on and $-V$ while the diode conducts.",
           "text_ko": "출력 크기 $V$로 쓴 벅-부스트: 인덕터에는 스위치 온 구간에 $V_g$, 다이오드 도통 구간에 $-V$가 걸립니다.",
+          "text_zh": "以输出电压的大小 $V$ 表示的升降压变换器：开关管导通期间电感电压为 $V_g$，二极管导通期间为 $-V$。",
           "latex": "D V_g - V \\left(1 - D\\right) = 0",
           "result_for": null
         },
         {
           "text": "Solve for $V$.",
           "text_ko": "$V$에 대해 풉니다.",
+          "text_zh": "解出 $V$。",
           "latex": "V = - \\frac{D V_g}{-1 + D} = \\frac{D V_g}{1 - D}",
           "result_for": "buckboost.V"
         },
         {
           "text": "Charge balance is the boost's: the capacitor feeds the load while the switch is on and receives $I_L$ while the diode conducts.",
           "text_ko": "전하 평형은 부스트와 같습니다. 스위치 온 구간에는 커패시터가 부하에 전류를 공급하고, 다이오드 도통 구간에는 $I_L$을 받습니다.",
+          "text_zh": "电荷平衡与升压变换器相同：开关管导通期间电容向负载供电，二极管导通期间电容接收 $I_L$。",
           "latex": "I_L = - \\frac{V}{R \\left(-1 + D\\right)} = \\frac{V}{\\left(1 - D\\right) R}",
           "result_for": "buckboost.IL"
         },
         {
           "text": "The inductor sees $V_g$ during $D T_s$, as in the boost.",
           "text_ko": "부스트와 마찬가지로 인덕터에는 $D T_s$ 동안 $V_g$가 걸립니다.",
+          "text_zh": "与升压变换器相同，电感电压为 $V_g$，持续 $D T_s$。",
           "latex": "\\Delta i_L = \\frac{V_g D T_s}{2 L}",
           "result_for": "buckboost.ripple.iL"
         },
         {
           "text": "The capacitor alone feeds the load during $D T_s$, as in the boost.",
           "text_ko": "부스트와 마찬가지로 $D T_s$ 동안 커패시터만이 부하에 전류를 공급합니다.",
+          "text_zh": "与升压变换器相同，在 $D T_s$ 内仅由电容向负载供电。",
           "latex": "\\Delta v = \\frac{V D T_s}{2 R C}",
           "result_for": "buckboost.ripple.v"
         },
         {
           "text": "Buck: while the diode conducts, the switch node sits at ground (ideal diode); the switch between the input and that node blocks $V_g$.",
           "text_ko": "벅: 다이오드가 도통하는 동안 스위치 노드는 접지 전위에 있으므로(이상적 다이오드), 입력과 그 노드 사이의 스위치는 $V_g$를 차단합니다.",
+          "text_zh": "降压变换器：二极管导通期间，开关节点处于地电位（理想二极管）；位于输入与该节点之间的开关管阻断 $V_g$。",
           "latex": "V_\\mathrm{DS} = V_g",
           "result_for": "buck.Vds"
         },
         {
           "text": "Boost: while the diode conducts, the switch node is connected to the output; the switch from that node to ground blocks $V$.",
           "text_ko": "부스트: 다이오드가 도통하는 동안 스위치 노드는 출력에 연결되므로, 그 노드와 접지 사이의 스위치는 $V$를 차단합니다.",
+          "text_zh": "升压变换器：二极管导通期间，开关节点接到输出；该节点与地之间的开关管阻断 $V$。",
           "latex": "V_\\mathrm{DS} = V",
           "result_for": "boost.Vds"
         },
         {
           "text": "While the diode conducts, the switch's far end sits at the output, $-V$; the switch blocks $V_g - (-V)$.",
           "text_ko": "다이오드가 도통하는 동안 스위치의 반대쪽 단자는 출력 전위 $-V$에 있으므로, 스위치는 $V_g - (-V)$를 차단합니다.",
+          "text_zh": "二极管导通期间，开关管的另一端处于输出电位 $-V$；开关管阻断 $V_g - (-V)$。",
           "latex": "V_\\mathrm{DS} = V_g + V",
           "result_for": "buckboost.Vds"
         },
         {
           "text": "Forward, reset interval: the reset winding ($N_r$ turns) connects to $V_g$ with reversed polarity, so the primary ($N_p$ turns) sees $-V_g N_p/N_r$.",
           "text_ko": "포워드, 리셋 구간: 리셋 권선($N_r$턴)이 반대 극성으로 $V_g$에 연결되므로 1차 권선($N_p$턴)에는 $-V_g N_p/N_r$이 걸립니다.",
+          "text_zh": "正激变换器，复位区间：复位绕组（$N_r$ 匝）以相反极性接到 $V_g$，因此一次绕组（$N_p$ 匝）上的电压为 $-V_g N_p/N_r$。",
           "latex": "v_\\mathrm{pri} = - \\frac{V_g}{n_r}",
           "result_for": null
         },
         {
           "text": "The switch blocks the input voltage minus the primary voltage.",
           "text_ko": "스위치는 입력 전압에서 1차 전압을 뺀 값을 차단합니다.",
+          "text_zh": "开关管阻断输入电压与一次绕组电压之差。",
           "latex": "V_\\mathrm{DS} = \\frac{V_g \\left(1 + n_r\\right)}{n_r} = V_g \\left(1 + \\frac{1}{n_r}\\right)",
           "result_for": "forward.Vds"
         },
         {
           "text": "Forward output inductor: while the switch is on, the secondary applies $n V_g$, so the inductor sees $n V_g - V$ for $D T_s$.",
           "text_ko": "포워드 출력 인덕터: 스위치가 켜져 있는 동안 2차 권선이 $n V_g$를 인가하므로 인덕터에는 $D T_s$ 동안 $n V_g - V$가 걸립니다.",
+          "text_zh": "正激变换器的输出电感：开关管导通期间，二次侧施加 $n V_g$，因此电感电压为 $n V_g - V$，持续 $D T_s$。",
           "latex": "2 \\Delta i_L = \\frac{D T_s \\left(- V + V_g n\\right)}{L}",
           "result_for": null
         },
         {
           "text": "Solve for $\\Delta i_L$.",
           "text_ko": "$\\Delta i_L$에 대해 풉니다.",
+          "text_zh": "解出 $\\Delta i_L$。",
           "latex": "\\Delta i_L = \\frac{\\left(n V_g - V\\right) D T_s}{2 L}",
           "result_for": "forward.ripple.iL"
         },
         {
           "text": "Transistor utilization: the load power $P = V I$ over the transistor's peak voltage times its rms current. With small ripple the transistor current is a flat pulse of height $I_Q$ for $D T_s$, whose rms value is $I_Q \\sqrt{D}$.",
           "text_ko": "트랜지스터 이용률은 부하 전력 $P = V I$를 트랜지스터의 피크 전압과 실효 전류의 곱으로 나눈 값입니다. 소리플 근사에서 트랜지스터 전류는 $D T_s$ 동안 높이 $I_Q$인 평평한 펄스이며, 그 실효값은 $I_Q \\sqrt{D}$입니다.",
+          "text_zh": "开关管利用率：负载功率 $P = V I$ 除以开关管峰值电压与其电流有效值之积。小纹波下，开关管电流是高为 $I_Q$、持续 $D T_s$ 的平顶脉冲，其有效值为 $I_Q \\sqrt{D}$。",
           "latex": null,
           "result_for": null
         },
         {
           "text": "Buck: $V = D V_g$, the transistor blocks $V_g$ and carries the inductor current $I$.",
           "text_ko": "벅: $V = D V_g$이고, 트랜지스터는 $V_g$를 차단하며 인덕터 전류 $I$를 흘립니다.",
+          "text_zh": "降压变换器：$V = D V_g$，开关管阻断 $V_g$，流过电感电流 $I$。",
           "latex": "U = \\sqrt{D}",
           "result_for": null
         },
         {
           "text": "Simplify.",
           "text_ko": "정리합니다.",
+          "text_zh": "化简。",
           "latex": "U = \\sqrt{D}",
           "result_for": "util.buck"
         },
         {
           "text": "Boost: the transistor blocks $V$ and carries the inductor current $I/(1 - D)$.",
           "text_ko": "부스트: 트랜지스터는 $V$를 차단하고 인덕터 전류 $I/(1 - D)$를 흘립니다.",
+          "text_zh": "升压变换器：开关管阻断 $V$，流过电感电流 $I/(1 - D)$。",
           "latex": "U = \\frac{1 - D}{\\sqrt{D}}",
           "result_for": null
         },
         {
           "text": "Simplify.",
           "text_ko": "정리합니다.",
+          "text_zh": "化简。",
           "latex": "U = \\frac{1 - D}{\\sqrt{D}}",
           "result_for": "util.boost"
         },
         {
           "text": "Buck-boost: $V = D V_g/(1 - D)$, the transistor blocks $V_g + V$ and carries $I/(1 - D)$.",
           "text_ko": "벅-부스트: $V = D V_g/(1 - D)$이고, 트랜지스터는 $V_g + V$를 차단하며 $I/(1 - D)$를 흘립니다.",
+          "text_zh": "升降压变换器：$V = D V_g/(1 - D)$，开关管阻断 $V_g + V$，流过 $I/(1 - D)$。",
           "latex": "U = \\frac{V_g \\sqrt{D}}{V_g + \\frac{D V_g}{1 - D}}",
           "result_for": null
         },
         {
           "text": "Simplify.",
           "text_ko": "정리합니다.",
+          "text_zh": "化简。",
           "latex": "U = \\left(1 - D\\right) \\sqrt{D}",
           "result_for": "util.buckboost"
         },
         {
           "text": "Flyback: $V = n D V_g/(1 - D)$, the transistor blocks $V_g + V/n$ and carries the primary-referred magnetizing current $n I/(1 - D)$; the turns ratio cancels and the result equals the buck-boost's.",
           "text_ko": "플라이백: $V = n D V_g/(1 - D)$이고, 트랜지스터는 $V_g + V/n$을 차단하며 1차 측 환산 자화 전류 $n I/(1 - D)$를 흘립니다. 권선비가 상쇄되어 벅-부스트와 같은 결과가 됩니다.",
+          "text_zh": "反激变换器：$V = n D V_g/(1 - D)$，开关管阻断 $V_g + V/n$，流过折算到一次侧的励磁电流 $n I/(1 - D)$；匝比消去，结果与升降压变换器相同。",
           "latex": "U = \\sqrt{D} \\left(1 - D\\right)",
           "result_for": null
         },
         {
           "text": "Forward: $V = n D V_g$, the transistor blocks $V_g(1 + 1/n_r)$ and carries the reflected inductor current $n I$ (magnetizing current neglected).",
           "text_ko": "포워드: $V = n D V_g$이고, 트랜지스터는 $V_g(1 + 1/n_r)$를 차단하며 반사된 인덕터 전류 $n I$를 흘립니다(자화 전류 무시).",
+          "text_zh": "正激变换器：$V = n D V_g$，开关管阻断 $V_g(1 + 1/n_r)$，流过反射的电感电流 $n I$（忽略励磁电流）。",
           "latex": "U = \\frac{\\sqrt{D}}{1 + \\frac{1}{n_r}}",
           "result_for": null
         },
         {
           "text": "Simplify.",
           "text_ko": "정리합니다.",
+          "text_zh": "化简。",
           "latex": "U = \\frac{n_r \\sqrt{D}}{1 + n_r} = \\frac{\\sqrt{D}}{1 + \\frac{1}{n_r}}",
           "result_for": "util.forward"
         }
@@ -1182,8 +1365,10 @@
       "source": "python/pe_core/derive/small_signal.py",
       "title": "Small-signal control-to-output transfer functions (CCM)",
       "title_ko": "소신호 제어-출력 전달함수(CCM)",
+      "title_zh": "小信号控制-输出传递函数（CCM）",
       "intro": "Averaging removes the switching ripple; perturbing the averaged equations around the operating point ($d = D + \\hat d$, $v = V + \\hat v$, $i = I + \\hat i$) and dropping second-order products gives linear equations whose Laplace transform yields $\\hat v/\\hat d$. Each converter below ends in the standard second-order form with gain $G_{d0}$, poles at $\\omega_0$ with quality factor $Q$, and, for the boost and buck-boost, a zero $\\omega_z$ in the right half-plane.",
       "intro_ko": "평균화로 스위칭 리플을 없앤 뒤, 평균 방정식을 동작점 주변에서 섭동($d = D + \\hat d$, $v = V + \\hat v$, $i = I + \\hat i$)하고 2차 항을 버리면 선형 방정식이 되며, 이를 라플라스 변환하면 $\\hat v/\\hat d$를 얻습니다. 아래 각 컨버터는 이득 $G_{d0}$, 품질계수 $Q$인 $\\omega_0$의 극점, 그리고 부스트와 벅-부스트의 경우 우반평면 영점 $\\omega_z$를 갖는 표준 2차 형태로 정리됩니다.",
+      "intro_zh": "取平均消除了开关纹波；在工作点附近对平均方程施加扰动（$d = D + \\hat d$，$v = V + \\hat v$，$i = I + \\hat i$）并略去二阶乘积项，得到线性方程，对其作拉普拉斯变换即得 $\\hat v/\\hat d$。下面各变换器最终都化为标准二阶形式：增益为 $G_{d0}$，极点位于 $\\omega_0$、品质因数为 $Q$，升压和升降压变换器还有一个位于右半平面的零点 $\\omega_z$。",
       "results": [
         "buck.ss.Gd0",
         "buck.ss.w0",
@@ -1201,114 +1386,133 @@
         {
           "text": "Buck, linearised averaged equations ($\\hat v_g = 0$): the inductor sees $d\\,v_g - v$, the capacitor carries $i - v/R$.",
           "text_ko": "벅의 선형화된 평균 방정식($\\hat v_g = 0$): 인덕터에는 $d\\,v_g - v$가 걸리고 커패시터에는 $i - v/R$이 흐릅니다.",
+          "text_zh": "降压变换器，线性化平均方程（$\\hat v_g = 0$）：电感电压为 $d\\,v_g - v$，电容电流为 $i - v/R$。",
           "latex": "\\left( \\hat i s L = - \\hat v + \\hat d V_g, \\  s \\hat v C = \\hat i - \\frac{\\hat v}{R}\\right)",
           "result_for": null
         },
         {
           "text": "Solve for $\\hat v/\\hat d$.",
           "text_ko": "$\\hat v/\\hat d$를 구합니다.",
+          "text_zh": "解出 $\\hat v/\\hat d$。",
           "latex": "G_{vd}(s) = \\frac{R V_g}{R + s L + C L R s^{2}}",
           "result_for": null
         },
         {
           "text": "DC gain: the value at $s = 0$.",
           "text_ko": "직류 이득: $s = 0$에서의 값.",
+          "text_zh": "直流增益：$s = 0$ 处的值。",
           "latex": "G_{d0} = V_g",
           "result_for": "buck.ss.Gd0"
         },
         {
           "text": "Poles: $\\omega_0 = 1/\\sqrt{a_2}$ from the $s^2$ coefficient $a_2$.",
           "text_ko": "극점: $s^2$ 계수 $a_2$로부터 $\\omega_0 = 1/\\sqrt{a_2}$.",
+          "text_zh": "极点：$\\omega_0 = 1/\\sqrt{a_2}$，由 $s^2$ 项的系数 $a_2$ 得到。",
           "latex": "\\omega_0 = \\frac{1}{\\sqrt{L C}}",
           "result_for": "buck.ss.w0"
         },
         {
           "text": "$Q = \\sqrt{a_2}/a_1$ from the $s$ coefficient $a_1$.",
           "text_ko": "$s$ 계수 $a_1$로부터 $Q = \\sqrt{a_2}/a_1$.",
+          "text_zh": "$Q = \\sqrt{a_2}/a_1$，由 $s$ 项的系数 $a_1$ 得到。",
           "latex": "Q = R \\sqrt{\\frac{C}{L}}",
           "result_for": "buck.ss.Q"
         },
         {
           "text": "Boost: the averaged inductor voltage is $v_g - d' v$ and the capacitor current $d' i - v/R$ ($d' = 1 - d$). Perturbing $d' = D' - \\hat d$ and linearising:",
           "text_ko": "부스트: 평균 인덕터 전압은 $v_g - d' v$, 커패시터 전류는 $d' i - v/R$입니다($d' = 1 - d$). $d' = D' - \\hat d$로 섭동하고 선형화하면:",
+          "text_zh": "升压变换器：平均电感电压为 $v_g - d' v$，电容电流为 $d' i - v/R$（$d' = 1 - d$）。按 $d' = D' - \\hat d$ 施加扰动并线性化：",
           "latex": "\\left( \\hat i s L = \\hat d V - \\hat v D', \\  s \\hat v C = \\hat i D' - \\hat d I - \\frac{\\hat v}{R}\\right)",
           "result_for": null
         },
         {
           "text": "Operating point from the steady state, writing $D' = 1 - D$: $V = V_g/D'$, $I = V/(D' R)$.",
           "text_ko": "$D' = 1 - D$로 쓴 정상상태 동작점: $V = V_g/D'$, $I = V/(D' R)$.",
+          "text_zh": "由稳态得到工作点，记 $D' = 1 - D$：$V = V_g/D'$，$I = V/(D' R)$。",
           "latex": "\\left( V = \\frac{V_g}{D'}, \\  I = \\frac{V_g}{D'^{2} R}\\right)",
           "result_for": null
         },
         {
           "text": "Solve for $\\hat v/\\hat d$.",
           "text_ko": "$\\hat v/\\hat d$를 구합니다.",
+          "text_zh": "解出 $\\hat v/\\hat d$。",
           "latex": "G_{vd}(s) = \\frac{V_g \\left(- s L + R D'^{2}\\right)}{D'^{2} \\left(s L + R D'^{2} + C L R s^{2}\\right)}",
           "result_for": null
         },
         {
           "text": "DC gain (results are written back with $D' = 1 - D$).",
           "text_ko": "직류 이득(결과는 $D' = 1 - D$를 대입한 형태로 나타냄).",
+          "text_zh": "直流增益（结果中已代回 $D' = 1 - D$）。",
           "latex": "G_{d0} = \\frac{V_g}{\\left(1 - D\\right)^{2}}",
           "result_for": "boost.ss.Gd0"
         },
         {
           "text": "Pole frequency.",
           "text_ko": "극점 주파수.",
+          "text_zh": "极点频率。",
           "latex": "\\omega_0 = \\frac{1 - D}{\\sqrt{L C}}",
           "result_for": "boost.ss.w0"
         },
         {
           "text": "Quality factor.",
           "text_ko": "품질계수.",
+          "text_zh": "品质因数。",
           "latex": "Q = \\left(1 - D\\right) R \\sqrt{\\frac{C}{L}}",
           "result_for": "boost.ss.Q"
         },
         {
           "text": "The numerator vanishes at a positive real $s$: a right-half-plane zero.",
           "text_ko": "분자가 양의 실수 $s$에서 0이 되므로 우반평면 영점입니다.",
+          "text_zh": "分子在正实数 $s$ 处为零：右半平面零点。",
           "latex": "\\omega_z = \\frac{\\left(1 - D\\right)^{2} R}{L}",
           "result_for": "boost.ss.wz"
         },
         {
           "text": "Buck-boost: averaged inductor voltage $d\\,v_g + d' v$ and capacitor current $-d' i - v/R$, with the output $v$ negative. Linearised:",
           "text_ko": "벅-부스트: 평균 인덕터 전압은 $d\\,v_g + d' v$, 커패시터 전류는 $-d' i - v/R$이며 출력 $v$는 음수입니다. 선형화하면:",
+          "text_zh": "升降压变换器：平均电感电压为 $d\\,v_g + d' v$，电容电流为 $-d' i - v/R$，输出 $v$ 为负。线性化：",
           "latex": "\\left( \\hat i s L = \\hat d \\left(V_g - V\\right) + \\hat v D', \\  s \\hat v C = \\hat d I - \\hat i D' - \\frac{\\hat v}{R}\\right)",
           "result_for": null
         },
         {
           "text": "Operating point, with $D' = 1 - D$: $V = -D V_g/D'$, $I = D V_g/(D'^2 R)$.",
           "text_ko": "$D' = 1 - D$로 쓴 동작점: $V = -D V_g/D'$, $I = D V_g/(D'^2 R)$.",
+          "text_zh": "工作点，记 $D' = 1 - D$：$V = -D V_g/D'$，$I = D V_g/(D'^2 R)$。",
           "latex": "\\left( V = \\frac{V_g \\left(-1 + D'\\right)}{D'}, \\  I = \\frac{V_g \\left(1 - D'\\right)}{D'^{2} R}\\right)",
           "result_for": null
         },
         {
           "text": "Solve for $\\hat v/\\hat d$.",
           "text_ko": "$\\hat v/\\hat d$를 구합니다.",
+          "text_zh": "解出 $\\hat v/\\hat d$。",
           "latex": "G_{vd}(s) = \\frac{V_g \\left(- s L \\left(-1 + D'\\right) - R D'^{2}\\right)}{D'^{2} \\left(s L + R D'^{2} + C L R s^{2}\\right)}",
           "result_for": null
         },
         {
           "text": "The dc gain is negative (inverting output); its magnitude is:",
           "text_ko": "직류 이득은 음수(반전 출력)이며, 그 크기는 다음과 같습니다.",
+          "text_zh": "直流增益为负（反相输出）；其大小为：",
           "latex": "G_{d0} = \\frac{V_g}{\\left(1 - D\\right)^{2}}",
           "result_for": "buckboost.ss.Gd0"
         },
         {
           "text": "Pole frequency.",
           "text_ko": "극점 주파수.",
+          "text_zh": "极点频率。",
           "latex": "\\omega_0 = \\frac{1 - D}{\\sqrt{L C}}",
           "result_for": "buckboost.ss.w0"
         },
         {
           "text": "Quality factor.",
           "text_ko": "품질계수.",
+          "text_zh": "品质因数。",
           "latex": "Q = \\left(1 - D\\right) R \\sqrt{\\frac{C}{L}}",
           "result_for": "buckboost.ss.Q"
         },
         {
           "text": "Right-half-plane zero.",
           "text_ko": "우반평면 영점.",
+          "text_zh": "右半平面零点。",
           "latex": "\\omega_z = \\frac{R \\left(-1 + D\\right)^{2}}{D L} = \\frac{\\left(1 - D\\right)^{2} R}{D L}",
           "result_for": "buckboost.ss.wz"
         }
@@ -1319,8 +1523,10 @@
       "source": "python/pe_core/derive/control.py",
       "title": "PWM modulator, loop gain and disturbance suppression",
       "title_ko": "PWM 변조기, 루프 이득, 외란 억제",
+      "title_zh": "PWM 调制器、环路增益与扰动抑制",
       "intro": "A voltage-mode controller compares a control voltage with a periodic ramp to set the duty ratio. Going once around the loop multiplies the gains of the compensator, the modulator, the power stage and the sensor; that product, the loop gain $T$, decides how strongly the loop rejects disturbances.",
       "intro_ko": "전압 모드 제어기는 제어 전압을 주기적인 램프와 비교해 듀티비를 정합니다. 루프를 한 바퀴 돌면 보상기, 변조기, 전력단, 센서의 이득이 곱해지며, 그 곱인 루프 이득 $T$가 외란을 얼마나 강하게 억제하는지 결정합니다.",
+      "intro_zh": "电压型控制器将控制电压与周期性锯齿波比较，以确定占空比。沿环路绕行一周，补偿器、调制器、功率级和传感器的增益相乘；这一乘积即环路增益 $T$，它决定环路抑制扰动的强弱。",
       "results": [
         "pwm.d",
         "loop.T",
@@ -1330,36 +1536,42 @@
         {
           "text": "The ramp rises from $0$ to $V_M$ in $T_s$; the switch turns off when it crosses $V_\\mathrm{ctrl}$.",
           "text_ko": "램프는 $T_s$ 동안 $0$에서 $V_M$까지 증가하며, $V_\\mathrm{ctrl}$을 넘는 순간 스위치가 꺼집니다.",
+          "text_zh": "锯齿波从 $0$ 上升到 $V_M$，历时 $T_s$；锯齿波越过 $V_\\mathrm{ctrl}$ 时开关管关断。",
           "latex": "\\frac{V_M t_\\mathrm{off}}{T_s} = V_\\mathrm{ctrl}",
           "result_for": null
         },
         {
           "text": "The on-time fraction is $D = t_\\mathrm{off}/T_s$.",
           "text_ko": "온 시간 비율은 $D = t_\\mathrm{off}/T_s$입니다.",
+          "text_zh": "导通时间占比为 $D = t_\\mathrm{off}/T_s$。",
           "latex": "D = \\frac{V_\\mathrm{ctrl}}{V_M}",
           "result_for": "pwm.d"
         },
         {
           "text": "Around the loop: the compensator output drives the modulator (gain $1/V_M$), the power stage turns $\\hat d$ into $\\hat v$ (gain $G_{vd}$), and the sensor feeds back $H \\hat v$.",
           "text_ko": "루프를 따라가면 보상기 출력이 변조기(이득 $1/V_M$)를 구동하고, 전력단이 $\\hat d$를 $\\hat v$로 바꾸며(이득 $G_{vd}$), 센서가 $H \\hat v$를 피드백합니다.",
+          "text_zh": "沿环路：补偿器输出驱动调制器（增益 $1/V_M$），功率级将 $\\hat d$ 转换为 $\\hat v$（增益 $G_{vd}$），传感器反馈 $H \\hat v$。",
           "latex": null,
           "result_for": null
         },
         {
           "text": "The loop gain is the product around the loop.",
           "text_ko": "루프 이득은 루프를 한 바퀴 도는 이득들의 곱입니다.",
+          "text_zh": "环路增益是沿环路各增益的乘积。",
           "latex": "T = \\frac{G_c G_{vd} H}{V_M}",
           "result_for": "loop.T"
         },
         {
           "text": "An output disturbance $\\hat v_\\mathrm{dist}$ adds to the controlled output; the controller acts on the error $\\hat v_\\mathrm{ref} - H\\hat v$.",
           "text_ko": "출력 외란 $\\hat v_\\mathrm{dist}$가 제어된 출력에 더해지고, 제어기는 오차 $\\hat v_\\mathrm{ref} - H\\hat v$에 따라 동작합니다.",
+          "text_zh": "输出扰动 $\\hat v_\\mathrm{dist}$ 叠加在受控输出上；控制器根据误差 $\\hat v_\\mathrm{ref} - H\\hat v$ 动作。",
           "latex": "\\hat v = \\hat v_\\mathrm{dist} + \\frac{G_c G_{vd} \\left(\\hat v_\\mathrm{ref} - \\hat v H\\right)}{V_M}",
           "result_for": null
         },
         {
           "text": "The disturbance reaching the output is divided by $1 + T$.",
           "text_ko": "출력에 도달하는 외란은 $1 + T$로 나뉩니다.",
+          "text_zh": "到达输出端的扰动被除以 $1 + T$。",
           "latex": "S = \\frac{1}{1 + T}",
           "result_for": "loop.suppression"
         }
@@ -1370,8 +1582,10 @@
       "source": "python/pe_core/derive/energy.py",
       "title": "Stored energy, losses and ringing",
       "title_ko": "저장 에너지, 손실, 링잉",
+      "title_zh": "储能、损耗与振铃",
       "intro": "Energy stored in an inductor or capacitor is the integral of the power $v i$ delivered to it. A loss that repeats every switching period is the energy lost per cycle times $f_s$; a conduction loss is the period average of the instantaneous power.",
       "intro_ko": "인덕터나 커패시터에 저장된 에너지는 공급된 전력 $v i$의 적분입니다. 스위칭 주기마다 반복되는 손실은 주기당 손실 에너지 × $f_s$이고, 도통 손실은 순시 전력의 주기 평균입니다.",
+      "intro_zh": "电感或电容储存的能量是送入它的功率 $v i$ 的积分。每个开关周期重复发生的损耗等于每周期损失的能量乘以 $f_s$；导通损耗是瞬时功率的周期平均值。",
       "results": [
         "flyback.leak.E",
         "flyback.leak.P",
@@ -1385,90 +1599,105 @@
         {
           "text": "Energy delivered to an inductance: $p = v i$ with $v = L\\,di/dt$, so $dE = L i\\,di$. Integrate from zero to the turn-off current.",
           "text_ko": "인덕턴스에 공급되는 에너지: $p = v i$이고 $v = L\\,di/dt$이므로 $dE = L i\\,di$입니다. 0에서 턴오프 전류까지 적분합니다.",
+          "text_zh": "送入电感的能量：$p = v i$，其中 $v = L\\,di/dt$，因此 $dE = L i\\,di$。从零积分到关断电流。",
           "latex": "E_\\mathrm{lk} = \\int\\limits_{0}^{I_\\mathrm{pk}} i L_\\mathrm{lk}\\, di",
           "result_for": null
         },
         {
           "text": "Evaluate the integral.",
           "text_ko": "적분을 계산합니다.",
+          "text_zh": "计算该积分。",
           "latex": "E_\\mathrm{lk} = \\frac{L_\\mathrm{lk} I_\\mathrm{pk}^{2}}{2}",
           "result_for": "flyback.leak.E"
         },
         {
           "text": "If this energy is removed (clamped or dissipated) every cycle, the average power is $E_\\mathrm{lk} f_s$.",
           "text_ko": "이 에너지를 매 주기 제거하면(클램프하거나 소산시키면) 평균 전력은 $E_\\mathrm{lk} f_s$입니다.",
+          "text_zh": "若每个周期都将这部分能量移除（被钳位或被耗散），平均功率为 $E_\\mathrm{lk} f_s$。",
           "latex": "P_\\mathrm{lk} = E_\\mathrm{lk} f_s",
           "result_for": "flyback.leak.P"
         },
         {
           "text": "Energy stored in the switch-node capacitance charged to $V_\\mathrm{sw}$: $dE = v\\,dq = C v\\,dv$.",
           "text_ko": "$V_\\mathrm{sw}$로 충전된 스위치 노드 커패시턴스의 저장 에너지: $dE = v\\,dq = C v\\,dv$.",
+          "text_zh": "充电到 $V_\\mathrm{sw}$ 的开关节点电容储存的能量：$dE = v\\,dq = C v\\,dv$。",
           "latex": "E_C = \\int\\limits_{0}^{V_\\mathrm{sw}} v C_\\mathrm{node}\\, dv",
           "result_for": null
         },
         {
           "text": "A hard turn-on discharges it through the switch channel every cycle: $P = E_C f_s$.",
           "text_ko": "하드 턴온은 매 주기 이 에너지를 스위치 채널로 방전시키므로 $P = E_C f_s$입니다.",
+          "text_zh": "硬开通每个周期都使其经开关管沟道放电：$P = E_C f_s$。",
           "latex": "P = \\frac{C_\\mathrm{node} V_\\mathrm{sw}^{2} f_s}{2}",
           "result_for": "loss.sw.cap"
         },
         {
           "text": "Conduction loss is the period average of the instantaneous power $i(t)^2 R_x$.",
           "text_ko": "도통 손실은 순시 전력 $i(t)^2 R_x$의 주기 평균입니다.",
+          "text_zh": "导通损耗是瞬时功率 $i(t)^2 R_x$ 的周期平均值。",
           "latex": "P = \\frac{\\int\\limits_{0}^{T_s} R_x i^{2}{\\left(t \\right)}\\, dt}{T_s}",
           "result_for": null
         },
         {
           "text": "By definition the rms current is the square root of the period average of $i(t)^2$.",
           "text_ko": "정의상 rms 전류는 $i(t)^2$의 주기 평균의 제곱근입니다.",
+          "text_zh": "按定义，电流有效值（rms）是 $i(t)^2$ 周期平均值的平方根。",
           "latex": "I_\\mathrm{rms}^{2} = \\frac{\\int\\limits_{0}^{T_s} i^{2}{\\left(t \\right)}\\, dt}{T_s}",
           "result_for": null
         },
         {
           "text": "$R_x$ is constant, so it moves out of the average.",
           "text_ko": "$R_x$는 상수이므로 평균 밖으로 나옵니다.",
+          "text_zh": "$R_x$ 为常数，因此可移到平均运算之外。",
           "latex": "P = I_\\mathrm{rms}^{2} R_x",
           "result_for": "loss.cond"
         },
         {
           "text": "A conducting diode is modelled as a forward-voltage intercept plus a dynamic resistance, $v_D = V_F + r_d i$, so $p = V_F i + r_d i^2$.",
           "text_ko": "도통 중인 다이오드는 순방향 전압 절편과 동저항으로 모델링합니다. $v_D = V_F + r_d i$이므로 $p = V_F i + r_d i^2$입니다.",
+          "text_zh": "导通的二极管建模为正向电压截距加动态电阻，$v_D = V_F + r_d i$，因此 $p = V_F i + r_d i^2$。",
           "latex": "P = \\frac{\\int\\limits_{0}^{T_s} \\left(V_F i{\\left(t \\right)} + r_d i^{2}{\\left(t \\right)}\\right)\\, dt}{T_s}",
           "result_for": null
         },
         {
           "text": "The average of $i$ is $I_\\mathrm{avg}$ and the average of $i^2$ is $I_\\mathrm{rms}^2$.",
           "text_ko": "$i$의 평균은 $I_\\mathrm{avg}$, $i^2$의 평균은 $I_\\mathrm{rms}^2$입니다.",
+          "text_zh": "$i$ 的平均值为 $I_\\mathrm{avg}$，$i^2$ 的平均值为 $I_\\mathrm{rms}^2$。",
           "latex": "P = V_F I_\\mathrm{avg} + r_d I_\\mathrm{rms}^{2}",
           "result_for": "loss.diode"
         },
         {
           "text": "Each cycle the driver draws the gate charge $Q_g$ from its $V_\\mathrm{GS}$ supply; the energy taken from the supply is the integral of $V_\\mathrm{GS}\\,dq$.",
           "text_ko": "드라이버는 매 주기 $V_\\mathrm{GS}$ 전원에서 게이트 전하 $Q_g$를 끌어옵니다. 전원에서 가져가는 에너지는 $V_\\mathrm{GS}\\,dq$의 적분입니다.",
+          "text_zh": "每个周期，驱动器所取的栅极电荷 $Q_g$ 来自其 $V_\\mathrm{GS}$ 电源；从电源取得的能量为 $V_\\mathrm{GS}\\,dq$ 的积分。",
           "latex": "E_G = \\int\\limits_{0}^{Q_g} V_\\mathrm{GS}\\, dq",
           "result_for": null
         },
         {
           "text": "All of it ends up as heat in the driver and gate resistances; multiply by $f_s$.",
           "text_ko": "이 에너지는 모두 드라이버와 게이트의 저항에서 열이 되며, 여기에 $f_s$를 곱합니다.",
+          "text_zh": "这些能量最终全部在驱动器与栅极的电阻中转化为热量；再乘以 $f_s$。",
           "latex": "P = Q_g V_\\mathrm{GS} f_s",
           "result_for": "loss.gate"
         },
         {
           "text": "An undamped L-C loop obeys $L C\\,d^2v/dt^2 + v = 0$; its characteristic equation is $L C s^2 + 1 = 0$.",
           "text_ko": "감쇠 없는 L-C 루프는 $L C\\,d^2v/dt^2 + v = 0$을 따르며, 특성 방정식은 $L C s^2 + 1 = 0$입니다.",
+          "text_zh": "无阻尼 L-C 回路满足 $L C\\,d^2v/dt^2 + v = 0$；其特征方程为 $L C s^2 + 1 = 0$。",
           "latex": "1 + C_\\mathrm{node} L_M s^{2} = 0",
           "result_for": null
         },
         {
           "text": "The roots are $\\pm j\\omega_0$.",
           "text_ko": "근은 $\\pm j\\omega_0$입니다.",
+          "text_zh": "其根为 $\\pm j\\omega_0$。",
           "latex": "\\omega_0 = \\frac{1}{\\sqrt{C_\\mathrm{node}} \\sqrt{L_M}}",
           "result_for": null
         },
         {
           "text": "$f = \\omega_0/(2\\pi)$.",
           "text_ko": "$f = \\omega_0/(2\\pi)$.",
+          "text_zh": "$f = \\omega_0/(2\\pi)$。",
           "latex": "f_\\mathrm{ring} = \\frac{1}{2 \\pi \\sqrt{L_M C_\\mathrm{node}}}",
           "result_for": "dcm.ring.f"
         }
@@ -1479,8 +1708,10 @@
       "source": "python/pe_core/derive/magnetics.py",
       "title": "Magnetic circuits: A_L, inductance, flux density and the core geometrical constant",
       "title_ko": "자기 회로: A_L, 인덕턴스, 자속 밀도, 코어 기하 상수",
+      "title_zh": "磁路：A_L、电感、磁通密度与磁芯几何常数",
       "intro": "A magnetic path behaves like a resistive circuit: the magnetomotive force $N i$ drives flux $\\Phi$ through reluctances $\\mathcal{R} = l/(\\mu A)$. With a uniform flux density over the effective area $A_e$, $B = \\Phi/A_e$.",
       "intro_ko": "자기 경로는 저항 회로처럼 동작합니다. 기자력 $N i$가 자기저항 $\\mathcal{R} = l/(\\mu A)$를 통해 자속 $\\Phi$를 흐르게 합니다. 유효 단면적 $A_e$에서 자속 밀도가 균일하면 $B = \\Phi/A_e$입니다.",
+      "intro_zh": "磁路的特性类似电阻电路：磁动势 $N i$ 驱动磁通 $\\Phi$ 流过磁阻 $\\mathcal{R} = l/(\\mu A)$。若有效截面积 $A_e$ 上的磁通密度均匀，则 $B = \\Phi/A_e$。",
       "results": [
         "mag.AL_gap",
         "mag.L_from_AL",
@@ -1495,120 +1726,140 @@
         {
           "text": "Core reluctance (relative permeability $\\mu_i$).",
           "text_ko": "코어 자기저항(비투자율 $\\mu_i$).",
+          "text_zh": "磁芯磁阻（相对磁导率 $\\mu_i$）。",
           "latex": "\\mathcal{R}_c = \\frac{l_e}{A_e \\mu_0 \\mu_i}",
           "result_for": null
         },
         {
           "text": "Gap reluctance (no fringing: the gap area equals $A_e$).",
           "text_ko": "공극 자기저항(프린징 무시: 공극 면적 = $A_e$).",
+          "text_zh": "气隙磁阻（忽略边缘磁通：气隙面积等于 $A_e$）。",
           "latex": "\\mathcal{R}_g = \\frac{l_g}{A_e \\mu_0}",
           "result_for": null
         },
         {
           "text": "They are in series.",
           "text_ko": "두 자기저항은 직렬입니다.",
+          "text_zh": "两者串联。",
           "latex": "\\mathcal{R} = \\frac{l_g}{A_e \\mu_0} + \\frac{l_e}{A_e \\mu_0 \\mu_i}",
           "result_for": null
         },
         {
           "text": "Flux linkage $\\lambda = N\\Phi = N (N i/\\mathcal{R})$, so $L = \\lambda/i = N^2/\\mathcal{R}$.",
           "text_ko": "쇄교 자속이 $\\lambda = N\\Phi = N (N i/\\mathcal{R})$이므로 $L = \\lambda/i = N^2/\\mathcal{R}$입니다.",
+          "text_zh": "磁链 $\\lambda = N\\Phi = N (N i/\\mathcal{R})$，因此 $L = \\lambda/i = N^2/\\mathcal{R}$。",
           "latex": "L = \\frac{N^{2}}{\\mathcal{R}}",
           "result_for": null
         },
         {
           "text": "The inductance factor is the inductance per turn squared, $A_L = L/N^2 = 1/\\mathcal{R}$.",
           "text_ko": "인덕턴스 계수는 턴 수 제곱당 인덕턴스, 즉 $A_L = L/N^2 = 1/\\mathcal{R}$입니다.",
+          "text_zh": "电感系数是每匝平方的电感，$A_L = L/N^2 = 1/\\mathcal{R}$。",
           "latex": "A_L = \\frac{1}{\\mathcal{R}}",
           "result_for": null
         },
         {
           "text": "Substitute the two reluctances.",
           "text_ko": "두 자기저항을 대입합니다.",
+          "text_zh": "代入两个磁阻。",
           "latex": "A_L = \\frac{A_e \\mu_0 \\mu_i}{l_e + l_g \\mu_i} = \\frac{\\mu_0 A_e}{l_g + \\frac{l_e}{\\mu_i}}",
           "result_for": "mag.AL_gap"
         },
         {
           "text": "Hence $L = A_L N^2$.",
           "text_ko": "따라서 $L = A_L N^2$입니다.",
+          "text_zh": "因此 $L = A_L N^2$。",
           "latex": "L = A_L N^{2}",
           "result_for": "mag.L_from_AL"
         },
         {
           "text": "Flux linkage and inductance: $\\lambda = N\\Phi = L i$, so $\\Phi = L i/N$.",
           "text_ko": "쇄교 자속과 인덕턴스: $\\lambda = N\\Phi = L i$이므로 $\\Phi = L i/N$입니다.",
+          "text_zh": "磁链与电感：$\\lambda = N\\Phi = L i$，因此 $\\Phi = L i/N$。",
           "latex": "\\lambda = N \\Phi",
           "result_for": null
         },
         {
           "text": "At the peak current, $B_\\mathrm{pk} = \\Phi_\\mathrm{pk}/A_e = L I_\\mathrm{pk}/(N A_e)$.",
           "text_ko": "피크 전류에서는 $B_\\mathrm{pk} = \\Phi_\\mathrm{pk}/A_e = L I_\\mathrm{pk}/(N A_e)$입니다.",
+          "text_zh": "在峰值电流处，$B_\\mathrm{pk} = \\Phi_\\mathrm{pk}/A_e = L I_\\mathrm{pk}/(N A_e)$。",
           "latex": "B_\\mathrm{pk} = \\frac{L I_\\mathrm{pk}}{N A_e}",
           "result_for": "mag.B_pk"
         },
         {
           "text": "The flux density follows the current, $B = L i/(N A_e)$. A ripple of $\\pm\\Delta i_L$ about the dc current moves it by $\\pm L\\,\\Delta i_L/(N A_e)$ about its dc value: that amplitude is $B_\\mathrm{ac}$.",
           "text_ko": "자속 밀도는 전류를 따라 $B = L i/(N A_e)$입니다. 직류 전류를 중심으로 한 $\\pm\\Delta i_L$의 리플은 자속 밀도를 직류 값을 중심으로 $\\pm L\\,\\Delta i_L/(N A_e)$만큼 움직이며, 이 진폭이 $B_\\mathrm{ac}$입니다.",
+          "text_zh": "磁通密度随电流变化，$B = L i/(N A_e)$。围绕直流电流的 $\\pm\\Delta i_L$ 纹波使磁通密度围绕其直流值变化 $\\pm L\\,\\Delta i_L/(N A_e)$：该幅值即 $B_\\mathrm{ac}$。",
           "latex": "B_\\mathrm{ac} = \\frac{L \\Delta i_L}{N A_e}",
           "result_for": "mag.B_ac"
         },
         {
           "text": "Holding $B_\\mathrm{pk}$ at the limit $B_\\mathrm{max}$ and solving for the turns gives the fewest turns that stay within it.",
           "text_ko": "$B_\\mathrm{pk}$를 한계 $B_\\mathrm{max}$로 두고 턴 수에 대해 풀면, 한계를 넘지 않는 최소 턴 수가 나옵니다.",
+          "text_zh": "令 $B_\\mathrm{pk}$ 等于限值 $B_\\mathrm{max}$ 并解出匝数，得到不超过该限值的最少匝数。",
           "latex": "N = \\frac{L I_\\mathrm{pk}}{B_\\mathrm{max} A_e}",
           "result_for": "mag.N_Bmax"
         },
         {
           "text": "With $N$ fixed, the inductance $L = N^2/(\\mathcal{R}_c + \\mathcal{R}_g)$ sets the gap reluctance, and with it the gap length.",
           "text_ko": "$N$이 정해지면 인덕턴스 $L = N^2/(\\mathcal{R}_c + \\mathcal{R}_g)$가 공극 자기저항을, 따라서 공극 길이를 정합니다.",
+          "text_zh": "$N$ 确定后，电感 $L = N^2/(\\mathcal{R}_c + \\mathcal{R}_g)$ 决定气隙磁阻，从而决定气隙长度。",
           "latex": "l_g = \\frac{\\mu_0 A_e N^{2}}{L} - \\frac{l_e}{\\mu_i}",
           "result_for": "mag.gap_length"
         },
         {
           "text": "Choosing a core. The winding's $N$ turns of copper area $A_w$ may fill only $K_u$ of the window $W_A$:",
           "text_ko": "코어 선정: 구리 단면적이 $A_w$인 $N$턴 권선은 창 면적 $W_A$ 중 비율 $K_u$만큼만 채울 수 있습니다.",
+          "text_zh": "选择磁芯。绕组 $N$ 匝、铜截面积为 $A_w$ 的导线只能按比例 $K_u$ 填充窗口 $W_A$：",
           "latex": "K_u W_A = A_w N",
           "result_for": null
         },
         {
           "text": "At the limit, its resistance, $N$ turns of mean length MLT, equals the copper-loss budget $R_\\mathrm{dc,max}$:",
           "text_ko": "한계에서는 평균 길이 MLT인 $N$턴 권선의 저항이 구리 손실 한도 $R_\\mathrm{dc,max}$와 같습니다.",
+          "text_zh": "在极限情况下，其电阻（$N$ 匝，平均匝长 MLT）等于铜损预算 $R_\\mathrm{dc,max}$：",
           "latex": "R_\\mathrm{dc,max} = \\frac{\\mathrm{MLT} N \\rho_w}{A_w}",
           "result_for": null
         },
         {
           "text": "The window fixes the wire, $A_w = K_u W_A/N$, so the resistance grows as the square of the turns:",
           "text_ko": "창이 선재를 정하므로($A_w = K_u W_A/N$) 저항은 턴 수의 제곱에 비례해 커집니다.",
+          "text_zh": "窗口决定导线截面积，$A_w = K_u W_A/N$，因此电阻随匝数的平方增大：",
           "latex": "R_\\mathrm{dc,max} = \\frac{\\mathrm{MLT} \\rho_w N^{2}}{K_u W_A}",
           "result_for": null
         },
         {
           "text": "The flux limit fixes the turns, $N = L I_\\mathrm{pk}/(B_\\mathrm{max} A_e)$:",
           "text_ko": "자속 한계가 턴 수를 정합니다: $N = L I_\\mathrm{pk}/(B_\\mathrm{max} A_e)$.",
+          "text_zh": "磁通限值决定匝数，$N = L I_\\mathrm{pk}/(B_\\mathrm{max} A_e)$：",
           "latex": "R_\\mathrm{dc,max} = \\frac{\\mathrm{MLT} \\rho_w I_\\mathrm{pk}^{2} L^{2}}{A_e^{2} B_\\mathrm{max}^{2} K_u W_A}",
           "result_for": null
         },
         {
           "text": "Collecting the core's dimensions on one side defines the core geometrical constant; the other side depends on the specification alone.",
           "text_ko": "코어 치수를 한쪽으로 모으면 코어 기하 상수가 정의되고, 다른 쪽은 사양만으로 정해집니다.",
+          "text_zh": "将磁芯尺寸归到等式一侧，即定义了磁芯几何常数；另一侧只取决于设计指标。",
           "latex": "K_g = \\frac{W_A A_e^{2}}{\\mathrm{MLT}}",
           "result_for": null
         },
         {
           "text": "A core meets the flux limit, the window and the resistance budget together when its $K_g$ is at least:",
           "text_ko": "코어의 $K_g$가 다음 값 이상이면 자속 한계, 창, 저항 한도를 함께 만족합니다.",
+          "text_zh": "磁芯要同时满足磁通限值、窗口和电阻预算，其 $K_g$ 至少应为：",
           "latex": "K_g = \\frac{\\rho_w L^{2} I_\\mathrm{pk}^{2}}{B_\\mathrm{max}^{2} R_\\mathrm{dc,max} K_u}",
           "result_for": "mag.Kg_req"
         },
         {
           "text": "Faraday's law: $v = N A_e\\,dB/dt$, so the change of $B$ over the on-time is the integral of $v/(N A_e)$.",
           "text_ko": "패러데이 법칙 $v = N A_e\\,dB/dt$에 따라 온 구간 동안의 $B$ 변화는 $v/(N A_e)$의 적분입니다.",
+          "text_zh": "法拉第定律：$v = N A_e\\,dB/dt$，因此导通时间内 $B$ 的变化量是 $v/(N A_e)$ 的积分。",
           "latex": "\\Delta B = \\int\\limits_{0}^{t_\\mathrm{on}} \\frac{V_w}{A_e N}\\, dt",
           "result_for": null
         },
         {
           "text": "With a constant winding voltage $V_w$ the swing is proportional to the volt-seconds $V_w t_\\mathrm{on}$.",
           "text_ko": "권선 전압 $V_w$가 일정하면 변화폭은 전압-초 $V_w t_\\mathrm{on}$에 비례합니다.",
+          "text_zh": "绕组电压 $V_w$ 恒定时，摆幅与伏秒积 $V_w t_\\mathrm{on}$ 成正比。",
           "latex": "\\Delta B = \\frac{V_w t_\\mathrm{on}}{N A_e}",
           "result_for": "mag.dB_faraday"
         }
@@ -1619,8 +1870,10 @@
       "source": "python/pe_core/derive/windings.py",
       "title": "Windings: resistance, skin depth, thin layers, leakage and the short circuit",
       "title_ko": "권선: 저항, 표피 깊이, 얇은 층, 누설, 단락",
+      "title_zh": "绕组：电阻、集肤深度、薄层、漏感与短路",
       "intro": "A winding is a long conductor wound in layers. Its resistance follows from its length and cross-section; at high frequency the current crowds into a skin; and the field between the windings stores the energy that appears as leakage inductance.",
       "intro_ko": "권선은 층으로 감긴 긴 도체입니다. 저항은 길이와 단면적에서 나오고, 주파수가 높으면 전류가 표면층으로 몰리며, 권선 사이의 자계는 누설 인덕턴스로 나타나는 에너지를 저장합니다.",
+      "intro_zh": "绕组是分层绕制的长导体。其电阻由长度和截面积决定；高频时电流集中到导体表层；绕组之间的磁场储存能量，这部分能量表现为漏感。",
       "results": [
         "wind.dcr",
         "wind.skin_depth",
@@ -1637,168 +1890,196 @@
         {
           "text": "The winding is one conductor, $N$ turns of mean length MLT:",
           "text_ko": "권선은 평균 길이 MLT인 $N$턴으로 된 도체 하나입니다.",
+          "text_zh": "绕组是一根导体，共 $N$ 匝，平均匝长为 MLT：",
           "latex": "l_w = \\mathrm{MLT} N",
           "result_for": null
         },
         {
           "text": "Its dc resistance is the resistivity times the length over the conductor's area.",
           "text_ko": "직류 저항은 저항률에 길이를 곱하고 도체 단면적으로 나눈 값입니다.",
+          "text_zh": "其直流电阻等于电阻率乘以长度再除以导体截面积。",
           "latex": "R_\\mathrm{dc} = \\frac{\\rho_w N \\mathrm{MLT}}{A_w}",
           "result_for": "wind.dcr"
         },
         {
           "text": "In a good conductor (conductivity $1/\\rho_w$) a sinusoidal current density obeys $d^2 J/dx^2 = j\\omega\\mu_0 J/\\rho_w$, so it varies as $e^{-k x}$ with",
           "text_ko": "양도체(전도율 $1/\\rho_w$) 안의 정현파 전류 밀도는 $d^2 J/dx^2 = j\\omega\\mu_0 J/\\rho_w$를 따르므로 $e^{-k x}$로 변하며, $k$는 다음과 같습니다.",
+          "text_zh": "在良导体（电导率 $1/\\rho_w$）中，正弦电流密度满足 $d^2 J/dx^2 = j\\omega\\mu_0 J/\\rho_w$，因此按 $e^{-k x}$ 变化，其中",
           "latex": "k^{2} = \\frac{2 \\pi i f \\mu_0}{\\rho_w}",
           "result_for": null
         },
         {
           "text": "The root with a positive real part:",
           "text_ko": "실수부가 양수인 근:",
+          "text_zh": "实部为正的根：",
           "latex": "k = \\frac{\\sqrt{\\pi} \\sqrt{f} \\sqrt{\\mu_0}}{\\sqrt{\\rho_w}} + \\frac{i \\sqrt{\\pi} \\sqrt{f} \\sqrt{\\mu_0}}{\\sqrt{\\rho_w}}",
           "result_for": null
         },
         {
           "text": "The magnitude falls by $e$ over one skin depth, the inverse of the real part of $k$.",
           "text_ko": "크기는 표피 깊이, 곧 $k$ 실수부의 역수만큼 들어갈 때마다 $e$배씩 줄어듭니다.",
+          "text_zh": "幅值每经过一个集肤深度按因子 $e$ 衰减，集肤深度即 $k$ 实部的倒数。",
           "latex": "\\delta = \\sqrt{\\frac{\\rho_w}{\\pi \\mu_0 f}}",
           "result_for": "wind.skin_depth"
         },
         {
           "text": "Dowell's ac resistance factor of $M_\\ell$ layers, each $\\varphi$ skin depths thick (`wind.dowell`):",
           "text_ko": "두께가 표피 깊이의 $\\varphi$배인 층 $M_\\ell$개의 Dowell 교류 저항 계수(`wind.dowell`):",
+          "text_zh": "$M_\\ell$ 层、每层厚 $\\varphi$ 个集肤深度时的 Dowell 交流电阻系数（`wind.dowell`）：",
           "latex": "F_R = \\varphi \\left(\\frac{\\sin{\\left(2 \\varphi \\right)} + \\sinh{\\left(2 \\varphi \\right)}}{- \\cos{\\left(2 \\varphi \\right)} + \\cosh{\\left(2 \\varphi \\right)}} + \\frac{\\left(- \\frac{2}{3} + \\frac{2 M_\\ell^{2}}{3}\\right) \\left(- \\sin{\\left(\\varphi \\right)} + \\sinh{\\left(\\varphi \\right)}\\right)}{\\cos{\\left(\\varphi \\right)} + \\cosh{\\left(\\varphi \\right)}}\\right)",
           "result_for": null
         },
         {
           "text": "For thin layers, expand the hyperbolic and circular functions in powers of $\\varphi$: the terms up to $\\varphi^3$ cancel and the first excess is of fourth order.",
           "text_ko": "얇은 층에서는 쌍곡선 함수와 삼각 함수를 $\\varphi$의 거듭제곱으로 전개합니다. $\\varphi^3$까지의 항은 상쇄되고, 처음 나타나는 초과분은 4차 항입니다.",
+          "text_zh": "对于薄层，将双曲函数和三角函数按 $\\varphi$ 的幂展开：直到 $\\varphi^3$ 的各项相互抵消，超出部分的首项为四阶。",
           "latex": "F_R = 1 - \\frac{\\varphi^{4}}{45} + \\frac{M_\\ell^{2} \\varphi^{4}}{9} = 1 + \\frac{\\left(5 M_\\ell^{2} - 1\\right) \\varphi^{4}}{45}",
           "result_for": "wind.dowell_low"
         },
         {
           "text": "At a given frequency the skin depth is fixed, so a layer $\\varphi$ skin depths thick has the dc resistance $R_\\delta/\\varphi$, $R_\\delta$ being that of a layer one skin depth thick. Carrying a current $I$, it loses",
           "text_ko": "주파수가 정해지면 표피 깊이도 정해지므로, 두께가 표피 깊이의 $\\varphi$배인 층의 직류 저항은 $R_\\delta/\\varphi$입니다($R_\\delta$는 두께가 표피 깊이 하나인 층의 직류 저항). 전류 $I$가 흐르면 손실은 다음과 같습니다.",
+          "text_zh": "频率给定时集肤深度固定，因此厚 $\\varphi$ 个集肤深度的层，其直流电阻为 $R_\\delta/\\varphi$，$R_\\delta$ 为厚一个集肤深度的层的直流电阻。流过电流 $I$ 时，其损耗为",
           "latex": "P = \\frac{F_R R_\\delta I^{2}}{\\varphi}",
           "result_for": null
         },
         {
           "text": "Relative to the loss of a layer one skin depth thick carrying the same current as dc, $R_\\delta I^2$:",
           "text_ko": "같은 전류가 직류로 흐르는, 두께가 표피 깊이 하나인 층의 손실 $R_\\delta I^2$에 대한 비는 다음과 같습니다.",
+          "text_zh": "相对于厚一个集肤深度、以直流形式流过同一电流的层的损耗 $R_\\delta I^2$：",
           "latex": "P/P_\\delta = \\frac{F_R}{\\varphi}",
           "result_for": "wind.loss_rel"
         },
         {
           "text": "With the series for thin layers:",
           "text_ko": "얇은 층의 급수를 쓰면:",
+          "text_zh": "代入薄层的级数展开：",
           "latex": "P/P_\\delta = \\frac{1 - \\frac{\\varphi^{4}}{45} + \\frac{M_\\ell^{2} \\varphi^{4}}{9}}{\\varphi}",
           "result_for": null
         },
         {
           "text": "It is least where its derivative vanishes:",
           "text_ko": "도함수가 0인 곳에서 가장 작습니다.",
+          "text_zh": "其导数为零处取最小值：",
           "latex": "\\varphi_\\mathrm{opt} = \\left(\\frac{15}{5 M_\\ell^{2} - 1}\\right)^{\\frac{1}{4}}",
           "result_for": "wind.phi_opt"
         },
         {
           "text": "There the ac resistance factor is the same for every number of layers:",
           "text_ko": "그곳에서 교류 저항 계수는 층 수와 관계없이 같습니다.",
+          "text_zh": "在该处，交流电阻系数对任意层数都相同：",
           "latex": "F_R = \\frac{4}{3}",
           "result_for": null
         },
         {
           "text": "The field in the window runs along the breadth $b_w$, so $H = \\mathcal{F}/b_w$ where $\\mathcal{F}$ is the MMF enclosed at that height; the energy it stores over the turn length MLT is",
           "text_ko": "창 안의 자계는 폭 $b_w$ 방향으로 향하므로, 그 높이까지 둘러싸인 기자력을 $\\mathcal{F}$라 하면 $H = \\mathcal{F}/b_w$이고, 턴 길이 MLT에 걸쳐 저장되는 에너지는 다음과 같습니다.",
+          "text_zh": "窗口内的磁场沿宽度 $b_w$ 方向，因此 $H = \\mathcal{F}/b_w$，其中 $\\mathcal{F}$ 为该高度处所包围的磁动势；它在匝长 MLT 上储存的能量为",
           "latex": "E = \\frac{\\mathrm{MLT} \\mu_0 \\int \\mathcal{F}^{2}\\, dy}{2 b_w}",
           "result_for": null
         },
         {
           "text": "Primary, then secondary: the MMF rises linearly through the primary to $N I$, stays there across the spacing, and falls back to zero through the secondary.",
           "text_ko": "1차 권선 다음에 2차 권선이 있으면, 기자력은 1차 권선을 지나며 $N I$까지 선형으로 오르고, 간격에서는 그대로 유지되다가, 2차 권선을 지나며 0으로 돌아옵니다.",
+          "text_zh": "先一次绕组、后二次绕组：磁动势在一次绕组中线性上升到 $N I$，在间距中保持不变，在二次绕组中降回零。",
           "latex": "\\mathcal{F} = I N",
           "result_for": null
         },
         {
           "text": "With $L_\\mathrm{lk} = 2E/I^2$, each winding counts with a third of its height, the spacing in full.",
           "text_ko": "$L_\\mathrm{lk} = 2E/I^2$에서 각 권선은 높이의 1/3이, 간격은 전부가 들어갑니다.",
+          "text_zh": "由 $L_\\mathrm{lk} = 2E/I^2$，每个绕组按其高度的三分之一计入，间距则全部计入。",
           "latex": "L_\\mathrm{lk} = \\frac{\\mathrm{MLT} \\mu_0 N^{2} \\left(h_p + h_s + 3 h_g\\right)}{3 b_w} = \\frac{\\mu_0 N^{2} \\mathrm{MLT} \\left(\\frac{h_p}{3} + h_g + \\frac{h_s}{3}\\right)}{b_w}",
           "result_for": "xfmr.leakage.ps"
         },
         {
           "text": "Primary split around the secondary: the MMF rises to $N I/2$ through the first half, crosses the secondary from $N I/2$ to $-N I/2$, and returns to zero through the second half.",
           "text_ko": "1차 권선을 2차 권선 양쪽으로 나누면, 기자력은 첫 번째 절반에서 $N I/2$까지 오르고, 2차 권선을 지나며 $N I/2$에서 $-N I/2$로 바뀐 뒤, 두 번째 절반에서 0으로 돌아옵니다.",
+          "text_zh": "一次绕组分成两半置于二次绕组两侧：磁动势在前一半中上升到 $N I/2$，穿过二次绕组时从 $N I/2$ 变为 $-N I/2$，在后一半中回到零。",
           "latex": "\\mathcal{F} = \\frac{I N}{2}",
           "result_for": null
         },
         {
           "text": "The peak MMF is halved, so the energy, and the leakage, fall to about a quarter; the two spacings both count.",
           "text_ko": "최대 기자력이 절반이 되므로 에너지와 누설은 약 1/4로 줄고, 두 간격이 모두 들어갑니다.",
+          "text_zh": "峰值磁动势减半，因此能量和漏感都降到约四分之一；两处间距都要计入。",
           "latex": "L_\\mathrm{lk} = \\frac{\\mathrm{MLT} \\mu_0 N^{2} \\left(h_p + h_s + 6 h_g\\right)}{12 b_w} = \\frac{\\mu_0 N^{2} \\mathrm{MLT} \\left(\\frac{h_p}{3} + 2 h_g + \\frac{h_s}{3}\\right)}{4 b_w}",
           "result_for": "xfmr.leakage.psp"
         },
         {
           "text": "Two coupled windings, each with its own inductance and the mutual inductance $L_{12}$ between them:",
           "text_ko": "각자의 인덕턴스와 둘 사이의 상호 인덕턴스 $L_{12}$를 갖는 두 결합 권선:",
+          "text_zh": "两个耦合绕组，各有自感，两者之间的互感为 $L_{12}$：",
           "latex": "v_1 = \\frac{di_1}{dt} L_{11} + \\frac{di_2}{dt} L_{12}",
           "result_for": null
         },
         {
           "text": "and at winding 2:",
           "text_ko": "권선 2에서는:",
+          "text_zh": "以及绕组 2 上：",
           "latex": "v_2 = \\frac{di_1}{dt} L_{12} + \\frac{di_2}{dt} L_{22}",
           "result_for": null
         },
         {
           "text": "Shorting winding 2 sets $v_2 = 0$, so its current changes against winding 1's:",
           "text_ko": "권선 2를 단락하면 $v_2 = 0$이므로 그 전류는 권선 1의 전류와 반대로 변합니다.",
+          "text_zh": "将绕组 2 短路使 $v_2 = 0$，因此其电流与绕组 1 的电流反向变化：",
           "latex": "\\frac{di_2}{dt} = - \\frac{\\frac{di_1}{dt} L_{12}}{L_{22}}",
           "result_for": null
         },
         {
           "text": "Winding 1 then sees the inductance $v_1/(di_1/dt)$:",
           "text_ko": "그러면 권선 1이 보는 인덕턴스는 $v_1/(di_1/dt)$입니다.",
+          "text_zh": "此时从绕组 1 看进去的电感为 $v_1/(di_1/dt)$：",
           "latex": "L_\\mathrm{sc} = L_{11} - \\frac{L_{12}^{2}}{L_{22}}",
           "result_for": null
         },
         {
           "text": "With the coupling coefficient $k = L_{12}/\\sqrt{L_{11} L_{22}}$ (`xfmr.k`):",
           "text_ko": "결합 계수 $k = L_{12}/\\sqrt{L_{11} L_{22}}$(`xfmr.k`)를 쓰면:",
+          "text_zh": "用耦合系数 $k = L_{12}/\\sqrt{L_{11} L_{22}}$（`xfmr.k`）表示：",
           "latex": "L_\\mathrm{sc} = L_{11} \\left(1 - k^{2}\\right)",
           "result_for": "xfmr.L_sc"
         },
         {
           "text": "In the transformer model (1:$n$, magnetizing inductance $L_M$ and the leakage inductances, all referred to the primary) the winding inductances are",
           "text_ko": "변압기 모델(1:$n$, 자화 인덕턴스 $L_M$와 누설 인덕턴스는 모두 1차 기준)에서 권선 인덕턴스는 다음과 같습니다.",
+          "text_zh": "在变压器模型中（1:$n$，励磁电感 $L_M$ 与各漏感均折算到一次侧），绕组电感为",
           "latex": "L_{11} = L_M + L_{\\ell 1}",
           "result_for": null
         },
         {
           "text": "the mutual inductance,",
           "text_ko": "상호 인덕턴스는",
+          "text_zh": "互感为",
           "latex": "L_{12} = L_M n",
           "result_for": null
         },
         {
           "text": "and winding 2's inductance (its leakage $L_{\\ell 2} = n^2 L_{\\ell 2}'$):",
           "text_ko": "권선 2의 인덕턴스는(누설 $L_{\\ell 2} = n^2 L_{\\ell 2}'$)",
+          "text_zh": "以及绕组 2 的电感（其漏感 $L_{\\ell 2} = n^2 L_{\\ell 2}'$）：",
           "latex": "L_{22} = n^{2} \\left(L_M + L_{\\ell 2}'\\right)",
           "result_for": null
         },
         {
           "text": "Substituting them, the turns ratio cancels: the primary's leakage in series with the secondary's in parallel with $L_M$.",
           "text_ko": "이를 대입하면 권선비가 소거됩니다. 1차 누설에, 2차 누설과 $L_M$의 병렬이 직렬로 더해집니다.",
+          "text_zh": "代入后匝比消去：一次侧漏感，与二次侧漏感和 $L_M$ 的并联相串联。",
           "latex": "L_\\mathrm{sc} = L_{\\ell 1} + \\frac{L_{\\ell 2}' L_M}{L_{\\ell 2}' + L_M}",
           "result_for": "xfmr.L_sc_T"
         },
         {
           "text": "With winding 2 open, no current flows in it ($di_2/dt = 0$), and the two voltages stand in the ratio",
           "text_ko": "권선 2를 개방하면 그 권선에는 전류가 흐르지 않으므로($di_2/dt = 0$) 두 전압의 비는 다음과 같습니다.",
+          "text_zh": "绕组 2 开路时其中无电流（$di_2/dt = 0$），两电压之比为",
           "latex": "V_2/V_1 = \\frac{L_{12}}{L_{11}}",
           "result_for": null
         },
         {
           "text": "In the transformer model: slightly below the turns ratio, the primary's leakage taking its share of the voltage.",
           "text_ko": "변압기 모델에서는 1차 누설이 전압의 일부를 나누어 가지므로 권선비보다 조금 작습니다.",
+          "text_zh": "在变压器模型中：略低于匝比，因为一次侧漏感分担了一部分电压。",
           "latex": "V_2/V_1 = \\frac{n L_M}{L_{\\ell 1} + L_M}",
           "result_for": "xfmr.V_oc"
         }
@@ -1809,8 +2090,10 @@
       "source": "python/pe_core/derive/measurement.py",
       "title": "Measurement: inductance read near self-resonance",
       "title_ko": "측정: 자기 공진 근처에서 읽히는 인덕턴스",
+      "title_zh": "测量：自谐振附近的电感读数",
       "intro": "A winding is an inductance with its turns' capacitance in parallel. An impedance meter divides the reactance it measures by $\\omega$ and reports that as the inductance.",
       "intro_ko": "권선은 턴 사이 커패시턴스가 병렬로 붙은 인덕턴스입니다. 임피던스 측정기는 측정한 리액턴스를 $\\omega$로 나누어 인덕턴스로 표시합니다.",
+      "intro_zh": "绕组是并联了匝间电容的电感。阻抗测量仪将测得的电抗除以 $\\omega$，并将结果显示为电感。",
       "results": [
         "meas.L_app"
       ],
@@ -1818,30 +2101,35 @@
         {
           "text": "The inductance and the capacitance in parallel:",
           "text_ko": "병렬로 연결된 인덕턴스와 커패시턴스:",
+          "text_zh": "电感与电容并联：",
           "latex": "Z = \\frac{1}{i C_p \\omega - \\frac{i}{L \\omega}}",
           "result_for": null
         },
         {
           "text": "which is a pure reactance,",
           "text_ko": "이는 순수 리액턴스입니다.",
+          "text_zh": "它是纯电抗，",
           "latex": "Z = - \\frac{i L \\omega}{-1 + C_p L \\omega^{2}}",
           "result_for": null
         },
         {
           "text": "so the meter reads the inductance $Z/(j\\omega)$:",
           "text_ko": "따라서 측정기는 $Z/(j\\omega)$를 인덕턴스로 읽습니다.",
+          "text_zh": "因此仪表读出的电感为 $Z/(j\\omega)$：",
           "latex": "L_\\mathrm{app} = - \\frac{L}{-1 + C_p L \\omega^{2}}",
           "result_for": null
         },
         {
           "text": "The self-resonant frequency (`passive.f_srf`) gives $\\omega^2 L C_p = (f/f_\\mathrm{srf})^2$:",
           "text_ko": "자기 공진 주파수(`passive.f_srf`)로 쓰면 $\\omega^2 L C_p = (f/f_\\mathrm{srf})^2$입니다.",
+          "text_zh": "用自谐振频率（`passive.f_srf`）表示，得 $\\omega^2 L C_p = (f/f_\\mathrm{srf})^2$：",
           "latex": "f_\\mathrm{srf} = \\frac{1}{2 \\pi \\sqrt{C_p} \\sqrt{L}}",
           "result_for": null
         },
         {
           "text": "Substituting $\\omega = 2\\pi f$:",
           "text_ko": "$\\omega = 2\\pi f$를 대입하면:",
+          "text_zh": "代入 $\\omega = 2\\pi f$：",
           "latex": "L_\\mathrm{app} = - \\frac{L f_\\mathrm{srf}^{2}}{f^{2} - f_\\mathrm{srf}^{2}} = \\frac{L}{1 - \\left(\\frac{f}{f_\\mathrm{srf}}\\right)^{2}}",
           "result_for": "meas.L_app"
         }
@@ -1852,8 +2140,10 @@
       "source": "python/pe_core/derive/harvesting.py",
       "title": "Linear source: maximum power and constant-voltage extraction",
       "title_ko": "선형 전원: 최대 전력과 정전압 추출",
+      "title_zh": "线性源：最大功率与恒压提取",
       "intro": "A linear energy source is modelled by its Thevenin equivalent: open-circuit voltage $V_\\mathrm{oc}$ behind a source resistance $R_s$. How much of its available power reaches the converter depends on what the converter's input looks like.",
       "intro_ko": "선형 에너지원은 테브난 등가회로, 즉 전원 저항 $R_s$ 뒤의 개방 전압 $V_\\mathrm{oc}$로 모델링합니다. 가용 전력 중 얼마가 컨버터에 도달하는지는 컨버터 입력이 어떻게 보이는지에 달려 있습니다.",
+      "intro_zh": "线性能量源用其戴维南等效电路建模：开路电压 $V_\\mathrm{oc}$ 串联源内阻 $R_s$。其可用功率有多少到达变换器，取决于变换器输入端呈现的特性。",
       "results": [
         "src.Pmax",
         "src.cv_power",
@@ -1868,90 +2158,105 @@
         {
           "text": "Power into a load resistance $R_L$.",
           "text_ko": "부하 저항 $R_L$로 들어가는 전력.",
+          "text_zh": "送入负载电阻 $R_L$ 的功率。",
           "latex": "P_L = \\frac{R_L V_\\mathrm{oc}^{2}}{\\left(R_L + R_s\\right)^{2}}",
           "result_for": null
         },
         {
           "text": "$dP_L/dR_L = 0$ gives the matched load.",
           "text_ko": "$dP_L/dR_L = 0$에서 정합 부하를 얻습니다.",
+          "text_zh": "由 $dP_L/dR_L = 0$ 得到匹配负载。",
           "latex": "R_L = R_s",
           "result_for": null
         },
         {
           "text": "Substitute $R_L = R_s$.",
           "text_ko": "$R_L = R_s$를 대입합니다.",
+          "text_zh": "代入 $R_L = R_s$。",
           "latex": "P_\\mathrm{max} = \\frac{V_\\mathrm{oc}^{2}}{4 R_s}",
           "result_for": "src.Pmax"
         },
         {
           "text": "A constant-voltage sink at $V_c$ (e.g. a converter pinned at a fixed input voltage) draws $I = (V_\\mathrm{oc} - V_c)/R_s$.",
           "text_ko": "전압 $V_c$의 정전압 싱크(예: 입력이 고정 전압에 묶인 컨버터)는 $I = (V_\\mathrm{oc} - V_c)/R_s$를 끌어옵니다.",
+          "text_zh": "电压为 $V_c$ 的恒压负载（例如输入被固定在某一电压的变换器）汲取电流 $I = (V_\\mathrm{oc} - V_c)/R_s$。",
           "latex": "I = \\frac{V_\\mathrm{oc} - V_c}{R_s}",
           "result_for": null
         },
         {
           "text": "The power it absorbs: negative when $V_c > V_\\mathrm{oc}$, when the sink returns energy to the source.",
           "text_ko": "싱크가 흡수하는 전력입니다. $V_c > V_\\mathrm{oc}$이면 음수이며, 이때 싱크는 전원으로 에너지를 되돌려 보냅니다.",
+          "text_zh": "其吸收的功率：当 $V_c > V_\\mathrm{oc}$ 时为负，此时负载将能量回馈给源。",
           "latex": "P = \\frac{V_c \\left(V_\\mathrm{oc} - V_c\\right)}{R_s}",
           "result_for": "src.cv_power"
         },
         {
           "text": "Normalise by $P_\\mathrm{max}$.",
           "text_ko": "$P_\\mathrm{max}$로 정규화합니다.",
+          "text_zh": "以 $P_\\mathrm{max}$ 归一化。",
           "latex": "\\eta_\\mathrm{ext} = \\frac{4 V_c \\left(V_\\mathrm{oc} - V_c\\right)}{V_\\mathrm{oc}^{2}}",
           "result_for": "src.cv_extraction"
         },
         {
           "text": "A converter in DCM draws an average input current proportional to its input voltage: its input is a resistance $R_\\mathrm{in}$, the loss-free resistor, which takes the place of $R_L$.",
           "text_ko": "DCM 컨버터는 입력 전압에 비례하는 평균 입력 전류를 끌어오므로, 입력이 저항 $R_\\mathrm{in}$, 즉 무손실 저항으로 보이며 $R_L$ 자리에 들어갑니다.",
+          "text_zh": "工作在 DCM 的变换器汲取的平均输入电流与其输入电压成正比：其输入端相当于电阻 $R_\\mathrm{in}$，即无损电阻，它取代 $R_L$ 的位置。",
           "latex": null,
           "result_for": null
         },
         {
           "text": "The source resistance and $R_\\mathrm{in}$ divide the source voltage.",
           "text_ko": "전원 저항과 $R_\\mathrm{in}$이 전원 전압을 분압합니다.",
+          "text_zh": "源内阻与 $R_\\mathrm{in}$ 对源电压分压。",
           "latex": "V_g = \\frac{V_\\mathrm{oc} R_\\mathrm{in}}{R_s + R_\\mathrm{in}}",
           "result_for": "lfr.Vg"
         },
         {
           "text": "$P_L$ with $R_L = R_\\mathrm{in}$, normalised by $P_\\mathrm{max}$: the source voltage cancels.",
           "text_ko": "$R_L = R_\\mathrm{in}$일 때의 $P_L$을 $P_\\mathrm{max}$로 정규화합니다. 전원 전압은 소거됩니다.",
+          "text_zh": "在 $P_L$ 中令 $R_L = R_\\mathrm{in}$，并以 $P_\\mathrm{max}$ 归一化：源电压被消去。",
           "latex": "\\eta_\\mathrm{ext} = \\frac{4 R_s R_\\mathrm{in}}{\\left(R_s + R_\\mathrm{in}\\right)^{2}}",
           "result_for": "lfr.eta"
         },
         {
           "text": "The loss-free resistor draws the power of a resistance at its input voltage.",
           "text_ko": "무손실 저항은 입력 전압이 걸린 저항과 같은 전력을 끌어옵니다.",
+          "text_zh": "无损电阻吸取的功率等于一个电阻在其输入电压下消耗的功率。",
           "latex": "P = \\frac{V_g^{2}}{R_\\mathrm{in}}",
           "result_for": null
         },
         {
           "text": "Solve for $V_g$: a larger power needs a higher input voltage.",
           "text_ko": "$V_g$에 대해 풉니다. 전력이 클수록 입력 전압이 높아야 합니다.",
+          "text_zh": "解出 $V_g$：功率越大，所需输入电压越高。",
           "latex": "V_g = \\sqrt{P R_\\mathrm{in}}",
           "result_for": "lfr.Vg_power"
         },
         {
           "text": "A DCM flyback's input resistance is $R_\\mathrm{in} = 2 L_M f_s / D^2$ (derived with the flyback).",
           "text_ko": "DCM 플라이백의 입력 저항은 $R_\\mathrm{in} = 2 L_M f_s / D^2$입니다(플라이백에서 유도).",
+          "text_zh": "DCM 反激变换器的输入电阻为 $R_\\mathrm{in} = 2 L_M f_s / D^2$（在反激变换器部分推导）。",
           "latex": "R_\\mathrm{in} = \\frac{2 L_M f_s}{D^{2}}",
           "result_for": null
         },
         {
           "text": "Solve for $L_M$: the inductance that presents a wanted $R_\\mathrm{in}$, such as $R_s$ to match the source.",
           "text_ko": "$L_M$에 대해 풀면, 원하는 $R_\\mathrm{in}$(전원과 정합하려면 $R_s$)을 만드는 인덕턴스가 나옵니다.",
+          "text_zh": "解出 $L_M$：即呈现所需 $R_\\mathrm{in}$ 的电感，例如为与源匹配而取 $R_s$。",
           "latex": "L_M = \\frac{R_\\mathrm{in} D^{2}}{2 f_s}",
           "result_for": "lfr.L_M"
         },
         {
           "text": "Under an envelope slow against the bus, the loss-free resistor takes $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$ at every instant; take $V_\\mathrm{oc}(t) = \\hat{V}_\\mathrm{oc} \\sin(\\pi t / T_\\mathrm{env})$, one half-wave of the envelope (a rectified sine repeats it).",
           "text_ko": "포락선이 버스에 비해 충분히 느리면 무손실 저항은 매 순간 $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$를 받습니다. 포락선의 반파 하나인 $V_\\mathrm{oc}(t) = \\hat{V}_\\mathrm{oc} \\sin(\\pi t / T_\\mathrm{env})$를 생각합니다(정류된 사인은 이를 반복합니다).",
+          "text_zh": "包络相对母线变化缓慢时，无损电阻每一时刻吸取 $\\eta_\\mathrm{ext} V_\\mathrm{oc}^2/(4 R_s)$；取 $V_\\mathrm{oc}(t) = \\hat{V}_\\mathrm{oc} \\sin(\\pi t / T_\\mathrm{env})$，即包络的一个半波（整流后的正弦波重复这一半波）。",
           "latex": "P = \\frac{\\eta_\\mathrm{ext} \\hat{V}_\\mathrm{oc}^{2} \\sin^{2}{\\left(\\frac{\\pi t}{T_\\mathrm{env}} \\right)}}{4 R_s}",
           "result_for": null
         },
         {
           "text": "Average over the half-wave: the square of a sine averages to half its peak's.",
           "text_ko": "반파에 걸쳐 평균합니다. 사인의 제곱은 평균이 최댓값 제곱의 절반입니다.",
+          "text_zh": "在半波内取平均：正弦波平方的平均值为其峰值平方的一半。",
           "latex": "\\bar{P} = \\frac{\\eta_\\mathrm{ext} \\hat{V}_\\mathrm{oc}^{2}}{8 R_s}",
           "result_for": "lfr.P_env"
         }
@@ -1962,8 +2267,10 @@
       "source": "python/pe_core/derive/piezo.py",
       "title": "Piezoelectric source: loads and interfaces",
       "title_ko": "압전 전원: 부하와 인터페이스",
+      "title_zh": "压电源：负载与接口电路",
       "intro": "Under a steady sinusoidal vibration of constant amplitude, a piezoelectric element is a current source $I_p \\sin \\omega t$ in parallel with its clamped capacitance $C_0$. What a load or an interface takes follows from where that current's charge goes in each half period.",
       "intro_ko": "진폭이 일정한 정현파 진동을 받는 압전 소자는 클램프 커패시턴스 $C_0$와 병렬인 전류원 $I_p \\sin \\omega t$입니다. 부하나 인터페이스가 가져가는 에너지는 반주기마다 그 전류의 전하가 어디로 가는지로 정해집니다.",
+      "intro_zh": "在幅值恒定的稳态正弦振动下，压电元件等效为电流源 $I_p \\sin \\omega t$ 与其夹持电容 $C_0$ 并联。负载或接口电路取得多少能量，取决于每个半周期内该电流的电荷流向何处。",
       "results": [
         "piezo.Vp",
         "piezo.R_opt",
@@ -1978,96 +2285,112 @@
         {
           "text": "With nothing connected, the whole current charges $C_0$: $v = \\frac{1}{C_0}\\int I_p \\sin \\omega t \\, dt$.",
           "text_ko": "아무것도 연결하지 않으면 전류 전부가 $C_0$를 충전합니다: $v = \\frac{1}{C_0}\\int I_p \\sin \\omega t \\, dt$.",
+          "text_zh": "未接任何电路时，全部电流为 $C_0$ 充电：$v = \\frac{1}{C_0}\\int I_p \\sin \\omega t \\, dt$。",
           "latex": "v = - \\frac{I_p \\cos{\\left(\\omega t \\right)}}{C_0 \\omega}",
           "result_for": null
         },
         {
           "text": "Its amplitude.",
           "text_ko": "그 진폭.",
+          "text_zh": "其幅值。",
           "latex": "V_p = \\frac{I_p}{\\omega C_0}",
           "result_for": "piezo.Vp"
         },
         {
           "text": "A resistor $R$ across the element shares the current with $C_0$: its voltage amplitude is $I_p |R \\parallel 1/(j\\omega C_0)|$, and it takes half the square of that over $R$.",
           "text_ko": "소자 양단의 저항 $R$은 $C_0$와 전류를 나눕니다. 전압 진폭은 $I_p |R \\parallel 1/(j\\omega C_0)|$이고, 저항이 받는 전력은 그 제곱의 절반을 $R$로 나눈 값입니다.",
+          "text_zh": "并接在元件两端的电阻 $R$ 与 $C_0$ 分流：其电压幅值为 $I_p |R \\parallel 1/(j\\omega C_0)|$，电阻吸收的功率为该幅值平方的一半除以 $R$。",
           "latex": "P = \\frac{R I_p^{2}}{2 \\left(1 + C_0^{2} R^{2} \\omega^{2}\\right)}",
           "result_for": null
         },
         {
           "text": "$dP/dR = 0$.",
           "text_ko": "$dP/dR = 0$.",
+          "text_zh": "$dP/dR = 0$。",
           "latex": "R = \\frac{1}{\\omega C_0}",
           "result_for": "piezo.R_opt"
         },
         {
           "text": "Substitute it.",
           "text_ko": "이를 대입합니다.",
+          "text_zh": "将其代入。",
           "latex": "P = \\frac{I_p^{2}}{4 \\omega C_0}",
           "result_for": "piezo.P_R"
         },
         {
           "text": "The source drives $2 I_p/\\omega$ of charge each half period, between two extrema of the displacement.",
           "text_ko": "전원은 변위의 두 극값 사이, 즉 반주기마다 $2 I_p/\\omega$의 전하를 흘립니다.",
+          "text_zh": "源在每个半周期内，即位移的两个极值之间，输送 $2 I_p/\\omega$ 的电荷。",
           "latex": "q = \\frac{2 I_p}{\\omega}",
           "result_for": null
         },
         {
           "text": "Through a full-wave bridge onto $V_\\mathrm{DC}$, the element's voltage swings from $-V_\\mathrm{DC}$ to $V_\\mathrm{DC}$ before the bridge conducts, which takes $2 C_0 V_\\mathrm{DC}$; the rest of the charge enters $V_\\mathrm{DC}$.",
           "text_ko": "전파 브리지를 거쳐 $V_\\mathrm{DC}$에 연결하면, 소자 전압이 $-V_\\mathrm{DC}$에서 $V_\\mathrm{DC}$까지 바뀐 뒤에야 브리지가 도통하며, 이 변화에 전하 $2 C_0 V_\\mathrm{DC}$가 듭니다. 나머지 전하가 $V_\\mathrm{DC}$로 들어갑니다.",
+          "text_zh": "经全波整流桥接到 $V_\\mathrm{DC}$ 时，元件电压须从 $-V_\\mathrm{DC}$ 摆到 $V_\\mathrm{DC}$，整流桥才导通，这需要 $2 C_0 V_\\mathrm{DC}$ 的电荷；其余电荷流入 $V_\\mathrm{DC}$。",
           "latex": "E_{1/2} = V_\\mathrm{DC} \\left(- 2 C_0 V_\\mathrm{DC} + \\frac{2 I_p}{\\omega}\\right)",
           "result_for": null
         },
         {
           "text": "Per unit time: one such half period every $\\pi/\\omega$.",
           "text_ko": "단위 시간당: $\\pi/\\omega$마다 반주기 하나.",
+          "text_zh": "折算到单位时间：每 $\\pi/\\omega$ 一个这样的半周期。",
           "latex": "P = \\frac{2 I_p V_\\mathrm{DC}}{\\pi} - \\frac{2 C_0 \\omega V_\\mathrm{DC}^{2}}{\\pi} = \\frac{2 V_\\mathrm{DC} \\left(I_p - \\omega C_0 V_\\mathrm{DC}\\right)}{\\pi}",
           "result_for": "piezo.P_std"
         },
         {
           "text": "$dP/dV_\\mathrm{DC} = 0$: half the open-circuit amplitude.",
           "text_ko": "$dP/dV_\\mathrm{DC} = 0$: 개방 전압 진폭의 절반.",
+          "text_zh": "$dP/dV_\\mathrm{DC} = 0$：开路电压幅值的一半。",
           "latex": "V_\\mathrm{DC} = \\frac{I_p}{2 C_0 \\omega}",
           "result_for": null
         },
         {
           "text": "Substitute it.",
           "text_ko": "이를 대입합니다.",
+          "text_zh": "将其代入。",
           "latex": "P_\\mathrm{std,max} = \\frac{I_p^{2}}{2 \\pi \\omega C_0}",
           "result_for": "piezo.P_std_max"
         },
         {
           "text": "SECE leaves the element open between extrema, so its voltage climbs from zero to $2 I_p/(\\omega C_0)$; at the extremum all of $\\tfrac12 C_0 v^2$ is taken, whatever the load.",
           "text_ko": "SECE는 극값 사이에서 소자를 개방해 두므로 전압이 0에서 $2 I_p/(\\omega C_0)$까지 오릅니다. 극값에서 $\\tfrac12 C_0 v^2$ 전부를 꺼내며, 이는 부하와 무관합니다.",
+          "text_zh": "SECE 在两个极值之间使元件开路，因此其电压从零升到 $2 I_p/(\\omega C_0)$；在极值处取走全部 $\\tfrac12 C_0 v^2$，与负载无关。",
           "latex": "E_{1/2} = \\frac{2 I_p^{2}}{C_0 \\omega^{2}}",
           "result_for": null
         },
         {
           "text": "Per unit time.",
           "text_ko": "단위 시간당.",
+          "text_zh": "折算到单位时间。",
           "latex": "P = \\frac{2 I_p^{2}}{\\pi \\omega C_0}",
           "result_for": "piezo.P_sece"
         },
         {
           "text": "Parallel SSHI inverts the element's voltage at each extremum, from $\\mp V_\\mathrm{DC}$ to $\\pm\\gamma V_\\mathrm{DC}$, so the swing to the other rail takes only $(1 - \\gamma) C_0 V_\\mathrm{DC}$.",
           "text_ko": "병렬 SSHI는 극값마다 소자 전압을 $\\mp V_\\mathrm{DC}$에서 $\\pm\\gamma V_\\mathrm{DC}$로 반전시키므로, 반대쪽 레일까지의 변화에는 $(1 - \\gamma) C_0 V_\\mathrm{DC}$만 듭니다.",
+          "text_zh": "并联 SSHI 在每个极值处将元件电压从 $\\mp V_\\mathrm{DC}$ 翻转到 $\\pm\\gamma V_\\mathrm{DC}$，因此摆向另一侧电源轨只需 $(1 - \\gamma) C_0 V_\\mathrm{DC}$ 的电荷。",
           "latex": "E_{1/2} = V_\\mathrm{DC} \\left(- C_0 V_\\mathrm{DC} \\left(1 - \\gamma\\right) + \\frac{2 I_p}{\\omega}\\right)",
           "result_for": null
         },
         {
           "text": "Per unit time.",
           "text_ko": "단위 시간당.",
+          "text_zh": "折算到单位时间。",
           "latex": "P = \\frac{2 I_p V_\\mathrm{DC}}{\\pi} - \\frac{C_0 \\omega V_\\mathrm{DC}^{2}}{\\pi} + \\frac{C_0 \\gamma \\omega V_\\mathrm{DC}^{2}}{\\pi} = \\frac{2 V_\\mathrm{DC} \\left(I_p - \\frac{\\omega C_0 V_\\mathrm{DC} \\left(1 - \\gamma\\right)}{2}\\right)}{\\pi}",
           "result_for": "piezo.P_sshi"
         },
         {
           "text": "$dP/dV_\\mathrm{DC} = 0$.",
           "text_ko": "$dP/dV_\\mathrm{DC} = 0$.",
+          "text_zh": "$dP/dV_\\mathrm{DC} = 0$。",
           "latex": "V_\\mathrm{DC} = \\frac{I_p}{C_0 \\omega \\left(1 - \\gamma\\right)}",
           "result_for": null
         },
         {
           "text": "Substitute it.",
           "text_ko": "이를 대입합니다.",
+          "text_zh": "将其代入。",
           "latex": "P_\\mathrm{SSHI,max} = \\frac{I_p^{2}}{\\pi \\omega C_0 \\left(1 - \\gamma\\right)}",
           "result_for": "piezo.P_sshi_max"
         }
@@ -2078,8 +2401,10 @@
       "source": "python/pe_core/derive/sensing.py",
       "title": "Current-output shunt monitor",
       "title_ko": "전류 출력형 션트 모니터",
+      "title_zh": "电流输出型分流监控器",
       "intro": "A current-output high-side monitor converts the small voltage across a shunt into a current, which an output resistor turns back into a ground-referenced voltage.",
       "intro_ko": "전류 출력형 하이사이드 모니터는 션트 양단의 작은 전압을 전류로 바꾸고, 출력 저항이 이를 다시 접지 기준 전압으로 바꿉니다.",
+      "intro_zh": "电流输出型高侧监控器将分流电阻两端的小电压转换为电流，再由输出电阻将该电流转换回以地为参考的电压。",
       "results": [
         "sense.burden",
         "sense.current_out_monitor",
@@ -2094,84 +2419,98 @@
         {
           "text": "Ohm's law across the shunt: the signal, and the voltage the shunt takes from the measured circuit.",
           "text_ko": "션트 양단의 옴의 법칙입니다. 이 전압은 신호이면서, 션트가 측정 대상 회로에서 빼앗는 전압이기도 합니다.",
+          "text_zh": "分流电阻两端的欧姆定律：这一电压既是信号，也是分流电阻从被测电路中占去的电压。",
           "latex": "V_\\mathrm{SENSE} = I_\\mathrm{SENSE} R_\\mathrm{SENSE}",
           "result_for": "sense.burden"
         },
         {
           "text": "The ideal amplifier forces the same voltage across $R_\\mathrm{IN}$, so the current through $R_\\mathrm{IN}$ is $V_\\mathrm{SENSE}/R_\\mathrm{IN}$.",
           "text_ko": "이상적 증폭기는 같은 전압을 $R_\\mathrm{IN}$ 양단에 걸므로, $R_\\mathrm{IN}$을 흐르는 전류는 $V_\\mathrm{SENSE}/R_\\mathrm{IN}$입니다.",
+          "text_zh": "理想放大器迫使 $R_\\mathrm{IN}$ 两端出现相同的电压，因此流过 $R_\\mathrm{IN}$ 的电流为 $V_\\mathrm{SENSE}/R_\\mathrm{IN}$。",
           "latex": "I_\\mathrm{OUT} = \\frac{V_\\mathrm{SENSE}}{R_\\mathrm{IN}}",
           "result_for": null
         },
         {
           "text": "That current flows out through $R_\\mathrm{OUT}$: $V_\\mathrm{OUT} = I_\\mathrm{OUT} R_\\mathrm{OUT}$.",
           "text_ko": "그 전류가 $R_\\mathrm{OUT}$으로 흘러 나가므로 $V_\\mathrm{OUT} = I_\\mathrm{OUT} R_\\mathrm{OUT}$입니다.",
+          "text_zh": "该电流经 $R_\\mathrm{OUT}$ 流出：$V_\\mathrm{OUT} = I_\\mathrm{OUT} R_\\mathrm{OUT}$。",
           "latex": "V_\\mathrm{OUT} = \\frac{I_\\mathrm{SENSE} R_\\mathrm{SENSE} R_\\mathrm{OUT}}{R_\\mathrm{IN}}",
           "result_for": "sense.current_out_monitor"
         },
         {
           "text": "A voltage-output amplifier multiplies the sense voltage by its fixed gain $G$ and adds the voltage on its REF pin, which sets the output at zero current.",
           "text_ko": "전압 출력형 증폭기는 센스 전압에 고정 이득 $G$를 곱하고, 전류가 0일 때의 출력을 정하는 REF 핀 전압을 더합니다.",
+          "text_zh": "电压输出型放大器将检测电压乘以固定增益 $G$，再加上 REF 引脚上的电压，该电压决定电流为零时的输出。",
           "latex": "V_\\mathrm{OUT} = G I_\\mathrm{SENSE} R_\\mathrm{SENSE} + V_\\mathrm{REF}",
           "result_for": "sense.voltage_out_monitor"
         },
         {
           "text": "An input offset voltage adds directly to the sense voltage, so the output of either amplifier reads the current",
           "text_ko": "입력 오프셋 전압은 센스 전압에 그대로 더해지므로, 두 증폭기 모두 출력이 나타내는 전류는 다음과 같습니다.",
+          "text_zh": "输入失调电压直接叠加在检测电压上，因此两种放大器的输出所读出的电流均为",
           "latex": "I_\\mathrm{meas} = \\frac{V_\\mathrm{OS} + I_\\mathrm{SENSE} R_\\mathrm{SENSE}}{R_\\mathrm{SENSE}}",
           "result_for": null
         },
         {
           "text": "The reading exceeds the current by the offset over the sense resistor, whatever the current.",
           "text_ko": "측정값은 전류와 관계없이 오프셋을 센스 저항으로 나눈 만큼 실제 전류보다 큽니다.",
+          "text_zh": "无论电流多大，读数都比实际电流大出失调电压除以检测电阻的值。",
           "latex": "I_\\mathrm{OS,eq} = \\frac{V_\\mathrm{OS}}{R_\\mathrm{SENSE}}",
           "result_for": "sense.offset_current"
         },
         {
           "text": "Without a Kelvin connection the sense connections sit beyond the pads and solder joints, whose resistance $R_\\mathrm{pad}$ carries the same current; the reading, scaled by $R_\\mathrm{SENSE}$, is",
           "text_ko": "켈빈 연결이 없으면 센스 연결점이 패드와 납땜부 너머에 있고, 그 저항 $R_\\mathrm{pad}$에도 같은 전류가 흐릅니다. $R_\\mathrm{SENSE}$로 환산한 측정값은 다음과 같습니다.",
+          "text_zh": "没有开尔文连接时，检测连接点位于焊盘和焊点之外，其电阻 $R_\\mathrm{pad}$ 流过同一电流；按 $R_\\mathrm{SENSE}$ 换算的读数为",
           "latex": "I_\\mathrm{meas} = \\frac{I_\\mathrm{SENSE} \\left(R_\\mathrm{SENSE} + R_\\mathrm{pad}\\right)}{R_\\mathrm{SENSE}}",
           "result_for": null
         },
         {
           "text": "Its relative error: independent of the current, and larger the smaller the shunt.",
           "text_ko": "상대 오차는 전류와 무관하며, 션트가 작을수록 커집니다.",
+          "text_zh": "其相对误差：与电流无关，分流电阻越小，误差越大。",
           "latex": "\\varepsilon_\\mathrm{pad} = \\frac{R_\\mathrm{pad}}{R_\\mathrm{SENSE}}",
           "result_for": "sense.pad_error"
         },
         {
           "text": "With both, the amplifier sees $I_\\mathrm{SENSE} (R_\\mathrm{SENSE} + R_\\mathrm{pad}) + V_\\mathrm{OS}$ and reads it as a current through $R_\\mathrm{SENSE}$. The output is the output equation at this current; the offset's sign that raises it bounds the output from above, the other sign from below.",
           "text_ko": "둘이 함께 있으면 증폭기는 $I_\\mathrm{SENSE} (R_\\mathrm{SENSE} + R_\\mathrm{pad}) + V_\\mathrm{OS}$를 보고 이를 $R_\\mathrm{SENSE}$에 흐르는 전류로 읽습니다. 출력은 이 전류를 출력 식에 넣은 값이며, 출력을 높이는 부호의 오프셋이 출력의 상한을, 반대 부호의 오프셋이 하한을 줍니다.",
+          "text_zh": "两者同时存在时，放大器检测到 $I_\\mathrm{SENSE} (R_\\mathrm{SENSE} + R_\\mathrm{pad}) + V_\\mathrm{OS}$，并将其读作流过 $R_\\mathrm{SENSE}$ 的电流。输出等于输出方程在该电流下的值；使输出升高的失调符号给出输出上限，另一符号给出下限。",
           "latex": "I_\\mathrm{meas} = \\frac{V_\\mathrm{OS} + I_\\mathrm{SENSE} \\left(R_\\mathrm{SENSE} + R_\\mathrm{pad}\\right)}{R_\\mathrm{SENSE}} = \\frac{I_\\mathrm{SENSE} \\left(R_\\mathrm{SENSE} + R_\\mathrm{pad}\\right)}{R_\\mathrm{SENSE}} + \\frac{V_\\mathrm{OS}}{R_\\mathrm{SENSE}}",
           "result_for": "sense.reading"
         },
         {
           "text": "Its relative error is the sum of the two, with no cross term: the offset's share falls as $1/I_\\mathrm{SENSE}$, the pad's share stays.",
           "text_ko": "상대 오차는 교차 항 없이 두 몫의 합입니다. 오프셋의 몫은 $1/I_\\mathrm{SENSE}$에 비례해 줄고, 패드의 몫은 그대로입니다.",
+          "text_zh": "其相对误差为两者之和，无交叉项：失调所占部分按 $1/I_\\mathrm{SENSE}$ 减小，焊盘所占部分不变。",
           "latex": "\\varepsilon_I = \\frac{V_\\mathrm{OS} + I_\\mathrm{SENSE} R_\\mathrm{pad}}{I_\\mathrm{SENSE} R_\\mathrm{SENSE}} = \\frac{V_\\mathrm{OS}}{I_\\mathrm{SENSE} R_\\mathrm{SENSE}} + \\frac{R_\\mathrm{pad}}{R_\\mathrm{SENSE}}",
           "result_for": "sense.rel_error"
         },
         {
           "text": "A current-output amplifier drives its current $I_\\mathrm{OUT}$ into $R_\\mathrm{OUT}$ at node A. An R-C filter follows: $R_f$ from node A to node B, and $C_f$ from node B to ground, with nothing else loading node B. The current balance at node A (Laplace domain):",
           "text_ko": "전류 출력형 증폭기는 노드 A에서 전류 $I_\\mathrm{OUT}$을 $R_\\mathrm{OUT}$으로 흘립니다. 그 뒤에 R-C 필터가 이어집니다. $R_f$는 노드 A와 노드 B 사이에, $C_f$는 노드 B와 접지 사이에 있고, 노드 B에는 다른 부하가 없습니다. 노드 A의 전류 평형(라플라스 영역)은 다음과 같습니다.",
+          "text_zh": "电流输出型放大器在节点 A 将其电流 $I_\\mathrm{OUT}$ 注入 $R_\\mathrm{OUT}$。其后接 R-C 滤波器：$R_f$ 接在节点 A 与节点 B 之间，$C_f$ 接在节点 B 与地之间，节点 B 上无其他负载。节点 A 的电流平衡（拉普拉斯域）：",
           "latex": "I_\\mathrm{OUT} = \\frac{V_A - V_B}{R_f} + \\frac{V_A}{R_\\mathrm{OUT}}",
           "result_for": null
         },
         {
           "text": "and at node B:",
           "text_ko": "노드 B에서는 다음과 같습니다.",
+          "text_zh": "以及节点 B：",
           "latex": "\\frac{V_A - V_B}{R_f} = V_B s C_f",
           "result_for": null
         },
         {
           "text": "Solving for the capacitor's voltage gives a single pole; at dc the output is still $I_\\mathrm{OUT} R_\\mathrm{OUT}$:",
           "text_ko": "커패시터 전압에 대해 풀면 극점이 하나이며, 직류에서 출력은 그대로 $I_\\mathrm{OUT} R_\\mathrm{OUT}$입니다.",
+          "text_zh": "解出电容电压，得到单个极点；直流时输出仍为 $I_\\mathrm{OUT} R_\\mathrm{OUT}$：",
           "latex": "\\frac{V_B}{I_\\mathrm{OUT}} = \\frac{R_\\mathrm{OUT}}{1 + s C_f R_\\mathrm{OUT} + s C_f R_f}",
           "result_for": null
         },
         {
           "text": "The pole's time constant is $C_f (R_\\mathrm{OUT} + R_f)$: the capacitor sees $R_\\mathrm{OUT}$ in series with $R_f$. $R_\\mathrm{OUT}$ is the Thevenin resistance of the current source it loads.",
           "text_ko": "그 극점의 시정수는 $C_f (R_\\mathrm{OUT} + R_f)$입니다. 커패시터는 $R_f$와 직렬인 $R_\\mathrm{OUT}$을 봅니다. $R_\\mathrm{OUT}$은 자신이 부하로 걸린 전류원의 테브난 저항입니다.",
+          "text_zh": "该极点的时间常数为 $C_f (R_\\mathrm{OUT} + R_f)$：从电容看进去是 $R_\\mathrm{OUT}$ 与 $R_f$ 串联。$R_\\mathrm{OUT}$ 是其所接电流源的戴维南电阻。",
           "latex": "R_\\mathrm{filt} = R_\\mathrm{OUT} + R_f",
           "result_for": "sense.filter_R"
         }
@@ -2182,8 +2521,10 @@
       "source": "python/pe_core/derive/bench.py",
       "title": "Bench: edges, gate drive, rise time, inrush, heat and a battery's terminals",
       "title_ko": "벤치: 에지, 게이트 구동, 상승 시간, 돌입 전류, 열, 배터리 단자",
+      "title_zh": "实验台：边沿、栅极驱动、上升时间、浪涌电流、散热与电池端电压",
       "intro": "Results of the inductor's and the capacitor's laws, the first-order step response, Ohm's law across a gate resistor, a series thermal path and the Rint battery model, in the form they take on the bench.",
       "intro_ko": "인덕터와 커패시터의 법칙, 1차 회로의 계단 응답, 게이트 저항 양단의 옴의 법칙, 직렬 열 경로, Rint 배터리 모델에서 나오는 결과를 벤치에서 쓰는 형태로 정리합니다.",
+      "intro_zh": "由电感和电容的伏安关系、一阶电路的阶跃响应、栅极电阻上的欧姆定律、串联热路以及 Rint 电池模型得到的结果，以实验台上使用的形式给出。",
       "results": [
         "layout.v_spike",
         "layout.L_ring",
@@ -2203,174 +2544,203 @@
         {
           "text": "The voltage across an inductance is proportional to the rate of change of its current:",
           "text_ko": "인덕턴스 양단 전압은 전류의 변화율에 비례합니다.",
+          "text_zh": "电感两端的电压与其电流的变化率成正比：",
           "latex": "v = L_\\mathrm{loop} \\frac{d}{d t} i{\\left(t \\right)}",
           "result_for": null
         },
         {
           "text": "A current that changes by $\\Delta I$ linearly over the edge $t_\\mathrm{edge}$ changes at a constant rate:",
           "text_ko": "에지 $t_\\mathrm{edge}$ 동안 $\\Delta I$만큼 선형으로 변하는 전류는 일정한 속도로 변합니다.",
+          "text_zh": "变化量为 $\\Delta I$、在边沿 $t_\\mathrm{edge}$ 内线性变化的电流，其变化率恒定：",
           "latex": "\\frac{d}{d t} i{\\left(t \\right)} = \\frac{\\Delta I}{t_\\mathrm{edge}}",
           "result_for": null
         },
         {
           "text": "so throughout the edge the loop's inductance develops",
           "text_ko": "따라서 에지 동안 루프 인덕턴스에 걸리는 전압은 다음과 같습니다.",
+          "text_zh": "因此在整个边沿期间，回路电感上产生的电压为",
           "latex": "V_\\mathrm{spike} = \\frac{L_\\mathrm{loop} \\Delta I}{t_\\mathrm{edge}}",
           "result_for": "layout.v_spike"
         },
         {
           "text": "After the turn-off edge the loop's inductance rings with the switch node's capacitance, a series L-C, at",
           "text_ko": "턴오프 에지 뒤에 루프 인덕턴스는 스위치 노드 커패시턴스와 직렬 L-C를 이루어 다음 주파수로 링잉합니다.",
+          "text_zh": "关断边沿之后，回路电感与开关节点电容构成串联 L-C 并产生振铃，其频率为",
           "latex": "f_\\mathrm{ring} = \\frac{1}{2 \\pi \\sqrt{C_\\mathrm{node}} \\sqrt{L_\\mathrm{loop}}}",
           "result_for": null
         },
         {
           "text": "so the ring's frequency gives the loop's inductance:",
           "text_ko": "따라서 링잉 주파수에서 루프 인덕턴스를 구할 수 있습니다.",
+          "text_zh": "因此由振铃频率可得回路电感：",
           "latex": "L_\\mathrm{loop} = \\frac{1}{4 \\pi^{2} f_\\mathrm{ring}^{2} C_\\mathrm{node}}",
           "result_for": "layout.L_ring"
         },
         {
           "text": "While the drain voltage makes its transition the gate stays at the plateau voltage $V_\\mathrm{pl}$. The driver switches its output to $V_\\mathrm{GS}$ (turn-on) or to 0 (turn-off) behind the gate loop's resistance $R_G$, so by Ohm's law the gate current is constant meanwhile:",
           "text_ko": "드레인 전압이 바뀌는 동안 게이트는 플래토 전압 $V_\\mathrm{pl}$에 머뭅니다. 드라이버는 게이트 루프 저항 $R_G$ 뒤에서 출력을 $V_\\mathrm{GS}$(턴온) 또는 0(턴오프)으로 바꾸므로, 옴의 법칙에 따라 그동안 게이트 전류는 일정합니다.",
+          "text_zh": "漏极电压转换期间，栅极保持在平台电压 $V_\\mathrm{pl}$。驱动器将其输出切换到 $V_\\mathrm{GS}$（开通）或 0（关断），与栅极之间隔着栅极回路电阻 $R_G$，因此根据欧姆定律，此期间栅极电流恒定：",
           "latex": null,
           "result_for": null
         },
         {
           "text": "at turn-on",
           "text_ko": "턴온 때",
+          "text_zh": "开通时",
           "latex": "I_G = \\frac{V_\\mathrm{GS} - V_\\mathrm{pl}}{R_G}",
           "result_for": "gate.I_on"
         },
         {
           "text": "and at turn-off",
           "text_ko": "턴오프 때",
+          "text_zh": "以及关断时",
           "latex": "I_G = \\frac{V_\\mathrm{pl}}{R_G}",
           "result_for": "gate.I_off"
         },
         {
           "text": "A constant current delivers charge at a constant rate:",
           "text_ko": "일정한 전류는 일정한 속도로 전하를 전달합니다.",
+          "text_zh": "恒定电流以恒定速率输送电荷：",
           "latex": "q = I_G t",
           "result_for": null
         },
         {
           "text": "so the plateau, along which the gate takes the gate-drain charge $Q_\\mathrm{GD}$, lasts",
           "text_ko": "따라서 게이트가 게이트-드레인 전하 $Q_\\mathrm{GD}$를 받는 플래토는 다음 시간 동안 지속됩니다.",
+          "text_zh": "因此平台期（栅极在此期间吸收栅漏电荷 $Q_\\mathrm{GD}$）的持续时间为",
           "latex": "t_\\mathrm{pl} = \\frac{Q_\\mathrm{GD}}{I_G}",
           "result_for": "gate.t_pl"
         },
         {
           "text": "A capacitor's charge is its capacitance times its voltage, so supplying the charge $Q_\\mathrm{boot}$ lowers its voltage by",
           "text_ko": "커패시터의 전하는 커패시턴스와 전압의 곱이므로, 전하 $Q_\\mathrm{boot}$를 공급하면 전압이 다음만큼 떨어집니다.",
+          "text_zh": "电容的电荷等于电容量乘以电压，因此提供电荷 $Q_\\mathrm{boot}$ 会使其电压降低",
           "latex": "\\Delta V_\\mathrm{boot} = \\frac{Q_\\mathrm{boot}}{C_\\mathrm{boot}}",
           "result_for": null
         },
         {
           "text": "For a droop of at most $\\Delta V_\\mathrm{boot}$ the capacitance must be at least",
           "text_ko": "강하가 $\\Delta V_\\mathrm{boot}$ 이하가 되려면 커패시턴스는 적어도 다음 값이어야 합니다.",
+          "text_zh": "要使电压跌落不超过 $\\Delta V_\\mathrm{boot}$，电容至少应为",
           "latex": "C_\\mathrm{boot} = \\frac{Q_\\mathrm{boot}}{\\Delta V_\\mathrm{boot}}",
           "result_for": "boot.C"
         },
         {
           "text": "A single-pole system answers a unit step with",
           "text_ko": "단일 극점 시스템은 단위 계단 입력에 다음과 같이 응답합니다.",
+          "text_zh": "单极点系统对单位阶跃的响应为",
           "latex": "y = 1 - e^{- \\frac{t}{\\tau}}",
           "result_for": null
         },
         {
           "text": "It reaches 10 % and 90 % of its final value at",
           "text_ko": "최종값의 10 %와 90 %에 도달하는 시각은 각각 다음과 같습니다.",
+          "text_zh": "它到达终值的 10 % 和 90 % 的时刻为",
           "latex": "\\left( t_{10} = \\tau \\ln{\\left(\\frac{10}{9} \\right)}, \\  t_{90} = \\tau \\ln{\\left(10 \\right)}\\right)",
           "result_for": null
         },
         {
           "text": "so its 10-90 % rise time is",
           "text_ko": "따라서 10-90 % 상승 시간은 다음과 같습니다.",
+          "text_zh": "因此其 10-90 % 上升时间为",
           "latex": "t_\\mathrm{rise} = 2 \\tau \\ln{\\left(3 \\right)}",
           "result_for": null
         },
         {
           "text": "Its -3 dB bandwidth is the corner frequency of the same pole:",
           "text_ko": "-3 dB 대역폭은 같은 극점의 차단 주파수입니다.",
+          "text_zh": "其 -3 dB 带宽为同一极点的转折频率：",
           "latex": "f_\\mathrm{BW} = \\frac{1}{2 \\pi \\tau}",
           "result_for": null
         },
         {
           "text": "Eliminating $\\tau$:",
           "text_ko": "$\\tau$를 소거하면:",
+          "text_zh": "消去 $\\tau$：",
           "latex": "t_\\mathrm{rise} = \\frac{\\ln{\\left(3 \\right)}}{\\pi f_\\mathrm{BW}} = \\frac{\\ln{\\left(9 \\right)}}{2 \\pi f_\\mathrm{BW}}",
           "result_for": "probe.t_rise"
         },
         {
           "text": "The tip-and-ground loop's inductance and the probe's input capacitance form a series L-C; without loss its current $i$ obeys",
           "text_ko": "팁과 접지가 이루는 루프의 인덕턴스와 프로브 입력 커패시턴스는 직렬 L-C를 이룹니다. 손실이 없으면 전류 $i$는 다음 식을 따릅니다.",
+          "text_zh": "探头尖端与接地线构成的回路电感和探头输入电容组成串联 L-C；无损耗时其电流 $i$ 满足",
           "latex": "L_\\mathrm{gnd} \\frac{d^{2}}{d t^{2}} i{\\left(t \\right)} + \\frac{i{\\left(t \\right)}}{C_\\mathrm{probe}} = 0",
           "result_for": null
         },
         {
           "text": "whose solutions ring at the angular frequency",
           "text_ko": "그 해는 다음 각주파수로 링잉합니다.",
+          "text_zh": "其解的振铃角频率为",
           "latex": "\\omega_0 = \\frac{1}{\\sqrt{C_\\mathrm{probe}} \\sqrt{L_\\mathrm{gnd}}}",
           "result_for": null
         },
         {
           "text": "that is, the frequency",
           "text_ko": "주파수로 나타내면 다음과 같습니다.",
+          "text_zh": "即频率为",
           "latex": "f_\\mathrm{probe} = \\frac{1}{2 \\pi \\sqrt{L_\\mathrm{gnd} C_\\mathrm{probe}}}",
           "result_for": "probe.f_ring"
         },
         {
           "text": "An empty capacitor switched onto a step $V_g$ through a series resistance charges with the current",
           "text_ko": "빈 커패시터가 직렬 저항을 통해 계단 전압 $V_g$에 연결되면 다음 전류로 충전됩니다.",
+          "text_zh": "未充电的电容经串联电阻接入阶跃电压 $V_g$，其充电电流为",
           "latex": "i = \\frac{V_g e^{- \\frac{t}{C_\\mathrm{in} R_\\mathrm{ser}}}}{R_\\mathrm{ser}}",
           "result_for": null
         },
         {
           "text": "which is largest at the step, when the capacitor has no voltage across it:",
           "text_ko": "이 전류는 커패시터 전압이 0인 계단 순간에 가장 큽니다.",
+          "text_zh": "该电流在阶跃瞬间最大，此时电容两端电压为零：",
           "latex": "I_\\mathrm{inrush} = \\frac{V_g}{R_\\mathrm{ser}}",
           "result_for": "inrush.I_pk"
         },
         {
           "text": "The integral of its square over the whole pulse is",
           "text_ko": "펄스 전체에 걸친 전류 제곱의 적분은 다음과 같습니다.",
+          "text_zh": "其平方在整个脉冲上的积分为",
           "latex": "I^2 t = \\frac{V_g^{2} C_\\mathrm{in}}{2 R_\\mathrm{ser}}",
           "result_for": "inrush.I2t"
         },
         {
           "text": "A capacitor's current is its capacitance times the rate of change of its voltage:",
           "text_ko": "커패시터 전류는 커패시턴스와 전압 변화율의 곱입니다.",
+          "text_zh": "电容电流等于电容量乘以其电压的变化率：",
           "latex": "i = C_\\mathrm{in} \\frac{d}{d t} v{\\left(t \\right)}",
           "result_for": null
         },
         {
           "text": "so a voltage ramped linearly from zero to $V_g$ over $t_\\mathrm{ramp}$ draws a constant current:",
           "text_ko": "따라서 전압을 $t_\\mathrm{ramp}$ 동안 0에서 $V_g$까지 선형으로 올리면 일정한 전류가 흐릅니다.",
+          "text_zh": "因此电压从零线性上升到 $V_g$、历时 $t_\\mathrm{ramp}$ 时，电流恒定：",
           "latex": "I_\\mathrm{ramp} = \\frac{C_\\mathrm{in} V_g}{t_\\mathrm{ramp}}",
           "result_for": "inrush.I_ramp"
         },
         {
           "text": "A thermal resistance is the temperature difference across a part of the heat's path per watt flowing through it. With all of the device's power flowing from the junction to the case, the case to the heat sink and the heat sink to the ambient in turn,",
           "text_ko": "열저항은 열 경로의 한 부분 양단 온도 차를 그 부분을 지나는 전력 1 W당으로 나타낸 값입니다. 소자의 전력 전부가 접합에서 케이스로, 케이스에서 방열판으로, 방열판에서 주위로 차례로 흐르면 다음이 성립합니다.",
+          "text_zh": "热阻是热流路径中某一段上每瓦流经功率对应的温差。器件的全部功率依次从结流到外壳、从外壳流到散热器、再从散热器流到环境时，",
           "latex": "\\left( T_J - T_C = P_D \\theta_\\mathrm{JC}, \\  T_C - T_S = P_D \\theta_\\mathrm{CS}, \\  T_S - T_A = P_D \\theta_\\mathrm{SA}\\right)",
           "result_for": null
         },
         {
           "text": "and the rises add up from the ambient:",
           "text_ko": "주위 온도에서부터 온도 상승분을 더하면 다음과 같습니다.",
+          "text_zh": "各段温升从环境温度起逐级相加：",
           "latex": "T_J = T_A + P_D \\left(\\theta_\\mathrm{JC} + \\theta_\\mathrm{CS} + \\theta_\\mathrm{SA}\\right)",
           "result_for": "therm.Tj"
         },
         {
           "text": "The Rint model is the open-circuit voltage behind the internal resistance; the charging current flows into the positive terminal through the resistance (`bat.rint`):",
           "text_ko": "Rint 모델은 내부 저항 뒤의 개방 전압입니다. 충전 전류는 저항을 거쳐 양극 단자로 들어갑니다(`bat.rint`).",
+          "text_zh": "Rint 模型为开路电压串联内阻；充电电流经内阻流入正极端子（`bat.rint`）：",
           "latex": "I_b = \\frac{V - V_b}{R_b}",
           "result_for": null
         },
         {
           "text": "so the terminals sit at",
           "text_ko": "따라서 단자 전압은 다음과 같습니다.",
+          "text_zh": "因此端电压为",
           "latex": "V = V_b + I_b R_b",
           "result_for": "bat.v_term"
         }
@@ -2381,8 +2751,10 @@
       "source": "python/pe_core/derive/numerics.py",
       "title": "Simulation: stepping a circuit in time, and how long it takes to settle",
       "title_ko": "시뮬레이션: 회로를 한 타임 스텝씩 계산하기와 정착에 걸리는 시간",
+      "title_zh": "仿真：按时间步长计算电路，以及进入稳态所需的时间",
       "intro": "A simulator advances a circuit's state in time steps. Within a step a switching converter is a linear circuit with constant sources, which a first-order example shows can be stepped exactly. The usual integration rules are compared on one decaying mode, the test equation, where each multiplies the deviation by a fixed factor per step. The envelope of the output filter's ring then says how many switching periods a simulation from rest needs before its last periods show the steady state.",
       "intro_ko": "시뮬레이터는 회로의 상태를 한 타임 스텝씩 계산합니다. 한 스텝 안에서 스위칭 컨버터는 전원이 일정한 선형 회로이며, 1차 회로의 예에서 보듯 이런 회로는 한 스텝을 정확히 계산할 수 있습니다. 흔히 쓰는 적분 규칙들은 감쇠 모드 하나, 곧 시험 방정식(test equation)으로 비교합니다. 이 방정식에서 각 규칙은 스텝마다 편차에 일정한 배율을 곱합니다. 끝으로 출력 필터 링잉의 포락선을 이용해, 정지 상태에서 시작한 시뮬레이션을 몇 스위칭 주기 동안 실행해야 마지막 주기들이 정상상태를 보여 주는지 구합니다.",
+      "intro_zh": "仿真器按时间步长逐步计算电路的状态。在一个时间步长内，开关变换器是电源恒定的线性电路；一阶电路的例子表明，这样的电路可以逐步精确计算。常用的积分方法在一个衰减模态上进行比较，即试验方程（test equation），每种方法在每一步都将偏差乘以一个固定因子。随后由输出滤波器振铃的包络得出：从零初始状态开始的仿真需要多少个开关周期，其最后几个周期才能呈现稳态。",
       "results": [
         "sim.exact_step",
         "num.gain_fe",
@@ -2396,114 +2768,133 @@
         {
           "text": "Within a step the circuit is linear and its sources are constant. A capacitor charged through a resistance then approaches the voltage $v_\\infty$ at a rate proportional to the distance left, over the time constant $\\tau$:",
           "text_ko": "한 스텝 안에서 회로는 선형이고 전원은 일정합니다. 그러면 저항을 통해 충전되는 커패시터는 남은 전압 차에 비례하고 시정수 $\\tau$에 반비례하는 속도로 전압 $v_\\infty$에 다가갑니다.",
+          "text_zh": "在一个时间步长内，电路是线性的，电源恒定。于是经电阻充电的电容趋近电压 $v_\\infty$，其速率等于剩余差值除以时间常数 $\\tau$：",
           "latex": "\\frac{d}{d t} v{\\left(t \\right)} = \\frac{v_\\infty - v{\\left(t \\right)}}{\\tau}",
           "result_for": null
         },
         {
           "text": "Solve it from the voltage $v_0$ at the start of the step:",
           "text_ko": "스텝이 시작할 때의 전압 $v_0$을 초기값으로 풉니다.",
+          "text_zh": "以该步起点的电压 $v_0$ 为初值求解：",
           "latex": "v{\\left(t \\right)} = v_\\infty + \\left(v_0 - v_\\infty\\right) e^{- \\frac{t}{\\tau}}",
           "result_for": null
         },
         {
           "text": "At the end of the step, $t = \\Delta t$. Nothing was approximated, so the step may be as long as the interval:",
           "text_ko": "스텝이 끝나는 $t = \\Delta t$에서의 값입니다. 근사한 것이 없으므로 스텝을 그 구간 전체만큼 길게 잡아도 됩니다.",
+          "text_zh": "在该步终点，$t = \\Delta t$。此处未作任何近似，因此步长可以与整个区间一样长：",
           "latex": "v_1 = v_\\infty + \\left(v_0 - v_\\infty\\right) e^{- \\frac{\\Delta t}{\\tau}}",
           "result_for": "sim.exact_step"
         },
         {
           "text": "Compare the usual rules on one decaying mode on its own, the deviation $x$ from where the circuit is going, which changes at the rate $-x/\\tau$ (the test equation). A rule that steps it from $x_0$ to $x_1$ over $\\Delta t$ multiplies it by a factor $g = x_1/x_0$ in every step:",
           "text_ko": "흔히 쓰는 규칙들을 감쇠 모드 하나만 떼어 비교합니다. 이 모드는 회로가 향하는 값에서 벗어난 편차 $x$이며, $-x/\\tau$의 속도로 변합니다(시험 방정식). $\\Delta t$ 동안 편차를 $x_0$에서 $x_1$로 계산하는 규칙은 매 스텝 편차에 배율 $g = x_1/x_0$를 곱합니다.",
+          "text_zh": "单独取一个衰减模态来比较常用方法：即电路偏离其趋向值的偏差 $x$，其变化率为 $-x/\\tau$（试验方程）。某种方法将其从 $x_0$ 计算到 $x_1$，历经 $\\Delta t$，则每一步都将其乘以因子 $g = x_1/x_0$：",
           "latex": "\\frac{d}{d t} x{\\left(t \\right)} = - \\frac{x{\\left(t \\right)}}{\\tau}",
           "result_for": null
         },
         {
           "text": "Forward Euler takes the slope at the start of the step:",
           "text_ko": "전진 오일러(forward Euler)는 스텝 시작점의 기울기를 씁니다.",
+          "text_zh": "前向欧拉法（forward Euler）取该步起点的斜率：",
           "latex": "x_1 = x_0 - \\frac{x_0 \\Delta t}{\\tau}",
           "result_for": null
         },
         {
           "text": "Its factor per step:",
           "text_ko": "스텝당 배율은 다음과 같습니다.",
+          "text_zh": "其每步的因子：",
           "latex": "g_\\mathrm{FE} = 1 - \\frac{\\Delta t}{\\tau}",
           "result_for": "num.gain_fe"
         },
         {
           "text": "The trapezoidal rule averages the slopes at both ends of the step, so $x_1$ appears on both sides:",
           "text_ko": "사다리꼴 규칙(trapezoidal rule)은 스텝 양 끝의 기울기를 평균하므로 $x_1$이 양변에 나타납니다.",
+          "text_zh": "梯形法（trapezoidal rule）取该步两端斜率的平均值，因此 $x_1$ 出现在等式两边：",
           "latex": "x_1 = x_0 + \\frac{\\Delta t \\left(- \\frac{x_0}{\\tau} - \\frac{x_1}{\\tau}\\right)}{2}",
           "result_for": null
         },
         {
           "text": "Solve for $x_1$ and divide by $x_0$:",
           "text_ko": "$x_1$에 대해 풀고 $x_0$으로 나눕니다.",
+          "text_zh": "解出 $x_1$，再除以 $x_0$：",
           "latex": "g_\\mathrm{TR} = - \\frac{\\Delta t - 2 \\tau}{\\Delta t + 2 \\tau} = \\frac{1 - \\frac{\\Delta t}{2 \\tau}}{1 + \\frac{\\Delta t}{2 \\tau}}",
           "result_for": "num.gain_tr"
         },
         {
           "text": "Backward Euler takes the slope at the end of the step:",
           "text_ko": "후진 오일러(backward Euler)는 스텝 끝점의 기울기를 씁니다.",
+          "text_zh": "后向欧拉法（backward Euler）取该步终点的斜率：",
           "latex": "x_1 = x_0 - \\frac{x_1 \\Delta t}{\\tau}",
           "result_for": null
         },
         {
           "text": "Its factor per step:",
           "text_ko": "스텝당 배율은 다음과 같습니다.",
+          "text_zh": "其每步的因子：",
           "latex": "g_\\mathrm{BE} = \\frac{\\tau}{\\Delta t + \\tau} = \\frac{1}{1 + \\frac{\\Delta t}{\\tau}}",
           "result_for": "num.gain_be"
         },
         {
           "text": "For a step far longer than $\\tau$, a stiff mode, the exact factor $e^{-\\Delta t/\\tau}$ is nearly zero. Forward Euler's factor grows without bound, the trapezoidal rule's tends to $-1$, so the mode keeps its size and flips its sign every step, and backward Euler's tends to zero, as the exact one does:",
           "text_ko": "스텝이 $\\tau$보다 훨씬 긴 강성(stiff) 모드에서는 정확한 배율 $e^{-\\Delta t/\\tau}$가 거의 0입니다. 이때 전진 오일러의 배율은 한없이 커지고, 사다리꼴 규칙의 배율은 $-1$에 가까워져 모드가 크기를 유지한 채 매 스텝 부호만 바뀌며, 후진 오일러의 배율은 정확한 배율처럼 0에 가까워집니다.",
+          "text_zh": "步长远大于 $\\tau$ 时，即对于刚性（stiff）模态，精确因子 $e^{-\\Delta t/\\tau}$ 接近零。前向欧拉法的因子无限增大；梯形法的因子趋于 $-1$，因此该模态大小不变而每步变号；后向欧拉法的因子则与精确因子一样趋于零：",
           "latex": "\\left( \\lim_{\\Delta t \\to \\infty}\\left(- \\frac{\\Delta t - 2 \\tau}{\\Delta t + 2 \\tau}\\right) = -1, \\  \\lim_{\\Delta t \\to \\infty}\\left(\\frac{\\tau}{\\Delta t + \\tau}\\right) = 0\\right)",
           "result_for": null
         },
         {
           "text": "Backward Euler steps an inductor's current with the slope at the end of the step, the voltage $v_{L,1}$ across it over its inductance:",
           "text_ko": "후진 오일러는 인덕터 전류를 스텝 끝점의 기울기, 곧 인덕터 전압 $v_{L,1}$을 인덕턴스로 나눈 값으로 계산합니다.",
+          "text_zh": "后向欧拉法用该步终点的斜率计算电感电流，即电感两端电压 $v_{L,1}$ 除以电感：",
           "latex": "i_1 = i_0 + \\frac{v_{L,1} \\Delta t}{L}",
           "result_for": null
         },
         {
           "text": "A diode's current has gone past zero, to $-I_\\mathrm{os}$, before the diode turns off. If nothing else takes the current, the next step must end with it at zero:",
           "text_ko": "다이오드가 꺼지기 전에 다이오드 전류가 0을 지나 $-I_\\mathrm{os}$까지 내려갔습니다. 이 전류가 흐를 다른 경로가 없으면 다음 스텝은 전류가 0인 상태로 끝나야 합니다.",
+          "text_zh": "二极管关断之前，其电流已越过零点，到达 $-I_\\mathrm{os}$。若没有其他支路承接该电流，下一步结束时电流必须为零：",
           "latex": "0 = - I_\\mathrm{os} + \\frac{v_{L,1} \\Delta t}{L}",
           "result_for": null
         },
         {
           "text": "Solve for the voltage across the inductor in that step:",
           "text_ko": "그 스텝에서 인덕터에 걸리는 전압에 대해 풉니다.",
+          "text_zh": "解出该步中电感两端的电压：",
           "latex": "v_\\mathrm{jump} = \\frac{L I_\\mathrm{os}}{\\Delta t}",
           "result_for": "sim.step_jump"
         },
         {
           "text": "Take a buck with ideal parts. With its source at rest (a voltage source is a short), the filter's inductance, its capacitance and the load resistance are in parallel. The natural response of this parallel RLC circuit goes as $e^{st}$, with $s$ a root of its characteristic equation:",
           "text_ko": "이상적인 부품으로 된 벅을 생각합니다. 전원을 끄면(전압원은 단락) 필터의 인덕턴스와 커패시턴스, 부하 저항이 병렬이 됩니다. 이 병렬 RLC 회로의 자연 응답은 $e^{st}$ 꼴이며, $s$는 특성 방정식의 근입니다.",
+          "text_zh": "取一个由理想元件构成的降压变换器。电源置零时（电压源视为短路），滤波器的电感、电容与负载电阻并联。该并联 RLC 电路的固有响应按 $e^{st}$ 变化，$s$ 为其特征方程的根：",
           "latex": "\\frac{1}{C L} + \\frac{s}{C R} + s^{2} = 0",
           "result_for": null
         },
         {
           "text": "When the filter rings, the roots are a complex-conjugate pair. Their common real part, half their sum, is $-\\alpha$, and $\\alpha$ is the decay rate of the ring's envelope (the neper frequency):",
           "text_ko": "필터가 링잉할 때 두 근은 켤레 복소수입니다. 두 근의 합의 절반인 공통 실수부가 $-\\alpha$이며, $\\alpha$는 링잉 포락선의 감쇠율, 곧 네퍼 주파수(neper frequency)입니다.",
+          "text_zh": "滤波器振铃时，两根为一对共轭复数。它们的公共实部即两根之和的一半，为 $-\\alpha$；$\\alpha$ 是振铃包络的衰减率，即奈培频率（neper frequency）：",
           "latex": "\\alpha = \\frac{1}{2 C R}",
           "result_for": null
         },
         {
           "text": "The envelope decays as $e^{-\\alpha t}$, with the time constant $1/\\alpha$, whatever the inductance (with ideal parts):",
           "text_ko": "포락선은 $e^{-\\alpha t}$로 감쇠하며, 시정수는 인덕턴스와 관계없이 $1/\\alpha$입니다(이상적인 부품에서).",
+          "text_zh": "包络按 $e^{-\\alpha t}$ 衰减，时间常数为 $1/\\alpha$，与电感无关（理想元件）：",
           "latex": "\\tau_\\mathrm{env} = 2 R C",
           "result_for": "filter.tau_env"
         },
         {
           "text": "A simulation from rest starts with an error as large as the steady state itself. After $N$ switching periods it has fallen to the fraction $\\varepsilon_r$:",
           "text_ko": "정지 상태에서 시작한 시뮬레이션은 처음 오차가 정상상태 값만큼 큽니다. $N$ 스위칭 주기 뒤에는 이 오차가 처음 값의 $\\varepsilon_r$배로 줄어듭니다.",
+          "text_zh": "从零初始状态开始的仿真，初始误差与稳态值本身一样大。经过 $N$ 个开关周期后，误差衰减为初始值的 $\\varepsilon_r$ 倍：",
           "latex": "\\varepsilon_r = e^{- \\frac{N T_s}{\\tau_\\mathrm{env}}}",
           "result_for": null
         },
         {
           "text": "Solve for $N$:",
           "text_ko": "$N$에 대해 풉니다.",
+          "text_zh": "解出 $N$：",
           "latex": "N_\\mathrm{set} = - \\frac{\\tau_\\mathrm{env} \\ln{\\left(\\varepsilon_r \\right)}}{T_s} = \\frac{\\tau_\\mathrm{env} \\ln{\\left(\\frac{1}{\\varepsilon_r} \\right)}}{T_s}",
           "result_for": "sim.periods_settle"
         }

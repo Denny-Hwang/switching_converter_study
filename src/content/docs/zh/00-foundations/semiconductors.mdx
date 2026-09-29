@@ -1,0 +1,82 @@
+---
+title: 半导体开关及其损耗
+description: 作为变换器开关的 MOSFET 和二极管：导通损耗、容性开关损耗、栅极驱动功率，以及二极管的正向压降模型。
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 把处于导通（conduction）状态的 MOSFET 建模为电阻，把导通的二极管建模为正向压降（forward voltage）加一个小电阻。
+- 估算容性开通损耗（capacitive turn-on loss）和栅极驱动功率（gate-drive power），并观察二者如何随开关频率（switching frequency）变化。
+- 区分随开关频率增大的损耗和随负载增大的损耗。
+
+## 理论
+
+### 变换器的开关
+
+理想开关导通时两端没有电压，关断时没有电流流过。变换器用 MOSFET 等晶体管和二极管实现开关 <Cite key="erickson2020" where="Ch. 4" />。晶体管由栅极（gate）控制开通和关断；二极管则自行通断，正偏（forward bias）时导通，反偏（reverse bias）时阻断（blocking）<Cite key="erickson2020" where="Ch. 4" />。
+
+### 导通损耗
+
+完全导通的 MOSFET 表现为一个电阻，即其导通电阻（on-resistance），因此其导通损耗（conduction loss）由电流有效值（rms current）求得（<EqRef id="loss.cond" label="导通损耗" />）。导通的二极管用一个恒定正向压降与一个小电阻串联来建模 <Cite key="erickson2020" where="Ch. 3" />：
+
+<Eq id="loss.diode" />
+
+无论电流多大，正向压降都从电路中占去一个固定的电压，因此在输出电压低时对效率（efficiency）的损害最大 <Cite key="erickson2020" where="Ch. 4" />。
+
+### 节点电容引起的开关损耗
+
+晶体管开通时，会使开关节点（switch node）上的电容放电，该电容包括晶体管自身的输出电容（output capacitance）。这部分电容储存的能量在每个周期都会损失 <Cite key="erickson2020" where="Ch. 4" />：
+
+<Eq id="loss.sw.cap" />
+
+此外，每次开关过渡（transition）期间电流和电压会短时交叠，二极管关断时还必须清除其存储电荷（stored charge）；二者都会在每次开关动作时增加损耗 <Cite key="erickson2020" where="Ch. 4" />。
+
+### 栅极驱动功率
+
+为使 MOSFET 开关，驱动器每个周期一次把栅极电荷（gate charge）从其电源送入栅极，再泄放到地。这所需的功率耗散（dissipation）在驱动器和栅极电阻中，而不在 MOSFET 的沟道中 <Cite key="balogh2018" />：
+
+<Eq id="loss.gate" />
+
+## 例题
+
+示例开关节点、栅极驱动和二极管：
+
+<Worked example="switch-losses" />
+
+在该开关频率下，容性开通损耗为 <Val example="switch-losses" name="P_sw" />，栅极驱动功率为 <Val example="switch-losses" name="P_gate" />；开关频率加倍时，二者都加倍。而二极管的导通损耗 <Val example="switch-losses" name="P_diode" /> 则取决于负载电流。
+
+## 动手试试
+
+<TryIt eq="loss.sw.cap" example="switch-losses" sweep="V_sw" />
+
+在对数轴上扫描（sweep）被开关的电压：容性损耗随其平方增大，因此这项损耗在开关高电压的变换器中最为重要。然后打开栅极驱动公式，扫描开关频率。
+
+## 实验练习
+
+在开关频率可设定的降压评估板（evaluation board）上，保持负载不变，在两个开关频率下测量输入功率和输出功率，可使用功率分析仪（power analyzer），也可在输入、输出两侧各用一对万用表。损耗增量除以频率增量，即为每个开关周期所损失能量的估计值；利用数据手册中的电容和栅极电荷，将其与容性损耗公式和栅极驱动公式的结果比较。
+
+## 易错点
+
+- **每个周期发生一次的损耗与频率成正比**。提高开关频率可以减小给定纹波所需的电感，但容性损耗、开关过渡损耗和栅极驱动损耗会成比例增加 <Cite key="erickson2020" where="Ch. 4" />。
+- **栅极功率加热的是驱动器，而不是 MOSFET**。应将其计入驱动器的耗散功率预算 <Cite key="balogh2018" />。
+- **输出电压低时，二极管压降（diode drop）代价很大**。同样的正向压降在低输出电压中所占比例更大，这就是低压变换器常用晶体管即同步整流管（synchronous rectifier）代替二极管的原因 <Cite key="erickson2020" where="Ch. 4" />。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch4', 'ti-slua618', 'erickson-ch3']} />
+
+## 测验
+
+<Quiz id="00-foundations/semiconductors" />

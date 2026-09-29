@@ -34,3 +34,7 @@ figures = [
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["pe_core*"]
+
+[tool.setuptools.package-data]
+# the Chinese text of the derivation steps, read by pe_core/derive/common.py
+"pe_core.derive" = ["zh.json"]

@@ -1,6 +1,7 @@
 synthetic: true
 label: "Piezoelectric source example"
 label_ko: "압전 전원 예제"
+label_zh: "压电源示例"
 # A vibrating piezoelectric element as a current source I_p sin(omega t) in parallel with its clamped
 # capacitance C_0. Round numbers for hand checking: V_p = 2 V, R_opt = 20 kOhm, P_R = 50 uW.
 params:

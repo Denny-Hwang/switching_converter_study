@@ -18,6 +18,7 @@ import { PLOT_CONFIG, axis, baseLayout, logTicks, sub, usePlotTheme } from '../l
 import { useStateHash } from '../lib/useStateHash';
 import { Choices, FieldLabel, NumInput, Rich } from './ToolUi';
 import { parseSI } from '../lib/siparse';
+import { PUNCT, type Locale } from '../i18n/ui';
 
 export interface MagLabels {
   /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
@@ -103,7 +104,7 @@ export interface MagPreset {
 }
 
 interface Props {
-  locale: 'en' | 'ko';
+  locale: Locale;
   labels: MagLabels;
   presets: MagPreset[];
   /** What each symbol means (i18n/symbols.ts). */
@@ -311,7 +312,8 @@ function Row({ label, value, eq, strong }: { label: string; value: string; eq?: 
   );
 }
 
-export default function MagneticsDesigner({ labels, presets, symbols, coreSources }: Props) {
+export default function MagneticsDesigner({ locale, labels, presets, symbols, coreSources }: Props) {
+  const punct = PUNCT[locale];
   const init = useMemo(() => stateFromHash(readHash(), presets), [presets]);
   const [state, setState] = useState<State>(init);
   const plotRef = useRef<HTMLDivElement>(null);
@@ -433,7 +435,7 @@ export default function MagneticsDesigner({ labels, presets, symbols, coreSource
     const note = f.key === 'N' ? labels.fewest : f.optional ? labels.optional : undefined;
     return (
       <div key={f.key} className="pe-row pe-row--full">
-        <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} note={note} />
+        <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} note={note} punct={punct} />
         <NumInput id={id} unit={f.unit} value={values[f.key] ?? ''} onChange={(e) => edit(f.key, e.target.value)} />
       </div>
     );
@@ -492,7 +494,9 @@ export default function MagneticsDesigner({ labels, presets, symbols, coreSource
       />
       {source && (
         <p className="pe-tool__hint">
-          {labels.coreSource}: <a href={source.href}>{source.label}</a>
+          {labels.coreSource}
+          {punct.colon}
+          <a href={source.href}>{source.label}</a>
         </p>
       )}
       <div className="pe-split pe-split--results">

@@ -13,3 +13,5 @@ criteria:
     text: '`modulelint`, `privacy_scan`, `mathlint` and `refcheck` pass, and the site builds.'
   - id: korean
     text: 'A Korean page, or a STATUS row that marks it pending.'
+  - id: chinese
+    text: 'A Chinese page, or a row of STATUS''s Chinese table that marks it pending.'

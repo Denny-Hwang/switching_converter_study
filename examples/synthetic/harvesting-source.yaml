@@ -1,6 +1,7 @@
 synthetic: true
 label: "Harvesting source example"
 label_ko: "하베스팅 전원 예제"
+label_zh: "能量收集源示例"
 # The synthetic case of docs/BUILD_SPEC.md (Phase 4): a source whose open-circuit voltage follows a
 # sinusoidal envelope, half-sines of 10 s each, up to 1 kV, behind 1 MOhm, and a fixed-D DCM flyback at 1 kHz sized
 # as a loss-free resistor equal to R_s, charging a 5 V output through a 0.5 V diode.
@@ -23,4 +24,4 @@ steps:
   - flyback.V_crit
   - flyback.Vds_off
 checks:
-  - {when: "V_g < V_gcrit", then: {en: "DCM at the envelope's peak: a loss-free resistor throughout", ko: "포락선 최댓값에서도 DCM: 내내 무손실 저항"}, else: {en: "CCM near the envelope's peak: the bus is held at V_g,crit there", ko: "포락선 최댓값 부근에서 CCM: 그곳에서 버스가 V_g,crit에 묶임"}}
+  - {when: "V_g < V_gcrit", then: {en: "DCM at the envelope's peak: a loss-free resistor throughout", ko: "포락선 최댓값에서도 DCM: 내내 무손실 저항", zh: "包络峰值处为 DCM：全程为无损电阻"}, else: {en: "CCM near the envelope's peak: the bus is held at V_g,crit there", ko: "포락선 최댓값 부근에서 CCM: 그곳에서 버스가 V_g,crit에 묶임", zh: "包络峰值附近为 CCM：该处母线保持在 V_g,crit"}}

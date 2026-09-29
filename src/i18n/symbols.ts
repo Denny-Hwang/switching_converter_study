@@ -1,23 +1,24 @@
 /**
  * What each symbol in the tools' input labels and tables means, in a few
- * words (EN and KO). A symbol of the equation catalogue takes the catalogue's
+ * words, in each of the site's languages. A symbol of the equation catalogue takes the catalogue's
  * own `meaning`, so the tools and the equations say the same thing; the
  * others are the tools' own quantities (limits, targets, ratings).
  */
 import { catalog } from 'pe-core';
+import { textIn, type Locale, type Texts } from './ui';
 
-type Meaning = { en: string; ko: string };
+type Meaning = Texts;
 
 function cat(key: string): Meaning {
   const s = catalog.symbols[key];
   if (!s) throw new Error(`symbols.ts: ${key} is not a catalogue symbol`);
-  return { en: s.meaning, ko: s.meaning_ko };
+  return { en: s.meaning, ko: s.meaning_ko, zh: s.meaning_zh };
 }
 
 export const TOOL_SYMBOLS: Record<string, Meaning> = {
-  A_L0: { en: 'inductance factor of the ungapped set', ko: '공극 없는 세트의 인덕턴스 계수' },
+  A_L0: { en: 'inductance factor of the ungapped set', ko: '공극 없는 세트의 인덕턴스 계수', zh: '无气隙磁芯组的电感系数' },
   A_e: cat('A_e'),
-  A_min: { en: 'smallest cross-section of the core', ko: '코어의 최소 단면적' },
+  A_min: { en: 'smallest cross-section of the core', ko: '코어의 최소 단면적', zh: '磁芯最小截面积' },
   B_max: cat('B_max'),
   C: cat('C'),
   C_bus: cat('C_bus'),
@@ -27,15 +28,15 @@ export const TOOL_SYMBOLS: Record<string, Meaning> = {
   G: cat('G_sense'),
   I_L: cat('I_L'),
   I_PP: cat('I_PP'),
-  I_max: { en: 'largest current to measure', ko: '측정할 최대 전류' },
+  I_max: { en: 'largest current to measure', ko: '측정할 최대 전류', zh: '待测最大电流' },
   I_min: cat('I_min'),
-  I_pk: { en: 'peak primary current', ko: '1차 피크 전류' },
-  'I_L,pk': { en: 'peak inductor current', ko: '인덕터 피크 전류' },
-  'I_L,rms': { en: 'rms inductor current', ko: '인덕터 전류의 실효값(rms)' },
-  'I_p,pk': { en: 'peak primary current', ko: '1차 피크 전류' },
-  'I_p,rms': { en: 'rms primary current', ko: '1차 전류의 실효값(rms)' },
-  'I_s,rms': { en: 'rms secondary current', ko: '2차 전류의 실효값(rms)' },
-  'K_u,max': { en: 'largest window utilization that can be wound', ko: '감을 수 있는 최대 창 이용률' },
+  I_pk: { en: 'peak primary current', ko: '1차 피크 전류', zh: '一次侧峰值电流' },
+  'I_L,pk': { en: 'peak inductor current', ko: '인덕터 피크 전류', zh: '电感峰值电流' },
+  'I_L,rms': { en: 'rms inductor current', ko: '인덕터 전류의 실효값(rms)', zh: '电感电流有效值（rms）' },
+  'I_p,pk': { en: 'peak primary current', ko: '1차 피크 전류', zh: '一次侧峰值电流' },
+  'I_p,rms': { en: 'rms primary current', ko: '1차 전류의 실효값(rms)', zh: '一次侧电流有效值（rms）' },
+  'I_s,rms': { en: 'rms secondary current', ko: '2차 전류의 실효값(rms)', zh: '二次侧电流有效值（rms）' },
+  'K_u,max': { en: 'largest window utilization that can be wound', ko: '감을 수 있는 최대 창 이용률', zh: '可绕制的最大窗口利用率' },
   K: cat('K'),
   K_crit: cat('K_crit'),
   L: cat('L'),
@@ -44,13 +45,14 @@ export const TOOL_SYMBOLS: Record<string, Meaning> = {
   MLT: cat('MLT'),
   M_l: { en: "layers of the winding (Dowell's M)", ko: '권선의 층 수 (Dowell의 M)' },
   N: cat('N'),
-  N_p: { en: 'primary turns', ko: '1차 턴 수' },
-  P: { en: 'full-load output power', ko: '전부하 출력 전력' },
+  N_p: { en: 'primary turns', ko: '1차 턴 수', zh: '一次绕组匝数' },
+  P: { en: 'full-load output power', ko: '전부하 출력 전력', zh: '满载输出功率' },
   'P_min (CCM)': {
     en: 'lowest power that must stay in CCM',
     ko: 'CCM을 유지해야 하는 최소 전력',
+    zh: '须保持 CCM 的最低功率',
   },
-  P_rated: { en: 'shunt power rating', ko: '션트 정격 전력' },
+  P_rated: { en: 'shunt power rating', ko: '션트 정격 전력', zh: '分流电阻额定功率' },
   Q_g: cat('Q_g'),
   R: cat('R'),
   R_IN: cat('R_IN'),
@@ -61,15 +63,15 @@ export const TOOL_SYMBOLS: Record<string, Meaning> = {
   R_clamp: cat('R_clamp'),
   R_f: cat('R_f'),
   R_in: cat('R_in'),
-  R_on: { en: 'switch on-resistance', ko: '스위치 온 저항(on-resistance)' },
-  R_pad: { en: 'pad and solder resistance (0 with a Kelvin connection)', ko: '패드·납땜 저항 (켈빈 연결이면 0)' },
+  R_on: { en: 'switch on-resistance', ko: '스위치 온 저항(on-resistance)', zh: '开关管导通电阻（on-resistance）' },
+  R_pad: { en: 'pad and solder resistance (0 with a Kelvin connection)', ko: '패드·납땜 저항 (켈빈 연결이면 0)', zh: '焊盘与焊锡电阻（开尔文连接时为 0）' },
   R_s: cat('R_s'),
   V: cat('V'),
-  '|V|': { en: 'output voltage magnitude', ko: '출력 전압의 크기' },
+  '|V|': { en: 'output voltage magnitude', ko: '출력 전압의 크기', zh: '输出电压绝对值' },
   V_BR: cat('V_BR'),
   V_CL: cat('V_CL'),
   V_D: cat('V_D'),
-  'V_DS,max': { en: 'largest switch voltage', ko: '최대 스위치 전압' },
+  'V_DS,max': { en: 'largest switch voltage', ko: '최대 스위치 전압', zh: '开关管最大电压' },
   'V_DS,rated': cat('V_rating'),
   V_F: cat('V_F'),
   V_FS: cat('V_FS'),
@@ -80,21 +82,22 @@ export const TOOL_SYMBOLS: Record<string, Meaning> = {
   'V_SENSE,max': {
     en: 'largest shunt voltage allowed',
     ko: '허용하는 최대 션트 전압',
+    zh: '分流电阻上允许的最大电压',
   },
-  V_0: { en: 'start voltage of the capacitor', ko: '커패시터의 시작 전압' },
+  V_0: { en: 'start voltage of the capacitor', ko: '커패시터의 시작 전압', zh: '电容初始电压' },
   V_b: cat('V_b'),
   V_e: cat('V_e'),
   V_g: cat('V_g'),
   'V_g,crit': cat('V_gcrit'),
-  'V_g,max': { en: 'highest input voltage', ko: '최고 입력 전압' },
-  'V_g,min': { en: 'lowest input voltage', ko: '최저 입력 전압' },
+  'V_g,max': { en: 'highest input voltage', ko: '최고 입력 전압', zh: '最高输入电压' },
+  'V_g,min': { en: 'lowest input voltage', ko: '최저 입력 전압', zh: '最低输入电压' },
   V_oc: cat('V_oc'),
   T_w: cat('T_w'),
   W_A: cat('W_A'),
   b_w: cat('b_w'),
-  d_o: { en: 'wire diameter over its insulation', ko: '절연 피막을 포함한 전선 지름' },
+  d_o: { en: 'wire diameter over its insulation', ko: '절연 피막을 포함한 전선 지름', zh: '含绝缘层的导线外径' },
   d_w: cat('d_w'),
-  f_env: { en: 'envelope frequency', ko: '포락선(envelope) 주파수' },
+  f_env: { en: 'envelope frequency', ko: '포락선(envelope) 주파수', zh: '包络（envelope）频率' },
   f_s: cat('f_s'),
   h_g: cat('h_g'),
   f_samp: cat('f_samp'),
@@ -107,28 +110,33 @@ export const TOOL_SYMBOLS: Record<string, Meaning> = {
   n_r: cat('n_r'),
   'n_r = N_r/N_p': cat('n_r'),
   r_d: cat('r_d'),
-  '|M|': { en: 'conversion ratio magnitude', ko: '변환비의 크기' },
+  '|M|': { en: 'conversion ratio magnitude', ko: '변환비의 크기', zh: '电压变换比绝对值' },
   '|V_OS|': {
     en: 'offset magnitude (data sheet)',
     ko: '오프셋 전압의 크기(데이터시트)',
+    zh: '失调电压绝对值（数据手册）',
   },
   'Δi_L / I_L': {
     en: 'ripple target: half peak-to-peak over dc',
     ko: '리플 목표: 피크-피크의 절반 ÷ 직류값',
+    zh: '纹波目标：峰峰值的一半与直流值之比',
   },
   'Δi_M / I_M': {
     en: 'magnetizing ripple target: half peak-to-peak over dc',
     ko: '자화 전류 리플 목표: 피크-피크의 절반 ÷ 직류값',
+    zh: '励磁电流纹波目标：峰峰值的一半与直流值之比',
   },
   'Δi_L,pp (on)': {
     en: 'inductor current rise while on',
     ko: '온 구간의 인덕터 전류 상승폭',
+    zh: '导通期间电感电流的上升量',
   },
   Δi_L: cat('Delta_i_L'),
   Δi_M: cat('Delta_i_M'),
   'Δv / V': {
     en: 'output ripple target: half peak-to-peak over V',
     ko: '출력 리플 목표: 피크-피크의 절반 ÷ V',
+    zh: '输出纹波目标：峰峰值的一半与 V 之比',
   },
   α: cat('alpha'),
   β: cat('beta'),
@@ -136,6 +144,6 @@ export const TOOL_SYMBOLS: Record<string, Meaning> = {
 };
 
 /** Every tool symbol's meaning in one language, for an island's props. */
-export function toolSymbols(locale: 'en' | 'ko'): Record<string, string> {
-  return Object.fromEntries(Object.entries(TOOL_SYMBOLS).map(([k, m]) => [k, m[locale]]));
+export function toolSymbols(locale: Locale): Record<string, string> {
+  return Object.fromEntries(Object.entries(TOOL_SYMBOLS).map(([k, m]) => [k, textIn(m, locale)]));
 }

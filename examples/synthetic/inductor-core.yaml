@@ -1,6 +1,7 @@
 synthetic: true
 label: "Wound-core example"
 label_ko: "권선 코어 예제"
+label_zh: "绕线磁芯示例"
 params:
   N: 20
   I_w: 2

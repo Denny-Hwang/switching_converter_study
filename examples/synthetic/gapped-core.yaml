@@ -1,6 +1,7 @@
 synthetic: true
 label: "Gapped core example"
 label_ko: "공극 코어 예제"
+label_zh: "带气隙磁芯示例"
 params:
   A_e: 1.0e-4
   l_e: 0.05

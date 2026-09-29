@@ -1,6 +1,7 @@
 synthetic: true
 label: "Flyback loss-budget example"
 label_ko: "플라이백 손실 예산 예제"
+label_zh: "反激变换器损耗预算示例"
 # Loss-budget preset (see loss-buck.yaml); 1:n transformer, n = N_s/N_p, and a
 # leakage inductance L_lk referred to the primary.
 params:

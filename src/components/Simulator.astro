@@ -7,7 +7,7 @@
  */
 import SimulatorIsland from '../tools/Simulator.tsx';
 import { toolSymbols } from '../i18n/symbols';
-import { ui } from '../i18n/ui';
+import { textIn, ui } from '../i18n/ui';
 import { pageLocale } from '../lib/locale';
 import { PRESETS, presetValues } from '../lib/simpresets';
 import { SEQ_TEXT } from '../i18n/sequence';
@@ -94,7 +94,7 @@ const labels = {
 };
 const presets = PRESETS.map((p) => ({
   id: p.id,
-  label: locale === 'ko' ? p.ko : p.en,
+  label: textIn(p, locale),
   topology: p.topology,
   values: presetValues(p.example, p.topology),
 }));

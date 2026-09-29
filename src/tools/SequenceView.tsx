@@ -20,6 +20,7 @@ import { fmtValue } from '../lib/format';
 import type { PlotTheme } from '../lib/plot';
 import { FONT, LEGEND, U, layoutCircuit, textWidth, wireSegments, type BranchLayout, type P } from '../lib/seqlayout';
 import { elementKey, fill, kindKey, modeDescription, stateKey, type SeqText } from '../i18n/sequence';
+import type { Punct } from '../i18n/ui';
 import { Rich } from './ToolUi';
 
 type SimResult = sim.SimResult;
@@ -35,18 +36,20 @@ interface Props {
   /** The period's modes (pe-core's modes(result)); none for a circuit at rest. */
   modes: OperatingMode[];
   text: SeqText;
+  /** The language's punctuation between strings (i18n/ui.ts PUNCT). */
+  punct: Punct;
   selected: number;
   onSelect: (k: number) => void;
   theme: PlotTheme;
 }
 
-export default function SequenceView({ result, modes, text, selected, onSelect, theme }: Props) {
+export default function SequenceView({ result, modes, text, punct, selected, onSelect, theme }: Props) {
   const s = useMemo(() => sim.schematic(result.params), [result]);
   const scale = useMemo(() => sim.currentScale(result, s), [result, s]);
   const k = Math.min(Math.max(selected, 0), modes.length - 1);
   const mode = modes[k];
   const peaks = useMemo(() => sim.branchScales(result, s), [result, s]);
-  const parts = useMemo(() => (mode ? modeParts(result, s, peaks, modes, k, text) : null), [result, s, peaks, modes, k, mode, text]);
+  const parts = useMemo(() => (mode ? modeParts(result, s, peaks, modes, k, text, punct) : null), [result, s, peaks, modes, k, mode, text, punct]);
   const rest = useMemo(() => sim.atRest(result, s, scale), [result, s, scale]);
   if (rest) {
     return (
@@ -113,7 +116,7 @@ export default function SequenceView({ result, modes, text, selected, onSelect, 
                 </th>
                 <td>
                   {text[stateKey(e.kind, e.state, 'st')]}
-                  {e.tSign !== undefined && e.signChanges === 1 && <span className="pe-field__meaning"> ({fill(text.reverses!, { t: tIn(e.tSign) })})</span>}
+                  {e.tSign !== undefined && e.signChanges === 1 && <span className="pe-field__meaning">{punct.open + fill(text.reverses!, { t: tIn(e.tSign) }) + punct.close}</span>}
                 </td>
                 <td>{current}</td>
                 <td>{voltage}</td>
@@ -133,7 +136,7 @@ export function timeIn(x: number, mode: OperatingMode): string {
 }
 
 /** What the view shows of mode k: its elements' states and currents, the branches' flow, the table's rows and the description. */
-export function modeParts(result: SimResult, s: Schematic, peaks: Map<string, number>, modes: OperatingMode[], k: number, text: SeqText) {
+export function modeParts(result: SimResult, s: Schematic, peaks: Map<string, number>, modes: OperatingMode[], k: number, text: SeqText, punct: Punct) {
   const mode = modes[k]!;
   // each branch's states, arrows and zeros are measured against its scale in the mode: the switching
   // cell's largest current in the mode, or a load's or source's element's own peak (sim.modeScales)
@@ -146,7 +149,7 @@ export function modeParts(result: SimResult, s: Schematic, peaks: Map<string, nu
   // each element as the table shows it; the description's voltages are the table's
   const rows = states.map((e) => ({ e, ...shown(e, flow.get(e.id)?.sign || 1, eps(e.id)) }));
   const said = rows.map(({ e, volts }) => ({ id: e.id, state: e.state, volts }));
-  const description = modeDescription(result.params.topology, mode.kind, modes[k + 1]?.kind, said, text, sim.coreReset(result, mode, states, scales));
+  const description = modeDescription(result.params.topology, mode.kind, modes[k + 1]?.kind, said, text, punct, sim.coreReset(result, mode, states, scales));
   return { mode, states, flow, byId, rows, description };
 }
 

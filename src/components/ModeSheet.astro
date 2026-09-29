@@ -12,7 +12,7 @@ import { sim } from 'pe-core';
 import ModeSheetView from '../tools/ModeSheet.tsx';
 import { stateFromHash, toParams } from '../tools/Simulator.tsx';
 import { SEQ_TEXT } from '../i18n/sequence';
-import { ui } from '../i18n/ui';
+import { PUNCT, ui } from '../i18n/ui';
 import { pageHref } from '../lib/paths';
 import { pageLocale } from '../lib/locale';
 import { STATIC_THEME } from '../lib/plot';
@@ -39,7 +39,7 @@ const [before, after] = t['sheet.caption'].split('{example}');
 ---
 
 <figure class="pe-figure pe-sheet__figure" id={`modes-${example}`}>
-  <ModeSheetView result={result} modes={modes} text={SEQ_TEXT[locale]} theme={STATIC_THEME} />
+  <ModeSheetView result={result} modes={modes} text={SEQ_TEXT[locale]} punct={PUNCT[locale]} theme={STATIC_THEME} />
   <figcaption>
     <Fragment set:html={renderInlineMath(before ?? '')} /><code>{example}</code><Fragment set:html={renderInlineMath(after ?? '')} />{' '}
     <a href={href}>▶ {t['sheet.open']}</a>

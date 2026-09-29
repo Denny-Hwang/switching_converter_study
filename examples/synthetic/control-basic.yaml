@@ -1,6 +1,7 @@
 synthetic: true
 label: "Voltage-mode loop example"
 label_ko: "전압 모드 루프 예제"
+label_zh: "电压模式环路示例"
 params:
   V_g: 24
   V_M: 2

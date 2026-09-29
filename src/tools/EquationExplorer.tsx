@@ -12,6 +12,7 @@ import { latexHtml, symHtml } from '../lib/sym';
 import { useStateHash } from '../lib/useStateHash';
 import { FieldLabel, NumInput, Rich } from './ToolUi';
 import { parseSI } from '../lib/siparse';
+import { PUNCT, fieldIn, type Locale } from '../i18n/ui';
 
 interface Labels {
   /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
@@ -31,7 +32,7 @@ interface Labels {
 }
 
 interface Props {
-  locale: 'en' | 'ko';
+  locale: Locale;
   labels: Labels;
 }
 
@@ -54,9 +55,9 @@ function unitLabel(name: string): string {
 }
 
 /** What a symbol is, in the page's language. */
-function meaningOf(name: string, locale: 'en' | 'ko'): string {
+function meaningOf(name: string, locale: Locale): string {
   const s = catalog.symbols[name];
-  return (locale === 'ko' ? s?.meaning_ko : s?.meaning) ?? '';
+  return s ? fieldIn(s, 'meaning', locale) : '';
 }
 
 /** A symbol inline, rendered by KaTeX from its catalogue LaTeX. */
@@ -65,7 +66,7 @@ function symbolHtml(name: string): string {
 }
 
 /** Axis title: the symbol, what it is, and its unit ("D — duty ratio", "V — output voltage [V]"). */
-function axisTitle(name: string, locale: 'en' | 'ko'): string {
+function axisTitle(name: string, locale: Locale): string {
   const u = unitLabel(name);
   const meaning = meaningOf(name, locale);
   return `${latexHtml(catalog.symbols[name]?.latex ?? name)}${meaning ? ` — ${symHtml(meaning)}` : ''}${u ? ` [${u}]` : ''}`;
@@ -222,7 +223,7 @@ export default function EquationExplorer({ locale, labels }: Props) {
     };
   }, [eqId, meta, numeric, sweep, from, to, logx, theme, locale, labels, result]);
 
-  const title = locale === 'ko' ? meta.title_ko : meta.title;
+  const title = fieldIn(meta, 'title', locale);
 
   return (
     <div className="pe-tool pe-explorer not-content">
@@ -231,7 +232,7 @@ export default function EquationExplorer({ locale, labels }: Props) {
         <select id="explorer-eq" value={eqId} onChange={(e) => changeEquation(e.target.value)}>
           {ids.map((id) => (
             <option key={id} value={id}>
-              {id} — {locale === 'ko' ? catalog.equations[id]!.title_ko : catalog.equations[id]!.title}
+              {id} — {fieldIn(catalog.equations[id]!, 'title', locale)}
             </option>
           ))}
         </select>
@@ -256,7 +257,8 @@ export default function EquationExplorer({ locale, labels }: Props) {
             ))}
           </fieldset>
           <p className="pe-explorer__result" aria-live="polite">
-            {labels.result}:{' '}
+            {labels.result}
+            {PUNCT[locale].colon}
             {error ? (
               <strong>{error}</strong>
             ) : (

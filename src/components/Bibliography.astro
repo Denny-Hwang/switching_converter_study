@@ -7,7 +7,6 @@ import { formatReference, references } from '../lib/references';
 import { pageLocale } from '../lib/locale';
 
 const locale = pageLocale(Astro);
-const ko = locale === 'ko';
 const all = Object.values(references);
 const shown = all.filter((e) => e.verified).sort((a, b) => a.label.localeCompare(b.label));
 const pending = all.length - shown.length;
@@ -43,9 +42,13 @@ const pending = all.length - shown.length;
 {
   pending > 0 && (
     <p class="pe-bib__pending">
-      {ko
-        ? `검증 대기 중인 항목 ${pending}개는 게시하지 않습니다.`
-        : `${pending} ${pending === 1 ? 'entry' : 'entries'} awaiting verification ${pending === 1 ? 'is' : 'are'} not published.`}
+      {
+        {
+          en: `${pending} ${pending === 1 ? 'entry' : 'entries'} awaiting verification ${pending === 1 ? 'is' : 'are'} not published.`,
+          ko: `검증 대기 중인 항목 ${pending}개는 게시하지 않습니다.`,
+          zh: `待核实的 ${pending} 个条目不予发布。`,
+        }[locale]
+      }
     </p>
   )
 }

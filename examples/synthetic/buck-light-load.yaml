@@ -1,6 +1,7 @@
 synthetic: true
 label: "Buck example at light load"
 label_ko: "경부하 벅 예제"
+label_zh: "轻载降压变换器示例"
 params:
   V_g: 24
   D: 0.5
@@ -18,4 +19,4 @@ steps:
   - {eq: buck.dcm.D2, bind: {M: M_dcm}}
   - {eq: def.V, bind: {M: M_dcm}, as: V_dcm}
 checks:
-  - {when: "K > K_crit", then: {en: "CCM", ko: "CCM"}, else: {en: "DCM", ko: "DCM"}}
+  - {when: "K > K_crit", then: {en: "CCM", ko: "CCM", zh: "CCM"}, else: {en: "DCM", ko: "DCM", zh: "DCM"}}

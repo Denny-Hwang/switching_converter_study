@@ -1,6 +1,7 @@
 synthetic: true
 label: "Example buck charging a battery at a fixed duty ratio"
 label_ko: "고정 듀티비로 배터리를 충전하는 벅 예제"
+label_zh: "以固定占空比为电池充电的降压变换器示例"
 # The battery is its open-circuit voltage V_b behind its internal resistance
 # R_b (Rint model). In CCM the switch node averages D V_g, so the battery
 # takes (D V_g - V_b)/R_b on average.

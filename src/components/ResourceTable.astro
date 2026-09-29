@@ -8,7 +8,7 @@
  * by type, level and tag (without JavaScript the form stays hidden and the
  * whole table shows).
  */
-import { ui } from '../i18n/ui';
+import { fieldIn, textIn, ui, type Locale } from '../i18n/ui';
 import { RESOURCE_LEVELS, RESOURCE_TYPES, resources, typeLabel, type ResourceType } from '../lib/resources';
 import { pageLocale } from '../lib/locale';
 import { fold } from '../lib/fold';
@@ -30,9 +30,13 @@ const shownTypes = order.filter((ty) => rows.some((r) => r.type === ty));
 const tags = [...new Set(rows.flatMap((r) => r.tags))].sort();
 const levels = (Object.keys(RESOURCE_LEVELS) as (keyof typeof RESOURCE_LEVELS)[]).filter((l) => rows.some((r) => r.level === l));
 const allEnglish = rows.every((r) => r.language === 'en');
-const languageName = { en: { en: 'English', ko: '영어' }, ko: { en: 'Korean', ko: '한국어' } } as const;
-// an English title on a Korean page is marked as English for screen readers and hyphenation
-const lang = (l: 'en' | 'ko') => (l === locale ? undefined : l);
+const languageName = {
+  en: { en: 'English', ko: '영어', zh: '英语' },
+  ko: { en: 'Korean', ko: '한국어', zh: '韩语' },
+  zh: { en: 'Chinese', ko: '중국어', zh: '中文' },
+} as const;
+// a title in another language than the page's is marked as such for screen readers and hyphenation
+const lang = (l: Locale) => (l === locale ? undefined : l);
 const id = `pe-res-${(types ?? ['all']).join('-')}`;
 ---
 
@@ -62,7 +66,7 @@ const id = `pe-res-${(types ?? ['all']).join('-')}`;
           <select data-f="level">
             <option value="">{t['res.all']}</option>
             {levels.map((l) => (
-              <option value={l}>{RESOURCE_LEVELS[l][locale]}</option>
+              <option value={l}>{textIn(RESOURCE_LEVELS[l], locale)}</option>
             ))}
           </select>
         </label>
@@ -102,7 +106,7 @@ const id = `pe-res-${(types ?? ['all']).join('-')}`;
               data-type={r.type}
               data-level={r.level}
               data-tags={r.tags.join(' ')}
-              data-text={fold(`${r.title} ${r.author} ${r.why} ${r.why_ko} ${r.tags.join(' ')}`)}
+              data-text={fold(`${r.title} ${r.author} ${r.why} ${fieldIn(r, 'why', locale)} ${r.tags.join(' ')}`)}
             >
               <td>
                 <a href={r.url} lang={lang(r.language)}>
@@ -113,10 +117,10 @@ const id = `pe-res-${(types ?? ['all']).join('-')}`;
                   {r.author}
                 </span>
                 <br />
-                <span class="pe-res__why">{locale === 'ko' ? r.why_ko : r.why}</span>
+                <span class="pe-res__why">{fieldIn(r, 'why', locale)}</span>
               </td>
               <td>{typeLabel(r.type, locale)}</td>
-              <td>{RESOURCE_LEVELS[r.level][locale]}</td>
+              <td>{textIn(RESOURCE_LEVELS[r.level], locale)}</td>
               <td class="pe-res__tags" lang={lang('en')}>
                 {r.tags.join(', ')}
               </td>

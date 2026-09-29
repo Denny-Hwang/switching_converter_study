@@ -8,6 +8,8 @@ export interface EquationMeta {
   id: string;
   title: string;
   title_ko: string;
+  /** Chinese (Simplified); empty until translated, when the site shows the English. */
+  title_zh: string;
   /** Full display LaTeX, e.g. "M = \\frac{1}{1 - D}". */
   latex: string;
   lhs: string;
@@ -21,8 +23,10 @@ export interface EquationMeta {
   assumptions: string[];
   convention: string;
   convention_ko: string;
+  convention_zh: string;
   notes: string;
   notes_ko: string;
+  notes_zh: string;
   cites: { key: string; where: string }[];
   derived_by: string | null;
   n_tests: number;
@@ -36,6 +40,7 @@ export interface SymbolMeta {
   /** A few words for legends and input labels: what the value is. */
   meaning: string;
   meaning_ko: string;
+  meaning_zh: string;
   /** Range used for random test vectors (SI), also a sensible UI default. */
   range: [number, number] | null;
   scale: 'linear' | 'log';
@@ -44,7 +49,7 @@ export interface SymbolMeta {
 export interface Catalog {
   sympy_version: string;
   schema_version: number;
-  assumption_labels: Record<string, { en: string; ko: string }>;
+  assumption_labels: Record<string, { en: string; ko: string; zh?: string }>;
   symbols: Record<string, SymbolMeta>;
   constants: Record<string, { value_expr: string; value: number }>;
   equations: Record<string, EquationMeta>;

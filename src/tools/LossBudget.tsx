@@ -15,6 +15,7 @@ import { useStateHash } from '../lib/useStateHash';
 import type { LossReply } from './lossbudget.worker';
 import { Choices, FieldLabel, NumInput, Rich } from './ToolUi';
 import { parseSI } from '../lib/siparse';
+import type { Locale } from '../i18n/ui';
 
 type Topology = sim.Topology;
 
@@ -64,7 +65,7 @@ export interface LossPreset {
 }
 
 interface Props {
-  locale: 'en' | 'ko';
+  locale: Locale;
   labels: LossLabels;
   presets: LossPreset[];
   simulatorHref: string;

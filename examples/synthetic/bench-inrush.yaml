@@ -1,6 +1,7 @@
 synthetic: true
 label: "Inrush example"
 label_ko: "돌입 전류 예제"
+label_zh: "浪涌电流示例"
 # 48 V switched onto an empty 100 uF input capacitor through 0.1 ohm in all;
 # then the same capacitor brought up by a controlled ramp over 4.8 ms.
 params:

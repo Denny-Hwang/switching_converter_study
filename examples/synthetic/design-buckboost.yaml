@@ -1,6 +1,7 @@
 synthetic: true
 label: "Example buck-boost specification"
 label_ko: "벅-부스트 설계 사양 예제"
+label_zh: "升降压变换器设计规格示例"
 # Converter-designer preset (see design-buck.yaml); V is the output magnitude.
 params:
   V_gmin: 9

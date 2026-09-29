@@ -44,6 +44,7 @@ export function citable(key: string): RefEntry {
 
 function ordinal(n: string, locale: string): string {
   if (locale === 'ko') return `제${n}판`;
+  if (locale === 'zh') return `第 ${n} 版`;
   const k = Number(n);
   const suffix = k % 10 === 1 && k % 100 !== 11 ? 'st' : k % 10 === 2 && k % 100 !== 12 ? 'nd' : k % 10 === 3 && k % 100 !== 13 ? 'rd' : 'th';
   return `${n}${suffix} ed.`;

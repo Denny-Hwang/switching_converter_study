@@ -1,6 +1,7 @@
 synthetic: true
 label: "K_g inductor example"
 label_ko: "K_g 인덕터 예제"
+label_zh: "K_g 电感示例"
 # A filter inductor's specification for the core geometrical constant: 100 µH
 # at 5 A peak and 4.5 A rms, flux density at most 0.3 T, copper at 100 °C, a
 # winding of at most 30 mΩ (the resistance budget R_dcmax) that fills at most

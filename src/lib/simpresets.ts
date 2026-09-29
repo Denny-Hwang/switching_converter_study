@@ -36,34 +36,37 @@ export interface PresetSpec {
   topology: Topology;
   en: string;
   ko: string;
+  zh: string;
 }
 
 export const PRESETS: PresetSpec[] = [
-  { id: 'buck', example: 'buck-basic', topology: 'buck', en: 'Buck, CCM', ko: '벅, CCM' },
-  { id: 'buck-light', example: 'buck-light-load', topology: 'buck', en: 'Buck, light load (DCM)', ko: '벅, 경부하(DCM)' },
-  { id: 'boost', example: 'boost-ideal', topology: 'boost', en: 'Boost', ko: '부스트' },
-  { id: 'boost-rl', example: 'boost-basic', topology: 'boost', en: 'Boost with winding resistance', ko: '권선 저항이 있는 부스트' },
-  { id: 'buckboost', example: 'buckboost-basic', topology: 'buckboost', en: 'Buck-boost', ko: '벅-부스트' },
-  { id: 'flyback-ccm', example: 'flyback-ccm', topology: 'flyback', en: 'Flyback, CCM', ko: '플라이백, CCM' },
-  { id: 'flyback-dcm', example: 'flyback-dcm', topology: 'flyback', en: 'Flyback, DCM', ko: '플라이백, DCM' },
+  { id: 'buck', example: 'buck-basic', topology: 'buck', en: 'Buck, CCM', ko: '벅, CCM', zh: '降压变换器，CCM' },
+  { id: 'buck-light', example: 'buck-light-load', topology: 'buck', en: 'Buck, light load (DCM)', ko: '벅, 경부하(DCM)', zh: '降压变换器，轻载（DCM）' },
+  { id: 'boost', example: 'boost-ideal', topology: 'boost', en: 'Boost', ko: '부스트', zh: '升压变换器' },
+  { id: 'boost-rl', example: 'boost-basic', topology: 'boost', en: 'Boost with winding resistance', ko: '권선 저항이 있는 부스트', zh: '含绕组电阻的升压变换器' },
+  { id: 'buckboost', example: 'buckboost-basic', topology: 'buckboost', en: 'Buck-boost', ko: '벅-부스트', zh: '升降压变换器' },
+  { id: 'flyback-ccm', example: 'flyback-ccm', topology: 'flyback', en: 'Flyback, CCM', ko: '플라이백, CCM', zh: '反激变换器，CCM' },
+  { id: 'flyback-dcm', example: 'flyback-dcm', topology: 'flyback', en: 'Flyback, DCM', ko: '플라이백, DCM', zh: '反激变换器，DCM' },
   {
     id: 'flyback-source',
     example: 'flyback-source',
     topology: 'flyback',
     en: 'Flyback, current-limited source',
     ko: '플라이백, 전류 제한 전원',
+    zh: '反激变换器，限流电源',
   },
-  { id: 'forward', example: 'forward-basic', topology: 'forward', en: 'Forward', ko: '포워드' },
-  { id: 'buck-battery', example: 'sim-buck-battery', topology: 'buck', en: 'Buck charging a battery', ko: '배터리를 충전하는 벅' },
-  { id: 'flyback-battery', example: 'sim-flyback-battery', topology: 'flyback', en: 'Flyback charging a battery (DCM)', ko: '배터리를 충전하는 플라이백(DCM)' },
+  { id: 'forward', example: 'forward-basic', topology: 'forward', en: 'Forward', ko: '포워드', zh: '正激变换器' },
+  { id: 'buck-battery', example: 'sim-buck-battery', topology: 'buck', en: 'Buck charging a battery', ko: '배터리를 충전하는 벅', zh: '为电池充电的降压变换器' },
+  { id: 'flyback-battery', example: 'sim-flyback-battery', topology: 'flyback', en: 'Flyback charging a battery (DCM)', ko: '배터리를 충전하는 플라이백(DCM)', zh: '为电池充电的反激变换器（DCM）' },
   {
     id: 'flyback-charging',
     example: 'sim-flyback-charging',
     topology: 'flyback',
     en: 'Flyback charging a capacitor from 0 V',
     ko: '0 V부터 커패시터를 충전하는 플라이백',
+    zh: '从 0 V 为电容充电的反激变换器',
   },
-  { id: 'buck-runaway', example: 'sim-buck-fixed', topology: 'buck', en: 'Buck into a fixed voltage (no steady state)', ko: '고정 전압에 연결된 벅(정상상태 없음)' },
+  { id: 'buck-runaway', example: 'sim-buck-fixed', topology: 'buck', en: 'Buck into a fixed voltage (no steady state)', ko: '고정 전압에 연결된 벅(정상상태 없음)', zh: '接固定电压的降压变换器（无稳态）' },
 ];
 
 /** Simulator field values from a synthetic example. */

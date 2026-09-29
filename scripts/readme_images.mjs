@@ -8,6 +8,8 @@
  * Re-run after changing what they show:
  *
  *     npm run build && node scripts/readme_images.mjs
+ *
+ * Take only some languages with --locale: `node scripts/readme_images.mjs --locale=zh`.
  */
 import { mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -25,7 +27,7 @@ const SHOTS = [
   { name: 'design', page: 'design/converter-designer/', tool: true, height: 720, ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
   { name: 'simulate', page: 'simulate/simulator/', tool: true, height: 1000, ready: ['.pe-tool .pe-sim__table', '.pe-tool .main-svg'] },
 ];
-const LOCALES = ['en', 'ko'];
+const LOCALES = process.argv.find((a) => a.startsWith('--locale='))?.slice('--locale='.length).split(',') ?? ['en', 'ko', 'zh'];
 const PAD = 12;
 
 /** Boxes of the elements matching `selector`, in page coordinates (the clip of a full-page screenshot). */

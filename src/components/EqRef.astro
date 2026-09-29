@@ -7,6 +7,7 @@
 import { getEquation } from 'pe-core';
 import { eqAnchor, eqHomes } from '../lib/eqhomes';
 import { pageHref } from '../lib/paths';
+import { fieldIn } from '../i18n/ui';
 import { pageLocale } from '../lib/locale';
 
 interface Props {
@@ -19,7 +20,7 @@ const eq = getEquation(id);
 const locale = pageLocale(Astro);
 const home = (await eqHomes(locale)).get(id);
 if (!home) throw new Error(`<EqRef id="${id}">: no page embeds <Eq id="${id}" /> (locale "${locale}", or English as its fallback)`);
-const text = label ?? (locale === 'ko' ? eq.title_ko : eq.title);
+const text = label ?? fieldIn(eq, 'title', locale);
 ---
 
 <a class="pe-eqref" href={pageHref(locale, home, eqAnchor(id))} title={id}>{text}</a>

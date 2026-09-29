@@ -45,8 +45,8 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | continuous conduction mode (CCM) | 연속 전도 모드(CCM) | 连续导通模式（CCM） |
 | discontinuous conduction mode (DCM) | 불연속 전도 모드(DCM) | 断续导通模式（DCM） |
 | CCM/DCM boundary | CCM/DCM 경계 | CCM/DCM 临界 |
-| operating mode | 동작 모드 | 工作模态 |
-| mode (of a period) | 모드 | 模态 |
+| operating mode (CCM or DCM) | 동작 모드 | 工作模式 |
+| operating mode (an interval of the period) · Mode k | 동작 모드 · 모드 k | 工作模态 · 模态 k |
 | operating point | 동작점 | 工作点 |
 | duty ratio | 듀티비 | 占空比 |
 | conversion ratio | 변환비 | 电压变换比 |
@@ -75,6 +75,12 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | open loop · closed loop | 개루프 · 폐루프 | 开环 · 闭环 |
 | quality factor Q · damping | 품질 계수 · 감쇠 | 品质因数 Q · 阻尼 |
 | Bode plot | 보드 선도 | 伯德图 |
+| phasor · impedance · admittance | 페이저 · 임피던스 · 어드미턴스 | 相量 · 阻抗 · 导纳 |
+| Fourier series · harmonic · pulse train | 푸리에 급수 · 고조파 · 펄스열 | 傅里叶级数 · 谐波 · 脉冲序列 |
+| rms value | 실효값(rms) | 有效值（rms） |
+| damping factor ζ | 감쇠 계수 ζ | 阻尼比 ζ |
+| corner frequency · angular frequency | 차단 주파수 · 각주파수 | 转折频率 · 角频率 |
+| rail · bus | 레일 · 버스 | 电源轨 · 母线 |
 
 ## Components and devices
 
@@ -97,6 +103,7 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | load · load resistance | 부하 · 부하 저항 | 负载 · 负载电阻 |
 | battery · internal resistance · state of charge | 배터리 · 내부 저항 · 충전 상태 | 电池 · 内阻 · 荷电状态 |
 | Thevenin source · open-circuit voltage | 테브난 전원 · 개방 전압 | 戴维南电源 · 开路电压 |
+| linear source · source resistance | 선형 전원 · 전원 저항 | 线性源 · 源内阻 |
 | current-limited source · constant-voltage sink | 전류 제한 전원 · 정전압 싱크 | 限流电源 · 恒压负载 |
 | loss-free resistor (LFR) | 무손실 저항(LFR) | 无损电阻（LFR） |
 | linear regulator | 선형 레귤레이터 | 线性稳压器 |
@@ -115,6 +122,8 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | magnetic field intensity · magnetomotive force | 자계 세기 · 기자력 | 磁场强度 · 磁动势 |
 | permeability · relative · of free space | 투자율 · 비투자율 · 진공 투자율 | 磁导率 · 相对磁导率 · 真空磁导率 |
 | reluctance · magnetic circuit | 자기저항 · 자기 회로 | 磁阻 · 磁路 |
+| Ampère's law · Faraday's law | 앙페르 법칙 · 패러데이 법칙 | 安培环路定律 · 法拉第定律 |
+| volt-seconds · flux swing | 전압-초 · 자속 변화폭 | 伏秒积 · 磁通摆幅 |
 | B-H loop · hysteresis · eddy current | B-H 루프 · 히스테리시스 · 와전류 | B-H 回线 · 磁滞 · 涡流 |
 | core loss · Steinmetz equation | 코어 손실 · 스타인메츠 식 | 磁芯损耗 · Steinmetz 公式 |
 | inductance factor A_L | 인덕턴스 계수 A_L | 电感系数 A_L |
@@ -123,6 +132,7 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | window · window utilization | 창 · 창 이용률 | 窗口 · 窗口利用率 |
 | winding · turns · turns ratio | 권선 · 턴 수 · 권선비 | 绕组 · 匝数 · 匝比 |
 | primary · secondary winding | 1차 권선 · 2차 권선 | 一次绕组 · 二次绕组 |
+| dot (polarity mark) | 점 표시(극성) | 同名端 |
 | reset winding | 리셋 권선 | 复位绕组 |
 | referred to the primary · reflected voltage | 1차 측으로 환산 · 반사 전압 | 折算到一次侧 · 反射电压 |
 | magnetizing inductance · magnetizing current | 자화 인덕턴스 · 자화 전류 | 励磁电感 · 励磁电流 |
@@ -147,8 +157,12 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | efficiency | 효율 | 效率 |
 | layout · hot loop | 레이아웃 · 핫 루프 | 布局 · 高 di/dt 回路 |
 | gate drive · gate charge · Miller plateau | 게이트 구동 · 게이트 전하 · 밀러 플래토 | 栅极驱动 · 栅极电荷 · 米勒平台 |
+| gate-drain charge · plateau voltage · driver | 게이트-드레인 전하 · 플래토 전압 · 드라이버 | 栅漏电荷 · 平台电压 · 驱动器 |
 | bootstrap capacitor · shoot-through | 부트스트랩 커패시터 · 슛스루 | 自举电容 · 直通 |
 | current sensing · shunt · current-sense amplifier | 전류 센싱 · 션트 · 전류 센스 증폭기 | 电流检测 · 分流电阻 · 电流检测放大器 |
+| high-side · low-side · Kelvin connection · pad | 하이사이드 · 로우사이드 · 켈빈 연결 · 패드 | 高侧 · 低侧 · 开尔文连接 · 焊盘 |
+| sense resistor · sense voltage · full scale | 센스 저항 · 센스 전압 · 풀스케일 | 检测电阻 · 检测电压 · 满量程 |
+| input offset voltage · anti-aliasing filter | 입력 오프셋 전압 · 안티에일리어싱 필터 | 输入失调电压 · 抗混叠滤波器 |
 | burden voltage · offset | 부담 전압 · 오프셋 | 负担电压 · 失调 |
 | four-wire (Kelvin) measurement | 4선식(켈빈) 측정 | 四线（开尔文）测量 |
 | probe · oscilloscope · ground lead | 프로브 · 오실로스코프 · 접지 리드 | 探头 · 示波器 · 接地线 |
@@ -161,6 +175,10 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | undervoltage lockout (UVLO) | 저전압 차단(UVLO) | 欠压锁定（UVLO） |
 | impedance analyzer · LCR meter | 임피던스 분석기 · LCR 미터 | 阻抗分析仪 · LCR 测试仪 |
 | evaluation board | 평가 보드 | 评估板 |
+| data sheet · manufacturer | 데이터시트 · 제조사 | 数据手册 · 厂商 |
+| function generator · square wave · sine wave | 함수 발생기 · 구형파 · 정현파 | 函数发生器 · 方波 · 正弦波 |
+| deskew (probes) | 디스큐 | 时延校正（deskew） |
+| load transient · worst case | 부하 과도 · 최악 조건 | 负载瞬态 · 最坏情况 |
 
 ## Harvesting
 
@@ -190,4 +208,6 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | Newton's method · bisection | 뉴턴법 · 이분법 | 牛顿法 · 二分法 |
 | event · converge | 이벤트 · 수렴 | 事件 · 收敛 |
 | relative difference · unit roundoff | 상대 차이 · 단위 반올림 오차 | 相对差 · 单位舍入误差 |
+| stiff (equations) · test equation | stiff · 시험 방정식 | 刚性（stiff）· 试验方程 |
+| decaying mode · tolerance · A-stable · L-stable | 감쇠 모드 · 허용오차 · A-안정 · L-안정 | 衰减模态 · 容差 · A 稳定 · L 稳定 |
 | headless browser | 헤드리스 브라우저 | 无头浏览器 |

@@ -1,6 +1,7 @@
 synthetic: true
 label: "DCM buck-boost example"
 label_ko: "DCM 벅-부스트 예제"
+label_zh: "DCM 升降压变换器示例"
 params:
   V_g: 10
   D: 0.5

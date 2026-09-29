@@ -9,6 +9,7 @@
  */
 import Cite from './Cite.astro';
 import { FIGURES, figureSvg } from '../lib/figures';
+import { textIn } from '../i18n/ui';
 import { pageLocale } from '../lib/locale';
 import { renderInlineMath } from '../math/inline';
 
@@ -28,9 +29,9 @@ const size = `--fig-width: ${Math.round(px)}px; --fig-min: ${Math.round(0.7 * px
 ---
 
 <figure class="pe-figure" id={`fig-${name}`}>
-  <div class="pe-figure__art" role="img" aria-label={info.alt[locale]} style={size} set:html={svg} />
+  <div class="pe-figure__art" role="img" aria-label={textIn(info.alt, locale)} style={size} set:html={svg} />
   <figcaption>
-    <Fragment set:html={renderInlineMath(info.caption[locale])} />{' '}
+    <Fragment set:html={renderInlineMath(textIn(info.caption, locale))} />{' '}
     <Cite key={info.cite.key} where={info.cite.where} />
   </figcaption>
 </figure>

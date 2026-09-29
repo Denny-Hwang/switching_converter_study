@@ -48,6 +48,19 @@ const GAP = 7;
 /** A state wider than this (px) is broken after its arrow onto two lines. */
 const STATE_WRAP = 64;
 
+/** Hangul, CJK ideographs, CJK punctuation and full-width forms: about one em each. */
+function wide(c: number): boolean {
+  return (
+    (c >= 0xac00 && c <= 0xd7a3) ||
+    (c >= 0x3130 && c <= 0x318f) ||
+    (c >= 0x1100 && c <= 0x11ff) ||
+    (c >= 0x4e00 && c <= 0x9fff) ||
+    (c >= 0x3400 && c <= 0x4dbf) ||
+    (c >= 0x3000 && c <= 0x303f) ||
+    (c >= 0xff00 && c <= 0xffef)
+  );
+}
+
 /**
  * An estimate of a text's width (px), on the generous side of what browsers
  * draw with the site's sans-serif fonts (scripts/seq_check.mjs measures the
@@ -57,7 +70,7 @@ export function textWidth(s: string, size: number): number {
   let w = 0;
   for (const ch of s) {
     const c = ch.codePointAt(0)!;
-    if ((c >= 0xac00 && c <= 0xd7a3) || (c >= 0x3130 && c <= 0x318f) || (c >= 0x1100 && c <= 0x11ff)) w += 1.1;
+    if (wide(c)) w += 1.1;
     else if (ch === '→' || ch === '↑' || ch === '↓') w += 1.0;
     else if (ch === ' ') w += 0.3;
     else if (/[A-Z]/.test(ch)) w += 0.72;

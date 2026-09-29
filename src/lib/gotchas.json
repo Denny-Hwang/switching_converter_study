@@ -1,15 +1,15 @@
 {
   "tags": {
-    "measurement": { "en": "Measurement", "ko": "측정" },
-    "sensing": { "en": "Current sensing", "ko": "전류 센싱" },
-    "sampling": { "en": "Sampling", "ko": "샘플링" },
-    "magnetics": { "en": "Magnetics", "ko": "자성 부품" },
-    "capacitors": { "en": "Capacitors", "ko": "커패시터" },
-    "temperature": { "en": "Temperature", "ko": "온도" },
-    "protection": { "en": "Protection", "ko": "보호" },
-    "gate-drive": { "en": "Gate drive", "ko": "게이트 구동" },
-    "power-gating": { "en": "Power gating", "ko": "전원 게이팅" },
-    "flyback": { "en": "Flyback", "ko": "플라이백" },
-    "harvesting": { "en": "Harvesting", "ko": "에너지 하베스팅" }
+    "measurement": { "en": "Measurement", "ko": "측정", "zh": "测量" },
+    "sensing": { "en": "Current sensing", "ko": "전류 센싱", "zh": "电流检测" },
+    "sampling": { "en": "Sampling", "ko": "샘플링", "zh": "采样" },
+    "magnetics": { "en": "Magnetics", "ko": "자성 부품", "zh": "磁性元件" },
+    "capacitors": { "en": "Capacitors", "ko": "커패시터", "zh": "电容" },
+    "temperature": { "en": "Temperature", "ko": "온도", "zh": "温度" },
+    "protection": { "en": "Protection", "ko": "보호", "zh": "保护" },
+    "gate-drive": { "en": "Gate drive", "ko": "게이트 구동", "zh": "栅极驱动" },
+    "power-gating": { "en": "Power gating", "ko": "전원 게이팅", "zh": "电源门控" },
+    "flyback": { "en": "Flyback", "ko": "플라이백", "zh": "反激" },
+    "harvesting": { "en": "Harvesting", "ko": "에너지 하베스팅", "zh": "能量收集" }
   }
 }

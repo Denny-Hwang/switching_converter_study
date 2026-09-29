@@ -1,6 +1,7 @@
 synthetic: true
 label: "Cross-check example"
 label_ko: "교차 검사 예제"
+label_zh: "交叉校验示例"
 # A simulated conversion ratio against the ideal one, and the unit roundoff of binary64,
 # the double of JavaScript and Python.
 params:
