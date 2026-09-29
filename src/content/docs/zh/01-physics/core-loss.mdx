@@ -1,0 +1,76 @@
+---
+title: 磁芯损耗
+description: 磁芯中的磁滞损耗和涡流损耗、经验性的 Steinmetz 公式，以及高频下限制磁通摆幅的为什么是磁芯损耗而不是饱和。
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 指出磁芯损耗（core loss）的两种机理：磁滞（hysteresis）和涡流（eddy current）。
+- 用 Steinmetz 公式（Steinmetz equation），由磁通幅值（flux amplitude）和频率估算单位体积的磁芯损耗。
+- 解释为什么在较高的开关频率（switching frequency）下，限制磁通摆幅（flux swing）的是磁芯损耗而不是饱和（saturation）。
+
+## 理论
+
+### 磁滞与涡流
+
+磁通密度（flux density）在每个周期内沿磁芯的 B-H 回线变化一周，回线所包围的能量以热的形式损耗，即磁滞损耗 <Cite key="erickson2020" where="Ch. 10" />。变化的磁通还会在磁芯材料内部感应（induction）出电流，这些电流在材料的电阻上耗散（dissipation）功率，即涡流损耗 <Cite key="erickson2020" where="Ch. 10" />。Steinmetz 发现，每周期的磁滞损耗随峰值磁通密度的某一幂次增长 <Cite key="steinmetz1984" />。
+
+### Steinmetz 公式
+
+对于给定材料，在一定的频率和磁通密度范围内，实测的单位体积损耗可用下式拟合（fitting）<Cite key="erickson2020" where="Ch. 10" />：
+
+<Eq id="loss.steinmetz" />
+
+$B_\mathrm{ac}$ 为交流磁通密度峰值（peak ac flux density），即由法拉第定律（Faraday's law）得到的峰峰值摆幅的一半（<EqRef id="mag.dB_faraday" label="磁通摆幅" />）。这些系数只适用于拟合时的材料、温度和范围，并且只适用于正弦激励（sinusoidal excitation）；对于变换器中的矩形波电压（rectangular voltage），该公式给出的是估计值。
+
+若认为磁通密度在磁芯的有效体积（effective volume）内均匀分布，则整个磁芯的损耗等于单位体积损耗乘以有效体积 <Cite key="erickson2020" where="Ch. 10" />：
+
+<Eq id="loss.core" />
+
+### 高频下摆幅为什么受限
+
+电压和占空比（duty ratio）一定时，磁通摆幅与开关频率成反比。在较高的开关频率下，使磁芯损耗保持在可接受范围内的摆幅通常远低于饱和磁通密度（saturation flux density），因此在变压器设计中，决定磁通摆幅的是磁芯损耗而不是饱和 <Cite key="erickson2020" where="Ch. 12" />。
+
+## 例题
+
+某一工作点（operating point）下的示例 Steinmetz 系数：
+
+<Worked example="core-loss" />
+
+采用这些系数，在 <Val example="core-loss" name="f" /> 下交流磁通密度峰值为 <Val example="core-loss" name="B_ac" /> 时，单位体积损耗为 <Val example="core-loss" name="P_v" />。有效体积为 <Val example="core-loss" name="V_e" /> 的磁芯，总损耗则为 <Val example="core-loss" name="P" />。
+
+## 动手试试
+
+<TryIt eq="loss.steinmetz" example="core-loss" sweep="B_ac" />
+
+在对数坐标轴上扫描（sweep）$B_\mathrm{ac}$：在双对数坐标图上，损耗是一条直线，其斜率为指数 $\beta$。磁通幅值减半，损耗除以 2 的 $\beta$ 次方。
+
+## 实验练习
+
+二次侧开路，用方波驱动变压器的一次侧，并用示波器（oscilloscope）记录一次电压和电流。两者乘积在一个周期内的平均值等于磁芯损耗加上很小的绕组损耗（winding loss）。先对电压探头和电流探头进行时延校正（deskew）：励磁电流（magnetizing current）主要是无功分量（reactive component），因此很小的时间偏差也会使结果大幅改变。将电压减半后重复测量，并将两次损耗之比与 2 的 $\beta$ 次方比较。
+
+## 易错点
+
+- **系数是经验值**。它们只适用于拟合时所用的材料、温度以及频率和磁通密度范围 <Cite key="erickson2020" where="Ch. 10" />。
+- **使用峰峰值摆幅的一半**。$B_\mathrm{ac}$ 是幅值，即 $\Delta B$ 的一半；若代入整个摆幅，损耗会被高估为 2 的 $\beta$ 次方倍。
+- **纹波小的滤波电感，摆幅也小**。此时其磁芯损耗不大，饱和限制则由不产生磁芯损耗的直流磁通（dc flux）决定 <Cite key="erickson2020" where="Ch. 10" />。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch10', 'coursera-magnetics', 'ti-slup132']} />
+
+## 测验
+
+<Quiz id="01-physics/core-loss" />

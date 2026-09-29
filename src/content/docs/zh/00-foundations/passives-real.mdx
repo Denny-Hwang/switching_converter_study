@@ -1,0 +1,80 @@
+---
+title: 实际无源元件
+description: 实际电感和电容在理想元件之外多出的特性：串联电阻与导通损耗、自谐振，以及电容串联电阻上的纹波。
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 由电流有效值（rms current）估算绕组（winding）或电容串联电阻（series resistance）中的导通损耗（conduction loss）。
+- 解释电感自谐振（self-resonance）的来源，以及在其附近测得的电感量为何不正确。
+- 估算电容串联电阻所增加的输出纹波。
+
+## 理论
+
+### 串联电阻与导通损耗
+
+实际电感具有绕组电阻 <Cite key="erickson2020" where="Ch. 3" />，实际电容具有等效串联电阻（equivalent series resistance, ESR）<Cite key="ti_slva630" />。电流流过电阻时，耗散（dissipation）的功率与电流有效值的平方成正比 <Cite key="erickson2020" where="Ch. 3" />：
+
+<Eq id="loss.cond" />
+
+晶体管导通电阻（on-resistance）的导通损耗也由同一公式给出（见[半导体页面](../semiconductors/)）。起作用的是有效值而不是平均值：平均值相同时，脉冲电流比恒定电流的损耗更大（<EqRef id="fourier.pulse.rms" label="脉冲序列的有效值" />）。
+
+### 自谐振
+
+绕组中相邻的匝（turn）之间隔着绝缘层（insulation），因此每匝两端都会出现一个小电容 <Cite key="ti_snoa930" />。这些电容合起来相当于一个与电感并联的电容，二者发生谐振：
+
+<Eq id="passive.f_srf" />
+
+低于该频率时元件呈感性（inductive）；高于该频率时并联电容起主导作用，元件表现为电容 <Cite key="alexander2017" where="Ch. 14" />。匝数多的绕线电感（wire-wound inductor）电感量可以很大，但自谐振频率（self-resonant frequency）往往较低 <Cite key="ti_snoa930" />。自谐振频率可以用阻抗分析仪（impedance analyzer）测量：它就是阻抗相位过零的频率 <Cite key="ti_snoa930" />。
+
+### 电容串联电阻与输出纹波
+
+变换器输出电容中的纹波电流既流过其电容，也流过其串联电阻，串联电阻会叠加一个与该电流同相的纹波电压 <Cite key="ti_slva630" />：
+
+<Eq id="cap.esr.ripple" />
+
+这一项叠加在容性（capacitive）纹波（<EqRef id="buck.ripple.v" label="降压变换器输出纹波" />）之上，而电容的串联电感（series inductance, ESL）会在开关边沿（switching edge）处叠加阶跃（step）<Cite key="ti_slva630" />。两项在不同时刻达到峰值，因此二者峰峰值（peak-to-peak）之和是总纹波的上限。
+
+## 例题
+
+示例绕组、电感和输出电容：
+
+<Worked example="passives-real" />
+
+在给定的电流有效值下，绕组损耗为 <Val example="passives-real" name="P" />。电感与其寄生电容（parasitic capacitance）在 <Val example="passives-real" name="f_srf" /> 处谐振。电容的串联电阻使输出纹波增加峰峰值 <Val example="passives-real" name="Delta_v_esr" />；可将其与[降压变换器页面](../../03-topologies/buck/)上的容性纹波比较。
+
+## 动手试试
+
+<TryIt eq="passive.f_srf" example="passives-real" sweep="C_p" />
+
+在对数轴上扫描（sweep）$C_p$：自谐振频率与寄生电容的平方根成反比地下降。然后打开导通损耗公式，扫描电流有效值，观察平方律（square law）。
+
+## 实验练习
+
+用阻抗分析仪或测试频率可以步进调节的 LCR 测试仪，测量一个匝数多的绕线电感的阻抗模和相位随频率的变化。找出相位过零处的自谐振频率 <Cite key="ti_snoa930" />，并用上面的公式估算寄生电容。然后观察：在单一测试频率下读出的电感值，如何随该频率接近谐振点而漂移。
+
+## 易错点
+
+- **在远低于自谐振频率处测量电感量**。在谐振点附近，读数既不是电感量也不是电容量；对于匝数多的绕组，谐振频率可能很低 <Cite key="ti_snoa930" />。
+- **损耗由电流有效值决定**。流过脉冲电流的绕组或串联电阻，其损耗比按平均电流估计的更大。
+- **开关边沿会带来额外的纹波**。电容的串联电感在每个开关边沿使输出电压产生阶跃，容性项和阻性项都预测不到这一点 <Cite key="ti_slva630" />。
+
+## 延伸阅读
+
+<GoDeeper ids={['ti-slva630', 'ti-snoa930', 'erickson-ch3']} />
+
+## 测验
+
+<Quiz id="00-foundations/passives-real" />

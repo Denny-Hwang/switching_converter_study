@@ -1,0 +1,12 @@
+---
+title: "资料"
+description: "本站推荐的所有外部资料，汇集在一个可筛选的表格中：图书、课程、视频、应用笔记、工具和论文。"
+sidebar:
+  order: 0
+---
+
+import ResourceTable from '../../../../components/ResourceTable.astro';
+
+各模块“延伸阅读”列表推荐的图书、课程、视频、应用笔记（application note）、工具和论文，以及另外几项，全部列在一个表格中。每一项都通过两次独立的网络搜索核对过标题，并注明核对日期；CI 会打开每个链接再次核对标题，若主机拒绝 CI 运行器（runner）访问，则核对该链接在互联网档案馆（Internet Archive）最新存档的标题。按类型分列的清单见侧边栏，正文中引用的出处见[参考文献](bibliography/)。
+
+<ResourceTable />

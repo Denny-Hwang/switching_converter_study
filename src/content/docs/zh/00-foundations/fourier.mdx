@@ -1,0 +1,80 @@
+---
+title: 开关波形的傅里叶级数
+description: 矩形脉冲序列的直流分量、谐波和有效值；每个开关节点上都是这种波形。
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 把周期波形分解为直流分量（dc component）和谐波（harmonics）。
+- 计算变换器开关节点（switch node）上的波形，即矩形脉冲序列（rectangular pulse train）的谐波幅值和有效值（rms value）。
+- 解释低通滤波器（low-pass filter）为何能提取出开关节点电压的直流分量。
+
+## 理论
+
+### 周期信号表示为正弦波之和
+
+周期信号等于其平均值（average value）与一系列正弦波（sinusoid）之和：平均值即直流分量，这些正弦波的频率为基波频率（fundamental frequency）的整数倍，即谐波 <Cite key="alexander2017" where="Ch. 17" />。把各次谐波的幅值画成频率的函数，就得到该信号的幅度谱（amplitude spectrum）<Cite key="alexander2017" where="Ch. 17" />。
+
+### 矩形脉冲序列
+
+降压（buck）变换器的开关节点上是一个脉冲序列：在每个周期中占比为 $D$ 的时间内为输入电压，其余时间为零 <Cite key="erickson2020" where="Ch. 2" />。它的直流分量就是它的平均值（<EqRef id="sw.v_avg" label="开关节点平均电压" />），其谐波幅值为
+
+<Eq id="fourier.pulse.harm" />
+
+谐波幅值与谐波次数（harmonic order）成反比地减小；只要 $h D$ 为整数，该次谐波就为零：在 $D = 0.5$ 时，所有偶次谐波都不存在。
+
+### 有效值
+
+有效值是一个周期内平方的平均值的平方根 <Cite key="alexander2017" where="Ch. 11" />。对脉冲序列而言，只有脉冲部分对这一平均值有贡献：
+
+<Eq id="fourier.pulse.rms" />
+
+电阻中的损耗取决于电流的有效值，而不是平均值（<EqRef id="loss.cond" label="导通损耗" />）；对于窄脉冲，有效值远大于平均值。
+
+### 输出滤波器为何有效
+
+降压变换器的 L-C 滤波器让开关节点电压的直流分量通过，并使其谐波衰减（attenuation），其中最低次谐波位于开关频率（switching frequency）处。输出端剩下的是平均值 $D V_g$ 加上很小的纹波 <Cite key="erickson2020" where="Ch. 2" />。
+
+## 例题
+
+一个示例脉冲序列，即降压变换器开关节点上的那种波形：
+
+<Worked example="pulse-train" />
+
+该脉冲序列的直流分量为 <Val example="pulse-train" name="v_s_avg" />，其基波（fundamental）幅值为 <Val example="pulse-train" name="a_h" />，在此占空比（duty ratio）下比直流分量本身还大。其有效值为 <Val example="pulse-train" name="V_rms" />。
+
+## 动手试试
+
+<TryIt eq="fourier.pulse.harm" example="pulse-train" sweep="D" />
+
+扫描（sweep）$D$：基波在 $D = 0.5$ 时最大。然后把 $h$ 设为 2 再次扫描：二次谐波在 $D = 0.5$ 时为零，在 0.25 和 0.75 处最大。
+
+## 实验练习
+
+在降压评估板（evaluation board）上，用差分探头（differential probe）或接地连线很短的探头测量开关节点电压，并使用示波器（oscilloscope）的 FFT 功能。读出直流值和前几次谐波的幅值，并与公式在实测占空比和输入电压下给出的值比较。确认示波器显示的是各次谐波的峰值幅值，还是峰值除以 $\sqrt{2}$ 所得的有效值。
+
+## 易错点
+
+- **谐波并不止于开关频率**。理想脉冲序列的谐波只按 $1/h$ 减小，因此一直延伸到远高于开关频率的范围；这对滤波器、干扰（interference）和采样都有影响。
+- **平均值与有效值不同**。平均值相同的两个电流，其有效值可能相差很大，而电阻损耗取决于有效值 <Cite key="alexander2017" where="Ch. 11" />。
+- **正弦波的有效值是幅值除以 $\sqrt{2}$，脉冲序列的有效值则不是**。应使用实际波形的有效值 <Cite key="alexander2017" where="Ch. 11" />。
+
+## 延伸阅读
+
+<GoDeeper ids={['mit-6003-notes', 'mit-6003']} />
+
+## 测验
+
+<Quiz id="00-foundations/fourier" />

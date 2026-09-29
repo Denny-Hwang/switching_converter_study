@@ -1,0 +1,27 @@
+---
+title: 公式流水线检查
+description: 由单一事实来源渲染的一个公式及其验证徽章，以及在浏览器中运行的同一引擎。
+sidebar:
+  order: 2
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import PipelinePlot from '../../../../tools/PipelinePlot.tsx';
+
+本页检验后续所有页面都依赖的这条链路：
+
+1. `packages/pe-core/equations/equations.yaml` 保存公式表达式、其假设、引用和手工核对过的测试值。
+2. `python scripts/gen_equations.py` 用 sympy 解析该文件，生成 LaTeX 和共享测试向量；若有测试值与表达式不符，则运行失败。
+3. TypeScript 引擎用这些向量测试（相对误差 1e-9），每个生成的公式都由 KaTeX 以严格模式（strict mode）渲染。
+4. 文档用 `<Eq id="…" />` 嵌入结果；不手工输入任何 LaTeX。
+
+<Eq id="buck.ccm.M" />
+
+展开公式下方的折叠栏可查看其假设和出处；徽章链接到一致性测试。公式本身在<EqRef id="buck.ccm.M" label="伏秒平衡页面" />中讲解。
+
+## 浏览器中的同一引擎
+
+下图是一个 React 岛（island），它在浏览器中调用降压（buck）和升压（boost）变换器 CCM 电压变换比（conversion ratio）的 TypeScript 求值函数（evaluator），并用 Plotly 绘图。[公式浏览器](../../design/explorer/)对目录中的任何公式都能做同样的事。
+
+<PipelinePlot client:only="react" label="CCM 下理想降压和升压变换器的电压变换比随占空比的变化" xTitle="D" />

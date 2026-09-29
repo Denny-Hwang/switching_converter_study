@@ -1,0 +1,80 @@
+---
+title: 相量、阻抗与拉普拉斯变换
+description: 用相量分析的正弦稳态、电感和电容的阻抗、传递函数，以及一阶低通滤波器及其伯德图。
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 用相量（phasor）表示正弦信号（sinusoidal signal），用阻抗（impedance）表示电感和电容。
+- 计算给定频率下电感和电容的阻抗。
+- 求一阶（first-order）低通滤波器（low-pass filter）的转折频率（corner frequency）及其在转折频率以上的衰减（attenuation）；这种滤波器是变换器传递函数（transfer function）的基本组成单元。
+
+## 理论
+
+### 相量与阻抗
+
+在正弦稳态（sinusoidal steady state）下，线性电路中的每个电压和电流都是电源频率的正弦量。每个正弦量都可以用一个复数即它的相量表示，相量包含幅值和相位（phase）<Cite key="alexander2017" where="Ch. 9" />。微分变为乘以 $j\omega$，每个元件用其阻抗描述，即其电压相量与电流相量之比 <Cite key="alexander2017" where="Ch. 9" />。电感和电容的阻抗模为
+
+<Eq id="imp.ZL" />
+
+<Eq id="imp.ZC" />
+
+电感的阻抗随频率升高而增大，电容的阻抗则随频率升高而减小。正因如此，变换器的 L-C 滤波器能让开关节点（switch node）电压的直流分量（dc component）通过，同时滤除开关谐波（harmonics）<Cite key="erickson2020" where="Ch. 2" />。
+
+### 拉普拉斯变换与传递函数
+
+拉普拉斯变换（Laplace transform）把同样的思路从正弦量推广到任意信号：用复频率（complex frequency）$s$ 代替 $j\omega$，线性电路就用传递函数描述，即输出的变换与输入的变换之比 <Cite key="alexander2017" where="Ch. 15" />。传递函数在 $j\omega$ 处取值，就得到频率响应（frequency response），即各频率下的增益（gain）和相位 <Cite key="alexander2017" where="Ch. 14" />。
+
+### 一阶低通滤波器
+
+电阻与电容串联、从电容两端取输出，就是最简单的低通滤波器。其增益在低频时接近 1，在转折频率以上下降 <Cite key="alexander2017" where="Ch. 14" />：
+
+<Eq id="rc.fc" />
+
+<Eq id="rc.gain" />
+
+在远高于转折频率处，频率每升高一个十倍频程（decade），增益降为十分之一：在伯德图（Bode plot）上即每十倍频程 -20 dB 的斜率 <Cite key="alexander2017" where="Ch. 14" />。变换器的 L-C 滤波器是二阶（second-order）的，在其谐振（resonance）频率以上以每十倍频程 -40 dB 下降 <Cite key="erickson2020" where="Ch. 8" />（见[小信号（small-signal）页面](../../02-theory/small-signal/)）。
+
+## 例题
+
+某一频率下的示例电感、电容和 R-C 滤波器：
+
+<Worked example="impedance-basic" />
+
+在 <Val example="impedance-basic" name="f" /> 下，电感的阻抗为 <Val example="impedance-basic" name="Z_L" />，而电容的阻抗只有 <Val example="impedance-basic" name="Z_C" />。R-C 滤波器的转折频率为 <Val example="impedance-basic" name="f_c" />，因此在该频率下，滤波器只让输入幅值的 <Val example="impedance-basic" name="G_lp" /> 通过。
+
+## 动手试试
+
+<TryIt eq="rc.gain" example="impedance-basic" sweep="f" />
+
+在对数轴上扫描（sweep）$f$：增益在转折频率以下保持平坦，在转折频率处等于 $1/\sqrt{2}$，在其以上每十倍频程降为十分之一。然后打开电容的阻抗公式，再次扫描 $f$，可以看到同样的反比关系。
+
+## 实验练习
+
+搭建一个转折频率位于音频范围内的 R-C 低通滤波器，用函数发生器（function generator）输出的正弦波驱动它，并在转折频率附近的若干频率下用示波器（oscilloscope）测量输出的幅值和相位。在对数频率轴上绘出以分贝（decibel）表示的增益，并与公式比较：在转折频率处增益下降 3 dB，输出滞后输入 45°；在高出一个十倍频程处，增益下降约 20 dB。
+
+## 易错点
+
+- **模值掩盖了相位**。阻抗模相等的电感和电容串联时相互抵消而不是相加：在该频率下它们处于串联谐振（series resonance）<Cite key="alexander2017" where="Ch. 14" />。
+- **弧度还是赫兹**。$\omega$ 的单位是弧度每秒，$f$ 的单位是赫兹；二者混用会使转折频率偏移 $2\pi$ 倍。
+- **带负载的滤波器是另一个滤波器**。转折频率公式假设输出端没有电流流出。与电容并联的负载会降低增益并使转折频率移动。
+
+## 延伸阅读
+
+<GoDeeper ids={['mit-6003-notes', 'mit-6003', 'mit-6002-notes']} />
+
+## 测验
+
+<Quiz id="00-foundations/phasors-laplace" />

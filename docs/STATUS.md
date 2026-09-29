@@ -83,10 +83,10 @@ page pending on its own.
 
 | Folder | ZH | Notes |
 | --- | --- | --- |
-| index | ⬜ | the landing page |
-| about | ⬜ | |
-| 00-foundations | ⬜ | |
-| 01-physics | ⬜ | |
+| index | ✅ | the landing page |
+| about | ✅ | |
+| 00-foundations | ✅ | |
+| 01-physics | ✅ | |
 | 02-theory | ⬜ | |
 | 03-topologies | ⬜ | |
 | 04-magnetics | ⬜ | |
@@ -95,7 +95,7 @@ page pending on its own.
 | 07-harvesting | ⬜ | |
 | 08-gotchas | ⬜ | |
 | 09-missions | ⬜ | |
-| 10-resources | ⬜ | |
+| 10-resources | ✅ | |
 | design | ⬜ | |
 | simulate | ⬜ | |
 

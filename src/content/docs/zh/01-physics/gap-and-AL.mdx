@@ -1,0 +1,74 @@
+---
+title: 气隙与电感系数
+description: 带气隙磁芯的磁阻、电感系数 A_L，以及功率电感为什么要开气隙。
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 由尺寸计算带气隙（air gap）磁芯的电感系数（inductance factor），并由匝数（number of turns）计算电感量。
+- 解释为什么开气隙后，电感量取决于气隙而不是磁芯材料。
+- 解释气隙如何降低电感在给定电流下达到的磁通密度（flux density）。
+
+## 理论
+
+### 磁路（magnetic circuit）
+
+磁通路径（magnetic path）的特性类似电阻电路：绕组的磁动势（magnetomotive force），即匝数与电流之积，驱动磁通（flux）流过串联的磁阻（reluctance），这里是磁芯磁阻和气隙磁阻 <Cite key="erickson2020" where="Ch. 10" />。磁芯磁阻等于磁路长度除以磁导率（permeability）和截面积；气隙磁阻等于气隙长度除以真空磁导率（permeability of free space）和截面积。由于磁芯的相对磁导率（relative permeability）很大，即使很短的气隙也可能在总磁阻中占主导。
+
+### 电感系数
+
+每匝平方的电感，即电感系数 $A_L$，等于总磁阻的倒数 <Cite key="dixon2001" />、<Cite key="erickson2020" where="Ch. 10" />：
+
+<Eq id="mag.AL_gap" />
+
+<Eq id="mag.L_from_AL" />
+
+气隙项占主导时，$A_L$ 取决于气隙长度和截面积，而几乎与 $\mu_i$ 无关：气隙使电感量对磁芯材料的离散性（spread）不敏感 <Cite key="erickson2020" where="Ch. 10" />。
+
+### 功率电感为什么要开气隙
+
+磁芯材料在一定的磁通密度下饱和（saturation），气隙不改变这一限值。但气隙降低了电感系数，因此获得给定的电感量需要更多匝数，在给定电流下磁通密度随之降低（<EqRef id="mag.B_pk" label="峰值磁通密度" />）：带气隙的电感在饱和前能流过更大的电流。
+
+## 例题
+
+一个示例带气隙磁芯：
+
+<Worked example="gapped-core" />
+
+在给定气隙下，电感系数为 <Val example="gapped-core" name="A_L" />，<Val example="gapped-core" name="N" /> 匝得到 <Val example="gapped-core" name="L" /> 的电感量。这里气隙磁阻远大于磁芯磁阻，因此结果几乎与 $\mu_i$ 无关。
+
+## 动手试试
+
+<TryIt eq="mag.AL_gap" example="gapped-core" sweep="l_g" />
+
+在对数坐标轴上扫描（sweep）$l_g$：气隙小时由磁芯材料决定 $A_L$，气隙大时由气隙决定，此时 $A_L$ 与气隙长度成反比地减小。分别在小气隙和大气隙下将 $\mu_i$ 减半，看材料在哪种情况下仍有影响。
+
+## 实验练习
+
+测量绕在一对无气隙铁氧体（ferrite）半磁芯上的绕组的电感量。然后在两个半磁芯之间放入厚度已知的薄非磁性垫片（spacer），例如塑料薄膜，再测量一次。将电感量的变化与公式比较，磁通路径每穿过一处垫片都要计入。实测电感量比预测值略大，因为气隙周围存在边缘磁通（fringing）<Cite key="dixon2001" />。
+
+## 易错点
+
+- **边缘磁通使实际的 $A_L$ 更大**。磁通在气隙周围向外鼓出，使气隙的有效截面积（effective area）增大，因此简单公式会低估电感量 <Cite key="dixon2001" />。
+- **对规定气隙的磁芯，采用厂商给出的 $A_L$**。厂商的 $A_L$ 是实测值，而边缘磁通难以计算；该公式用于理解气隙，以及估算自行设计的气隙。
+- **电感量与匝数的平方成正比**。在同一磁芯上将匝数加倍，电感量变为原来的四倍。
+
+## 延伸阅读
+
+<GoDeeper ids={['ti-slup132', 'erickson-ch10', 'coursera-magnetics']} />
+
+## 测验
+
+<Quiz id="01-physics/gap-and-AL" />

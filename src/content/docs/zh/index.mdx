@@ -1,0 +1,38 @@
+---
+title: 学习、设计和仿真开关变换器
+description: 开放、可验证、多语言的开关功率变换器学习资源库。
+template: splash
+hero:
+  title: 开关变换器学习
+  tagline: 从会写出教科书上的电压变换比（conversion ratio），到能设计、仿真和测量变换器，并解释测量结果为何与公式不符。
+  actions:
+    - text: 关于本项目
+      link: about/
+      icon: right-arrow
+      variant: primary
+    - text: GitHub 上的源代码
+      link: https://github.com/Denny-Hwang/switching_converter_study
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title="学习（Learn）" icon="open-book">
+    从伏秒平衡（volt-second balance）到 CCM/DCM、拓扑、磁性元件（magnetics）、损耗和能量收集接口的理论。每个公式都由同一个源文件生成，并经过测试检验。
+  </Card>
+  <Card title="设计（Design）" icon="setting">
+    变换器、磁性元件、损耗预算（loss budget）、电流检测链和钳位电路的计算器，全部由同一个经过测试的公式引擎驱动。
+  </Card>
+  <Card title="仿真（Simulate）" icon="rocket">
+    在浏览器中运行的时域（time-domain）变换器仿真器，以及每种拓扑的 LTspice、ngspice 和 CircuitJS 文件。
+  </Card>
+  <Card title="验证（Verify）" icon="approve-check">
+    推导（derivation）在 sympy 中复现，TypeScript 与 Python 的结果一致到 1e-9，引用和链接由 CI 检查。
+  </Card>
+</CardGrid>
+
+实验台和设计中反复出现的错误，连同各自的现象、原因和解决方法，汇集在[易错点](08-gotchas/)中。
+
+本站分阶段建设。原则和路线图见[关于](about/)，所有页面赖以建立的验证链见[公式流水线检查](about/equation-pipeline/)。

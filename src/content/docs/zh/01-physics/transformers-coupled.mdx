@@ -1,0 +1,78 @@
+---
+title: 变压器与耦合电感
+description: 采用 1:n 约定的理想变压器、实际变压器的励磁电感和漏感，以及变压器与耦合电感的区别。
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 按本站的 1:n 匝比（turns ratio）约定，应用理想变压器（ideal transformer）的关系式。
+- 加入励磁电感（magnetizing inductance）和漏感（leakage inductance），建立实际变压器的模型。
+- 区分传递能量的变压器与储存能量的耦合电感（coupled inductor）。
+
+## 理论
+
+### 理想变压器
+
+同一磁芯上的两个绕组，若全耦合（perfect coupling）、没有励磁电流（magnetizing current）且没有损耗，就构成理想变压器。匝比记为 1:n，其中 $n$ 为二次（secondary）绕组匝数除以一次（primary）绕组匝数；电压乘以 $n$，电流除以 $n$ <Cite key="alexander2017" where="Ch. 13" />、<Cite key="erickson2020" where="Ch. 6" />：
+
+<Eq id="xfmr.V2" />
+
+<Eq id="xfmr.I2" />
+
+功率守恒，接在二次侧的阻抗（impedance）在一次侧表现为原值除以 $n^2$ <Cite key="alexander2017" where="Ch. 13" />。
+
+### 励磁电感
+
+实际磁芯的磁导率（permeability）是有限的，因此即使二次侧开路，建立磁通（flux）也需要电流。该励磁电流用一个与理想变压器一次侧并联、折算到一次侧（referred to the primary）的电感 $L_M$ 来建模 <Cite key="erickson2020" where="Ch. 6" />。绕组上施加电压期间，励磁电流持续增大，这就是变压器必须在每个周期内复位（reset）的原因（见[正激（forward）变换器](../../03-topologies/forward/)）。
+
+### 漏感
+
+并非全部磁通都同时与两个绕组交链（linkage）。只与其中一个绕组交链的磁通，表现为与该绕组串联的漏感 <Cite key="erickson2020" where="Ch. 10" />。漏感减缓电流从一个绕组向另一个绕组的转移；在反激（flyback）变换器中，每次关断（turn-off）时都必须吸收漏感中的能量（见[反激变换器页面](../../03-topologies/flyback/)）。
+
+### 变压器还是耦合电感
+
+变压器在两个绕组都导通（conduction）期间把能量从一次侧传递到二次侧，理想情况下不储存能量。反激变换器的耦合电感工作方式不同：一次绕组导通期间，其励磁电感储存能量，之后再经二次绕组释放 <Cite key="erickson2020" where="Ch. 6" />。因此两者的设计目标不同：变压器要求励磁电流小，耦合电感要求达到规定的励磁电感和储能（stored energy）<Cite key="erickson2020" where="Ch. 10" />。
+
+## 例题
+
+一个示例理想变压器：
+
+<Worked example="transformer-ideal" />
+
+匝比为 <Val example="transformer-ideal" name="n" /> 时，二次侧两端电压为 <Val example="transformer-ideal" name="V_2" />，流过的电流为 <Val example="transformer-ideal" name="I_2" />：电压降低的倍数与电流增大的倍数相同。
+
+## 动手试试
+
+<TryIt eq="xfmr.V2" example="transformer-ideal" sweep="n" />
+
+在对数范围内扫描（sweep）$n$：小于 1 时变压器降压（step down），大于 1 时升压（step up）。然后与反激变换器的电压变换比（conversion ratio）比较（<EqRef id="flyback.ccm.M" label="反激变换器的电压变换比" />），该变换比由同一因子乘以升降压（buck-boost）变换比得到。
+
+## 实验练习
+
+二次侧开路，用函数发生器（function generator）输出的正弦波（sine wave）驱动小型信号变压器（signal transformer）的一次侧，频率取在其额定频率范围（rated frequency range）内。测量两个绕组的电压，求出匝比。然后分别测量二次侧开路时的一次电流（即励磁电流）和二次侧短路（short circuit）时的一次电流（受漏感限制），并由电压、电流和频率估算这两个电感。
+
+## 易错点
+
+- **核对匝比约定**。数据手册（data sheet）和教材对匝比的书写方向各不相同；本站始终采用 1:n，其中 $n$ 为二次匝数除以一次匝数。
+- **励磁电流不是负载电流**。即使完全空载，励磁电流也照样流动；绕组上的净伏秒积（net volt-seconds）在每个周期内必须为零，否则励磁电流会不断增大，直到磁芯饱和（saturation）<Cite key="erickson2020" where="Ch. 6" />。
+- **注意同名端（dot）**。反接其中一个绕组，二次电压就会反相；在反激变换器中，绕组极性（winding polarity）的选取应使开关管导通期间二极管阻断（blocking）<Cite key="erickson2020" where="Ch. 6" />。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch10', 'erickson-ch6', 'coursera-magnetics']} />
+
+## 测验
+
+<Quiz id="01-physics/transformers-coupled" />
