@@ -1,6 +1,6 @@
 """docs/STATUS.md's counts are the repository's: the derivations and the equations they leave out, the
 symbols with a meaning, the derivation modules, the references, the example files, the pages and the
-English/Korean page pairs. A phase that adds any of them updates STATUS in the same change."""
+English/Korean and English/Chinese page pairs. A phase that adds any of them updates STATUS in the same change."""
 
 from __future__ import annotations
 
@@ -56,14 +56,16 @@ def test_references() -> None:
 
 def test_examples() -> None:
     n = len(list((REPO_ROOT / "examples" / "synthetic").glob("*.yaml")))
-    assert f"| ✅ {n} examples, EN and KO |" in row("| Example numbers:")
+    assert f"| ✅ {n} examples, EN, KO and ZH |" in row("| Example numbers:")
 
 
 def test_pages() -> None:
-    en, ko = pages("en"), pages("ko")
-    assert f"| ✅ all {en + ko} pages ({en} EN, {ko} KO) |" in row("| Wording:")
+    en, ko, zh = pages("en"), pages("ko"), pages("zh")
+    assert f"| ✅ all {en + ko + zh} pages ({en} EN, {ko} KO, {zh} ZH) |" in row("| Wording:")
     # every English page with its Korean page at the same path (modulelint compares their structure)
-    paths = {loc: {p.relative_to(DOCS / loc) for p in (DOCS / loc).rglob("*") if p.suffix in (".md", ".mdx")} for loc in ("en", "ko")}
-    pairs = len(paths["en"] & paths["ko"])
-    pending = "no Korean page pending" if paths["en"] <= paths["ko"] else f"{len(paths['en'] - paths['ko'])} Korean page(s) pending"
-    assert f"| ✅ {pairs} page pairs; {pending} |" in row("| Korean parity")
+    paths = {loc: {p.relative_to(DOCS / loc) for p in (DOCS / loc).rglob("*") if p.suffix in (".md", ".mdx")} for loc in ("en", "ko", "zh")}
+    for locale, name, start in (("ko", "Korean", "| Korean parity"), ("zh", "Chinese", "| Chinese parity")):
+        pairs = len(paths["en"] & paths[locale])
+        missing = len(paths["en"] - paths[locale])
+        pending = f"no {name} page pending" if not missing else f"{missing} {name} page(s) pending"
+        assert f"| ✅ {pairs} page pairs; {pending} |" in row(start)

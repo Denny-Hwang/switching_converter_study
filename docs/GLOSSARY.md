@@ -29,6 +29,8 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | source matcher | 전원 정합 | 源匹配 |
 | sense chain | 센스 체인 | 电流检测链 |
 | preset | 프리셋 | 预设 |
+| equation catalogue | 수식 카탈로그 | 公式目录 |
+| worked example · example (a synthetic example's label) | 풀이 예제 · 예제 | 例题 · 示例 |
 | sweep | 스윕 | 扫描 |
 
 ## Converters and their operation
@@ -46,6 +48,7 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | discontinuous conduction mode (DCM) | 불연속 전도 모드(DCM) | 断续导通模式（DCM） |
 | CCM/DCM boundary | CCM/DCM 경계 | CCM/DCM 临界 |
 | operating mode (CCM or DCM) | 동작 모드 | 工作模式 |
+| conduction mode (CCM, BCM, DCM, where the text says so) | 전도 모드 | 导通模式 |
 | operating mode (an interval of the period) · Mode k | 동작 모드 · 모드 k | 工作模态 · 模态 k |
 | operating point | 동작점 | 工作点 |
 | duty ratio | 듀티비 | 占空比 |
@@ -53,12 +56,14 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | switching period · switching frequency | 스위칭 주기 · 스위칭 주파수 | 开关周期 · 开关频率 |
 | on-interval · off-interval · idle interval | 온 구간 · 오프 구간 · 휴지 구간 | 导通区间 · 关断区间 · 空闲区间 |
 | steady state · periodic steady state | 정상상태 · 주기적 정상상태 | 稳态 · 周期稳态 |
+| light load · full load · no load | 경부하 · 전부하 · 무부하 | 轻载 · 满载 · 空载 |
 | start-up | 기동 | 启动 |
 | volt-second balance | 전압-초 평형 | 伏秒平衡 |
 | charge balance | 전하 평형 | 电荷平衡 |
 | small-ripple approximation | 소리플 근사 | 小纹波近似 |
 | ripple · peak-to-peak | 리플 · 피크-피크 | 纹波 · 峰峰值 |
 | half the peak-to-peak ripple (Δi_L) | 리플의 절반 | 纹波峰峰值的一半 |
+| the ripple's lowest value (its valley) | 최솟값 | 谷值 |
 | switch node | 스위치 노드 | 开关节点 |
 | switch stress | 스위치 스트레스 | 开关应力 |
 | transistor utilization | 트랜지스터 이용률 | 开关管利用率 |
@@ -81,6 +86,7 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | damping factor ζ | 감쇠 계수 ζ | 阻尼比 ζ |
 | corner frequency · angular frequency | 차단 주파수 · 각주파수 | 转折频率 · 角频率 |
 | rail · bus | 레일 · 버스 | 电源轨 · 母线 |
+| figure of merit | 성능 지수 | 性能指标 |
 
 ## Components and devices
 
@@ -90,6 +96,7 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | diode · switch (transistor) | 다이오드 · 스위치 | 二极管 · 开关管 |
 | body diode | 바디 다이오드 | 体二极管 |
 | freewheeling diode · rectifier diode · reset diode | 환류 다이오드 · 정류 다이오드 · 리셋 다이오드 | 续流二极管 · 整流二极管 · 复位二极管 |
+| synchronous rectification · synchronous rectifier | 동기 정류 · 동기 정류기 | 同步整流 · 同步整流管 |
 | on-resistance · forward voltage (drop) | 온 저항 · 순방향 전압(강하) | 导通电阻 · 正向压降 |
 | conducting · blocking · reverse bias | 도통 · 차단 · 역바이어스 | 导通 · 阻断 · 反偏 |
 | turn-on · turn-off | 턴온 · 턴오프 | 开通 · 关断 |
@@ -108,6 +115,7 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | loss-free resistor (LFR) | 무손실 저항(LFR) | 无损电阻（LFR） |
 | linear regulator | 선형 레귤레이터 | 线性稳压器 |
 | rating | 정격 | 额定值 |
+| fuse | 퓨즈 | 保险丝 |
 
 ## Magnetics
 
@@ -130,10 +138,12 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | effective area · effective path length · effective volume | 유효 단면적 · 유효 자로 길이 · 유효 체적 | 有效截面积 · 有效磁路长度 · 有效体积 |
 | core geometrical constant K_g | 코어 기하 상수 K_g | 磁芯几何常数 K_g |
 | window · window utilization | 창 · 창 이용률 | 窗口 · 窗口利用率 |
+| winding window | 권선 창 | 绕线窗口 |
 | winding · turns · turns ratio | 권선 · 턴 수 · 권선비 | 绕组 · 匝数 · 匝比 |
 | primary · secondary winding | 1차 권선 · 2차 권선 | 一次绕组 · 二次绕组 |
 | dot (polarity mark) | 점 표시(극성) | 同名端 |
 | reset winding | 리셋 권선 | 复位绕组 |
+| core reset · reset limit | 코어 리셋 · 리셋 한계 | 磁复位 · 磁复位限制 |
 | referred to the primary · reflected voltage | 1차 측으로 환산 · 반사 전압 | 折算到一次侧 · 反射电压 |
 | magnetizing inductance · magnetizing current | 자화 인덕턴스 · 자화 전류 | 励磁电感 · 励磁电流 |
 | leakage inductance · coupling coefficient | 누설 인덕턴스 · 결합 계수 | 漏感 · 耦合系数 |
@@ -166,6 +176,8 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | burden voltage · offset | 부담 전압 · 오프셋 | 负担电压 · 失调 |
 | four-wire (Kelvin) measurement | 4선식(켈빈) 측정 | 四线（开尔文）测量 |
 | probe · oscilloscope · ground lead | 프로브 · 오실로스코프 · 접지 리드 | 探头 · 示波器 · 接地线 |
+| an ohmmeter's test leads | 테스트 리드 | 表笔 |
+| effective value (a meter's reading, parasitics included) | 유효값 | 等效值 |
 | differential probe · current probe | 차동 프로브 · 전류 프로브 | 差分探头 · 电流探头 |
 | rise time · bandwidth | 상승 시간 · 대역폭 | 上升时间 · 带宽 |
 | Nyquist frequency · aliasing | 나이퀴스트 주파수 · 에일리어싱 | 奈奎斯特频率 · 混叠 |
@@ -174,6 +186,8 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | inrush current · soft start | 돌입 전류 · 소프트 스타트 | 浪涌电流 · 软启动 |
 | undervoltage lockout (UVLO) | 저전압 차단(UVLO) | 欠压锁定（UVLO） |
 | impedance analyzer · LCR meter | 임피던스 분석기 · LCR 미터 | 阻抗分析仪 · LCR 测试仪 |
+| impedance meter · apparent inductance | 임피던스 측정기 · 겉보기 인덕턴스 | 阻抗测量仪 · 表观电感 |
+| an oscilloscope's earth | 대지 | 保护接地 |
 | evaluation board | 평가 보드 | 评估板 |
 | data sheet · manufacturer | 데이터시트 · 제조사 | 数据手册 · 厂商 |
 | function generator · square wave · sine wave | 함수 발생기 · 구형파 · 정현파 | 函数发生器 · 方波 · 正弦波 |
@@ -192,6 +206,7 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | synchronized switch harvesting on inductor (SSHI) | SSHI | 同步电感开关收集（SSHI） |
 | standard interface (bridge onto a dc voltage) | 표준 인터페이스 | 标准接口电路 |
 | envelope | 포락선 | 包络 |
+| figure of merit (of a triboelectric generator) | 성능 지수 | 优值（性能优值 · 结构优值） |
 
 ## Simulation and numerics
 
@@ -204,9 +219,13 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | schematic · netlist · directive | 회로도 · 넷리스트 · 지시문 | 原理图 · 网表 · 仿真指令 |
 | transient analysis | 과도 해석 | 瞬态分析 |
 | trapezoidal rule · backward Euler · forward Euler · Gear | 사다리꼴 규칙 · 후진 오일러 · 전진 오일러 · Gear | 梯形法 · 后向欧拉法 · 前向欧拉法 · Gear 法 |
+| backward differentiation formula · companion model | 후진 차분 공식 · 동반 모델 | 后向差分公式 · 伴随模型 |
 | piecewise-linear · matrix exponential · eigenvalue | 구간별 선형 · 행렬 지수 함수 · 고윳값 | 分段线性 · 矩阵指数 · 特征值 |
 | Newton's method · bisection | 뉴턴법 · 이분법 | 牛顿法 · 二分法 |
 | event · converge | 이벤트 · 수렴 | 事件 · 收敛 |
+| from rest (a start-up) | 정지 상태에서 시작한 | 从零初始状态开始 |
+| operating-mode view · all modes at once | 동작 모드 보기 · 모든 모드 한눈에 보기 | 工作模态视图 · 全部模态一览 |
+| case (of the SPICE library) | 케이스 | 算例 |
 | relative difference · unit roundoff | 상대 차이 · 단위 반올림 오차 | 相对差 · 单位舍入误差 |
 | stiff (equations) · test equation | stiff · 시험 방정식 | 刚性（stiff）· 试验方程 |
 | decaying mode · tolerance · A-stable · L-stable | 감쇠 모드 · 허용오차 · A-안정 · L-안정 | 衰减模态 · 容差 · A 稳定 · L 稳定 |
