@@ -1,6 +1,6 @@
 """The release's version is one number everywhere: the npm workspace and its lock file, pe-core, the
 Python package, and the latest release in CHANGELOG.md (whose date is a real date and which the Korean
-summary starts with)."""
+and the Chinese summaries start with)."""
 
 from __future__ import annotations
 
@@ -41,9 +41,17 @@ def test_the_release_date_is_a_date() -> None:
     dt.date.fromisoformat(date)
 
 
-def test_the_korean_summary_has_the_latest_release() -> None:
+def summary_starts_with_latest(heading: str) -> bool:
     version, date = latest_release()
     text = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "\n## 한국어 요약\n" in text
-    m = re.search(r"^### \[(\d+\.\d+\.\d+)\] - (\d{4}-\d{2}-\d{2})$", text.split("\n## 한국어 요약\n", 1)[1], re.M)
-    assert m and (m.group(1), m.group(2)) == (version, date), "CHANGELOG.md: the Korean summary must start with the latest release"
+    assert f"\n## {heading}\n" in text, f"CHANGELOG.md: no '## {heading}' section"
+    m = re.search(r"^### \[(\d+\.\d+\.\d+)\] - (\d{4}-\d{2}-\d{2})$", text.split(f"\n## {heading}\n", 1)[1], re.M)
+    return bool(m) and (m.group(1), m.group(2)) == (version, date)
+
+
+def test_the_korean_summary_has_the_latest_release() -> None:
+    assert summary_starts_with_latest("한국어 요약"), "CHANGELOG.md: the Korean summary must start with the latest release"
+
+
+def test_the_chinese_summary_has_the_latest_release() -> None:
+    assert summary_starts_with_latest("中文摘要"), "CHANGELOG.md: the Chinese summary must start with the latest release"

@@ -1,7 +1,7 @@
 {
   "name": "switching-converter-study",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Open, bilingual (EN/KO) power-electronics learning repository with a verifiable equation engine, calculators and an in-browser converter simulator.",
   "license": "SEE LICENSE IN LICENSE-CODE",
   "type": "module",

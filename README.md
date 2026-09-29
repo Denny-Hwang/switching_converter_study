@@ -171,7 +171,7 @@ lychee --config lychee.toml --root-dir "$PWD/_linkcheck" _linkcheck   # every li
 | 4 | Magnetics, bench, harvesting, gotchas, resources | done |
 | 5 | LTspice/ngspice library, CircuitJS1 circuits, missions, simulation pages, reproducible build; v0.1.0 | done |
 
-Released as **v0.1.0**; what each release holds is in [`CHANGELOG.md`](CHANGELOG.md).
+The latest release is **v0.2.0**. v0.1.0 completed the phases above; v0.2.0 adds the Chinese version and a wording pass over the English and Korean text. What each release holds is in [`CHANGELOG.md`](CHANGELOG.md).
 
 ### Contributing and licences
 
@@ -328,7 +328,7 @@ lychee --config lychee.toml --root-dir "$PWD/_linkcheck" _linkcheck   # 모든 �
 | 4 | 자성 부품, 벤치, 하베스팅, 주의할 점, 자료 | 완료 |
 | 5 | LTspice/ngspice 라이브러리, CircuitJS1 회로, 미션, 시뮬레이션 페이지, 재현 가능한 빌드, v0.1.0 | 완료 |
 
-**v0.1.0**으로 공개했습니다. 각 릴리스의 내용은 [`CHANGELOG.md`](CHANGELOG.md)에 있습니다.
+최신 릴리스는 **v0.2.0**입니다. v0.1.0에서 위의 단계를 마쳤고, v0.2.0에서 중국어판을 더하고 영어와 한국어 문구를 다듬었습니다. 각 릴리스의 내용은 [`CHANGELOG.md`](CHANGELOG.md)에 있습니다.
 
 ### 기여와 라이선스
 
@@ -464,7 +464,7 @@ lychee --config lychee.toml --root-dir "$PWD/_linkcheck" _linkcheck   # 每个�
 | 4 | 磁性元件、实验台、能量收集、易错点、资料 | 已完成 |
 | 5 | LTspice/ngspice 库、CircuitJS1 电路、任务、仿真页面、可复现构建；v0.1.0 | 已完成 |
 
-已发布 **v0.1.0**；各版本的内容见 [`CHANGELOG.md`](CHANGELOG.md)。
+最新版本为 **v0.2.0**。v0.1.0 完成了上述各阶段，v0.2.0 新增中文版，并修订了英文和韩文的措辞。各版本的内容见 [`CHANGELOG.md`](CHANGELOG.md)。
 
 ### 贡献与许可证
 

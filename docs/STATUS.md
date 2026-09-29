@@ -73,7 +73,7 @@
 | Korean parity (BUILD_SPEC §7 Phase 5): every English page has a Korean page at the same path with the same heading levels (h2 to h4) in order and the same components, or a line here marking the Korean page pending (`modulelint.py`) | ✅ 90 page pairs; no Korean page pending |
 | Chinese parity: every English page has a Chinese page at the same path with the same heading levels (h2 to h4) in order and the same components, or a row of the Chinese table below marking it pending (`modulelint.py`) | ✅ 90 page pairs; no Chinese page pending |
 | STATUS's counts (derivations and the equations they leave out, symbols, references, examples, pages) equal the repository's (`test_status.py`) | ✅ |
-| Release | ✅ v0.1.0 (`CHANGELOG.md`), tagged on the commit that merges it; one version in `package.json` and its lock file, `packages/pe-core` and the Python package, equal to the changelog's latest release (`test_release.py`) |
+| Release | ✅ v0.2.0 (`CHANGELOG.md`; v0.1.0 before it), each tagged on the commit that merges it; one version in `package.json` and its lock file, `packages/pe-core` and the Python package, equal to the changelog's latest release, with which its Korean and Chinese summaries start (`test_release.py`) |
 
 ## Chinese (zh-CN)
 
@@ -104,7 +104,7 @@ Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here), an
 
 Legend: ✅ done · 🟡 partial · ⬜ not started · ➖ not applicable. "Phase" is the build phase that delivers the module (docs/BUILD_SPEC.md §7); "later" = not scheduled in phases 0–5. 00-foundations and 01-physics are compact refreshers (Phase 2 scope).
 
-_Last updated: the Chinese version (all pages in EN, KO and ZH). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
+_Last updated: release v0.2.0, the Chinese version (all pages in EN, KO and ZH). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
 
 "Try it" links open the [equation explorer](../src/content/docs/en/design/explorer.mdx) with a synthetic preset. Pages whose example is a whole converter also open the [simulator](../src/content/docs/en/simulate/simulator.mdx) with it (`<TrySim>`, Phase 3a); design-tool presets come with the design tools.
 
