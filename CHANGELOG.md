@@ -42,8 +42,8 @@ text (pull requests #28 to #31). The numbers, equations, citations and quiz answ
   natural engineering Korean in the -ㅂ니다 style, with one vocabulary across pages, UI and catalogue.
   BUILD_SPEC §8 states the rules. (#29)
 - **Three languages.** The landing page, About, the missions index, M9 and the simulator page no
-  longer speak of two languages. M9 also asks for the Chinese page, as a new criterion; ticks already given
-  keep their ids. CLAUDE.md and BUILD_SPEC name the Chinese version. (#30)
+  longer speak of two languages. M9 also asks for the Chinese page, as a new criterion; ticks
+  already given keep their ids. CLAUDE.md and BUILD_SPEC name the Chinese version. (#30)
 - **Link checks.** CLAUDE.md's link check copies the site under the Pages path and runs the lychee
   binary, as CI does. `resources_check` tries a URL that neither its host nor the Internet Archive
   answered again after 60, 180 and 300 s, since the archive rate-limits a runner for minutes. (#28)
