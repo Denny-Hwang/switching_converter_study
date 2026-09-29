@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { sim } from 'pe-core';
 import SequenceView from './SequenceView';
 import { SEQ_TEXT } from '../i18n/sequence';
+import { LOCALES, PUNCT, type Locale } from '../i18n/ui';
 import type { PlotTheme } from '../lib/plot';
 
 /**
@@ -33,9 +34,9 @@ interface Shown {
   rows: { name: string; state: string; current: string; voltage: string }[];
 }
 
-function render(r: sim.SimResult, k: number, locale: 'en' | 'ko'): Shown {
+function render(r: sim.SimResult, k: number, locale: Locale): Shown {
   const ms = sim.modes(r);
-  const html = renderToStaticMarkup(createElement(SequenceView, { result: r, modes: ms, text: SEQ_TEXT[locale], selected: k, onSelect: () => {}, theme: THEME }));
+  const html = renderToStaticMarkup(createElement(SequenceView, { result: r, modes: ms, text: SEQ_TEXT[locale], punct: PUNCT[locale], selected: k, onSelect: () => {}, theme: THEME }));
   const text = /<div class="pe-seq__text"><h4>(.*?)<\/h4><p>(.*?)<\/p>/s.exec(html);
   const rows = [...html.matchAll(/<tr[^>]*><th scope="row">(.*?)<\/th><td>(.*?)<\/td><td>(.*?)<\/td><td>(.*?)<\/td><\/tr>/gs)].map((m) => ({
     name: strip(m[1]!),
@@ -49,14 +50,18 @@ function render(r: sim.SimResult, k: number, locale: 'en' | 'ko'): Shown {
 /** The average in a "start → end (average)" cell. */
 const avgOf = (cell: string) => parse(/\((.*)\)$/.exec(cell)![1]!);
 
+/** The voltage sentences (say.volts, say.voltsR) in each language: the symbol, the average, and its parts with a winding resistance. */
+const SAID_VOLTS: Record<Locale, RegExp> = {
+  en: /The voltage across (\w+) averages (.+?)(?:: (.+?) across its winding resistance, (.+?) across its inductance)?\.(?: |$)/g,
+  ko: /(\w+) 양단 전압은 평균 (.+?)(?:입니다|이며, 권선 저항에 (.+?), 인덕턴스에 (.+?)가 걸립니다)\.(?: |$)/g,
+  // Chinese sentences follow one another without a space
+  zh: /(\w+) 两端电压的平均值为 (.+?)(?:：其中绕组电阻上为 (.+?)，电感上为 (.+?))?。/g,
+};
+
 /** What the description says each inductor's voltage averages, by the symbol it names (L, LM), with its parts. */
-function saidVolts(description: string, locale: 'en' | 'ko'): Map<string, { v: number; vr?: number; vl?: number }> {
+function saidVolts(description: string, locale: Locale): Map<string, { v: number; vr?: number; vl?: number }> {
   const out = new Map<string, { v: number; vr?: number; vl?: number }>();
-  const re =
-    locale === 'en'
-      ? /The voltage across (\w+) averages (.+?)(?:: (.+?) across its winding resistance, (.+?) across its inductance)?\.(?: |$)/g
-      : /(\w+) 양단 전압은 평균 (.+?)(?:입니다|이며, 권선 저항에 (.+?), 인덕턴스에 (.+?)가 걸립니다)\.(?: |$)/g;
-  for (const m of description.matchAll(re)) out.set(m[1]!, { v: parse(m[2]!), vr: m[3] ? parse(m[3]) : undefined, vl: m[4] ? parse(m[4]) : undefined });
+  for (const m of description.matchAll(SAID_VOLTS[locale])) out.set(m[1]!, { v: parse(m[2]!), vr: m[3] ? parse(m[3]) : undefined, vl: m[4] ? parse(m[4]) : undefined });
   return out;
 }
 
@@ -80,11 +85,13 @@ describe("the description's voltages are the table's", () => {
       expect(r.status).toBe('steady');
       const ms = sim.modes(r);
       const s = sim.schematic(p);
-      for (const locale of ['en', 'ko'] as const) {
+      for (const locale of LOCALES) {
         for (let k = 0; k < ms.length; k++) {
           const v = render(r, k, locale);
           const states = sim.elementStates(r, ms[k]!, s);
           expect(v.rows.length).toBe(states.length);
+          // the sentences are joined as the language writes them: a space after each full stop, none in Chinese
+          expect(v.description, `${locale} mode ${k + 1}`).not.toMatch(locale === 'zh' ? /。 / : /\.[^ \d]/);
           const said = saidVolts(v.description, locale);
           states.forEach((e, j) => {
             if (e.kind !== 'inductor') return;
@@ -150,11 +157,14 @@ describe("the forward converter's core reset is said where it happens", () => {
     }
   });
 
-  it('the Korean view says the same', () => {
+  it('the Korean and Chinese views say the same', () => {
     const r = sim.simulate(CASES[6]![1]);
-    const ko = sim.modes(r).map((_, k) => render(r, k, 'ko').description);
-    expect(ko[1]).toContain(SEQ_TEXT.ko['say.reset']!.replace(/_/g, ''));
-    expect(ko.filter((d) => d.includes(SEQ_TEXT.ko['say.reset']!.replace(/_/g, ''))).length).toBe(1);
+    for (const locale of ['ko', 'zh'] as const) {
+      const said = sim.modes(r).map((_, k) => render(r, k, locale).description);
+      const reset = SEQ_TEXT[locale]['say.reset']!.replace(/_/g, '');
+      expect(said[1]).toContain(reset);
+      expect(said.filter((d) => d.includes(reset)).length).toBe(1);
+    }
   });
 });
 
@@ -185,8 +195,8 @@ describe('a circuit at rest', () => {
   it('has no modes to select, and the view says why', () => {
     const r = sim.simulate({ topology: 'buck', Vg: 24, D: 0.4, fs: 1e5, L: 1e-4, Ron: 0.1, load: { kind: 'network', C: 1e-5, V0: 0 } });
     expect(sim.atRest(r)).toBe(true);
-    for (const locale of ['en', 'ko'] as const) {
-      const html = renderToStaticMarkup(createElement(SequenceView, { result: r, modes: [], text: SEQ_TEXT[locale], selected: 0, onSelect: () => {}, theme: THEME }));
+    for (const locale of LOCALES) {
+      const html = renderToStaticMarkup(createElement(SequenceView, { result: r, modes: [], text: SEQ_TEXT[locale], punct: PUNCT[locale], selected: 0, onSelect: () => {}, theme: THEME }));
       expect(html).toContain(SEQ_TEXT[locale].rest!);
       expect(html).not.toContain('pe-seq__mode');
     }

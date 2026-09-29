@@ -5,6 +5,7 @@ import { sim } from 'pe-core';
 import ModeSheet, { letter, sheetRows } from './ModeSheet';
 import { stateFromHash, toParams } from './Simulator';
 import { SEQ_TEXT } from '../i18n/sequence';
+import { LOCALES, PUNCT, type Locale } from '../i18n/ui';
 import { STATIC_THEME } from '../lib/plot';
 import { fmtValue } from '../lib/format';
 import { PRESETS, presetValues, simulatorHash } from '../lib/simpresets';
@@ -26,8 +27,8 @@ function run(example: string, topology: sim.Topology): sim.SimResult {
   return sim.simulate(params);
 }
 
-const render = (r: sim.SimResult, ms: sim.OperatingMode[], locale: 'en' | 'ko') =>
-  renderToStaticMarkup(createElement(ModeSheet, { result: r, modes: ms, text: SEQ_TEXT[locale], theme: STATIC_THEME }));
+const render = (r: sim.SimResult, ms: sim.OperatingMode[], locale: Locale) =>
+  renderToStaticMarkup(createElement(ModeSheet, { result: r, modes: ms, text: SEQ_TEXT[locale], punct: PUNCT[locale], theme: STATIC_THEME }));
 
 // the examples the topology pages draw (the SPICE and CircuitJS1 library's cases), and two battery loads
 const CASES: [string, sim.Topology, number][] = [
@@ -48,7 +49,7 @@ describe('ModeSheet', () => {
     expect(r.converged).toBe(true);
     const ms = sim.modes(r);
     if (count) expect(ms.length).toBe(count);
-    for (const locale of ['en', 'ko'] as const) {
+    for (const locale of LOCALES) {
       const html = render(r, ms, locale);
       const figures = [...html.matchAll(/<figure class="pe-sheet__mode"><figcaption><strong>\(([a-z])\) ([^<]*)<\/strong>/g)];
       expect(figures.map((m) => m[1])).toEqual(ms.map((_, k) => letter(k)));

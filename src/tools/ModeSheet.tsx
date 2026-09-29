@@ -13,6 +13,7 @@ import { sim } from 'pe-core';
 import { fmtValue } from '../lib/format';
 import type { PlotTheme } from '../lib/plot';
 import { fill, kindKey, type SeqText } from '../i18n/sequence';
+import type { Punct } from '../i18n/ui';
 import { Circuit, modeParts, timeIn } from './SequenceView';
 import { Rich } from './ToolUi';
 
@@ -24,6 +25,8 @@ interface Props {
   /** The period's modes (pe-core's modes(result)). */
   modes: OperatingMode[];
   text: SeqText;
+  /** The language's punctuation between strings (i18n/ui.ts PUNCT). */
+  punct: Punct;
   theme: PlotTheme;
 }
 
@@ -58,11 +61,11 @@ export function sheetRows(topology: sim.Topology): SheetRow[] {
 /** The mode's letter in the sheet: (a), (b), ... */
 export const letter = (k: number) => String.fromCharCode(97 + k);
 
-function ModeSheet({ result, modes, text, theme }: Props) {
+function ModeSheet({ result, modes, text, punct, theme }: Props) {
   if (!modes.length) return null;
   const s = sim.schematic(result.params);
   const peaks = sim.branchScales(result, s);
-  const parts = modes.map((_, k) => modeParts(result, s, peaks, modes, k, text));
+  const parts = modes.map((_, k) => modeParts(result, s, peaks, modes, k, text, punct));
   const topo = result.params.topology;
   const dt = (m: OperatingMode) => fmtValue(m.t1 - m.t0, 's', 3);
   const active = theme.colors[3]!;
@@ -91,7 +94,7 @@ function ModeSheet({ result, modes, text, theme }: Props) {
               </strong>{' '}
               {text[kindKey(topo, mode.kind)]}
               <span className="pe-sheet__range">
-                {' '}
+                {punct.space}
                 <Rich text={fill(text.sheetRange!, { a: String(k), b: String(k + 1), t0: timeIn(mode.t0, mode), t1: timeIn(mode.t1, mode), dt: dt(mode) })} />
               </span>
             </figcaption>
@@ -159,7 +162,7 @@ function samples(result: SimResult, modes: OperatingMode[], key: string): { t: n
   return { t, y: (w[key] as number[] | undefined) ?? [] };
 }
 
-function KeyWaveforms({ result, modes, text, theme }: Props) {
+function KeyWaveforms({ result, modes, text, theme }: Omit<Props, 'punct'>) {
   const topo = result.params.topology;
   const rows = sheetRows(topo).filter((r) => r.key === 'gate' || r.key === 'i_S' || Array.isArray(result.waveforms[r.key]));
   const Ts = 1 / result.params.fs;

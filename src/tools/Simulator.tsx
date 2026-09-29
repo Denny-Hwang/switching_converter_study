@@ -19,7 +19,7 @@ import ModeSheet from './ModeSheet';
 import { Choices, FieldLabel, NumInput, Rich, Sym } from './ToolUi';
 import { parseSI } from '../lib/siparse';
 import { falstadLink, falstadText, currentBar } from '../lib/falstadgen';
-import type { Locale } from '../i18n/ui';
+import { PUNCT, type Locale, type Punct } from '../i18n/ui';
 
 /** The sheet of every mode starts open up to this many modes. */
 const SHEET_OPEN_MODES = 6;
@@ -481,8 +481,8 @@ export function loadRows(r: SimResult): { label: string; unit: string; value: nu
 /** Fill '{key}' placeholders. */
 const fill = (text: string, values: Record<string, string>) => text.replace(/\{(\w+)\}/g, (m, k: string) => values[k] ?? m);
 
-/** What the status line says when there is no steady state (runaway, charging, unsettled), or null. */
-export function noSteadyText(r: SimResult, labels: SimLabels): string | null {
+/** What the status line says when there is no steady state (runaway, charging, unsettled), or null; `punct` joins its sentences. */
+export function noSteadyText(r: SimResult, labels: SimLabels, punct: Punct): string | null {
   const su = r.startUp;
   const n = String(su?.cycles ?? 0);
   if (r.status === 'runaway' && r.drift) {
@@ -494,9 +494,9 @@ export function noSteadyText(r: SimResult, labels: SimLabels): string | null {
       v: fmtValue(d.vLavg ?? NaN, 'V'),
     });
     // the forward converter's core that does not reset; else the duty ratio that would balance a fixed output
-    if (d.state === 'iM' && d.Dmax !== undefined) text += ` ${fill(labels.noReset, { Dmax: fmt(d.Dmax) })}`;
-    else if (d.Dbalance !== undefined) text += ` ${fill(labels.balance, { D: fmt(d.Dbalance) })}`;
-    return `${text} ${fill(labels.startUp, { n })}`;
+    if (d.state === 'iM' && d.Dmax !== undefined) text += punct.space + fill(labels.noReset, { Dmax: fmt(d.Dmax) });
+    else if (d.Dbalance !== undefined) text += punct.space + fill(labels.balance, { D: fmt(d.Dbalance) });
+    return text + punct.space + fill(labels.startUp, { n });
   }
   // a capacitor alone: charging without bound, or not settled yet
   if ((r.status === 'charging' || r.status === 'unsettled') && su && r.drift?.state === 'v') {
@@ -512,9 +512,9 @@ export function noSteadyText(r: SimResult, labels: SimLabels): string | null {
  * What the page says when the drawn waveforms leave the model: each diode it
  * holds off forward-biased beyond its drop, and the switch voltage below
  * zero (its body diode, ideal in the models), each where a diode with the
- * model's drop would conduct.
+ * model's drop would conduct; `punct` joins the sentences.
  */
-export function outsideModelText(r: SimResult | null | undefined, labels: SimLabels): string | null {
+export function outsideModelText(r: SimResult | null | undefined, labels: SimLabels, punct: Punct): string | null {
   if (!r) return null;
   // in a steady period the results may not hold; in a start-up, the start-up from the first cycle that leaves the model
   const place = (from?: number) =>
@@ -527,7 +527,7 @@ export function outsideModelText(r: SimResult | null | undefined, labels: SimLab
     out.push(d.diode === 'D3' ? fill(labels.resetDiodeForward, { v, ...at }) : fill(labels.diodeForward, { diode: names[d.diode], v, vf: fmtValue(d.drop, 'V'), ...at }));
   }
   if (r.switchBelowZero !== undefined) out.push(fill(labels.switchBelowZero, { v: fmtValue(r.switchBelowZero, 'V'), ...place(r.switchFrom) }));
-  return out.length ? out.join(' ') : null;
+  return out.length ? out.join(punct.space) : null;
 }
 
 /** The anchor a slider takes when its field is committed: the typed value if it lies outside the slider's range. */
@@ -688,7 +688,8 @@ function useSimRunner(): {
   return useMemo(() => ({ run, cancel }), [run, cancel]);
 }
 
-export default function Simulator({ labels, presets, symbols, seqText }: Props) {
+export default function Simulator({ locale, labels, presets, symbols, seqText }: Props) {
+  const punct = PUNCT[locale];
   const init = useMemo(() => initialState(presets), [presets]);
   const [fstate, setFstate] = useState<FieldState>(init.fs);
   const [values, setValues] = useState<Record<string, string>>(init.values);
@@ -1080,22 +1081,25 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
           <section className="pe-sim__status" aria-live="polite">
             {error && <p className="pe-sim__error">{error}</p>}
             {((busy && !result && !error) || slow) && <p>{labels.running}</p>}
-            {result && result.status !== 'steady' && <p className="pe-sim__nosteady">{noSteadyText(result, labels)}</p>}
-            {outsideModelText(result, labels) && (
+            {result && result.status !== 'steady' && <p className="pe-sim__nosteady">{noSteadyText(result, labels, punct)}</p>}
+            {outsideModelText(result, labels, punct) && (
               <p className="pe-sim__nosteady">
-                <Rich text={outsideModelText(result, labels)!} />
+                <Rich text={outsideModelText(result, labels, punct)!} />
               </p>
             )}
             {result && result.status === 'steady' && (
               <p>
-                {labels.mode}: <strong className={`pe-sim__mode pe-sim__mode--${result.mode}`}>{result.mode}</strong>
+                {labels.mode}
+                {punct.colon}
+                <strong className={`pe-sim__mode pe-sim__mode--${result.mode}`}>{result.mode}</strong>
                 {Number.isFinite(result.K) && (
                   <>
                     {' '}
                     · <Sym text="K" /> = {fmt(result.K)}, <Sym text="K_crit" /> = {fmt(result.Kcrit)}
                   </>
                 )}{' '}
-                · {labels.converged} ({labels.cycles}: {result.cycles})
+                · {labels.converged}
+                {punct.open + labels.cycles + punct.colon + result.cycles + punct.close}
               </p>
             )}
           </section>
@@ -1103,14 +1107,14 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
             ref={plotRef}
             className="pe-chart"
             role="img"
-            aria-label={`${labels.topologies[fstate.topo]}: i_L, i_D, v_L, v_DS, v_out`}
+            aria-label={labels.topologies[fstate.topo] + punct.colon + ['i_L', 'i_D', 'v_L', 'v_DS', 'v_out'].join(punct.list)}
             style={{ height: fstate.source ? 680 : 560, display: error ? 'none' : undefined }}
           />
           {result && <p className="pe-tool__hint">{labels.plotHint}</p>}
-          {result?.converged && <FalstadOpen result={result} labels={labels} />}
+          {result?.converged && <FalstadOpen result={result} labels={labels} punct={punct} />}
         </div>
       </div>
-      {result?.converged && <SequenceView result={result} modes={modes} text={seqText} selected={sel} onSelect={setModeSel} theme={theme} />}
+      {result?.converged && <SequenceView result={result} modes={modes} text={seqText} punct={punct} selected={sel} onSelect={setModeSel} theme={theme} />}
       {result?.converged && modes.length > 0 && (
         // open unless the period has many modes (a node capacitance's ringing): then one click away
         <details className="pe-sheet__box" open={modes.length <= SHEET_OPEN_MODES}>
@@ -1118,7 +1122,7 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
           <p className="pe-tool__hint">
             <Rich text={seqText.sheetIntro!} />
           </p>
-          <ModeSheet result={result} modes={modes} text={seqText} theme={theme} />
+          <ModeSheet result={result} modes={modes} text={seqText} punct={punct} theme={theme} />
         </details>
       )}
       {result?.converged && (
@@ -1206,7 +1210,7 @@ export default function Simulator({ labels, presets, symbols, seqText }: Props) 
 }
 
 /** The link that opens the simulated converter in CircuitJS1, or why there is none. */
-function FalstadOpen({ result, labels }: { result: SimResult; labels: SimLabels }) {
+function FalstadOpen({ result, labels, punct }: { result: SimResult; labels: SimLabels; punct: Punct }) {
   const f = useMemo(() => falstadFor(result), [result]);
   if (!f) return <p className="pe-tool__hint">{labels.falstadNeeds}</p>;
   return (
@@ -1219,8 +1223,8 @@ function FalstadOpen({ result, labels }: { result: SimResult; labels: SimLabels 
       <Rich text={labels.falstadHint} />
       {f.leftOut.length > 0 && (
         <>
-          {' '}
-          <Rich text={labels.falstadLeftOut.replace('{list}', f.leftOut.join(', '))} />
+          {punct.space}
+          <Rich text={labels.falstadLeftOut.replace('{list}', f.leftOut.join(punct.list))} />
         </>
       )}
     </p>

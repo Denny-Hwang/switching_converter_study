@@ -31,7 +31,7 @@ import { PLOT_CONFIG, axis, baseLayout, logTicks, sub, usePlotTheme } from '../l
 import { ChoiceButtons, Choices, FieldLabel, NumInput, Rich } from './ToolUi';
 import type { EnvelopeReply } from './sourcematch.worker';
 import { parseSI } from '../lib/siparse';
-import type { Locale } from '../i18n/ui';
+import { PUNCT, type Locale } from '../i18n/ui';
 
 export type EnvelopeKind = 'none' | 'sine' | 'points';
 
@@ -296,7 +296,8 @@ function purge(el: HTMLDivElement | null) {
   if (el?.hasChildNodes()) import('plotly.js-dist-min').then((mod) => (mod.default ?? mod).purge(el));
 }
 
-export default function SourceMatcher({ labels, presets, simulatorHref, symbols }: Props) {
+export default function SourceMatcher({ locale, labels, presets, simulatorHref, symbols }: Props) {
+  const punct = PUNCT[locale];
   const init = useMemo(() => stateFromHash(readHash(), presets), [presets]);
   const [env, setEnv] = useState<EnvelopeKind>(init.env);
   const [values, setValues] = useState<Record<string, string>>(init.values);
@@ -611,7 +612,7 @@ export default function SourceMatcher({ labels, presets, simulatorHref, symbols 
             {rippling && <p className="pe-sim__error">{labels.ripple}</p>}
             {runError && (
               <p className="pe-sim__error">
-                {labels.runFailed} ({runError})
+                {labels.runFailed + punct.open + runError + punct.close}
               </p>
             )}
           </section>
@@ -736,7 +737,10 @@ export default function SourceMatcher({ labels, presets, simulatorHref, symbols 
                         <Rich text={labels.plfr} />
                       </th>
                       <td>
-                        {fmt(r.Plfr, 'W')} (<Rich text={r.limit === 'ccm' ? labels.limitCcm : labels.limitSwitch} />)
+                        {fmt(r.Plfr, 'W')}
+                        {punct.open}
+                        <Rich text={r.limit === 'ccm' ? labels.limitCcm : labels.limitSwitch} />
+                        {punct.close}
                       </td>
                       <td>
                         <code>dcm.P_in</code>

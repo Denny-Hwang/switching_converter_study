@@ -14,7 +14,7 @@ import { fmtValue } from '../lib/format';
 import { useStateHash } from '../lib/useStateHash';
 import { Choices, FieldLabel, NumInput, Rich, Sym } from './ToolUi';
 import { parseSI } from '../lib/siparse';
-import type { Locale } from '../i18n/ui';
+import { PUNCT, type Locale } from '../i18n/ui';
 
 export interface DesignerLabels {
   /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
@@ -287,7 +287,8 @@ const VR: Partial<Record<DesignTopology, string>> = {
   flyback: 'flyback.diode.VR',
 };
 
-export default function ConverterDesigner({ labels, presets, simulatorHref, lossBudgetHref, symbols }: Props) {
+export default function ConverterDesigner({ locale, labels, presets, simulatorHref, lossBudgetHref, symbols }: Props) {
+  const punct = PUNCT[locale];
   const init = useMemo(() => stateFromHash(readHash(), presets), [presets]);
   const [topo, setTopo] = useState<DesignTopology>(init.topo);
   const [values, setValues] = useState<Record<string, string>>(init.values);
@@ -431,7 +432,7 @@ export default function ConverterDesigner({ labels, presets, simulatorHref, loss
     const sym = f.label(topo);
     return (
       <div key={f.key} className="pe-row pe-row--full">
-        <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} note={f.optional ? labels.optional : undefined} />
+        <FieldLabel htmlFor={id} sym={sym} meaning={symbols[sym]} unit={f.unit} note={f.optional ? labels.optional : undefined} punct={punct} />
         <NumInput id={id} unit={f.unit} value={values[f.key] ?? ''} onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
       </div>
     );
@@ -527,7 +528,10 @@ export default function ConverterDesigner({ labels, presets, simulatorHref, loss
                     )}
                     <tr>
                       <th scope="row">
-                        <Rich text={labels.lRipple} /> (<Sym text={Lname} />)
+                        <Rich text={labels.lRipple} />
+                        {punct.open}
+                        <Sym text={Lname} />
+                        {punct.close}
                       </th>
                       <td>{fmt(r.L.ripple, 'H')}</td>
                       <td>
@@ -536,7 +540,10 @@ export default function ConverterDesigner({ labels, presets, simulatorHref, loss
                     </tr>
                     <tr>
                       <th scope="row">
-                        <Rich text={labels.lCcm} /> (<Sym text={Lname} />)
+                        <Rich text={labels.lCcm} />
+                        {punct.open}
+                        <Sym text={Lname} />
+                        {punct.close}
                       </th>
                       <td>{fmt(r.L.ccm, 'H')}</td>
                       <td>
@@ -545,12 +552,17 @@ export default function ConverterDesigner({ labels, presets, simulatorHref, loss
                     </tr>
                     <tr>
                       <th scope="row">
-                        <Rich text={labels.lUsed} /> (<Sym text={Lname} />)
+                        <Rich text={labels.lUsed} />
+                        {punct.open}
+                        <Sym text={Lname} />
+                        {punct.close}
                       </th>
                       <td>
-                        <strong>{fmt(r.L.chosen, 'H')}</strong>{' '}
+                        <strong>{fmt(r.L.chosen, 'H')}</strong>
                         <small>
-                          (<Rich text={labels.binding[r.L.binding]} />)
+                          {punct.open}
+                          <Rich text={labels.binding[r.L.binding]} />
+                          {punct.close}
                         </small>
                       </td>
                       <td />

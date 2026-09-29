@@ -12,7 +12,7 @@ import { latexHtml, symHtml } from '../lib/sym';
 import { useStateHash } from '../lib/useStateHash';
 import { FieldLabel, NumInput, Rich } from './ToolUi';
 import { parseSI } from '../lib/siparse';
-import { fieldIn, type Locale } from '../i18n/ui';
+import { PUNCT, fieldIn, type Locale } from '../i18n/ui';
 
 interface Labels {
   /** How values are entered: SI units, with or without a prefix (lib/siparse.ts). */
@@ -257,7 +257,8 @@ export default function EquationExplorer({ locale, labels }: Props) {
             ))}
           </fieldset>
           <p className="pe-explorer__result" aria-live="polite">
-            {labels.result}:{' '}
+            {labels.result}
+            {PUNCT[locale].colon}
             {error ? (
               <strong>{error}</strong>
             ) : (

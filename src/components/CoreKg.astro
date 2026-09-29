@@ -7,7 +7,7 @@
  */
 import katex from 'katex';
 import { catalog } from 'pe-core';
-import { fieldIn, ui } from '../i18n/ui';
+import { PUNCT, fieldIn, ui } from '../i18n/ui';
 import { katexOptions } from '../math/katex-options';
 import { getExample } from '../lib/examples';
 import { coreKg } from '../lib/corekg';
@@ -23,6 +23,7 @@ interface Props {
 const { example } = Astro.props;
 const locale = pageLocale(Astro);
 const t = ui[locale];
+const punct = PUNCT[locale];
 const ex = getExample(example);
 const need = ex.context.K_g;
 if (!(need !== undefined && need > 0)) throw new Error(`<CoreKg example="${example}">: the example computes no K_g (mag.Kg_req)`);
@@ -73,7 +74,10 @@ const label = fieldIn(ex, 'label', locale);
             <td class="pe-worked__value">{r.MLT}</td>
             <td class="pe-worked__value">{r.Kg}</td>
             <td class="pe-worked__value">
-              {r.margin} ({r.fits ? t['corekg.fits'] : t['corekg.short']})
+              {r.margin}
+              {punct.open}
+              {r.fits ? t['corekg.fits'] : t['corekg.short']}
+              {punct.close}
             </td>
           </tr>
         ))

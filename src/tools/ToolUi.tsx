@@ -4,6 +4,7 @@
  * equal-size buttons.
  */
 import type { InputHTMLAttributes } from 'react';
+import { PUNCT, type Punct } from '../i18n/ui';
 import { parseSI } from '../lib/siparse';
 import { symParts } from '../lib/sym';
 
@@ -70,12 +71,14 @@ interface FieldLabelProps {
   /** What the value is, in a few words (TOOL_SYMBOLS or the catalogue). */
   meaning?: string;
   unit?: string;
-  /** Anything after the unit, e.g. "(optional)". */
+  /** Anything after the unit, in parentheses, e.g. "(optional)". */
   note?: string;
+  /** The page language's parentheses for the note (i18n/ui.ts PUNCT). */
+  punct?: Punct;
 }
 
 /** An input's label: the symbol, what it means, and its unit. */
-export function FieldLabel({ htmlFor, sym, symHtml, meaning, unit, note }: FieldLabelProps) {
+export function FieldLabel({ htmlFor, sym, symHtml, meaning, unit, note, punct = PUNCT.en }: FieldLabelProps) {
   return (
     <label htmlFor={htmlFor} className="pe-field">
       {symHtml ? <span className="pe-sym pe-sym--tex" dangerouslySetInnerHTML={{ __html: symHtml }} /> : <Sym text={sym} />}
@@ -87,7 +90,9 @@ export function FieldLabel({ htmlFor, sym, symHtml, meaning, unit, note }: Field
       {unit && unit !== '1' && <span className="pe-field__unit">[{unit}]</span>}
       {note && (
         <span className="pe-field__note">
-          (<Rich text={note} />)
+          {punct.open}
+          <Rich text={note} />
+          {punct.close}
         </span>
       )}
     </label>

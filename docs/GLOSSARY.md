@@ -45,8 +45,8 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | continuous conduction mode (CCM) | 연속 전도 모드(CCM) | 连续导通模式（CCM） |
 | discontinuous conduction mode (DCM) | 불연속 전도 모드(DCM) | 断续导通模式（DCM） |
 | CCM/DCM boundary | CCM/DCM 경계 | CCM/DCM 临界 |
-| operating mode | 동작 모드 | 工作模态 |
-| mode (of a period) | 모드 | 模态 |
+| operating mode (CCM or DCM) | 동작 모드 | 工作模式 |
+| operating mode (an interval of the period) · Mode k | 동작 모드 · 모드 k | 工作模态 · 模态 k |
 | operating point | 동작점 | 工作点 |
 | duty ratio | 듀티비 | 占空比 |
 | conversion ratio | 변환비 | 电压变换比 |
@@ -122,6 +122,8 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | magnetic field intensity · magnetomotive force | 자계 세기 · 기자력 | 磁场强度 · 磁动势 |
 | permeability · relative · of free space | 투자율 · 비투자율 · 진공 투자율 | 磁导率 · 相对磁导率 · 真空磁导率 |
 | reluctance · magnetic circuit | 자기저항 · 자기 회로 | 磁阻 · 磁路 |
+| Ampère's law · Faraday's law | 앙페르 법칙 · 패러데이 법칙 | 安培环路定律 · 法拉第定律 |
+| volt-seconds · flux swing | 전압-초 · 자속 변화폭 | 伏秒积 · 磁通摆幅 |
 | B-H loop · hysteresis · eddy current | B-H 루프 · 히스테리시스 · 와전류 | B-H 回线 · 磁滞 · 涡流 |
 | core loss · Steinmetz equation | 코어 손실 · 스타인메츠 식 | 磁芯损耗 · Steinmetz 公式 |
 | inductance factor A_L | 인덕턴스 계수 A_L | 电感系数 A_L |
@@ -130,6 +132,7 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | window · window utilization | 창 · 창 이용률 | 窗口 · 窗口利用率 |
 | winding · turns · turns ratio | 권선 · 턴 수 · 권선비 | 绕组 · 匝数 · 匝比 |
 | primary · secondary winding | 1차 권선 · 2차 권선 | 一次绕组 · 二次绕组 |
+| dot (polarity mark) | 점 표시(극성) | 同名端 |
 | reset winding | 리셋 권선 | 复位绕组 |
 | referred to the primary · reflected voltage | 1차 측으로 환산 · 반사 전압 | 折算到一次侧 · 反射电压 |
 | magnetizing inductance · magnetizing current | 자화 인덕턴스 · 자화 전류 | 励磁电感 · 励磁电流 |
@@ -172,6 +175,10 @@ ESR, MOSFET, PWM, RMS, SPICE, TVS, UVLO) stay as they are.
 | undervoltage lockout (UVLO) | 저전압 차단(UVLO) | 欠压锁定（UVLO） |
 | impedance analyzer · LCR meter | 임피던스 분석기 · LCR 미터 | 阻抗分析仪 · LCR 测试仪 |
 | evaluation board | 평가 보드 | 评估板 |
+| data sheet · manufacturer | 데이터시트 · 제조사 | 数据手册 · 厂商 |
+| function generator · square wave · sine wave | 함수 발생기 · 구형파 · 정현파 | 函数发生器 · 方波 · 正弦波 |
+| deskew (probes) | 디스큐 | 时延校正（deskew） |
+| load transient · worst case | 부하 과도 · 최악 조건 | 负载瞬态 · 最坏情况 |
 
 ## Harvesting
 

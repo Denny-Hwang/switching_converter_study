@@ -2,12 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { sim } from 'pe-core';
 import { NAMES } from '../lib/seqlayout';
 import { SAY, SEQ_TEXT, descKey, elementKey, energySentences, kindKey, stateKey } from './sequence';
+import { LOCALES } from './ui';
 
 /**
  * The operating-mode view has a text for everything the simulator can show:
  * every interval of every model (with and without a node capacitance, a
  * source, each load), every element of every drawn circuit, every state of
- * every kind of element, in English and in Korean.
+ * every kind of element, in every language of the site.
  */
 
 const TOPOLOGIES: sim.Topology[] = ['buck', 'boost', 'buckboost', 'flyback', 'forward'];
@@ -32,11 +33,10 @@ function variants(): sim.SimParams[] {
 }
 
 describe('operating-mode texts', () => {
-  it('English and Korean have the same keys, none empty but the idle short states', () => {
+  it('every language has the English keys, none empty but the idle short states', () => {
     const en = Object.keys(SEQ_TEXT.en).sort();
-    const ko = Object.keys(SEQ_TEXT.ko).sort();
-    expect(ko).toEqual(en);
-    for (const locale of ['en', 'ko'] as const) {
+    for (const locale of LOCALES) expect(Object.keys(SEQ_TEXT[locale]).sort(), locale).toEqual(en);
+    for (const locale of LOCALES) {
       for (const [k, v] of Object.entries(SEQ_TEXT[locale])) {
         if (k === 'short.idle') continue;
         expect(v.trim().length, `${locale} ${k}`).toBeGreaterThan(0);
@@ -49,7 +49,7 @@ describe('operating-mode texts', () => {
     for (const p of variants()) {
       const kinds = new Set(Object.keys(sim.buildModel(p).intervals).map((iv) => (iv === 'clamp' ? 'ring' : iv)));
       for (const kind of kinds) {
-        for (const locale of ['en', 'ko'] as const) {
+        for (const locale of LOCALES) {
           const text = SEQ_TEXT[locale];
           if (!text[kindKey(p.topology, kind)]) missing.push(`${locale} ${kindKey(p.topology, kind)}`);
           // a rise ends as the diode takes over, as the current reaches zero first, or at turn-on
@@ -69,7 +69,7 @@ describe('operating-mode texts', () => {
       for (const b of sim.schematic(p).branches) {
         if (b.kind === 'wire') continue;
         if (!NAMES[b.id]) missing.push(`drawn name ${b.id}`);
-        for (const locale of ['en', 'ko'] as const) {
+        for (const locale of LOCALES) {
           const text = SEQ_TEXT[locale];
           if (!text[elementKey(p.topology, b.id)]) missing.push(`${locale} ${elementKey(p.topology, b.id)}`);
           for (const st of sim.STATES[b.kind]) {
@@ -85,14 +85,14 @@ describe('operating-mode texts', () => {
 });
 
 describe('the energy sentences', () => {
-  it('every state of every element they name has a sentence in both languages, and each source its name', () => {
+  it('every state of every element they name has a sentence in every language, and each source its name', () => {
     const missing: string[] = [];
     for (const p of variants()) {
       for (const b of sim.schematic(p).branches) {
         const say = SAY[b.id];
         if (!say || b.kind === 'wire') continue;
         expect(say.kind, b.id).toBe(b.kind);
-        for (const locale of ['en', 'ko'] as const) {
+        for (const locale of LOCALES) {
           const text = SEQ_TEXT[locale];
           for (const st of sim.STATES[b.kind]) if (!text[stateKey(say.kind, st, 'say')]) missing.push(`${locale} ${stateKey(say.kind, st, 'say')}`);
           if (say.kind === 'vsource' && !text[`src.${b.id}`]) missing.push(`${locale} src.${b.id}`);
@@ -100,7 +100,7 @@ describe('the energy sentences', () => {
       }
     }
     expect([...new Set(missing)]).toEqual([]);
-    for (const locale of ['en', 'ko'] as const) for (const k of ['rest', 'tableNote']) expect(SEQ_TEXT[locale][k], `${locale} ${k}`).toBeTruthy();
+    for (const locale of LOCALES) for (const k of ['rest', 'tableNote']) expect(SEQ_TEXT[locale][k], `${locale} ${k}`).toBeTruthy();
   });
 
   it("follow the table's states, one sentence per element, with no placeholder left", () => {
@@ -108,7 +108,7 @@ describe('the energy sentences', () => {
     const r = sim.simulate(p);
     for (const m of sim.modes(r)) {
       const states = sim.elementStates(r, m);
-      for (const locale of ['en', 'ko'] as const) {
+      for (const locale of LOCALES) {
         const said = energySentences(states, SEQ_TEXT[locale]);
         // L, C, the battery, the source and the bus capacitor
         expect(said.length).toBe(5);

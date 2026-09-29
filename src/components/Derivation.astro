@@ -11,7 +11,7 @@ import { catalog } from 'pe-core';
 import { REPO_BLOB } from '../config';
 import { katexOptions } from '../math/katex-options';
 import { renderInlineMath } from '../math/inline';
-import { fieldIn } from '../i18n/ui';
+import { PUNCT, fieldIn } from '../i18n/ui';
 import { pageLocale } from '../lib/locale';
 
 interface Props {
@@ -21,6 +21,7 @@ const { module } = Astro.props;
 const d = derivations.derivations.find((x) => x.module === module);
 if (!d) throw new Error(`<Derivation module="${module}">: no such module in derivations.generated.json`);
 const locale = pageLocale(Astro);
+const punct = PUNCT[locale];
 const t = {
   en: { reproduces: 'reproduces', source: 'Derivation script', checked: 'equality checked symbolically by pytest' },
   ko: { reproduces: '재현하는 수식', source: '유도 스크립트', checked: 'pytest가 sympy로 일치를 검증함' },
@@ -43,8 +44,10 @@ const t = {
                 href={`${REPO_BLOB}/packages/pe-core/equations/equations.yaml#L${catalog.equations[st.result_for]?.yaml_line ?? 1}`}
               >
                 <code>{st.result_for}</code>
-              </a>{' '}
-              ({t.checked})
+              </a>
+              {punct.open}
+              {t.checked}
+              {punct.close}
             </p>
           )}
         </li>
@@ -52,6 +55,8 @@ const t = {
     }
   </ol>
   <p class="pe-deriv__source">
-    {t.source}: <a href={`${REPO_BLOB}/${d.source}`}><code>{d.source}</code></a>
+    {t.source}
+    {punct.colon}
+    <a href={`${REPO_BLOB}/${d.source}`}><code>{d.source}</code></a>
   </p>
 </div>

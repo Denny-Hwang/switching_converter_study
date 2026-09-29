@@ -4,7 +4,7 @@
  * circuit file, the same example in the site's simulator, and the ideal values the CI's
  * falstad job (scripts/falstad_check.mjs) compares its last periods with.
  */
-import { fieldIn, ui } from '../i18n/ui';
+import { PUNCT, fieldIn, ui } from '../i18n/ui';
 import { REPO_BLOB } from '../config';
 import { pageHref } from '../lib/paths';
 import { pageLocale } from '../lib/locale';
@@ -14,6 +14,7 @@ import { fmtValue } from '../lib/format';
 
 const locale = pageLocale(Astro);
 const t = ui[locale];
+const punct = PUNCT[locale];
 
 type Stat = 'avg' | 'max' | 'min';
 const STATS: Stat[] = ['avg', 'max', 'min'];
@@ -50,7 +51,8 @@ function lines(c: FalstadCase): { label: string; values: string[] }[] {
             <th scope="row">
               {fieldIn(c, 'title', locale)}
               <div class="pe-falstad__sub">
-                {t['falstad.sim']}:{' '}
+                {t['falstad.sim']}
+                {punct.colon}
                 <a href={`${pageHref(locale, 'simulate/simulator')}#${simulatorHash(c.example, c.topology)}`}>
                   <code>{c.example}</code>
                 </a>
@@ -67,7 +69,9 @@ function lines(c: FalstadCase): { label: string; values: string[] }[] {
             <td>
               {lines(c).map((l) => (
                 <div>
-                  {l.label}: {l.values.join(', ')}
+                  {l.label}
+                  {punct.colon}
+                  {l.values.join(punct.list)}
                 </div>
               ))}
             </td>
