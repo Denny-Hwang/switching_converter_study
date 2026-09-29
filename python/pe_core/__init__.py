@@ -11,4 +11,4 @@
 * :mod:`pe_core.generate`   render every generated artefact (scripts/gen_equations.py)
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

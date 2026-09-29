@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pe_core"
-version = "0.1.0"
+version = "0.2.0"
 description = "Verification side of the switching-converter learning repository: sympy derivations, LaTeX and test-vector generation."
 license = "MIT"
 requires-python = ">=3.11"
