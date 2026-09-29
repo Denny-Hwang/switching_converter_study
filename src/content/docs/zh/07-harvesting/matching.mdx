@@ -1,0 +1,89 @@
+---
+title: 匹配
+description: 电阻、电池这类恒定电压以及变换器各取得线性源可用功率的多大比例；为什么接在电源与电池之间的变换器能让电源工作在其最佳电压；以及为什么固定占空比的 DCM 变换器是无损电阻。
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 求出恒定电压（constant voltage）和无损电阻（loss-free resistor）各取得线性源可用功率的比例。
+- 理解为什么接在电源与电池之间的变换器能让电源工作在其最佳电压。
+- 了解固定占空比的 DCM 变换器是无损电阻，以及电源幅值变化时它的表现。
+
+## 理论
+
+### 恒定电压
+
+直接接到线性源上的电池，或保持在固定电压 $V_c$ 的母线，所吸取的电流就是两个电压之差经 $R_s$ 驱动的电流。它取得的功率等于该电流乘以其自身的电压 <Cite key="alexander2017" where="Sec. 4.8 (Maximum Power Transfer)" />：
+
+<Eq id="src.cv_power" />
+
+以占可用功率（<EqRef id="src.Pmax" label="线性源的最大功率" />）的比例表示：
+
+<Eq id="src.cv_extraction" />
+
+只有在开路电压的一半处，它才取得全部可用功率。电池电压由其荷电状态决定，而不是由电源决定；能量收集器的幅值又会变化：直接连接时，两者很少恰好在这一点相遇。
+
+### 中间接入变换器
+
+接在电源与电池之间的变换器把两者的电压隔开：其输入可以处在电源给出功率最大的电压，而其输出保持在电池电压。Ottman 等在压电元件与电池之间接入一个工作在 DCM 的降压变换器（step-down converter），使其以功率最大的占空比工作，并报告该变换器使收集的功率提高了“约 325%”（原文“by approximately 325%”）<Cite key="ottman2003" />。
+
+### 无损电阻
+
+在固定占空比的 DCM 下，升降压（buck-boost）变换器或反激（flyback）变换器吸取的平均输入电流与其输入电压成正比：其输入端是一个电阻，即<EqRef id="lfr.R_in" label="无损电阻" />，它把功率传递出去，而不是将其耗散 <Cite key="singer1990" />、<Cite key="erickson2020" where="Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)" />。接线性源时，该电阻与源内阻对电源电压分压：
+
+<Eq id="lfr.Vg" />
+
+而变换器在任何电源幅值下取得的可用功率比例都相同 <Cite key="alexander2017" where="Sec. 4.8 (Maximum Power Transfer)" />：
+
+<Eq id="lfr.eta" />
+
+输入电阻等于源内阻时，变换器取得全部可用功率；偏向任何一侧时，该比例都下降得很慢。因此，只要变换器保持在 DCM（[DCM 反激变换器](../lfr-dcm-flyback/)），固定的占空比就能在线性源幅值变化时使其保持在最大功率点（maximum power point），无需任何测量。
+
+## 例题
+
+一个线性源，分别接电池和无损电阻：
+
+<Worked example="match-basic" />
+
+该电源最多能给出 <Val example="match-basic" name="P_max" />。直接与之相连、电压为 <Val example="match-basic" name="V_c" /> 的电池取得 <Val example="match-basic" name="P_cv" />，比例为 <Val example="match-basic" name="eta_ext_cv" />。<Val example="match-basic" name="R_in" /> 的无损电阻把输入保持在 <Val example="match-basic" name="V_g" />，取得的比例为 <Val example="match-basic" name="eta_ext_lfr" />，并且在任何电源幅值下都保持这一比例。
+
+## 动手试试
+
+<TryIt eq="src.cv_extraction" example="match-basic" sweep="V_c" from={0} to={10} logx={false} />
+
+扫描恒压负载所保持的电压：该比例在开路电压的一半处达到峰值，在两端降为零。
+
+<TryIt eq="lfr.eta" example="match-basic" sweep="R_in" from={2.5} to={250} />
+
+扫描输入电阻：输入电阻为源内阻的两倍或一半时，仍能取得可用功率的九分之八。
+
+## 实验练习
+
+用实验室电源和一个串联功率电阻构成线性源。接入工作在恒压模式的电子负载（electronic load）来代替电池，将其电压从零逐步升到实验室电源的电压，并记录每一步的电流。画出功率随电压变化的曲线，找出峰值所在，并与实验室电源电压的一半比较。然后把负载换成占空比固定、工作在 DCM 的变换器，在两个实验室电源电压下测量其输入电压和输入电流：两者之比，即输入电阻，保持不变。
+
+## 易错点
+
+- **直接接到电源上的电池工作在电池电压**，而不是电源的最佳电压（<EqRef id="src.cv_extraction" label="恒压负载的功率提取比" />）。
+- **无损电阻只在 DCM 下成立**（<EqRef id="lfr.R_in" label="无损电阻" />）；强电源可能把变换器推入 CCM（[DCM 反激变换器](../lfr-dcm-flyback/)）。
+- **开路电压的一半只是线性源的最佳点**。非线性电源有其自身的最佳点（[MPPT](../sece-sshi-mppt/#最大功率点跟踪)）。
+- **幅值变化时，固定电阻能保持其比例，固定电压则不能**（<EqRef id="lfr.eta" label="无损电阻的功率提取比" />）。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch15', 'ottman2003-ieee']} />
+
+## 测验
+
+<Quiz id="07-harvesting/matching" />

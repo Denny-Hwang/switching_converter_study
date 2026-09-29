@@ -1,0 +1,118 @@
+---
+title: 伏秒平衡与电荷平衡
+description: 决定任何 CCM 变换器直流电压变换比的两个稳态条件，及其在降压、升压和升降压变换器上的应用。
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Figure from '../../../../components/Figure.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 表述电感伏秒平衡（volt-second balance）和电容电荷平衡（charge balance），并解释它们为何在稳态（steady state）下成立。
+- 用这两个条件求连续导通模式（continuous conduction mode, CCM）下变换器的直流电压变换比（conversion ratio）。
+- 识别平衡条件不适用的情形。
+
+## 理论
+
+### 伏秒平衡
+
+在周期稳态下，每个波形都逐个开关周期（switching period）重复，因此电感电流在每个周期结束时回到其起始值。电感电压在一个周期内的积分等于 $L$ 乘以这一电流净变化量，而该净变化量为零：一个周期内电感电压的平均值为零，即 $\langle v_L \rangle = 0$ <Cite key="erickson2020" where="Ch. 2" />。这就是**电感伏秒平衡**。
+
+<Figure name="balance" />
+
+采用[小纹波近似（small-ripple approximation）](../switching-principle/)时，电感电压在导通区间（on-interval）$D T_s$ 内取一个恒定值，在关断区间（off-interval）$(1 - D) T_s$ 内取另一个恒定值。平衡条件用前者确定后者：
+
+<Eq id="vsb.v_off" />
+
+开关管导通期间施加的正伏秒积，必须由其关断期间的负伏秒积抵消。
+
+### 平均值不为零时
+
+在一个周期内，电感电流的变化量等于电感电压的平均值乘以周期，再除以电感量：
+
+<Eq id="vsb.drift" />
+
+在启动（start-up）、负载阶跃或输入电压阶跃等瞬态（transient）过程中，这一变化使变换器逐个周期地趋向新的稳态。平均值无法达到零的电路根本没有稳态：在 CCM 下向固定输出电压供电的变换器，若占空比（duty ratio）高于使其平衡的占空比，电感电流每个周期都增加相同的量，无限增长 <Cite key="erickson2020" where="Ch. 2" />。若占空比低于该值，电流则会在周期内降到零，变换器稳定在 DCM，其中的空闲区间使平均值为零 <Cite key="erickson2020" where="Ch. 5" />。
+
+### 电荷平衡
+
+同样的论证也适用于电容：电容电压在每个周期结束时回到其起始值，因此流入电容的净电荷为零，电容电流的平均值也为零，即 $\langle i_C \rangle = 0$。这就是**电容电荷平衡** <Cite key="erickson2020" where="Ch. 2" />。写成两个区间的形式：
+
+<Eq id="csb.i_off" />
+
+伏秒平衡给出变换器的电压关系；电荷平衡给出其直流电流。
+
+### 降压变换器
+
+开关管导通时，电感接在 $V_g$ 与输出之间，因此其电压为 $V_g - V$。二极管导通（conduction）时，电感的输入端接地，其电压为 $-V$。使这两个电压满足平衡条件，即得到降压（buck）变换器的电压变换比 <Cite key="erickson2020" where="Ch. 2" />：
+
+<Eq id="buck.ccm.M" />
+
+### 升压变换器
+
+升压（boost）变换器把电感放在输入侧。开关管导通时，电感两端电压为 $V_g$；二极管导通时，电感两端电压为 $V_g - V$。要使两者平衡，$V$ 必须大于 $V_g$：
+
+<Eq id="boost.ccm.M" />
+
+### 升降压变换器
+
+升降压（buck-boost）变换器在开关管导通期间把电感接到 $V_g$，在二极管导通期间把电感接到输出。其输出反相，因此变换比为负；变换比的绝对值在 $D < 0.5$ 时小于 1，在 $D > 0.5$ 时大于 1：
+
+<Eq id="buckboost.ccm.M" />
+
+三个变换比的 sympy 逐步推导都在[推导页面](../derivations/#deriv-ccm_ratios)中。
+
+## 例题
+
+两个区间值的平衡：一个电感在导通区间内承受给定的电压，一个电容在导通区间内流入给定的电流。
+
+<Worked example="balance-basic" checks={false} />
+
+$D$ = <Val example="balance-basic" name="D" /> 时，关断区间的长度是导通区间的三倍，因此关断区间电压的大小是导通区间电压的三分之一，符号相反。
+
+对占空比相同的升压和升降压变换器示例应用同样的平衡：
+
+<Worked example="boost-basic" show={['V_g', 'D', 'M_ideal']} checks={false} />
+
+<Worked example="buckboost-basic" show={['V_g', 'D', 'M']} checks={false} />
+
+## 动手试试
+
+<TryIt eq="boost.ccm.M" example="boost-basic" sweep="D" />
+
+<TrySim example="boost-basic" topology="boost" />
+
+将 $D$ 向 1 扫描（sweep），观察理想升压变换器的电压变换比无限增大。[平均模型（averaged model）页面](../averaged-models/)说明了实际升压变换器为什么不能沿这条曲线变化。
+
+以无法达到平衡的占空比向固定输出供电的降压变换器没有稳态：仿真器显示其电流的失控增长、造成这一增长的电感电压平均值，以及能够使其平衡的占空比。
+
+<TrySim example="sim-buck-fixed" topology="buck" />
+
+## 实验练习
+
+在低压变换器评估板（evaluation board）上，用差分探头（differential probe），或用两个探头加示波器的减法运算，测量电感电压。在稳态下，读出两个平台（plateau）电压以及导通时间和关断时间，检查两块伏秒面积是否大小相等、符号相反。然后使负载阶跃变化，在瞬态过程中再次观察：电感电流变化期间，两块面积不再相等。
+
+## 易错点
+
+- **平衡只在稳态下成立**。在启动、负载阶跃和输入电压阶跃期间，电感电压的平均值不为零；正是这个非零平均值改变了电感电流 <Cite key="erickson2020" where="Ch. 2" />。
+- **不要把小纹波近似用于正要计算的纹波，也不要用于产生该纹波的波形**。降压变换器的输出电压纹波由电感电流纹波引起，因此计算该纹波时不能把电感电流当作恒定值 <Cite key="erickson2020" where="Ch. 2" />。
+- **损耗会改变平衡方程**。绕组电阻（winding resistance）和半导体器件的压降会给各区间的电压增加一些项，并降低变换比；见[平均模型页面](../averaged-models/)。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch2', 'coursera-intro-pe', 'ti-slva061']} />
+
+## 测验
+
+<Quiz id="02-theory/volt-second-charge-balance" />

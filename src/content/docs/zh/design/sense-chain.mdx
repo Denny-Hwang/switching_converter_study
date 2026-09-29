@@ -1,0 +1,134 @@
+---
+title: 电流检测链
+description: 校核从分流电阻到 ADC 的电流检测链。给出增益、满量程电流及其决定因素、输出下限、施加在被测电路上的负担电压、失调等效电流、焊盘误差、最小电流下的误差，以及滤波器转折频率与采样率的比较，并对每项超限发出警告。
+sidebar:
+  order: 7
+tableOfContents: false
+---
+
+import { Image } from 'astro:assets';
+import Cite from '../../../../components/Cite.astro';
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import SenseChain from '../../../../components/SenseChain.astro';
+import Val from '../../../../components/Val.astro';
+import Worked from '../../../../components/Worked.astro';
+import shot from '../../../../assets/screenshots/sensechain-zh.png';
+
+变换器用分流电阻测量其电流，分流电阻上的小电压由放大器放大后送给 ADC。每一级都有其限制。分流电阻从被测电路中占去电压和功率。放大器在高端会达到其输出范围的极限，在低端则叠加其失调。检测路径中的焊盘和焊点带来自身的电阻，而 ADC 会把高于其采样率一半的任何成分折回读数中。电流检测链工具以 SI 单位接收整条检测链的参数，在从零到最大电流的范围内给出：
+
+- 增益、满量程电流（full-scale current）及决定它的限值，以及输出下限（output floor），均取失调和焊盘电阻的最坏情况；
+- 最大电流下的检测电压（即负担电压，burden voltage）和分流电阻损耗；
+- 失调等效电流、焊盘误差，以及最小电流下读数的误差；
+- R-C 滤波器的转折频率（corner frequency）与奈奎斯特频率的比较。
+
+工具对每项超限发出警告，每个结果都注明其所依据的公式。两张图表分别显示输出和相对误差随电流的变化。
+
+<SenseChain />
+
+## 计算内容
+
+工具所测的电流从零到 $I_\mathrm{max}$，$\varepsilon_\mathrm{max}$ 是在需要关注的最小电流 $I_\mathrm{min}$ 下可接受的误差。
+
+### 检测电压与负担电压
+
+根据欧姆定律，分流电阻把电流转换为检测电压 <Cite key="alexander2017" where="Ch. 2" />（<EqRef id="sense.burden" label="检测电压" />，见[电流检测](../../06-bench/current-sensing/)页面）。
+
+该电压既是放大器的信号，也是负担电压，即分流电阻从被测电路中占去的电压。分流电阻越大，信号越大，但负担电压和损耗也越大，这里的损耗是分流电阻在最大电流下的<EqRef id="loss.cond" label="导通损耗（conduction loss）" />。若输入被测电路所能容许的压降和分流电阻的额定功率，工具会把负担电压和损耗分别与之比较。
+
+### 放大器的输出
+
+**电流输出型放大器**使检测电压加在其输入电阻 $R_\mathrm{IN}$ 两端。由此产生的电流经 $R_\mathrm{OUT}$ 流出，并由它转换回对地电压 <Cite key="adi_ltc6101" />：
+
+<Eq id="sense.current_out_monitor" />
+
+这两个电阻决定增益。
+
+**电压输出型放大器**具有固定增益 $G$，并叠加其 REF 引脚上的电压 <Cite key="ti_ina181" where="Equation 1" />：
+
+<Eq id="sense.voltage_out_monitor" />
+
+REF 电压决定零电流时的输出。正负两种方向的电流使输出分别摆向其两侧；电流只沿一个方向流动时，适合取 REF 电压为零 <Cite key="ti_ina181" />。
+
+### 失调
+
+放大器的输入失调电压直接叠加在检测电压上 <Cite key="adi_ltc6101" where="Applications Information" />。因此输出把它读作一个电流，在任何电流下都相同：
+
+<Eq id="sense.offset_current" />
+
+分流电阻越大，这个电流越小，因为同样的电流会产生更大的检测电压 <Cite key="ti_ina181" />。代价是负担电压和损耗更大。
+
+### 焊盘与焊点电阻
+
+分流电阻只有几毫欧或更小时，焊点电阻在检测元件的电阻中占相当大的比例，并增大测量误差 <Cite key="osullivan2012" />。若检测连接位于焊盘外侧，放大器检测到的是负载电流在分流电阻与焊盘的串联电阻 $R_\mathrm{SENSE} + R_\mathrm{pad}$ 上产生的电压。因此读数在任何电流下都偏高同一比例（<EqRef id="sense.pad_error" label="焊盘误差" />，见[电流检测](../../06-bench/current-sensing/)）。
+
+开尔文连接（Kelvin connection）把焊盘移出检测路径：采用四端子分流电阻，或把两端子分流电阻装在四焊盘（分离焊盘，split-pad）布局上 <Cite key="osullivan2012" />。LTC6101 数据手册建议，除功率最低的应用外，检测电阻都应采用开尔文连接 <Cite key="adi_ltc6101" where="Applications Information" />。采用开尔文连接时，将 $R_\mathrm{pad}$ 设为零。
+
+### 放大器的读数
+
+同时存在失调和焊盘电阻时，放大器检测到的是负载电流流过分流电阻和焊盘所产生的电压，再加上其失调，并把这个和读作仅流过分流电阻的电流：
+
+<Eq id="sense.reading" />
+
+把这个电流代入输出公式即得输出。数据手册给出的是失调的最大幅值，而不是其符号，因此工具两种符号都取：对上端的限值取使输出升高的符号，对下限取使输出降低的符号。
+
+### 最小电流下的误差
+
+相对于真实电流，两项误差直接相加，没有交叉项：
+
+<Eq id="sense.rel_error" />
+
+失调引起的部分与电流成反比地减小，因此在 $I_\mathrm{min}$ 下最为重要。焊盘引起的部分在任何电流下都相同。在 $I_\mathrm{min}$ 下，若某一部分单独超过 $\varepsilon_\mathrm{max}$，工具就对该部分发出警告；若只有二者之和超过，则对总和发出警告。误差图表绘出二者随电流的变化，并标出目标。
+
+### 满量程与输出下限
+
+输出受两个限值约束。放大器只能输出到其最大输出电压 $V_\mathrm{OUT,max}$，该值取决于其电源；ADC 只能读到其满量程 $V_\mathrm{FS}$。电压输出型放大器的数据手册把输出摆幅规定为比电源轨低一个小电压、比地高一个小电压 <Cite key="ti_ina181" />。LTC6101 的数据手册以规定电源电压下的绝对值给出其最大输出 <Cite key="adi_ltc6101" />。请输入适用于所用电源的值。
+
+工具取最高输出（计入焊盘电阻，且失调取使输出升高的符号），求出它达到两个限值中较低者时的电流：这就是满量程电流。若该电流低于 $I_\mathrm{max}$，读数可能在达到最大电流之前削波。若远高于此值，ADC 的量程就有一部分被浪费；表中给出 $I_\mathrm{max}$ 下的最高输出所占满量程的比例。
+
+在低端，REF 引脚电压为零的电压输出型放大器不能把输出一直驱动到地。其最低输出 $V_\mathrm{OUT,min}$，即对地摆幅，构成一个下限：输出本应低于该下限的所有电流，读数都相同。失调若取使输出降低的符号，会使输出在达到由失调决定的某一电流之前一直停在下限。工具取最低输出，给出一个电流，低于该电流时输出可能停在下限；该电流高于 $I_\mathrm{min}$ 时，工具发出警告。REF 电压高于下限时，下限即消失。
+
+### 滤波与采样
+
+以采样率 $f_\mathrm{samp}$ 采样的 ADC，能表示从直流到奈奎斯特频率的频带：
+
+<Eq id="adc.nyquist" />
+
+高于该频率的任何分量都会混叠回这一频带，因此要在 ADC 之前用抗混叠滤波器将其滤除 <Cite key="kester_mt002" />。在变换器中，开关纹波就是这样的分量。工具采用一阶 R-C 滤波器（first-order R-C filter），其<EqRef id="rc.fc" label="转折频率" />和<EqRef id="rc.gain" label="增益幅值" />取自相量页面。转折频率等于或高于奈奎斯特频率时，工具发出警告，并给出滤波器在奈奎斯特频率处的增益。这项检查是本工具自己的规则，以奈奎斯特准则为基础。单个极点（pole）的衰减只与频率成反比，因此转折频率低于奈奎斯特频率只是最低要求，并不总是足够：奈奎斯特频率处的增益表明有多少信号仍能在该处通过。
+
+电流输出型放大器的输出是电流源，由 $R_\mathrm{OUT}$ 将其转换为电压。从滤波器看过去，这相当于一个内阻为 $R_\mathrm{OUT}$ 的电源，即其戴维南等效电路（Thevenin equivalent）<Cite key="alexander2017" where="Ch. 4" />。因此，滤波电容所见的是 $R_\mathrm{OUT}$ 与 $R_f$ 的串联，推导（derivation）见公式下方的链接：
+
+<Eq id="sense.filter_R" />
+
+不加 $R_f$、直接并联在 $R_\mathrm{OUT}$ 两端的电容，也是这种滤波器。工具把电压输出型放大器的输出视为理想电压源，因此此时电容所见的只有 $R_f$；实际放大器的输出电阻会叠加到 $R_f$ 上。
+
+若已知变换器的开关频率，请将其输入：表中随即给出滤波器在该频率处的增益，即开关纹波到达 ADC 的比例。
+
+## 例题
+
+电流输出型放大器，配两端子分流电阻：
+
+<Worked example="sense-current" />
+
+在最大电流下，输出的标称值为 <Val example="sense-current" name="V_OUT" />。计入焊盘电阻和失调后，放大器读数为 <Val example="sense-current" name="I_meas" />，输出最高可达 <Val example="sense-current" name="V_OUThi" />，仍低于 ADC 的满量程 <Val example="sense-current" name="V_FS" />。问题出在低端。失调等效电流 <Val example="sense-current" name="I_OSeq" /> 和焊盘误差 <Val example="sense-current" name="eps_pad" /> 使 <Val example="sense-current" name="I_min" /> 下读数的相对误差达到 <Val example="sense-current" name="eps_I" />，而目标为 <Val example="sense-current" name="eps_max" />。开尔文连接可消除焊盘引起的部分。要减小失调引起的部分，则需要更大的分流电阻或失调更低的放大器。滤波电容所见的电阻为 $R_\mathrm{OUT}$ 与 $R_f$ 之和 <Val example="sense-current" name="R_filt" />，这使转折频率低于奈奎斯特频率。
+
+电压输出型放大器，配开尔文连接的分流电阻：
+
+<Worked example="sense-voltage" />
+
+最大电流下的最高输出 <Val example="sense-voltage" name="V_OUThi" /> 低于放大器的最大输出 <Val example="sense-voltage" name="V_OUTmax" />，最小电流下的误差 <Val example="sense-voltage" name="eps_I" /> 满足目标。滤波器的转折频率 <Val example="sense-voltage" name="f_c" /> 低于奈奎斯特频率 <Val example="sense-voltage" name="f_N" />。在该频率处，滤波器仍会让信号的 <Val example="sense-voltage" name="G_lp" /> 通过。
+
+## 局限性
+
+- **只考虑失调和焊盘**。误差模型包含放大器的输入失调和焊盘电阻。它未计入放大器的增益误差、增益电阻的容差、输入偏置电流、共模抑制（common-mode rejection）和噪声。它也未计入分流电阻自身的容差及其随温度的变化，以及 ADC 自身的误差。实际的误差预算（error budget）要把这些都加进去。
+- **电流从零开始**。只针对单方向流动的电流校核检测链。分流电阻损耗按 $I_\mathrm{max}$ 的直流电流计算。变化的电流按其有效值（rms）产生损耗，而输出限值适用于其峰值。
+- **输出限值按输入值计算**。输出范围取决于电源、负载和温度。应采用数据手册中对应实际使用条件的限值。
+- **一阶滤波器按空载计算**。ADC 输入端在采样时会吸取电荷。其数据手册给出所允许的信号源阻抗。
+- **只有一个焊盘电阻**。对阻值最小的分流电阻，检测点在焊盘上的位置以及电流在电阻中分布的均匀程度也有影响 <Cite key="osullivan2012" />。
+
+## 截图
+
+<figure class="pe-shot">
+  <Image src={shot} alt="载入电流输出型示例的电流检测链工具：放大器类型按钮，电流、分流电阻、放大器和 ADC 的输入栏，关于失调和焊盘误差的警告，注明每个结果所用公式的结果表，以及输出电压和相对误差随电流变化的图表。" />
+  <figcaption>载入电流输出型示例的电流检测链工具。</figcaption>
+</figure>

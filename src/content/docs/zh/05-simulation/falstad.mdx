@@ -1,0 +1,93 @@
+---
+title: CircuitJS1 中的变换器
+description: 如何在 Paul Falstad 的浏览器仿真器中打开 SPICE 库的电路，该仿真器如何逐步计算电路，以及为什么电流若无处可去，二极管停止导通时就可能出现尖峰。
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+import FalstadLinks from '../../../../components/FalstadLinks.astro';
+
+## 目标
+
+- 在 CircuitJS1 中打开 SPICE 库的电路，并读取其示波器（scope）波形。
+- 了解 CircuitJS1 如何逐步计算电路，以及在二极管停止导通的那个时间步长（time step）内可能发生什么。
+- 区分数值尖峰与电路本身的尖峰，并了解库中的电路为何带有体二极管（body diode）、用后向欧拉法（backward Euler）计算的磁性元件，以及略小于 1 的耦合系数（coupling coefficient）。
+
+## 理论
+
+### CircuitJS1 中的 SPICE 库
+
+CircuitJS1 是 Paul Falstad 的电路仿真器，由 Iain Sharp 移植到浏览器上 <Cite key="falstad_circuitjs" />：它在网页中运行电路，并以动画显示流过电路的电流。仓库的 `sim/falstad/` 文件夹以 CircuitJS1 电路的形式收录了 SPICE 库的七个算例，每个算例既有文本文件（File > Import From Text），也有在 falstad.com 上打开它的链接。链接把整个电路压缩后存放在其地址中 <Cite key="circuitjs1_source" />。一个脚本根据同名 SPICE 网表所依据的元件列表，用同一示例的数值写出每个电路，并检查每个元件所连接的节点与网表中的相同。
+
+<FalstadLinks />
+
+底部的示波器显示电感电流（反激变换器中为开关管电流）、开关节点电压或漏极电压，以及输出电压。电路打开后以每秒约一个开关周期的速度运行，电流点移动得足够慢，肉眼可以跟上；拖动 Simulation Speed 滑块可以让它运行得更快。电路从理想稳态的数值开始：输出电容电压为输出电压，电感（反激变换器中为励磁电感）电流为开关管开通时刻的电流，因此示波器在最初几个周期内就显示稳态。Reset 把电容和电感恢复到这些数值。若要使用自己的数值，可在本站的仿真器中设置，然后打开其中的链接**在 CircuitJS1 中打开这些数值**：它是用表单中的数值搭建的同一电路（[相同的电路](../../simulate/simulator/#ltspicengspice-和-circuitjs1-中的相同电路)）。
+
+本站的 CI 在无头浏览器（headless browser）中打开 falstad.com 上每个链接的副本，即只提高了运行速度的同一电路。它将副本运行与 SPICE 算例相同的周期数，并把最后两个周期的平均值和极值与表中的理想值比较：每个值与理想值之差都不得超过该物理量在这两个周期内最大绝对值的 1 %。
+
+### CircuitJS1 如何逐步计算电路
+
+CircuitJS1 以一个固定的时间步长逐步计算整个电路。只有当迭代不收敛时，它才把步长减半，而且前提是 Other Options 中的 Auto-Adjust Timestep 已开启 <Cite key="circuitjs1_source" />。库中的电路关闭了该选项，以开关周期的五百分之一为步长。SPICE 则根据误差估计选取每一步的步长 <Cite key="ngspice_manual" />；CircuitJS1 不会去寻找二极管开始或停止导通的时刻。
+
+在每一步中，每个电感都变为一个伴随模型（companion model），即一个电导与一个电流源并联。除非取消勾选该电感的 Trapezoidal Approximation 复选框（此时选用后向欧拉法），该模型遵循梯形法（trapezoidal rule）；变压器的绕组也按同样的方式处理 <Cite key="circuitjs1_source" />。二极管是非线性的，因此 CircuitJS1 迭代求解：用二极管在当前电压处的直线代替二极管，求解电路，然后重复。一旦二极管电压在相邻两次迭代之间的变化不超过 10 mV，CircuitJS1 就认为二极管已收敛 <Cite key="circuitjs1_source" />，随后保留已有的解，不再重新求解。
+
+### 二极管停止导通时
+
+库中的二极管接近理想：其电压的变化即使远小于迭代所接受的变化量，也会使电流变化许多倍。当二极管电流在一步之内降到零时，代表二极管的那条直线仍可能让电流越过零点继续流动，在这一步、也许还有下一步中都是如此，于是电感电流最终低于零。在库中的 DCM 降压变换器中，电流越过零点的量略大于它在一步之内的变化量。一旦迭代判定二极管已关断，而又没有其他元件承接该电流，下一步就必须把电流拉回零，后向欧拉法在这一步中给电感施加的电压为：
+
+<Eq id="sim.step_jump" />
+
+电流离开的那个节点最终与电感另一端相差这一电压：在去掉体二极管的 DCM 降压变换器中，开关节点在一步中从接近零跳到比输出高出这一电压之处，即比输入高约十伏，这是电路中并不存在的尖峰。缩短步长并不能消除它。电流的过冲量约等于它在一步之内的变化量，因此随步长减小而减小，而跳变的大小仍与二极管关断前电感两端的电压大致相当，在降压变换器中即为输出电压：把步长一再减半，DCM 降压变换器的跳变始终在其输出电压的约 0.7 到 1.4 倍之间。
+
+因此，库中的电路像本站的仿真器一样，给每个开关管都配上了体二极管。体二极管能限制跳变，但不能消除跳变：越过零点的电流从体二极管流过，因此节点电压超出电源轨（rail）的幅度不超过一个二极管压降。DCM 降压变换器的开关节点先在比输入高一个二极管压降处停留几步，随后在体二极管自身的电流越过零点时，有一步跌到输出电压以下。DCM 反激变换器的漏极电压在二极管关断时回落到输入电压，此时可能有一步向下跌落，但最多只跌到比地低一个二极管压降处；没有体二极管时，它会跌到远低于地的位置。节点上的电容若用后向欧拉法计算，则可无跳变地承接该电流。
+
+### 变压器
+
+CircuitJS1 的变压器要对其绕组电感矩阵求逆，而耦合系数恰好为 1 时该矩阵是奇异矩阵；其对话框也只接受 0 到 1 之间的耦合系数 <Cite key="circuitjs1_source" />。库中的变压器采用 0.99999。剩下的漏感（leakage inductance）在关断时给漏极电压叠加一个持续一步的尖峰，因为开关管在这一步之内截断了漏感电流（<EqRef id="sim.step_jump" label="一步跳变" />，式中取开关管电流所流经的漏感及开关管截断的电流）。该电流不随步长减小，因此这个尖峰（在库中的步长下不到一伏）与 1 减耦合系数之差成正比，并与步长成反比。
+
+该漏感还构成一个比步长快得多的模态，而梯形法对这种模态的放大因子接近 -1（<EqRef id="num.gain_tr" label="梯形法的放大因子" />）：它在相邻两步之间来回振铃。勾选 Trapezoidal Approximation 复选框后，在输出二极管导通期间，DCM 反激变换器的漏极电压每一步都在约为应有值两倍的电平与零之间交替。因此，库中的电感和变压器采用后向欧拉法，它对这种模态的放大因子接近零（<EqRef id="num.gain_be" label="后向欧拉法的放大因子" />）。
+
+## 例题
+
+库中的 DCM 降压变换器用后向欧拉法计算其电感。去掉其体二极管后，续流二极管（freewheeling diode）关断时越过零点的电流必须在一步之内归零：
+
+<Worked example="falstad-jump" />
+
+开关节点跳到比输出高 <Val example="falstad-jump" name="v_jump" /> 的位置，而输出为 <Val example="buck-light-load" name="V_dcm" />，因此在这一步中，开关节点显示的电压比输入高约十伏。有体二极管时，电流经体二极管流回输入，开关节点在比输入高一个二极管压降处停留几步。
+
+## 动手试试
+
+<TryIt eq="sim.step_jump" example="falstad-jump" sweep="I_os" />
+
+步长一定时，跳变与越过零点的电流成正比。然后在 CircuitJS1 中观察：从表中打开 DCM 降压变换器，选中开关管两端的二极管并将其删除，然后观察开关节点的示波器在每次二极管导通结束时出现尖峰。在 Other Options 中改变时间步长：尖峰依然存在。在 DCM 反激变换器中双击变压器，勾选 Trapezoidal Approximation：漏极的示波器上满是每步来回交替的波形。本站的仿真器在步内找出二极管电流降到零的时刻（[它如何逐步计算](../in-browser-simulator/#事件)），因此这两种现象都不会出现：
+
+<TrySim example="buck-light-load" topology="buck" />
+
+## 实验练习
+
+在实验台上捕获 DCM 变换器在二极管停止导通时的开关节点波形：电感与开关节点处的电容一起振铃（<EqRef id="dcm.ring.f" label="振铃频率" />）。由振铃频率和电感算出该电容。在 CircuitJS1 中，把你的变换器的数值填入库中的 DCM 降压变换器，在开关节点与地之间加上该电容并取消勾选其 Trapezoidal Approximation 复选框，再把时间步长设得足够短，以分辨振铃，即取振铃周期的一小部分。此时开关节点平滑地离开零点，并以与实验台相同的频率振铃；若其摆幅达到输入电压，则被体二极管在输入电压处削平。比较频率，而不是衰减：后向欧拉法对振荡的放大因子绝对值小于 1 <Cite key="hairer1996" where="Sec. IV.3" />，因此它本身就会使振荡衰减；一个振铃周期跨越的步数越少，仿真出的振铃消失得越快。
+
+## 易错点
+
+- **只持续一步、并随步长改变而变化的尖峰**是数值性的：先寻找无处可去的电流（<EqRef id="sim.step_jump" label="一步跳变" />），再到电路中寻找原因。
+- **每一步都来回交替的节点**是梯形法作用于比步长快得多的模态的结果。对该模态中的电感、变压器和电容取消勾选 Trapezoidal Approximation。
+- **无法输入恰好为 1 的耦合系数**：对话框不接受该值 <Cite key="circuitjs1_source" />。应使用略小于 1 的值，并预期关断时会出现一个小的漏感尖峰。
+- **特性曲线陡峭的二极管收敛得不精确**。迭代依据电压而不是电流的变化来停止，因此对于接近理想的二极管，一步结束时电感电流可能已远远越过零点。应给电流提供通路：体二极管限制跳变，而用后向欧拉法计算的节点电容（取消勾选 Trapezoidal Approximation）则消除跳变。
+
+## 延伸阅读
+
+<GoDeeper ids={['falstad-circuitjs', 'circuitjs1-source', 'circuitjs1-js-interface']} />
+
+## 测验
+
+<Quiz id="05-simulation/falstad" />

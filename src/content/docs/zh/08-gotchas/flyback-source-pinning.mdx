@@ -1,0 +1,42 @@
+---
+title: 锁定电源电压的固定占空比反激变换器
+description: 由限流电源供电时，固定占空比的反激变换器只在 DCM 下呈现为电阻；一旦其输入达到临界电压，CCM 就把输入保持在该电压上。
+sidebar:
+  order: 11
+gotcha:
+  tags: [flyback, harvesting]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import TrySim from '../../../../components/TrySim.astro';
+
+<GotchaTags />
+
+## 现象
+
+反激变换器设计成呈现高阻抗电源的源内阻时，在小幅值下取得预期比例的电源功率。幅值超过某一值后，其输入电压不再跟随电源，它取得的功率也低于电源的可用功率。
+
+## 原因
+
+在 DCM 下，固定占空比的反激变换器在输入端呈现为一个电阻（<EqRef id="lfr.R_in" label="无损电阻" />）<Cite key="erickson2020" where="Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)" />。只有输入低于<EqRef id="flyback.V_crit" label="临界输入电压" />时，它才工作在 DCM。足以把输入抬高到该电压的电源会把反激变换器推入 CCM；在 CCM 下，输出固定时，电压变换比只允许这一个输入电压 <Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />。输入便停在该电压：反激变换器已成为恒压负载（constant-voltage sink），它从电源功率中取得的比例取决于电源的幅值（<EqRef id="src.cv_extraction" label="恒压负载的功率提取比" />）。
+
+在该示例中，开路电压为 <Val example="flyback-source" name="V_oc" />、源内阻为 <Val example="flyback-source" name="R_s" /> 的电源可向匹配电阻提供 <Val example="flyback-source" name="P_max" />。反激变换器的输入被保持在其临界电压 <Val example="flyback-source" name="V_gcrit" />，在该电压下，它取得的功率占该功率的比例为 <Val example="flyback-source" name="eta_ext" />。
+
+## 如何确认
+
+画出输入电压随电源幅值变化的曲线：在 DCM 下它跟随幅值变化，到达临界电压后变平。或者观察励磁电流：在 CCM 下，它不再在每个周期内降到零。仿真器中的限流电源可以显示输入稳定在临界电压上的过程：
+
+<TrySim example="flyback-source" topology="flyback" />
+
+## 解决方法
+
+选择占空比和匝比，使临界电压高于电源所能驱动到的最高输入电压（<EqRef id="lfr.Vg" label="无损电阻的母线电压" />），再按由此得到的电压确定开关管的额定电压（<EqRef id="flyback.Vds_off" label="开关管电压" />）。匝比越小，临界电压越高。改变占空比也会改变输入电阻（<EqRef id="lfr.R_in" label="输入电阻" />），因此要随之重新确定励磁电感（<EqRef id="lfr.L_M" label="匹配所需的励磁电感" />）。
+
+## 参考资料
+
+- <Cite key="erickson2020" where="Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)" />：无损电阻（loss-free resistor）。
+- <Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />：反激变换器的 CCM 电压变换比。
+- [作为无损电阻的 DCM 反激变换器](../../07-harvesting/lfr-dcm-flyback/)和[源匹配工具](../../design/source-matcher/)。

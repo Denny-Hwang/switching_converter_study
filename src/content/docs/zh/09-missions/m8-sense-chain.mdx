@@ -1,0 +1,72 @@
+---
+title: M8 · 不削波的电流检测链
+description: 取一个在小电流端达不到误差目标的电流检测链，加以修正，使其在满电流时输出低于放大器和 ADC 的限值，并采用与采样率相适应的滤波器。
+sidebar:
+  order: 8
+mission:
+  id: m8
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Cite from '../../../../components/Cite.astro';
+import TryTool from '../../../../components/TryTool.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 求出电流检测链的负担电压（burden）、失调等效电流（offset-equivalent current）和滤波器的转折频率（corner frequency）。
+- 找出示例在最小电流下达不到误差目标的原因，并加以修正。
+- 在失调和焊盘电阻的最坏情况下，使最大电流时的输出低于放大器的最大输出和 ADC 的满量程（full scale）。
+
+## 开始之前
+
+- 阅读[电流检测链](../../design/sense-chain/)和[电流检测](../../06-bench/current-sensing/)。
+- 了解本任务涉及的两个易错点：[焊盘与焊点电阻](../../08-gotchas/shunt-pad-resistance/)和[电流输出型放大器的电压余量](../../08-gotchas/current-output-headroom/)。
+
+## 步骤
+
+### 1. 检测链
+
+用电流输出型示例打开电流检测链：
+
+<TryTool tool="sense-chain" example="sense-current" />
+
+它测量最高 <Val example="sense-current" name="I_SENSE" /> 的电流，所用分流电阻为 <Val example="sense-current" name="R_SENSE" />，其焊盘另外增加 <Val example="sense-current" name="R_pad" />；读取 <Val example="sense-current" name="I_min" /> 时，误差必须在 <Val example="sense-current" name="eps_max" /> 以内。
+
+### 2. 负担电压与失调
+
+求出最大电流下的检测电压（<EqRef id="sense.burden" label="检测电压" />），以及放大器失调所相当的电流（<EqRef id="sense.offset_current" label="失调等效电流" />）。将两者填入下方。分流电阻越大，后者越小，前者越大 <Cite key="ti_ina181" />。
+
+### 3. 小电流端为何不达标
+
+在最小电流下，把焊盘误差（<EqRef id="sense.pad_error" label="焊盘误差" />）与失调相加（<EqRef id="sense.rel_error" label="相对误差" />）。说明二者中哪一项更大，以及为什么开尔文连接（Kelvin connection）能消除其中一项 <Cite key="osullivan2012" />。
+
+### 4. 修正及其代价
+
+修改检测链，即连接方式、分流电阻或放大器的失调，直到工具报告最小电流下的误差在目标以内。然后校核最大电流：最坏情况下的输出必须低于放大器的最大输出和 ADC 的满量程。否则应降低增益。写下你的修正在负担电压和耗散功率方面的代价。
+
+### 5. 滤波器
+
+求出滤波器的转折频率（<EqRef id="rc.fc" label="R-C 转折频率" />），并与 ADC 采样率对应的奈奎斯特频率（Nyquist frequency，<EqRef id="adc.nyquist" label="奈奎斯特频率" />）比较。将转折频率填入下方。
+
+## 验收标准
+
+<Mission id="m8" />
+
+## 易错点
+
+- 电流输出型放大器的输出不能摆动到电源电压。无论增益多大，最大输出都由其电压余量（headroom）决定（[电压余量](../../08-gotchas/current-output-headroom/)）。
+- 数据手册给出的是失调的最大幅值，而不是其符号：两种符号都要校核，即在量程上端使输出升高的符号，和在下端使读数降低的符号。
+- 采用电流输出型放大器时，滤波电容所见的是 $R_\mathrm{OUT}$ 与 $R_f$ 串联（<EqRef id="sense.filter_R" label="滤波器的电阻" />），因此转折频率低于仅按 $R_f$ 算出的值。
+- 低于奈奎斯特频率的单个极点，仍会让该频率处的一部分信号通过。读出滤波器在奈奎斯特频率处的增益；若输入了开关频率，也读出开关频率处的增益。
+
+## 延伸阅读
+
+<GoDeeper ids={['ti-sszta51', 'adi-osullivan2012']} />
+
+## 测验
+
+<Quiz id="09-missions/m8-sense-chain" />

@@ -1,0 +1,20 @@
+# 任务 M5 的验收标准（src/content/docs/zh/09-missions/m5-flyback-clamp.mdx）。
+# 各语言的 id 相同：浏览器中保存的进度是共用的。
+criteria:
+  - id: switch-voltage
+    text: '无漏感时，CCM 反激变换器示例在开关管关断期间的开关管电压。'
+    check: {example: flyback-ccm, name: V_DS, tol: 0.02}
+  - id: diode-voltage
+    text: '开关管导通期间其输出二极管的反向电压。'
+    check: {example: flyback-ccm, name: V_R, tol: 0.02}
+  - id: reflected
+    text: '钳位示例的反射电压 $V_\mathrm{OR}$。'
+    check: {example: clamp-rcd, name: V_OR, tol: 0.01}
+  - id: rcd-switch
+    text: '采用 RCD 示例的钳位电路时的开关管电压。'
+    check: {example: clamp-rcd, name: V_DS, tol: 0.01}
+  - id: margin
+    text: '留出至少十分之一额定值作为裕量的 RCD 电阻，以及由此付出的钳位损耗。'
+  - id: ceiling
+    text: 'TVS 钳位电路在空载时所允许的输出电压。'
+    check: {example: clamp-tvs, name: V_omax, tol: 0.01}

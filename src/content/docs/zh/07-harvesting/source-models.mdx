@@ -1,0 +1,89 @@
+---
+title: 电源模型
+description: 把能量收集器看作开路电压串联源内阻，及其所能给出的最大功率；把振动的压电元件看作与其夹持电容并联的电流源，以及从中取得最大功率的电阻；摩擦电发电机的优值比较的是什么。
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 把在工作范围内呈线性的能量收集器建模为开路电压串联源内阻，并了解它所能给出的最大功率。
+- 把振动的压电元件（piezoelectric element）建模为与其夹持电容（clamped capacitance）并联的电流源，并求出从中取得最大功率的电阻。
+- 了解摩擦电发电机（triboelectric generator）的优值（figure of merit）比较的是什么。
+
+## 理论
+
+### 线性源
+
+在其工作范围内呈线性的电源，从负载看去相当于开路电压（open-circuit voltage）$V_\mathrm{oc}$ 串联源内阻 $R_s$，即其戴维南等效电路（Thevenin equivalent）<Cite key="alexander2017" where="Ch. 4" />。负载电阻等于源内阻时，它输出的功率最大 <Cite key="alexander2017" where="Sec. 4.8 (Maximum Power Transfer)" />：
+
+<Eq id="src.Pmax" />
+
+这就是电源的可用功率。接在其后的变换器取走其中的一部分，其多少取决于变换器输入端呈现的特性；[匹配](../matching/)模块求出这一比例。
+
+### 振动的压电元件
+
+装在作正弦振动的结构上的压电元件输出与结构速度成正比的电流。计入其两端的夹持电容 $C_0$，它就是与 $C_0$ 并联的电流源 $I_p \sin \omega t$ <Cite key="guyomar2005" />，前提是电气侧取走的能量不改变振动幅值。不接任何电路时，全部电流都对 $C_0$ 充放电，电压向正负两个方向摆动的幅度各为
+
+<Eq id="piezo.Vp" />
+
+它的内阻抗是电容，而不是电阻。并接在元件两端的电阻与 $C_0$ 分流，当其阻值等于振动频率下该电容的电抗时，取得的功率最大：
+
+<Eq id="piezo.R_opt" />
+
+<Eq id="piezo.P_R" />
+
+最佳电阻取决于频率：按一种振动选定的电阻，在另一种振动下就会失配。负载取得的能量来自振动，因此，只有当每个周期收集的能量相对于结构自身机械损耗消耗的能量很小，或者运动由外部强制施加时，该模型才成立。否则，能量收集会降低振动幅值；在尖锐的谐振附近，电负载还可能使谐振本身偏移；该模型忽略了这两种效应，因而高估了功率。
+
+储能元件需要直流电压，因此压电元件通常经整流器工作。接到最佳直流电压上的全波整流桥（full-wave bridge）取得的功率小于最佳电阻（<EqRef id="piezo.P_std_max" label="标准接口电路的最大功率" />）；SECE 和 SSHI 这两种非线性接口电路（[SECE、SSHI 与 MPPT](../sece-sshi-mppt/)）取得的功率更大。
+
+### 摩擦电发电机
+
+Zi 等提出，用运动一个周期所能输出的最大能量，即其最大能量输出循环（cycles for maximized energy output）的能量，除以面积和位移，来比较摩擦纳米发电机（triboelectric nanogenerator）。其性能优值等于由设计决定的结构优值（structural figure of merit）乘以由材料决定的表面电荷密度（surface charge density）的平方 <Cite key="zi2015" />。它按每个周期的能量评价发电机，而不是按某个特定负载恰好取得的功率。
+
+## 例题
+
+一个压电元件，先开路，再接最佳电阻：
+
+<Worked example="piezo-source" />
+
+该元件在 <Val example="piezo-source" name="omega" /> 下输出 <Val example="piezo-source" name="I_p" /> 的电流，与 <Val example="piezo-source" name="C_0" /> 的电容并联。开路时，其电压向正负两个方向各摆动 <Val example="piezo-source" name="V_p" />。最佳电阻为 <Val example="piezo-source" name="R" />，它取得 <Val example="piezo-source" name="P_R" />。
+
+## 动手试试
+
+<TryIt eq="piezo.R_opt" example="piezo-source" sweep="omega" />
+
+扫描振动频率：频率升高时最佳电阻减小，因此固定电阻只与一种振动匹配。
+
+<TryIt eq="src.Pmax" example="match-basic" sweep="R_s" />
+
+扫描线性源的源内阻：源内阻减半，可用功率加倍。
+
+## 实验练习
+
+把元件装在以恒定正弦幅值驱动的振动台（shaker）上。用输入电阻远大于最佳电阻的探头测量其开路电压幅值，并记下探头的输入电容，它会叠加到 $C_0$ 上（[探头](../../06-bench/probes/)）。然后用十进制电阻箱（decade resistance box）给元件加载，记录每个阻值下的电压幅值，并计算每个电阻取得的功率。找出取得功率最大的电阻，将其与振动频率下元件电容的电抗比较；该电容用 LCR 测试仪在远离结构谐振的频率下测量：在谐振附近，运动会叠加到测得的电容上，而远离谐振时，对于弱耦合的元件，这一叠加很小。在另一个频率下重复，观察最佳电阻的移动。
+
+## 易错点
+
+- **探头会给高阻抗电源加载**。其输入电阻和输入电容与电源并联；在相信读数之前，先将它们与最佳电阻（<EqRef id="piezo.R_opt" label="最佳电阻" />）及 $C_0$ 比较。
+- **最佳电阻只在一个频率下成立**。它是振动频率下 $C_0$ 的电抗，随频率而变。
+- **接到直流电压上的整流桥取得的功率小于最佳电阻**（<EqRef id="piezo.P_std_max" label="标准接口电路的最大功率" />）。
+- **该模型不计负载对振动的阻尼**。若负载取走的能量相对于结构自身损耗消耗的能量并不小，振动幅值就会降低，此时该模型高估功率。
+
+## 延伸阅读
+
+<GoDeeper ids={['zi2015-nature', 'guyomar2005-pubmed']} />
+
+## 测验
+
+<Quiz id="07-harvesting/source-models" />

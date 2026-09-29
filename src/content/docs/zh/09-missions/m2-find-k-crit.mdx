@@ -1,0 +1,81 @@
+---
+title: M2 · 在仿真器中找出临界 K
+description: 观察仿真得到的电感电流，找出降压和升压变换器离开 CCM 时的负载，并将该处的 K 与公式给出的临界值比较。
+sidebar:
+  order: 2
+mission:
+  id: m2
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 通过实验找出降压（buck）和升压（boost）变换器进入 DCM 时的负载电阻。
+- 把该电阻换算为无量纲的 $K$，并与各变换器的临界值（critical value）$K_\mathrm{crit}(D)$ 比较。
+- 观察变换器进入 DCM 后输出电压的变化。
+
+## 开始之前
+
+- 阅读[CCM 与 DCM](../../02-theory/ccm-dcm/)和[参数 K](../../02-theory/k-parameter/)。
+- 了解 $K$ 的定义（<EqRef id="K.def" label="参数 K" />），以及降压变换器（<EqRef id="Kcrit.buck" label="降压" />）和升压变换器（<EqRef id="Kcrit.boost" label="升压" />）的临界值。
+
+## 步骤
+
+### 1. 降压变换器的临界点
+
+用降压变换器示例打开仿真器：
+
+<TrySim example="buck-basic" topology="buck" />
+
+打开时变换器处于 CCM，$R$ = <Val example="buck-basic" name="R" />。逐步增大 $R$，观察图表上方检测到的模式。该模式由仿真得到的电感电流判定：在 DCM 下，电感电流会在周期内降到零。它不是由 $K$ 计算得出的。从两侧逐步逼近工作模式发生变化的电阻值。
+
+### 2. 临界点处的 K
+
+取 $L$ = <Val example="buck-basic" name="L" />、$f_s$ = <Val example="buck-basic" name="f_s" />，求出所找到的电阻处的 $K$，填入下方。仿真器也会在检测到的模式旁显示 $K$ 和 $K_\mathrm{crit}$，因此可以把公式给出的临界点与电流显示的临界点比较。
+
+### 3. 升压变换器的临界点
+
+用升压变换器示例重复同样的操作，它打开时 $R$ = <Val example="boost-ideal" name="R" />：
+
+<TrySim example="boost-ideal" topology="boost" />
+
+在相同的占空比下，它的临界值比降压变换器的小得多，因此负载轻得多时仍保持 CCM。
+
+### 4. DCM 下的输出
+
+在轻载 $R$ = <Val example="buck-light-load" name="R" /> 下打开降压变换器：
+
+<TrySim example="buck-light-load" topology="buck" />
+
+在图表下方的负载表中读出输出电压，填入下方。它高于 $D V_g$，因为在 DCM 下电压变换比还取决于 $K$（<EqRef id="buck.dcm.M" label="降压变换器的 DCM 电压变换比" />）。
+
+### 5. 升压变换器的最坏占空比
+
+升压变换器的临界值不随 $D$ 单调变化。在公式浏览器中扫描 $D$，找出它的峰值位置：
+
+<TryIt eq="Kcrit.boost" example="boost-ideal" sweep="D" />
+
+## 验收标准
+
+<Mission id="m2" />
+
+## 易错点
+
+- $K$ 随开关频率和电感量增大而增大，随电阻增大而减小，因此改变 $f_s$ 或 $L$ 与改变负载一样会使临界点移动。
+- 在临界点附近，电流只是刚好触及零，极小的变化就能使工作模式翻转。取最后一个 CCM 设置与第一个 DCM 设置之间的中点作为电阻值。
+- 在 DCM 下，输出随负载变化。要把输出保持在设定值，就需要不同的占空比，稳压器会自行找到这一占空比。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch5', 'coursera-converter-circuits']} />
+
+## 测验
+
+<Quiz id="09-missions/m2-find-k-crit" />

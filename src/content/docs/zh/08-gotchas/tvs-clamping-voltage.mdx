@@ -1,0 +1,39 @@
+---
+title: 按击穿电压评估的 TVS
+description: 在其实际钳位的电流下，TVS 维持的电压高于其击穿电压，而它所保护的开关管承受的正是这一电压。
+sidebar:
+  order: 4
+gotcha:
+  tags: [protection, flyback]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## 现象
+
+反激变换器的开关管损坏，或者其关断时的漏极电压峰值高于选择一次侧钳位电路时所依据的值，尽管 TVS 的击穿电压（breakdown voltage）相对开关管的额定值留有裕量。
+
+## 原因
+
+TVS 在击穿电压下开始导通，但在流过电流期间，它维持的是其钳位电压（clamping voltage），即击穿电压加上动态电阻（dynamic resistance）与电流之积 <Cite key="st_an316" />（<EqRef id="tvs.V_clamp" label="钳位电压" />）。数据手册中的钳位电压是标准脉冲峰值电流下的最大值；动态电阻取决于脉冲的持续时间，击穿电压则随温度升高 <Cite key="st_an316" />。在反激变换器中，钳位电路在关断时承接漏感中的电流，开关管承受输入电压与钳位电压之和（<EqRef id="clamp.Vds" label="钳位电路导通期间的开关管电压" />）。
+
+在钳位检查工具的示例中，击穿电压为 <Val example="clamp-tvs" name="V_BR" />、在 <Val example="clamp-tvs" name="I_PP" /> 脉冲下钳位于 <Val example="clamp-tvs" name="V_CL" /> 的 TVS，其动态电阻为 <Val example="clamp-tvs" name="R_D" />。在反激变换器的峰值电流 <Val example="clamp-tvs" name="I_pk" /> 下，它维持 <Val example="clamp-tvs" name="V_clamp" />，开关管承受 <Val example="clamp-tvs" name="V_DS" />，而其额定值为 <Val example="clamp-tvs" name="V_rating" />。
+
+## 如何确认
+
+用额定电压足够的探头和很短的接地连接捕获关断时的漏极电压（[探头](../../06-bench/probes/)）。若一次侧的地不是示波器的保护接地，例如在离线式变换器中，应使用额定电压足够的差分探头（differential probe）：探头的接地线与示波器的保护接地相连（[栅极驱动](../../06-bench/gate-drive/)）。钳位电路导通期间，漏极电压停在输入电压与钳位电压之和上。将这一平台与实际峰值电流下的钳位电压比较，并将其峰值与开关管的额定值比较。
+
+## 解决方法
+
+按实际峰值电流和最高温度下的钳位电压选择 TVS，并相对开关管的额定值留出裕量；[钳位检查](../../design/clamp-check/)由数据手册中的击穿电压和钳位电压计算该值。同时要使钳位电压远高于反射输出电压：接近反射电压的钳位电压所吸收的能量远多于漏感能量 <Cite key="ti_ssztcv6" />。
+
+## 参考资料
+
+- <Cite key="st_an316" />：由击穿电压和动态电阻求应用中实际电流下的钳位电压，以及数据手册中钳位电压的含义。
+- <Cite key="ti_ssztcv6" />：接近反射电压的钳位电压会浪费功率。
+- [缓冲电路与钳位电路](../../04-magnetics/snubbers-clamps/)和[钳位检查](../../design/clamp-check/)工具。

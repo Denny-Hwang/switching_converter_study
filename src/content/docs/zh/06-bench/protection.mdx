@@ -1,0 +1,91 @@
+---
+title: 保护电路
+description: 流入未充电输入电容的浪涌电流及其焦耳积分，降低浪涌电流却不消除能量的受控电压斜坡，较热环境中的保险丝，以及防止电池反接的串联二极管。
+sidebar:
+  order: 6
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 估算电源接通到未充电的输入电容上时的峰值电流和焦耳积分（joule integral）。
+- 按给定的浪涌电流（inrush current）选择电压斜坡，并了解其能量的去向。
+- 了解较热的环境对保险丝的影响，以及防止电池反接的串联二极管的代价。
+
+## 理论
+
+### 阶跃引起的浪涌电流
+
+电源接通到未充电电容上的瞬间，电容两端没有电压。当布线电感很小，其自身的时间常数（电感除以串联电阻）远小于 $R_\mathrm{ser} C_\mathrm{in}$ 时，整个阶跃电压都落在与电容串联的电阻上：源内阻、布线电阻和电容自身的 ESR。于是由该电阻决定峰值 <Cite key="alexander2017" where="Ch. 7 (First-Order Circuits)" />：
+
+<Eq id="inrush.I_pk" />
+
+随后电流以时间常数 $R_\mathrm{ser} C_\mathrm{in}$ 衰减。电流平方在整个脉冲上的积分，即其焦耳积分，为
+
+<Eq id="inrush.I2t" />
+
+路径中某一电阻与焦耳积分之积，就是脉冲在该电阻中留下的热量。无论阻值多大，串联电阻整体吸收的能量都与电容储存的能量相等（<EqRef id="cap.E" label="电容储存的能量" />），其中每一部分（保险丝的熔体（element）、开关、布线）各自分担一份。
+
+引线电感较大时，电流上升变慢，峰值降低，此时峰值也与电容有关；电阻很小时，电容电压会振铃到电源电压以上。焦耳积分不变：电源输出的能量仍是电容储存能量的两倍，其余部分由电阻耗散。
+
+### 受控斜坡
+
+让电容两端的电压上升得更慢，可以减小浪涌电流 <Cite key="ti_slva670" />。电容电流等于电容与其电压变化率之积，因此从零开始的线性斜坡吸取恒定电流：
+
+<Eq id="inrush.I_ramp" />
+
+当与固定电源串联的器件——负载开关（load switch）或热插拔开关（hot-swap switch）——产生斜坡时，它在流过该电流的同时承受电源电压的其余部分。在斜坡期间，路径耗散的能量仍与电容储存的能量相等；斜坡时间远长于 $R_\mathrm{ser} C_\mathrm{in}$ 时，几乎全部耗散在该器件中。斜坡降低了电流，并把能量分散到一段时间内，但并未消除能量。自身输出按斜坡上升的电源，例如变换器的软启动（soft start），没有这样一个会发热的器件。
+
+### 较热环境中的保险丝
+
+环境温度越高，保险丝的工作温度越高，寿命越短 <Cite key="littelfuse_fuseology" />。紧挨高温散热器或位于温热机壳内的保险丝，其环境温度高于敞开实验台上的同一保险丝。
+
+### 电池反接
+
+与电池串联的二极管可防止电池接反 <Cite key="ti_slva139" />：电池反接时，二极管阻断。正确连接时，只要电路在工作，二极管就流过全部负载电流，其损耗为正向压降与平均电流之积，再加上其电阻所占的部分（<EqRef id="loss.diode" label="二极管导通损耗" />）。电池电压越低，该压降所占的比例越大，损耗所占的比例也越大。
+
+## 例题
+
+接通到未充电输入电容上的电源，以及以受控斜坡建立电压的同一电容：
+
+<Worked example="bench-inrush" />
+
+经总串联电阻 <Val example="bench-inrush" name="R_ser" />，未充电的 <Val example="bench-inrush" name="C_in" /> 电容在阶跃时吸取 <Val example="bench-inrush" name="I_inrush" />，脉冲的焦耳积分为 <Val example="bench-inrush" name="I2t" />。在 <Val example="bench-inrush" name="t_ramp" /> 内以斜坡升到 <Val example="bench-inrush" name="V_g" /> 时，同一电容吸取恒定的 <Val example="bench-inrush" name="I_ramp" />。阶跃时由串联电阻吸收的能量，现在几乎全部进入产生斜坡的器件。
+
+## 动手试试
+
+<TryIt eq="inrush.I_pk" example="bench-inrush" sweep="R_ser" />
+
+扫描串联电阻：峰值与之成反比。ESR 更低的电容吸取的峰值更高。
+
+<TryIt eq="inrush.I_ramp" example="bench-inrush" sweep="t_ramp" />
+
+扫描斜坡时间：时间加倍，电流减半。
+
+## 实验练习
+
+从低电压和限流电源开始。在输入引线上夹一个电流探头，把电源接通到变换器未充电的输入电容上，捕获电流的峰值及其衰减；电源的限流会给峰值封顶，因此要记下限流值。估算路径的电阻：布线和开关的电阻用四线毫欧表（four-wire milliohm meter）测量，电容的 ESR 取自其数据手册或用阻抗测量仪在高频下测量，源内阻取自电源的数据手册，或由其在已知负载阶跃下的压降求得。将峰值与阶跃公式比较：峰值偏低且电容电压振铃到电源电压以上，说明引线电感在起作用。用示波器的数学运算功能对捕获的电流求平方并积分，与焦耳积分比较。然后减慢开关的开通并重复测量：峰值下降。同时捕获开关两端的电压；它与电流之积在斜坡期间的积分，就是开关此时吸收的能量。
+
+## 易错点
+
+- **在 R-C 模型中，电容并不限制阶跃产生的峰值**；只有串联电阻起限制作用（<EqRef id="inrush.I_pk" label="浪涌电流峰值" />）。引线电感会降低峰值，并可能使电容电压振铃到电源电压以上。
+- **由串联器件产生的斜坡并不消除能量**。路径耗散的能量仍与电容储存的能量相等，只是现在大部分耗散在该器件中（<EqRef id="inrush.I_ramp" label="斜坡控制下的浪涌电流" />）。
+- **较热的保险丝老化更快** <Cite key="littelfuse_fuseology" />。
+- **只要电路在工作，串联二极管就一直消耗功率**，而不只是在出现故障时（<EqRef id="loss.diode" label="二极管导通损耗" />）。
+
+## 延伸阅读
+
+<GoDeeper ids={['ti-slva670', 'littelfuse-fuseology', 'ti-slva139']} />
+
+## 测验
+
+<Quiz id="06-bench/protection" />

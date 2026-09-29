@@ -1,0 +1,18 @@
+# 任务 M8 的验收标准（src/content/docs/zh/09-missions/m8-sense-chain.mdx）。
+# 各语言的 id 相同：浏览器中保存的进度是共用的。
+criteria:
+  - id: burden
+    text: '最大电流下的检测电压，即加在被测电路上的负担电压。'
+    check: {example: sense-current, name: V_SENSE, tol: 0.01}
+  - id: offset
+    text: '放大器失调所相当的电流。'
+    check: {example: sense-current, name: I_OSeq, tol: 0.01}
+  - id: low-end
+    text: '最小电流下焊盘误差与失调中较大的一项，以及使误差回到目标以内的改动。'
+  - id: no-clip
+    text: '最大电流下，最坏情况的输出低于放大器的最大输出和 ADC 的满量程。'
+  - id: cost
+    text: '你的修正在负担电压和耗散功率方面的代价。'
+  - id: filter
+    text: '低于奈奎斯特频率的滤波器转折频率。'
+    check: {example: sense-current, name: f_c, tol: 0.01}

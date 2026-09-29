@@ -1,0 +1,39 @@
+---
+title: 低于分流电阻两端万用表读数的电流读数
+description: 电流检测链在脉冲电流的峰值处削波时，其读数的平均值会低于真实平均值，而分流电阻两端的 DMM 仍读出真实平均值。
+sidebar:
+  order: 12
+gotcha:
+  tags: [measurement, sensing]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+
+<GotchaTags />
+
+## 现象
+
+由检测放大器和 ADC 的采样值求平均得到的脉冲电流读数，低于在同一分流电阻两端用直流电压挡测量的 DMM（数字万用表）读数。负载越大，或在平均值不变时电流脉冲越窄越高，这一差距越大。
+
+## 原因
+
+分流电阻上的电压每一瞬间都跟随电流（<EqRef id="sense.burden" label="检测电压" />）。DMM 的积分型转换器（integrating converter）在积分时间内积累与其输入平均值成正比的电荷 <Cite key="kester_mt027" />，它让直流和低频信号通过，同时衰减特定频率的噪声 <Cite key="keithley_llmh7" />。因此，只要它在许多个开关周期上积分（读数速率低时即如此），且其输入不在脉冲峰值处过载，它在分流电阻两端读出的就是电压的直流分量，即其平均值。对脉冲序列而言，该平均值等于脉冲高度乘以占空比（<EqRef id="fourier.pulse.harm" label="脉冲序列的谐波" />）。
+
+电流检测链只能读到其限值为止，即放大器的最高输出和 ADC 的满量程（full scale），见[电流检测链](../../design/sense-chain/)。按平均电流设计的检测链可能在脉冲峰值处削波，而削波后采样值的平均值低于真实平均值：检测链丢掉了每个脉冲中高于其限值的部分。
+
+## 如何确认
+
+用示波器观察放大器的输出：每个脉冲都在同一电压处出现平顶，就是削波。然后通入检测链量程以内的恒定直流电流，比较检测链与 DMM 的读数：若二者在直流下一致，则检测链已经校准，脉冲电流下的差距来自其限值或其采样（[漏掉脉冲的采样](../sub-nyquist-pulses/)）。把 DMM 换到高一挡的量程再读一次：读数相同，说明削波的不是 DMM 本身。
+
+## 解决方法
+
+按电流的峰值而不是平均值确定检测链的满量程：降低增益，直到最高的峰值低于两个限值。[电流检测链](../../design/sense-chain/)工具给出满量程电流，并标出可能削波的读数。
+
+## 参考资料
+
+- <Cite key="kester_mt027" />：积分型转换器的电荷与其输入在积分时间内的平均值成正比。
+- <Cite key="keithley_llmh7" />：积分型转换器让直流通过，并衰减特定频率的噪声。
+- [电流检测链](../../design/sense-chain/)：放大器和 ADC 的限值。
+- [开关波形的傅里叶级数](../../00-foundations/fourier/)：脉冲序列的直流分量。

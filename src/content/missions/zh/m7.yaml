@@ -1,0 +1,16 @@
+# 任务 M7 的验收标准（src/content/docs/zh/09-missions/m7-loss-budget.mdx）。
+# 各语言的 id 相同：浏览器中保存的进度是共用的。
+criteria:
+  - id: gate
+    text: '手工算出的降压变换器示例的栅极驱动损耗。'
+    check: {example: loss-buck, name: P_gate, tol: 0.01}
+  - id: full-load
+    text: '满载时最大的损耗，以及它在满载时最大的原因。'
+  - id: light-load
+    text: '十分之一负载时最大的损耗，以及它与满载时不同的原因。'
+  - id: frequency
+    text: '$f_s$ 加倍对各项损耗和效率的影响，以及由此换来的好处。'
+  - id: missing
+    text: '预算未计入或只作估算的损耗，以及你的计划如何观测它们。'
+  - id: plan
+    text: '一份实验台测量计划：对每项损耗写明物理量、仪器和起作用的限制，并说明如何测量效率。'

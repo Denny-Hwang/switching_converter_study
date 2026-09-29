@@ -1,0 +1,83 @@
+---
+title: 源匹配
+description: 使固定占空比的反激变换器与线性源（开路电压串联源内阻）匹配。可查看它取得的可用功率比例、CCM 从何处开始并保持母线电压、更大功率所需的开关管电压，以及电源幅值变化时的逐周期仿真。
+sidebar:
+  order: 6
+tableOfContents: false
+---
+
+import { Image } from 'astro:assets';
+import SourceMatcher from '../../../../components/SourceMatcher.astro';
+import Cite from '../../../../components/Cite.astro';
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Worked from '../../../../components/Worked.astro';
+import shot from '../../../../assets/screenshots/sourcematcher-zh.png';
+
+线性源（linear source）是开路电压（open-circuit voltage）$V_\mathrm{oc}$ 串联源内阻 $R_s$，它向匹配负载（matched load）输出的功率最大 <Cite key="alexander2017" where="Sec. 4.8" />。以固定占空比（duty ratio）工作在 DCM 的反激变换器像电阻一样从输入吸取功率，因此能与这样的电源匹配 <Cite key="erickson2020" where="Ch. 15" />。源匹配工具以 SI 单位接收电源、反激变换器及其固定输出的参数。它给出：
+
+- 工作点（operating point）：母线电压、吸取的功率，以及该功率占可用功率（available power）的比例；
+- 该比例随电源幅值的变化，以及 CCM 从何处开始；
+- 更大功率所需的开关管电压；
+- 可选：在变化的电源幅值下对反激变换器的逐周期仿真。
+
+每个结果都注明其所用的公式。表格下方的链接在[仿真器](../../simulate/simulator/)中打开该工作点。
+
+<SourceMatcher />
+
+## 计算内容
+
+### 可用功率
+
+线性源在负载等于其自身内阻时输出的功率最大（<EqRef id="src.Pmax" label="线性源的最大功率" />）。
+
+### 作为电阻的反激变换器
+
+在固定占空比的 DCM 下，反激变换器的平均输入电流与其输入电压成正比：其输入端是一个电阻，即<EqRef id="lfr.R_in" label="无损电阻（loss-free resistor）" />，它把功率传递出去，而不是将其耗散 <Cite key="singer1990" />、<Cite key="erickson2020" where="Ch. 15" />。接线性源时，该电阻与源内阻对电源电压分压（<EqRef id="lfr.Vg" label="无损电阻的母线电压" />）。
+
+反激变换器在任何电源幅值下取得的可用功率比例都相同，其电阻与源内阻相等时取得全部可用功率 <Cite key="alexander2017" where="Sec. 4.8" />（<EqRef id="lfr.eta" label="无损电阻的功率提取比" />）。
+
+### CCM 从何处开始
+
+只要输入电压低于<EqRef id="flyback.V_crit" label="临界输入电压（critical input voltage）" />，反激变换器就保持在 DCM。若电源强到足以使分压所得电压高于该值，就会把反激变换器推入 CCM，而 CCM 把母线电压保持在临界电压。此时反激变换器表现为恒压负载（constant-voltage sink），它取得的可用功率比例取决于电源幅值 <Cite key="alexander2017" where="Sec. 4.8" />（<EqRef id="src.cv_extraction" label="恒压负载的功率提取比" />）。
+
+工具将分压公式对 $V_\mathrm{oc}$ 求解，得到这一情况开始时的电源幅值。提取比例图表显示两种工作区。反激变换器表现为电阻时，该比例保持不变。一旦 CCM 保持住母线电压，该比例就是恒压负载的比例：电源幅值为临界电压的两倍时它等于 1，超过后下降。若 $R_\mathrm{in}$ 大于 $R_s$，母线电压在低于该幅值时就达到临界电压，该比例会先升到 1。
+
+### 功率越大，开关管电压越高，直至临界电压
+
+经同一输入电阻，更大的功率需要更高的母线电压（<EqRef id="lfr.Vg_power" label="给定功率所需的输入电压" />）。
+
+开关管阻断（blocking）母线电压与反射输出电压（reflected output voltage）之和（<EqRef id="flyback.Vds_off" label="开关管电压" />）。这一关系只到临界电压为止：在临界电压处，CCM 保持母线电压不变，无论电源此后再注入多少功率，开关管电压都停留在<EqRef id="flyback.Vds_clamped" label="其 CCM 值" />。因此，反激变换器作为电阻所能吸取的最大功率，就是临界电压下<EqRef id="dcm.P_in" label="DCM 变换器吸取的功率" />。若开关管额定值低于这一 CCM 值，额定值会更早地限制功率，即在开关管电压达到额定值之处；工具会指出适用的是哪一个限制。开关管图表绘出开关管电压随功率的变化：先是电阻工作时的上升段，然后是 CCM 下的平台。
+
+### 变化的电源幅值
+
+选用包络（envelope）时，电源幅值按整流正弦（rectified sine）或输入的数据点变化，以 $V_\mathrm{oc}$ 的比例表示。随后工具用[仿真器](../../simulate/simulator/)的电源驱动模型（source-driven model）逐个开关周期地仿真反激变换器，每个开关周期都采用其起始时刻的电源幅值，因此一个包络周期必须至少包含 20 个开关周期。
+
+仿真从母线电压为零开始，起点比一个包络周期提前母线最慢时间常数的七倍。反激变换器表现为电阻时，该时间常数至多为 $R_s C_\mathrm{bus}$；一旦 CCM 保持住母线电压，平均化的母线与励磁电感（magnetizing inductance）构成一个二阶系统（second-order system）<Cite key="erickson2020" where="Ch. 7" />，其较慢的模态可能需要长得多的时间，对源内阻小的电源尤其如此。随后工具反复计算包络周期，直到前后两个周期相同，并显示最后一个周期。其母线电压和功率是各开关周期内的平均值。
+
+吸取的功率是电源在母线电压下向母线输出的功率 <Cite key="alexander2017" where="Sec. 4.8" />（<EqRef id="src.cv_power" label="流入恒压负载的功率" />）。
+
+当电源幅值低于母线电压、母线向电源回馈功率时，该功率为负。它在该包络周期内的总和除以可用能量，即得包络周期内的提取比例。为使一次运行在几秒内完成，每次运行的开关周期数有上限；若某个包络需要更多周期，工具会给出提示。
+
+## 例题
+
+<Worked example="source-lfr" />
+
+此处反激变换器的电阻等于源内阻，因此它取得全部可用功率 <Val example="source-lfr" name="P_max" />，此时母线电压为 <Val example="source-lfr" name="V_g" />。这远低于临界输入电压 <Val example="source-lfr" name="V_gcrit" />，因此反激变换器保持在 DCM，其开关管阻断 <Val example="source-lfr" name="V_DS" />。在工具中提高 $V_\mathrm{oc}$，直到母线电压达到临界电压：反激变换器变为恒压负载，它取得的可用功率比例随之下降。[仿真器的例题](../../simulate/simulator/#例题锁定电源电压的反激变换器)就是这个反激变换器在更高电源幅值下、处于该工作区的情况。
+
+“整流正弦包络”示例在峰值进入恒压工作区的包络下运行同一反激变换器。反激变换器表现为电阻时，母线电压跟随电源变化；在峰值附近，母线电压停在临界电压。
+
+## 局限性
+
+- **线性源**。电源是恒定电压串联恒定电阻。内阻随工作点变化的电源不在此模型范围内。
+- **理想反激变换器**。除输出二极管的压降外，反激变换器没有损耗：包络仿真中没有导通电阻（on-resistance）、绕组电阻（winding resistance）和节点电容。输出为固定电压（例如电池）。开关管电压不含关断时漏感（leakage inductance）产生的尖峰；[钳位检查](../clamp-check/)针对该尖峰确定钳位电路的参数。
+- **母线按平均值计算**。工作点和图表都采用平均值：它们假设母线电容使母线电压在一个开关周期内几乎不变。电容较小时，母线电压有纹波，工具会给出提示；通过仿真器链接可以看到差别。
+- **缓慢变化的包络**。每个开关周期内电源幅值视为恒定，因此包络在一个开关周期内的变化必须很小。
+
+## 截图
+
+<figure class="pe-shot">
+  <Image src={shot} alt="载入恒定幅值示例的源匹配工具：电源和反激变换器输入栏，包络按钮，注明每个结果所用公式的工作点表，以及可用功率提取比例随电源幅值变化的图表和开关管电压随功率变化的图表。" />
+  <figcaption>载入恒定幅值示例的源匹配工具。</figcaption>
+</figure>

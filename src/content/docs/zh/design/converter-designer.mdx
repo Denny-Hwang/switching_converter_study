@@ -1,0 +1,55 @@
+---
+title: 变换器设计工具
+description: 针对输入电压范围和负载范围，确定降压、升压、升降压、反激或正激变换器的电感和输出电容，所用公式全部取自公式目录。
+sidebar:
+  order: 2
+tableOfContents: false
+---
+
+import { Image } from 'astro:assets';
+import ConverterDesigner from '../../../../components/ConverterDesigner.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import shot from '../../../../assets/screenshots/designer-zh.png';
+
+选择拓扑（topology），并给出输入电压范围、输出电压、满载功率、须保持 CCM 的最轻负载、开关频率和两个纹波目标。设计工具给出：
+
+- 占空比（duty ratio）范围；
+- 满足电流纹波目标的电感，以及使最轻负载仍保持 CCM 的电感；
+- 满足电压纹波目标的输出电容；
+- 输入范围内最坏情况下的纹波、峰值电流以及开关管和二极管的电压；
+- 占空比范围内 $K$ 与 $K_\mathrm{crit}$ 的比较。
+
+每个结果都注明其所依据的目录公式。结果下方的链接用设计出的元件参数，在输入范围的两端打开[仿真器](../../simulate/simulator/)，以便在时域中检验设计；其中的元件都是理想的，只有反激变换器的二极管压降除外。另一些链接在同样的两点打开[损耗预算](../loss-budget/)，开关管和二极管数据取其示例中的值，不含磁芯数据，因为设计工具不选择磁芯。
+
+<ConverterDesigner />
+
+## 设计方法
+
+设计工具考察覆盖整个输入范围的一组输入电压网格点，以及范围内某个量达到峰值的各点，并对每个结果取其最坏情况。它只使用目录中的公式。需要将某个公式对其输入之一（占空比、电感或电容）求解时，它对目录自身的求值函数（evaluator）用二分法（bisection）求出该值，因此工具与理论页面的结果必然一致。
+
+1. **占空比**。在每个输入电压下，将 CCM 电压变换比（conversion ratio）对 $D$ 求解：<EqRef id="buck.ccm.M" label="降压" />、<EqRef id="boost.ccm.M" label="升压" />、<EqRef id="buckboost.ccm.M" label="升降压" />、<EqRef id="flyback.ccm.M" label="反激" />和<EqRef id="forward.ccm.M" label="正激" />。对反激变换器，二极管压降叠加在输出电压上，与<EqRef id="flyback.V_crit" label="临界输入电压（critical input voltage）" />所依据的伏秒平衡（volt-second balance）中一样。
+2. **满足纹波目标的电感**。满载时的平均电感电流（<EqRef id="buck.IL" label="降压" />、<EqRef id="boost.IL" label="升压" />、<EqRef id="buckboost.IL" label="升降压" />，以及反激变换器的<EqRef id="flyback.IM" label="励磁电流" />）乘以纹波目标，得到允许的纹波；再将纹波公式（<EqRef id="buck.ripple.iL" label="降压" />、<EqRef id="boost.ripple.iL" label="升压" />、<EqRef id="buckboost.ripple.iL" label="升降压" />、<EqRef id="flyback.ripple.iM" label="反激" />、<EqRef id="forward.ripple.iL" label="正激" />）对电感求解。正激变换器的输出级是输入为 $n V_g$ 的降压变换器，因此其输出电感流过负载电流 <Cite key="erickson2020" where="Ch. 6" />。
+3. **最轻负载下保持 CCM 的电感**。取占空比范围内最大的 $K_\mathrm{crit}$（<EqRef id="Kcrit.buck" label="降压与正激" />、<EqRef id="Kcrit.boost" label="升压" />、<EqRef id="Kcrit.buckboost" label="升降压" />、<EqRef id="Kcrit.flyback" label="反激" />），求最轻负载下的<EqRef id="L.crit" label="临界电感" />。对反激变换器，在同一输出电流下，二极管压降同样叠加在输出电压上，因此这里的负载取在输出电压加二极管压降下吸取该电流的负载；若直接用负载本身，求得的临界值会偏低。
+4. **采用的电感**。若未直接输入电感，取以上两者中的较大者。用该电感求出满载和最轻负载下的 $K$（<EqRef id="K.def" label="定义" />；反激变换器采用第 3 步的负载），并在图中与 $K_\mathrm{crit}$ 比较：$K$ 位于曲线上方时，变换器工作在 CCM。
+5. **纹波与应力**。求出采用该电感时的纹波、<EqRef id="ripple.Ipk" label="峰值电流" />以及开关管电压（<EqRef id="buck.Vds" label="降压" />、<EqRef id="boost.Vds" label="升压" />、<EqRef id="buckboost.Vds" label="升降压" />、<EqRef id="flyback.Vds_off" label="反激" />、<EqRef id="forward.Vds" label="正激" />）。在降压、升压和升降压变换器中，二极管阻断（blocking）的电压与开关管相同 <Cite key="erickson2020" where="Ch. 6" />；反激变换器的二极管阻断<EqRef id="flyback.diode.VR" label="其自身的反向电压" />。
+6. **输出电容**。将电压纹波公式对 $C$ 求解：<EqRef id="buck.ripple.v" label="降压与正激" />、<EqRef id="boost.ripple.v" label="升压" />、<EqRef id="buckboost.ripple.v" label="升降压" />、<EqRef id="flyback.ripple.v" label="反激" />。
+
+对正激变换器，工具还检查占空比是否超过<EqRef id="forward.reset.Dmax" label="磁复位限制" />。
+
+## 纹波目标
+
+两个目标都是按纹波峰峰值的**一半**计算的比值，这是公式目录的约定 <Cite key="erickson2020" where="Ch. 2" />：电流目标是电感电流纹波与满载平均电感电流（反激变换器为励磁电流）之比，电压目标是输出电压纹波与输出电压之比。
+
+## 局限性
+
+- **理想元件**。开关管、二极管（反激变换器的二极管压降除外）、电感和电容都是理想的。电容的串联电阻会产生其自身的纹波（<EqRef id="cap.esr.ripple" label="ESR 纹波" />），因此这里求得的电容是下限。
+- **只适用于 CCM 设计**。占空比和纹波都以 CCM 为前提，电感也按 CCM 确定；设计为工作在 DCM 的变换器（例如 DCM 反激变换器）不在此确定参数。在满载工作于 DCM 的范围内，设计工具会指出这一点，该处适用的是 DCM 公式。
+- **不在此确定的内容**。不检查额定值和热限制，也不设计正激变换器的励磁电感和复位绕组。应在仿真器中检验设计，并用[损耗预算](../loss-budget/)估算其损耗。
+
+## 截图
+
+<figure class="pe-shot">
+  <Image src={shot} alt="载入降压变换器示例规格的变换器设计工具：输入栏，注明每个结果所依据目录公式的设计结果表，输入范围两端的工作点，仿真器链接，以及 K 与 K_crit(D) 的比较图。" />
+  <figcaption>载入降压变换器示例规格的变换器设计工具。</figcaption>
+</figure>

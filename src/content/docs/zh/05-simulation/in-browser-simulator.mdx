@@ -1,0 +1,87 @@
+---
+title: 浏览器内仿真器的工作原理
+description: 本站仿真器为何对每个开关区间作精确计算，而不采用小步长的积分方法，以及它如何在不从零初始状态开始仿真数百个周期的情况下求得周期稳态。
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 理解开关变换器为何在每个开关区间内都是线性电路，以及对其作精确逐步计算的含义。
+- 针对快时间常数（time constant），比较精确步进与简单的积分方法（integration rule）。
+- 了解仿真器如何求得周期稳态（periodic steady state），以及与从零初始状态开始的运行相比，这样做节省了什么。
+
+## 理论
+
+### 每个区间内的线性电路
+
+在两个开关事件（event）之间，[仿真器](../../simulate/simulator/)中的每个开关管和二极管要么导通、要么关断，剩下的是一个线性电路：电阻、电感、电容和恒定电源。其状态，即电感电流和电容电压，在每个区间内服从带恒定电源的线性微分方程，状态空间平均法（state-space averaging）也正是从这一描述出发的 <Cite key="erickson2020" where="Ch. 7" />。对于经电阻充电的电容，无论步长多长，一步内的解都是精确的：
+
+<Eq id="sim.exact_step" />
+
+具有多个状态的电路用其方程矩阵的指数一次计算所有状态，仿真器用缩放与平方法（scaling and squaring）计算这一矩阵指数 <Cite key="higham2005" />。区间内除舍入外不作任何近似，因此步长不会限制一步所得状态的精度。尽管如此，仿真器仍采用较短的子步（sub-step），即周期的两千分之一或更短，因为它必须找出事件：在一个长步长内，二极管可能导通后又关断而不被察觉（[计算方法](../../simulate/simulator/#计算方法)）。
+
+### 快时间常数下的简单方法
+
+通用积分器则以小步长来近似求解。最简单的方法是前向欧拉法（forward Euler），它用每一步起点处的斜率计算该步，并在每一步都把衰减模态的偏差乘以一个固定的放大因子 <Cite key="hairer1996" />：
+
+<Eq id="num.gain_fe" />
+
+步长超过时间常数的两倍时，放大因子的绝对值大于 1，解无界增长。变换器中既有快时间常数，例如开关节点处小电阻后面的小电容，也有输出滤波器的慢时间常数：这样的方法必须以短于最快时间常数的步长，计算最慢时间常数所需的那么多个周期。SPICE 用隐式（implicit）方法避免发散，无论步长多大，隐式方法都不会让衰减模态增长（见 [ngspice 页面](../ngspice/)）。
+
+### 事件
+
+当某个开关改变状态时，区间结束：在栅极信号的边沿，以及二极管电流降到零或其电压使其导通时。仿真器利用同一精确解在步内找出该时刻，因此下一个区间从正确的状态开始（[计算方法](../../simulate/simulator/#计算方法)）。
+
+### 周期稳态
+
+在 CCM 下，若滤波器会振铃，变换器输出从零初始状态开始，按滤波器的包络时间常数趋于稳定（<EqRef id="filter.tau_env" label="包络时间常数" />），要使启动误差降到其一小部分，需要许多个周期（<EqRef id="sim.periods_settle" label="稳定所需周期数" />）。仿真器则直接寻找这样一个周期起始状态：一个周期把它映射回其自身。这就是周期稳态，即从一个周期的初始状态到下一个周期初始状态的映射（map）的不动点（fixed point）。牛顿法（Newton's method）利用该映射的导数，即周期结束时的状态如何依赖于周期开始时的状态，经几次迭代就能求出它 <Cite key="aprille1972" />。对变换器而言，该导数是各步矩阵的乘积，并在每个发生时刻取决于状态的事件（例如二极管电流降到零）处修正（[计算方法](../../simulate/simulator/#计算方法)）。若开关时刻和各区间的顺序都不取决于状态，例如电流始终大于零、开关管两端没有电容的降压变换器，则该映射是仿射（affine）的，即矩阵乘以状态再加一个常数；此时若稳态唯一，一次牛顿迭代即可到达稳态。
+
+## 例题
+
+一个电容以十纳秒的时间常数向某一电压充电，以五十纳秒为步长计算：
+
+<Worked example="sim-exact-step" />
+
+在长达五个时间常数的一步中，精确步进使电容电压从 <Val example="sim-exact-step" name="v_0" /> 变为 <Val example="sim-exact-step" name="v_1" />。同样步长下，前向欧拉法的放大因子为 <Val example="sim-exact-step" name="g_FE" />：它的第一步落在终值电压的另一侧，与终值的距离是起始时的四倍，此后每一步都再重复一次。
+
+## 动手试试
+
+<TryIt eq="num.gain_fe" example="sim-exact-step" sweep="Delta_t" />
+
+扫描步长：只有步长小于时间常数的两倍时，前向欧拉法放大因子的绝对值才不超过 1。
+
+<TryIt eq="sim.exact_step" example="sim-exact-step" sweep="Delta_t" />
+
+无论步长多长，精确步进都趋近终值电压。用降压变换器示例打开仿真器：其稳态是直接计算出来的，无需经过启动过程。
+
+<TrySim example="buck-basic" topology="buck" />
+
+## 实验练习
+
+用函数发生器输出的方波经电阻给电容充电，并捕获电容电压。在半个周期开始时和一个时间常数之后读取其值，与精确步进的结果比较。然后取间隔为两倍时间常数的采样点，从第一个采样点开始手工应用前向欧拉法：第一步就已越过终值电压，而电路本身并不会这样。
+
+## 易错点
+
+- **稳态不是启动过程**。存在稳态时，仿真器给出的是稳态；实验台上的启动或负载阶跃会经历仿真器不显示的瞬态过程。只有找不到稳态时，它才绘制从零初始状态开始的启动过程。
+- **仅靠小步长并不能使显式（explicit）方法稳定**。对于不振铃而衰减的模态，步长必须短于*最快*时间常数的两倍，即使该模态快到对结果无关紧要也是如此（<EqRef id="num.gain_fe" label="前向欧拉法的放大因子" />）。轻阻尼的振铃则需要短得多的步长，而无阻尼的振铃在任何步长下都会增长 <Cite key="hairer1996" where="Sec. IV.2" />。
+- **图中绘制的是采样点**。比子步更窄的峰值可能出现在报告的数值中，却不出现在图中。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch7', 'mit-6002']} />
+
+## 测验
+
+<Quiz id="05-simulation/in-browser-simulator" />

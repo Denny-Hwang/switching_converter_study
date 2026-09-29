@@ -1,0 +1,89 @@
+---
+title: 栅极驱动
+description: 开关管栅极电荷曲线上的米勒平台，栅极电流以及漏极电压完成跳变所需的时间，高侧驱动器的自举电容，以及 GaN 开关管的栅极裕量。
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 从开关管的栅极电荷曲线（gate-charge curve）上读出米勒平台（Miller plateau）及其电荷。
+- 由驱动器电压和栅极回路电阻估算栅极电流以及漏极电压完成跳变所需的时间。
+- 为高侧驱动器确定自举电容（bootstrap capacitor）的容量。
+
+## 理论
+
+### 米勒平台
+
+MOSFET 的栅极经其栅极回路充电：栅极回路由驱动器输出、外接电阻和器件内部栅极电阻组成，三者合计为 $R_G$。开通时有一段时间栅极电压不上升：漏极电压下降期间，栅源电压停留在米勒平台上保持不变，驱动器所能提供的全部栅极电流都转去为栅漏电容放电 <Cite key="balogh2018" />。在此期间栅极得到的电荷，就是数据手册栅极电荷曲线上的栅漏电荷（gate-drain charge）$Q_\mathrm{GD}$ <Cite key="vishay_an608a" />。栅极本身处于平台电压 $V_\mathrm{pl}$，因此推动栅极电流的是驱动器的开通电压 $V_\mathrm{GS}$（即驱动电压，与栅极驱动损耗中的相同）与平台电压之差：
+
+<Eq id="gate.I_on" />
+
+关断时，驱动器把栅极拉到零。此时漏极电压在平台期间上升，栅极电流就是为栅漏电容充电的电流 <Cite key="balogh2018" where="MOSFET turn-off" />；推动它的是平台电压本身：
+
+<Eq id="gate.I_off" />
+
+平台持续的时间，就是栅极电流输送 $Q_\mathrm{GD}$ 所需的时间，漏极电压在此期间完成跳变：
+
+<Eq id="gate.t_pl" />
+
+若两个边沿的栅极回路电阻相同，平台电压低于驱动电压的一半时，关断电流小于开通电流，因此开关管关断比开通慢；关断时电阻更小（驱动器的灌电流能力强于拉电流能力）时，同一公式给出的关断电流更大。驱动器每个周期都输送全部栅极电荷，栅极驱动功率由栅极回路中的各电阻分担耗散（<EqRef id="loss.gate" label="栅极驱动损耗" />）。
+
+### 自举电容
+
+高侧开关管的栅极由浮在开关节点上的电源驱动。自举电容在开关节点处于低电平时充电，它就是这个电源 <Cite key="ti_slua887" />：高侧导通期间，栅极电荷和驱动器消耗的电荷全部由它单独提供，其电压跌落量为该电荷除以其电容。按允许的跌落计算：
+
+<Eq id="boot.C" />
+
+电容小于最小值时，驱动器的欠压锁定（undervoltage lockout）可能动作并关断高侧开关管 <Cite key="ti_slua887" />。
+
+### GaN 开关管
+
+eGaN FET（EPC 的增强型 GaN 开关管）的最大栅源电压低于硅 MOSFET <Cite key="epc_wp008" />。栅极回路也是一个回路：其电感在栅极电流的每个边沿都会产生电压（<EqRef id="layout.v_spike" label="回路电压" />），并与栅极电容发生振铃，因此栅极电压可能过冲到驱动电压以上，逼近这一较低的极限。
+
+## 例题
+
+一个驱动器、一条栅极回路和一个开关管的栅极电荷曲线：
+
+<Worked example="bench-gate" />
+
+开通时，栅极在平台期间吸取 <Val example="bench-gate" name="I_G_on" />，漏极电压在 <Val example="bench-gate" name="t_pl_on" /> 内完成跳变。关断时，平台电压只能推动 <Val example="bench-gate" name="I_G_off" />，跳变需要 <Val example="bench-gate" name="t_pl_off" />。
+
+该开关管驱动器的自举电容：
+
+<Worked example="bench-boot" />
+
+## 动手试试
+
+<TryIt eq="gate.t_pl" example="bench-gate" sweep="I_G" bind={{ I_G: 'I_G_on' }} />
+
+扫描栅极电流：跳变时间与之成反比地减小。减小栅极电阻可增大电流；只要栅极电压仍在其额定值之内，提高驱动器电压也能增大电流。
+
+## 实验练习
+
+在低侧开关管的栅极和漏极上各接一个电压探头，二者都以位于电路地的源极为参考，找出开通过程中的平台：漏极电压下降期间，栅极电压停止上升。源极不在地电位的开关管需要使用差分探头：探头的接地线与示波器的保护接地相连。测量平台的电压和持续时间。探头测到的是内部栅极电阻之外的栅极引脚，因此它显示的平台在开通时高于管芯（die）上的平台，在关断时低于后者，差值为栅极电流与该电阻之积。将平台的持续时间与栅漏电荷除以公式所给栅极电流之商比较；数据手册给出的该电荷对应其自身的测试漏极电压，电压摆幅更大时所需电荷更多。在关断时重复测量，并换用更大的栅极电阻再测。
+
+## 易错点
+
+- **平台电压接近驱动电压**时，栅极回路上的电压很小，因而电流很小，跳变缓慢（<EqRef id="gate.I_on" label="开通时的栅极电流" />）。
+- **关断比开通慢**：两个边沿的栅极回路电阻相同且平台电压低于驱动电压的一半时，关断时的栅极电流是两者中较小的一个（<EqRef id="gate.I_off" label="关断时的栅极电流" />）。
+- **自举电容过小**时，其电压会不断跌落，直到驱动器的欠压锁定关断高侧 <Cite key="ti_slua887" />。
+- **eGaN 栅极的电压极限较低** <Cite key="epc_wp008" />，留给栅极回路自身电感所叠加的振铃的余量较小。
+
+## 延伸阅读
+
+<GoDeeper ids={['ti-slua618', 'vishay-an608a', 'ti-slua887']} />
+
+## 测验
+
+<Quiz id="06-bench/gate-drive" />

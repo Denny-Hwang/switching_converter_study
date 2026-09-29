@@ -1,0 +1,124 @@
+---
+title: 钳位检查
+description: 在最坏情况工作点校核反激变换器的一次侧钳位电路（TVS 或 RCD 钳位电路）。给出反射电压、漏感能量、实际钳位电流下的钳位电压、开关管电压与其额定值的比较、钳位损耗，以及空载反激变换器的输出电压上限。
+sidebar:
+  order: 5
+tableOfContents: false
+---
+
+import { Image } from 'astro:assets';
+import ClampCheck from '../../../../components/ClampCheck.astro';
+import Cite from '../../../../components/Cite.astro';
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Worked from '../../../../components/Worked.astro';
+import shot from '../../../../assets/screenshots/clampcheck-zh.png';
+
+反激变换器的开关管关断时，励磁电流（magnetizing current）转移到二次侧。漏感（leakage inductance）中的电流却不能转移：它把漏极电压推高到输入电压与反射输出电压（reflected output voltage）之和以上，直到跨接在一次绕组两端的钳位电路导通（conduction）<Cite key="ti_ssztcv6" />。钳位检查工具以最坏情况工作点（operating point）和钳位电路的数据为输入，均采用 SI 单位。它给出：
+
+- 反射电压、漏感能量，以及漏感电流降到零所需的时间；
+- 实际峰值电流下的钳位电压，以及开关管电压与其额定值的比较；
+- 钳位损耗；
+- 采用 TVS 时，空载反激变换器的输出电压上限。
+
+每个结果都注明其所用的公式。图表显示钳位损耗与开关管电压之间随钳位电压变化的折中（trade-off）。
+
+<ClampCheck />
+
+## 计算内容
+
+输入最高输入电压和关断时一次侧的最大峰值电流。若二者出现在不同的工作点，放在一起校核是保守的。匝比（turns ratio）为 1:$n$，其中 $n$ 为二次绕组匝数除以一次绕组匝数，$L_\mathrm{lk}$ 为折算到一次侧的漏感。
+
+### 反射电压
+
+输出二极管导通期间，一次绕组上的电压为输出电压加二极管压降，再除以 $n$ <Cite key="erickson2020" where="Ch. 6" />：
+
+<Eq id="flyback.V_OR" />
+
+钳位电路必须维持高于此值的电压。否则，每当输出二极管导通时它也导通，吸走本应送往输出的能量。
+
+### 漏感能量
+
+关断时，漏感中流过一次侧峰值电流（<EqRef id="flyback.leak.E" label="漏感能量" />）。钳位电路在每个周期都要吸收这部分能量（<EqRef id="flyback.leak.P" label="漏感功率" />）。
+
+### 钳位电压
+
+**TVS** 在其击穿电压（breakdown voltage）$V_\mathrm{BR}$ 下开始导通，其电压随电流升高。其数据手册给出峰值脉冲电流 $I_\mathrm{PP}$ 下的钳位电压（clamping voltage）$V_\mathrm{CL}$。在击穿电压上串联一个动态电阻（dynamic resistance），即可模拟二者之间的电压上升 <Cite key="st_an316" />：
+
+<Eq id="tvs.R_D" />
+
+工具取一次侧峰值电流下的 TVS 电压作为最高钳位电压：
+
+<Eq id="tvs.V_clamp" />
+
+漏感电流降到零的过程中，TVS 电压向 $V_\mathrm{BR}$ 回落，因此工具以范围的形式给出钳位电压。
+
+**RCD 钳位电路**由一个向电容充电的二极管和并联在电容两端的电阻构成。电容维持钳位电压，电阻耗散钳位电路的功率。钳位电压稳定在二者平衡之处，即高于 $V_\mathrm{OR}$ 的那个根，推导（derivation）见公式下方的链接：
+
+<Eq id="clamp.rcd.V" />
+
+由此式，电阻越大，钳位电压越高；由下面的损耗公式，损耗越低：钳位电路在电压与损耗之间折中 <Cite key="ti_ssztcv6" />。
+
+### 开关管电压
+
+钳位电路导通期间，开关管阻断（blocking）输入电压与钳位电压之和：
+
+<Eq id="clamp.Vds" />
+
+裕量（margin）为开关管额定值减去最高钳位电压下的这一电压。
+
+### 复位时间与钳位损耗
+
+钳位电路导通期间，励磁电感把一次绕组电压保持在 $V_\mathrm{OR}$。因此漏感两端的电压为 $V_\mathrm{clamp} - V_\mathrm{OR}$，其电流线性下降到零 <Cite key="erickson2020" where="Ch. 2" />：
+
+<Eq id="clamp.t_reset" />
+
+复位必须在关断时间内完成。钳位电压越接近 $V_\mathrm{OR}$，复位所需时间越长；需要一个完整开关周期或更长时间时，工具会发出警告。此时钳位电路会吸走本应送往输出的能量，这里的公式不再成立。
+
+与此同时，反射电压持续向钳位电路注入电流。因此钳位电路吸收的能量多于漏感能量，且钳位电压越接近 $V_\mathrm{OR}$，吸收得越多 <Cite key="ti_ssztcv6" />：
+
+<Eq id="clamp.P" />
+
+对 TVS，此式在最高钳位电压下的值是下限，在 $V_\mathrm{BR}$ 下的值是上限。表中给出这两个值，以及它们与漏感功率之比。
+
+### 空载时的输出电压
+
+移除负载且没有稳压时，输出持续充电。只有当其反射电压达到钳位电压时，输出电压才停止上升，此后全部输入功率都由钳位电路吸收。TVS 在此期间保持其电压，因此输出停在：
+
+<Eq id="flyback.V_ceiling" />
+
+输出电容和输出侧的所有器件都必须能承受这一电压，TVS 的额定值也必须按全部输入功率确定，这远大于其正常工作时的损耗。
+
+RCD 钳位电路没有这样的上限。其电压稳定在电阻恰好耗散钳位功率的数值上（即上面 RCD 公式所依据的功率平衡），因此空载时电阻要耗散全部输入功率，钳位电压会升到远高于带载时的值。输出电压和开关管电压也随之升高。对 RCD 钳位电路，工具不给出上限，而是发出警告：应限制空载时的输入功率，或增加一个固定电压钳位电路。
+
+## 钳位电压的选择
+
+图表从略高于 $V_\mathrm{OR}$ 处开始，绘出钳位损耗（对数坐标）和开关管电压随钳位电压的变化。钳位电压低，代价是损耗；钳位电压高，代价是开关管电压。开关管额定值决定了开关管所允许的最高钳位电压。阴影带表示所输入钳位电路的电压范围。
+
+## 例题
+
+TVS 钳位电路：
+
+<Worked example="clamp-tvs" />
+
+峰值电流为 <Val example="clamp-tvs" name="I_pk" /> 时，TVS 电压达到 <Val example="clamp-tvs" name="V_clamp" />，远低于数据手册中 <Val example="clamp-tvs" name="I_PP" /> 下的钳位电压。损耗介于 <Val example="clamp-tvs" name="P_clamp" /> 与 <Val example="clamp-tvs" name="P_clamp_max" /> 之间，是漏感功率 <Val example="clamp-tvs" name="P_lk" /> 的数倍。
+
+同一反激变换器采用 RCD 钳位电路：
+
+<Worked example="clamp-rcd" />
+
+在该电阻所决定的钳位电压下，开关管电压为 <Val example="clamp-rcd" name="V_DS" />，距 <Val example="clamp-rcd" name="V_rating" /> 的额定值只有很小的裕量。减小电阻可降低钳位电压，但损耗随之增大。空载时，这一钳位电路根本无法使开关管保持在额定值以内（见上文）。
+
+## 局限性
+
+- **理想钳位电路**。钳位电路导通期间保持电压恒定（对 RCD 钳位电路，即认为电容的纹波很小），漏感电流线性下降。关断时间不是输入量：工具只把复位时间与整个开关周期比较。钳位二极管的反向恢复（reverse recovery），以及钳位电路停止导通后漏感与开关节点电容之间的振铃，都未建模。
+- **TVS 数据**。由数据手册中 $I_\mathrm{PP}$ 下的 $V_\mathrm{CL}$ 求得的动态电阻只适用于数据手册中的那种脉冲：它取决于脉冲持续时间，而击穿电压随温度升高 <Cite key="st_an316" />。应取覆盖设计条件的数据手册值，而不是典型值（typical value），并针对重复性损耗校核 TVS 的额定功率。
+- **只适用于耗散型钳位电路**（dissipative clamp）。能量转化为热。把能量送回输入或输出的钳位电路不在本工具范围内。
+
+## 截图
+
+<figure class="pe-shot">
+  <Image src={shot} alt="载入 TVS 示例的钳位检查工具：钳位类型按钮，工作点和 TVS 输入栏，注明每个结果所用公式的结果表，以及钳位损耗和开关管电压随钳位电压变化的图表，图中标出开关管额定值，并以阴影表示 TVS 的电压范围。" />
+  <figcaption>载入 TVS 示例的钳位检查工具。</figcaption>
+</figure>

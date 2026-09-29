@@ -1,0 +1,26 @@
+---
+title: 公式浏览器
+description: 用 pe-core 引擎计算公式目录中的任一公式，扫描其中一个输入，并通过 URL 分享当前视图。
+sidebar:
+  order: 1
+tableOfContents: false
+---
+
+import { Image } from 'astro:assets';
+import Explorer from '../../../../components/Explorer.astro';
+import shot from '../../../../assets/screenshots/explorer-zh.png';
+
+选择一个公式，以 SI 单位设定其输入，并扫描（sweep）其中一个输入，观察结果如何变化。计算在浏览器中运行，所用的 TypeScript 求值函数（evaluator）正是测试套件对照 sympy 向量检验的那些（相对误差 1e-9），因此这里的数值与理论页面一致。
+
+学习页面上的“动手试试（Try it）”链接会打开公式浏览器，并填入例题的输入值。每个视图都保存在 URL 的哈希部分中，因此书签或分享的链接能准确重现该视图。
+
+<Explorer />
+
+公式浏览器一次只计算一个公式，并不检查其假设是否成立，例如在 DCM 工作点（operating point）上计算 CCM 电压变换比（conversion ratio）的情况。各公式的假设列在其所在页面中该公式的下方。[仿真器](../../simulate/simulator/)根据电路本身确定工作模式，[变换器设计工具](../converter-designer/)则综合一种拓扑的各个公式，并在给定的输入范围内检查工作模式。
+
+## 截图
+
+<figure class="pe-shot">
+  <Image src={shot} alt="从 CCM 与 DCM 页面的“动手试试”链接打开的公式浏览器：降压变换器的 DCM 电压变换比公式及其两个输入和结果，以及在对数坐标上对 K 的扫描。" />
+  <figcaption>从 CCM 与 DCM 页面的“动手试试”链接打开的公式浏览器。</figcaption>
+</figure>

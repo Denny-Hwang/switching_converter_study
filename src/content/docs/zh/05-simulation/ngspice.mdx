@@ -1,0 +1,84 @@
+---
+title: 在 ngspice 中运行网表
+description: SPICE 库的网表如何在 ngspice 中运行，其中的仿真指令起什么作用，以及为什么积分方法决定了开关波形是否会在相邻时间点之间振铃。
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 以批处理模式（batch mode）运行库中的网表，并读取其测量结果。
+- 理解积分方法（integration rule）对比其时间步长（time step）快得多的模态有何影响，以及为什么梯形法（trapezoidal rule）会在电路本身不振铃的地方产生振铃。
+- 选择使开关波形可信的选项。
+
+## 理论
+
+### 运行网表
+
+仓库的 `sim/ngspice/` 文件夹以 ngspice 网表（netlist）的形式收录了每个变换器算例 <Cite key="ngspice" />。运行 `ngspice -b buck-ccm.cir`，它会打印最后一个周期的 `.meas` 结果：开关节点电压、电感电流（反激变换器中为一次电流）和输出电压的平均值、最大值和最小值。运行 `ngspice buck-ccm.cir`，再输入 `run`，即可绘制该文件夹的 README 中列出的波形。CI 会重新运行每个网表，要求每个值都在理想公式的 1 % 以内（以该物理量在一个周期内的最大绝对值为基准），并要求输出已稳定。
+
+### SPICE 如何逐步计算电路
+
+SPICE 在一系列时间点（time point）上计算电路。它选取每一步的步长，使其对积分方法估计的误差保持在容差（tolerance）以内；除非网表另行设定，相对容差（relative tolerance）为 0.001 <Cite key="ngspice_manual" />。在两个时间点之间，每个电容和电感都遵循 `.options method` 所选的积分方法：未另行指定时为梯形法，也可以选择 Gear 法，它使用后向差分公式（backward differentiation formula），默认最高用到第二个 <Cite key="ngspice_manual" />。
+
+### 积分方法对快速模态的作用
+
+变换器电路中可能存在比时间步长快得多的模态，例如在二极管停止导通处。单步法（one-step rule），如梯形法或后向欧拉法（backward Euler），每一步都把这种模态的偏差乘以一个固定的放大因子。梯形法取每步两端斜率的平均值：
+
+<Eq id="num.gain_tr" />
+
+无论步长多大，其放大因子的绝对值都不超过 1，因此解不会发散；但当步长远大于该模态的时间常数（time constant）时，放大因子趋近 -1：该模态几乎不衰减，并在每个时间点翻转符号，形成电路中并不存在的振铃 <Cite key="hairer1996" />。Gear 法所用的后向差分公式中，第一个就是后向欧拉法，它取每步终点的斜率：
+
+<Eq id="num.gain_be" />
+
+其放大因子则趋于零，因此这种模态经过一步后几乎消失 <Cite key="hairer1996" />；第二个公式也能在几步之内使其衰减殆尽 <Cite key="hairer1996" where="Ch. V" />。
+
+### 库中观察到的现象
+
+在 ngspice 的默认设置下，即采用梯形法且相对容差为 0.001 时，库中的 DCM 反激变换器恰好表现出这种现象：二极管一停止导通，二次电流就在相邻两步之间围绕零来回振铃，漏极电压则摆到低于零约一千伏。在相同容差下改用 Gear 法可以消除振铃，但二极管导通结束时其电流仍会越过零点，漏极电压在那一瞬间下冲到低于零数十伏。采用 `.options method=gear reltol=1e-4`（库中每个网表和原理图都带有这一行）后，两者都消失了。
+
+## 例题
+
+时间常数为一纳秒的模态，以二十纳秒为步长计算：
+
+<Worked example="num-stiff" />
+
+梯形法每一步把该模态乘以 <Val example="num-stiff" name="g_TR" />：十步之后仍剩下约七分之一，且其符号在每个时间点都翻转。后向欧拉法把它乘以 <Val example="num-stiff" name="g_BE" />：两步之后剩下的不到四百分之一。
+
+## 动手试试
+
+<TryIt eq="num.gain_tr" example="num-stiff" sweep="Delta_t" />
+
+扫描步长：放大因子在步长为时间常数的两倍处穿过零，步长更长时趋近 -1。
+
+<TryIt eq="num.gain_be" example="num-stiff" sweep="Delta_t" />
+
+后向欧拉法的放大因子则朝零减小。
+
+## 实验练习
+
+在实验台上捕获 DCM 变换器在二极管停止导通时的开关节点波形。那里的振铃是真实的：电感与开关节点处的电容一起振铃，频率由这些元件决定。对同一电路仿真两次：一次采用梯形法和较长的最大步长，另一次采用 Gear 法和足够短的最大步长，短到能分辨真实的振铃，即取振铃周期的一小部分。在每个时间点都来回交替、且随最大步长改变而移动的振铃是数值性的；频率保持不变的振铃属于电路本身，除实验台附加的损耗外，它应与实验台上的结果相符。
+
+## 易错点
+
+- **在每个时间点都翻转符号的振铃**来自积分方法，而不是电路（<EqRef id="num.gain_tr" label="梯形法的放大因子" />）。
+- **Gear 法也会使其未能分辨的真实振铃衰减**。对于无阻尼振荡，后向欧拉法的放大因子绝对值小于 1，而梯形法的恰好为 1 <Cite key="hairer1996" />：除非步长相对于振铃周期很短，否则轻阻尼的 L-C 振铃在 Gear 法仿真中比在实际电路中衰减得更快。
+- **更严格的容差是有代价的**。它使步长变短、运行时间变长。库是为了 DCM 反激变换器的二极管关断而选用它的，并对所有算例一律采用。
+
+## 延伸阅读
+
+<GoDeeper ids={['ngspice-tool', 'ngspice-manual']} />
+
+## 测验
+
+<Quiz id="05-simulation/ngspice" />

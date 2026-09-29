@@ -1,0 +1,18 @@
+# 任务 M3 的验收标准（src/content/docs/zh/09-missions/m3-boost-rhp-zero.mdx）。
+# 各语言的 id 相同：浏览器中保存的进度是共用的。
+criteria:
+  - id: picture
+    text: '用两句话说明 $D$ 的阶跃为何先使升压变换器的输出降低，以及降压变换器为何没有这样的零点。'
+  - id: omega-z
+    text: '升压变换器示例的 RHP 零点 $\omega_z$。'
+    check: {example: boost-basic, name: omega_z, tol: 0.01}
+  - id: omega-0
+    text: '其二重极点 $\omega_0$。'
+    check: {example: boost-basic, name: omega_0, tol: 0.01}
+  - id: moves
+    text: '在公式浏览器中：$R$ 减半时 $\omega_z$ 减半，$D$ 增大时它降低。'
+  - id: buckboost
+    text: '升降压变换器示例的 RHP 零点。'
+    check: {example: buckboost-basic, name: omega_z, tol: 0.01}
+  - id: worst-case
+    text: '决定最低零点的工作点，以及穿越频率为何必须远低于该零点。'

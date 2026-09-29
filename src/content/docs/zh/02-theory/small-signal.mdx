@@ -1,0 +1,76 @@
+---
+title: 小信号模型
+description: 在工作点附近将平均模型线性化，并读出降压变换器的控制-输出传递函数及其直流增益、谐振频率和 Q。
+sidebar:
+  order: 6
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 解释什么是小信号模型（small-signal model），以及它在什么条件下有效。
+- 描述降压（buck）变换器的控制-输出传递函数（control-to-output transfer function）：直流增益（dc gain）、二重极点（double pole）和品质因数（quality factor）。
+- 由电路参数计算 $G_{d0}$、$\omega_0$ 和 $Q$，并预测谐振峰（resonant peak）。
+
+## 理论
+
+### 扰动（perturbation）与线性化（linearization）
+
+由于占空比（duty ratio）与电压、电流相乘，变换器的平均模型（averaged model）是非线性的。要设计反馈环路，就需要知道它对工作点（operating point）附近小变化的响应。每个量都写成其直流值加上一个小的交流变化量：例如，占空比写成 $D$ 加 $\hat{d}(t)$。两个交流变化量的乘积被略去。剩下的是一个线性电路，即**小信号模型**，它在变化量远小于直流值、频率远低于开关频率（switching frequency）时有效 <Cite key="erickson2020" where="Ch. 7" />。
+
+### 降压变换器的控制-输出传递函数
+
+在降压变换器中，占空比直接作用于开关节点电压，该电压随后由 L-C 滤波器和负载滤波。因此，从 $\hat{d}$ 到输出电压变化量的控制-输出传递函数 $G_{vd}(s)$ 是一个直流增益后接一个二阶低通（low-pass）响应：一对位于滤波器谐振角频率（resonant angular frequency）$\omega_0$ 处的极点，其品质因数 $Q$ 由负载决定 <Cite key="erickson2020" where="Ch. 8" />。直流增益就是静态特性（static characteristic）的斜率：
+
+<Eq id="buck.ss.Gd0" />
+
+<Eq id="buck.ss.w0" />
+
+<Eq id="buck.ss.Q" />
+
+由平均电路（averaged circuit）推导这三个量的过程见[推导页面](../derivations/#deriv-small_signal)。
+
+### 解读伯德图（Bode plot）
+
+在远低于 $\omega_0$ 处，幅值平坦地保持为 $G_{d0}$，相位接近零。在 $\omega_0$ 处，幅值恰好是直流增益的 $Q$ 倍，相位已下降 90°；在 $\omega_0$ 以上，幅值与频率的平方成反比地下降，相位趋近 −180° <Cite key="erickson2020" where="Ch. 8" />。轻载（light load，$R$ 较大）时 $Q$ 较高：谐振峰高而窄，相位变化陡峭，反馈环路必须适应这一点。以赫兹表示时，将 $\omega_0$ 除以 $2\pi$。
+
+## 例题
+
+前面各页的降压变换器示例，这次作为小信号系统来看：
+
+<Worked example="buck-basic" show={['V_g', 'L', 'C', 'R', 'G_d0', 'omega_0', 'Q']} checks={false} />
+
+直流增益等于输入电压，即每单位占空比 <Val example="buck-basic" name="G_d0" />。极点位于 <Val example="buck-basic" name="omega_0" />，由于 $Q$ = <Val example="buck-basic" name="Q" />，该频率处的幅值等于直流增益乘以这个值。
+
+## 动手试试
+
+<TryIt eq="buck.ss.Q" example="buck-basic" sweep="R" />
+
+以对数坐标在几个数量级的范围内扫描（sweep）$R$：$Q$ 与负载电阻（load resistance）成正比地增大，因此谐振峰在轻载时最高。
+
+## 实验练习
+
+用频率响应分析仪（frequency response analyzer, FRA）向开环（open-loop）降压变换器的 PWM 调制器（PWM modulator）控制输入注入一个小的正弦（sinusoidal）变化量，并测量输出电压变化量与控制输入变化量之比随频率的变化。找出谐振峰，并将其频率与 $\omega_0/(2\pi)$ 比较。在更轻的负载下重复，确认峰值增大而其频率不变。注入幅值要足够小，使其减半时响应不变。
+
+## 易错点
+
+- **实际元件会对谐振产生阻尼（damping）**。理想模型中除负载外没有任何损耗。绕组电阻（winding resistance）和电容串联电阻会降低 $Q$，而且电容的串联电阻会引入一个零点（zero）：电容的阻抗是 $1/(sC)$ 加上该电阻。
+- **该模型只在远低于开关频率时有效**，并且只适用于小变化量 <Cite key="erickson2020" where="Ch. 7" />。在 $f_s$ 附近，平均模型不再能描述电路。
+- **DCM 会改变传递函数**。在 DCM 下，电感电流不再把状态从一个周期带到下一个周期，L-C 谐振从低频响应中消失 <Cite key="erickson2020" where="Ch. 15" />。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch7', 'erickson-ch8', 'coursera-converter-control']} />
+
+## 测验
+
+<Quiz id="02-theory/small-signal" />

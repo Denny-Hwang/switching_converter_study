@@ -1,0 +1,105 @@
+---
+title: 升压变换器
+description: 工作于 CCM 的升压变换器：输入侧的电感电流、电流纹波与电压纹波、开关应力，以及由损耗和右半平面零点决定的限制。
+sidebar:
+  order: 2
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Figure from '../../../../components/Figure.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import ModeSheet from '../../../../components/ModeSheet.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 求出升压（boost）变换器在给定工作点（operating point）的电感电流、电流纹波（current ripple）和峰值电流（peak current）。
+- 估算其输出电压纹波（output voltage ripple），并解释为什么它比降压（buck）变换器的大。
+- 说明开关管和二极管的应力，以及在高占空比（duty ratio）下限制升压变换器的两个效应。
+
+## 理论
+
+### 电路与电压变换比
+
+<Figure name="boost" />
+
+升压变换器将电感与输入串联，在电感另一端与地之间接一个开关管，在该节点与输出电容和负载之间接一个二极管 <Cite key="erickson2020" where="Ch. 2" />。开关管导通期间在电感中储存能量，二极管导通（conduction）期间将其叠加在输入电压之上释放，从而使输出高于输入（<EqRef id="boost.ccm.M" label="升压变换器的电压变换比" />）。
+
+### 电感直流电流
+
+电感中流过的是输入电流。二极管只在关断区间（off-interval）向输出电容供电，对输出电容应用电荷平衡（charge balance），得到
+
+<Eq id="boost.IL" />
+
+因此电感电流是负载电流的 $1/(1 - D)$ 倍：升压比（step-up ratio）高时，电感、开关管和二极管中的电流远大于负载电流。
+
+### 电流纹波与峰值电流
+
+开关管导通期间，电感两端电压为输入电压，电感电流线性上升 <Cite key="erickson2020" where="Ch. 2" />：
+
+<Eq id="boost.ripple.iL" />
+
+开关管和二极管轮流流过电感电流，因此二者都要流过其峰值（<EqRef id="ripple.Ipk" label="峰值电流" />）。
+
+### 输出电压纹波
+
+二极管电流以脉冲形式到达输出端。开关管导通期间，由电容单独向负载供电，电容电压下降 <Cite key="erickson2020" where="Ch. 2" />：
+
+<Eq id="boost.ripple.v" />
+
+电容在每个周期的一部分时间内要提供全部负载电流，而不是只吸收一个小的三角波纹波，因此纹波相同时，升压变换器需要比降压变换器更大的输出电容。推导（derivation）见[推导页面](../../02-theory/derivations/#deriv-topologies)。
+
+### 应力与限制
+
+开关管关断时由开关管阻断（block）输出电压，开关管导通时由二极管阻断该电压 <Cite key="erickson2020" where="Ch. 6" />：
+
+<Eq id="boost.Vds" />
+
+高占空比下有两个效应限制升压变换器。电感的绕组电阻（winding resistance）使变换比（conversion ratio）先达到峰值、随后急剧下降（<EqRef id="boost.ccm.M_RL" label="计入绕组电阻的变换比" />）；控制-输出传递函数（control-to-output transfer function）有一个[右半平面（right-half-plane, RHP）零点](../../02-theory/rhp-zero/)，它随 $D$ 增大而移向低频（<EqRef id="boost.ss.wz" label="RHP 零点" />）。
+
+### 工作模态（operating mode）
+
+本节逐个模态地考察例题的一个稳态周期。波形由本站的仿真器计算，仿真器的[工作模态视图](../../simulate/simulator/#工作模态)可对任意参数值绘出同样的图。在 CCM 下，一个周期包含两个模态：开关管导通，电感从输入储能，同时由电容单独向负载供电；随后开关管关断，二极管把电感电流送往输出 <Cite key="erickson2020" where="Ch. 2" />。
+
+<ModeSheet example="boost-ideal" topology="boost" />
+
+## 例题
+
+一个理想升压变换器例题：
+
+<Worked example="boost-ideal" show={['V_g', 'D', 'f_s', 'L', 'C', 'R', 'V', 'I_L', 'Delta_i_L', 'I_pk', 'Delta_v', 'K', 'K_crit']} />
+
+在该占空比下，电感电流 <Val example="boost-ideal" name="I_L" /> 是负载电流的两倍，开关管和二极管须流过峰值为 <Val example="boost-ideal" name="I_pk" /> 的电流。电容与降压变换器例题相同，输出纹波 <Val example="boost-ideal" name="Delta_v" /> 却大了好几倍，因为每个周期有一半时间由电容单独向负载供电。
+
+## 动手试试
+
+<TryIt eq="boost.IL" example="boost-ideal" sweep="D" />
+
+<TrySim example="boost-ideal" topology="boost" />
+
+将 $D$ 从 0 扫描（sweep）到 1：输出电压和负载固定时，随着 $D$ 趋近 1，电感电流无限增大。
+
+## 实验练习
+
+用限流的台式电源（current-limited bench supply）为小功率升压评估板（evaluation board）供电，用电流探头（current probe）测量输入电流：它就是电感电流，连续且呈三角波。然后测量二极管电流或输出电容电流，观察其中的脉冲。将测得的输出纹波与按实测占空比和负载算出的预测值比较，然后将负载电阻（load resistance）减半，检查纹波是否加倍。
+
+## 易错点
+
+- **开关管无法断开负载**。即使开关管保持关断，电感和二极管仍把输入接到输出，因此输出跟随输入，上电（power-up）时电容经由它们充电。
+- **输入电压低意味着电流大**。输出电压和功率固定时，输入电压减半会使升压比和输入电流都加倍；电感、开关管和二极管的额定值（rating）必须能承受该电流加上纹波峰峰值的一半（half-ripple）。
+- **越过计入损耗的变换比的峰值后，增大占空比反而使输出降低**。参见[平均模型（averaged model）页面](../../02-theory/averaged-models/)。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch2', 'ti-slva061', 'ti-slva372']} />
+
+## 测验
+
+<Quiz id="03-topologies/boost" />

@@ -1,0 +1,91 @@
+---
+title: 缓冲电路与钳位电路
+description: 用钳位电路限制开关管的电压尖峰，用根据两次测得的振铃频率确定参数的 RC 缓冲电路使振铃衰减，以及两者各自的耗散功率。
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 区分钳位电路（clamp）和缓冲电路（snubber）：前者限制峰值电压并吸收漏感能量，后者使振铃（ringing）衰减。
+- 由两次测量求出振铃节点的寄生电容（parasitic capacitance）和寄生电感（parasitic inductance），并据此确定 RC 缓冲电路的参数。
+- 估算钳位电路和缓冲电路的耗散功率。
+
+## 理论
+
+### 钳位电路
+
+反激变换器的开关管关断（turn-off）时，漏感（leakage inductance）使电流继续流动，把漏极电压推高到输入电压与反射的输出电压（<EqRef id="flyback.V_OR" label="反射电压" />）之和以上，直到被钳位电路限制 <Cite key="ti_ssztcv6" />（<EqRef id="clamp.Vds" label="钳位时的开关管电压" />）。钳位电路吸收的能量多于漏感能量；钳位电压越接近反射电压（reflected voltage），漏感电流复位（reset）所需的时间越长（<EqRef id="clamp.t_reset" label="复位时间" />），钳位电路的耗散也越大（<EqRef id="clamp.P" label="钳位功率" />）<Cite key="ti_ssztcv6" />。RCD 钳位电路的电压稳定在其电阻恰好耗散钳位功率的数值上（<EqRef id="clamp.rcd.V" label="RCD 钳位电压" />）。TVS 的钳位电压等于其击穿电压（breakdown voltage）加上动态电阻（dynamic resistance）与电流之积（<EqRef id="tvs.V_clamp" label="TVS 钳位电压" />）<Cite key="st_an316" />。[钳位检查](../../design/clamp-check/)可确定这两种钳位电路的参数。
+
+### 振铃及其寄生参数
+
+开关管或二极管停止导通时，节点的寄生电感和寄生电容会产生振铃。它们的数值可由两次测得的振铃频率求出：一次在原电路上测量，一次在节点两端并联一个已知电容后测量 <Cite key="nexperia_an11160" />：
+
+<Eq id="snub.C_par" />
+
+<Eq id="snub.L_par" />
+
+### RC 缓冲电路
+
+在节点两端跨接电阻与电容的串联支路，即可使振铃衰减。AN11160 依次确定这两个元件 <Cite key="nexperia_an11160" />：
+
+- **电容**。取 $C_\mathrm{par}$ 的一到两倍作为起点较好，这是损耗与峰值电压之间的折中。它还必须足够大，能吸收寄生电感的能量；又必须足够小，能在导通时间（on-time）内放完电。
+- **电阻**。由寄生电感、电阻与缓冲电容串联回路的阻尼比（damping factor）确定。阻尼比在 0.5 到 1 之间时峰值电压最低；该范围内的最佳值要通过试验几个取值来找到。
+
+<Eq id="snub.R" />
+
+每个边沿（edge）都对缓冲电容充电或放电。由此增加的损耗与电阻无关；无论有无缓冲电路，寄生电感的能量都会损耗掉 <Cite key="nexperia_an11160" />：
+
+<Eq id="snub.P" />
+
+电容越大，采用最佳电阻时所能达到的峰值电压越低，但损耗也越大：缓冲电路是阻尼与损耗之间的折中 <Cite key="nexperia_an11160" />。
+
+电阻需要单独确定其额定值。在给电容充电的边沿，电阻吸收的能量与电容储存的能量相同，此外还要吸收寄生电感的能量；AN11160 据此确定电阻的额定值 <Cite key="nexperia_an11160" />：
+
+<Eq id="snub.P_R" />
+
+若开通的开关管经电阻为电容放电，该边沿也会使电阻发热，其能量最多可达电容储存的能量。
+
+## 例题
+
+一个示例振铃节点及其缓冲电路：
+
+<Worked example="rc-snubber" />
+
+并联 <Val example="rc-snubber" name="C_add" /> 后，振铃频率从 <Val example="rc-snubber" name="f_r0" /> 降到 <Val example="rc-snubber" name="f_r1" />，因此节点自身的电容为 <Val example="rc-snubber" name="C_par" />，电感为 <Val example="rc-snubber" name="L_par" />。取缓冲电容为 <Val example="rc-snubber" name="C_snub" />，即 $C_\mathrm{par}$ 的两倍，阻尼比取范围中点 <Val example="rc-snubber" name="zeta" />，得到电阻 <Val example="rc-snubber" name="R_snub" />。节点电压摆幅（swing）为 <Val example="rc-snubber" name="V_snub" />、频率为 <Val example="rc-snubber" name="f_s" /> 时，缓冲电路增加 <Val example="rc-snubber" name="P" /> 的损耗。振铃开始时寄生电感中的电流为 <Val example="rc-snubber" name="I_ring" />，电阻在给电容充电的边沿耗散 <Val example="rc-snubber" name="P_Rsnub" />；若另一个边沿经电阻为电容放电，耗散还会更大。
+
+## 动手试试
+
+<TryIt eq="snub.C_par" example="rc-snubber" sweep="f_r1" from={5e6} to={1.96e7} />
+
+扫描（sweep）$f_{r1}$，使其趋近 $f_{r0}$：频率只下降一点，求得的 $C_\mathrm{par}$ 就很大，而任一频率的微小误差都会使它产生很大误差。所加电容应足够大，使频率明显下降。
+
+[钳位检查](../../design/clamp-check/)根据反激变换器的漏感和峰值电流确定其 TVS 或 RCD 钳位电路的参数。
+
+## 实验练习
+
+用带短接地弹簧（ground spring）的探头测量开关节点，读出开关边沿（switching edge）之后的振铃频率。在器件附近并联一个 C0G 电容，其容量为预计寄生电容的几倍，然后再读一次频率。计算 $C_\mathrm{par}$ 和 $L_\mathrm{par}$，选定缓冲电容，并按范围内的阻尼比选定电阻，再在其附近试几个电阻值。用额定值满足其耗散功率的电阻搭建缓冲电路（<EqRef id="snub.P_R" label="缓冲电阻的耗散功率" />），并检查峰值电压和电阻的温度。
+
+## 易错点
+
+- **按实际电流下的钳位电压（clamping voltage）评估 TVS**。其钳位电压等于击穿电压加上动态电阻与电流之积，而不只是击穿电压 <Cite key="st_an316" />。
+- **钳位电压接近反射电压会浪费功率**。此时钳位电路吸收的能量远多于漏感能量 <Cite key="ti_ssztcv6" />。
+- **缓冲电路的损耗并不等于其电阻的额定值**。无论电阻取何值，缓冲电路增加的损耗都由电容、电压摆幅和开关频率决定 <Cite key="nexperia_an11160" />；电阻还要吸收寄生电感的能量（<EqRef id="snub.P_R" label="缓冲电阻的耗散功率" />）。
+
+## 延伸阅读
+
+<GoDeeper ids={['nexperia-an11160', 'ti-ssztcv6', 'erickson-ch4']} />
+
+## 测验
+
+<Quiz id="04-magnetics/snubbers-clamps" />

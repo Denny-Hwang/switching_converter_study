@@ -1,0 +1,51 @@
+# 02-theory/k-parameter 测验。数值为合成的练习值。
+numbers: synthetic
+questions:
+  - q: '一个变换器的 $L = 50\,\mu\mathrm{H}$，$R = 5\,\Omega$，$T_s = 10\,\mu\mathrm{s}$。$K$ 是多少？'
+    options:
+      - '0.5'
+      - '1'
+      - '2'
+      - '4'
+    answer: 2
+    explain: '$K$ 为 $2L/(R T_s)$：$50\,\mu\mathrm{H}$ 的两倍是 $100\,\mu\mathrm{H}$，而 $R T_s$ 为 $50\,\mu\mathrm{s}\cdot\Omega$，因此比值为 2。'
+  - q: '一个降压变换器在 $D = 0.4$、$K = 0.5$ 下工作。它处于哪种工作模式？'
+    options:
+      - 'CCM'
+      - 'DCM'
+      - '恰好处于临界'
+      - '不知道输入电压就无法判定'
+    answer: 1
+    explain: '对降压变换器，$K_\mathrm{crit}$ 为 $1 - D$，此处为 0.6。$K$ 低于该值，因此电感电流会降到零：DCM。'
+  - q: '哪种变化会使变换器趋向 DCM？'
+    options:
+      - '更大的电感量'
+      - '更高的开关频率'
+      - '更重的负载（$R$ 更小）'
+      - '更轻的负载（$R$ 更大）'
+    answer: 3
+    explain: '$R$ 越大，$K$ 越小。电感量越大、开关频率越高、负载越重，$K$ 都越大，变换器也越趋向 CCM。'
+  - q: '升压变换器的临界值 $K_\mathrm{crit}$ 在哪个占空比下最大？'
+    options:
+      - '$D$ 趋近 0 时'
+      - '$D = 1/3$'
+      - '$D = 0.5$'
+      - '$D$ 趋近 1 时'
+    answer: 1
+    explain: '升压变换器的临界值 $D(1 - D)^2$ 在两端均为零。其导数 $(1 - D)(1 - 3D)$ 在 $D = 1/3$ 处为零，此时的值为 $4/27$。'
+  - q: '一个降压变换器必须在负载减轻到 $R = 20\,\Omega$ 时仍保持 CCM，此时 $K_\mathrm{crit}$ 为 0.5，$T_s = 10\,\mu\mathrm{s}$。满足要求的最小电感量是多少？'
+    options:
+      - '$25\,\mu\mathrm{H}$'
+      - '$50\,\mu\mathrm{H}$'
+      - '$100\,\mu\mathrm{H}$'
+      - '$200\,\mu\mathrm{H}$'
+    answer: 1
+    explain: '临界电感为 $K_\mathrm{crit} R T_s/2$：0.5 与 $200\,\mu\mathrm{s}\cdot\Omega$ 之积的一半，即 $50\,\mu\mathrm{H}$。'
+  - q: '一个降压变换器在一定的输入电压范围内把输出电压稳定在固定值。在哪个输入电压下，它最容易在轻载时进入 DCM？'
+    options:
+      - '最低输入电压'
+      - '最高输入电压'
+      - '输入电压范围的中间'
+      - '与输入电压无关'
+    answer: 1
+    explain: '输入电压越高，所需的占空比越小，而降压变换器的临界值 $1 - D$ 随 $D$ 减小而增大，因此在更大的 $K$ 下就会达到临界。'

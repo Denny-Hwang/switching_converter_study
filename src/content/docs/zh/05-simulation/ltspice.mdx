@@ -1,0 +1,92 @@
+---
+title: LTspice 中的变换器
+description: 如何打开并运行 SPICE 库的 LTspice 原理图，其中的仿真指令起什么作用，以及从零初始状态开始的仿真要运行多久，其最后几个周期才能反映稳态。
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 打开并运行 SPICE 库的 LTspice 原理图，并绘制其 README 中列出的波形。
+- 算出从零初始状态开始的仿真要运行多久，其最后几个周期才能反映稳态（steady state）。
+- 了解原理图中带有哪些仿真指令（directive）及其原因。
+
+## 理论
+
+### LTspice 中的 SPICE 库
+
+仓库的 `sim/ltspice/` 文件夹以 LTspice 原理图（schematic）的形式收录了五种基本变换器 <Cite key="ltspice" />，每种变换器一个文件夹，其中的 README 说明应绘制哪些波形、应得到什么结果。每个原理图与 `sim/ngspice/` 中同名的 ngspice 网表（netlist）是同一电路：库的脚本把每个原理图读回为网表，逐个元件、逐个节点地与 ngspice 网表比较，原理图中的网络（net）也带有网表的节点名。打开原理图并按下 Run：原理图自带其仿真指令。
+
+- `.param` 设置合成（synthetic）示例的数值，仿真器中同名的预设也使用这些数值。
+- `.model` 给出接近理想的开关管和二极管。
+- `.tran` 从零初始状态开始运行，即所有电容都未充电、所有电感都没有电流，视算例不同运行 400 到 2500 个周期，时间步长（time step）不超过周期的二百分之一。
+- `.options method=gear reltol=1e-4` 选择积分方法（integration method）和容差（tolerance）。原因见 [ngspice 页面](../ngspice/)。
+
+ngspice 网表中还带有 `.meas` 语句，用于求出每个物理量在最后一个周期内的平均值和极值。在 LTspice 中，可放大查看最后一个周期，或把同样的语句加入原理图。
+
+### 需要运行多久
+
+从零初始状态开始的运行必须经历整个启动过程，其最后一个周期才能反映稳态。只要变换器保持在 CCM，启动后其输出滤波器与负载就会振铃（ring）；元件理想时，振铃的包络（envelope）按仅由负载和电容决定的时间常数（time constant）衰减：
+
+<Eq id="filter.tau_env" />
+
+启动后残留的误差在每个包络时间常数内按相同的比例减小。要把它减小到起始时的某一比例，需要的周期数为：
+
+<Eq id="sim.periods_settle" />
+
+负载越轻，振铃持续越久；精度每提高十倍，所需周期数就增加相同的数量。实际元件会使振铃衰减得更快一些：绕组和开关管的电阻总是如此，电容的串联电阻在品质因数（quality factor）大于 1 时也是如此。启动过程也可能暂时离开 CCM：在库中的降压变换器中，输出第一次过冲之后，最初 20 个周期中有若干个周期电感电流降到零。这时该公式只是估计值，而不是精确的周期数。在 DCM 下，电感电流每个周期都回到零，因此电感不会把任何东西从一个周期带到下一个周期：滤波器不再发生 L-C 振铃，输出改为以单一时间常数在稳态附近趋于稳定 <Cite key="erickson2020" where="Ch. 15" />。
+
+库中每个算例的运行时长都是其最慢时间常数的许多倍，库的脚本在每次运行结束时检查该次运行：输出在最后一个周期内的平均值与前一个周期的平均值相比，相差必须在万分之一以内，否则该算例判为未稳定而失败。这项检查只能发现远远过短的运行。一个周期内，衰减中的误差只减小其自身的一小部分，这一比例约等于周期与时间常数之比；因此，当时间常数为 100 个周期时（如库中的 DCM 反激变换器），万分之一的变化仍允许约 1 % 的误差。输出振铃时，在振铃的波峰附近，即输出平均值停止上升、开始下降的地方，即使振铃仍然很大，相邻两个周期的平均值也可能相符。SPICE 自身的精度也设定了下限：在库的 ngspice 运行中，启动过程早已消失之后，平均值仍会跳变多达千分之一到千分之二。
+
+### 积分设置
+
+在 LTspice 的默认设置下，库中 DCM 反激变换器的漏极电压出现低于零数十伏的下冲（dip），而电路本身并没有这种下冲：其深度与 ngspice 在默认容差下用 Gear 法绘出的下冲大致相当，远不及 ngspice 梯形法（trapezoidal rule）振铃时的一千伏。`.options` 行可以消除它，在 ngspice 中也是如此。库中记录了一次用 LTspice 26.1.1 所做的核对：LTspice 自己生成的网表与库中的网表一致，其结果与 ngspice 的结果相差不超过各物理量最大绝对值的 0.3 %。[ngspice 页面](../ngspice/)描述了这两种效应：每一步乘在快速模态上的放大因子（<EqRef id="num.gain_tr" label="梯形法的放大因子" />），以及容差较松时二极管电流越过零点的过冲。
+
+## 例题
+
+采用降压变换器示例的滤波器、负载和开关频率，从零初始状态开始运行，直到启动误差只剩千分之一：
+
+<Worked example="sim-settle" />
+
+其品质因数为 <Val example="sim-settle" name="Q" />，远大于 1/2，因此滤波器会振铃。包络时间常数为 <Val example="sim-settle" name="tau_env" />，即 20 个周期，输出需要 <Val example="sim-settle" name="N_set" /> 个周期才能稳定到千分之一，这远在库的 1 % 以内，与库中 ngspice 运行所能分辨的精度大致相当。库中的降压变换器算例运行 400 个周期后才测量最后一个周期。
+
+## 动手试试
+
+<TryIt eq="sim.periods_settle" example="sim-settle" sweep="eps_r" />
+
+扫描剩余比例：精度每提高十倍，所需周期数都增加相同的数量。
+
+<TryIt eq="filter.tau_env" example="sim-settle" sweep="R" />
+
+扫描负载：负载越轻，振铃持续越久。本站的仿真器无需经过启动过程即可求得稳态：
+
+<TrySim example="buck-basic" topology="buck" />
+
+## 实验练习
+
+让一台降压变换器以固定占空比、无反馈环路带电阻负载启动，从它开始开关的那一刻起捕获其输出。若电感电流在最初几个周期中触及零，则待其不再触及零之后，用振铃中相隔已知时间的两个峰值测量包络的衰减，并把所得时间常数与负载电阻和输出电容之积的两倍比较：绕组和开关管的电阻会使振铃进一步衰减，品质因数大于 1 时电容的串联电阻也是如此，因此预计测得的时间常数会稍短一些。数出输出保持在终值 1 % 以内之前所经过的周期数，并与剩余比例为 1 % 时的公式结果比较。然后用你的数值和相同的启动条件运行库中的原理图。
+
+## 易错点
+
+- **对尚未稳定的周期所做的测量**，测到的是启动过程。先运行公式所要求的周期数，再像库中那样检查输出平均值是否已不再逐周期变化：仅凭变化很小，并不能证明缓慢的振铃已经稳定。
+- **包络公式适用于元件理想、无反馈环路且滤波器会振铃的 CCM**。在 DCM 下、滤波器阻尼大到不振铃时，或在闭环控制下，输出以其他方式趋于稳定（<EqRef id="filter.tau_env" label="包络时间常数" />）。
+- **电路不可能产生的尖峰**往往是数值性的：先检查 `.options` 行，再到电路中寻找原因。
+
+## 延伸阅读
+
+<GoDeeper ids={['adi-ltspice-basics', 'ltspice-tool']} />
+
+## 测验
+
+<Quiz id="05-simulation/ltspice" />

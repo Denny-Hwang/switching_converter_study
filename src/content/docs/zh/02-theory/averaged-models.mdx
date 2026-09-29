@@ -1,0 +1,91 @@
+---
+title: 平均模型
+description: 在一个开关周期内对变换器求平均，得到直流等效电路，损耗在其中表现为普通电阻。在 DCM 下，平均后的开关成为无损电阻。
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 建立变换器的平均直流模型（averaged dc model），并在其中加入电感的绕组电阻（winding resistance）。
+- 预测该电阻如何限制升压（boost）变换器的电压变换比（conversion ratio）和效率（efficiency）。
+- 把 DCM 下的开关网络描述为无损电阻（loss-free resistor, LFR），并计算其输入电阻。
+
+## 理论
+
+### 从开关电路到直流模型
+
+采用小纹波近似（small-ripple approximation），在一个开关周期（switching period）内对每个电路方程求平均（averaging），开关动作就消失了：平均后的电感电压方程和电容电流方程就是一个直流电路的方程。在这个电路中，开关网络相当于一个理想的**直流变压器**（dc transformer），其匝比（turns ratio）就是电压变换比。它把功率从输入无损地传递到输出，而每一种损耗机理都表现为它周围的一个普通电阻或压降 <Cite key="erickson2020" where="Ch. 3" />。于是，一个模型就能给出输出电压、各电流和效率。
+
+### 含电感绕组电阻的升压变换器
+
+在升压变换器中加入电感的绕组电阻 $R_L$。伏秒平衡（volt-second balance）方程在两个区间中都增加了 $R_L$ 上的压降，而电荷平衡（charge balance）不变；联立求解两者得到 <Cite key="erickson2020" where="Ch. 3" />：
+
+<Eq id="boost.ccm.M_RL" />
+
+<EqRef id="boost.ccm.M" label="理想升压变换比" />乘上了一个随 $D$ 趋近 1 而趋于零的因子：电感流过的是输入电流，而输入电流随 $D$ 增大而比输出电流增长得快得多，因此 $R_L$ 上的损耗最终会占去全部新增的输入功率。电压变换比不会无限增大，而是达到最大值后下降。效率由同一模型得出：
+
+<Eq id="boost.ccm.eta_RL" />
+
+$R_L$ 要与 $(1 - D)^2 R$ 比较，后者是经直流变压器反射到电感一侧的负载电阻（reflected load resistance）。$D$ 较高时，这一反射电阻很小，因此即使很小的绕组电阻也会降低效率。推导见[推导页面](../derivations/#deriv-averaging)。
+
+### DCM：无损电阻
+
+在 DCM 下，电感电流在每个周期都从零开始。于是，导通区间（on-interval）内储存的能量，以及由此从输入吸取的功率，只取决于输入电压、占空比（duty ratio）、电感量和开关频率（switching frequency）。对升降压（buck-boost）变换器和反激（flyback）变换器，用励磁电感（magnetizing inductance）$L_M$ 表示为：
+
+<Eq id="dcm.P_in" />
+
+因此，平均输入电流与输入电压成正比，输入端口的表现如同一个电阻 <Cite key="singer1990" />、<Cite key="erickson2020" where="Ch. 15" />：
+
+<Eq id="lfr.R_in" />
+
+这个电阻并不耗散它吸收的功率，而是把这些功率传递到输出。因此，平均后的 DCM 开关网络被建模为**无损电阻**；能量收集接口正是利用这一性质，对电源呈现电阻性负载。[源匹配工具（source matcher）](../../design/source-matcher/)将反激变换器的无损电阻与线性源（linear source）相匹配。
+
+## 例题
+
+含绕组电阻的升压变换器示例：
+
+<Worked example="boost-basic" show={['V_g', 'D', 'R', 'R_L', 'M_ideal', 'M', 'eta', 'V']} checks={false} />
+
+<Val example="boost-basic" name="R_L" /> 的绕组电阻只有负载电阻的百分之一，却使变换比从 <Val example="boost-basic" name="M_ideal" /> 降到 <Val example="boost-basic" name="M" />，效率降到 <Val example="boost-basic" name="eta" />，因为在这一占空比下，它要与负载电阻的四分之一比较。
+
+从输入端看 DCM 升降压变换器示例：
+
+<Worked example="lfr-basic" />
+
+## 动手试试
+
+<TryIt eq="boost.ccm.M_RL" example="boost-basic" sweep="D" />
+
+<TrySim example="boost-basic" topology="boost" />
+
+将 $D$ 从 0 扫描（sweep）到 1：变换比先达到峰值，然后急剧下降。增大 $R_L$，观察峰值降低并移向更低的占空比。
+
+## 实验练习
+
+在一个由限流实验室电源（current-limited bench supply）供电的小功率升压变换器上，先用四线测量（four-wire measurement）方法测出电感的直流电阻。然后在固定的电阻负载下，以开环（open loop）方式逐步增大占空比，同时用万用表测量输入功率和输出功率。画出电压变换比和效率随 $D$ 变化的曲线，并代入实测的 $R_L$，与上面两个公式比较。开关管和二极管还会带来额外损耗，因此实测效率会低于预测值。
+
+## 易错点
+
+- **越过最大值后，占空比越大，输出越低**。在变换比的峰值之后，提高 $D$ 反而使 $V$ 降低。假定相反关系的反馈环路，其增益在该处改变符号。
+- **$R_L$ 只是直流绕组电阻**。磁芯损耗、交流绕组损耗（ac winding loss）和开关损耗都不在这个模型中；每一种都会增加各自的损耗元件 <Cite key="erickson2020" where="Ch. 3" />。
+- **无损电阻只在 DCM 下成立**。一旦电流不再在每个周期回到零，输入电流就不再与输入电压成正比。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch3', 'erickson-ch15', 'coursera-intro-pe']} />
+
+## 测验
+
+<Quiz id="02-theory/averaged-models" />

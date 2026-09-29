@@ -1,0 +1,89 @@
+---
+title: M1 · 推导并验证降压变换器
+description: 用伏秒平衡推导降压变换器的电压变换比和电感纹波，将其与公式目录和降压变换器示例核对，并观察目录的检查如何发现错误的值。
+sidebar:
+  order: 1
+mission:
+  id: m1
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 由伏秒平衡（volt-second balance）推导降压（buck）变换器在 CCM 下的电压变换比，分别用手工和 sympy 完成。
+- 由导通区间（on-interval）内电流的斜率推导其电感电流纹波。
+- 以一个公式为例，走一遍本站的检查：它在 `equations.yaml` 中的条目、它的测试值、必须复现它的 sympy 推导，以及生成器（generator）。逐一故意破坏，看哪项检查失败。
+
+## 开始之前
+
+- 阅读[伏秒平衡与电荷平衡](../../02-theory/volt-second-charge-balance/)和[降压变换器](../../03-topologies/buck/)。
+- 克隆本仓库并安装其 Python 包（按 README 所述，`pip install -e "python[dev,figures]"`）。以下命令均在克隆的根目录下运行。
+- 本站中，$\Delta i_L$ 表示电感电流纹波峰峰值的一半，与 Erickson 相同。
+
+## 步骤
+
+### 1. 手工推导
+
+在 CCM 下，开关管在 $D T_s$ 内把电感接到 $V_g$，二极管在周期的其余时间内把它接地。将输出电压 $V$ 视为恒定（小纹波近似，small-ripple approximation），写出每个区间内的电感电压。求它在一个周期内的平均值，令平均值为零，解出 $V$。将 $V/V_g$ 与<EqRef id="buck.ccm.M" label="降压变换器的电压变换比" />比较。
+
+### 2. 用 sympy 推导
+
+让 sympy 完成同样的代数运算。填入两个电感电压：
+
+```python
+import sympy as sp
+
+D, Vg, V = sp.symbols('D V_g V', positive=True)
+v_on = ...   # 开关管导通期间的电感电压
+v_off = ...  # 二极管导通期间的电感电压
+print(sp.solve(sp.Eq(D * v_on + (1 - D) * v_off, 0), V))
+```
+
+本仓库自己的推导是 `python/pe_core/derive/ccm_ratios.py`，[推导页面](../../02-theory/derivations/#deriv-ccm_ratios)逐步展示了它。
+
+### 3. 纹波
+
+在导通区间内，电感电流以恒定斜率上升。它在 $D T_s$ 内的上升量就是纹波峰峰值，其一半即 $\Delta i_L$。将结果与<EqRef id="buck.ripple.iL" label="降压变换器的电感纹波" />比较。
+
+### 4. 示例的数值
+
+降压变换器示例的参数为 $V_g$ = <Val example="buck-basic" name="V_g" />、$D$ = <Val example="buck-basic" name="D" />、$L$ = <Val example="buck-basic" name="L" /> 和 $f_s$ = <Val example="buck-basic" name="f_s" />。求出它的输出电压和 $\Delta i_L$，填入“验收标准”中。然后在公式浏览器中打开纹波公式并扫描电感量：纹波按 $1/L$ 减小。
+
+<TryIt eq="buck.ripple.iL" example="buck-basic" sweep="L" />
+
+### 5. 检查通过
+
+在你的克隆中运行 `python scripts/gen_equations.py`、`pytest` 和 `python scripts/mathlint.py`。三者均通过，且 `git status` 显示生成器没有改动 `packages/pe-core/equations/`。
+
+### 6. 改错一个测试值
+
+在 `packages/pe-core/equations/equations.yaml` 中，修改 `buck.ccm.M` 的 `tests` 里的第一个期望值。运行 `python scripts/gen_equations.py`：它拒绝执行，其消息指出该条目、该测试以及表达式给出的值。用 `git checkout -- packages/pe-core/equations/` 撤销修改。
+
+### 7. 自洽地改错公式
+
+现在修改 `buck.ccm.M` 的表达式及其两个期望值，使三者彼此一致（例如三者都减半）。生成器接受这一修改，但 `pytest` 在 `test_derivation_reproduces_yaml[buck.ccm.M]` 处失败：sympy 推导给出的仍是你在第 1 步中求得的变换比。按前面的方法撤销修改；同一次 checkout 也会恢复生成器改写过的文件。
+
+## 验收标准
+
+<Mission id="m1" />
+
+## 易错点
+
+- 此处的 $\Delta i_L$ 是纹波峰峰值的一半。电流的完整摆幅是该项检查所期望值的两倍。
+- 该变换比只在 CCM 下成立。电感电流在周期结束前降到零时，输出会升到 $D V_g$ 以上（[CCM 与 DCM](../../02-theory/ccm-dcm/)，以及任务 M2）。
+- 用安装了 `pe_core` 的 Python 运行 `pytest`。换用其他解释器，会在任何检查运行之前就在导入时失败。
+- 生成器接受的实验修改也改写了生成器的输出文件。`git checkout -- packages/pe-core/equations/` 会同时恢复 YAML 和这些文件。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch2', 'coursera-intro-pe']} />
+
+## 测验
+
+<Quiz id="09-missions/m1-derive-buck" />

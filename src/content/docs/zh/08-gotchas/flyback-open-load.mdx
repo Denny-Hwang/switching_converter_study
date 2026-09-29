@@ -1,0 +1,40 @@
+---
+title: 移除负载的开环反激变换器
+description: 既无稳压又无负载时，反激变换器的输出会一直充电，直到其电压反射到一次侧后达到一次侧钳位电路的电压；此后钳位电路吸收全部输入功率。
+sidebar:
+  order: 8
+gotcha:
+  tags: [flyback, protection]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## 现象
+
+以固定占空比、无反馈运行的反激变换器，在测试中或因连接器松动而断开负载时，会把输出推到远高于正常值的电压。输出侧的某个器件损坏，或者一次侧钳位电路过热。
+
+## 原因
+
+每个开关周期都在励磁电感中储存能量，再把它送到输出。没有负载时，输出电容保留这些能量，输出电压逐周期升高。只有当输出电压反射到一次侧后达到钳位电压时，它才停止升高：从此改由钳位电路吸收这些能量（<EqRef id="flyback.V_ceiling" label="空载输出电压" />）<Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />。此时钳位电路耗散全部输入功率。TVS 的钳位电压（clamping voltage）应按一次侧峰值电流、并按该功率使其达到的温度取值：其击穿电压（breakdown voltage）随温度升高，上限也随之升高 <Cite key="st_an316" />。RCD 钳位电路没有固定的上限。其电压稳定在电阻恰好耗散钳位电路所吸收功率的数值上，这就是<EqRef id="clamp.rcd.V" label="RCD 钳位电压" />所依据的功率平衡 <Cite key="ti_ssztcv6" />；正常工作时，这一功率仅来自漏感能量。没有负载时，这一功率是全部输入功率，因此钳位电路、输出和开关管的电压都会升到远高于带载时的值。
+
+在钳位检查工具的示例中，<Val example="clamp-tvs" name="V" /> 的输出在无负载时会升到 <Val example="clamp-tvs" name="V_omax" />，这还是 TVS 升温之前的值。
+
+## 如何确认
+
+由钳位电压、匝比和二极管压降计算上限（<EqRef id="flyback.V_ceiling" label="空载输出电压" />），并与输出侧每个器件的额定值比较。只有当这些器件的额定值都高于该上限，开关管的额定电压高于输入电压与 TVS 在其温度下的钳位电压之和（<EqRef id="clamp.Vds" label="钳位电路导通期间的开关管电压" />），并且一次侧钳位电路是能承受全部输入功率的 TVS 或齐纳二极管（Zener diode）时，才可在实验台上移除负载；然后观察输出向上限升高。降低输入电压会减小钳位电路吸收的功率，但上限只会通过峰值电流和 TVS 温度的变化而略微降低。
+
+## 解决方法
+
+不要让输出处于无负载状态：用反馈稳定输出电压，保留一个变换器不会失去的最小负载，或把输出钳位在其所供电器件的额定值以下。若一次侧钳位电路必须经受住空载，就按全部输入功率确定其额定值；如[钳位检查](../../design/clamp-check/)所警示的，RCD 钳位电路需要旁加一个固定电压钳位，或者在空载时限制输入功率。
+
+## 参考资料
+
+- <Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />：反激变换器及其变压器模型，上限即由此得出。
+- <Cite key="st_an316" />：TVS 在实际电流下的钳位电压，以及其随温度升高的击穿电压。
+- <Cite key="ti_ssztcv6" />：一次侧钳位电路，以及 RCD 钳位电路的电压与其损耗的关系。
+- [缓冲电路与钳位电路](../../04-magnetics/snubbers-clamps/)，以及给出该上限的[钳位检查](../../design/clamp-check/)。

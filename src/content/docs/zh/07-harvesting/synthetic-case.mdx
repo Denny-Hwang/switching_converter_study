@@ -1,0 +1,81 @@
+---
+title: 设计实例
+description: 用一个示例的数值，从电源到开关管完整跟踪一个能量收集设计：一个串联大电阻、幅值按缓慢包络变化的高压电源，以及设计成其无损电阻的 DCM 反激变换器。
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 从电源到开关管，完整跟踪一个能量收集设计。
+- 估算无损电阻从幅值按缓慢包络（envelope）变化的电源取得的平均功率。
+- 在包络峰值处检查设计：是否处于 DCM，以及开关管电压。
+
+## 理论
+
+### 电源
+
+本例的电源是线性的：开路电压串联一个大的源内阻，其幅值沿缓慢的包络起伏，包络是同一个正弦半波的不断重复。在每一时刻，它最多能给出<EqRef id="src.Pmax" label="线性源的最大功率" />，该量随包络的平方变化。
+
+### 变换器
+
+设计成与源内阻相等的无损电阻（<EqRef id="lfr.L_M" label="无损电阻的励磁电感" />）、固定占空比且工作在 DCM 的反激变换器，把输入保持在电源电压的一半，并在每一时刻都取得全部可用功率（<EqRef id="lfr.eta" label="无损电阻的功率提取比" />），前提是满足两个条件。它在包络峰值处，即母线电压最高处，也必须保持在 DCM（<EqRef id="flyback.V_crit" label="临界输入电压" />）。此外，包络相对于母线自身的时间常数（time constant），即母线电容乘以源内阻与输入电阻的并联值，必须足够缓慢，使母线电压能跟随包络 <Cite key="alexander2017" where="Ch. 7 (First-Order Circuits)" />。
+
+### 平均功率
+
+在整个包络上取平均，功率为其峰值处数值的一半，因为正弦平方的平均值是其峰值平方的一半 <Cite key="alexander2017" where="Ch. 11" />：
+
+<Eq id="lfr.P_env" />
+
+[源匹配工具](../../design/source-matcher/)逐个开关周期地仿真这样的包络，并显示：在峰值会使反激变换器进入 CCM 的地方，母线电压被保持在临界电压。
+
+### 开关管
+
+反激变换器开关工作期间，包络峰值决定其开关管阻断的最高电压：母线电压加上反射的输出电压（<EqRef id="flyback.Vds_off" label="开关管电压" />），其上再叠加漏感尖峰（[缓冲电路与钳位电路](../../04-magnetics/snubbers-clamps/)）。按平均值或包络起始处选定额定值的开关管，会在峰值处损坏。在它不开关时，即启动时、欠压锁定（undervoltage lockout）期间或故障之后，母线上没有负载，会充电到电源开路电压的峰值，随后开关动作就从该电压开始：除非有钳位电路把母线电压限制得更低，否则母线电容必须承受该峰值，开关管必须承受该峰值加上反射的输出电压。
+
+## 例题
+
+本例在包络峰值处和平均意义下的情况：
+
+<Worked example="harvesting-source" />
+
+电源串联 <Val example="harvesting-source" name="R_s" />，沿由每段持续 <Val example="harvesting-source" name="T_env" /> 的正弦半波构成的包络升至 <Val example="harvesting-source" name="V_ocpk" />；在峰值处它可给出 <Val example="harvesting-source" name="P_max" />。在 <Val example="harvesting-source" name="f_s" /> 和 <Val example="harvesting-source" name="D" /> 下，<Val example="harvesting-source" name="L_M" /> 的励磁电感（magnetizing inductance）呈现 <Val example="harvesting-source" name="R_in" /> 的电阻，因此反激变换器在每一时刻都取得全部可用功率：平均为 <Val example="harvesting-source" name="P_avg" />。在峰值处，母线电压达到 <Val example="harvesting-source" name="V_g" />，低于 <Val example="harvesting-source" name="V_gcrit" sig={4} /> 的临界电压，开关管在漏感尖峰之前阻断 <Val example="harvesting-source" name="V_DS" />。
+
+## 动手试试
+
+<TryIt eq="lfr.P_env" example="harvesting-source" sweep="V_ocpk" />
+
+扫描包络峰值：平均功率随其平方变化。
+
+<TryIt eq="lfr.eta" example="harvesting-source" sweep="R_in" from={1e5} to={1e7} />
+
+在源内阻附近扫描反激变换器的输入电阻：在两倍范围以内，取得的比例始终接近全部。
+
+## 实验练习
+
+不要在开放的实验台上按全电压搭建本例。应将其按比例缩小：把电源电压除以某个系数，电阻保持不变，于是母线电压也除以该系数，功率除以该系数的平方；输出电压及其经变压器的反射电压保持不变。用一台按包络逐级改变输出的可编程电源，串联一个等于源内阻的电阻，来模拟电源；负载则用以固定占空比工作的反激变换器。记录每一步的输入电压和输入电流，计算功率，并将其在包络上的平均值与按比例缩放后的公式结果比较。
+
+## 易错点
+
+- **空载的母线会充电到开路电压**。串联大电阻时，电源电流很小，但并接在电源两端的电容仍会充到全部电压并保持住：应按该电压选择母线和开关管的额定值，或对母线加钳位。
+- **平均值要求包络缓慢变化**。若包络的变化与母线时间常数相当，母线电压就跟不上包络，无损电阻取得的比例也不再在每一时刻成立。
+- **在峰值处而不是平均值处检查 DCM**（<EqRef id="flyback.V_crit" label="临界输入电压" />）。
+- **开关管的额定值要按峰值选择**，还要考虑空载的母线（<EqRef id="flyback.Vds_off" label="开关管电压" />）。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch15', 'erickson-ch5']} />
+
+## 测验
+
+<Quiz id="07-harvesting/synthetic-case" />

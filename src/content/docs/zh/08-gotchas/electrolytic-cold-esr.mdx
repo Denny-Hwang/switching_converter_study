@@ -1,0 +1,36 @@
+---
+title: 低温下的电解电容
+description: 铝电解电容的 ESR 在低温下急剧升高，其两端的纹波也随之增大。
+sidebar:
+  order: 9
+gotcha:
+  tags: [capacitors, temperature]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## 现象
+
+在温度范围的低温端，变换器的输出纹波增大到原来的几倍，而在室温下一切正常。
+
+## 原因
+
+电解液的电阻率在低温下升高，铝电解电容在其最低额定温度下的 ESR（等效串联电阻）往往是其室温 ESR 的 10 到 100 倍 <Cite key="cde_ae_guide" />。流过电容的纹波电流在 ESR 两端产生与之成正比的纹波电压，它叠加在容性纹波之上（<EqRef id="cap.esr.ripple" label="ESR 纹波" />）。在低温示例中，ESR 为 <Val example="bench-cold" name="R_esr" />、纹波电流峰峰值为 <Val example="bench-cold" name="Delta_i_pp" /> 时，纹波电压峰峰值为 <Val example="bench-cold" name="Delta_v_esr" />；ESR 增至 10 倍，即该范围的下限 <Val example="bench-cold" name="R_esr_cold" /> 时，纹波为 <Val example="bench-cold" name="Delta_v_esr_cold" />。
+
+## 如何确认
+
+在低温箱中使电容处于规格规定的最低温度，测量输出纹波或电容在开关频率下的 ESR，并与室温下的值比较。
+
+## 解决方法
+
+按数据手册给出的最低温度下的 ESR 选定电容，使纹波在该温度下满足限值。并联的电容分担纹波电流，总 ESR 随并联个数成反比减小，因此增加电容数量也能降低纹波。
+
+## 参考资料
+
+- <Cite key="cde_ae_guide" />：铝电解电容在最低额定温度下的 ESR，往往是其室温 ESR 的 10 到 100 倍。
+- [低温](../../06-bench/low-temp/)：ESR 纹波的例题和一项实验练习。

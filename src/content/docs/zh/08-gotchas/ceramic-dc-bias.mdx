@@ -1,0 +1,39 @@
+---
+title: 加电压后电容量下降的陶瓷电容
+description: 2 类陶瓷电容（X7R、X5R）在工作直流电压和工作温度下可能只剩标称电容量的一部分，而其代码并不表明会剩下多少。
+sidebar:
+  order: 3
+gotcha:
+  tags: [capacitors]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## 现象
+
+变换器的输出纹波是设计预测值的几倍，或者滤波器的转折频率与计算值相差很远，而实验台上的 LCR 测试仪测得该陶瓷电容的值却接近其标称值。
+
+## 原因
+
+X7R 或 X5R 这类 2 类（class 2）代码说明的是电容量在一个温度范围内可能变化多少。它并不表明电容量随电容两端直流电压的变化，因此必须查看具体器件的数据 <Cite key="adi_ceramic_caps" />。仅直流电压一项就可能使电容量只剩标称值的一小部分：在该文的例子中，额定电压 6.3 V 的 4.7 µF Y5V 电容在室温下加 5 V 时剩下 0.33 µF <Cite key="adi_ceramic_caps" />。X7R 或 X5R 器件损失多少电容量取决于具体器件：在该文的数据中，封装越大，损失越少；而封装尺寸和介质相同时，额定电压往往没有影响 <Cite key="adi_ceramic_caps" />。温度还会再次改变该值。LCR 测试仪的测试信号很小，又不加直流电压，因此显示不出这种损失。
+
+纹波取决于实际存在的电容量（<EqRef id="buck.ripple.v" label="输出电压纹波" />）。示例降压变换器的输出电容若为 <Val example="ceramic-bias" name="C" />，纹波为 <Val example="ceramic-bias" name="Delta_v" />（峰峰值的一半）；若它在工作电压下只剩 <Val example="ceramic-bias" name="C_bias" />，纹波则为 <Val example="ceramic-bias" name="Delta_v_bias" />。
+
+## 如何确认
+
+在施加工作直流电压的条件下读取电容量：可用能叠加直流偏置的阻抗测量仪测量，也可查阅厂商针对该型号本身给出的电容量随直流电压变化的曲线。在电路中，由实测纹波反推电容量，并与标称值比较。
+
+## 解决方法
+
+按电容在工作直流电压和极限温度下的电容量选定电容，这一电容量取自该器件本身的数据；比较候选器件时也依据这些数据，而不是它们的代码 <Cite key="adi_ceramic_caps" />。若该电容量不足，则并联更多电容，直到剩余的电容量满足纹波要求。
+
+## 参考资料
+
+- <Cite key="adi_ceramic_caps" />：2 类代码不说明电容量随直流电压的变化；仅直流电压就可能使电容量只剩标称值的一小部分；在其数据中，封装越大，损失越少。
+- [实际无源元件](../../00-foundations/passives-real/)：串联电阻、自谐振和输出纹波。
+- [低温](../../06-bench/low-temp/)：低温在实验台上带来的变化。

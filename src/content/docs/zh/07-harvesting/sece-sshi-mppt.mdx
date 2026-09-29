@@ -1,0 +1,97 @@
+---
+title: SECE、SSHI 与 MPPT
+description: 全波整流桥、同步电荷提取（SECE）和并联同步电感开关收集（SSHI）分别从同一个振动压电元件取得多少功率，其中哪些取决于直流电压，以及变换器如何按开路电压的一定比例跟踪最大功率点。
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 比较全波整流桥、SECE 和并联 SSHI 从同一个振动压电元件取得的功率。
+- 了解其中哪些取决于其后的直流电压，以及各自在何处取得的功率最大。
+- 按开路电压的一定比例跟踪电源的最大功率点（maximum power point）。
+
+## 理论
+
+下面三种接口电路都从[电源模型](../source-models/)中的元件取得功率：与夹持电容 $C_0$ 并联的电流源 $I_p \sin \omega t$，其振动幅值不因能量收集而改变。每个半周期，即位移的两个极值之间，电源输送的电荷相同。经整流桥向直流电压供电的两种接口电路，区别在于整流桥导通之前，它们要花掉多少电荷来摆动元件电压；SECE 则让全部电荷都给元件充电，然后取走储存在其中的能量。
+
+### 标准接口电路
+
+接到直流电压（储能电容或电池）上的全波整流桥，即标准接口电路（standard interface），只有在元件电压从一侧电源轨（rail）摆到另一侧之后才导通。每个半周期，这一摆动都要消耗一部分电荷，其余电荷进入直流侧 <Cite key="guyomar2005" />：
+
+<Eq id="piezo.P_std" />
+
+功率取决于直流电压。它在零伏处为零，在开路电压幅值处也为零，此时摆动耗尽了全部电荷；它在开路电压幅值的一半处最大：
+
+<Eq id="piezo.P_std_max" />
+
+### SECE
+
+同步电荷提取（synchronous electric charge extraction, SECE）在元件电压的两个极值之间让元件开路，然后在每个极值处经变换器把元件的全部电荷取到储能元件中 <Cite key="lefeuvre2005" />。在两次提取之间，半个周期的全部电荷使元件电压从零升到开路电压幅值的两倍，变换器随后取走此时储存在 $C_0$ 中的能量，并以储能元件当时的电压将其输出。元件从不与储能元件直接相连，因此功率与储能元件的电压无关：
+
+<Eq id="piezo.P_sece" />
+
+这是标准接口电路最大功率的四倍，即多出 300%。Lefeuvre 等报告，与为获得最大功率而调整的标准接口电路相比，该技术“使收集的功率提高 400%”（原文“increases the harvested power by 400%”）<Cite key="lefeuvre2005" />；该百分比按其原文照录。变换器必须承受提取时的元件电压，即开路电压幅值的两倍。
+
+### 并联 SSHI
+
+同步电感开关收集（synchronized switch harvesting on inductor, SSHI）的并联形式保留整流桥，并在元件两端并接一个开关和一个电感。位移每达到一个极值，开关就短暂闭合，由电感使元件电压翻转 <Cite key="guyomar2005" />。翻转会损失部分电压：元件电压从直流电压变为符号相反、大小为其 $\gamma$ 倍的电压，因此摆到另一侧电源轨只需付出剩余的部分：
+
+<Eq id="piezo.P_sshi" />
+
+<Eq id="piezo.P_sshi_max" />
+
+翻转越好，功率越大，取得该功率的直流电压也越高。Guyomar 等报告，与标准技术相比，收集的功率“可提高 900% 以上”（原文“may be increased above 900%”）<Cite key="guyomar2005" />；在本模型中，这相当于保留约五分之四电压的翻转。即使翻转什么也不保留，即开关只是把元件放电，功率也达到标准接口电路最大功率的两倍。
+
+### 最大功率点跟踪
+
+对线性源而言，送入恒定电压（constant voltage）的功率在开路电压的一半处最大（<EqRef id="src.cv_extraction" label="恒压负载的功率提取比" />），上面的标准接口电路同样在元件开路电压幅值的一半处最佳。因此，把输入保持在电源开路电压固定比例处的变换器，在电源幅值变化时始终处于最大功率点：这就是开路电压比例法（fractional open-circuit voltage method）<Cite key="esram2007" />。为获知开路电压，这类变换器会不时停止吸取功率并对其采样：有一种能量收集充电器周期性地关闭自身，对开路电压的一定比例进行采样，对热电发电机（thermoelectric generator）通常为 50 % <Cite key="ti_bq25570" />。太阳能电池这类非线性电源，其最佳点位于另一比例 <Cite key="esram2007" />。
+
+## 例题
+
+同一个元件，分别接三种接口电路：
+
+<Worked example="piezo-interfaces" />
+
+经整流桥接到 <Val example="piezo-interfaces" name="V_DC" /> 时，元件给出 <Val example="piezo-interfaces" name="P_std" />。在最佳直流电压，即其开路电压幅值 <Val example="piezo-interfaces" name="V_p" /> 的一半处，它可给出 <Val example="piezo-interfaces" name="P_std_max" />。SECE 在任何储能电压下都取得 <Val example="piezo-interfaces" name="P_sece" />，翻转系数（inversion coefficient）为 <Val example="piezo-interfaces" name="gamma" /> 的并联 SSHI 最多可得 <Val example="piezo-interfaces" name="P_sshi_max" />。
+
+## 动手试试
+
+<TryIt eq="piezo.P_std" example="piezo-interfaces" sweep="V_DC" from={0} to={2} logx={false} />
+
+扫描整流桥后的直流电压：功率在开路电压幅值的一半处升至峰值，在等于该幅值时降为零。
+
+<TryIt eq="piezo.P_sshi_max" example="piezo-interfaces" sweep="gamma" />
+
+扫描翻转系数：翻转趋近理想时，最大功率无限增大，而电感和开关的损耗决不允许这一点。
+
+## 实验练习
+
+在以恒定幅值振动的振动台（shaker）上，把元件经全波整流桥接到储能电容，由源测量单元（source-measure unit, SMU）把该电容保持在直流电压；SMU 吸收并测量整流桥的电流（微安级）。将直流电压从零逐步升到开路电压幅值，记录 SMU 吸收的电流，并画出功率曲线；把最佳直流电压与开路电压幅值的一半比较。对于并联 SSHI，加上开关和电感，在每个电压极值处触发开关，并在示波器上读出翻转前后瞬间的元件电压：两者之比就是要代入公式的翻转系数。
+
+## 易错点
+
+- **直流电压高于开路电压幅值时，整流桥收集不到任何能量**。充电超过该值的储能元件不再继续充电（<EqRef id="piezo.P_std" label="标准接口电路的功率" />）。
+- **上述公式假定整流桥是理想的**。实际整流桥中有两个二极管串联导通 <Cite key="mohan2003" where="Ch. 5 (Line-Frequency Diode Rectifiers)" />，因此元件电压必须摆到直流电压加上两个正向压降（forward voltage drop），整流桥才导通：对于开路电压幅值只有几伏的元件，这占了摆幅的很大一部分。
+- **SECE 的变换器承受开路电压幅值的两倍**，因为元件电压在整个半周期内从零一直上升（<EqRef id="piezo.P_sece" label="SECE 的功率" />）。
+- **SSHI 的增益取决于翻转的质量**。开关和电感中的损耗会降低翻转系数，功率也随之降低（<EqRef id="piezo.P_sshi_max" label="并联 SSHI 的最大功率" />）。
+- **对开路电压采样会占用收集时间**：采样期间变换器不取用任何功率。
+- **以上结果都假定振动幅值不变**。若收集取走的能量相对于结构自身损耗消耗的能量并不小，振幅就会降低，此时该模型会高估每一种接口电路的功率。
+
+## 延伸阅读
+
+<GoDeeper ids={['lefeuvre2005-sage', 'guyomar2005-pubmed', 'esram2007-ieee', 'ti-bq25570']} />
+
+## 测验
+
+<Quiz id="07-harvesting/sece-sshi-mppt" />
