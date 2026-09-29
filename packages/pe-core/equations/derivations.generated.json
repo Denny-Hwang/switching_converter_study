@@ -472,7 +472,7 @@
         {
           "text": "Forward reset: the magnetizing inductance sees $V_g$ for $D T_s$, then the reset winding ($N_r$ turns) clamps it to $-V_g/n_r$ for $D_2 T_s$ until the magnetizing current is back to zero.",
           "text_ko": "포워드 리셋: 자화 인덕턴스에는 $D T_s$ 동안 $V_g$가 걸리고, 이후 자화 전류가 0으로 돌아올 때까지 $D_2 T_s$ 동안 리셋 권선($N_r$ 턴)이 이 전압을 $-V_g/n_r$로 클램프합니다.",
-          "text_zh": "正激变换器的复位：励磁电感电压为 $V_g$，持续 $D T_s$；随后复位绕组（$N_r$ 匝）将其钳位在 $-V_g/n_r$，持续 $D_2 T_s$，直到励磁电流回到零。",
+          "text_zh": "正激变换器的磁复位：励磁电感电压为 $V_g$，持续 $D T_s$；随后复位绕组（$N_r$ 匝）将其钳位在 $-V_g/n_r$，持续 $D_2 T_s$，直到励磁电流回到零。",
           "latex": "D V_g - \\frac{D_2 V_g}{n_r} = 0",
           "result_for": null
         },
@@ -891,7 +891,7 @@
       "title_zh": "反激变换器钳位电路：反射电压、钳位损耗、输出电压上限",
       "intro": "When the flyback's switch turns off, the magnetizing current passes to the secondary, but the current in the leakage inductance $L_\\mathrm{lk}$ has nowhere to go except a clamp across the primary. The clamp holds the primary at $V_\\mathrm{clamp}$ until that current has fallen to zero.",
       "intro_ko": "플라이백의 스위치가 꺼지면 자화 전류는 2차 측으로 넘어가지만, 누설 인덕턴스 $L_\\mathrm{lk}$의 전류는 1차 측에 연결된 클램프 외에는 흐를 곳이 없습니다. 클램프는 이 전류가 0으로 줄어들 때까지 1차 측을 $V_\\mathrm{clamp}$에 묶어 둡니다.",
-      "intro_zh": "反激变换器的开关管关断时，励磁电流转移到二次侧，但漏感 $L_\\mathrm{lk}$ 中的电流除了跨接在一次绕组两端的钳位电路外无处可去。钳位电路将一次绕组电压钳在 $V_\\mathrm{clamp}$，直到该电流降到零。",
+      "intro_zh": "反激变换器的开关管关断时，励磁电流转移到二次侧，但漏感 $L_\\mathrm{lk}$ 中的电流除了跨接在一次绕组两端的钳位电路外无处可去。钳位电路将一次绕组电压钳位在 $V_\\mathrm{clamp}$，直到该电流降到零。",
       "results": [
         "flyback.V_OR",
         "clamp.Vds",
@@ -918,7 +918,7 @@
         {
           "text": "The switch lies between the input and the primary winding, which the clamp holds at $V_\\mathrm{clamp}$ while it conducts.",
           "text_ko": "스위치는 입력과 1차 권선 사이에 있으며, 클램프가 도통하는 동안 1차 권선은 $V_\\mathrm{clamp}$에 묶입니다.",
-          "text_zh": "开关管位于输入与一次绕组之间，钳位电路导通期间将一次绕组电压钳在 $V_\\mathrm{clamp}$。",
+          "text_zh": "开关管位于输入与一次绕组之间，钳位电路导通期间将一次绕组电压钳位在 $V_\\mathrm{clamp}$。",
           "latex": "V_\\mathrm{DS} = V_g + V_\\mathrm{clamp}",
           "result_for": "clamp.Vds"
         },
@@ -953,7 +953,7 @@
         {
           "text": "In an RCD clamp the capacitor holds $V_\\mathrm{clamp}$ and the resistor dissipates the clamp power.",
           "text_ko": "RCD 클램프에서는 커패시터가 $V_\\mathrm{clamp}$를 유지하고 저항이 클램프 전력을 소산합니다.",
-          "text_zh": "在 RCD 钳位电路中，电容保持 $V_\\mathrm{clamp}$，电阻消耗钳位功率。",
+          "text_zh": "在 RCD 钳位电路中，电容保持 $V_\\mathrm{clamp}$，电阻耗散钳位功率。",
           "latex": "\\frac{V_\\mathrm{clamp}^{2}}{R_\\mathrm{clamp}} = \\frac{L_\\mathrm{lk} V_\\mathrm{clamp} f_s I_\\mathrm{pk}^{2}}{2 \\left(V_\\mathrm{clamp} - V_\\mathrm{OR}\\right)}",
           "result_for": null
         },
@@ -1526,7 +1526,7 @@
       "title_zh": "PWM 调制器、环路增益与扰动抑制",
       "intro": "A voltage-mode controller compares a control voltage with a periodic ramp to set the duty ratio. Going once around the loop multiplies the gains of the compensator, the modulator, the power stage and the sensor; that product, the loop gain $T$, decides how strongly the loop rejects disturbances.",
       "intro_ko": "전압 모드 제어기는 제어 전압을 주기적인 램프와 비교해 듀티비를 정합니다. 루프를 한 바퀴 돌면 보상기, 변조기, 전력단, 센서의 이득이 곱해지며, 그 곱인 루프 이득 $T$가 외란을 얼마나 강하게 억제하는지 결정합니다.",
-      "intro_zh": "电压型控制器将控制电压与周期性锯齿波比较，以确定占空比。沿环路绕行一周，补偿器、调制器、功率级和传感器的增益相乘；这一乘积即环路增益 $T$，它决定环路抑制扰动的强弱。",
+      "intro_zh": "电压模式控制器将控制电压与周期性锯齿波比较，以确定占空比。沿环路绕行一周，补偿器、调制器、功率级和传感器的增益相乘；这一乘积即环路增益 $T$，它决定环路抑制扰动的强弱。",
       "results": [
         "pwm.d",
         "loop.T",
@@ -1571,7 +1571,7 @@
         {
           "text": "The disturbance reaching the output is divided by $1 + T$.",
           "text_ko": "출력에 도달하는 외란은 $1 + T$로 나뉩니다.",
-          "text_zh": "到达输出端的扰动被除以 $1 + T$。",
+          "text_zh": "到达输出端的扰动减小到原来的 $1 + T$ 分之一。",
           "latex": "S = \\frac{1}{1 + T}",
           "result_for": "loop.suppression"
         }
@@ -1613,7 +1613,7 @@
         {
           "text": "If this energy is removed (clamped or dissipated) every cycle, the average power is $E_\\mathrm{lk} f_s$.",
           "text_ko": "이 에너지를 매 주기 제거하면(클램프하거나 소산시키면) 평균 전력은 $E_\\mathrm{lk} f_s$입니다.",
-          "text_zh": "若每个周期都将这部分能量移除（被钳位或被耗散），平均功率为 $E_\\mathrm{lk} f_s$。",
+          "text_zh": "若每个周期都将这部分能量移除（钳位或耗散），平均功率为 $E_\\mathrm{lk} f_s$。",
           "latex": "P_\\mathrm{lk} = E_\\mathrm{lk} f_s",
           "result_for": "flyback.leak.P"
         },
@@ -1918,7 +1918,7 @@
         {
           "text": "The magnitude falls by $e$ over one skin depth, the inverse of the real part of $k$.",
           "text_ko": "크기는 표피 깊이, 곧 $k$ 실수부의 역수만큼 들어갈 때마다 $e$배씩 줄어듭니다.",
-          "text_zh": "幅值每经过一个集肤深度按因子 $e$ 衰减，集肤深度即 $k$ 实部的倒数。",
+          "text_zh": "幅值每经过一个集肤深度减小到原来的 $e$ 分之一，集肤深度即 $k$ 实部的倒数。",
           "latex": "\\delta = \\sqrt{\\frac{\\rho_w}{\\pi \\mu_0 f}}",
           "result_for": "wind.skin_depth"
         },
@@ -2579,7 +2579,7 @@
         {
           "text": "While the drain voltage makes its transition the gate stays at the plateau voltage $V_\\mathrm{pl}$. The driver switches its output to $V_\\mathrm{GS}$ (turn-on) or to 0 (turn-off) behind the gate loop's resistance $R_G$, so by Ohm's law the gate current is constant meanwhile:",
           "text_ko": "드레인 전압이 바뀌는 동안 게이트는 플래토 전압 $V_\\mathrm{pl}$에 머뭅니다. 드라이버는 게이트 루프 저항 $R_G$ 뒤에서 출력을 $V_\\mathrm{GS}$(턴온) 또는 0(턴오프)으로 바꾸므로, 옴의 법칙에 따라 그동안 게이트 전류는 일정합니다.",
-          "text_zh": "漏极电压转换期间，栅极保持在平台电压 $V_\\mathrm{pl}$。驱动器将其输出切换到 $V_\\mathrm{GS}$（开通）或 0（关断），与栅极之间隔着栅极回路电阻 $R_G$，因此根据欧姆定律，此期间栅极电流恒定：",
+          "text_zh": "漏极电压跳变期间，栅极保持在平台电压 $V_\\mathrm{pl}$。驱动器将其输出切换到 $V_\\mathrm{GS}$（开通）或 0（关断），与栅极之间隔着栅极回路电阻 $R_G$，因此根据欧姆定律，此期间栅极电流恒定：",
           "latex": null,
           "result_for": null
         },
@@ -2754,7 +2754,7 @@
       "title_zh": "仿真：按时间步长计算电路，以及进入稳态所需的时间",
       "intro": "A simulator advances a circuit's state in time steps. Within a step a switching converter is a linear circuit with constant sources, which a first-order example shows can be stepped exactly. The usual integration rules are compared on one decaying mode, the test equation, where each multiplies the deviation by a fixed factor per step. The envelope of the output filter's ring then says how many switching periods a simulation from rest needs before its last periods show the steady state.",
       "intro_ko": "시뮬레이터는 회로의 상태를 한 타임 스텝씩 계산합니다. 한 스텝 안에서 스위칭 컨버터는 전원이 일정한 선형 회로이며, 1차 회로의 예에서 보듯 이런 회로는 한 스텝을 정확히 계산할 수 있습니다. 흔히 쓰는 적분 규칙들은 감쇠 모드 하나, 곧 시험 방정식(test equation)으로 비교합니다. 이 방정식에서 각 규칙은 스텝마다 편차에 일정한 배율을 곱합니다. 끝으로 출력 필터 링잉의 포락선을 이용해, 정지 상태에서 시작한 시뮬레이션을 몇 스위칭 주기 동안 실행해야 마지막 주기들이 정상상태를 보여 주는지 구합니다.",
-      "intro_zh": "仿真器按时间步长逐步计算电路的状态。在一个时间步长内，开关变换器是电源恒定的线性电路；一阶电路的例子表明，这样的电路可以逐步精确计算。常用的积分方法在一个衰减模态上进行比较，即试验方程（test equation），每种方法在每一步都将偏差乘以一个固定因子。随后由输出滤波器振铃的包络得出：从零初始状态开始的仿真需要多少个开关周期，其最后几个周期才能呈现稳态。",
+      "intro_zh": "仿真器按时间步长逐步计算电路的状态。在一个时间步长内，开关变换器是电源恒定的线性电路；一阶电路的例子表明，这样的电路可以逐步精确计算。常用的积分方法在一个衰减模态上比较，即试验方程（test equation），每种方法在每一步都将偏差乘以一个固定因子。随后由输出滤波器振铃的包络得出：从零初始状态开始的仿真需要多少个开关周期，其最后几个周期才能呈现稳态。",
       "results": [
         "sim.exact_step",
         "num.gain_fe",

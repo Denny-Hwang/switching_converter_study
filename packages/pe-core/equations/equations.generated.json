@@ -242,7 +242,7 @@
     "window_field": {
       "en": "one-dimensional field in the winding window: the MMF changes only across the layers, and the field runs along the winding breadth",
       "ko": "권선 창 안의 1차원 자계: 기자력은 층을 가로지르는 방향으로만 변하고, 자계는 권선 폭 방향으로 향함",
-      "zh": "绕组窗口内的一维磁场：磁动势只沿穿过各层的方向变化，磁场沿绕组宽度方向"
+      "zh": "绕线窗口内的一维磁场：磁动势只沿穿过各层的方向变化，磁场沿绕组宽度方向"
     },
     "dowell_layers": {
       "en": "foil layers spanning the winding breadth, a sinusoidal current, and a one-dimensional field in the window",
@@ -1566,7 +1566,7 @@
       "desc": "loss of a layer relative to that of a layer one skin depth thick carrying the same current as dc",
       "meaning": "loss relative to a one-skin-depth layer at dc",
       "meaning_ko": "두께가 표피 깊이인 층의 직류 손실에 대한 비",
-      "meaning_zh": "损耗与一个集肤深度厚层直流损耗之比",
+      "meaning_zh": "损耗与厚一个集肤深度的层的直流损耗之比",
       "range": null,
       "scale": "linear"
     },
@@ -1873,7 +1873,7 @@
       "desc": "source (Thevenin) resistance",
       "meaning": "source resistance",
       "meaning_ko": "전원 내부 저항(source resistance)",
-      "meaning_zh": "电源内阻（source resistance）",
+      "meaning_zh": "源内阻（source resistance）",
       "range": [
         1.0,
         10000000.0
@@ -2544,7 +2544,7 @@
       "desc": "window area available to a winding (a bobbin's winding area)",
       "meaning": "winding window area",
       "meaning_ko": "권선 창 면적(window area)",
-      "meaning_zh": "绕组窗口面积（window area）",
+      "meaning_zh": "绕线窗口面积（window area）",
       "range": [
         1e-06,
         0.001
@@ -2836,7 +2836,7 @@
       "desc": "ringing frequency",
       "meaning": "ringing frequency",
       "meaning_ko": "링잉 주파수",
-      "meaning_zh": "振铃频率（ringing）",
+      "meaning_zh": "振铃频率",
       "range": null,
       "scale": "linear"
     },
@@ -3013,7 +3013,7 @@
       "desc": "Steinmetz coefficient (with f in Hz and B in T)",
       "meaning": "Steinmetz coefficient",
       "meaning_ko": "스타인메츠 계수(Steinmetz coefficient)",
-      "meaning_zh": "Steinmetz 系数（Steinmetz coefficient）",
+      "meaning_zh": "Steinmetz 系数",
       "range": [
         0.1,
         100.0
@@ -4089,7 +4089,7 @@
       "convention_zh": "",
       "notes": "the converter stays in CCM for $L > L_\\mathrm{crit}$; check the largest $R$ (lightest load) and the duty ratio that maximises $K_\\mathrm{crit}$ over the input range",
       "notes_ko": "$L > L_\\mathrm{crit}$이면 CCM을 유지합니다. 가장 큰 $R$(가장 가벼운 부하)과, 입력 범위에서 $K_\\mathrm{crit}$을 최대로 만드는 듀티비에서 확인합니다",
-      "notes_zh": "$L > L_\\mathrm{crit}$ 时变换器保持 CCM；应按最大的 $R$（最轻负载）以及输入范围内使 $K_\\mathrm{crit}$ 最大的占空比进行校核",
+      "notes_zh": "$L > L_\\mathrm{crit}$ 时变换器保持 CCM；应按最大的 $R$（最轻负载）以及输入范围内使 $K_\\mathrm{crit}$ 最大的占空比校核",
       "cites": [
         {
           "key": "erickson2020",
@@ -4341,7 +4341,7 @@
       "convention_zh": "",
       "notes": "the average input current is proportional to $V_g$; the power is passed on, not dissipated",
       "notes_ko": "평균 입력 전류가 $V_g$에 비례합니다. 전력은 소산되지 않고 출력으로 전달됩니다",
-      "notes_zh": "平均输入电流与 $V_g$ 成正比；功率被传递出去，而不是被耗散",
+      "notes_zh": "平均输入电流与 $V_g$ 成正比；功率传递出去，而不是耗散掉",
       "cites": [
         {
           "key": "singer1990",
@@ -4653,7 +4653,7 @@
       "convention_zh": "$\\Delta v$ 为纹波峰峰值的一半（Erickson）",
       "notes": "while the switch is on the diode is off and the capacitor alone supplies the load, as in the buck-boost",
       "notes_ko": "스위치가 켜져 있는 동안에는 다이오드가 꺼져 있으므로, 벅-부스트와 마찬가지로 커패시터 혼자 부하에 전류를 공급합니다",
-      "notes_zh": "与升降压变换器相同，开关管导通期间二极管截止，由电容单独向负载供电",
+      "notes_zh": "与升降压变换器相同，开关管导通期间二极管关断，由电容单独向负载供电",
       "cites": [
         {
           "key": "erickson2020",
@@ -6099,7 +6099,7 @@
       "convention_zh": "",
       "notes": "the current density falls by a factor $e$ for every skin depth into the conductor; conductors much thicker than $\\delta$ carry the current in a surface layer",
       "notes_ko": "전류 밀도는 도체 안으로 표피 깊이만큼 들어갈 때마다 $e$분의 1로 줄어듭니다. $\\delta$보다 훨씬 두꺼운 도체에서는 전류가 표면층으로만 흐릅니다",
-      "notes_zh": "电流密度每深入导体一个集肤深度，就按因子 $e$ 衰减；远厚于 $\\delta$ 的导体只在表面层中通过电流",
+      "notes_zh": "电流密度每深入导体一个集肤深度，就减小到原来的 $e$ 分之一；远厚于 $\\delta$ 的导体只在表面层中通过电流",
       "cites": [
         {
           "key": "erickson2020",
@@ -7509,7 +7509,7 @@
       "convention_zh": "",
       "notes": "the amplifier multiplies the sense voltage by its gain and adds the REF voltage, so a current of either sign swings the output either side of $V_\\mathrm{REF}$; the output cannot quite reach the supply rails",
       "notes_ko": "증폭기가 센스 전압에 이득을 곱하고 REF 전압을 더하므로, 전류의 부호에 따라 출력이 $V_\\mathrm{REF}$ 위아래로 움직입니다. 출력은 전원 레일까지 완전히 도달하지 못합니다",
-      "notes_zh": "放大器将检测电压乘以其增益，再加上 REF 电压，因此电流无论正负，输出都可在 $V_\\mathrm{REF}$ 两侧摆动；输出无法完全达到电源轨",
+      "notes_zh": "放大器将检测电压乘以其增益，再加上 REF 电压，因此输出随电流的正负摆向 $V_\\mathrm{REF}$ 的上方或下方；输出无法完全达到电源轨",
       "cites": [
         {
           "key": "ti_ina181",
@@ -8676,7 +8676,7 @@
       "convention_zh": "",
       "notes": "at frequencies where $T \\gg 1$ a disturbance is divided by roughly $T$",
       "notes_ko": "$T \\gg 1$인 주파수에서 외란은 대략 $T$로 나누어집니다",
-      "notes_zh": "在 $T \\gg 1$ 的频率上，扰动大致被除以 $T$",
+      "notes_zh": "在 $T \\gg 1$ 的频率上，扰动大致减小到原来的 $T$ 分之一",
       "cites": [
         {
           "key": "erickson2020",
@@ -10822,7 +10822,7 @@
       "convention_zh": "",
       "notes": "the rule averages the slopes at both ends of the step. Its factor stays between -1 and 1 for any step (the rule is A-stable), but a step much longer than $\\tau$ gives a factor close to -1: the mode is hardly damped and changes sign every step, a ringing from one step to the next that the circuit does not have. ngspice integrates with this rule unless told otherwise",
       "notes_ko": "이 규칙은 스텝 양 끝의 기울기를 평균합니다. 배율은 스텝 길이와 관계없이 -1과 1 사이에 머물지만(A-안정), 스텝이 $\\tau$보다 훨씬 길면 배율이 -1에 가까워집니다. 그러면 모드가 거의 감쇠하지 않고 스텝마다 부호를 바꾸는, 회로에는 없는 링잉이 생깁니다. ngspice는 따로 지정하지 않으면 이 규칙으로 적분합니다",
-      "notes_zh": "该方法取每步两端斜率的平均值。任意步长下其放大因子都在 -1 与 1 之间（该方法是 A-稳定的），但步长远大于 $\\tau$ 时放大因子接近 -1：该模态几乎不衰减，且每一步都改变符号，形成电路本身并不存在的逐步振铃。如无另行指定，ngspice 采用该方法积分",
+      "notes_zh": "该方法取每步两端斜率的平均值。任意步长下其放大因子都在 -1 与 1 之间（该方法是 A 稳定的），但步长远大于 $\\tau$ 时放大因子接近 -1：该模态几乎不衰减，且每一步都改变符号，形成电路本身并不存在的逐步振铃。如无另行指定，ngspice 采用该方法积分",
       "cites": [
         {
           "key": "hairer1996",
@@ -10864,7 +10864,7 @@
       "convention_zh": "",
       "notes": "the rule takes the slope at the end of the step. Its factor lies between 0 and 1 for any step and tends to zero as the step grows (the rule is L-stable): a mode much faster than the step is almost gone after one step, without ringing. It is the first of the backward differentiation formulas, which ngspice uses, up to the second by default, when .options method=gear asks for Gear's method",
       "notes_ko": "이 규칙은 스텝 끝의 기울기를 씁니다. 배율은 스텝 길이와 관계없이 0과 1 사이이고 스텝이 길수록 0에 가까워집니다(L-안정). 스텝보다 훨씬 빠른 모드는 링잉 없이 한 스텝 뒤에 거의 사라집니다. 후진 차분 공식(backward differentiation formula) 가운데 첫 번째이며, .options method=gear로 기어(Gear) 방법을 지정하면 ngspice는 이 공식들을 기본적으로 두 번째까지 씁니다",
-      "notes_zh": "该方法取每步终点的斜率。任意步长下其放大因子都在 0 与 1 之间，且随步长增大趋于零（该方法是 L-稳定的）：比步长快得多的模态经过一步后几乎消失，且不产生振铃。它是后向差分公式（backward differentiation formula）中的第一个；当 .options method=gear 指定 Gear 法时，ngspice 使用这类公式，默认最高到第二个",
+      "notes_zh": "该方法取每步终点的斜率。任意步长下其放大因子都在 0 与 1 之间，且随步长增大趋于零（该方法是 L 稳定的）：比步长快得多的模态经过一步后几乎消失，且不产生振铃。它是后向差分公式（backward differentiation formula）中的第一个；当 .options method=gear 指定 Gear 法时，ngspice 使用这类公式，默认最高到第二个",
       "cites": [
         {
           "key": "hairer1996",

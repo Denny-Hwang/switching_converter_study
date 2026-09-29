@@ -66,7 +66,7 @@
    "Solve for $V$; the output is inverted.": "解出 $V$；输出反相。",
    "Flyback (1:$n$, magnetizing inductance on the primary): $V_g$ while the switch is on; while the diode conducts the secondary is clamped at $V$, which reflects to $-V/n$ on the primary.": "反激变换器（1:$n$，励磁电感在一次侧）：开关管导通期间为 $V_g$；二极管导通期间二次侧被钳位在 $V$，反射到一次侧为 $-V/n$。",
    "Forward: the secondary applies $nV_g$ to the output filter while the switch is on, so the output inductor sees $nV_g - V$, then $-V$ while the freewheeling diode conducts.": "正激变换器：开关管导通期间，二次侧向输出滤波器施加 $nV_g$，因此输出电感电压为 $nV_g - V$；随后在续流二极管导通期间为 $-V$。",
-   "Forward reset: the magnetizing inductance sees $V_g$ for $D T_s$, then the reset winding ($N_r$ turns) clamps it to $-V_g/n_r$ for $D_2 T_s$ until the magnetizing current is back to zero.": "正激变换器的复位：励磁电感电压为 $V_g$，持续 $D T_s$；随后复位绕组（$N_r$ 匝）将其钳位在 $-V_g/n_r$，持续 $D_2 T_s$，直到励磁电流回到零。",
+   "Forward reset: the magnetizing inductance sees $V_g$ for $D T_s$, then the reset winding ($N_r$ turns) clamps it to $-V_g/n_r$ for $D_2 T_s$ until the magnetizing current is back to zero.": "正激变换器的磁复位：励磁电感电压为 $V_g$，持续 $D T_s$；随后复位绕组（$N_r$ 匝）将其钳位在 $-V_g/n_r$，持续 $D_2 T_s$，直到励磁电流回到零。",
    "Solve for the reset interval.": "解出复位区间。",
    "The reset must finish within the period, $D + D_2 \\le 1$; the equality gives the largest duty ratio.": "复位必须在一个周期内完成，即 $D + D_2 \\le 1$；取等号得到最大占空比。",
    "Buck ripple: during the on-interval the inductor current rises with slope $(V_g - V)/L$ for $D T_s$, which is the full peak-to-peak ripple, i.e. $2\\Delta i_L$.": "降压变换器的纹波：导通区间内电感电流以斜率 $(V_g - V)/L$ 上升，持续 $D T_s$，上升量即整个纹波峰峰值，也就是 $2\\Delta i_L$。",
@@ -128,16 +128,16 @@
  },
  "clamp": {
   "title": "反激变换器钳位电路：反射电压、钳位损耗、输出电压上限",
-  "intro": "反激变换器的开关管关断时，励磁电流转移到二次侧，但漏感 $L_\\mathrm{lk}$ 中的电流除了跨接在一次绕组两端的钳位电路外无处可去。钳位电路将一次绕组电压钳在 $V_\\mathrm{clamp}$，直到该电流降到零。",
+  "intro": "反激变换器的开关管关断时，励磁电流转移到二次侧，但漏感 $L_\\mathrm{lk}$ 中的电流除了跨接在一次绕组两端的钳位电路外无处可去。钳位电路将一次绕组电压钳位在 $V_\\mathrm{clamp}$，直到该电流降到零。",
   "steps": {
    "While the output diode conducts, the secondary winding carries the output voltage plus the diode drop.": "输出二极管导通期间，二次绕组上的电压为输出电压加二极管压降。",
    "An ideal 1:$n$ transformer divides a secondary voltage by $n$ on the primary.": "理想 1:$n$ 变压器将二次侧电压除以 $n$ 折算到一次侧。",
-   "The switch lies between the input and the primary winding, which the clamp holds at $V_\\mathrm{clamp}$ while it conducts.": "开关管位于输入与一次绕组之间，钳位电路导通期间将一次绕组电压钳在 $V_\\mathrm{clamp}$。",
+   "The switch lies between the input and the primary winding, which the clamp holds at $V_\\mathrm{clamp}$ while it conducts.": "开关管位于输入与一次绕组之间，钳位电路导通期间将一次绕组电压钳位在 $V_\\mathrm{clamp}$。",
    "The magnetizing inductance holds $V_\\mathrm{OR}$ while the output diode conducts, so the leakage inductance sees $V_\\mathrm{clamp} - V_\\mathrm{OR}$ and its current falls linearly from $I_\\mathrm{pk}$.": "输出二极管导通期间励磁电感两端电压保持为 $V_\\mathrm{OR}$，因此漏感两端电压为 $V_\\mathrm{clamp} - V_\\mathrm{OR}$，其电流从 $I_\\mathrm{pk}$ 线性下降。",
    "It reaches zero after this time, which must fit in the off-time.": "电流经过这段时间降到零，这段时间不能超过关断时间。",
    "The clamp absorbs its voltage times this falling current: more than the leakage energy $\\tfrac12 L_\\mathrm{lk} I_\\mathrm{pk}^2$, because the reflected voltage keeps driving the current meanwhile.": "钳位电路吸收其电压与这一下降电流之积对应的能量：大于漏感能量 $\\tfrac12 L_\\mathrm{lk} I_\\mathrm{pk}^2$，因为在此期间反射电压仍在推动电流。",
    "Once per switching period.": "每个开关周期一次。",
-   "In an RCD clamp the capacitor holds $V_\\mathrm{clamp}$ and the resistor dissipates the clamp power.": "在 RCD 钳位电路中，电容保持 $V_\\mathrm{clamp}$，电阻消耗钳位功率。",
+   "In an RCD clamp the capacitor holds $V_\\mathrm{clamp}$ and the resistor dissipates the clamp power.": "在 RCD 钳位电路中，电容保持 $V_\\mathrm{clamp}$，电阻耗散钳位功率。",
    "The root above $V_\\mathrm{OR}$.": "大于 $V_\\mathrm{OR}$ 的根。",
    "With the load removed and no regulation, the output keeps charging and its reflected voltage rises until it reaches the clamp voltage; from then on the clamp takes all of the input power. This holds for a clamp whose voltage does not depend on that power (a TVS); an RCD clamp's voltage rises with it.": "负载断开且无稳压控制时，输出持续充电，其反射电压不断升高，直至达到钳位电压；此后钳位电路吸收全部输入功率。这适用于电压与该功率无关的钳位器件（TVS）；RCD 钳位电路的电压随该功率升高。",
    "Solve for the output voltage.": "解出输出电压。"
@@ -220,14 +220,14 @@
  },
  "control": {
   "title": "PWM 调制器、环路增益与扰动抑制",
-  "intro": "电压型控制器将控制电压与周期性锯齿波比较，以确定占空比。沿环路绕行一周，补偿器、调制器、功率级和传感器的增益相乘；这一乘积即环路增益 $T$，它决定环路抑制扰动的强弱。",
+  "intro": "电压模式控制器将控制电压与周期性锯齿波比较，以确定占空比。沿环路绕行一周，补偿器、调制器、功率级和传感器的增益相乘；这一乘积即环路增益 $T$，它决定环路抑制扰动的强弱。",
   "steps": {
    "The ramp rises from $0$ to $V_M$ in $T_s$; the switch turns off when it crosses $V_\\mathrm{ctrl}$.": "锯齿波从 $0$ 上升到 $V_M$，历时 $T_s$；锯齿波越过 $V_\\mathrm{ctrl}$ 时开关管关断。",
    "The on-time fraction is $D = t_\\mathrm{off}/T_s$.": "导通时间占比为 $D = t_\\mathrm{off}/T_s$。",
    "Around the loop: the compensator output drives the modulator (gain $1/V_M$), the power stage turns $\\hat d$ into $\\hat v$ (gain $G_{vd}$), and the sensor feeds back $H \\hat v$.": "沿环路：补偿器输出驱动调制器（增益 $1/V_M$），功率级将 $\\hat d$ 转换为 $\\hat v$（增益 $G_{vd}$），传感器反馈 $H \\hat v$。",
    "The loop gain is the product around the loop.": "环路增益是沿环路各增益的乘积。",
    "An output disturbance $\\hat v_\\mathrm{dist}$ adds to the controlled output; the controller acts on the error $\\hat v_\\mathrm{ref} - H\\hat v$.": "输出扰动 $\\hat v_\\mathrm{dist}$ 叠加在受控输出上；控制器根据误差 $\\hat v_\\mathrm{ref} - H\\hat v$ 动作。",
-   "The disturbance reaching the output is divided by $1 + T$.": "到达输出端的扰动被除以 $1 + T$。"
+   "The disturbance reaching the output is divided by $1 + T$.": "到达输出端的扰动减小到原来的 $1 + T$ 分之一。"
   }
  },
  "energy": {
@@ -236,7 +236,7 @@
   "steps": {
    "Energy delivered to an inductance: $p = v i$ with $v = L\\,di/dt$, so $dE = L i\\,di$. Integrate from zero to the turn-off current.": "送入电感的能量：$p = v i$，其中 $v = L\\,di/dt$，因此 $dE = L i\\,di$。从零积分到关断电流。",
    "Evaluate the integral.": "计算该积分。",
-   "If this energy is removed (clamped or dissipated) every cycle, the average power is $E_\\mathrm{lk} f_s$.": "若每个周期都将这部分能量移除（被钳位或被耗散），平均功率为 $E_\\mathrm{lk} f_s$。",
+   "If this energy is removed (clamped or dissipated) every cycle, the average power is $E_\\mathrm{lk} f_s$.": "若每个周期都将这部分能量移除（钳位或耗散），平均功率为 $E_\\mathrm{lk} f_s$。",
    "Energy stored in the switch-node capacitance charged to $V_\\mathrm{sw}$: $dE = v\\,dq = C v\\,dv$.": "充电到 $V_\\mathrm{sw}$ 的开关节点电容储存的能量：$dE = v\\,dq = C v\\,dv$。",
    "A hard turn-on discharges it through the switch channel every cycle: $P = E_C f_s$.": "硬开通每个周期都使其经开关管沟道放电：$P = E_C f_s$。",
    "Conduction loss is the period average of the instantaneous power $i(t)^2 R_x$.": "导通损耗是瞬时功率 $i(t)^2 R_x$ 的周期平均值。",
@@ -285,7 +285,7 @@
    "Its dc resistance is the resistivity times the length over the conductor's area.": "其直流电阻等于电阻率乘以长度再除以导体截面积。",
    "In a good conductor (conductivity $1/\\rho_w$) a sinusoidal current density obeys $d^2 J/dx^2 = j\\omega\\mu_0 J/\\rho_w$, so it varies as $e^{-k x}$ with": "在良导体（电导率 $1/\\rho_w$）中，正弦电流密度满足 $d^2 J/dx^2 = j\\omega\\mu_0 J/\\rho_w$，因此按 $e^{-k x}$ 变化，其中",
    "The root with a positive real part:": "实部为正的根：",
-   "The magnitude falls by $e$ over one skin depth, the inverse of the real part of $k$.": "幅值每经过一个集肤深度按因子 $e$ 衰减，集肤深度即 $k$ 实部的倒数。",
+   "The magnitude falls by $e$ over one skin depth, the inverse of the real part of $k$.": "幅值每经过一个集肤深度减小到原来的 $e$ 分之一，集肤深度即 $k$ 实部的倒数。",
    "Dowell's ac resistance factor of $M_\\ell$ layers, each $\\varphi$ skin depths thick (`wind.dowell`):": "$M_\\ell$ 层、每层厚 $\\varphi$ 个集肤深度时的 Dowell 交流电阻系数（`wind.dowell`）：",
    "For thin layers, expand the hyperbolic and circular functions in powers of $\\varphi$: the terms up to $\\varphi^3$ cancel and the first excess is of fourth order.": "对于薄层，将双曲函数和三角函数按 $\\varphi$ 的幂展开：直到 $\\varphi^3$ 的各项相互抵消，超出部分的首项为四阶。",
    "At a given frequency the skin depth is fixed, so a layer $\\varphi$ skin depths thick has the dc resistance $R_\\delta/\\varphi$, $R_\\delta$ being that of a layer one skin depth thick. Carrying a current $I$, it loses": "频率给定时集肤深度固定，因此厚 $\\varphi$ 个集肤深度的层，其直流电阻为 $R_\\delta/\\varphi$，$R_\\delta$ 为厚一个集肤深度的层的直流电阻。流过电流 $I$ 时，其损耗为",
@@ -391,7 +391,7 @@
    "so throughout the edge the loop's inductance develops": "因此在整个边沿期间，回路电感上产生的电压为",
    "After the turn-off edge the loop's inductance rings with the switch node's capacitance, a series L-C, at": "关断边沿之后，回路电感与开关节点电容构成串联 L-C 并产生振铃，其频率为",
    "so the ring's frequency gives the loop's inductance:": "因此由振铃频率可得回路电感：",
-   "While the drain voltage makes its transition the gate stays at the plateau voltage $V_\\mathrm{pl}$. The driver switches its output to $V_\\mathrm{GS}$ (turn-on) or to 0 (turn-off) behind the gate loop's resistance $R_G$, so by Ohm's law the gate current is constant meanwhile:": "漏极电压转换期间，栅极保持在平台电压 $V_\\mathrm{pl}$。驱动器将其输出切换到 $V_\\mathrm{GS}$（开通）或 0（关断），与栅极之间隔着栅极回路电阻 $R_G$，因此根据欧姆定律，此期间栅极电流恒定：",
+   "While the drain voltage makes its transition the gate stays at the plateau voltage $V_\\mathrm{pl}$. The driver switches its output to $V_\\mathrm{GS}$ (turn-on) or to 0 (turn-off) behind the gate loop's resistance $R_G$, so by Ohm's law the gate current is constant meanwhile:": "漏极电压跳变期间，栅极保持在平台电压 $V_\\mathrm{pl}$。驱动器将其输出切换到 $V_\\mathrm{GS}$（开通）或 0（关断），与栅极之间隔着栅极回路电阻 $R_G$，因此根据欧姆定律，此期间栅极电流恒定：",
    "at turn-on": "开通时",
    "and at turn-off": "以及关断时",
    "A constant current delivers charge at a constant rate:": "恒定电流以恒定速率输送电荷：",
@@ -419,7 +419,7 @@
  },
  "numerics": {
   "title": "仿真：按时间步长计算电路，以及进入稳态所需的时间",
-  "intro": "仿真器按时间步长逐步计算电路的状态。在一个时间步长内，开关变换器是电源恒定的线性电路；一阶电路的例子表明，这样的电路可以逐步精确计算。常用的积分方法在一个衰减模态上进行比较，即试验方程（test equation），每种方法在每一步都将偏差乘以一个固定因子。随后由输出滤波器振铃的包络得出：从零初始状态开始的仿真需要多少个开关周期，其最后几个周期才能呈现稳态。",
+  "intro": "仿真器按时间步长逐步计算电路的状态。在一个时间步长内，开关变换器是电源恒定的线性电路；一阶电路的例子表明，这样的电路可以逐步精确计算。常用的积分方法在一个衰减模态上比较，即试验方程（test equation），每种方法在每一步都将偏差乘以一个固定因子。随后由输出滤波器振铃的包络得出：从零初始状态开始的仿真需要多少个开关周期，其最后几个周期才能呈现稳态。",
   "steps": {
    "Within a step the circuit is linear and its sources are constant. A capacitor charged through a resistance then approaches the voltage $v_\\infty$ at a rate proportional to the distance left, over the time constant $\\tau$:": "在一个时间步长内，电路是线性的，电源恒定。于是经电阻充电的电容趋近电压 $v_\\infty$，其速率等于剩余差值除以时间常数 $\\tau$：",
    "Solve it from the voltage $v_0$ at the start of the step:": "以该步起点的电压 $v_0$ 为初值求解：",
