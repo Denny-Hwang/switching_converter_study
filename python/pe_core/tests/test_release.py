@@ -45,7 +45,9 @@ def summary_starts_with_latest(heading: str) -> bool:
     version, date = latest_release()
     text = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     assert f"\n## {heading}\n" in text, f"CHANGELOG.md: no '## {heading}' section"
-    m = re.search(r"^### \[(\d+\.\d+\.\d+)\] - (\d{4}-\d{2}-\d{2})$", text.split(f"\n## {heading}\n", 1)[1], re.M)
+    # the section ends at the next level-two heading: one summary must not lend its entries to another
+    section = text.split(f"\n## {heading}\n", 1)[1].split("\n## ", 1)[0]
+    m = re.search(r"^### \[(\d+\.\d+\.\d+)\] - (\d{4}-\d{2}-\d{2})$", section, re.M)
     return bool(m) and (m.group(1), m.group(2)) == (version, date)
 
 
