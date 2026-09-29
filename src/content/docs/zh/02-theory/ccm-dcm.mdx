@@ -1,0 +1,99 @@
+---
+title: CCM 与 DCM
+description: 带二极管的变换器为何在轻载时进入断续导通模式（DCM），如何求出多出的区间，以及 DCM 电压变换比如何随负载变化。
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Figure from '../../../../components/Figure.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 解释第二个开关为二极管时，断续导通模式（discontinuous conduction mode, DCM）为何在轻载（light load）下出现。
+- 计算降压（buck）、升压（boost）和升降压（buck-boost）变换器的二极管导通区间（diode-conduction interval）和 DCM 电压变换比（conversion ratio）。
+- 根据示波器上的波形识别 DCM。
+
+## 理论
+
+### DCM 的成因
+
+在基本变换器中，第二个开关是二极管，它只能单向导通。电感电流是直流值加上三角波纹波。负载变轻时，直流值减小，但纹波不变：在 CCM 下，纹波只取决于所加的电压、$L$ 和 $T_s$。一旦纹波的谷值降到零，二极管就会在周期结束前停止导通，电感电流保持为零，直到开关管再次开通 <Cite key="erickson2020" where="Ch. 5" />。这时每个周期有三个子区间（subinterval）：开关管导通 $D T_s$，二极管导通 $D_2 T_s$，在剩余的 $D_3 T_s$ 内两者都不导通。这就是**断续导通模式**（DCM）。电感电流始终不降到零的通常情况，则是**连续导通模式**（continuous conduction mode, CCM）。
+
+<Figure name="ccm-dcm" />
+
+变换器工作在哪种模式，取决于无量纲参数（dimensionless parameter）<EqRef id="K.def" label="K" />，以及它的临界值（critical value）；见[参数 K 页面](../k-parameter/)。
+
+### DCM 的分析
+
+伏秒平衡（volt-second balance）和电荷平衡（charge balance）仍然成立，但有两点变化 <Cite key="erickson2020" where="Ch. 5" />：
+
+1. 二极管导通区间 $D_2$ 是一个新的未知量，因此需要第二个方程。
+2. 电感电流纹波与其直流值相比不再很小，因此不能对电感电流应用小纹波近似（small-ripple approximation）。电感电流的平均值要由实际的三角形波形计算。
+
+对降压变换器，在开关管导通区间和二极管导通区间上应用伏秒平衡，可以用电压变换比表示二极管导通区间：
+
+<Eq id="buck.dcm.D2" />
+
+接着由电荷平衡，令电感电流（一个从零开始、到零结束的三角形）的平均值等于负载电流。联立求解这两个条件，得到降压变换器的 DCM 电压变换比：
+
+<Eq id="buck.dcm.M" />
+
+升压和升降压变换器按同样的步骤求解，只是令二极管电流的平均值等于负载电流：
+
+<Eq id="boost.dcm.M" />
+
+<Eq id="buckboost.dcm.M" />
+
+逐步推导见[推导页面](../derivations/#deriv-dcm)。
+
+### DCM 下的变化
+
+- **电压变换比随负载变化**。在 CCM 下，$M$ 只是 $D$ 的函数；在 DCM 下，它还取决于 $K$，因而取决于 $R$。去掉负载时，$K$ 趋于零：降压变换器的输出升向 $V_g$，升压和升降压变换器的输出则无限升高。因此，开环（open-loop）变换器绝不能空载运行。
+- **电感峰值电流不再取决于负载**。每个周期都从零电流开始，因此峰值由 $D T_s$ 期间所加的电压、$L$ 和 $T_s$ 决定。
+- **空闲区间（idle interval）内开关节点发生振铃（ringing）**。实际的开关节点存在来自开关管和二极管的电容。电感电流降到零时，这一电容与电感构成一个弱阻尼（lightly damped）的 L-C 电路，其振铃频率为
+
+<Eq id="dcm.ring.f" />
+
+## 例题
+
+[开关变换原理页面](../switching-principle/)中的降压变换器示例，这次负载减轻为原来的十分之一：
+
+<Worked example="buck-light-load" />
+
+按 CCM 公式，输出电压变换比应为 <Val example="buck-light-load" name="M_ccm" />。在 DCM 下，变换比为 <Val example="buck-light-load" name="M_dcm" />，因此输出为 <Val example="buck-light-load" name="V_dcm" />，而不是输入的一半。二极管导通时间占周期的 <Val example="buck-light-load" name="D_2" />；加上开关管的 <Val example="buck-light-load" name="D" />，周期中还剩下一段空闲区间。
+
+## 动手试试
+
+<TryIt eq="buck.dcm.M" example="buck-light-load" sweep="K" />
+
+<TrySim example="buck-light-load" topology="buck" />
+
+以对数坐标在几个数量级的范围内扫描 $K$。$K$ 很小时，变换比趋近 1。随着 $K$ 增大，变换比减小，并恰好在 $K$ 达到 $K_\mathrm{crit}$ 处等于 CCM 值 $D$。超过这一点，变换器处于 CCM，这个公式不再适用，但公式浏览器仍会继续绘出它。
+
+## 实验练习
+
+取一个带二极管整流器（diode rectifier）的降压变换器，例如采用非同步（asynchronous）控制器并工作在固定频率模式的低压评估板（evaluation board），再准备一个阻值可调的电阻负载。逐渐减轻负载，同时用电流探头观察电感电流，用电压探头观察开关节点。记下电流首次触及零时的负载、空闲区间的出现，以及空闲区间内开关节点上的振铃。检查在占空比（duty ratio）保持不变时，输出电压是否随负载减轻而升高。
+
+## 易错点
+
+- **同步整流（synchronous rectification）消除了 DCM**。DCM 的产生是因为二极管不能流过反向电流。与主开关管互补（complementary）驱动的晶体管可以双向导通，因此轻载时电感电流只是变为负值，变换器保持在 CCM <Cite key="erickson2020" where="Ch. 5" />。
+- **“轻载”是相对的**。一个负载算不算轻，不仅取决于 $R$，还取决于 $L$、$T_s$ 和 $D$；应将 $K$ 与 $K_\mathrm{crit}$ 比较。
+- **不要在 DCM 下使用 CCM 公式**。电流一旦降到零，纹波、峰值电流和电压变换比都遵循不同的表达式。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch5', 'coursera-converter-circuits', 'ti-slva057']} />
+
+## 测验
+
+<Quiz id="02-theory/ccm-dcm" />

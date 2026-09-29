@@ -1,0 +1,16 @@
+# 任务 M2 的验收标准（src/content/docs/zh/09-missions/m2-find-k-crit.mdx）。
+# 各语言的 id 相同：浏览器中保存的进度是共用的。
+criteria:
+  - id: buck-boundary
+    text: '降压变换器示例检测到的模式由 CCM 变为 DCM 处的 $K$，由该处的电阻算出。'
+    check: {example: buck-basic, name: K_crit, tol: 0.05}
+  - id: boost-boundary
+    text: '升压变换器示例的相应值。'
+    check: {example: boost-ideal, name: K_crit, tol: 0.05}
+  - id: agree
+    text: '在两个临界点上，仿真电流所显示的工作模式都与公式给出的临界值一致。'
+  - id: dcm-output
+    text: '轻载下降压变换器的输出电压，从仿真器的负载表中读出。'
+    check: {example: buck-light-load, name: V_dcm, tol: 0.02}
+  - id: boost-peak
+    text: '在公式浏览器中找到的、使升压变换器的 $K_\mathrm{crit}$ 最大的占空比。'

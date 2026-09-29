@@ -1,0 +1,87 @@
+---
+title: 漏感
+description: 漏感即一个绕组不与另一绕组共享的磁通；耦合系数、短路测试、变压器模型，以及绕组排布如何决定漏感。
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 将漏感（leakage inductance）解释为只与一个绕组交链（linkage）、而不与另一个绕组交链的磁通（flux），这部分磁通主要分布在绕组之间。
+- 建立耦合系数（coupling coefficient）、短路电感（short-circuit inductance）与变压器模型（transformer model）中各漏感之间的关系。
+- 估算某种绕组排布（winding arrangement）的漏感，以及它在反激（flyback）变换器中造成的代价。
+
+## 理论
+
+### 耦合绕组
+
+同一磁芯上的两个绕组共享大部分磁通，但不是全部。从端子看，它们表现为两个自感（self-inductance）$L_{11}$ 和 $L_{22}$，以及一个互感（mutual inductance）$L_{12}$ <Cite key="erickson2020" where="Ch. 10" />、<Cite key="alexander2017" where="Ch. 13" />。两者共享磁通的程度就是耦合系数：
+
+<Eq id="xfmr.k" />
+
+### 短路测试（short-circuit test）
+
+将二次绕组短路（short circuit），使其电压，即其磁链（flux linkage）的变化率，保持为零：此时二次电流抵消两个绕组共享的大部分磁通，从一次绕组看进去主要是两个绕组的漏感（在此推导）：
+
+<Eq id="xfmr.L_sc" />
+
+$k$ 接近 1 时，它只是 $L_{11}$ 的一小部分：将二次绕组短路，在一次侧用阻抗测量仪（impedance meter）即可直接测得。
+
+### 变压器模型
+
+变压器模型把每个绕组的电感分为一个漏感和两个绕组共有的励磁电感（magnetizing inductance）$L_M$，两个绕组之间是一个理想的 1:$n$ 变压器 <Cite key="erickson2020" where="Ch. 10" />。二次绕组短路时，从一次侧看进去：
+
+<Eq id="xfmr.L_sc_T" />
+
+由于 $L_M$ 远大于各漏感，短路测试测得的是折算到一次侧（referred）的两个漏感之和，也就是反激变换器的钳位电路（clamp）必须吸收的漏感 $L_\mathrm{lk}$。短路测试无法得知这一总和在两个绕组之间如何分配。
+
+### 漏磁通的位置
+
+漏磁通穿过绕线窗口（winding window）。其能量由窗口内的磁动势（magnetomotive force）决定：磁动势在一次绕组各层中上升，在绕组间距中保持峰值，在二次绕组中降回零（<EqRef id="xfmr.leakage.ps" label="P-S 排布的漏感" />）<Cite key="erickson2020" where="Ch. 10" />。把一次绕组分成两半置于二次绕组两侧，峰值减半，漏感降到约四分之一（<EqRef id="xfmr.leakage.psp" label="P-S-P 排布的漏感" />）。这些公式中只出现绕组的几何结构和真空磁导率（permeability of free space）：磁芯材料和气隙（air gap）决定的是励磁电感，而不是漏感。
+
+### 漏感的代价
+
+反激变换器的开关管关断时，漏感中储存的能量（<EqRef id="flyback.leak.E" label="漏感能量" />）无法传递到二次侧。这部分能量在每个周期都要由钳位电路或缓冲电路（snubber）吸收（<EqRef id="flyback.leak.P" label="漏感功率" />）<Cite key="erickson2020" where="Ch. 4" />；见[缓冲电路与钳位电路](../snubbers-clamps/)。
+
+## 例题
+
+一对示例绕组，以阻抗测量仪的读数给出：
+
+<Worked example="coupled-pair" />
+
+耦合系数为 <Val example="coupled-pair" name="k_c" sig={4} />。二次绕组短路时，一次绕组的读数为 <Val example="coupled-pair" name="L_sc" />。变压器模型取励磁电感 <Val example="coupled-pair" name="L_M" />，一次侧和二次侧漏感分别为 <Val example="coupled-pair" name="L_l1" /> 和 <Val example="coupled-pair" name="L_l2p" />（均折算到一次侧），得到相同的值 <Val example="coupled-pair" name="L_sc_T" />：几乎等于两个漏感之和。二次绕组开路时，电压比为 <Val example="coupled-pair" name="V_ratio" sig={4} />，略低于匝比 <Val example="coupled-pair" name="n" />（见[磁性元件的测量](../measurement/#漏感耦合与匝比)）。
+
+## 动手试试
+
+<TryIt eq="xfmr.L_sc" example="coupled-pair" sweep="k_c" />
+
+从 0.9 向 1 扫描（sweep）$k$：短路电感随 $1 - k^2$ 减小。$k$ 在 1 附近的微小变化会使漏感大幅改变。
+
+## 实验练习
+
+用 LCR 测试仪按串联电感（series inductance）读数，先在二次绕组开路时、再在用短而宽的短接片将其短路时，测量变压器一次绕组的电感。测试频率应远低于自谐振（self-resonance），同时又要足够高，使短路时的读数不再随频率变化（见[磁性元件的测量](../measurement/#漏感耦合与匝比)）。两次读数之比代入短路电感公式，即可求出 $k$。然后将两个绕组分别顺向串联（series aiding）和反向串联（series opposing）：两次读数之差是互感的四倍 <Cite key="alexander2017" where="Ch. 13" />。将测得的漏感与根据绕组几何结构得到的估算值比较。
+
+## 易错点
+
+- **短路连接本身也有电感**。又长又细的短路线会使读数增大；应使用短而宽的短接片。
+- **测试频率过低，读数偏高**。二次绕组短路时，励磁电感的电抗必须远大于折算到一次侧的二次绕组电阻；否则励磁电感会分走一部分电流，读数向开路电感升高。
+- **测得的是总和**。短路测试测得的是一次侧与二次侧漏感之和，折算到一次侧。
+- **气隙不能消除漏感**。磁芯开气隙会降低 $L_M$ 和 $k$，但漏感本身由绕组决定。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch10', 'erickson-ch12', 'ti-slup132']} />
+
+## 测验
+
+<Quiz id="04-magnetics/leakage" />

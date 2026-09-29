@@ -1,0 +1,71 @@
+---
+title: M4 · 设计 CCM 降压变换器电感
+description: 用磁芯几何常数确定 CCM 降压变换器滤波电感的尺寸，在磁性元件设计工具中完成其匝数、气隙和窗口的设计，并找出换用较小磁芯时最先不满足的约束。
+sidebar:
+  order: 4
+mission:
+  id: m4
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import TryMag from '../../../../components/TryMag.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 由电感的设计指标求出其所需的磁芯几何常数（core geometrical constant）$K_g$，并选择磁芯。
+- 在磁性元件设计工具中完成设计：满足磁通密度的最少匝数、得到所需电感量的气隙（air gap），以及能绕进窗口（window）且电阻不超出预算的绕组。
+- 找出磁芯过小时最先不满足的约束，以及怎样才能使设计成立。
+
+## 开始之前
+
+- 阅读[电感设计步骤](../../04-magnetics/design-procedure/)和[磁性元件设计工具](../../design/magnetics-designer/)。
+- 了解设计指标从何而来：电感量和峰值电流来自变换器（[降压变换器](../../03-topologies/buck/)和[变换器设计工具](../../design/converter-designer/)），$\Delta i$ 为纹波峰峰值的一半。
+
+## 步骤
+
+### 1. 设计指标
+
+示例电感的 $L$ = <Val example="kg-inductor" name="L" />，峰值电流为 <Val example="kg-inductor" name="I_pk" />，电流有效值（rms）为 <Val example="kg-inductor" name="I_rms" />。其磁通密度最高可达 $B_\mathrm{max}$ = <Val example="kg-inductor" name="B_max" />，绕组最多可占窗口的 $K_u$ = <Val example="kg-inductor" name="K_u" />，绕组电阻预算为 <Val example="kg-inductor" name="R_dcmax" />。
+
+### 2. 所需的 K_g
+
+求出设计指标所需的 $K_g$（<EqRef id="mag.Kg_req" label="所需的磁芯几何常数" />），计算时采用绕组温度下导线的电阻率（<EqRef id="wind.rho_T" label="给定温度下的电阻率" />）；再求出电阻预算在电流有效值下允许的铜损（copper loss，<EqRef id="loss.cond" label="导通损耗" />）。将两者填入下方。
+
+### 3. 磁芯
+
+将求得的 $K_g$ 与电感设计步骤[例题](../../04-magnetics/design-procedure/#例题)中表列的磁芯比较，选取满足要求的最小磁芯。记下它超出所需值的幅度。
+
+### 4. 匝数、气隙和窗口
+
+用该磁芯打开磁性元件设计工具：
+
+<TryMag example="mag-kg" />
+
+按最小截面 $A_\mathrm{min}$ 手工核对最少匝数（<EqRef id="mag.N_Bmax" label="满足 B_max 的最少匝数" />）。然后读出该匝数下得到所需电感量的气隙（<EqRef id="mag.gap_length" label="气隙长度" />）、绕组占窗口的比例，以及其直流电阻与预算的对比。
+
+### 5. 较小的磁芯
+
+将磁芯换成 E 25/13/7。找出最先不满足的一项：磁通密度所要求的匝数、窗口，还是电阻。然后只改变一项，即导线、预算或 $B_\mathrm{max}$，并说明这一改变的代价。
+
+## 验收标准
+
+<Mission id="m4" />
+
+## 易错点
+
+- $B_\mathrm{max}$ 不是材料的饱和磁通密度。如磁性元件设计工具页面所述，它低于磁芯最高温度下的饱和磁通密度，并留有裕量。
+- 匝数由最小截面处的磁通密度决定，那里的磁通密度最高，而不是由有效截面积 $A_e$ 处的磁通密度决定。
+- 气隙估算忽略了边缘磁通（fringing）。要得到同样的电感量，实际气隙必须更长，这就是数据手册给出带气隙成套磁芯 $A_L$ 值的原因。
+- 设计工具中的 $\Delta i$ 是纹波峰峰值的一半。输入完整摆幅会使磁通摆幅（flux swing）加倍，而由此预测的磁芯损耗按摆幅的幂次增长，增幅比这更大（<EqRef id="loss.steinmetz" label="单位体积磁芯损耗" />）。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch11', 'coursera-magnetics']} />
+
+## 测验
+
+<Quiz id="09-missions/m4-buck-inductor" />

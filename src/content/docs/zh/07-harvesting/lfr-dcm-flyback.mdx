@@ -1,0 +1,83 @@
+---
+title: 作为无损电阻的 DCM 反激变换器
+description: 设计固定占空比的 DCM 反激变换器，使其输入电阻等于源内阻；求出电源幅值高于何值时 CCM 接管并保持母线电压；并了解其开关管必须阻断的电压以及更大功率的代价。
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 设计固定占空比的 DCM 反激（flyback）变换器，使其输入电阻等于源内阻。
+- 求出电源幅值高于何值时它会退出 DCM，并了解此后它的表现。
+- 了解其开关管阻断的电压，以及为什么经同一电阻吸取更多功率时该电压会更高。
+
+## 理论
+
+### 确定无损电阻的参数
+
+固定占空比、工作在 DCM 的反激变换器，在输入端呈现<EqRef id="lfr.R_in" label="无损电阻（loss-free resistor）" />特性 <Cite key="erickson2020" where="Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)" />。由该电阻解出励磁电感（magnetizing inductance），就得到设计所需的电感：
+
+<Eq id="lfr.L_M" />
+
+为与线性源匹配，令输入电阻等于源内阻（<EqRef id="lfr.eta" label="无损电阻的功率提取比" />）。开关频率越低或占空比越大，得到同一电阻所需的电感越大。输出电压不出现在式中：在 DCM 下，输入电阻只取决于电感、开关频率和占空比。
+
+### DCM 在何处结束
+
+只要输入电压低于<EqRef id="flyback.V_crit" label="临界输入电压" />，反激变换器就保持在 DCM；临界输入电压（critical input voltage）由输出电压、二极管压降、占空比和匝比决定。若电源强到足以使分压所得的电压（<EqRef id="lfr.Vg" label="无损电阻的母线电压" />）高于该值，就会把反激变换器推入 CCM。输出固定时，CCM 电压变换比只允许一个输入电压，即临界输入电压 <Cite key="erickson2020" where="Ch. 6 (Converter Circuits)" />：母线电压被保持在该值，反激变换器成为恒压负载（constant-voltage sink），它取得的可用功率比例取决于电源幅值（<EqRef id="src.cv_extraction" label="恒压负载的功率提取比" />）。
+
+### 开关管阻断的电压与更大的功率
+
+开关管阻断输入电压与经匝比反射的输出电压之和（<EqRef id="flyback.Vds_off" label="开关管电压" />），漏感尖峰还会叠加在其上（[缓冲电路与钳位电路](../../04-magnetics/snubbers-clamps/)）。经同一输入电阻，更大的功率需要更高的输入电压：
+
+<Eq id="lfr.Vg_power" />
+
+因此，经匹配的反激变换器吸取更多功率，会使其开关管电压升高。这一关系只到临界电压为止。在临界电压处，CCM 保持母线电压不变；在反激变换器开关工作期间，无论电源此后再注入多少功率，开关管电压都保持在<EqRef id="flyback.Vds_clamped" label="其 CCM 值" />；反激变换器作为电阻所能吸取的最大功率，是临界电压下<EqRef id="dcm.P_in" label="变换器在 DCM 下吸取的功率" />。
+
+## 例题
+
+输入电阻设计为等于源内阻的反激变换器：
+
+<Worked example="lfr-flyback" />
+
+在 <Val example="lfr-flyback" name="D" /> 和 <Val example="lfr-flyback" name="f_s" /> 下，<Val example="lfr-flyback" name="L_M" /> 的励磁电感呈现 <Val example="lfr-flyback" name="R_in" /> 的电阻，即源内阻。于是电源的 <Val example="lfr-flyback" name="V_oc" /> 被分压为 <Val example="lfr-flyback" name="V_g" />，低于 <Val example="lfr-flyback" name="V_gcrit" /> 的临界输入电压：反激变换器取得全部可用功率 <Val example="lfr-flyback" name="P_max" />，其开关管在漏感尖峰之前阻断 <Val example="lfr-flyback" name="V_DS" />。
+
+## 动手试试
+
+<TryIt eq="lfr.L_M" example="lfr-flyback" sweep="D" />
+
+扫描占空比：呈现同一电阻所需的电感随占空比的平方增大。
+
+<TrySim example="flyback-source" topology="flyback" />
+
+同类反激变换器接更强的电源：母线电压不断上升，直到 CCM 开始，随后稳定在临界输入电压。
+
+## 实验练习
+
+搭建占空比固定的反激变换器，并在其输入端并接母线电容；电容要足够大，使它与串联电阻一起在许多个开关周期内对脉动的输入电流取平均。由实验室电源经一个串联电阻给它供电，该电阻等于计算所得的输入电阻。测量输入电压：它应处在实验室电源电压的一半。缓慢升高实验室电源电压，直到输入电压不再随之升高；此时的电压即临界输入电压，将其与公式比较。实验室电源必须达到该电压的两倍，按例题的数值为几百伏，而母线电容会保持它所达到的电压：应把电路封闭在外壳内，接触之前先经电阻给电容放电。更大的匝比 n（N_s/N_p）会降低临界电压（<EqRef id="flyback.V_crit" label="临界输入电压" />），使实验在更安全的电压下进行。每一步都用额定电压足够的探头采集开关管的漏极电压（[探头](../../06-bench/probes/)），读出漏感尖峰之前的平台电压，并与公式对照。
+
+## 易错点
+
+- **高于临界输入电压时，反激变换器不再匹配**。在该电压下，CCM 把母线电压保持不变（<EqRef id="flyback.V_crit" label="临界输入电压" />）。
+- **开关管电压包含反射的输出电压**，漏感尖峰还会叠加在其上（<EqRef id="flyback.Vds_off" label="开关管电压" />）。
+- **反激变换器不开关时，母线会充电到开路电压**：在启动时、欠压锁定期间或故障之后，没有任何电路从电源吸取功率。此时开关管要阻断该电压加上反射的输出电压：应按此选择其额定值，或对母线加钳位（[设计实例](../synthetic-case/)）。
+- **经同一电阻吸取更多功率需要更高的电压**（<EqRef id="lfr.Vg_power" label="给定功率所需的输入电压" />）。
+- **匹配对误差不敏感**。取得的比例在峰值处很平坦：电感的小误差使输入电阻偏离同样的比例，而取得的比例只下降约该比例平方的四分之一（<EqRef id="lfr.eta" label="无损电阻的功率提取比" />）。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch15', 'erickson-ch5', 'ottman2003-ieee']} />
+
+## 测验
+
+<Quiz id="07-harvesting/lfr-dcm-flyback" />

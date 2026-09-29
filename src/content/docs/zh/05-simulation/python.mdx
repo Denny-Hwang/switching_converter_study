@@ -1,0 +1,81 @@
+---
+title: 用 Python 验证
+description: 本站的 Python 包如何用 SymPy 推导每个公式并生成页面上显示的内容，以及如何在一个容差内比较两个计算结果，使舍入不会导致失败，而真正的错误无法通过。
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 跟踪一个公式从 SymPy 推导到页面、再到测试的全过程。
+- 用相对差（relative difference）比较两个计算结果，并选择一个容差（tolerance），使舍入不会导致失败，而真正的错误无法通过。
+- 在自己的计算机上运行本站的检查。
+
+## 理论
+
+### 一个来源，两种实现
+
+本站的每个公式都只在 `packages/pe-core/equations/equations.yaml` 中出现一次，以 SymPy 表达式的形式存放，并附有其符号、测试和引用。Python 包 `python/pe_core` 以该文件为基础工作：
+
+- 在可能的情况下，`python/pe_core/derive/` 中的脚本从基本原理推导公式，用 SymPy 逐步求解电路的平衡方程（balance equation）。[推导页面](../../02-theory/derivations/)按代码的计算过程展示这些步骤，pytest 则检查每个结果是否等于公式目录中的表达式。
+- `python scripts/gen_equations.py` 生成页面上显示的 LaTeX 和测试向量（test vector），测试向量包括每个公式自身的测试，以及由 SymPy 计算的随机输入。CI 会重新运行它，只要有任何差异就失败。
+
+页面和工具背后的 TypeScript 引擎有自己的求值函数，它们是手工编写的，而不是从同一文件生成的，这样一方的错误就不会被复制到另一方。vitest 用测试向量检查每个求值函数。
+
+### 比较两个数
+
+两个计算结果用它们的相对差来比较：
+
+<Eq id="num.rel_diff" />
+
+物理量按比例缩放时（例如单位从伏特换成毫伏），相对差不变，因此同一个容差适用于所有物理量。参考值为零时相对差无定义 <Cite key="higham2002" where="Sec. 1.2" />，参考值接近零时它会夸大很小的差异，因此在那里应与一个尺度比较。两个正确的程序不一定产生逐位相同的结果：每次运算都对其结果舍入，而结果取决于运算的顺序。一次舍入使一个数改变的量，相对于其大小，至多为该格式的单位舍入误差（unit roundoff）：
+
+<Eq id="num.unit_roundoff" />
+
+本站要求同一公式的 TypeScript 计算结果与 Python 计算结果相差在十亿分之一以内。这是单位舍入误差的数百万倍，因此只要计算过程不像相消（cancellation）即几乎相等的两数相减那样放大误差 <Cite key="higham2002" where="Sec. 1.7" />，舍入就能通过；同时它又远低于任何真正的错误，例如常数错误或漏掉一个因子。仿真与其公式比较时采用较宽松的容差，因为公式把电路理想化了：它假定纹波很小 <Cite key="erickson2020" where="Ch. 2" />，而 SPICE 库中的开关管和二极管只是接近理想。SPICE 库的各个值与理想公式之差必须在 1 % 以内（以各物理量在一个周期内的最大绝对值为基准），浏览器内仿真器的电压变换比和纹波则须在 2 % 以内。
+
+### 用另一个求解器校验
+
+`scripts/spice_crosscheck.py` 根据电路原理图，而不是仿真器的方程，把浏览器内仿真器的电路重新写成网表，并在 ngspice 中运行 <Cite key="ngspice" />。CI 将仿真器与 ngspice 的结果比较：每个值之差都不得超过该物理量在一个周期内最大绝对值的 0.5 %，并为 SPICE 元件引入的影响留出少量余量；每个峰峰值摆幅之差须在 2 % 以内。
+
+## 例题
+
+将仿真所得的电压变换比与理想值比较，并计算 binary64，即 JavaScript 的数值和 Python 的 float 所采用的 IEEE 754 双精度的单位舍入误差：
+
+<Worked example="num-parity" />
+
+该变换比与理想值相差 <Val example="num-parity" name="delta_rel" />，在库的 1 % 以内。单位舍入误差为 <Val example="num-parity" name="u_r" />：十亿分之一的容差可以容纳数百万次舍入。
+
+## 动手试试
+
+<TryIt eq="num.rel_diff" example="num-parity" sweep="x_val" />
+
+扫描被测值：相对差在参考值两侧线性增大，只在参考值本身处为零。
+
+## 实验练习
+
+在实验台上用万用表测量变换器的输入电压和输出电压，用 Python 计算两者之比相对于理想值的相对差，并列出可能造成这一差异的因素：二极管压降、开关管和绕组的电阻、纹波。然后改变负载，观察其中哪些因素随电流增大。
+
+## 易错点
+
+- **参考值接近零**时，相对差失去意义；应像库的检查那样，与一个尺度比较，例如该物理量在一个周期内的最大值。
+- **共用代码的两种实现也共有其中的错误**。生成的求值函数即使在源文件出错的地方，也会与该文件一致。
+- **浮点数（floating-point）不作相等比较**。在 binary64 中，0.1 + 0.1 + 0.1 不等于 0.3：应在容差范围内比较（<EqRef id="num.unit_roundoff" label="单位舍入误差" />）。
+
+## 延伸阅读
+
+<GoDeeper ids={['sympy-solving', 'python-floatingpoint']} />
+
+## 测验
+
+<Quiz id="05-simulation/python" />

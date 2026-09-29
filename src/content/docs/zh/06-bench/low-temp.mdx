@@ -1,0 +1,79 @@
+---
+title: 低温
+description: 低温对铝电解电容的 ESR 及其两端纹波的影响，陶瓷电容的温度代码为何不能说明其直流电压特性，以及低温下电池的端电压与充电。
+sidebar:
+  order: 7
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 估算低温下铝电解电容的 ESR 产生的纹波。
+- 了解陶瓷电容的温度代码不能说明什么。
+- 用 Rint 模型理解电池的端电压，并了解为何不在低温下给锂离子电芯充电。
+
+## 理论
+
+### 铝电解电容
+
+电解液的电阻率在低温下升高，常使铝电解电容在最低额定温度下的 ESR 达到室温 ESR 的 10 到 100 倍；低温还会使电容量减小 <Cite key="cde_ae_guide" />。具体元件的低温数据见其数据手册。ESR 两端的纹波电压按同一比例升高（<EqRef id="cap.esr.ripple" label="ESR 两端的纹波电压" />）：输出纹波在室温下满足限值的变换器，在低温下可能超出限值。
+
+### 陶瓷电容
+
+2 类（class-2）陶瓷电容的代码（如 X7R）描述的是其电容量随温度的变化，并不隐含任何关于电压系数（voltage coefficient）的信息 <Cite key="adi_ceramic_caps" />。仅直流电压一项就可能使电容量只剩标称值的一小部分：在该文的例子中，一个额定电压 6.3 V 的 4.7 µF Y5V 电容，在室温下加 5 V 时只剩 0.33 µF <Cite key="adi_ceramic_caps" />，温度还会使其再次变化。应在电容实际工作的直流电压下、在其将经历的整个温度范围内检查电容量。
+
+### 电池
+
+在 Rint 模型中，电池表示为开路电压（open-circuit voltage）与内阻串联，二者都是荷电状态（state of charge, SoC）、健康状态（state of health, SoH）和温度的函数 <Cite key="he2011" where="Sec. 2.1" />。充电电流使端电压高于开路电压：
+
+<Eq id="bat.v_term" />
+
+因此，把端电压维持在限压值的充电器，向内阻较大的电池输出的电流较小：内阻应取电池工作温度下的值。
+
+低温下，锂离子电芯的碳负极（carbon anode）较难接受锂离子，使金属锂更容易在碳表面析出，电池的热稳定性也随之降低。低于电芯规定的充电下限温度时，不得以任何电流对其充电 <Cite key="jeita_liion" />。
+
+## 例题
+
+一个正在充电的电芯，以及一个输出电容在室温下和在其低温极限下的 ESR 纹波：
+
+<Worked example="bench-cold" />
+
+以 <Val example="bench-cold" name="I_b" /> 经 <Val example="bench-cold" name="R_b" /> 充电时，电芯的端电压为 <Val example="bench-cold" name="V" />，高于其开路电压 <Val example="bench-cold" name="V_b" />。电容的 ESR 在室温下产生 <Val example="bench-cold" name="Delta_v_esr" /> 的峰峰值纹波，ESR 升高到十倍时产生 <Val example="bench-cold" name="Delta_v_esr_cold" />。
+
+## 动手试试
+
+<TryIt eq="cap.esr.ripple" example="bench-cold" sweep="R_esr" />
+
+在十倍范围内扫描 ESR：纹波随之变化。
+
+<TryIt eq="bat.v_term" example="bench-cold" sweep="R_b" />
+
+扫描内阻：在相同充电电流下，端电压随内阻升高。
+
+## 实验练习
+
+先在室温下测量变换器的输出纹波，再在输出电容冷却后（使用低温箱，或只对该电容喷冷冻剂）测量，测量时探头的接地连接要短（[探头](../probes/)）。若纹波以 ESR 分量为主，用纹波除以流入电容的纹波电流峰峰值来估算 ESR，并比较两个温度下的结果。电容回温时要注意凝露（condensation）。对于电池，在两个温度下以恒定电流放电，同时记录其端电压和电流，并在每个温度下由电流阶跃估算其内阻。
+
+## 易错点
+
+- **电解电容的 ESR** 在最低额定温度下常为室温 ESR 的 10 到 100 倍 <Cite key="cde_ae_guide" />。
+- **陶瓷电容的代码不能说明其直流电压特性** <Cite key="adi_ceramic_caps" />。
+- **低于充电下限温度的锂离子电芯**不得充电 <Cite key="jeita_liion" />。
+- **处于限压状态的充电器**向内阻较大的电池输出的电流较小（<EqRef id="bat.v_term" label="端电压" />）。
+
+## 延伸阅读
+
+<GoDeeper ids={['cde-ae-guide', 'adi-ceramic-caps', 'jeita-liion']} />
+
+## 测验
+
+<Quiz id="06-bench/low-temp" />

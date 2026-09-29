@@ -1,0 +1,87 @@
+---
+title: 磁性元件的测量
+description: 测量绕制元件的电感量、漏感、匝比和直流电阻，用电流脉冲测量其饱和；以及由自谐振、表笔和缺少直流电流造成的误导性读数。
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 测量绕制元件（wound part）的电感量、漏感、匝比（turns ratio）和直流电阻，并了解每项读数受什么限制。
+- 用电压脉冲找出磁芯开始饱和（saturation）的电流。
+- 识别因自谐振（self-resonance）、表笔（test lead）和缺少直流电流而失真的读数。
+
+## 理论
+
+### 阻抗测量仪（impedance meter）的读数
+
+LCR 测试仪在其测试频率（test frequency）下施加一个小的正弦信号，并给出元件在该频率下包括寄生参数在内的等效值（effective value）<Cite key="keysight_5950_3000" />。绕组的匝与匝之间存在电容，它与绕组的电感并联（<EqRef id="passive.f_srf" label="自谐振频率" />），测试频率越接近自谐振，读数越大：
+
+<Eq id="meas.L_app" />
+
+测试频率远低于自谐振时，读数就是电感量；测试频率为自谐振频率的十分之一时，读数偏高 1 %。
+
+### 直流电阻
+
+采用两线法的欧姆表（ohmmeter）读出的是绕组连同表笔及其接触点的电阻。四线（开尔文，Kelvin）法经一对表笔通入电流，用另一对表笔检测电压，因此表笔电阻不计入读数 <Cite key="keithley_llmh7" />。只有几匝的绕组，其电阻可能远小于表笔电阻。
+
+### 漏感、耦合与匝比
+
+另一绕组短路时，一个绕组的电感就是它的漏感（leakage inductance），即<EqRef id="xfmr.L_sc" label="短路电感" />；另一绕组开路时，则是它的全部电感（见[漏感](../leakage/)）。测试频率有一个适用范围。与测量任何电感时一样，它必须远低于自谐振；它又必须足够高，使电流由短路绕组承担：励磁电感（magnetizing inductance）的电抗（reactance）必须远大于折算到被测侧的短路绕组电阻，否则一部分电流会流过励磁电感，读数向开路电感升高（由变压器模型推导 <Cite key="erickson2020" where="Ch. 10" />）。测试频率低时，漏感的电抗可能小于绕组电阻：此时应按串联电感（series inductance）读数，这是电抗小的电感所适用的模型 <Cite key="keysight_5950_3000" />。
+
+开路电压（open-circuit voltage）之比接近匝比（<EqRef id="xfmr.V2" label="理想变压器" />），但略低于匝比：一次侧漏感与励磁电感对外加电压分压（在此推导）：
+
+<Eq id="xfmr.V_oc" />
+
+对于[耦合绕组示例](../leakage/#例题)，匝比为 <Val example="coupled-pair" name="n" /> 时，电压比读数为 <Val example="coupled-pair" name="V_ratio" sig={4} />。若测试频率低到被驱动绕组的电阻相对其电抗已不算小，电压比会进一步降低。
+
+### 饱和
+
+阻抗测量仪的信号小，又没有直流电流，因此显示不出饱和。在绕组两端施加阶跃电压（voltage step），其电流按电压除以电感的斜率线性上升（<EqRef id="ind.di" label="电感电流" />）。超过饱和磁通密度后，磁芯的磁导率急剧下降，电感量随之骤降 <Cite key="erickson2020" where="Ch. 10" />（见[磁性材料与 B-H 曲线](../../01-physics/ferrites-bh/)），因此电流上升变陡：斜率开始增大处的电流就是饱和电流（saturation current）。
+
+### B-H 回线
+
+在无气隙磁芯上绕两个绕组时，磁场强度（field intensity）可由一次电流按安培环路定律求得（<EqRef id="mag.H_ampere" label="安培环路定律" />），磁通密度（flux density）可由开路二次绕组电压的积分按法拉第定律求得（<EqRef id="mag.dB_faraday" label="法拉第定律" />）<Cite key="erickson2020" where="Ch. 10" />。以两者互为坐标作图，即得到磁芯的 B-H 回线（B-H loop）。
+
+## 例题
+
+一个示例绕组在两个测试频率下的读数：
+
+<Worked example="lcr-srf" />
+
+该绕组在 <Val example="lcr-srf" name="f_srf" /> 处谐振。在 <Val example="lcr-srf" name="f_lo" /> 下，仪表读数为 <Val example="lcr-srf" name="L_app_lo" sig={4} />，接近绕组的电感量 <Val example="lcr-srf" name="L" />。在接近自谐振的 <Val example="lcr-srf" name="f_hi" /> 下，读数为 <Val example="lcr-srf" name="L_app_hi" />。
+
+## 动手试试
+
+<TryIt eq="meas.L_app" example="lcr-srf" sweep="f" bind={{ f: 'f_lo' }} />
+
+扫描（sweep）测试频率：读数在低频时平坦，接近自谐振时急剧上升。将 $f_\mathrm{srf}$ 调高，相当于电容更小的绕组，然后比较。
+
+## 实验练习
+
+用 LCR 测试仪的每个测试频率测量一个匝数多的绕组，例如反激变压器的一次绕组，并用阻抗分析仪（impedance analyzer）或频率扫描找出其自谐振。由自谐振估算其电容（<EqRef id="passive.f_srf" label="自谐振频率" />），并将读数与表观电感（apparent inductance）公式比较。然后分别用两线法和四线法测量其直流电阻：两者之差就是表笔及其接触点的电阻。
+
+## 易错点
+
+- **对照自谐振检查测试频率**。匝数多的绕组谐振频率低。仪表读出的是测试频率下包括寄生参数在内的等效值 <Cite key="keysight_5950_3000" />：接近自谐振时，该值远大于电感量（<EqRef id="meas.L_app" label="表观电感" />）。
+- **两线法测得的电阻包含表笔电阻**。绕组的直流电阻应采用四线法测量 <Cite key="keithley_llmh7" />。
+- **没有直流电流，就没有饱和**。仪表读数只有在磁芯于峰值电流下不饱和时，才在该电流下成立：应在设计的峰值电流下用电流脉冲检验这一点。
+- **开路电压比并不完全等于匝比**。它偏低的比例约为被驱动绕组的漏感与励磁电感之比（<EqRef id="xfmr.V_oc" label="开路电压比" />）；绕组电阻分担一部分电压时，偏低更多。
+
+## 延伸阅读
+
+<GoDeeper ids={['keysight-imh', 'keithley-llmh', 'erickson-ch10']} />
+
+## 测验
+
+<Quiz id="04-magnetics/measurement" />

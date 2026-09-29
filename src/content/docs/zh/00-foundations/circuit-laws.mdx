@@ -49,7 +49,7 @@ import Quiz from '../../../../components/Quiz.astro';
 
 <Eq id="cap.E" />
 
-电感电流和电容电压不能瞬间改变：跳变意味着储能（stored energy）在零时间内发生变化 <Cite key="alexander2017" where="Ch. 6" />。因此，晶体管关断时，电感电流必须继续流向某处，变换器通过二极管或第二个开关管为它提供通路 <Cite key="erickson2020" where="Ch. 4" />。在稳态（steady state）下，电流在每个周期结束时还回到起始值，这就是[伏秒平衡（volt-second balance）](../../02-theory/volt-second-charge-balance/)。
+电感电流和电容电压不能瞬间改变：跳变意味着储能（stored energy）在零时间内发生变化 <Cite key="alexander2017" where="Ch. 6" />。因此，晶体管关断时，电感电流必须继续流向某处，变换器通过二极管或第二个开关管为它提供通路 <Cite key="erickson2020" where="Ch. 4" />。在稳态（steady state）下，电流还会在每个周期结束时回到起始值，这就是[伏秒平衡（volt-second balance）](../../02-theory/volt-second-charge-balance/)。
 
 ## 例题
 
@@ -72,7 +72,7 @@ import Quiz from '../../../../components/Quiz.astro';
 ## 易错点
 
 - **纹波峰峰值的一半就是一半**。本页的变化量是区间内的全部变化量；变换器各页的 $\Delta i_L$ 是纹波峰峰值的一半。混用两种约定会使结果加倍或减半。
-- **不要让电感电流失去通路**。电感电流不能瞬间停止 <Cite key="alexander2017" where="Ch. 6" />，因此断开唯一的通路会迫使开关两端出现很高的电压，直到某处开始导通（conduction）为止。
+- **不要让电感电流失去通路**。电感电流不能瞬间停止 <Cite key="alexander2017" where="Ch. 6" />，因此断开唯一的通路会迫使开关两端出现很高的电压，直到有元件导通（conduction）为止。
 - **已放电的电容接到低内阻电源（stiff source）上会产生浪涌电流（surge）**。电容电压不能突变 <Cite key="alexander2017" where="Ch. 6" />，因此把它直接接到电压源上时，电流只受回路中电阻的限制。
 
 ## 延伸阅读

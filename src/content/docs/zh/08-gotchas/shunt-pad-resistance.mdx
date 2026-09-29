@@ -1,0 +1,37 @@
+---
+title: 读数按固定比例偏高的小阻值分流电阻
+description: 没有开尔文连接时，小阻值分流电阻检测路径中的焊盘和焊点会增加其电阻，形成增益误差。
+sidebar:
+  order: 6
+gotcha:
+  tags: [sensing, measurement]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## 现象
+
+通过几毫欧的分流电阻（shunt）测得的电流，在所有电流下都偏高相同的比例：这是增益误差（gain error），而不是失调。分流电阻越小，误差越大。
+
+## 原因
+
+分流电阻为几毫欧或更小时，焊点电阻在检测元件的电阻中占相当大的比例 <Cite key="osullivan2012" />。如果放大器的检测连线从焊盘的外侧引出，放大器检测的就是流过分流电阻、焊盘和焊点整体的电流，因此在任何电流下，读数都偏高，偏高的比例为焊盘和焊点的电阻与分流电阻之比（<EqRef id="sense.pad_error" label="焊盘误差" />）。例如，在 <Val example="bench-sense" name="R_SENSE" /> 分流电阻的检测路径中，<Val example="bench-sense" name="R_pad" /> 的焊盘和焊点电阻使每个读数都偏高，相对误差为 <Val example="bench-sense" name="eps_pad" />。
+
+## 如何确认
+
+让已知电流流过分流电阻，并测量两次电压：一次在焊盘的外端，一次在分流电阻自身的端子（或其开尔文焊盘）上。两电压之差除以电流，就是焊盘和焊点的电阻；两电压之比减 1，就是读数的相对误差。
+
+## 解决方法
+
+用开尔文连接（Kelvin connection）把焊盘移出检测路径：采用四端子分流电阻，或把两端子分流电阻放在四焊盘（分离焊盘，split-pad）布局上 <Cite key="osullivan2012" />。LTC6101 的数据手册建议，除功率最低的应用外，都对检测电阻采用开尔文连接 <Cite key="adi_ltc6101" where="Applications Information" />。采用开尔文连接时，[电流检测链](../../design/sense-chain/)工具中的焊盘电阻为零。
+
+## 参考资料
+
+- <Cite key="osullivan2012" />：毫欧级分流电阻中的焊点电阻；开尔文检测和分离焊盘检测。
+- <Cite key="adi_ltc6101" where="Applications Information" />：检测电阻的开尔文连接。
+- [电流检测](../../06-bench/current-sensing/)：焊盘误差的例题和一项实验练习。

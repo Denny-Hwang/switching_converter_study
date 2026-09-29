@@ -1,0 +1,75 @@
+---
+title: M7 · 损耗预算及其测量计划
+description: 建立降压变换器示例的损耗预算，找出满载和轻载时占主导的损耗，手工核对其中一项，并写出实验台测量计划，说明每项损耗如何测量、测量受什么限制。
+sidebar:
+  order: 7
+mission:
+  id: m7
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Cite from '../../../../components/Cite.astro';
+import TryTool from '../../../../components/TryTool.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 按类别读出变换器在不同负载和开关频率下的损耗，并说明在何处由哪项损耗限制效率。
+- 手工计算一项损耗，并与工具的结果核对。
+- 规划验证该预算的实验台工作：每项损耗测量什么、用什么仪器，以及测量受什么限制。
+
+## 开始之前
+
+- 阅读[损耗预算](../../design/loss-budget/)，以及实验台部分关于[探头](../../06-bench/probes/)、[电流检测](../../06-bench/current-sensing/)和[热设计](../../06-bench/thermal/)的页面。
+- 降压变换器示例把 <Val example="loss-buck" name="V_g" /> 转换为 <Val example="loss-buck" name="V" />，功率为 <Val example="loss-buck" name="P" />，开关频率为 <Val example="loss-buck" name="f_s" />。
+
+## 步骤
+
+### 1. 损耗预算
+
+用降压变换器示例打开损耗预算：
+
+<TryTool tool="loss-budget" example="loss-buck" />
+
+它在每个负载下仿真变换器，并调整占空比直到输出达到设定值，然后把所仿真周期中的损耗按类别分项统计。
+
+### 2. 手工计算一项损耗
+
+栅极驱动损耗与负载无关。栅极电荷（gate charge）为 <Val example="loss-buck" name="Q_g" />、驱动电压为 <Val example="loss-buck" name="V_GS" /> 时，求出该损耗（<EqRef id="loss.gate" label="栅极驱动功率" />），并与工具中相应的损耗项比较。将其填入下方。这一功率耗散在驱动器和栅极电阻中，而不是开关管中。
+
+### 3. 满载与轻载
+
+指出满载和十分之一负载时最大的损耗，并说明二者为何不同：哪些损耗随电流的平方变化（<EqRef id="loss.cond" label="导通损耗" />），哪些只由开关频率决定。
+
+### 4. 开关频率
+
+将 $f_s$ 加倍，观察各损耗项和效率。说明哪些损耗项加倍了，以及更高的频率换来了什么（电感量相同时纹波更小，或纹波相同时电感量更小）。
+
+### 5. 工具未涵盖的部分
+
+仿真中的开关过渡是瞬时的，因此硬开关晶体管的交叠损耗（overlap loss）不在预算之内 <Cite key="erickson2020" where="Ch. 4" />；磁芯损耗则是由正弦激励下测得的系数得到的估算值 <Cite key="erickson2020" where="Ch. 10" />。确定你的计划如何观测这两者。
+
+### 6. 实验台测量计划
+
+对每项损耗，写下要测量的物理量、所用仪器以及起作用的限制：探头上升时间与开关边沿的对比（<EqRef id="probe.t_rise" label="探头上升时间" />）、分流电阻的负担电压和焊盘电阻、对脉冲电流取平均的仪表、元件的温升。最后写出如何测量效率本身。
+
+## 验收标准
+
+<Mission id="m7" />
+
+## 易错点
+
+- 满载效率掩盖了轻载时的情况。轻载时，不随负载减小的损耗占主导，因此要读完整条曲线。
+- 在脉冲电流峰值处削波的电流检测链，读出的平均值低于接在同一分流电阻两端的仪表（[电流读数低于仪表](../../08-gotchas/dmm-true-average/)）。
+- 接地线较长的探头会与其自身电容一起振铃，并在被测边沿上叠加它自己的边沿（[探头](../../06-bench/probes/)）。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch3', 'adi-an1144']} />
+
+## 测验
+
+<Quiz id="09-missions/m7-loss-budget" />

@@ -60,10 +60,10 @@
 
 | Item | State |
 | --- | --- |
-| Symbols explained where they appear: under every `<Eq>` (`<dl>` of symbol and meaning) and next to every symbol of a worked example | ✅ every page, EN and KO |
-| Example numbers: each worked example, preset and quiz example is labelled an example; every page's footer states once that example numbers are synthetic (`PRIVACY_RULES.md`, checked by `privacy_scan.py`) | ✅ 69 examples, EN and KO |
-| Wording: filler and repeated statements removed; Korean pages give the English term in parentheses at the first use of a technical term (BUILD_SPEC §8) | ✅ all 180 pages (90 EN, 90 KO) |
-| Figures drawn from code (`scripts/gen_figures.py`): schematics in schemdraw, idealized waveforms in matplotlib, in the site's symbols; inlined in the theme's text colour, with a caption and a text alternative in EN and KO and the source each follows (`src/lib/figures.ts`, tested); CI redraws them and fails on a difference | ✅ 8 figures: buck, boost, buck-boost, flyback and forward schematics; the buck's switch-node voltage, volt-second balance, inductor current in CCM, at the boundary and in DCM |
+| Symbols explained where they appear: under every `<Eq>` (`<dl>` of symbol and meaning) and next to every symbol of a worked example | ✅ every page, EN, KO and ZH |
+| Example numbers: each worked example, preset and quiz example is labelled an example; every page's footer states once that example numbers are synthetic (`PRIVACY_RULES.md`, checked by `privacy_scan.py`) | ✅ 69 examples, EN, KO and ZH |
+| Wording: filler and repeated statements removed; Korean and Chinese pages give the English term in parentheses at the first use of a technical term (BUILD_SPEC §8) | ✅ all 270 pages (90 EN, 90 KO, 90 ZH) |
+| Figures drawn from code (`scripts/gen_figures.py`): schematics in schemdraw, idealized waveforms in matplotlib, in the site's symbols; inlined in the theme's text colour, with a caption and a text alternative in EN, KO and ZH and the source each follows (`src/lib/figures.ts`, tested); CI redraws them and fails on a difference | ✅ 8 figures: buck, boost, buck-boost, flyback and forward schematics; the buck's switch-node voltage, volt-second balance, inductor current in CCM, at the boundary and in DCM |
 
 ## Release (Phase 5e)
 
@@ -71,6 +71,7 @@
 | --- | --- |
 | Reproducible build (BUILD_SPEC §7 Phase 5: a fresh clone, `npm ci && npm run build`, the same site) | ✅ `npm run build` ends with `scripts/postbuild.mjs`, which makes the two parts of the output that were not reproducible the same in every build: the islands' uids, which Astro hashes from the component's absolute path (nothing reads them), and the order of Pagefind's languages, which it writes in no fixed order. `scripts/repro_check.sh` builds HEAD's files at another path with `npm ci && npm run build` and requires the same `dist/`, file for file and byte for byte (CI, job `site`) |
 | Korean parity (BUILD_SPEC §7 Phase 5): every English page has a Korean page at the same path with the same heading levels (h2 to h4) in order and the same components, or a line here marking the Korean page pending (`modulelint.py`) | ✅ 90 page pairs; no Korean page pending |
+| Chinese parity: every English page has a Chinese page at the same path with the same heading levels (h2 to h4) in order and the same components, or a row of the Chinese table below marking it pending (`modulelint.py`) | ✅ 90 page pairs; no Chinese page pending |
 | STATUS's counts (derivations and the equations they leave out, symbols, references, examples, pages) equal the repository's (`test_status.py`) | ✅ |
 | Release | ✅ v0.1.0 (`CHANGELOG.md`), tagged on the commit that merges it; one version in `package.json` and its lock file, `packages/pe-core` and the Python package, equal to the changelog's latest release (`test_release.py`) |
 
@@ -87,23 +88,23 @@ page pending on its own.
 | about | ✅ | |
 | 00-foundations | ✅ | |
 | 01-physics | ✅ | |
-| 02-theory | ⬜ | |
-| 03-topologies | ⬜ | |
-| 04-magnetics | ⬜ | |
-| 05-simulation | ⬜ | |
-| 06-bench | ⬜ | |
-| 07-harvesting | ⬜ | |
-| 08-gotchas | ⬜ | |
-| 09-missions | ⬜ | |
+| 02-theory | ✅ | |
+| 03-topologies | ✅ | |
+| 04-magnetics | ✅ | |
+| 05-simulation | ✅ | |
+| 06-bench | ✅ | |
+| 07-harvesting | ✅ | |
+| 08-gotchas | ✅ | |
+| 09-missions | ✅ | |
 | 10-resources | ✅ | |
-| design | ⬜ | |
-| simulate | ⬜ | |
+| design | ✅ | |
+| simulate | ✅ | |
 
-Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here); theory uses only `<Eq>` embeds and each Eq has ≥ 1 test vector; "Try it" links a tool preset; "Go deeper" has ≥ 2 verified resources with retrieval dates; a gotchas subsection exists; quiz with ≥ 5 explained questions; build, tests and all lints green.
+Definition of done (CLAUDE.md): EN and KO pages present (or KO pending here), and the ZH page once the Chinese table marks its folder done; theory uses only `<Eq>` embeds and each Eq has ≥ 1 test vector; "Try it" links a tool preset; "Go deeper" has ≥ 2 verified resources with retrieval dates; a gotchas subsection exists; quiz with ≥ 5 explained questions; build, tests and all lints green.
 
 Legend: ✅ done · 🟡 partial · ⬜ not started · ➖ not applicable. "Phase" is the build phase that delivers the module (docs/BUILD_SPEC.md §7); "later" = not scheduled in phases 0–5. 00-foundations and 01-physics are compact refreshers (Phase 2 scope).
 
-_Last updated: Phase 5e (release v0.1.0). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
+_Last updated: the Chinese version (all pages in EN, KO and ZH). `python scripts/modulelint.py` checks every ✅ below against the pages themselves._
 
 "Try it" links open the [equation explorer](../src/content/docs/en/design/explorer.mdx) with a synthetic preset. Pages whose example is a whole converter also open the [simulator](../src/content/docs/en/simulate/simulator.mdx) with it (`<TrySim>`, Phase 3a); design-tool presets come with the design tools.
 
@@ -225,11 +226,11 @@ Gotcha pages are not modules: each follows the template symptom · why · how to
 ## 09-missions
 
 Nine missions with acceptance criteria (`<Mission>`: src/content/missions/<locale>/<id>.yaml, the same criterion ids in
-both languages) and a local-only progress tracker: localStorage in the reader's browser (src/lib/missionstore.ts), no
+every language) and a local-only progress tracker: localStorage in the reader's browser (src/lib/missionstore.ts), no
 account, nothing sent; the index lists every mission with its progress (`<MissionProgress>`). A criterion with an answer
 check takes a number and ticks itself within its tolerance of a synthetic example's value. `modulelint.py` checks each
 page: its sections (Goal, Before you start, Steps, Acceptance criteria, Gotchas, Go deeper, Quiz), a tool link in its
-steps, its criteria in both languages, two resources and its quiz.
+steps, its criteria in every language, two resources and its quiz.
 
 | Mission | Phase | EN | KO | Criteria ≥ 3 | Tool link | Go deeper ≥ 2 | Gotchas | Quiz ≥ 5 | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

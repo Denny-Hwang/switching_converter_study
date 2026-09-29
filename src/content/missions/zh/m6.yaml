@@ -1,0 +1,19 @@
+# 任务 M6 的验收标准（src/content/docs/zh/09-missions/m6-lfr-matching.mdx）。
+# 各语言的 id 相同：浏览器中保存的进度是共用的。
+criteria:
+  - id: available
+    text: '示例电源所能提供的最大功率。'
+    check: {example: source-lfr, name: P_max, tol: 0.01}
+  - id: input-resistance
+    text: '在示例的 $D$、$f_s$ 和 $L_M$ 下反激变换器的输入电阻。'
+    check: {example: source-lfr, name: R_in, tol: 0.01}
+  - id: match-inductance
+    text: '在该 $D$ 和 $f_s$ 下与电源匹配的励磁电感。'
+    check: {example: lfr-flyback, name: L_M, tol: 0.01}
+  - id: bus
+    text: '匹配时的母线电压。'
+    check: {example: source-lfr, name: V_g, tol: 0.01}
+  - id: mismatch
+    text: '$D$ 加倍时，你预测的输入电阻和功率比例与源匹配给出的结果一致。'
+  - id: limit
+    text: 'CCM 开始接管母线电压时的电源幅值，以及此时开关管电压与其额定值的比较。'

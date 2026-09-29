@@ -1,0 +1,39 @@
+---
+title: 未到满量程就削波的电流输出型监控器
+description: 增大电流输出型监控器的输出电阻，提高的是其增益，而不是其输出所能达到的最高电压。
+sidebar:
+  order: 5
+gotcha:
+  tags: [sensing]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## 现象
+
+电流输出型（current-output）电流检测监控器在小电流下读数正确，但电流超过某一值后，其输出便不再上升，此时尚未达到设计中由其增益算出的满量程（full scale）。输出电阻越大，读数在越低的电流下削波。
+
+## 原因
+
+监控器使检测电压加在其输入电阻两端，并使由此产生的电流流过其输出电阻，因此其增益就是这两个电阻之比（<EqRef id="sense.current_out_monitor" label="电流输出型监控器" />）<Cite key="adi_ltc6101" />。其输出只能升到某一最高电压；LTC6101 的数据手册以规定电源电压下的绝对值给出该电压 <Cite key="adi_ltc6101" />。输出电阻决定增益，从而决定输出达到该电压时的电流，但不决定该电压本身。满量程取该限值与 ADC 满量程二者中的较低者。
+
+在电流检测链的示例中，监控器的输出最高可驱动到 <Val example="sense-current" name="V_OUTmax" />，ADC 最高可读到 <Val example="sense-current" name="V_FS" />。在最大电流 <Val example="sense-current" name="I_SENSE" /> 下，输出为 <Val example="sense-current" name="V_OUT" />；计入焊盘电阻，并取使输出升高的失调符号时，输出为 <Val example="sense-current" name="V_OUThi" />。输出电阻加倍，这一最高输出也随之加倍，超出两个限值。
+
+## 如何确认
+
+逐级增大电流，并直接在监控器自身的引脚上读取输出。若曲线在某一电压处折平，且该电压不随输出电阻的改变而移动，那就是输出的限值；将它与数据手册在所用电源电压下给出的最高输出比较。
+
+## 解决方法
+
+选择输出电阻，使最大电流下的输出（计入失调和焊盘的贡献，并取使输出升高的符号）既低于监控器的最高输出，也低于 ADC 的满量程。[电流检测链](../../design/sense-chain/)工具计算这一满量程电流，并标出可能削波的读数。
+
+## 参考资料
+
+- <Cite key="adi_ltc6101" />：电流输出型监控器、由两个电阻决定的增益，以及其最高输出电压。
+- [电流检测链](../../design/sense-chain/)：满量程和输出限值的计算过程。
+- [电流检测](../../06-bench/current-sensing/)：分流电阻及其连接。

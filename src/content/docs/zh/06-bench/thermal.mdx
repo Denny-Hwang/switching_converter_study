@@ -1,0 +1,78 @@
+---
+title: 热设计
+description: 由器件功率和热量路径上的各热阻求结温，数据手册中的结至环境热阻值不能说明什么，以及由封装顶部温度估算结温。
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 由器件的功率和热量路径上的各热阻估算其结温。
+- 了解数据手册中的结至环境热阻不能说明你的电路板的哪些情况。
+- 由封装顶部测得的温度估算结温。
+
+## 理论
+
+### 串联热路
+
+热阻（thermal resistance）是流过它的每瓦功率所对应的温差 <Cite key="ti_spra953" />。装在散热器（heat sink）上的器件，其功率主要从结（junction）传到外壳，经界面材料（导热垫、导热硅脂或绝缘垫片）传到散热器，再从散热器传到空气。设全部功率都沿这一路径流动，则每一段使温度升高其热阻与功率之积：
+
+<Eq id="therm.Tj" />
+
+链路中最大的热阻在结温升中所占份额最大，因此降低它最有效。
+
+数据手册中的结至环境热阻 $\theta_\mathrm{JA}$ 是最常给出的热指标，也常被误用 <Cite key="ti_spra953" />：它描述的是器件测量时从结到空气的整条路径，包括当时的电路板和气流，而不是你的电路板上的路径。
+
+### 由封装顶部估算
+
+没有散热器的器件经引脚、电路板和顶部散发功率，只有部分功率流经顶部。结至顶部特征参数（junction-to-top characterization parameter）$\Psi_\mathrm{JT}$ 按器件的全部功率，把结温与封装顶部测得的温度联系起来；它不是真正的热阻，不能计入串联热路 <Cite key="ti_spra953" />：
+
+<Eq id="therm.psi" />
+
+数据手册给出的值只在其表征条件下成立；封装上加装散热器后便不再适用。
+
+### 温度与损耗
+
+硅 MOSFET 的导通电阻（on-resistance）随结温升高：在所引教程中，从 25 °C 到 125 °C 大约翻一番 <Cite key="microchip_apt0403" />；所用器件的倍数可从数据手册的归一化导通电阻曲线读出。导通损耗随之增大（<EqRef id="loss.cond" label="导通损耗" />）。结温越高，损耗越大，损耗又使结温进一步升高：应按损耗所导致的结温估算损耗，而不是按室温估算。
+
+## 例题
+
+一个装在散热器上的开关管；另外还有一个没有散热器、测量了封装顶部温度的器件：
+
+<Worked example="bench-thermal" />
+
+按串联热路计算，开关管的结温为 <Val example="bench-thermal" name="T_J" />，温升大部分产生在散热器的 <Val example="bench-thermal" name="theta_SA" /> 上。对于没有散热器的器件，由 <Val example="bench-thermal" name="T_T" /> 的封装顶部温度和特征参数求得结温为 <Val example="bench-thermal" name="T_J_top" />。
+
+## 动手试试
+
+<TryIt eq="therm.Tj" example="bench-thermal" sweep="theta_SA" />
+
+扫描散热器的热阻：在该例中它是链路中最大的热阻，结温随之变化。改为降低结至外壳热阻时，该例中的结温变化小得多。
+
+## 实验练习
+
+让变换器满载运行，直到各处温度稳定，并由损耗模型求出每个器件的功率。实测输入功率减去输出功率是整个变换器的损耗，即所有开关管、二极管、磁性元件、电容以及控制电路的损耗之和：它检验的是损耗模型的总和，而不是任何单个器件的功率。对于装在散热器上的开关管，测量环境温度，并经串联热路估算结温。对于没有散热器的器件（控制器，或靠电路板散热的表面贴装开关管），测量其封装顶部温度，并用数据手册中的特征参数估算结温：红外热像仪要按表面的发射率（emissivity）设置，并防止热电偶（thermocouple）的导线从小封装上带走热量。将每个估算值与按数据手册的结至环境热阻所预测的值比较。
+
+## 易错点
+
+- **结至环境热阻**对应的是测量时所用的电路板和气流，且常被误用 <Cite key="ti_spra953" />。
+- **特征参数不是热阻**：不要把它计入串联热路 <Cite key="ti_spra953" />。
+- **按室温估算的损耗**偏低：导通电阻随结温升高 <Cite key="microchip_apt0403" />。
+
+## 延伸阅读
+
+<GoDeeper ids={['ti-spra953', 'ti-slva462', 'microchip-apt0403']} />
+
+## 测验
+
+<Quiz id="06-bench/thermal" />

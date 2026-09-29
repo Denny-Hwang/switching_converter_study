@@ -1,0 +1,38 @@
+---
+title: 随测试频率增大的电感
+description: 匝数多的绕组在 LCR 测试仪上读数偏高，测试频率越高，读数越高，原因是绕组自身的电容使其自谐振频率接近测试频率。
+sidebar:
+  order: 1
+gotcha:
+  tags: [measurement, magnetics]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+
+<GotchaTags />
+
+## 现象
+
+LCR 测试仪测量匝数多的绕组（例如反激变压器的一次绕组）时，读数远高于设计预期的电感量，而且在每个测试频率（test frequency）下读数都不同：频率越高，读数越高。
+
+## 原因
+
+测试仪给出的是元件在其测试频率下包括寄生参数在内的等效值（effective value）<Cite key="keysight_5950_3000" />。匝间电容与电感并联，并与之发生谐振（<EqRef id="passive.f_srf" label="自谐振频率" />）。在该谐振频率以下，二者表现为一个更大的电感，测试频率越接近谐振，读数上升越陡（<EqRef id="meas.L_app" label="表观电感" />）。匝数多，既带来大的电感（电感随匝数的平方增大，<EqRef id="mag.L_from_AL" label="由电感系数求电感" />），也带来匝间电容，因此二者的谐振频率较低。
+
+例如，电感为 <Val example="lcr-srf" name="L" />、两端并联 <Val example="lcr-srf" name="C_p" /> 的绕组在 <Val example="lcr-srf" name="f_srf" /> 处谐振。测试仪在 <Val example="lcr-srf" name="f_lo" /> 下的读数为 <Val example="lcr-srf" name="L_app_lo" sig={4} />，在 <Val example="lcr-srf" name="f_hi" /> 下的读数为 <Val example="lcr-srf" name="L_app_hi" />。
+
+## 如何确认
+
+在测试仪的两个或更多测试频率下测量该绕组。随频率升高而急剧攀升的读数来自谐振：在谐振附近，表观电感（apparent inductance）无限增大（<EqRef id="meas.L_app" label="表观电感" />），远超过磁芯本身随频率的变化。要找出谐振频率，可用阻抗分析仪扫描绕组的阻抗：在谐振频率以上，元件呈容性（<EqRef id="passive.f_srf" label="自谐振频率" />）。
+
+## 解决方法
+
+在远低于自谐振频率的测试频率下测量：此时读数偏高的比例约为两频率之比的平方，在谐振频率的十分之一处偏高百分之一（<EqRef id="meas.L_app" label="表观电感" />）。若测试仪的各测试频率都离谐振太近，则用频率扫描找出自谐振频率，再用同一公式修正读数。
+
+## 参考资料
+
+- <Cite key="keysight_5950_3000" />：阻抗测量仪读出的是其测试频率下包括寄生参数在内的等效值。
+- [磁性元件的测量](../../04-magnetics/measurement/)：表观电感的例题和一项实验练习。

@@ -1,0 +1,94 @@
+---
+title: 右半平面（RHP）零点
+description: 占空比阶跃后，升压和升降压变换器的输出为何先向反方向变化，如何计算右半平面零点，以及它如何限制反馈环路。
+sidebar:
+  order: 7
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 从物理上解释升压（boost）和升降压（buck-boost）变换器为何有右半平面（right-half-plane, RHP）零点（zero）。
+- 由电路参数计算这两种变换器的 RHP 零点和二重极点（double pole）参数。
+- 了解 RHP 零点如何限制反馈环路的穿越频率（crossover frequency）。
+
+## 理论
+
+### 输出为何先向反方向变化
+
+在升压变换器中，只有在二极管导通（conduction）期间，即关断区间（off-interval）内，能量才会到达输出。占空比（duty ratio）的阶跃（step）增大使导通区间（on-interval）变长、关断区间变短。电感电流最终会增大，输出也随之升高。但在阶跃刚发生后，电感电流尚未变化，而二极管在每个周期中导通的时间变短了，因此二极管电流的平均值以及输出电压会先下降 <Cite key="erickson2020" where="Ch. 8" />。升降压变换器的表现与此相同。
+
+位于 $s$ 平面右半部分的零点恰好产生这种行为：其幅值像普通零点一样随频率升高而增大，其相位却像极点一样滞后。
+
+### 升压变换器的控制-输出传递函数
+
+升压变换器的控制-输出传递函数（control-to-output transfer function）包含一个直流增益（dc gain）、一对极点和 RHP 零点 <Cite key="erickson2020" where="Ch. 8" />：
+
+<Eq id="boost.ss.Gd0" />
+
+<Eq id="boost.ss.w0" />
+
+<Eq id="boost.ss.Q" />
+
+<Eq id="boost.ss.wz" />
+
+这对极点来自电感和电容，但透过[平均模型（averaged model）](../averaged-models/)中的直流变压器（dc transformer）来看，电感量表现为除以 $(1 - D)^2$ 后的值，因此随着 $D$ 增大，极点移向更低的频率。
+
+### 升降压变换器的控制-输出传递函数
+
+<Eq id="buckboost.ss.Gd0" />
+
+<Eq id="buckboost.ss.w0" />
+
+<Eq id="buckboost.ss.Q" />
+
+<Eq id="buckboost.ss.wz" />
+
+由平均电路（averaged circuit）推导全部八个量的过程见[推导页面](../derivations/#deriv-small_signal)。
+
+### 对控制的影响
+
+负载越重（$R$ 越小）、$D$ 越大，RHP 零点的频率越低，因此其最低频率出现在满载（full load）和最低输入电压时。由于它在幅值持续升高的同时增加相位滞后（phase lag），环路穿越频率必须在整个工作范围内都远低于最低的 $\omega_z$ <Cite key="erickson2020" where="Ch. 8" />。补偿器（compensator）无法抵消这个零点：那需要一个位于右半平面的极点，而这样的极点是不稳定的。
+
+## 例题
+
+升压和升降压变换器示例，两者的占空比相同：
+
+<Worked example="boost-basic" show={['V_g', 'D', 'L', 'C', 'R', 'G_d0', 'omega_0', 'Q', 'omega_z']} checks={false} />
+
+<Worked example="buckboost-basic" show={['V_g', 'D', 'L', 'C', 'R', 'G_d0', 'omega_0', 'Q', 'omega_z']} checks={false} />
+
+在升压变换器中，位于 <Val example="boost-basic" name="omega_z" /> 的 RHP 零点仅比位于 <Val example="boost-basic" name="omega_0" /> 的二重极点高出不多：穿越频率若在极点附近，环路就已经会受到零点相位滞后的影响。
+
+## 动手试试
+
+<TryIt eq="boost.ss.wz" example="boost-basic" sweep="R" />
+
+将 $R$ 向减小的方向扫描（sweep），即加重负载：零点与 $R$ 成正比地降低。然后把 $R$ 恢复原值，改为扫描 $D$。
+
+## 实验练习
+
+在小功率运行的开环（open-loop）升压变换器上，对占空比施加一个小阶跃，例如使调制器（modulator）的控制输入阶跃变化。以该阶跃为触发，用交流耦合观察输出电压：它先短暂下跌，再上升到新值。在更重的负载下重复，比较下跌的幅度。
+
+## 易错点
+
+- **按最坏情况（worst case）设计**。RHP 零点的最低频率出现在负载最重、占空比最高，即输入电压最低时。
+- **降压（buck）变换器没有 RHP 零点**。它的占空比作用于开关节点（switch node），而开关节点直接驱动输出滤波器；升压和升降压变换器则只在关断区间内向输出传递能量 <Cite key="erickson2020" where="Ch. 8" />。
+- **估算相位裕度（phase margin）时必须计入该零点**。它的相位滞后在远低于 $\omega_z$ 处就已开始，与普通零点开始产生相位超前（phase lead）的频率范围相同。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch8', 'coursera-converter-control', 'ti-slva061']} />
+
+## 测验
+
+<Quiz id="02-theory/rhp-zero" />

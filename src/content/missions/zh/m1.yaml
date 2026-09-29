@@ -1,0 +1,19 @@
+# 任务 M1 的验收标准（src/content/docs/zh/09-missions/m1-derive-buck.mdx）。
+# 各语言的 id 相同：浏览器中保存的进度是共用的。
+criteria:
+  - id: by-hand
+    text: '手工推导时，由电感的伏秒平衡得到输出电压，且 $V/V_g$ 等于目录中的电压变换比。'
+  - id: sympy
+    text: '你的 sympy 脚本对 $V$ 求解该平衡方程，得到相同的结果。'
+  - id: example-v
+    text: '降压变换器示例的输出电压，由你求得的电压变换比算出。'
+    check: {example: buck-basic, name: V, tol: 0.005}
+  - id: example-ripple
+    text: '降压变换器示例的 $\Delta i_L$，即纹波峰峰值的一半。'
+    check: {example: buck-basic, name: Delta_i_L, tol: 0.01}
+  - id: checks-pass
+    text: '在你的克隆中，生成器、`pytest` 和 `mathlint` 均通过，且未改动公式文件。'
+  - id: wrong-test
+    text: '生成器拒绝 `buck.ccm.M` 中错误的期望值，并指出该条目和该测试。'
+  - id: wrong-equation
+    text: '同时修改表达式及其测试时，`pytest` 在 `test_derivation_reproduces_yaml[buck.ccm.M]` 处失败。'

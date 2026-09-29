@@ -1,0 +1,69 @@
+---
+title: M3 · 找出升压变换器的右半平面零点
+description: 计算升压变换器示例的右半平面零点和二重极点，观察零点随负载和占空比的移动，并找出限制反馈环路的工作点。
+sidebar:
+  order: 3
+mission:
+  id: m3
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Cite from '../../../../components/Cite.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 用自己的话解释：升压（boost）变换器的占空比发生阶跃时，其输出为何先向反方向变化。
+- 计算升压变换器示例的右半平面（right-half-plane, RHP）零点和二重极点（double pole）。
+- 找出零点如何随负载和占空比移动，以及哪个工作点限制反馈环路的穿越频率（crossover frequency）。
+
+## 开始之前
+
+- 阅读[右半平面（RHP）零点](../../02-theory/rhp-zero/)和[小信号模型](../../02-theory/small-signal/)。
+- 公式给出的是以 rad/s 为单位的角频率。除以 $2\pi$ 即得以赫兹为单位的频率。
+
+## 步骤
+
+### 1. 物理图景
+
+阅读这一过程：$D$ 阶跃后，二极管的导通时间缩短，在电感电流来得及增大之前，就使流入输出的平均电流降低。用两句话把它写下来。然后说明降压（buck）变换器为何没有这样的零点：它的电感在两个区间内都向输出供电 <Cite key="erickson2020" where="Ch. 8" />。
+
+### 2. 示例的零点和极点
+
+升压变换器示例的参数为 $V_g$ = <Val example="boost-basic" name="V_g" />、$D$ = <Val example="boost-basic" name="D" />、$L$ = <Val example="boost-basic" name="L" />、$C$ = <Val example="boost-basic" name="C" /> 和 $R$ = <Val example="boost-basic" name="R" />。求出它的零点（<EqRef id="boost.ss.wz" label="升压变换器的 RHP 零点" />）和二重极点（<EqRef id="boost.ss.w0" label="升压变换器的二重极点" />），并将两者填入下方。
+
+### 3. 零点的移动
+
+在公式浏览器中打开零点公式，将 $R$ 向负载加重的方向扫描，然后把 $R$ 恢复原值，再扫描 $D$：
+
+<TryIt eq="boost.ss.wz" example="boost-basic" sweep="R" />
+
+### 4. 升降压变换器
+
+升降压（buck-boost）变换器也有同类零点（<EqRef id="buckboost.ss.wz" label="升降压变换器的 RHP 零点" />）。对占空比相同的升降压变换器示例求出该零点，填入下方。
+
+### 5. 限制环路的工作点
+
+在一定的负载和输入电压范围内，零点在负载最重、占空比最大，即输入电压最低时最低。环路的穿越频率必须远低于这个最低的零点 <Cite key="erickson2020" where="Ch. 8" />。说明对该示例而言这是工作范围的哪个角点，以及为什么按标称工作点设计会高估可用的穿越频率。
+
+## 验收标准
+
+<Mission id="m3" />
+
+## 易错点
+
+- $\omega_z$ 的单位是 rad/s。若把它当作赫兹，穿越频率的上限就会被定为应有值的六倍多。
+- 零点随工作点移动。最坏情况不是标称工作点，而是最低输入电压下的最重负载。
+- 补偿器（compensator）无法抵消 RHP 零点。那需要一个位于右半平面的极点，而这样的极点是不稳定的 <Cite key="erickson2020" where="Ch. 8" />。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch8', 'coursera-converter-control']} />
+
+## 测验
+
+<Quiz id="09-missions/m3-boost-rhp-zero" />

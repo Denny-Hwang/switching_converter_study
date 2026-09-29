@@ -1,0 +1,80 @@
+---
+title: 探头与测量带宽
+description: 探头的接地线给开关沿带来什么，测量系统的带宽如何限制其所能显示的上升时间，以及如何测量变换器的输出纹波。
+sidebar:
+  order: 4
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 了解探头的接地线给快速边沿的测量带来什么。
+- 把测量系统的带宽与其所能显示的最快的上升沿联系起来。
+- 用短接地连接测量变换器的输出纹波。
+
+## 理论
+
+### 接地线
+
+探头测量的是其针尖与接地连接之间的电压，通向这两点的引线构成一个回路。该回路引入寄生电感，使开关瞬态（switching transient）的幅值被错误地放大 <Cite key="adi_an1144" />。它与探头的输入电容构成串联 L-C，每个快速边沿都会激励它以其谐振频率振铃：这是探头的振铃，而不是电路的振铃。
+
+<Eq id="probe.f_ring" />
+
+接地越短，回路越小：针尖-套筒法（tip-and-barrel method）去掉长接地线，把探头的套筒直接接到地参考点上 <Cite key="adi_an1144" />。
+
+### 带宽与上升时间
+
+探头与示波器组合后，对阶跃的响应不会快于其带宽所允许的速度。对于单极点响应，10-90 % 上升时间（rise time）由带宽决定：
+
+<Eq id="probe.t_rise" />
+
+历史上，示波器的响应往往近似遵循这一规律 <Cite key="tek_bw_risetime" />；该常数取决于响应的形状，带宽相同时，平坦响应的示波器测量上升时间比高斯响应的示波器更准确 <Cite key="keysight_5988_8008" />。无限快的理想阶跃，显示出来的上升时间就是系统自身的上升时间：要看到边沿自身的上升时间，系统的上升时间必须远小于它。
+
+### 输出纹波
+
+变换器的输出纹波相对输出电压很小，叠加在其上的开关瞬态却很快：长接地线的回路会夸大这些瞬态 <Cite key="adi_an1144" />，使它们看起来像纹波。应在输出电容处用针尖-套筒法测量纹波 <Cite key="adi_an1144" />。示波器通道的带宽限制（bandwidth limit）会衰减高于该限值的成分（<EqRef id="rc.gain" label="一阶低通滤波器" />）：应把它设得远高于纹波自身的频率，否则纹波也会被衰减。
+
+## 例题
+
+一个测量系统，以及一个带长接地线的探头：
+
+<Worked example="bench-probe" />
+
+该系统显示的理想阶跃上升时间为 <Val example="bench-probe" name="t_rise" />；接地回路的 <Val example="bench-probe" name="L_gnd" /> 与探头的 <Val example="bench-probe" name="C_probe" /> 在 <Val example="bench-probe" name="f_probe" /> 处振铃。
+
+## 动手试试
+
+<TryIt eq="probe.t_rise" example="bench-probe" sweep="BW" />
+
+扫描带宽：上升时间与之成反比地减小。
+
+<TryIt eq="probe.f_ring" example="bench-probe" sweep="L_gnd" />
+
+扫描接地回路的电感：接地越短，振铃越快，也越远高于所测的边沿。
+
+## 实验练习
+
+对同一个开关沿测量两次：一次用探头的长接地线，一次用接地弹簧或针尖-套筒法。比较过冲和振铃频率，并由该频率和数据手册上的探头输入电容估算接地线的电感。然后用这两种方式测量输出纹波，并分别打开和关闭通道的带宽限制。
+
+## 易错点
+
+- **随接地线而变的振铃**属于探头，而不属于电路：缩短接地，它就会改变 <Cite key="adi_an1144" />。
+- **比系统快得多的边沿**，显示出来的上升时间约为系统的上升时间（<EqRef id="probe.t_rise" label="上升时间" />）。
+- **设在纹波频率附近的带宽限制**会衰减纹波本身（<EqRef id="rc.gain" label="一阶低通滤波器" />）。
+
+## 延伸阅读
+
+<GoDeeper ids={['adi-an1144', 'keysight-5988-8008', 'tek-bw-risetime']} />
+
+## 测验
+
+<Quiz id="06-bench/probes" />

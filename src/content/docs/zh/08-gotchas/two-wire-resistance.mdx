@@ -1,0 +1,36 @@
+---
+title: 读数随表笔放置方式而变的低电阻
+description: 用两线法测量绕组或分流电阻的电阻时，读数包含表笔及其接触点；四线法可将它们排除在外。
+sidebar:
+  order: 2
+gotcha:
+  tags: [measurement, magnetics]
+---
+
+import GotchaTags from '../../../../components/GotchaTags.astro';
+import Cite from '../../../../components/Cite.astro';
+import EqRef from '../../../../components/EqRef.astro';
+
+<GotchaTags />
+
+## 现象
+
+匝数少的绕组或任何低电阻的直流电阻读数远高于其计算值（<EqRef id="wind.dcr" label="绕组的直流电阻" />），而且表笔压得更紧或移动位置时，读数会变化。
+
+## 原因
+
+采用两线法（two-wire）的欧姆表经其表笔通入测试电流，又在同一对表笔两端读取电压，因此读数是元件连同表笔及其接触点的电阻。四线（four-wire，开尔文）法经一对引线通入电流，用另一对引线检测电压，因此引线电阻不计入读数 <Cite key="keithley_llmh7" />。只有几匝的绕组，其电阻可能远小于表笔电阻。
+
+## 如何确认
+
+把两支表笔相互碰触并读数：这就是表笔及其接触点本身的电阻。若它相对于元件的读数不算小，读数中就有很大一部分是表笔电阻。然后用四线法测量该元件：两次读数之差就是表笔及其接触点的电阻。
+
+## 解决方法
+
+用四线法测量：电流引线接在元件的端子上，检测引线也接在同一端子上、位于电流接触点的内侧，使两检测点之间只有该元件 <Cite key="keithley_llmh7" />。阻抗测量仪的四端子连接以同样的方式把引线阻抗排除在外 <Cite key="keysight_5950_3000" />。记录读数时一并记下绕组的温度：铜的电阻随温度升高而增大（<EqRef id="wind.rho_T" label="给定温度下的电阻率" />）。
+
+## 参考资料
+
+- <Cite key="keithley_llmh7" />：在低电阻测量中，四线法把表笔的电阻排除在外。
+- <Cite key="keysight_5950_3000" />：在阻抗测量中，四端子连接把引线阻抗排除在外。
+- [磁性元件的测量](../../04-magnetics/measurement/)：直流电阻，以及用两线法和四线法测量的实验练习。

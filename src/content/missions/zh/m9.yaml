@@ -1,0 +1,17 @@
+# 任务 M9 的验收标准（src/content/docs/zh/09-missions/m9-write-a-gotcha.mdx）。
+# 各语言的 id 相同：浏览器中保存的进度是共用的。
+criteria:
+  - id: symptom
+    text: '你自己犯过的一个错误，按最初看到的现象描述，不含其所在项目的任何内容。'
+  - id: template
+    text: '页面遵循模板：先是标签，然后是现象、原因、如何确认、解决方法和参考资料。'
+  - id: numbers
+    text: '每个数值都通过 `<Val>` 取自合成示例，或取自同一行上引用的来源。'
+  - id: sources
+    text: '关于器件或方法的每项论断，都引用 `references.bib` 中经过核实的条目。'
+  - id: checks
+    text: '`modulelint`、`privacy_scan`、`mathlint` 和 `refcheck` 均通过，且站点能够构建。'
+  - id: korean
+    text: '韩文页面，或 STATUS 中将其标为待完成的一行。'
+  - id: chinese
+    text: '中文页面，或 STATUS 中文表中将其标为待完成的一行。'

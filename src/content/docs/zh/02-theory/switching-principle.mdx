@@ -1,0 +1,91 @@
+---
+title: 开关变换原理
+description: 理想开关与 L-C 滤波器为何能无损地把直流变换为直流，占空比如何决定直流输出，以及小纹波近似作了哪些假设。
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Figure from '../../../../components/Figure.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 解释理想开关变换器为何不像线性稳压器（linear regulator）那样消耗功率。
+- 由占空比（duty ratio）$D$ 计算开关节点（switch node）波形的直流分量（dc component）。
+- 说明输出滤波器必须起什么作用，以及小纹波近似（small-ripple approximation）作了什么假设。
+
+## 理论
+
+### 为什么采用开关方式？
+
+线性稳压器降低电压的方法，是让一个流过全部负载电流的晶体管承受输入与输出之间的电压差；这一电压差与负载电流之积以热的形式损耗掉。理想开关没有任何损耗：导通时其两端电压为零，关断时流过它的电流为零，因此两者之积，即它消耗的功率，在两种状态下都为零 <Cite key="erickson2020" where="Ch. 1 (Introduction)" />。理想电感和电容只储存和释放能量，不消耗任何能量。因此，仅由理想开关和电抗元件（reactive element）构成的变换器可以无损地变换功率。
+
+### 开关节点及其直流分量
+
+将一个单刀双掷开关（single-pole double-throw switch）接到输入电源上。开关处于位置 1 时，开关节点电压为输入电压 $V_g$；处于位置 2 时，开关节点接地。开关每个开关周期（switching period）重复一次这一过程，开关周期为
+
+<Eq id="def.Ts" />
+
+每个周期中开关处于位置 1 的时间比例 $D$ 称为**占空比** <Cite key="erickson2020" where="Ch. 2" />。因此，开关节点电压 $v_s(t)$ 是一个矩形波（rectangular wave）。它在一个周期内的平均值，即其直流分量，为
+
+<Eq id="sw.v_avg" />
+
+<Figure name="switch-node" />
+
+### 滤波：保留平均值，滤除谐波
+
+傅里叶级数（Fourier series）把 $v_s(t)$ 分解为上述直流分量与位于开关频率（switching frequency）$f_s$ 整数倍处的谐波（harmonics）之和。转折频率（corner frequency）远低于 $f_s$ 的 L-C 低通滤波器（low-pass filter）让直流分量通过，并使谐波大幅衰减（attenuation），因此输出电压基本上就是开关节点的直流分量 <Cite key="erickson2020" where="Ch. 2" />。于是，占空比这一时间量决定了一个直流电压。
+
+### 电压变换比
+
+变换器可以用其电压变换比（conversion ratio）$M(D)$ 来概括，即直流输出电压与直流输入电压之比：
+
+<Eq id="def.V" />
+
+对开关节点滤波，就得到降压（buck）变换器：其输出就是开关节点电压的平均值，由此得到<EqRef id="buck.ccm.M" label="降压变换器的电压变换比" />。同样的开关、电感和电容按其他方式连接，会得到其他变换比，例如<EqRef id="boost.ccm.M" label="升压变换器" />和<EqRef id="buckboost.ccm.M" label="升降压变换器" />的变换比。三者都在[伏秒平衡（volt-second balance）页面](../volt-second-charge-balance/)中推导。
+
+### 小纹波近似
+
+实际滤波器会在输出上留下少量开关纹波。滤波器设计得当时，纹波与直流值相比很小，在稳态分析（steady-state analysis）中可以用直流值 $V$ 代替输出电压：这就是**小纹波近似** <Cite key="erickson2020" where="Ch. 2" />。采用这一近似后，电感两端的电压在每个子区间（subinterval）内恒定，因此电感电流沿直线上升和下降；这些直线的斜率决定电流纹波。这一近似只可用于几乎恒定的量，绝不可用于正要计算的纹波本身。
+
+## 例题
+
+一个示例降压变换器，其开关节点经一级 L-C 滤波后接电阻负载：
+
+<Worked example="buck-basic" show={['V_g', 'D', 'f_s', 'T_s', 'v_s_avg', 'M', 'V', 'Delta_i_L']} checks={false} />
+
+在每个 <Val example="buck-basic" name="T_s" /> 的周期中，开关节点有占比 <Val example="buck-basic" name="D" /> 的时间处于 <Val example="buck-basic" name="V_g" />，因此其直流分量，以及随之而定的输出电压，为 <Val example="buck-basic" name="V" />。电感电流在其直流值上下仍带有 <Val example="buck-basic" name="Delta_i_L" />（峰峰值的一半）的三角波纹波，输出电容会将其进一步平滑。
+
+## 动手试试
+
+<TryIt eq="sw.v_avg" example="buck-basic" sweep="D" />
+
+<TrySim example="buck-basic" topology="buck" />
+
+将 $D$ 从 0 扫描（sweep）到 1：无论开关频率是多少，直流分量都与之成正比地增大。
+
+## 实验练习
+
+不需要功率级（power stage）。将函数发生器（function generator）输出的逻辑电平方波送入一个 R-C 低通滤波器，其转折频率远低于方波频率。改变占空比，同时用万用表的直流挡测量滤波器输出，并把每个读数与方波高电平乘以占空比所得的值比较。然后用示波器观察同一节点：提高频率或增大滤波器的时间常数（time constant）时，残余纹波减小，而直流读数不变。
+
+## 易错点
+
+- **平均值跟随的是开关节点，而不是栅极信号**。二极管正向压降（forward drop）、开关管电阻和死区时间会在周期的部分时段内改变开关节点电压，因此直流输出会偏离指令占空比（commanded duty ratio）所决定的理想值。[平均模型（averaged model）页面](../averaged-models/)把这些损耗加入模型 <Cite key="erickson2020" where="Ch. 3" />。
+- **DCM 中开关节点并非在整个关断区间（off-interval）内都保持为零**。电感电流降到零后，二极管停止导通（conduction），开关节点围绕输出电压振铃（ringing），因此输出最终高于 $D V_g$；参见 [CCM 与 DCM](../ccm-dcm/) <Cite key="erickson2020" where="Ch. 5" />。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch2', 'coursera-intro-pe', 'ti-slva477']} />
+
+## 测验
+
+<Quiz id="02-theory/switching-principle" />

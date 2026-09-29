@@ -1,0 +1,86 @@
+---
+title: 推导
+description: 所有推导得到的公式，都用 sympy 逐步重新推导。这些步骤导出自 pytest 对照 equations.yaml 运行的同一批脚本。
+sidebar:
+  order: 90
+---
+
+import Derivation from '../../../../components/Derivation.astro';
+
+下面每一节都由 `python/pe_core/derive/` 中的一个脚本生成。同一脚本也在 `pytest` 下运行：除非推导结果（derived result）与 `equations.yaml` 中存储的表达式之差（symbolic difference）经符号化简后为零，否则测试不通过。文字说明和标题由人工撰写；本页的每个公式都由 sympy 从这些脚本中输出。
+
+## 基础复习：元件特性方程（element laws）、阻抗、傅里叶级数、磁学（magnetics）、理想变压器
+
+<Derivation module="foundations" />
+
+## 平均化（averaging）、平衡条件（balance）与平均模型中的损耗
+
+<Derivation module="averaging" />
+
+## CCM 电压变换比（conversion ratio）与纹波
+
+<Derivation module="ccm_ratios" />
+
+## CCM/DCM 临界（boundary）与 DCM 电压变换比
+
+<Derivation module="dcm" />
+
+## 反激变换器：DCM 电压变换比、临界、应力、无损电阻（loss-free resistor）
+
+<Derivation module="flyback" />
+
+## 反激变换器钳位：反射电压（reflected voltage）、钳位损耗、输出上限
+
+<Derivation module="clamp" />
+
+## 缓冲电路（snubber）：由振铃求得的寄生参数、阻尼电阻与损耗
+
+<Derivation module="snubbers" />
+
+## 拓扑细节：直流电流、纹波、开关应力、利用率（utilization）
+
+<Derivation module="topologies" />
+
+## 小信号传递函数（small-signal transfer functions），CCM
+
+<Derivation module="small_signal" />
+
+## PWM 调制器（modulator）与环路增益（loop gain）
+
+<Derivation module="control" />
+
+## 储能、损耗与振铃
+
+<Derivation module="energy" />
+
+## 磁路（magnetic circuits）：电感系数、磁通密度与磁芯几何常数
+
+<Derivation module="magnetics" />
+
+## 绕组（windings）：电阻、集肤深度（skin depth）、薄层、漏感（leakage）与短路
+
+<Derivation module="windings" />
+
+## 测量：在自谐振附近读出的电感量
+
+<Derivation module="measurement" />
+
+## 线性源（linear sources）：最大功率、恒压提取（constant-voltage extraction）与无损电阻
+
+<Derivation module="harvesting" />
+
+## 压电源（piezoelectric source）：负载与接口电路
+
+<Derivation module="piezo" />
+
+## 电流输出型分流监控器
+
+<Derivation module="sensing" />
+
+## 实验台：边沿、栅极驱动、上升时间、浪涌电流、发热与电池端子
+
+<Derivation module="bench" />
+
+## 仿真：逐个时间步长（time step）计算电路，以及稳定所需的时间
+
+<Derivation module="numerics" />

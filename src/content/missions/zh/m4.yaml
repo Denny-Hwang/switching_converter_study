@@ -1,0 +1,17 @@
+# 任务 M4 的验收标准（src/content/docs/zh/09-missions/m4-buck-inductor.mdx）。
+# 各语言的 id 相同：浏览器中保存的进度是共用的。
+criteria:
+  - id: kg
+    text: '示例电感所需的磁芯几何常数 $K_g$。'
+    check: {example: kg-inductor, name: K_g, tol: 0.02}
+  - id: copper-loss
+    text: '其电阻预算在电流有效值下允许的铜损。'
+    check: {example: kg-inductor, name: P_cu, tol: 0.01}
+  - id: core
+    text: '表中满足该 $K_g$ 的最小磁芯，及其超出所需值的幅度。'
+  - id: turns
+    text: '设计工具中按 $A_\mathrm{min}$ 计算、满足 $B_\mathrm{max}$ 的最少匝数，并经手工核对。'
+  - id: gap-window
+    text: '该匝数下得到所需电感量的气隙、所占窗口不超过 $K_u$ 的绕组，以及不超出预算的绕组电阻。'
+  - id: smaller-core
+    text: '在 E 25/13/7 磁芯上最先不满足的一项，以及能修正它的一处改动及其代价。'

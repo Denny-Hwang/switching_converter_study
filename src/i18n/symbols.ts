@@ -16,7 +16,7 @@ function cat(key: string): Meaning {
 }
 
 export const TOOL_SYMBOLS: Record<string, Meaning> = {
-  A_L0: { en: 'inductance factor of the ungapped set', ko: '공극 없는 세트의 인덕턴스 계수', zh: '无气隙磁芯组的电感系数' },
+  A_L0: { en: 'inductance factor of the ungapped set', ko: '공극 없는 세트의 인덕턴스 계수', zh: '无气隙整套磁芯的电感系数' },
   A_e: cat('A_e'),
   A_min: { en: 'smallest cross-section of the core', ko: '코어의 최소 단면적', zh: '磁芯最小截面积' },
   B_max: cat('B_max'),
@@ -43,7 +43,7 @@ export const TOOL_SYMBOLS: Record<string, Meaning> = {
   L_M: cat('L_M'),
   L_lk: cat('L_lk'),
   MLT: cat('MLT'),
-  M_l: { en: "layers of the winding (Dowell's M)", ko: '권선의 층 수 (Dowell의 M)' },
+  M_l: { en: "layers of the winding (Dowell's M)", ko: '권선의 층 수 (Dowell의 M)', zh: '绕组层数（Dowell 公式中的 M）' },
   N: cat('N'),
   N_p: { en: 'primary turns', ko: '1차 턴 수', zh: '一次绕组匝数' },
   P: { en: 'full-load output power', ko: '전부하 출력 전력', zh: '满载输出功率' },
@@ -101,7 +101,7 @@ export const TOOL_SYMBOLS: Record<string, Meaning> = {
   f_s: cat('f_s'),
   h_g: cat('h_g'),
   f_samp: cat('f_samp'),
-  f_sw: { en: "converter's switching frequency", ko: '컨버터의 스위칭 주파수' },
+  f_sw: { en: "converter's switching frequency", ko: '컨버터의 스위칭 주파수', zh: '变换器的开关频率' },
   k: cat('k'),
   k_s: cat('k_s'),
   l_e: cat('l_e'),

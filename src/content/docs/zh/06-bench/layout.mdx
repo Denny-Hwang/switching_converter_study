@@ -1,0 +1,76 @@
+---
+title: 开关变换器的 PCB 布局（layout）
+description: 电流在每个边沿都发生切换的高 di/dt 回路，其电感产生的电压，以及输入电容、接地层、开关节点和反馈走线的布置位置。
+sidebar:
+  order: 1
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 找出变换器中电流在每个边沿都通断切换的回路。
+- 估算该回路电感在一个边沿期间产生的电压。
+- 据此布置输入电容、接地层、开关节点和反馈走线。
+
+## 理论
+
+### 高 di/dt 回路
+
+在降压变换器中，开关管导通期间从输入电容吸取一个大小等于电感电流的脉冲；经布线相连的电源提供大约平均值的电流，并在开关管关断期间为电容补充电荷。在每个边沿，开关管、二极管（或第二个开关管）和输入电容的电流都阶跃变化一个电感电流，而电感电流继续流动 <Cite key="erickson2020" where="Ch. 2" />：由这三者构成的回路就是电流发生切换的回路，即高 di/dt 回路（hot loop）。每个回路都有电感；若一个边沿在 $t_\mathrm{edge}$ 内使电流变化 $\Delta I$，回路电感上产生的电压为（<EqRef id="ind.di" label="电感伏安关系" />）：
+
+<Eq id="layout.v_spike" />
+
+根据基尔霍夫电压定律，在开关管电流下降期间，该电压叠加在开关管两端的输入电压之上 <Cite key="alexander2017" where="Ch. 2 (Basic Laws)" />：这就是每个关断沿上的过冲（overshoot）。对于同一边沿，该电压与回路电感成正比，回路越短、越紧凑，电压越小。输入电容闭合这个回路，因此应紧挨开关管放置：TI 称它是对降压变换器的可靠工作最重要的一个元件 <Cite key="ti_slyt614" />。
+
+关断沿之后，回路电感与开关节点电容发生振铃（ringing），由振铃频率即可求出电感，而无需在回路中接入电流探头：
+
+<Eq id="layout.L_ring" />
+
+### 接地层与开关节点
+
+每块这样的电路板都应在承载功率级的外层旁边紧邻设置一个接地层（ground layer）<Cite key="adi_an136" />。开关节点（switch node）在每个边沿都在输入电压与地之间摆动，其铜箔与相邻走线之间的杂散电容（stray capacitance）中流过的电流与这一摆动的速率成正比（<EqRef id="cap.dv" label="电容伏安关系" />）。但该节点还要流过电感电流并为开关管导出热量，因此其面积也不能太小：AN-136 把它当作一个折中问题 <Cite key="adi_an136" />。
+
+### 反馈走线
+
+控制器调节的是反馈走线（feedback trace）送来的电压：走线途中拾取的电压，会像输出本身的电压一样被调节进输出。走线应尽量远离电感和噪声大的功率走线 <Cite key="ti_snva021" />，并从输出电压真正要紧的那一点引出，配有自己的回流路径（开尔文连接（Kelvin connection），见[电流检测](../current-sensing/)）。
+
+## 例题
+
+边沿相同的两个回路：
+
+<Worked example="bench-layout" />
+
+同样的电流阶跃在 <Val example="bench-layout" name="L_loop" /> 的回路中产生 <Val example="bench-layout" name="V_spike" />，而在 <Val example="bench-layout" name="L_loop_tight" /> 的更紧凑回路中只产生 <Val example="bench-layout" name="V_spike_tight" />。
+
+## 动手试试
+
+<TryIt eq="layout.v_spike" example="bench-layout" sweep="L_loop" />
+
+扫描回路电感：电压与之成正比。将 $t_\mathrm{edge}$ 减半（相当于换用更快的开关管），电压加倍。
+
+## 实验练习
+
+在变换器电路板上找出高 di/dt 回路：输入电容、开关管，以及二极管或第二个开关管。在一端接地的低侧开关管或二极管两端，用探头所允许的最短接地连接（见[探头](../probes/)）测量关断时的过冲；两个端子电位都在变动的开关管需要用差分探头。使用电流探头需要在高 di/dt 回路中加入一段导线环，而导线环本身会增加电感，因此改由边沿之后的振铃和开关节点上的全部电容来估算回路电感：全部电容为数据手册中开关管和二极管的输出电容，再加上探头的输入电容和电路板的电容。并联一个已知电容后再测一次振铃，即可一次求出全部电容（与[缓冲电路与钳位电路](../../04-magnetics/snubbers-clamps/)中的做法相同）。代入边沿的电流阶跃和下降时间，将过冲与回路电压公式比较。然后在这对开关管两端紧贴着并接一个小陶瓷电容，使回路变短，再测一次。
+
+## 易错点
+
+- **输入电容放得太远**，会使电流发生切换的回路变大，过冲也随之变大（<EqRef id="layout.v_spike" label="回路电压" />）。
+- **开关节点的铜箔太少**会过热，太多则会把其电压摆动耦合到相邻走线上：其面积是一个折中 <Cite key="adi_an136" />。
+- **探头接地线过长**会引入自身的回路，使过冲看起来比实际更大 <Cite key="adi_an1144" />（见[探头](../probes/)）。
+
+## 延伸阅读
+
+<GoDeeper ids={['adi-an136', 'ti-slyt614', 'ti-snva021']} />
+
+## 测验
+
+<Quiz id="06-bench/layout" />

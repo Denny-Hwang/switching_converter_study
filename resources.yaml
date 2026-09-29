@@ -491,7 +491,7 @@ resources:
     retrieved: 2026-09-24
     why: "How to find a ringing node's parasitic capacitance and inductance with an added capacitor, then choose the RC snubber's capacitor and its resistor from a damping factor, trading peak voltage against loss."
     why_ko: "커패시터를 더해 링잉 노드의 기생 커패시턴스와 인덕턴스를 구한 뒤, 피크 전압과 손실을 맞바꾸며 RC 스너버의 커패시터와 감쇠 계수로 정하는 저항을 고르는 방법."
-    why_zh: "如何借助外加电容求出振铃节点的寄生电容和寄生电感，再根据阻尼系数选择 RC 缓冲电路的电容和电阻，在峰值电压与损耗之间折中。"
+    why_zh: "如何借助外加电容求出振铃节点的寄生电容和寄生电感，再选择 RC 缓冲电路的电容，并按阻尼比确定其电阻，在峰值电压与损耗之间折中。"
     title_match: "Designing RC snubbers"
     urlkind: pdf
     cite: nexperia_an11160
@@ -539,7 +539,7 @@ resources:
     retrieved: 2026-09-24
     why: "Precision dc measurements, among them low resistances with the four-wire (Kelvin) method, which keeps the test leads' resistance out of the reading."
     why_ko: "정밀 직류 측정. 그중에서도 테스트 리드의 저항을 측정값에서 빼 주는 4선식(켈빈) 저저항 측정법."
-    why_zh: "精密直流测量，其中包括用四线（开尔文）法测量低电阻，该方法使测试引线的电阻不计入读数。"
+    why_zh: "精密直流测量，其中包括用四线（开尔文）法测量低电阻，该方法使表笔的电阻不计入读数。"
     title_match: "Low Level Measurements Handbook"
     urlkind: pdf
     cite: keithley_llmh7
@@ -792,7 +792,7 @@ resources:
     retrieved: 2026-09-24
     why: "How a fuse's ratings are defined, and what its current, its pulses and its ambient temperature do to it."
     why_ko: "퓨즈 정격의 정의와, 전류·펄스·주위 온도가 퓨즈에 주는 영향."
-    why_zh: "熔断器额定值如何定义，以及电流、脉冲和环境温度对熔断器的影响。"
+    why_zh: "保险丝的额定值如何定义，以及电流、脉冲和环境温度对保险丝的影响。"
     title_match: "Fuse Selection Guide"
     urlkind: pdf
     cite: littelfuse_fuseology

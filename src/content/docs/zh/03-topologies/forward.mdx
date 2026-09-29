@@ -1,0 +1,91 @@
+---
+title: 正激变换器
+description: 变压器隔离的降压变换器：电压变换比、限制占空比的变压器磁复位、复位期间的开关应力，以及输出电感纹波。
+sidebar:
+  order: 5
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Figure from '../../../../components/Figure.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import ModeSheet from '../../../../components/ModeSheet.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 计算正激（forward）变换器的电压变换比（conversion ratio）和输出电感纹波。
+- 解释为什么变压器必须在每个周期复位（reset），以及复位绕组（reset winding）如何限制占空比（duty ratio）。
+- 求出由复位绕组决定的开关应力（switch stress），以及它带来的折中（trade-off）。
+
+## 理论
+
+### 变压器隔离的降压变换器
+
+<Figure name="forward" />
+
+在正激变换器中，变压器在开关管导通期间直接传递能量：二次绕组（secondary winding）把 $n V_g$ 加到一个降压（buck）型输出级（output stage）上，该输出级由一个二极管、一个续流二极管（freewheeling diode）和一个 L-C 滤波器构成。与反激（flyback）变换器的耦合电感（coupled inductor）不同，这里的变压器并不用于储存能量 <Cite key="erickson2020" where="Ch. 6" />。其变换比等于降压变换器的变换比乘以匝比（turns ratio）：
+
+<Eq id="forward.ccm.M" />
+
+与降压变换器一样，输出电感流过负载电流（<EqRef id="buck.IL" label="电感直流电流" />）。开关管导通期间，输出电感两端电压为 $n V_g - V$：
+
+<Eq id="forward.ripple.iL" />
+
+### 变压器磁复位
+
+实际变压器的励磁电感（magnetizing inductance）是有限的，因此开关管导通期间励磁电流（magnetizing current）不断上升。励磁电流必须在下一个周期开始前回到零，否则会逐周期增大，直到磁芯饱和（saturation）<Cite key="erickson2020" where="Ch. 6" />。复位绕组在开关管关断期间把励磁能量送回输入，$n_r$ 为其匝数除以一次绕组（primary winding）匝数。对励磁电感应用伏秒平衡（volt-second balance），即得到占空比的上限：
+
+<Eq id="forward.reset.Dmax" />
+
+复位期间，复位绕组把一次绕组电压钳位（clamp）在输入电压的 $1/n_r$ 倍，且极性相反（reversed polarity），开关管阻断（block）的电压为
+
+<Eq id="forward.Vds" />
+
+复位绕组匝数越多（$n_r$ 越大），开关应力越低，但最大占空比也越低；匝数越少则相反。$n_r = 1$ 时，占空比被限制在二分之一以内，开关管阻断两倍的输入电压。
+
+### 工作模态（operating mode）
+
+本节逐个模态地考察例题的一个稳态周期。波形由本站的仿真器计算，仿真器的[工作模态视图](../../simulate/simulator/#工作模态)可对任意参数值绘出同样的图。开关管导通期间，二次绕组驱动输出电感电流流过整流二极管（rectifier diode），励磁电流上升。开关管关断后，输出电感经另一个二极管续流（freewheeling），励磁电流则经复位绕组流回输入；励磁电流降到零后，直到周期结束只剩下续流 <Cite key="erickson2020" where="Ch. 6" />。
+
+<ModeSheet example="forward-basic" topology="forward" />
+
+## 例题
+
+一次绕组与复位绕组匝数相等的正激变换器例题：
+
+<Worked example="forward-basic" show={['V_g', 'n', 'n_r', 'D', 'f_s', 'L', 'R', 'D_max', 'M', 'V', 'V_DS', 'Delta_i_L', 'I_L']} />
+
+所选占空比 <Val example="forward-basic" name="D" /> 低于上限 <Val example="forward-basic" name="D_max" />，因此变压器每个周期都能复位，开关管须阻断 <Val example="forward-basic" name="V_DS" />。
+
+## 动手试试
+
+<TryIt eq="forward.Vds" example="forward-basic" sweep="n_r" />
+
+<TrySim example="forward-basic" topology="forward" />
+
+扫描（sweep）$n_r$：复位绕组匝数越多，开关应力越低，并趋近输入电压。然后打开磁复位限制的公式，再次扫描 $n_r$，观察最大占空比随之下降。
+
+## 实验练习
+
+在单管正激评估板（evaluation board）上观察开关管电压。开关管关断期间，应能看到一个位于复位电压的平台（plateau），其持续时间等于励磁电流回到零所需的时间，随后是逐渐稳定在输入电压的振铃（ringing）。在两个占空比下测量平台的持续时间，检查复位时间是否与导通时间（on-time）成正比地增长。
+
+## 易错点
+
+- **超过磁复位限制会使磁芯饱和**。若占空比超过该限制，哪怕只是在瞬态（transient）过程中，励磁电流也无法回到零，并逐周期增大 <Cite key="erickson2020" where="Ch. 6" />；控制器中的最大占空比限制（duty-ratio clamp）可防止这种情况。
+- **复位绕组决定开关管的额定值（rating）**。选定 $n_r$，就同时确定了最大占空比和开关应力。
+- **输出级与降压变换器相同**。输出纹波、峰值电流（peak current）以及输出电感的 CCM/DCM 临界均可按[降压变换器页面](../buck/)计算，只需以 $n V_g$ 代替 $V_g$。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch6', 'coursera-converter-circuits', 'mit-6334-notes']} />
+
+## 测验
+
+<Quiz id="03-topologies/forward" />

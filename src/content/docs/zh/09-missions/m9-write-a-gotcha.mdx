@@ -1,0 +1,66 @@
+---
+title: M9 · 编写一个易错点页面
+description: 把你自己在实验台上犯过的一个错误写成本站的一个页面，从现象写到解决方法，采用合成数值和经过核实的来源，并通过本站的检查。
+sidebar:
+  order: 9
+mission:
+  id: m9
+---
+
+import TrySim from '../../../../components/TrySim.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 写下你犯过的一个错误，使后来的人能从现象认出它。
+- 解释其机理、把它与其他原因区分开的检查方法，以及解决方法，每一项都有来源支持。
+- 使页面以英文、韩文和中文通过本站的检查，或将韩文和中文页面标为待完成（pending）。
+
+## 开始之前
+
+- 阅读[易错点](../../08-gotchas/)各页面，了解其写法，并阅读仓库中的模板 `docs/GOTCHA_TEMPLATE.md`。
+- 阅读 `PRIVACY_RULES.md`：不得包含任何来自真实项目的内容，也不得出现机构、设备或部署地点的名称。
+
+## 步骤
+
+### 1. 选择错误
+
+选一个你自己犯过的错误，按你最初看到的现象来描述它，即你知道原因之前看到的样子。去掉一切属于其所在项目的内容：页面必须适用于任何设计。
+
+### 2. 复现
+
+尽可能用本站自己的工具展示其机理。变换器层面的错误常常可以在仿真器中展示，关于[锁定电源电压的固定占空比反激变换器](../../08-gotchas/flyback-source-pinning/)的易错点就是这样做的。例如，仿真器中向固定电压供电的降压变换器预设，显示的电感电流始终无法稳定：
+
+<TrySim example="sim-buck-fixed" topology="buck" />
+
+### 3. 编写页面
+
+按模板编写：先是标签，然后是现象、原因、如何确认、解决方法和参考资料。每个数值都要通过合成（synthetic）示例给出（`examples/synthetic/<name>.yaml`，用 `<Val>` 显示），或取自同一行上引用的来源。用 `<EqRef>` 链接公式；新公式要先加入 `equations.yaml`。
+
+### 4. 为每项论断提供来源
+
+关于器件或方法的每项陈述，都要引用 `references.bib` 中的来源。新条目在其 DOI 或 URL 被打开并核对一致之前，保留 `VERIFY` 标记；在此之前，任何已发布的页面都不得引用它。
+
+### 5. 运行检查
+
+运行 `python scripts/modulelint.py`、`python scripts/privacy_scan.py`、`python scripts/mathlint.py` 和 `python scripts/refcheck.py`，然后运行 `npm run build`。在 `docs/STATUS.md` 中添加该页面的行，编写韩文和中文页面，或在该文件中将它们标为待完成（中文页面在中文表中单独占一行）。若希望页面发布到本站，就提交拉取请求。
+
+## 验收标准
+
+<Mission id="m9" />
+
+## 易错点
+
+- 带着已知原因去描述的现象，对尚未找到原因的人毫无帮助。描述你看到的情况。
+- 不得使用你所从事项目中的数值，即使经过舍入也不行。应建立一个合成示例，用取整的数值显示同样的效应。
+- 没有检验的解决方法只是猜测：要说明如何判断解决方法已经生效。
+
+## 延伸阅读
+
+<GoDeeper ids={['keysight-imh', 'keithley-llmh']} />
+
+## 测验
+
+<Quiz id="09-missions/m9-write-a-gotcha" />

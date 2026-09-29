@@ -1,0 +1,78 @@
+---
+title: 电流检测
+description: 分流电阻的检测电压和负担电压，分流电阻放在低侧还是高侧，以及开尔文连接排除在读数之外的焊盘和焊点。
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 用分流电阻（shunt）把电流转换为电压，并了解它给电路带来的代价。
+- 在低侧（low side）和高侧（high side）之间为分流电阻选定位置。
+- 用开尔文连接（Kelvin connection）使焊盘和焊点不计入读数。
+
+## 理论
+
+### 分流电阻
+
+根据欧姆定律，分流电阻把电流转换为检测电压 <Cite key="alexander2017" where="Ch. 2" />：
+
+<Eq id="sense.burden" />
+
+该电压既是放大器的信号，也是负担电压（burden），即分流电阻从被测电路中占去的电压。分流电阻越大，信号越大，放大器失调所致误差的占比越小 <Cite key="ti_ina181" />，代价是负担电压更大、耗散更多（<EqRef id="loss.cond" label="导通损耗" />）。
+
+### 低侧还是高侧
+
+在**低侧**，分流电阻位于接地回流路径（ground return）中，因此负载的地比电源的地高出一个检测电压。低侧检测适合能够容忍这种地电位扰动、对成本敏感的设计；不能容忍时，高侧检测更好 <Cite key="ti_sszta51" />。在**高侧**，分流电阻的两个端子都接近电源电压，因此放大器的输入端必须能承受这一电压：电流检测放大器的规格注明其适用于低侧、高侧或两侧 <Cite key="ti_ina181" />、<Cite key="adi_ltc6101" />。
+
+### 焊盘、焊点与开尔文连接
+
+分流电阻只有几毫欧或更小时，焊点电阻在检测元件的电阻中占相当大的比例，并增大测量误差 <Cite key="osullivan2012" />。若检测连接位于焊盘外侧，放大器检测到的是电流在分流电阻和焊盘上共同产生的电压，读数在任何电流下都偏高同一比例：
+
+<Eq id="sense.pad_error" />
+
+开尔文连接把焊盘移出检测路径：采用四端子分流电阻，或把两端子分流电阻装在四焊盘（分离焊盘，split-pad）布局上 <Cite key="osullivan2012" />。LTC6101 数据手册建议，除功率最低的应用外，检测电阻都应采用开尔文连接 <Cite key="adi_ltc6101" where="Applications Information" />。
+
+放大器及其失调、输出范围和 ADC 之前的滤波器，在[电流检测链](../../design/sense-chain/)工具中逐项计算。
+
+## 例题
+
+一个没有开尔文连接的小阻值分流电阻：
+
+<Worked example="bench-sense" />
+
+在最大电流下，分流电阻也只产生 <Val example="bench-sense" name="V_SENSE" />；检测路径中 <Val example="bench-sense" name="R_pad" /> 的焊盘和焊点使读数偏高 <Val example="bench-sense" name="eps_pad" />。
+
+## 动手试试
+
+<TryIt eq="sense.pad_error" example="bench-sense" sweep="R_SENSE" />
+
+扫描分流电阻的阻值：分流电阻越小，同样的焊盘所占的比例越大。开尔文连接在任何阻值下都使 $R_\mathrm{pad}$ 为零。
+
+## 实验练习
+
+让已知电流流过电路板上的一个低阻值分流电阻。测量其两端电压两次：一次在焊盘的外端，一次在分流电阻自身的端子（或其开尔文焊盘）上。将两次读数分别与电流和分流电阻标称阻值之积比较，并由差值估算焊盘电阻。然后把分流电阻从接地回流路径移到电源侧，观察负载的地：它不再随电流变动。
+
+## 易错点
+
+- **低侧分流电阻会抬高负载的地**，抬高量为其检测电压 <Cite key="ti_sszta51" />：负载发送给以地为参考的电路的信号会随电流变动。
+- **在焊盘外侧检测**会把焊盘电阻加到分流电阻上，使每个读数都偏高一个固定比例 <Cite key="osullivan2012" />（<EqRef id="sense.pad_error" label="焊盘误差" />）。
+- **高侧分流电阻**使放大器的输入端处于电源电压：应选用规格适用于高侧检测的放大器 <Cite key="ti_ina181" />。
+
+## 延伸阅读
+
+<GoDeeper ids={['ti-sszta51', 'adi-osullivan2012']} />
+
+## 测验
+
+<Quiz id="06-bench/current-sensing" />

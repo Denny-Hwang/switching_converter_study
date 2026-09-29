@@ -92,7 +92,7 @@ symbol_table:
   R_in: {latex: "R_\\mathrm{in}", unit: "Ω", desc: "emulated (loss-free) input resistance", meaning: "emulated input resistance", meaning_ko: "등가 입력 저항(emulated resistance)", meaning_zh: "等效输入电阻（emulated resistance）", range: [1, 1.0e7], scale: log}
   R_x: {latex: "R_x", unit: "Ω", desc: "resistance carrying the current (R_DS(on), winding DCR, ESR, ...)", meaning: "resistance carrying the current", meaning_ko: "전류가 흐르는 저항", meaning_zh: "流过该电流的电阻", range: [0.001, 10], scale: log}
   r_d: {latex: "r_d", unit: "Ω", desc: "diode dynamic (slope) resistance", meaning: "diode dynamic resistance", meaning_ko: "다이오드 동저항(dynamic resistance)", meaning_zh: "二极管动态电阻（dynamic resistance）", range: [0.001, 1], scale: log}
-  R_s: {latex: "R_s", unit: "Ω", desc: "source (Thevenin) resistance", meaning: "source resistance", meaning_ko: "전원 내부 저항(source resistance)", meaning_zh: "电源内阻（source resistance）", range: [1, 1.0e7], scale: log}
+  R_s: {latex: "R_s", unit: "Ω", desc: "source (Thevenin) resistance", meaning: "source resistance", meaning_ko: "전원 내부 저항(source resistance)", meaning_zh: "源内阻（source resistance）", range: [1, 1.0e7], scale: log}
   C_bus: {latex: "C_\\mathrm{bus}", unit: "F", desc: "input bus capacitor that the source charges and the converter draws from", meaning: "input bus capacitor", meaning_ko: "입력 버스 커패시터", meaning_zh: "输入母线电容"}
   V_b: {latex: "V_b", unit: "V", desc: "open-circuit voltage of a battery (Rint model)", meaning: "battery open-circuit voltage", meaning_ko: "배터리 개방 전압(open-circuit voltage)", meaning_zh: "电池开路电压（open-circuit voltage）", range: [1, 100], scale: log}
   R_b: {latex: "R_b", unit: "Ω", desc: "internal resistance of a battery (Rint model)", meaning: "battery internal resistance", meaning_ko: "배터리 내부 저항(internal resistance)", meaning_zh: "电池内阻（internal resistance）", range: [0.001, 10], scale: log}
@@ -106,7 +106,7 @@ symbol_table:
   f_s: {latex: "f_s", unit: "Hz", desc: "switching frequency 1/T_s", meaning: "switching frequency", meaning_ko: "스위칭 주파수", meaning_zh: "开关频率", range: [1.0e3, 1.0e6], scale: log}
   t_on: {latex: "t_\\mathrm{on}", unit: "s", desc: "switch on-time", meaning: "switch on-time", meaning_ko: "스위치 온 시간(on-time)", meaning_zh: "开关管导通时间（on-time）", range: [1.0e-7, 1.0e-3], scale: log}
   t_r: {latex: "t_r", unit: "s", desc: "time the leakage current takes to fall to zero after turn-off (clamp conducting)", meaning: "time for the leakage current to reach zero", meaning_ko: "누설 전류가 0이 되는 시간", meaning_zh: "漏感电流降到零的时间"}
-  f_ring: {latex: "f_\\mathrm{ring}", unit: "Hz", desc: "ringing frequency", meaning: "ringing frequency", meaning_ko: "링잉 주파수", meaning_zh: "振铃频率（ringing）"}
+  f_ring: {latex: "f_\\mathrm{ring}", unit: "Hz", desc: "ringing frequency", meaning: "ringing frequency", meaning_ko: "링잉 주파수", meaning_zh: "振铃频率"}
   P: {latex: "P", unit: "W", desc: "power", meaning: "power", meaning_ko: "전력", meaning_zh: "功率", range: [1.0e-4, 1000], scale: log}
   P_max: {latex: "P_\\mathrm{max}", unit: "W", desc: "maximum power available from a linear source", meaning: "largest power available", meaning_ko: "최대 가용 전력", meaning_zh: "最大可用功率"}
   E_lk: {latex: "E_\\mathrm{lk}", unit: "J", desc: "energy stored in the leakage inductance at turn-off", meaning: "leakage energy per turn-off", meaning_ko: "턴오프당 누설 에너지", meaning_zh: "每次关断的漏感能量", range: [1.0e-9, 1.0e-2], scale: log}
@@ -155,14 +155,14 @@ symbol_table:
   Delta_B: {latex: "\\Delta B", unit: "T", desc: "flux-density swing, peak-to-peak", meaning: "flux-density swing, peak-to-peak", meaning_ko: "자속 밀도 변화폭, 피크-피크", meaning_zh: "磁通密度摆幅，峰峰值"}
   B_ac: {latex: "B_\\mathrm{ac}", unit: "T", desc: "peak AC flux-density amplitude (half the peak-to-peak swing)", meaning: "ac flux-density amplitude", meaning_ko: "교류 자속 밀도 진폭", meaning_zh: "交流磁通密度幅值", range: [0.01, 0.3], scale: log}
   P_v: {latex: "P_v", unit: "W/m³", desc: "core loss per unit volume", meaning: "core loss per volume", meaning_ko: "단위 체적당 코어 손실(core loss)", meaning_zh: "单位体积磁芯损耗（core loss）", range: [1.0e3, 1.0e6], scale: log}
-  k: {latex: "k", unit: "W/m³", desc: "Steinmetz coefficient (with f in Hz and B in T)", meaning: "Steinmetz coefficient", meaning_ko: "스타인메츠 계수(Steinmetz coefficient)", meaning_zh: "Steinmetz 系数（Steinmetz coefficient）", range: [0.1, 100], scale: log}
+  k: {latex: "k", unit: "W/m³", desc: "Steinmetz coefficient (with f in Hz and B in T)", meaning: "Steinmetz coefficient", meaning_ko: "스타인메츠 계수(Steinmetz coefficient)", meaning_zh: "Steinmetz 系数", range: [0.1, 100], scale: log}
   f: {latex: "f", unit: "Hz", desc: "excitation frequency", meaning: "frequency", meaning_ko: "주파수", meaning_zh: "频率", range: [1.0e3, 1.0e6], scale: log}
   alpha: {latex: "\\alpha", unit: "1", desc: "Steinmetz frequency exponent", meaning: "Steinmetz frequency exponent", meaning_ko: "스타인메츠 주파수 지수", meaning_zh: "Steinmetz 频率指数", range: [1, 2]}
   beta: {latex: "\\beta", unit: "1", desc: "Steinmetz flux-density exponent", meaning: "Steinmetz flux-density exponent", meaning_ko: "스타인메츠 자속 밀도 지수", meaning_zh: "Steinmetz 磁通密度指数", range: [2, 3]}
   B_max: {latex: "B_\\mathrm{max}", unit: "T", desc: "largest flux density a design allows (below saturation, with margin)", meaning: "largest flux density allowed", meaning_ko: "허용 최대 자속 밀도(flux density)", meaning_zh: "允许的最大磁通密度（flux density）", range: [0.05, 0.5]}
   rho_w: {latex: "\\rho_w", unit: "Ω·m", desc: "resistivity of the winding conductor", meaning: "conductor resistivity", meaning_ko: "도체 저항률(resistivity)", meaning_zh: "导体电阻率（resistivity）", range: [1.0e-8, 3.0e-8]}
   MLT: {latex: "\\mathrm{MLT}", unit: "m", desc: "mean length of one turn of a winding", meaning: "mean length per turn", meaning_ko: "1턴 평균 길이(mean length per turn)", meaning_zh: "平均匝长（mean length per turn）", range: [0.01, 0.2], scale: log}
-  W_A: {latex: "W_A", unit: "m²", desc: "window area available to a winding (a bobbin's winding area)", meaning: "winding window area", meaning_ko: "권선 창 면적(window area)", meaning_zh: "绕组窗口面积（window area）", range: [1.0e-6, 1.0e-3], scale: log}
+  W_A: {latex: "W_A", unit: "m²", desc: "window area available to a winding (a bobbin's winding area)", meaning: "winding window area", meaning_ko: "권선 창 면적(window area)", meaning_zh: "绕线窗口面积（window area）", range: [1.0e-6, 1.0e-3], scale: log}
   A_w: {latex: "A_w", unit: "m²", desc: "bare conductor area of one turn", meaning: "bare conductor area of one turn", meaning_ko: "1턴의 도체 단면적(절연 제외)", meaning_zh: "单匝的裸导体截面积", range: [1.0e-9, 1.0e-5], scale: log}
   K_u: {latex: "K_u", unit: "1", desc: "window utilization: conductor area over window area", meaning: "window utilization", meaning_ko: "창 이용률(window utilization)", meaning_zh: "窗口利用率（window utilization）"}
   R_dc: {latex: "R_\\mathrm{dc}", unit: "Ω", desc: "dc resistance of a winding", meaning: "winding dc resistance", meaning_ko: "권선 직류 저항", meaning_zh: "绕组直流电阻"}
@@ -216,7 +216,7 @@ symbol_table:
   # --- 04-magnetics: core selection, windings, coupling, snubbers, measurement -----
   K_g: {latex: "K_g", unit: "m⁵", desc: "core geometrical constant A_e² W_A / MLT", meaning: "core geometrical constant", meaning_ko: "코어 기하 상수(core geometrical constant)", meaning_zh: "磁芯几何常数（core geometrical constant）"}
   R_dcmax: {latex: "R_\\mathrm{dc,max}", unit: "Ω", desc: "largest winding dc resistance allowed: the copper-loss budget", meaning: "largest winding resistance allowed", meaning_ko: "허용되는 최대 권선 저항", meaning_zh: "允许的最大绕组电阻", range: [0.001, 1], scale: log}
-  P_rel: {latex: "P/P_\\delta", unit: "1", desc: "loss of a layer relative to that of a layer one skin depth thick carrying the same current as dc", meaning: "loss relative to a one-skin-depth layer at dc", meaning_ko: "두께가 표피 깊이인 층의 직류 손실에 대한 비", meaning_zh: "损耗与一个集肤深度厚层直流损耗之比"}
+  P_rel: {latex: "P/P_\\delta", unit: "1", desc: "loss of a layer relative to that of a layer one skin depth thick carrying the same current as dc", meaning: "loss relative to a one-skin-depth layer at dc", meaning_ko: "두께가 표피 깊이인 층의 직류 손실에 대한 비", meaning_zh: "损耗与厚一个集肤深度的层的直流损耗之比"}
   phi_opt: {latex: "\\varphi_\\mathrm{opt}", unit: "1", desc: "layer thickness of least loss, in skin depths", meaning: "layer thickness of least loss, in skin depths", meaning_ko: "손실이 가장 작은 층 두께(표피 깊이 단위)", meaning_zh: "损耗最小的层厚（以集肤深度计）"}
   k_c: {latex: "k", unit: "1", desc: "coupling coefficient of two windings, L_12/sqrt(L_11 L_22)", meaning: "coupling coefficient", meaning_ko: "결합 계수(coupling coefficient)", meaning_zh: "耦合系数（coupling coefficient）", range: [0.9, 0.999]}
   L_11: {latex: "L_{11}", unit: "H", desc: "inductance of winding 1 with winding 2 open", meaning: "inductance of winding 1, winding 2 open", meaning_ko: "권선 2를 개방했을 때 권선 1의 인덕턴스", meaning_zh: "绕组 2 开路时绕组 1 的电感", range: [1.0e-6, 0.01], scale: log}
@@ -353,7 +353,7 @@ assumption_labels:
   linear_shunt: {en: "the shunt is a linear resistor: its resistance does not change with the current", ko: "션트는 선형 저항: 저항값이 전류에 따라 변하지 않음", zh: "分流电阻为线性电阻：阻值不随电流变化"}
   good_conductor: {en: "a good conductor carrying a sinusoidal current (displacement current neglected)", ko: "정현파 전류가 흐르는 양도체(변위 전류 무시)", zh: "流过正弦电流的良导体（忽略位移电流）"}
   uniform_dc_current: {en: "a dc current spread uniformly over the conductor's cross-section", ko: "도체 단면 전체에 고르게 흐르는 직류 전류", zh: "直流电流在导体截面上均匀分布"}
-  window_field: {en: "one-dimensional field in the winding window: the MMF changes only across the layers, and the field runs along the winding breadth", ko: "권선 창 안의 1차원 자계: 기자력은 층을 가로지르는 방향으로만 변하고, 자계는 권선 폭 방향으로 향함", zh: "绕组窗口内的一维磁场：磁动势只沿穿过各层的方向变化，磁场沿绕组宽度方向"}
+  window_field: {en: "one-dimensional field in the winding window: the MMF changes only across the layers, and the field runs along the winding breadth", ko: "권선 창 안의 1차원 자계: 기자력은 층을 가로지르는 방향으로만 변하고, 자계는 권선 폭 방향으로 향함", zh: "绕线窗口内的一维磁场：磁动势只沿穿过各层的方向变化，磁场沿绕组宽度方向"}
   dowell_layers: {en: "foil layers spanning the winding breadth, a sinusoidal current, and a one-dimensional field in the window", ko: "권선 폭 전체에 걸친 박판(foil) 층, 정현파 전류, 권선 창 안의 1차원 자계", zh: "占满绕组宽度的铜箔（foil）层、正弦电流以及窗口内的一维磁场"}
   linear_temperature: {en: "resistance linear in temperature near 20 °C", ko: "20 °C 부근에서 온도에 선형인 저항", zh: "20 °C 附近电阻随温度线性变化"}
   square_equivalent: {en: "each round conductor replaced by a square conductor of the same area, the layer by a foil of that thickness", ko: "둥근 도체를 같은 면적의 정사각형 도체로, 층을 그 두께의 박판(foil)으로 대치", zh: "每根圆导体用等面积的方形导体代替，整层用该厚度的铜箔（foil）代替"}
@@ -615,7 +615,7 @@ equations:
     assumptions: [ideal, bcm, steady_state, small_ripple, resistive_load]
     notes: "the converter stays in CCM for $L > L_\\mathrm{crit}$; check the largest $R$ (lightest load) and the duty ratio that maximises $K_\\mathrm{crit}$ over the input range"
     notes_ko: "$L > L_\\mathrm{crit}$이면 CCM을 유지합니다. 가장 큰 $R$(가장 가벼운 부하)과, 입력 범위에서 $K_\\mathrm{crit}$을 최대로 만드는 듀티비에서 확인합니다"
-    notes_zh: "$L > L_\\mathrm{crit}$ 时变换器保持 CCM；应按最大的 $R$（最轻负载）以及输入范围内使 $K_\\mathrm{crit}$ 最大的占空比进行校核"
+    notes_zh: "$L > L_\\mathrm{crit}$ 时变换器保持 CCM；应按最大的 $R$（最轻负载）以及输入范围内使 $K_\\mathrm{crit}$ 最大的占空比校核"
     cite: {key: erickson2020, where: "Ch. 5 (The Discontinuous Conduction Mode)"}
     derived_by: python/pe_core/derive/dcm.py
     tests:
@@ -727,7 +727,7 @@ equations:
     assumptions: [ideal, dcm, steady_state]
     notes: "the average input current is proportional to $V_g$; the power is passed on, not dissipated"
     notes_ko: "평균 입력 전류가 $V_g$에 비례합니다. 전력은 소산되지 않고 출력으로 전달됩니다"
-    notes_zh: "平均输入电流与 $V_g$ 成正比；功率被传递出去，而不是被耗散"
+    notes_zh: "平均输入电流与 $V_g$ 成正比；功率传递出去，而不是耗散掉"
     cite:
       - {key: singer1990}
       - {key: erickson2020, where: "Ch. 15 (AC and DC Equivalent Circuit Modeling of the Discontinuous Conduction Mode)"}
@@ -844,7 +844,7 @@ equations:
     convention_zh: "$\\Delta v$ 为纹波峰峰值的一半（Erickson）"
     notes: "while the switch is on the diode is off and the capacitor alone supplies the load, as in the buck-boost"
     notes_ko: "스위치가 켜져 있는 동안에는 다이오드가 꺼져 있으므로, 벅-부스트와 마찬가지로 커패시터 혼자 부하에 전류를 공급합니다"
-    notes_zh: "与升降压变换器相同，开关管导通期间二极管截止，由电容单独向负载供电"
+    notes_zh: "与升降压变换器相同，开关管导通期间二极管关断，由电容单独向负载供电"
     cite: {key: erickson2020, where: "Ch. 6 (Converter Circuits); derived here by charge balance"}
     derived_by: python/pe_core/derive/flyback.py
     tests:
@@ -1422,7 +1422,7 @@ equations:
     assumptions: [good_conductor]
     notes: "the current density falls by a factor $e$ for every skin depth into the conductor; conductors much thicker than $\\delta$ carry the current in a surface layer"
     notes_ko: "전류 밀도는 도체 안으로 표피 깊이만큼 들어갈 때마다 $e$분의 1로 줄어듭니다. $\\delta$보다 훨씬 두꺼운 도체에서는 전류가 표면층으로만 흐릅니다"
-    notes_zh: "电流密度每深入导体一个集肤深度，就按因子 $e$ 衰减；远厚于 $\\delta$ 的导体只在表面层中通过电流"
+    notes_zh: "电流密度每深入导体一个集肤深度，就减小到原来的 $e$ 分之一；远厚于 $\\delta$ 的导体只在表面层中通过电流"
     cite: {key: erickson2020, where: "Ch. 10 (Basic Magnetics Theory: eddy currents in winding conductors); derived here"}
     derived_by: python/pe_core/derive/windings.py
     tests:
@@ -2016,7 +2016,7 @@ equations:
     assumptions: [ideal_amplifier]
     notes: "the amplifier multiplies the sense voltage by its gain and adds the REF voltage, so a current of either sign swings the output either side of $V_\\mathrm{REF}$; the output cannot quite reach the supply rails"
     notes_ko: "증폭기가 센스 전압에 이득을 곱하고 REF 전압을 더하므로, 전류의 부호에 따라 출력이 $V_\\mathrm{REF}$ 위아래로 움직입니다. 출력은 전원 레일까지 완전히 도달하지 못합니다"
-    notes_zh: "放大器将检测电压乘以其增益，再加上 REF 电压，因此电流无论正负，输出都可在 $V_\\mathrm{REF}$ 两侧摆动；输出无法完全达到电源轨"
+    notes_zh: "放大器将检测电压乘以其增益，再加上 REF 电压，因此输出随电流的正负摆向 $V_\\mathrm{REF}$ 的上方或下方；输出无法完全达到电源轨"
     cite: {key: ti_ina181, where: "Equation 1, from its definitions of the load current, the sense resistor, the gain and the REF voltage"}
     derived_by: python/pe_core/derive/sensing.py
     tests:
@@ -2476,7 +2476,7 @@ equations:
     assumptions: [small_signal, real_loop_gain]
     notes: "at frequencies where $T \\gg 1$ a disturbance is divided by roughly $T$"
     notes_ko: "$T \\gg 1$인 주파수에서 외란은 대략 $T$로 나누어집니다"
-    notes_zh: "在 $T \\gg 1$ 的频率上，扰动大致被除以 $T$"
+    notes_zh: "在 $T \\gg 1$ 的频率上，扰动大致减小到原来的 $T$ 分之一"
     cite: {key: erickson2020, where: "Ch. 9 (Controller Design)"}
     derived_by: python/pe_core/derive/control.py
     tests:
@@ -3349,7 +3349,7 @@ equations:
     assumptions: [test_equation, fixed_step]
     notes: "the rule averages the slopes at both ends of the step. Its factor stays between -1 and 1 for any step (the rule is A-stable), but a step much longer than $\\tau$ gives a factor close to -1: the mode is hardly damped and changes sign every step, a ringing from one step to the next that the circuit does not have. ngspice integrates with this rule unless told otherwise"
     notes_ko: "이 규칙은 스텝 양 끝의 기울기를 평균합니다. 배율은 스텝 길이와 관계없이 -1과 1 사이에 머물지만(A-안정), 스텝이 $\\tau$보다 훨씬 길면 배율이 -1에 가까워집니다. 그러면 모드가 거의 감쇠하지 않고 스텝마다 부호를 바꾸는, 회로에는 없는 링잉이 생깁니다. ngspice는 따로 지정하지 않으면 이 규칙으로 적분합니다"
-    notes_zh: "该方法取每步两端斜率的平均值。任意步长下其放大因子都在 -1 与 1 之间（该方法是 A-稳定的），但步长远大于 $\\tau$ 时放大因子接近 -1：该模态几乎不衰减，且每一步都改变符号，形成电路本身并不存在的逐步振铃。如无另行指定，ngspice 采用该方法积分"
+    notes_zh: "该方法取每步两端斜率的平均值。任意步长下其放大因子都在 -1 与 1 之间（该方法是 A 稳定的），但步长远大于 $\\tau$ 时放大因子接近 -1：该模态几乎不衰减，且每一步都改变符号，形成电路本身并不存在的逐步振铃。如无另行指定，ngspice 采用该方法积分"
     cite:
       - {key: hairer1996, where: "Sec. IV.3 (Stability Function of Implicit RK-Methods: the trapezoidal rule is A-stable, |R| tends to 1); derived here"}
       - {key: ngspice_manual, where: ".options, transient analysis: METHOD, trapezoidal by default"}
@@ -3368,7 +3368,7 @@ equations:
     assumptions: [test_equation, fixed_step]
     notes: "the rule takes the slope at the end of the step. Its factor lies between 0 and 1 for any step and tends to zero as the step grows (the rule is L-stable): a mode much faster than the step is almost gone after one step, without ringing. It is the first of the backward differentiation formulas, which ngspice uses, up to the second by default, when .options method=gear asks for Gear's method"
     notes_ko: "이 규칙은 스텝 끝의 기울기를 씁니다. 배율은 스텝 길이와 관계없이 0과 1 사이이고 스텝이 길수록 0에 가까워집니다(L-안정). 스텝보다 훨씬 빠른 모드는 링잉 없이 한 스텝 뒤에 거의 사라집니다. 후진 차분 공식(backward differentiation formula) 가운데 첫 번째이며, .options method=gear로 기어(Gear) 방법을 지정하면 ngspice는 이 공식들을 기본적으로 두 번째까지 씁니다"
-    notes_zh: "该方法取每步终点的斜率。任意步长下其放大因子都在 0 与 1 之间，且随步长增大趋于零（该方法是 L-稳定的）：比步长快得多的模态经过一步后几乎消失，且不产生振铃。它是后向差分公式（backward differentiation formula）中的第一个；当 .options method=gear 指定 Gear 法时，ngspice 使用这类公式，默认最高到第二个"
+    notes_zh: "该方法取每步终点的斜率。任意步长下其放大因子都在 0 与 1 之间，且随步长增大趋于零（该方法是 L 稳定的）：比步长快得多的模态经过一步后几乎消失，且不产生振铃。它是后向差分公式（backward differentiation formula）中的第一个；当 .options method=gear 指定 Gear 法时，ngspice 使用这类公式，默认最高到第二个"
     cite:
       - {key: hairer1996, where: "Sec. IV.3 (implicit Euler is L-stable) and Ch. V (Multistep Methods for Stiff Problems: backward differentiation formulas, the first of which is implicit Euler); derived here"}
       - {key: ngspice_manual, where: ".options, transient analysis: METHOD=gear, and MAXORD, 2 by default"}

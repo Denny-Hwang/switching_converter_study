@@ -1,0 +1,78 @@
+---
+title: 基本变换器的比较
+description: 并列比较降压、升压、升降压、反激和正激变换器的变换范围、开关应力与开关管利用率、控制难度以及隔离。
+sidebar:
+  order: 6
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 根据变换范围（conversion range）、隔离（isolation）和控制难度，在各基本变换器之间作出选择。
+- 用一个数值，即开关管利用率（transistor utilization），比较各变换器让其开关管承受的负担。
+- 了解哪些变换器有右半平面（right-half-plane, RHP）零点，哪些变换器的输入电流或输出电流是脉冲式的。
+
+## 理论
+
+### 变换范围与隔离
+
+降压（buck）变换器只能降压（step down），升压（boost）变换器只能升压（step up）（<EqRef id="buck.ccm.M" label="降压变换器" />、<EqRef id="boost.ccm.M" label="升压变换器" />）。升降压（buck-boost）变换器既能降压也能升压，但输出反相（inverted output）（<EqRef id="buckboost.ccm.M" label="升降压变换器" />）。反激（flyback）变换器和正激（forward）变换器增加了一个变压器：输出是隔离的，变换范围随匝比（turns ratio）成比例变化（<EqRef id="flyback.ccm.M" label="反激变换器" />、<EqRef id="forward.ccm.M" label="正激变换器" />）<Cite key="erickson2020" where="Ch. 6" />。
+
+### 开关管应力与利用率
+
+若变换器为传递给定功率，需要额定值（rating）为高电压、高电流有效值（rms current）的开关管，则它对该开关管的利用很差。一种性能指标（figure of merit）是**开关管利用率**：负载功率除以开关管峰值电压与其电流有效值之积 <Cite key="erickson2020" where="Ch. 6" />。纹波很小时，开关管电流是持续 $D T_s$ 的平顶脉冲，利用率只取决于占空比（duty ratio）：
+
+<Eq id="util.buck" />
+
+<Eq id="util.boost" />
+
+<Eq id="util.buckboost" />
+
+<Eq id="util.forward" />
+
+降压变换器在占空比大时几乎能完全利用开关管。升压变换器在占空比小、即只少量升压时最好。升降压变换器和反激变换器最差，因为其开关管要阻断（block）输入电压与反射输出电压（reflected output voltage）之和；它们的利用率在 $D = 1/3$ 时达到最大。$n_r = 1$ 的正激变换器受限于 $D \le 0.5$，且要阻断两倍的输入电压，这也使其利用率存在上限。推导（derivation）见[推导页面](../../02-theory/derivations/#deriv-topologies)。
+
+### 控制与电流波形
+
+降压变换器和正激变换器经 L-C 滤波器向输出供电，没有右半平面零点。升压、升降压和反激变换器只在关断区间（off-interval）向输出传递能量，由此产生限制其环路带宽（loop bandwidth）的[右半平面零点](../../02-theory/rhp-zero/)。降压变换器的输入电流是脉冲式的，输出电流是连续的；升压变换器正好相反；升降压变换器和反激变换器在两个端口的电流都是脉冲式的 <Cite key="erickson2020" where="Ch. 6" />。
+
+## 例题
+
+各拓扑取相同的占空比：
+
+<Worked example="comparison-basic" />
+
+在该占空比下，降压变换器的利用率 <Val example="comparison-basic" name="U_buck" /> 远高于升降压变换器的利用率 <Val example="comparison-basic" name="U_bb" />：负载功率相同时，升降压变换器需要额定电压与额定电流之积更大的开关管。
+
+## 动手试试
+
+<TryIt eq="util.buckboost" example="comparison-basic" sweep="D" />
+
+将 $D$ 从 0 扫描（sweep）到 1，找出升降压变换器和反激变换器利用率的最大值。然后打开降压变换器和升压变换器的利用率公式，比较各条曲线。
+
+## 实验练习
+
+用电流探头（current probe）和能计算有效值的示波器，在两块拓扑不同、输出功率相近的评估板（evaluation board）上测量开关管电流和漏源电压（drain-source voltage）。由峰值电压、电流有效值和实测输出功率计算每个开关管的利用率，并将结果与上面各公式在实测占空比下的值比较。
+
+## 易错点
+
+- **利用率只比较开关管**。它不考虑二极管应力、磁性元件（magnetics）尺寸、开关损耗和电容的纹波电流；应将其作为多个判据之一使用。
+- **小纹波假设（small-ripple assumption）使纹波大的变换器显得更好**。电流纹波大时，电流有效值高于平顶脉冲的值，实际利用率随之降低。
+- **隔离是一项要求，而不是性能指标**。若应用需要电气隔离（galvanic isolation），则无论利用率如何，只有基于变压器的拓扑才符合要求。
+
+## 延伸阅读
+
+<GoDeeper ids={['erickson-ch6', 'mit-6334-notes', 'coursera-converter-circuits']} />
+
+## 测验
+
+<Quiz id="03-topologies/comparison" />

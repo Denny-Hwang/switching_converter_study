@@ -1,0 +1,105 @@
+---
+title: 升降压变换器
+description: 既能降压也能升压的反相变换器：输出电压的大小、电感电流、纹波，以及由输入电压与输出电压之和决定的开关应力。
+sidebar:
+  order: 3
+module: true
+---
+
+import Eq from '../../../../components/Eq.astro';
+import EqRef from '../../../../components/EqRef.astro';
+import Cite from '../../../../components/Cite.astro';
+import Figure from '../../../../components/Figure.astro';
+import Worked from '../../../../components/Worked.astro';
+import Val from '../../../../components/Val.astro';
+import TryIt from '../../../../components/TryIt.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import ModeSheet from '../../../../components/ModeSheet.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 计算升降压（buck-boost）变换器在给定工作点（operating point）的输出电压大小、电感电流和纹波。
+- 解释为什么其开关管和二极管必须阻断（block）输入电压与输出电压之和。
+- 将其电流和应力（stress）与降压（buck）变换器、升压（boost）变换器作比较。
+
+## 理论
+
+### 电路与电压变换比
+
+<Figure name="buck-boost" />
+
+升降压变换器通过开关管把电感接到输入，通过二极管把电感接到输出。开关管导通期间，电感储存来自输入的能量；二极管导通（conduction）期间，电感把这些能量以相反的极性释放到输出 <Cite key="erickson2020" where="Ch. 2" />。因此电压变换比（conversion ratio）为负（<EqRef id="buckboost.ccm.M" label="升降压变换器的电压变换比" />）。用输出电压的大小表示：
+
+<Eq id="buckboost.V" />
+
+$D < 0.5$ 时降压（step down），$D > 0.5$ 时升压（step up）。
+
+### 电感电流与纹波
+
+输入和输出从不同时接到电感上，因此电感电流只在关断区间（off-interval）到达输出。由电荷平衡（charge balance）得到与升压变换器形式相同的结果：
+
+<Eq id="buckboost.IL" />
+
+开关管导通期间，电感两端电压为输入电压：
+
+<Eq id="buckboost.ripple.iL" />
+
+开关管和二极管都要流过电感电流的峰值（<EqRef id="ripple.Ipk" label="峰值电流" />）。
+
+### 输出电压纹波
+
+与升压变换器一样，开关管导通期间由电容单独向负载供电 <Cite key="erickson2020" where="Ch. 2" />：
+
+<Eq id="buckboost.ripple.v" />
+
+其输入电流和输出电流都是脉冲式的（pulsed）：输入只在导通区间（on-interval）取用电流，输出只在关断区间得到电流。
+
+### 开关应力
+
+二极管导通期间，开关管另一端的电位为（负的）输出电压，因此开关管阻断输入电压与输出电压大小之和；开关管导通期间，由二极管阻断同样的和 <Cite key="erickson2020" where="Ch. 6" />：
+
+<Eq id="buckboost.Vds" />
+
+这个和既大于输入电压，也大于输出电压：这是用单级（single stage）电路实现升压和降压的代价。其小信号模型（small-signal model）也有一个右半平面（right-half-plane, RHP）零点（<EqRef id="buckboost.ss.wz" label="RHP 零点" />）。反激（flyback）变换器是该电路的变压器隔离（isolation）形式（见[反激变换器页面](../flyback/)）。
+
+### 工作模态（operating mode）
+
+本节逐个模态地考察例题的一个稳态周期。波形由本站的仿真器计算，仿真器的[工作模态视图](../../simulate/simulator/#工作模态)可对任意参数值绘出同样的图。在 CCM 下，一个周期包含两个模态：开关管导通，电感从输入储能，同时由电容单独向负载供电；随后开关管关断，二极管把电感电流送入输出，将输出充电至负电压 <Cite key="erickson2020" where="Ch. 2" />。
+
+<ModeSheet example="buckboost-basic" topology="buckboost" />
+
+## 例题
+
+[伏秒平衡（volt-second balance）页面](../../02-theory/volt-second-charge-balance/)中的升降压变换器例题：
+
+<Worked example="buckboost-basic" show={['V_g', 'D', 'f_s', 'L', 'C', 'R', 'V', 'I_L', 'Delta_i_L', 'I_pk', 'Delta_v', 'V_DS', 'K', 'K_crit']} />
+
+在该占空比（duty ratio）下，输出电压的大小等于输入电压，但开关管须阻断 <Val example="buckboost-basic" name="V_DS" />，并流过峰值为 <Val example="buckboost-basic" name="I_pk" /> 的电流。
+
+## 动手试试
+
+<TryIt eq="buckboost.Vds" example="buckboost-basic" sweep="V" />
+
+<TrySim example="buckboost-basic" topology="buckboost" />
+
+扫描（sweep）输出电压的大小 $V$：输出每增加一伏，开关应力就在输入电压之上再增加一伏。
+
+## 实验练习
+
+在升降压（反相）评估板（evaluation board）上，将示波器的接地夹（ground clip）接在变换器的地上测量输出：输出为负。测量开关管关断期间的开关管电压，并将其与输入电压和输出电压大小之和比较；然后用电流探头（current probe）观察输入电流，注意它以脉冲形式流动。
+
+## 易错点
+
+- **输出是反相的**。假定输出为正的负载、测量或反馈分压器（feedback divider）会读错极性，或按错误的极性调节。
+- **输入端和输出端都流过脉冲电流**。与降压变换器（输出电流连续）或升压变换器（输入电流连续）不同，输入电容和输出电容都流过很大的纹波电流。
+- **应力随两个电压一起增大**。升压比高时，开关应力主要来自输出电压的大小；降压幅度大时，主要来自输入电压。
+
+## 延伸阅读
+
+<GoDeeper ids={['ti-slva059', 'erickson-ch6', 'coursera-converter-circuits']} />
+
+## 测验
+
+<Quiz id="03-topologies/buck-boost" />

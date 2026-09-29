@@ -1,0 +1,73 @@
+---
+title: M6 · 用 DCM 反激变换器匹配电源
+description: 把以固定占空比工作于 DCM 的反激变换器视为无损电阻，使其与线性源匹配，并找出匹配在何处结束：CCM 开始起作用，开关管电压随之升高。
+sidebar:
+  order: 6
+mission:
+  id: m6
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Cite from '../../../../components/Cite.astro';
+import TryTool from '../../../../components/TryTool.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 求出线性源所能提供的功率，以及以固定占空比工作于 DCM 的反激变换器的输入电阻。
+- 选择使二者匹配（matching）的励磁电感（magnetizing inductance），并校核匹配时的母线电压和功率。
+- 找出匹配的限制：失配的占空比、强电源下的 CCM，以及开关管的额定值。
+
+## 开始之前
+
+- 阅读[电源模型](../../07-harvesting/source-models/)、[匹配](../../07-harvesting/matching/)和[作为无损电阻（loss-free resistor）的 DCM 反激变换器](../../07-harvesting/lfr-dcm-flyback/)。
+- 在固定占空比的 DCM 下，反激变换器的平均输入电流与其输入电压成正比：其输入端是一个电阻，但它把功率传递出去，而不是将其耗散 <Cite key="singer1990" />。
+
+## 步骤
+
+### 1. 电源
+
+示例电源的开路电压为 <Val example="source-lfr" name="V_oc" />，源内阻为 <Val example="source-lfr" name="R_s" />。求出它所能提供的最大功率（<EqRef id="src.Pmax" label="线性源的最大功率" />）。
+
+### 2. 反激变换器的输入电阻
+
+反激变换器工作在 $f_s$ = <Val example="source-lfr" name="f_s" />、$D$ = <Val example="source-lfr" name="D" /> 下，$L_M$ = <Val example="source-lfr" name="L_M" />。求出它的输入电阻（<EqRef id="lfr.R_in" label="无损电阻" />），并与源内阻比较。
+
+### 3. 按匹配设计
+
+把问题反过来：在此占空比和开关频率下，多大的励磁电感能使输入电阻等于源内阻（<EqRef id="lfr.L_M" label="给定电阻所需的励磁电感" />）？
+
+### 4. 匹配时的母线
+
+两个电阻对电源电压分压（<EqRef id="lfr.Vg" label="无损电阻的母线电压" />）。求出母线电压，然后用该示例打开源匹配，在其中读出相同的数值：
+
+<TryTool tool="source-matcher" example="source-lfr" />
+
+### 5. 失配的占空比
+
+在工具中把 $D$ 加倍。预测新的输入电阻，以及反激变换器从可用功率中取得的比例（<EqRef id="lfr.eta" label="无损电阻的功率提取比" />），再与工具的结果比较。
+
+### 6. 匹配在何处结束
+
+将 $D$ 恢复原值，提高电源的开路电压。找出母线电压达到临界输入电压（critical input voltage，<EqRef id="flyback.V_crit" label="临界输入电压" />）、并由 CCM 保持在该值时的电源幅值。读出此时的开关管电压，并与开关管的额定值 <Val example="source-lfr" name="V_rating" /> 比较。
+
+## 验收标准
+
+<Mission id="m6" />
+
+## 易错点
+
+- 输入电阻与占空比的平方成反比：$D$ 的微小误差就会使匹配点大幅移动。
+- 反激变换器只在 DCM 下表现为电阻。高于临界电压时，CCM 把母线电压保持住，反激变换器成为恒压负载（constant-voltage sink），它取得的功率比例取决于电源幅值。
+- 同一电阻上要通过更大的功率，就需要更高的母线电压，而开关管要阻断母线电压加反射输出电压。应按最强的电源校核额定值。
+
+## 延伸阅读
+
+<GoDeeper ids={['singer1990-ieee', 'erickson-ch15']} />
+
+## 测验
+
+<Quiz id="09-missions/m6-lfr-matching" />

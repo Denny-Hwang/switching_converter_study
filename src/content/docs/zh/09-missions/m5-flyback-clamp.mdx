@@ -1,0 +1,81 @@
+---
+title: M5 · 反激变换器的电压与一次侧钳位电路
+description: 求出反激变换器的开关管和二极管电压，再加入漏感，确定一个使开关管不超出其额定值的一次侧钳位电路，并给出它的钳位损耗。
+sidebar:
+  order: 5
+mission:
+  id: m5
+---
+
+import EqRef from '../../../../components/EqRef.astro';
+import Val from '../../../../components/Val.astro';
+import Cite from '../../../../components/Cite.astro';
+import TrySim from '../../../../components/TrySim.astro';
+import TryTool from '../../../../components/TryTool.astro';
+import Mission from '../../../../components/Mission.astro';
+import GoDeeper from '../../../../components/GoDeeper.astro';
+import Quiz from '../../../../components/Quiz.astro';
+
+## 目标
+
+- 求出反激（flyback）变换器的开关管和输出二极管所阻断的电压，并在仿真器中核对开关管的电压。
+- 加入漏感（leakage inductance），了解为什么需要钳位电路（clamp）。
+- 确定一个与开关管额定值之间留有裕量的 RCD 或 TVS 钳位电路，并说明它在耗散功率和空载时所允许的输出电压两方面的代价。
+
+## 开始之前
+
+- 阅读[反激变换器](../../03-topologies/flyback/)、[漏感](../../04-magnetics/leakage/)和[缓冲电路与钳位电路](../../04-magnetics/snubbers-clamps/)。
+- 匝比为 1:$n$，其中 $n$ 为二次绕组匝数除以一次绕组匝数，因此一次侧所见的是输出电压除以 $n$。
+
+## 步骤
+
+### 1. 理想反激变换器的电压
+
+CCM 反激变换器示例的参数为 $V_g$ = <Val example="flyback-ccm" name="V_g" />、$n$ = <Val example="flyback-ccm" name="n" /> 和 $D$ = <Val example="flyback-ccm" name="D" />。求出它的输出电压、开关管关断期间阻断的电压（<EqRef id="flyback.Vds_off" label="关断时的开关管电压" />），以及开关管导通期间输出二极管的反向电压（<EqRef id="flyback.diode.VR" label="二极管反向电压" />）。将后两个电压填入下方。
+
+### 2. 在仿真器中核对
+
+在仿真器中打开该示例，将图表下方表格中的开关管电压与你的计算值比较：
+
+<TrySim example="flyback-ccm" topology="flyback" />
+
+仿真器中的变压器没有漏感，因此开关管电压在关断时没有尖峰：它直接跃升到输入电压加反射电压（reflected voltage）。
+
+### 3. 反射电压
+
+存在漏感时，开关管关断的瞬间，漏感中仍流着一次电流的峰值，它把漏极电压推高到输入电压加反射电压以上，直到被钳位电路限制 <Cite key="ti_ssztcv6" />。钳位示例是在更高输入电压下工作的同类反激变换器。求出它们的反射电压（<EqRef id="flyback.V_OR" label="反射电压" />）：任何钳位电路的钳位电压都必须高于该值。
+
+### 4. RCD 钳位电路
+
+用 RCD 示例打开钳位检查：
+
+<TryTool tool="clamp-check" example="clamp-rcd" />
+
+将它给出的开关管电压填入下方。该电压距开关管额定值 <Val example="clamp-rcd" name="V_rating" /> 的裕量很小。调整电阻，直到裕量至少为额定值的十分之一，并记下此时的钳位损耗。钳位电路在电压与损耗之间折中 <Cite key="ti_ssztcv6" />。
+
+### 5. TVS 钳位电路与空载
+
+打开同一工作点下的 TVS 示例：
+
+<TryTool tool="clamp-check" example="clamp-tvs" />
+
+记下它的钳位电压、损耗，以及空载时它所允许的输出电压（<EqRef id="flyback.V_ceiling" label="钳位电路决定的输出电压上限" />）。将该上限填入下方，并与 RCD 钳位电路的空载行为比较，工具会对后者发出警告。
+
+## 验收标准
+
+<Mission id="m5" />
+
+## 易错点
+
+- 反射电压包含二极管压降：一次侧的电压是输出电压加上该压降，再除以 $n$。
+- 钳位电压接近反射电压时，对开关管看似安全，但此时漏感电流需要很长时间才能复位，钳位电路吸收的能量远多于漏感能量 <Cite key="ti_ssztcv6" />。复位需要整个周期时，工具会发出警告。
+- 同时按最高输入电压和最大峰值电流校核开关管，即使二者从不同时出现：这样做是保守的。
+- RCD 钳位电路只有在输出吸收功率时才能维持其电压。空载时，其电阻必须耗散全部能量，各电压会升到远高于此处计算值的水平（钳位检查中的[空载时的输出电压](../../design/clamp-check/#空载时的输出电压)）。
+
+## 延伸阅读
+
+<GoDeeper ids={['ti-ssztcv6', 'erickson-ch6']} />
+
+## 测验
+
+<Quiz id="09-missions/m5-flyback-clamp" />
