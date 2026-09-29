@@ -42,7 +42,7 @@ text (pull requests #28 to #31). The numbers, equations, citations and quiz answ
   natural engineering Korean in the -ㅂ니다 style, with one vocabulary across pages, UI and catalogue.
   BUILD_SPEC §8 states the rules. (#29)
 - **Three languages.** The landing page, About, the missions index, M9 and the simulator page no
-  longer say "bilingual". M9 also asks for the Chinese page, as a new criterion; ticks already given
+  longer speak of two languages. M9 also asks for the Chinese page, as a new criterion; ticks already given
   keep their ids. CLAUDE.md and BUILD_SPEC name the Chinese version. (#30)
 - **Link checks.** CLAUDE.md's link check copies the site under the Pages path and runs the lychee
   binary, as CI does. `resources_check` tries a URL that neither its host nor the Internet Archive
@@ -56,8 +56,9 @@ text (pull requests #28 to #31). The numbers, equations, citations and quiz answ
   - the window utilization K_u is the share of the window that can be wound, not the copper's actual
     share (`04-magnetics/design-procedure`);
   - the RCD clamp settles where the resistor dissipates the power the clamp takes, not a power of the
-    resistor's own (`08-gotchas/flyback-open-load`);
-  - in the note of `loop.T` (the loop gain), the phases of the factors add, not their magnitudes.
+    resistor's own (`08-gotchas/flyback-open-load`).
+- **The note of `loop.T`** (the loop gain), in English and Korean: the phases of the factors add, not
+  their magnitudes. (#29)
 - **M1's install command** is the README's, `pip install -e "python[dev,figures]"`: without the
   extras, its step 5 could not run pytest. (#29)
 - **The simulator page** says "Further suites", since three follow, not two; in Korean too, the SPICE
@@ -166,9 +167,11 @@ Not in this release: the converter designer's DCM target, and the topologies the
   BUILD_SPEC §8에 있습니다.
 - **링크 검사.** CLAUDE.md의 링크 검사 명령이 CI와 같아졌습니다. `resources_check`는 호스트와 인터넷
   아카이브(Internet Archive)가 모두 응답하지 않은 URL을 60초, 180초, 300초 뒤에 다시 확인합니다.
-- **고친 내용.** 한국어에서 창 이용률 K_u의 뜻, RCD 클램프의 전력 균형, `loop.T`의 설명(인수들의 위상이
-  더해짐)을 영어와 같게 바로잡았습니다. M1의 설치 명령은 README와 같은
-  `pip install -e "python[dev,figures]"`입니다.
+- **고친 내용.** 한국어에서 창 이용률 K_u의 뜻과 RCD 클램프의 전력 평형을 영어와 같게 바로잡았습니다.
+  `loop.T`의 설명(인수들의 위상이 더해짐)은 영어와 한국어 모두에서 고쳤습니다. M1의 설치 명령은 README와 같은
+  `pip install -e "python[dev,figures]"`입니다. 시뮬레이터 페이지는 이어지는 테스트 묶음이 둘이 아니라
+  셋이므로 "그 밖의 테스트 묶음"이라고 쓰며, 한국어에서도 SPICE 비교의 기본 온 저항은 넷리스트와 같은
+  1 mΩ입니다.
 - **이번 릴리스.** 모든 패키지의 버전을 0.2.0으로 맞추고, 이 변경 기록에 중국어 요약을 더했습니다.
 
 ### [0.1.0] - 2026-09-28
@@ -215,38 +218,38 @@ Not in this release: the converter designer's DCM target, and the topologies the
 
 新增第三种语言简体中文，并修订了英文和韩文的措辞（PR #28 至 #31）。除下列更正外，数值、公式、引用和测验答案与 0.1.0 相同。
 
-- **中文页面。** 全部 90 个页面、55 套测验和 9 个任务的验收标准都有中文版，位于与英文页面对应的 `/zh/` 路径下。各页面的标题顺序、组件、公式、带单位的数值和链接与英文页面一致，并由第二位审阅者对照英文逐页审阅。正文采用中国大陆教材的文体，术语首次出现时在括号中给出英文。
-- **中文工具与数据。** 界面文字、工作模态视图、工具的符号含义、图题与替代文本、示例名称、预设、资料说明、公式目录和推导步骤都有中文。工具截图和 README 插图有中文版，README 有中文部分。
-- **按语言设定标点。** 代码拼接译文时使用的冒号、列表分隔符、括号和句间空格按语言设定：中文使用全角标点，句间不留空格。
+- **中文页面**。全部 90 个页面、55 套测验和 9 个任务的验收标准都有中文版，位于与英文页面对应的 `/zh/` 路径下。各页面的标题顺序、组件、公式、带单位的数值和链接与英文页面一致，并由第二位审阅者对照英文逐页审阅。正文采用中国大陆教材的文体，术语首次出现时在括号中给出英文。
+- **中文工具与数据**。界面文字、工作模态视图、工具的符号含义、图题与替代文本、示例名称、预设、资料说明、公式目录和推导步骤都有中文。工具截图和 README 插图有中文版，README 有中文部分。
+- **按语言设定标点**。代码拼接译文时使用的冒号、列表分隔符、括号和句间空格按语言设定：中文使用全角标点，句间不留空格。
 - **术语表**（`docs/GLOSSARY.md`）。以英文、韩文和中文列出本站术语。
-- **中文检查。** 像检查韩文页面一样，逐对比较英文与中文页面；公式目录的中文字段和每个工具输入项的中文含义为必填项；浏览器检查也打开中文页面。
-- **措辞修订。** 删去英文和韩文中交代写法的语句和重复的附带说明；韩文统一为自然的工程用语和 -ㅂ니다 体，页面、界面和公式目录使用同一套术语。规则见 BUILD_SPEC §8。
-- **链接检查。** CLAUDE.md 中的链接检查命令与 CI 一致；对主机和互联网档案馆（Internet Archive）均未应答的 URL，`resources_check` 在 60 s、180 s 和 300 s 后重试。
-- **更正。** 韩文中窗口利用率 K_u 的含义、RCD 钳位的功率平衡以及 `loop.T` 的说明（各因子的相位相加）已与英文一致；M1 的安装命令与 README 相同，为 `pip install -e "python[dev,figures]"`。
-- **本次发布。** 所有软件包的版本统一为 0.2.0，本变更记录增加中文摘要。
+- **中文检查**。像检查韩文页面一样，逐对比较英文与中文页面；公式目录的中文字段和每个工具输入项的中文含义为必填项；浏览器检查也打开中文页面。
+- **措辞修订**。删去英文和韩文中交代写法的语句和重复的附带说明；韩文统一为自然的工程用语和 -ㅂ니다 体，页面、界面和公式目录使用同一套术语。规则见 BUILD_SPEC §8。
+- **链接检查**。CLAUDE.md 中的链接检查命令与 CI 一致；对主机和互联网档案馆（Internet Archive）均未应答的 URL，`resources_check` 在 60 s、180 s 和 300 s 后重试。
+- **更正**。韩文中窗口利用率 K_u 的含义和 RCD 钳位的功率平衡已与英文一致。`loop.T` 的说明（各因子的相位相加）在英文和韩文中均已更正。M1 的安装命令与 README 相同，为 `pip install -e "python[dev,figures]"`。仿真器页面改为“其他测试套件”，因为其后列出的是三个而不是两个；韩文中 SPICE 对比的默认导通电阻也与网表一致，为 1 mΩ。
+- **本次发布**。所有软件包的版本统一为 0.2.0，本变更记录增加中文摘要。
 
 ### [0.1.0] - 2026-09-28
 
-首个版本：按 `docs/BUILD_SPEC.md` 各阶段构建的网站、工具及其背后的检查（PR #1 至 #27）。示例中的数值是标明为示例的、便于教学的整齐数值，或注明出处的数据手册值（如磁性元件设计工具中通用磁芯的数值）。本版本不含变换器设计工具的 DCM 目标，也不含计划中推迟的拓扑（Ćuk、SEPIC 和 Zeta、桥式、LLC、电荷泵、LDO、整流器），`docs/STATUS.md` 列出了这些内容。
+首个版本：按 `docs/BUILD_SPEC.md` 各阶段构建的网站、工具及其背后的检查（PR #1 至 #27）。示例中的数值是标明为示例的、便于教学的整齐数值，或注明出处的数据手册值（如磁性元件设计工具中通用磁芯的数值）。本版本不含变换器设计工具的 DCM 目标，也不含计划中推迟的拓扑（Ćuk、SEPIC、Zeta、桥式、LLC、电荷泵、LDO、整流器），`docs/STATUS.md` 列出了这些内容。
 
-- **页面。** 英文和韩文各 90 个页面，韩文为英文的完整译文。
+- **页面**。英文和韩文各 90 个页面，韩文为英文的完整译文。
   - 采用完整模板的模块页面 46 个
   - 易错点 13 个，带验收标准和进度记录的任务 9 个
   - 逐一打开并核对标题的资料 86 条
   - 每种语言 55 套测验
-- **公式的单一来源。** 185 个公式（其中 162 个由 sympy 推导）出自同一个文件，TypeScript 与 Python 实现的相对误差在 1e-9 以内。
-- **经核实的参考文献。** 共 70 条，每条经两轮核实，DOI 与 Crossref 核对。
-- **浏览器内仿真器。** 涵盖五种变换器：
+- **公式的单一来源**。185 个公式（其中 162 个由 sympy 推导）出自同一个文件，TypeScript 与 Python 实现一致，相对误差在 1e-9 以内。
+- **经核实的参考文献**。共 70 条，每条经两轮核实，DOI 与 Crossref 核对。
+- **浏览器内仿真器**。涵盖五种变换器：
   - CCM/DCM、节点电容引起的振铃、多种负载和限流电源
   - 无稳态时的诊断
   - 逐个查看工作模态，以及像论文那样一次画出全部模态的图
   - 经验证与公式相差在 2 % 以内，并与 ngspice 一致
-- **7 种设计工具。** 每个输入框都可以按数据手册的写法输入：SI 词头、单位、百分数，以及韩文键盘的单位符号。
-- **SPICE 库。** 五种变换器的七个算例，提供 LTspice 原理图和 ngspice 网表。
-- **CircuitJS1 电路与分享链接。** 从稳态开始，慢速运行。无戴维南电源（Thevenin source）且为电阻负载时，仿真器中输入的数值达到稳态后也可在 CircuitJS1 中打开，并注明 CircuitJS1 电路中略去的部分（绕组电阻、二极管压降、节点电容）。
-- **易读的页面和工具。** 每个符号旁给出简短含义，设置位于图表旁，图表随页面的浅色和深色主题变化。韩文技术术语首次出现时在括号中给出英文。
-- **由代码绘制的图。** 原理图和波形适配两种主题。
-- **检查。** CI 在每个 PR 上检查引擎、仿真器、工具、推导、生成文件、lint、ngspice、在线链接和构建。
-- **可复现构建。** 将仓库文件解到另一路径，用 `npm ci && npm run build` 构建，CI 检查得到的站点是否逐字节相同。
-- **韩文对应检查。** 核对每一对英文和韩文页面的路径、标题级别和组件。
-- **本次发布。** 增加本变更记录，所有软件包的版本统一为 0.1.0；测试检查版本和 `docs/STATUS.md` 中的数量。
+- **7 种设计工具**。每个输入框都可以按数据手册的写法输入：SI 词头、单位、百分数，以及韩文键盘的单位符号。
+- **SPICE 库**。五种变换器的七个算例，提供 LTspice 原理图和 ngspice 网表。
+- **CircuitJS1 电路与分享链接**。从稳态开始，慢速运行。无戴维南电源（Thevenin source）且为电阻负载时，仿真器中输入的数值达到稳态后也可在 CircuitJS1 中打开，并注明 CircuitJS1 电路中略去的部分（绕组电阻、二极管压降、节点电容）。
+- **易读的页面和工具**。每个符号旁给出简短含义，设置位于图表旁，图表随页面的浅色和深色主题变化。韩文技术术语首次出现时在括号中给出英文。
+- **由代码绘制的图**。原理图和波形适配两种主题。
+- **检查**。CI 在每个 PR 上检查引擎、仿真器、工具、推导、生成文件、lint、ngspice、在线链接和构建。
+- **可复现构建**。将仓库文件解压到另一路径，用 `npm ci && npm run build` 构建，CI 检查得到的站点是否逐字节相同。
+- **韩文对应检查**。核对每一对英文和韩文页面的路径、标题级别和组件。
+- **本次发布**。增加本变更记录，所有软件包的版本统一为 0.1.0；测试检查版本和 `docs/STATUS.md` 中的数量。
