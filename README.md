@@ -1,18 +1,19 @@
 <div align="center">
 
-# Switching Converter Study · 스위칭 컨버터 스터디
+# Switching Converter Study · 스위칭 컨버터 스터디 · 开关变换器学习
 
 **Learn, design and simulate switching power converters, with every equation derived, tested and cited.**<br>
-**스위칭 전력 컨버터를 배우고, 설계하고, 시뮬레이션합니다. 모든 수식은 유도·검증·인용됩니다.**
+**스위칭 전력 컨버터를 배우고, 설계하고, 시뮬레이션합니다. 모든 수식은 유도·검증·인용됩니다.**<br>
+**学习、设计和仿真开关功率变换器，每个公式都经过推导、测试并注明出处。**
 
 [![CI](https://github.com/Denny-Hwang/switching_converter_study/actions/workflows/ci.yml/badge.svg)](https://github.com/Denny-Hwang/switching_converter_study/actions/workflows/ci.yml)
 [![Deploy](https://github.com/Denny-Hwang/switching_converter_study/actions/workflows/pages.yml/badge.svg)](https://github.com/Denny-Hwang/switching_converter_study/actions/workflows/pages.yml)
 
-**[Open the site (English)](https://denny-hwang.github.io/switching_converter_study/en/)** · **[사이트 열기 (한국어)](https://denny-hwang.github.io/switching_converter_study/ko/)**
+**[Open the site (English)](https://denny-hwang.github.io/switching_converter_study/en/)** · **[사이트 열기 (한국어)](https://denny-hwang.github.io/switching_converter_study/ko/)** · **[打开网站（中文）](https://denny-hwang.github.io/switching_converter_study/zh/)**
 
 <img src="docs/images/topologies.svg" width="100%" alt="Schematics of the five converters on the site: buck, boost, inverting buck-boost, flyback and forward">
 
-[English](#english) · [한국어](#한국어)
+[English](#english) · [한국어](#한국어) · [中文](#中文)
 
 </div>
 
@@ -20,9 +21,9 @@
 
 ## English
 
-An open, bilingual learning repository on power electronics for electrical
-engineers, and a web app that puts **learning**, **design** and
-**simulation** in one place. It covers switching-converter theory
+An open learning repository on power electronics for electrical engineers
+(in English, Korean and Chinese) and a web app that puts **learning**,
+**design** and **simulation** in one place. It covers switching-converter theory
 (CCM/DCM), the basic topologies, magnetics and losses, energy-harvesting
 interfaces and bench practice, with LTspice, ngspice and CircuitJS1
 (Falstad) files for the five basic converters and nine missions that put the
@@ -126,7 +127,7 @@ pip install -e "python[dev,figures]" && pytest   # sympy derivations and test ve
 python scripts/gen_equations.py        # regenerate LaTeX, test vectors, derivations, bibliography JSON (CI fails on a diff)
 python scripts/gen_figures.py --check  # redraw the figures and compare with the committed SVGs
 python scripts/mathlint.py             # no hand-typed equations; every <Eq> id exists
-python scripts/modulelint.py           # module template, every EN/KO page pair mirrored, STATUS.md
+python scripts/modulelint.py           # module template, every EN page mirrored in KO and ZH, STATUS.md
 python scripts/privacy_scan.py         # privacy rules
 python scripts/refcheck.py --online    # citation keys, VERIFY flags, DOIs against Crossref
 python scripts/resources_check.py --online   # every resource URL opened and its title matched
@@ -157,7 +158,7 @@ lychee --config lychee.toml --root-dir "$PWD/_linkcheck" _linkcheck   # every li
 | `examples/synthetic/` | the parameter sets behind every worked example and preset |
 | `sim/` | the SPICE library: LTspice schematics, ngspice netlists, CircuitJS1 circuits and share links, their READMEs and waveforms |
 | `scripts/` | generators, lints, screenshots |
-| `src/` | Astro + Starlight site: pages (`content/docs/en`, `content/docs/ko`), components, tools |
+| `src/` | Astro + Starlight site: pages (`content/docs/en`, `content/docs/ko`, `content/docs/zh`), components, tools |
 
 ### Roadmap
 
@@ -182,7 +183,7 @@ the citation rules. Documentation: CC BY-SA 4.0 (`LICENSE-DOCS`). Code: MIT
 
 ## 한국어
 
-전기공학 엔지니어를 위한 전력전자 공개 학습 저장소(영어 원본, 한국어 미러)이자
+전기공학 엔지니어를 위한 전력전자 공개 학습 저장소(영어 원본, 한국어·중국어 미러)이자
 **학습**, **설계**, **시뮬레이션**을 한곳에 모은 웹 앱입니다. 스위칭 컨버터
 이론(CCM/DCM), 기본 토폴로지, 자성 부품, 손실, 에너지 하베스팅 인터페이스, 벤치
 실습을 다루며, 다섯 가지 기본 컨버터의 LTspice·ngspice·CircuitJS1(Falstad) 파일과
@@ -283,7 +284,7 @@ pip install -e "python[dev,figures]" && pytest   # sympy 유도와 테스트 벡
 python scripts/gen_equations.py        # LaTeX·테스트 벡터·유도·참고문헌 JSON 재생성 (차이가 있으면 CI 실패)
 python scripts/gen_figures.py --check  # 그림을 다시 그려 커밋된 SVG와 비교
 python scripts/mathlint.py             # 손으로 쓴 수식 금지, 모든 <Eq> id 존재
-python scripts/modulelint.py           # 모듈 템플릿, 모든 영어·한국어 페이지 쌍의 미러, STATUS.md
+python scripts/modulelint.py           # 모듈 템플릿, 모든 영어 페이지의 한국어·중국어 미러, STATUS.md
 python scripts/privacy_scan.py         # 개인정보 규칙
 python scripts/refcheck.py --online    # 인용 키, VERIFY 표시, Crossref로 DOI 확인
 python scripts/resources_check.py --online   # 모든 자료 URL을 열어 제목 대조
@@ -314,7 +315,7 @@ lychee --config lychee.toml --root-dir "$PWD/_linkcheck" _linkcheck   # 모든 �
 | `examples/synthetic/` | 모든 예제와 프리셋의 파라미터 |
 | `sim/` | SPICE 라이브러리: LTspice 회로도, ngspice 넷리스트, CircuitJS1 회로와 공유 링크, 그 README와 파형 |
 | `scripts/` | 생성기, 린트, 스크린샷 |
-| `src/` | Astro + Starlight 사이트: 페이지(`content/docs/en`, `content/docs/ko`), 컴포넌트, 도구 |
+| `src/` | Astro + Starlight 사이트: 페이지(`content/docs/en`, `content/docs/ko`, `content/docs/zh`), 컴포넌트, 도구 |
 
 ### 로드맵
 
@@ -333,3 +334,138 @@ lychee --config lychee.toml --root-dir "$PWD/_linkcheck" _linkcheck   # 모든 �
 
 모듈 템플릿, 수식 작업 흐름, 인용 규칙은 `CONTRIBUTING.md`를 참고하세요.
 문서: CC BY-SA 4.0(`LICENSE-DOCS`). 코드: MIT(`LICENSE-CODE`).
+
+---
+
+## 中文
+
+这是一个面向电气工程师的开放式电力电子学习资源库（英文、韩文和中文），也是一个把**学习**、**设计**和**仿真**集于一处的 Web 应用。内容涵盖开关变换器理论（CCM/DCM）、基本拓扑、磁性元件与损耗、能量收集接口和实验台实践，并附有五种基本变换器的 LTspice、ngspice 和 CircuitJS1（Falstad）文件，以及九个运用这些页面和工具的任务。
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**学习**。每个页面说明所教内容，推导出结果，并在公式旁解释每个符号。随后讲解一个例题，链接到工具预设，列出易错点，最后以测验结束。
+
+<img src="docs/images/learn-zh.png" alt="伏秒平衡页面：CCM 下电感电压和电流的图，其后是平衡公式及每个符号的含义">
+
+</td>
+<td width="50%" valign="top">
+
+**设计**。针对变换器及其磁性元件与损耗、反激变换器的钳位电路、能量收集源和电流检测链的计算器。每个结果都标明其所依据的公式。
+
+<img src="docs/images/design-zh.png" alt="变换器设计工具：设计规格输入栏及其旁边的设计结果表，表中每个结果都标明其公式">
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top">
+
+**仿真**。在浏览器中运行的时域（time-domain）仿真器：选择拓扑，用 SI 前缀和单位输入数值（100 µH、200 kHz、30 %）或拖动滑块，波形、工作模式和损耗随之更新。可以按模态单步查看一个周期，并显示电路中的电流路径和每个元件的状态；也可以一次查看全部模态：先是标有模态边界的主要波形，然后是各模态下的电路。每个结果都与公式的值并列显示；仿真器已对照公式（偏差在 2 % 以内）和 ngspice 进行验证。负载为电阻且没有戴维南电源（Thevenin source）时，一个链接即可在 CircuitJS1 中打开同一组数值。
+
+<img src="docs/images/simulate-zh.png" alt="仿真器：拓扑和预设按钮、检测到的模式，以及上下排列的波形旁的参数输入栏">
+
+</td>
+</tr>
+</table>
+
+### 如何保证数值正确
+
+```mermaid
+flowchart LR
+  Y["equations.yaml<br/>所有公式的单一来源"] --> P["Python + sympy<br/>推导、LaTeX、测试向量"]
+  P --> T["pe-core (TypeScript)<br/>求值函数、仿真器"]
+  P --> S["站点<br/>公式、例题、工具"]
+  T --> S
+  B["references.bib<br/>已核实的出处"] --> S
+```
+
+- 每个公式只在 `packages/pe-core/equations/equations.yaml` 中写一次。sympy 复现其推导（derivation）并生成其 LaTeX。TypeScript 引擎必须在共享测试向量上与 Python 参考实现一致，相对误差在 1e-9 以内。
+- 每个公式以及每条关于器件或方法的论断都引用 `references.bib` 中已核实的条目。CI 对照 Crossref 核对每个 DOI，打开每个链接，遇到失效链接即失败。
+- 数学公式用 KaTeX 以严格模式（strict mode）渲染。插图由代码绘制（`scripts/gen_figures.py`）。隐私扫描拦截真实项目的数据（`PRIVACY_RULES.md`）：示例数值都是取整的教学用数值。
+
+### 内容
+
+| 部分 | 页面 |
+| --- | --- |
+| 00 基础 | 电路定律、相量与拉普拉斯变换、傅里叶级数、实际无源元件、半导体开关 |
+| 01 物理 | 法拉第定律与电感、变压器、铁氧体与 B-H 曲线、气隙与 A_L、磁芯损耗 |
+| 02 理论 | 开关变换原理、伏秒平衡与电荷平衡、CCM 与 DCM、参数 K、平均模型、小信号模型、右半平面（RHP）零点、控制基础、推导 |
+| 03 拓扑 | 降压、升压、升降压、反激、正激、比较 |
+| 04 磁性元件 | 电感设计步骤、绕组损耗、漏感、缓冲电路与钳位电路、磁性元件的测量 |
+| 05 仿真 | LTspice 与 ngspice 中的 SPICE 库（仿真指令、需要运行多久、积分设置）、CircuitJS1 中的相同电路（其固定时间步长与二极管电流无处可去时出现的尖峰）、用 Python 验证、浏览器内仿真器的工作原理 |
+| 06 实验台 | PCB 布局、栅极驱动、电流检测、探头与测量带宽、热设计、保护电路、低温 |
+| 07 能量收集 | 电源模型、匹配、作为无损电阻的 DCM 反激变换器、SECE、SSHI 与 MPPT、设计实例 |
+| 08 易错点 | 实验台和设计中的十三个错误，每个都从现象讲到解决方法 |
+| 09 任务 | 九个带验收标准的任务，以及保存在浏览器中的进度记录 |
+| 10 资料 | 图书、课程、视频、应用笔记、工具和论文，每项均已打开核对；参考文献 |
+| 工具 | 公式浏览器、仿真器、变换器设计工具、磁性元件设计工具、损耗预算、钳位检查、源匹配、电流检测链 |
+| SPICE 库 | `sim/`：五种变换器的 LTspice 原理图和 ngspice 网表（附应绘制的量和预期数值），以及可在 falstad.com 上打开的 CircuitJS1 电路 |
+
+### 在本地运行
+
+环境要求：Node.js ≥ 22.12、Python ≥ 3.11。
+
+```sh
+npm install && npm run dev   # 站点和工具：http://localhost:4321/switching_converter_study/
+npm test                     # vitest：pe-core、仿真器验证、TS/Python 一致性
+```
+
+<details>
+<summary>CI 运行的全部检查</summary>
+
+```sh
+npm run typecheck && npm test          # TypeScript 类型检查；vitest（pe-core、仿真器、工具、TS/Python 一致性）
+pip install -e "python[dev,figures]" && pytest   # sympy 推导与测试向量
+python scripts/gen_equations.py        # 重新生成 LaTeX、测试向量、推导和参考文献 JSON（有差异时 CI 失败）
+python scripts/gen_figures.py --check  # 重绘插图并与已提交的 SVG 比较
+python scripts/mathlint.py             # 不允许手写公式；每个 <Eq> id 都存在
+python scripts/modulelint.py           # 模块模板、每个英文页面的韩文与中文镜像、STATUS.md
+python scripts/privacy_scan.py         # 隐私规则
+python scripts/refcheck.py --online    # 引用键、VERIFY 标记、对照 Crossref 核对 DOI
+python scripts/resources_check.py --online   # 打开每个资料 URL 并核对其标题
+python scripts/falstad_library.py --check    # CircuitJS1 电路：是否最新，接线是否与 SPICE 网表一致
+python scripts/sim_library.py --check        # 用 ngspice 和公式核对 SPICE 库（需要 ngspice）
+python scripts/spice_crosscheck.py --check   # 用 ngspice 核对仿真器（需要 ngspice）
+npx playwright install --with-deps chromium   # 三项浏览器检查所用的无头浏览器
+node scripts/falstad_check.mjs         # 在 falstad.com 上运行每个 CircuitJS1 分享链接
+npm run build                          # KaTeX 严格模式构建（公式出错即失败），然后运行 scripts/postbuild.mjs
+bash scripts/repro_check.sh            # HEAD 的文件放在另一路径下，构建出逐字节相同的站点
+python scripts/anchorcheck.py dist     # 每个 #fragment 链接的目标都存在（构建后）
+node scripts/keyboard_check.mjs        # 工具页面的键盘焦点顺序（构建后）
+node scripts/seq_check.mjs             # 工作模态图中文字的实际边界框（构建后）
+rm -rf _linkcheck && mkdir _linkcheck && cp -r dist _linkcheck/switching_converter_study   # 置于 Pages 路径下的站点
+lychee --config lychee.toml --root-dir "$PWD/_linkcheck" _linkcheck   # 每个链接（lychee 可执行文件，而非 npm 上的同名包）
+```
+
+</details>
+
+### 仓库结构
+
+| 路径 | 内容 |
+| --- | --- |
+| `CLAUDE.md`, `PRIVACY_RULES.md` | 必须遵守的约定；绝不能提交的内容 |
+| `docs/BUILD_SPEC.md`, `docs/STATUS.md`, `docs/ADR/` | 构建规范与各阶段；模块状态；决策记录 |
+| `packages/pe-core/` | TypeScript 引擎；`equations/` 存放单一事实来源（single source of truth） |
+| `python/pe_core/` | 验证：sympy 推导、LaTeX 与向量生成 |
+| `examples/synthetic/` | 每个例题和预设所依据的参数集 |
+| `sim/` | SPICE 库：LTspice 原理图、ngspice 网表、CircuitJS1 电路与分享链接，以及各自的 README 和波形 |
+| `scripts/` | 生成器、lint 检查、截图 |
+| `src/` | Astro + Starlight 站点：页面（`content/docs/en`、`content/docs/ko`、`content/docs/zh`）、组件、工具 |
+
+### 路线图
+
+| 阶段 | 范围 | 状态 |
+| --- | --- | --- |
+| 0 | 站点框架、CI、Pages 部署、公式流水线 | 已完成 |
+| 1 | 公式引擎：推导、一致性、公式与引用的 lint 检查 | 已完成 |
+| 2 | 核心内容：基础、物理、理论、拓扑（英文与韩文） | 已完成 |
+| 3 | 时域仿真器与设计工具：仿真器、变换器设计工具、磁性元件设计工具、损耗预算、钳位检查、源匹配、电流检测链 | 已完成 |
+| 4 | 磁性元件、实验台、能量收集、易错点、资料 | 已完成 |
+| 5 | LTspice/ngspice 库、CircuitJS1 电路、任务、仿真页面、可复现构建；v0.1.0 | 已完成 |
+
+已发布 **v0.1.0**；各版本的内容见 [`CHANGELOG.md`](CHANGELOG.md)。
+
+### 贡献与许可证
+
+模块模板、公式工作流程和引用规则见 `CONTRIBUTING.md`。文档：CC BY-SA 4.0（`LICENSE-DOCS`）。代码：MIT（`LICENSE-CODE`）。
